@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { MiniGameHub } from './game/components/MiniGameHub'
+import { EnhancedMiniGameHub } from './game/components/EnhancedMiniGameHub'
 import { toast } from 'sonner'
 
 interface UserProfile {
@@ -254,17 +255,11 @@ function App() {
         </div>
       </header>
 
-      {/* Mini Game Hub Modal */}
+      {/* Enhanced Mini Game Hub Modal */}
       {isPlaying && (
         <Dialog open={isPlaying} onOpenChange={setIsPlaying}>
-          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <GameController className="w-6 h-6" />
-                Financial Mini-Games
-              </DialogTitle>
-            </DialogHeader>
-            <MiniGameHub
+          <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto p-0 border-0">
+            <EnhancedMiniGameHub
               onGameComplete={completeGame}
               onExit={() => setIsPlaying(false)}
             />
@@ -284,58 +279,81 @@ function App() {
           <TabsContent value="games" className="space-y-6">
             <div className="text-center space-y-4">
               <div className="text-6xl">🎮</div>
-              <h3 className="text-2xl font-bold">Financial Learning Games</h3>
+              <h3 className="text-2xl font-bold">Revolutionary Learning Games</h3>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Master money management through fun, interactive mini-games that teach real financial skills.
+                Master money management through motion-controlled games, brain-computer interfaces, and adaptive learning for all ages.
               </p>
+              <div className="flex flex-wrap justify-center gap-2 mb-4">
+                <Badge className="bg-blue-100 text-blue-800">📱 Motion Controls</Badge>
+                <Badge className="bg-purple-100 text-purple-800">🧠 BCI Integration</Badge>
+                <Badge className="bg-green-100 text-green-800">🎯 VARK Adaptation</Badge>
+                <Badge className="bg-orange-100 text-orange-800">👥 Age-Tiered Content</Badge>
+              </div>
               <Button 
                 size="lg"
                 onClick={() => setIsPlaying(true)}
                 className="text-lg px-8 py-3"
               >
                 <GameController className="w-6 h-6 mr-2" />
-                Play Mini-Games
+                Start Advanced Learning
               </Button>
             </div>
             
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <Card className="text-center">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">⚖️</div>
-                  <h4 className="font-semibold mb-2">Budget Balance</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Learn to allocate income across expense categories
+                  <div className="text-4xl mb-3">🍋</div>
+                  <h4 className="font-semibold mb-2">Retro Lemonade Stand</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    8-bit business sim with motion controls and BCI focus tracking
                   </p>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <Badge variant="outline" className="text-xs">Motion</Badge>
+                    <Badge variant="outline" className="text-xs">BCI</Badge>
+                  </div>
                 </CardContent>
               </Card>
               
               <Card className="text-center">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">📈</div>
-                  <h4 className="font-semibold mb-2">Investment Tower</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Build wealth by stacking different investments
+                  <div className="text-4xl mb-3">🫗</div>
+                  <h4 className="font-semibold mb-2">Motion Budget Jars</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Tilt your device to pour money into budget categories
                   </p>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <Badge variant="outline" className="text-xs">Kinesthetic</Badge>
+                    <Badge variant="outline" className="text-xs">VARK</Badge>
+                  </div>
                 </CardContent>
               </Card>
               
               <Card className="text-center">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">💳</div>
-                  <h4 className="font-semibold mb-2">Credit Memory</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Match credit cards with their features
+                  <div className="text-4xl mb-3">👥</div>
+                  <h4 className="font-semibold mb-2">Age-Adaptive Games</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Content automatically adjusts for elementary, middle, or adult learners
                   </p>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <Badge variant="outline" className="text-xs">6-10</Badge>
+                    <Badge variant="outline" className="text-xs">11-14</Badge>
+                    <Badge variant="outline" className="text-xs">15+</Badge>
+                  </div>
                 </CardContent>
               </Card>
               
               <Card className="text-center">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">🧮</div>
-                  <h4 className="font-semibold mb-2">Compound Growth</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Visualize the magic of compound interest
+                  <div className="text-4xl mb-3">🧠</div>
+                  <h4 className="font-semibold mb-2">Brain-Enhanced Learning</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    EEG monitoring adapts difficulty based on focus and engagement
                   </p>
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <Badge variant="outline" className="text-xs">Focus</Badge>
+                    <Badge variant="outline" className="text-xs">Flow</Badge>
+                  </div>
                 </CardContent>
               </Card>
             </div>
