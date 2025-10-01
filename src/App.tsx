@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { 
   Coins, Trophy, Users, Target, BookOpen, Star, Brain, ChartLine, 
-  GameController, Lightning, TrendUp, Medal, Fire, Clock, Calculator
+  GameController, Lightning, TrendUp, Medal, Fire, Clock, Calculator, ArrowLeft
 } from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -272,20 +272,41 @@ function App() {
         </div>
       </header>
 
-      {/* Gaming Modal with Enhanced Styling */}
+      {/* Gaming Hub - Full Screen */}
       {isPlaying && (
-        <Dialog open={isPlaying} onOpenChange={setIsPlaying}>
-          <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto p-0 border-0 glass-card shadow-2xl">
-            <ProfessionalGameHub
-              onGameComplete={completeGame}
-              onExit={() => setIsPlaying(false)}
-              userTier="middle"
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="fixed inset-0 z-50 bg-background">
+          <ProfessionalGameHub
+            onGameComplete={completeGame}
+            onExit={() => setIsPlaying(false)}
+            userTier="middle"
+          />
+        </div>
       )}
 
-      <div className="min-h-screen pt-8">
+      {/* Mini-Games Hub - Full Screen */}
+      {currentScenario === 'mini-games' && (
+        <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
+          <div className="container mx-auto px-6 py-8">
+            <div className="flex items-center gap-4 mb-8">
+              <Button 
+                variant="outline" 
+                onClick={() => setCurrentScenario(null)}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Games
+              </Button>
+              <h1 className="text-3xl font-bold text-gradient-primary">Mini-Games Collection</h1>
+            </div>
+            <MiniGameHub
+              onGameComplete={completeGame}
+              onExit={() => setCurrentScenario(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {!isPlaying && currentScenario !== 'mini-games' && (
         <div className="container mx-auto px-6 pb-12">
           <Tabs defaultValue="games" className="w-full">
             <TabsList className="grid w-full grid-cols-4 glass-card border shadow-lg h-14 p-1 mb-8">
@@ -345,18 +366,35 @@ function App() {
                 </Badge>
               </div>
               
-              <Button 
-                size="lg"
-                onClick={() => setIsPlaying(true)}
-                className="btn-primary-gaming px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-accent/25 transition-all duration-300"
-              >
-                <GameController className="w-6 h-6 mr-3" />
-                Start Learning Adventure
-              </Button>
+              <div className="flex justify-center gap-4">
+                <Button 
+                  size="lg"
+                  onClick={() => setIsPlaying(true)}
+                  className="btn-primary-gaming px-10 py-6 text-xl font-bold shadow-2xl hover:shadow-accent/25 transition-all duration-300"
+                >
+                  <GameController className="w-6 h-6 mr-3" />
+                  Start Learning Adventure
+                </Button>
+                
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setCurrentScenario('mini-games')}
+                  className="px-10 py-6 text-xl font-bold border-2 hover:bg-secondary/10 transition-all duration-300"
+                >
+                  <Target className="w-6 h-6 mr-3" />
+                  Quick Mini-Games
+                </Button>
+              </div>
             </div>
             
+            {/* Mini-Games Hub */}
+            
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <Card className="interactive-card glass-card border-l-4 border-l-accent shadow-lg hover:shadow-2xl">
+              <Card 
+                className="interactive-card glass-card border-l-4 border-l-accent shadow-lg hover:shadow-2xl cursor-pointer"
+                onClick={() => setIsPlaying(true)}
+              >
                 <CardContent className="p-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="gradient-accent p-3 rounded-2xl shadow-md">
@@ -370,15 +408,22 @@ function App() {
                   <p className="text-muted-foreground text-base mb-6 leading-relaxed">
                     Catch falling coins while avoiding expenses in this fast-paced savings game that teaches smart spending decisions.
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Saving Skills</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Quick Math</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Decision Making</Badge>
                   </div>
+                  <Button className="w-full btn-primary-gaming">
+                    <GameController className="w-4 h-4 mr-2" />
+                    Play Now
+                  </Button>
                 </CardContent>
               </Card>
               
-              <Card className="interactive-card glass-card border-l-4 border-l-primary shadow-lg hover:shadow-2xl">
+              <Card 
+                className="interactive-card glass-card border-l-4 border-l-primary shadow-lg hover:shadow-2xl cursor-pointer"
+                onClick={() => setIsPlaying(true)}
+              >
                 <CardContent className="p-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="gradient-primary p-3 rounded-2xl shadow-md">
@@ -392,15 +437,22 @@ function App() {
                   <p className="text-muted-foreground text-base mb-6 leading-relaxed">
                     Balance your monthly budget by categorizing expenses and making smart financial decisions through interactive gameplay.
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Budgeting</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Planning</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Analysis</Badge>
                   </div>
+                  <Button className="w-full btn-primary-gaming">
+                    <GameController className="w-4 h-4 mr-2" />
+                    Play Now
+                  </Button>
                 </CardContent>
               </Card>
               
-              <Card className="interactive-card glass-card border-l-4 border-l-secondary shadow-lg hover:shadow-2xl">
+              <Card 
+                className="interactive-card glass-card border-l-4 border-l-secondary shadow-lg hover:shadow-2xl cursor-pointer"
+                onClick={() => setIsPlaying(true)}
+              >
                 <CardContent className="p-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="gradient-secondary p-3 rounded-2xl shadow-md">
@@ -414,11 +466,15 @@ function App() {
                   <p className="text-muted-foreground text-base mb-6 leading-relaxed">
                     Build your investment portfolio by stacking different asset blocks strategically to maximize returns and minimize risk.
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Investing</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Strategy</Badge>
                     <Badge variant="secondary" className="bg-muted text-muted-foreground font-medium">Risk Management</Badge>
                   </div>
+                  <Button className="w-full btn-primary-gaming">
+                    <GameController className="w-4 h-4 mr-2" />
+                    Play Now
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -749,7 +805,7 @@ function App() {
           </TabsContent>
         </Tabs>
         </div>
-      </div>
+      )}
     </div>
   )
 }
