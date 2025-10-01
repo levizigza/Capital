@@ -12,9 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { AdvancedGameEngine } from './game/components/AdvancedGameEngine'
-import { advancedScenarios, dailyChallenges, multiplayerChallenges } from './data/gameData'
-import type { GameScenario } from './data/gameData'
+import { MiniGameHub } from './game/components/MiniGameHub'
 import { toast } from 'sonner'
 
 interface UserProfile {
@@ -82,7 +80,7 @@ function App() {
   })
 
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
-  const [currentScenario, setCurrentScenario] = useState<GameScenario | null>(null)
+  const [currentScenario, setCurrentScenario] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
   // Calculate level from XP with exponential scaling
@@ -90,31 +88,35 @@ function App() {
   const currentLevelXP = (userProfile?.xp || 0) % xpForNextLevel
   const progressPercent = (currentLevelXP / xpForNextLevel) * 100
 
-  // Advanced game completion handler
-  const completeGame = (scenarioId: string, results: GameResults) => {
+  // Mini-game completion handler
+  const completeGame = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
     const newScore: GameScore = {
-      gameId: scenarioId,
-      score: results.coinsEarned,
-      completed: results.success,
-      timeSpent: results.timeSpent,
+      gameId: gameId,
+      score: score,
+      completed: true,
+      timeSpent: timeSpent,
       date: new Date().toISOString(),
       difficulty: userProfile?.preferences.difficulty || 'adaptive',
-      finalNetWorth: results.finalNetWorth,
-      decisions: results.decisions
+      finalNetWorth: additionalData?.finalAmount || 0,
+      decisions: []
     }
 
     setGameScores(prevScores => [...(prevScores || []), newScore])
+    
+    // Calculate XP and coins based on score
+    const xpEarned = Math.floor(score * 0.5) + 50 // Base XP + score bonus
+    const coinsEarned = Math.floor(score * 0.3) + 25 // Base coins + score bonus
     
     setUserProfile(prevProfile => {
       if (!prevProfile) {
         const defaultProfile: UserProfile = {
           name: 'Anonymous',
           level: 1,
-          xp: results.xpEarned,
-          totalCoins: results.coinsEarned,
+          xp: xpEarned,
+          totalCoins: coinsEarned,
           gamesCompleted: 1,
-          achievements: results.achievementsUnlocked,
-          currentStreak: results.success ? 1 : 0,
+          achievements: [],
+          currentStreak: 1,
           skillsUnlocked: [],
           learningStyle: null,
           preferences: {
@@ -126,7 +128,7 @@ function App() {
         return defaultProfile
       }
       
-      const newXP = prevProfile.xp + results.xpEarned
+      const newXP = prevProfile.xp + xpEarned
       const newLevel = Math.floor(newXP / 100) + 1
       const leveledUp = newLevel > prevProfile.level
 
@@ -136,31 +138,20 @@ function App() {
         })
       }
 
-      // Check for new achievements
-      const newAchievements = [...(prevProfile.achievements || [])]
-      results.achievementsUnlocked.forEach(achievement => {
-        if (!newAchievements.includes(achievement)) {
-          newAchievements.push(achievement)
-        }
-      })
-
       return {
         ...prevProfile,
         xp: newXP,
         level: newLevel,
-        totalCoins: prevProfile.totalCoins + results.coinsEarned,
+        totalCoins: prevProfile.totalCoins + coinsEarned,
         gamesCompleted: prevProfile.gamesCompleted + 1,
-        currentStreak: results.success ? prevProfile.currentStreak + 1 : 0,
-        achievements: newAchievements
+        currentStreak: prevProfile.currentStreak + 1,
+        achievements: prevProfile.achievements
       }
     })
 
-    toast.success(
-      results.success ? 'Game Completed Successfully!' : 'Game Completed',
-      {
-        description: `+${results.coinsEarned} coins, +${results.xpEarned} XP, Net Worth: $${results.finalNetWorth.toLocaleString()}`
-      }
-    )
+    toast.success('Game Completed Successfully!', {
+      description: `+${coinsEarned} coins, +${xpEarned} XP, Score: ${score}`
+    })
     
     setCurrentScenario(null)
     setIsPlaying(false)
@@ -194,49 +185,13 @@ function App() {
     }
   }, [userProfile?.name, setUserProfile])
 
-  // Get recommended scenarios based on user progress
-  const getRecommendedScenarios = () => {
-    const userLevel = userProfile?.level || 1
-    const completedGames = new Set((gameScores || []).map(score => score.gameId))
-    
-    return advancedScenarios.filter(scenario => {
-      // Check if user meets prerequisites
-      const meetsPrereqs = scenario.prerequisites.every(prereq => 
-        (userProfile?.skillsUnlocked || []).includes(prereq) || completedGames.has(prereq)
-      )
-      
-      // Check difficulty appropriateness
-      const difficultyLevel = {
-        'beginner': 1,
-        'intermediate': 3,
-        'advanced': 6,
-        'expert': 10
-      }
-      
-      return meetsPrereqs && userLevel >= (difficultyLevel[scenario.difficulty] || 1)
-    })
-  }
-
-  const recommendedScenarios = getRecommendedScenarios()
-
-  // Get difficulty color
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800'
-      case 'intermediate': return 'bg-blue-100 text-blue-800'
-      case 'advanced': return 'bg-purple-100 text-purple-800'
-      case 'expert': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   // Get category icon
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'life_simulation': return <Users className="w-6 h-6" />
-      case 'market_trading': return <ChartLine className="w-6 h-6" />
-      case 'business_management': return <Target className="w-6 h-6" />
-      case 'crisis_management': return <Lightning className="w-6 h-6" />
+      case 'budgeting': return <Users className="w-6 h-6" />
+      case 'investing': return <ChartLine className="w-6 h-6" />
+      case 'credit': return <Target className="w-6 h-6" />
+      case 'savings': return <Lightning className="w-6 h-6" />
       default: return <GameController className="w-6 h-6" />
     }
   }
@@ -299,169 +254,144 @@ function App() {
         </div>
       </header>
 
-      {/* Game Engine Modal */}
-      {currentScenario && isPlaying && (
+      {/* Mini Game Hub Modal */}
+      {isPlaying && (
         <Dialog open={isPlaying} onOpenChange={setIsPlaying}>
           <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                {getCategoryIcon(currentScenario.category)}
-                {currentScenario.title}
+                <GameController className="w-6 h-6" />
+                Financial Mini-Games
               </DialogTitle>
             </DialogHeader>
-            <AdvancedGameEngine
-              scenario={currentScenario}
-              playerId={userProfile?.name || 'anonymous'}
-              onComplete={(results) => completeGame(currentScenario.id, results)}
-              onExit={() => {
-                setCurrentScenario(null)
-                setIsPlaying(false)
-              }}
+            <MiniGameHub
+              onGameComplete={completeGame}
+              onExit={() => setIsPlaying(false)}
             />
           </DialogContent>
         </Dialog>
       )}
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="scenarios" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="scenarios">Advanced Scenarios</TabsTrigger>
+        <Tabs defaultValue="games" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="games">Mini-Games</TabsTrigger>
             <TabsTrigger value="challenges">Daily Challenges</TabsTrigger>
-            <TabsTrigger value="multiplayer">Multiplayer</TabsTrigger>
             <TabsTrigger value="progress">Analytics</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="scenarios" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-              {recommendedScenarios.map((scenario) => (
-                <Card key={scenario.id} className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className={`p-3 rounded-lg bg-gradient-to-br from-card to-muted`}>
-                        {getCategoryIcon(scenario.category)}
-                      </div>
-                      <Badge className={getDifficultyColor(scenario.difficulty)}>
-                        {scenario.difficulty}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl">{scenario.title}</CardTitle>
-                    <CardDescription className="text-base">{scenario.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{scenario.estimatedTime}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Trophy className="w-4 h-4" />
-                          <span>+{scenario.rewards.xp} XP</span>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <h4 className="font-semibold text-sm">Learning Objectives:</h4>
-                        <ScrollArea className="max-h-20">
-                          <ul className="text-sm text-muted-foreground space-y-1">
-                            {scenario.learningObjectives.slice(0, 3).map((objective, index) => (
-                              <li key={index} className="flex items-start gap-2">
-                                <span className="text-primary">•</span>
-                                {objective}
-                              </li>
-                            ))}
-                          </ul>
-                        </ScrollArea>
-                      </div>
-                      
-                      <Button 
-                        className="w-full"
-                        onClick={() => {
-                          setCurrentScenario(scenario)
-                          setIsPlaying(true)
-                        }}
-                      >
-                        Start Advanced Scenario
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+          <TabsContent value="games" className="space-y-6">
+            <div className="text-center space-y-4">
+              <div className="text-6xl">🎮</div>
+              <h3 className="text-2xl font-bold">Financial Learning Games</h3>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Master money management through fun, interactive mini-games that teach real financial skills.
+              </p>
+              <Button 
+                size="lg"
+                onClick={() => setIsPlaying(true)}
+                className="text-lg px-8 py-3"
+              >
+                <GameController className="w-6 h-6 mr-2" />
+                Play Mini-Games
+              </Button>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <div className="text-4xl mb-3">⚖️</div>
+                  <h4 className="font-semibold mb-2">Budget Balance</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Learn to allocate income across expense categories
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <div className="text-4xl mb-3">📈</div>
+                  <h4 className="font-semibold mb-2">Investment Tower</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Build wealth by stacking different investments
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <div className="text-4xl mb-3">💳</div>
+                  <h4 className="font-semibold mb-2">Credit Memory</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Match credit cards with their features
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card className="text-center">
+                <CardContent className="p-6">
+                  <div className="text-4xl mb-3">🧮</div>
+                  <h4 className="font-semibold mb-2">Compound Growth</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Visualize the magic of compound interest
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
           <TabsContent value="challenges" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              {dailyChallenges.map((challenge, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Lightning className="w-8 h-8 text-amber-500" />
-                      <Badge className={getDifficultyColor(challenge.difficulty)}>
-                        {challenge.difficulty}
-                      </Badge>
-                    </div>
-                    <CardTitle>{challenge.name}</CardTitle>
-                    <CardDescription>{challenge.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="text-sm text-muted-foreground">
-                        <strong>Time Limit:</strong> {Math.floor(challenge.timeLimit / 60000)} minutes
-                      </div>
-                      <div className="space-y-1">
-                        <strong className="text-sm">Rules:</strong>
-                        {challenge.rules.map((rule, ruleIndex) => (
-                          <div key={ruleIndex} className="text-sm text-muted-foreground">
-                            • {rule}
-                          </div>
-                        ))}
-                      </div>
-                      <Button className="w-full" variant="outline">
-                        Start Challenge
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="text-center space-y-4">
+              <div className="text-6xl">⚡</div>
+              <h3 className="text-2xl font-bold">Daily Challenges</h3>
+              <p className="text-muted-foreground">
+                New financial challenges refresh daily to keep your skills sharp!
+              </p>
             </div>
-          </TabsContent>
-
-          <TabsContent value="multiplayer" className="space-y-6">
+            
             <div className="grid gap-6 md:grid-cols-2">
-              {multiplayerChallenges.map((challenge, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <Users className="w-8 h-8 text-primary" />
-                      <Badge variant="secondary">{challenge.players} players</Badge>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Lightning className="w-8 h-8 text-amber-500" />
+                    <Badge className="bg-green-100 text-green-800">Easy</Badge>
+                  </div>
+                  <CardTitle>Quick Budget Challenge</CardTitle>
+                  <CardDescription>Balance a budget in under 60 seconds</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="text-sm text-muted-foreground">
+                      <strong>Time Limit:</strong> 1 minute
                     </div>
-                    <CardTitle>{challenge.name}</CardTitle>
-                    <CardDescription>{challenge.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="text-sm">
-                        <strong>Duration:</strong> {challenge.duration}
-                      </div>
-                      <div className="space-y-1">
-                        <strong className="text-sm">Roles:</strong>
-                        <div className="flex flex-wrap gap-1">
-                          {challenge.roles.map((role, roleIndex) => (
-                            <Badge key={roleIndex} variant="outline" className="text-xs">
-                              {role}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <Button className="w-full" disabled>
-                        Coming Soon
-                      </Button>
+                    <Button className="w-full" disabled>
+                      Coming Soon
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <Lightning className="w-8 h-8 text-amber-500" />
+                    <Badge className="bg-blue-100 text-blue-800">Medium</Badge>
+                  </div>
+                  <CardTitle>Investment Speed Run</CardTitle>
+                  <CardDescription>Build a diversified portfolio quickly</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="text-sm text-muted-foreground">
+                      <strong>Time Limit:</strong> 2 minutes
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    <Button className="w-full" disabled>
+                      Coming Soon
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 

@@ -1,55 +1,75 @@
-# FinanceQuest PRD - Advanced Game Development Edition
+# FinanceQuest - Interactive Mini-Games Edition
 
 ## Core Purpose & Success
 
-**Mission Statement**: Create an engaging, sophisticated financial education platform that uses advanced game development principles to teach real-world money management through immersive, interactive experiences.
+**Mission Statement**: Create engaging financial mini-games that teach real money management skills through interactive gameplay, similar to popular educational games on CoolMathGames and Miniclip.
 
 **Success Indicators**: 
-- User retention > 70% after first week
-- Average session time > 15 minutes
-- Completion rate > 60% for each game module
-- Measurable improvement in financial literacy scores
+- User completion rates across all mini-games > 75%
+- Average play session time > 10 minutes  
+- Daily return rate > 40%
+- Skill progression across financial concepts
 
-**Experience Qualities**: Immersive, Educational, Rewarding
+**Experience Qualities**: Fun, Interactive, Educational
 
 ## Project Classification & Approach
 
-**Complexity Level**: Complex Application with advanced game mechanics, real-time systems, and sophisticated state management
+**Complexity Level**: Light Application with multiple mini-games and basic progress tracking
 
-**Primary User Activity**: Interactive learning through game-based experiences with elements of Creating, Acting, and strategic thinking
+**Primary User Activity**: Learning through hands-on gameplay and real-time decision making
 
 ## Thought Process for Feature Selection
 
-**Core Problem Analysis**: Traditional financial education is boring and abstract. Users need hands-on, consequence-driven learning that mirrors real-world financial decisions.
+**Core Problem Analysis**: Financial education is often boring and theoretical. People learn better through active participation and immediate feedback rather than passive consumption.
 
-**User Context**: Students, young adults, and parents seeking engaging financial education tools they can use in short sessions or extended gameplay.
+**User Context**: Students and young adults who want to learn financial skills through games they can play in short 2-5 minute sessions.
 
-**Critical Path**: User registration → Tutorial/Onboarding → Core game loop → Progressive skill building → Advanced scenarios
+**Critical Path**: Select mini-game → Learn through gameplay → See immediate results → Understand concepts naturally → Progress to harder difficulties
 
 **Key Moments**: 
-1. First successful financial decision with immediate feedback
+1. First successful budget balance (immediate satisfaction)
+2. Watching compound interest grow visually (aha moment)
+3. Mastering credit card knowledge through memory game (retention)
 2. Unlocking advanced games after mastering basics  
 3. Achieving major financial milestones in simulation
 
 ## Essential Features
 
-### Advanced Game Mechanics
-- **Real-time economic simulation**: Dynamic market conditions, inflation, interest rates
-- **Consequence-driven gameplay**: Poor decisions have lasting effects on virtual finances
-- **Progressive difficulty scaling**: Adaptive challenges based on user performance
-- **Multiplayer competitions**: Leaderboards, challenges, and collaborative scenarios
+### Core Mini-Games
+1. **Budget Balance Game**
+   - Interactive slider-based budget allocation
+   - Real-time feedback on spending categories  
+   - Visual balance scale metaphor
+   - 50/30/20 rule teaching
+   - Time pressure for engagement
 
-### Sophisticated User Systems
-- **Detailed progress tracking**: Analytics dashboard with performance insights
-- **Personalized learning paths**: AI-driven content adaptation based on learning style
-- **Achievement and reward systems**: Meaningful badges tied to real financial concepts
-- **Social features**: Share achievements, compare progress, collaborative learning
+2. **Investment Tower**
+   - Drag-and-drop investment building
+   - Market condition changes affecting returns
+   - Risk vs reward visualization
+   - Portfolio diversification concepts
+   - Real-time growth simulation
 
-### Advanced Game Content
-- **Life simulation mode**: Full virtual life with career, housing, investments
-- **Market trading simulator**: Real-time stock/crypto trading with virtual money
-- **Business management game**: Start and grow virtual businesses
-- **Crisis scenario training**: Economic downturns, job loss, unexpected expenses
+3. **Credit Card Memory**
+   - Memory matching game mechanics
+   - Learn different card types and features
+   - APR, fees, and benefits education
+   - Timed challenge elements
+   - Progressive difficulty levels
+
+4. **Compound Growth Visualizer**
+   - Interactive parameter sliders
+   - Real-time growth animation
+   - Visual chart updates
+   - Long-term thinking development
+   - Goal-setting challenges
+
+### Supporting Features
+- **Progress Tracking**: XP, levels, coins, streaks
+- **Achievement System**: Unlockable badges for milestones  
+- **Difficulty Scaling**: Easy/Medium/Hard options for each game
+- **Performance Analytics**: Score tracking and improvement metrics
+- **Mini-Game Hub**: Central launcher with game previews and stats
 
 ## Design Direction
 
