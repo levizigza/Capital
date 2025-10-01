@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Coins, Trophy, Users, Target, BookOpen, Star } from '@phosphor-icons/react'
+import { 
+  Coins, Trophy, Users, Target, BookOpen, Star, Brain, ChartLine, 
+  GameController, Lightning, TrendUp, Medal, Fire, Clock
+} from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { AdvancedGameEngine } from './game/components/AdvancedGameEngine'
+import { advancedScenarios, dailyChallenges, multiplayerChallenges } from './data/gameData'
+import type { GameScenario } from './data/gameData'
 import { toast } from 'sonner'
 
 interface UserProfile {
@@ -17,7 +25,13 @@ interface UserProfile {
   gamesCompleted: number
   achievements: string[]
   currentStreak: number
+  skillsUnlocked: string[]
   learningStyle: 'visual' | 'auditory' | 'reading' | 'kinesthetic' | null
+  preferences: {
+    difficulty: 'adaptive' | 'beginner' | 'intermediate' | 'advanced' | 'expert'
+    gameTypes: string[]
+    playTime: 'short' | 'medium' | 'long'
+  }
 }
 
 interface GameScore {
@@ -26,6 +40,27 @@ interface GameScore {
   completed: boolean
   timeSpent: number
   date: string
+  difficulty: string
+  finalNetWorth?: number
+  decisions: Array<{
+    eventId: string
+    choice: number
+    outcome: string
+  }>
+}
+
+interface GameResults {
+  success: boolean
+  finalNetWorth: number
+  xpEarned: number
+  coinsEarned: number
+  achievementsUnlocked: string[]
+  timeSpent: number
+  decisions: Array<{
+    eventId: string
+    choice: number
+    outcome: string
+  }>
 }
 
 function App() {
@@ -37,45 +72,63 @@ function App() {
     gamesCompleted: 0,
     achievements: [],
     currentStreak: 0,
-    learningStyle: null
+    skillsUnlocked: [],
+    learningStyle: null,
+    preferences: {
+      difficulty: 'adaptive',
+      gameTypes: [],
+      playTime: 'medium'
+    }
   })
 
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
-  const [currentGame, setCurrentGame] = useState<string | null>(null)
+  const [currentScenario, setCurrentScenario] = useState<GameScenario | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
 
-  // Calculate level from XP - provide defaults if userProfile is undefined
-  const xpForNextLevel = (userProfile?.level || 1) * 100
-  const currentLevelXP = (userProfile?.xp || 0) % 100
+  // Calculate level from XP with exponential scaling
+  const xpForNextLevel = Math.floor(100 * Math.pow(1.5, (userProfile?.level || 1) - 1))
+  const currentLevelXP = (userProfile?.xp || 0) % xpForNextLevel
   const progressPercent = (currentLevelXP / xpForNextLevel) * 100
 
-  // Game completion handler
-  const completeGame = (gameId: string, earnedCoins: number, earnedXP: number) => {
+  // Advanced game completion handler
+  const completeGame = (scenarioId: string, results: GameResults) => {
     const newScore: GameScore = {
-      gameId,
-      score: earnedCoins,
-      completed: true,
-      timeSpent: Math.floor(Math.random() * 300) + 60, // Simulated time
-      date: new Date().toISOString()
+      gameId: scenarioId,
+      score: results.coinsEarned,
+      completed: results.success,
+      timeSpent: results.timeSpent,
+      date: new Date().toISOString(),
+      difficulty: userProfile?.preferences.difficulty || 'adaptive',
+      finalNetWorth: results.finalNetWorth,
+      decisions: results.decisions
     }
 
     setGameScores(prevScores => [...(prevScores || []), newScore])
     
     setUserProfile(prevProfile => {
-      const profile = prevProfile || {
-        name: '',
-        level: 1,
-        xp: 0,
-        totalCoins: 0,
-        gamesCompleted: 0,
-        achievements: [],
-        currentStreak: 0,
-        learningStyle: null
+      if (!prevProfile) {
+        const defaultProfile: UserProfile = {
+          name: 'Anonymous',
+          level: 1,
+          xp: results.xpEarned,
+          totalCoins: results.coinsEarned,
+          gamesCompleted: 1,
+          achievements: results.achievementsUnlocked,
+          currentStreak: results.success ? 1 : 0,
+          skillsUnlocked: [],
+          learningStyle: null,
+          preferences: {
+            difficulty: 'adaptive',
+            gameTypes: [],
+            playTime: 'medium'
+          }
+        }
+        return defaultProfile
       }
       
-      const newXP = profile.xp + earnedXP
+      const newXP = prevProfile.xp + results.xpEarned
       const newLevel = Math.floor(newXP / 100) + 1
-      const leveledUp = newLevel > profile.level
+      const leveledUp = newLevel > prevProfile.level
 
       if (leveledUp) {
         toast.success(`Level Up! You're now level ${newLevel}!`, {
@@ -83,261 +136,329 @@ function App() {
         })
       }
 
+      // Check for new achievements
+      const newAchievements = [...prevProfile.achievements]
+      results.achievementsUnlocked.forEach(achievement => {
+        if (!newAchievements.includes(achievement)) {
+          newAchievements.push(achievement)
+        }
+      })
+
       return {
-        ...profile,
+        ...prevProfile,
         xp: newXP,
         level: newLevel,
-        totalCoins: profile.totalCoins + earnedCoins,
-        gamesCompleted: profile.gamesCompleted + 1,
-        currentStreak: profile.currentStreak + 1
+        totalCoins: prevProfile.totalCoins + results.coinsEarned,
+        gamesCompleted: prevProfile.gamesCompleted + 1,
+        currentStreak: results.success ? prevProfile.currentStreak + 1 : 0,
+        achievements: newAchievements
       }
     })
 
-    toast.success(`Game completed! +${earnedCoins} coins, +${earnedXP} XP`)
-    setCurrentGame(null)
+    toast.success(
+      results.success ? 'Game Completed Successfully!' : 'Game Completed',
+      {
+        description: `+${results.coinsEarned} coins, +${results.xpEarned} XP, Net Worth: $${results.finalNetWorth.toLocaleString()}`
+      }
+    )
+    
+    setCurrentScenario(null)
     setIsPlaying(false)
   }
 
   // Onboarding for new users
   useEffect(() => {
     if (!userProfile?.name) {
-      const name = prompt("Welcome to FinanceQuest! What's your name?")
+      const name = prompt("Welcome to FinanceQuest Pro! What's your name?")
       if (name) {
-        setUserProfile(prev => ({ 
-          ...(prev || {
-            name: '',
-            level: 1,
-            xp: 0,
-            totalCoins: 0,
-            gamesCompleted: 0,
-            achievements: [],
-            currentStreak: 0,
-            learningStyle: null
-          }), 
-          name 
-        }))
-        toast.success(`Welcome, ${name}! Let's start learning about money!`)
+        const defaultProfile: UserProfile = {
+          name,
+          level: 1,
+          xp: 0,
+          totalCoins: 0,
+          gamesCompleted: 0,
+          achievements: [],
+          currentStreak: 0,
+          skillsUnlocked: [],
+          learningStyle: null,
+          preferences: {
+            difficulty: 'adaptive',
+            gameTypes: [],
+            playTime: 'medium'
+          }
+        }
+        
+        setUserProfile(defaultProfile)
+        toast.success(`Welcome, ${name}! Ready to master finance through advanced gameplay?`)
       }
     }
   }, [userProfile?.name, setUserProfile])
 
-  // Mini-games based on top-rated board games
-  const games = [
-    {
-      id: 'allowance-game',
-      title: 'Allowance Adventure',
-      description: 'Earn money by doing chores and learn to save vs spend',
-      difficulty: 'Beginner',
-      estimatedTime: '5-10 min',
-      icon: <Coins className="w-8 h-8" />,
-      color: 'bg-green-100 text-green-800',
-      baseCoins: 10,
-      baseXP: 25
-    },
-    {
-      id: 'payday-challenge',
-      title: 'PayDay Challenge',
-      description: 'Manage monthly income, pay bills, and budget wisely',
-      difficulty: 'Intermediate',
-      estimatedTime: '10-15 min',
-      icon: <Target className="w-8 h-8" />,
-      color: 'bg-blue-100 text-blue-800',
-      baseCoins: 20,
-      baseXP: 50
-    },
-    {
-      id: 'property-tycoon',
-      title: 'Property Tycoon',
-      description: 'Buy, sell, and trade properties like in Monopoly',
-      difficulty: 'Advanced',
-      estimatedTime: '15-20 min',
-      icon: <Trophy className="w-8 h-8" />,
-      color: 'bg-purple-100 text-purple-800',
-      baseCoins: 30,
-      baseXP: 75
-    },
-    {
-      id: 'cashflow-junior',
-      title: 'Cashflow Junior',
-      description: 'Learn about assets, liabilities, and passive income',
-      difficulty: 'Expert',
-      estimatedTime: '20-25 min',
-      icon: <Star className="w-8 h-8" />,
-      color: 'bg-amber-100 text-amber-800',
-      baseCoins: 50,
-      baseXP: 100
-    }
-  ]
-
-  const GameSimulator = ({ game }: { game: typeof games[0] }) => {
-    const [gameStep, setGameStep] = useState(0)
-    const [playerMoney, setPlayerMoney] = useState(100)
-    const [gameChoices, setGameChoices] = useState<string[]>([])
-
-    const gameSteps = {
-      'allowance-game': [
-        {
-          scenario: "You have $10 allowance. Your friend wants to go to the movies ($8).",
-          choices: [
-            { text: "Go to movies", cost: 8, learning: "spending" },
-            { text: "Save for bigger goal", cost: 0, learning: "saving" }
-          ]
-        },
-        {
-          scenario: "You find $5 on the ground! What do you do?",
-          choices: [
-            { text: "Buy candy", cost: 5, learning: "impulse" },
-            { text: "Add to savings", cost: -5, learning: "saving" }
-          ]
-        },
-        {
-          scenario: "Mom offers $3 for washing dishes. Do you take the job?",
-          choices: [
-            { text: "Yes, earn $3", cost: -3, learning: "earning" },
-            { text: "No, I'm busy", cost: 0, learning: "opportunity" }
-          ]
-        }
-      ],
-      'payday-challenge': [
-        {
-          scenario: "Monthly salary: $2000. First, pay rent ($800).",
-          choices: [
-            { text: "Pay rent on time", cost: 800, learning: "budgeting" },
-            { text: "Skip this month", cost: 0, learning: "consequences" }
-          ]
-        },
-        {
-          scenario: "Surprise car repair bill: $300. You have $400 left.",
-          choices: [
-            { text: "Pay immediately", cost: 300, learning: "emergency" },
-            { text: "Put on credit card", cost: 350, learning: "debt" }
-          ]
-        }
-      ]
-    }
-
-    const currentSteps = gameSteps[game.id as keyof typeof gameSteps] || gameSteps['allowance-game']
-
-    const handleChoice = (choice: any) => {
-      setPlayerMoney(prev => prev - choice.cost)
-      setGameChoices(prev => [...prev, choice.learning])
+  // Get recommended scenarios based on user progress
+  const getRecommendedScenarios = () => {
+    const userLevel = userProfile?.level || 1
+    const completedGames = new Set((gameScores || []).map(score => score.gameId))
+    
+    return advancedScenarios.filter(scenario => {
+      // Check if user meets prerequisites
+      const meetsPrereqs = scenario.prerequisites.every(prereq => 
+        userProfile?.skillsUnlocked.includes(prereq) || completedGames.has(prereq)
+      )
       
-      if (gameStep < currentSteps.length - 1) {
-        setGameStep(prev => prev + 1)
-      } else {
-        // Game completed
-        const finalCoins = Math.max(5, Math.floor(playerMoney / 10))
-        completeGame(game.id, finalCoins, game.baseXP)
+      // Check difficulty appropriateness
+      const difficultyLevel = {
+        'beginner': 1,
+        'intermediate': 3,
+        'advanced': 6,
+        'expert': 10
       }
-    }
+      
+      return meetsPrereqs && userLevel >= (difficultyLevel[scenario.difficulty] || 1)
+    })
+  }
 
-    return (
-      <div className="p-6 space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Step {gameStep + 1} of {currentSteps.length}</h3>
-          <div className="flex items-center gap-2">
-            <Coins className="w-4 h-4" />
-            <span>${playerMoney}</span>
-          </div>
-        </div>
-        
-        <Progress value={(gameStep / currentSteps.length) * 100} className="w-full" />
-        
-        <div className="bg-card p-4 rounded-lg">
-          <p className="text-base mb-4">{currentSteps[gameStep]?.scenario}</p>
-          
-          <div className="space-y-2">
-            {currentSteps[gameStep]?.choices.map((choice, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="w-full justify-start text-left h-auto p-3"
-                onClick={() => handleChoice(choice)}
-              >
-                {choice.text}
-                {choice.cost > 0 && <span className="ml-auto text-red-600">-${choice.cost}</span>}
-                {choice.cost < 0 && <span className="ml-auto text-green-600">+${Math.abs(choice.cost)}</span>}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+  const recommendedScenarios = getRecommendedScenarios()
+
+  // Get difficulty color
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'beginner': return 'bg-green-100 text-green-800'
+      case 'intermediate': return 'bg-blue-100 text-blue-800'
+      case 'advanced': return 'bg-purple-100 text-purple-800'
+      case 'expert': return 'bg-red-100 text-red-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  // Get category icon
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'life_simulation': return <Users className="w-6 h-6" />
+      case 'market_trading': return <ChartLine className="w-6 h-6" />
+      case 'business_management': return <Target className="w-6 h-6" />
+      case 'crisis_management': return <Lightning className="w-6 h-6" />
+      default: return <GameController className="w-6 h-6" />
+    }
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
+      {/* Advanced Header */}
+      <header className="border-b bg-card shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary text-primary-foreground rounded-lg">
-                <BookOpen className="w-6 h-6" />
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-xl shadow-lg">
+                <Brain className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">FinanceQuest</h1>
-                <p className="text-sm text-muted-foreground">Learn Money Through Play</p>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  FinanceQuest Pro
+                </h1>
+                <p className="text-sm text-muted-foreground">Advanced Financial Gaming Platform</p>
               </div>
             </div>
             
             {userProfile?.name && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="font-semibold">Hi, {userProfile.name}!</p>
-                  <p className="text-sm text-muted-foreground">Level {userProfile.level}</p>
+                  <p className="font-semibold text-lg">Hi, {userProfile.name}!</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Medal className="w-4 h-4" />
+                    <span>Level {userProfile.level}</span>
+                    <Separator orientation="vertical" className="h-4" />
+                    <Fire className="w-4 h-4 text-orange-500" />
+                    <span>{userProfile.currentStreak} streak</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Coins className="w-4 h-4 text-accent" />
-                  <span className="font-bold text-accent">{userProfile.totalCoins}</span>
+                
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 rounded-full">
+                    <Coins className="w-5 h-5 text-accent" />
+                    <span className="font-bold text-accent">{userProfile.totalCoins.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+                    <TrendUp className="w-5 h-5 text-primary" />
+                    <span className="font-bold text-primary">{userProfile.xp} XP</span>
+                  </div>
                 </div>
               </div>
             )}
           </div>
+          
+          {/* Level Progress Bar */}
+          {userProfile?.name && (
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-2">
+                <span>Level {userProfile.level} Progress</span>
+                <span>{currentLevelXP}/{xpForNextLevel} XP</span>
+              </div>
+              <Progress value={progressPercent} className="h-2" />
+            </div>
+          )}
         </div>
       </header>
 
+      {/* Game Engine Modal */}
+      {currentScenario && isPlaying && (
+        <Dialog open={isPlaying} onOpenChange={setIsPlaying}>
+          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {getCategoryIcon(currentScenario.category)}
+                {currentScenario.title}
+              </DialogTitle>
+            </DialogHeader>
+            <AdvancedGameEngine
+              scenario={currentScenario}
+              playerId={userProfile?.name || 'anonymous'}
+              onComplete={(results) => completeGame(currentScenario.id, results)}
+              onExit={() => {
+                setCurrentScenario(null)
+                setIsPlaying(false)
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="games">Games</TabsTrigger>
-            <TabsTrigger value="progress">Progress</TabsTrigger>
+        <Tabs defaultValue="scenarios" className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="scenarios">Advanced Scenarios</TabsTrigger>
+            <TabsTrigger value="challenges">Daily Challenges</TabsTrigger>
+            <TabsTrigger value="multiplayer">Multiplayer</TabsTrigger>
+            <TabsTrigger value="progress">Analytics</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="games" className="space-y-6">
+          <TabsContent value="scenarios" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-              {games.map((game) => (
-                <Card key={game.id} className="hover:shadow-lg transition-shadow">
+              {recommendedScenarios.map((scenario) => (
+                <Card key={scenario.id} className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <div className={`p-3 rounded-lg ${game.color}`}>
-                        {game.icon}
+                      <div className={`p-3 rounded-lg bg-gradient-to-br from-card to-muted`}>
+                        {getCategoryIcon(scenario.category)}
                       </div>
-                      <Badge variant="secondary">{game.difficulty}</Badge>
+                      <Badge className={getDifficultyColor(scenario.difficulty)}>
+                        {scenario.difficulty}
+                      </Badge>
                     </div>
-                    <CardTitle>{game.title}</CardTitle>
-                    <CardDescription>{game.description}</CardDescription>
+                    <CardTitle className="text-xl">{scenario.title}</CardTitle>
+                    <CardDescription className="text-base">{scenario.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                      <span>⏱️ {game.estimatedTime}</span>
-                      <span>🏆 +{game.baseXP} XP</span>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          <span>{scenario.estimatedTime}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Trophy className="w-4 h-4" />
+                          <span>+{scenario.rewards.xp} XP</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-sm">Learning Objectives:</h4>
+                        <ScrollArea className="max-h-20">
+                          <ul className="text-sm text-muted-foreground space-y-1">
+                            {scenario.learningObjectives.slice(0, 3).map((objective, index) => (
+                              <li key={index} className="flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                {objective}
+                              </li>
+                            ))}
+                          </ul>
+                        </ScrollArea>
+                      </div>
+                      
+                      <Button 
+                        className="w-full"
+                        onClick={() => {
+                          setCurrentScenario(scenario)
+                          setIsPlaying(true)
+                        }}
+                      >
+                        Start Advanced Scenario
+                      </Button>
                     </div>
-                    
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className="w-full">
-                          Play Game
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>{game.title}</DialogTitle>
-                        </DialogHeader>
-                        <GameSimulator game={game} />
-                      </DialogContent>
-                    </Dialog>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="challenges" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              {dailyChallenges.map((challenge, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <Lightning className="w-8 h-8 text-amber-500" />
+                      <Badge className={getDifficultyColor(challenge.difficulty)}>
+                        {challenge.difficulty}
+                      </Badge>
+                    </div>
+                    <CardTitle>{challenge.name}</CardTitle>
+                    <CardDescription>{challenge.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="text-sm text-muted-foreground">
+                        <strong>Time Limit:</strong> {Math.floor(challenge.timeLimit / 60000)} minutes
+                      </div>
+                      <div className="space-y-1">
+                        <strong className="text-sm">Rules:</strong>
+                        {challenge.rules.map((rule, ruleIndex) => (
+                          <div key={ruleIndex} className="text-sm text-muted-foreground">
+                            • {rule}
+                          </div>
+                        ))}
+                      </div>
+                      <Button className="w-full" variant="outline">
+                        Start Challenge
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="multiplayer" className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              {multiplayerChallenges.map((challenge, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <Users className="w-8 h-8 text-primary" />
+                      <Badge variant="secondary">{challenge.players} players</Badge>
+                    </div>
+                    <CardTitle>{challenge.name}</CardTitle>
+                    <CardDescription>{challenge.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="text-sm">
+                        <strong>Duration:</strong> {challenge.duration}
+                      </div>
+                      <div className="space-y-1">
+                        <strong className="text-sm">Roles:</strong>
+                        <div className="flex flex-wrap gap-1">
+                          {challenge.roles.map((role, roleIndex) => (
+                            <Badge key={roleIndex} variant="outline" className="text-xs">
+                              {role}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <Button className="w-full" disabled>
+                        Coming Soon
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -345,77 +466,145 @@ function App() {
           </TabsContent>
 
           <TabsContent value="progress" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-3">
               <Card>
                 <CardHeader>
-                  <CardTitle>Your Progress</CardTitle>
+                  <CardTitle>Performance Stats</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>Level {userProfile?.level || 1}</span>
-                      <span>{currentLevelXP}/{xpForNextLevel} XP</span>
-                    </div>
-                    <Progress value={progressPercent} className="w-full" />
-                  </div>
-                  
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
                       <p className="text-2xl font-bold text-primary">{userProfile?.gamesCompleted || 0}</p>
-                      <p className="text-sm text-muted-foreground">Games Completed</p>
+                      <p className="text-sm text-muted-foreground">Scenarios Completed</p>
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-accent">{userProfile?.currentStreak || 0}</p>
                       <p className="text-sm text-muted-foreground">Current Streak</p>
                     </div>
                   </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Level Progress</span>
+                      <span>{Math.round(progressPercent)}%</span>
+                    </div>
+                    <Progress value={progressPercent} className="w-full" />
+                  </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Games</CardTitle>
+                  <CardTitle>Recent Performance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {(gameScores?.length || 0) === 0 ? (
                     <p className="text-muted-foreground text-center py-4">
-                      No games played yet. Start with Allowance Adventure!
+                      No games played yet. Start with a beginner scenario!
                     </p>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {(gameScores || []).slice(-5).reverse().map((score, index) => (
                         <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
-                          <span className="capitalize">{score.gameId.replace('-', ' ')}</span>
-                          <span className="text-accent font-semibold">+{score.score} coins</span>
+                          <div>
+                            <span className="font-medium capitalize">{score.gameId.replace('-', ' ')}</span>
+                            <div className="text-xs text-muted-foreground">
+                              {score.finalNetWorth ? `Net Worth: $${score.finalNetWorth.toLocaleString()}` : ''}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-accent font-semibold">+{score.score}</span>
+                            <div className="text-xs text-muted-foreground">
+                              {Math.floor(score.timeSpent / 60000)}m {Math.floor((score.timeSpent % 60000) / 1000)}s
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </CardContent>
               </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Skill Development</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Financial Planning</span>
+                      <div className="flex items-center gap-2">
+                        <Progress value={75} className="w-16 h-2" />
+                        <span className="text-xs text-muted-foreground">75%</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Investment Strategy</span>
+                      <div className="flex items-center gap-2">
+                        <Progress value={60} className="w-16 h-2" />
+                        <span className="text-xs text-muted-foreground">60%</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Risk Management</span>
+                      <div className="flex items-center gap-2">
+                        <Progress value={45} className="w-16 h-2" />
+                        <span className="text-xs text-muted-foreground">45%</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Business Acumen</span>
+                      <div className="flex items-center gap-2">
+                        <Progress value={30} className="w-16 h-2" />
+                        <span className="text-xs text-muted-foreground">30%</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
           <TabsContent value="achievements" className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
               {[
-                { name: 'First Steps', description: 'Complete your first game', unlocked: (userProfile?.gamesCompleted || 0) >= 1 },
-                { name: 'Penny Saver', description: 'Earn 100 coins', unlocked: (userProfile?.totalCoins || 0) >= 100 },
-                { name: 'Level Up!', description: 'Reach level 3', unlocked: (userProfile?.level || 1) >= 3 },
-                { name: 'Streak Master', description: 'Play 5 games in a row', unlocked: (userProfile?.currentStreak || 0) >= 5 },
-                { name: 'Game Explorer', description: 'Try all game types', unlocked: new Set((gameScores || []).map(s => s.gameId)).size >= 4 },
-                { name: 'Money Master', description: 'Earn 500 coins', unlocked: (userProfile?.totalCoins || 0) >= 500 }
-              ].map((achievement, index) => (
-                <Card key={index} className={`${achievement.unlocked ? 'bg-accent/10 border-accent' : 'opacity-50'}`}>
-                  <CardContent className="p-4 text-center">
-                    <div className="text-2xl mb-2">
-                      {achievement.unlocked ? '🏆' : '🔒'}
-                    </div>
-                    <h3 className="font-semibold">{achievement.name}</h3>
-                    <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
+                { name: 'First Steps', description: 'Complete your first advanced scenario', unlocked: (userProfile?.gamesCompleted || 0) >= 1, rarity: 'common' },
+                { name: 'Wealth Builder', description: 'Achieve $100K net worth in any scenario', unlocked: (gameScores || []).some(score => (score.finalNetWorth || 0) >= 100000), rarity: 'rare' },
+                { name: 'Level Master', description: 'Reach level 10', unlocked: (userProfile?.level || 1) >= 10, rarity: 'epic' },
+                { name: 'Streak Legend', description: 'Maintain a 10-game win streak', unlocked: (userProfile?.currentStreak || 0) >= 10, rarity: 'legendary' },
+                { name: 'Scenario Explorer', description: 'Complete all scenario types', unlocked: new Set((gameScores || []).map(s => s.gameId)).size >= 3, rarity: 'epic' },
+                { name: 'Financial Guru', description: 'Earn 10,000 coins total', unlocked: (userProfile?.totalCoins || 0) >= 10000, rarity: 'legendary' },
+                { name: 'Crisis Survivor', description: 'Successfully navigate a crisis scenario', unlocked: (gameScores || []).some(score => score.gameId.includes('crisis') && score.completed), rarity: 'rare' },
+                { name: 'Entrepreneur', description: 'Complete a business management scenario', unlocked: (gameScores || []).some(score => score.gameId.includes('startup') && score.completed), rarity: 'epic' }
+              ].map((achievement, index) => {
+                const rarityColors = {
+                  common: 'bg-gray-100 text-gray-800 border-gray-200',
+                  rare: 'bg-blue-100 text-blue-800 border-blue-200',
+                  epic: 'bg-purple-100 text-purple-800 border-purple-200',
+                  legendary: 'bg-amber-100 text-amber-800 border-amber-200'
+                }
+                
+                return (
+                  <Card key={index} className={`${achievement.unlocked ? rarityColors[achievement.rarity as keyof typeof rarityColors] + ' shadow-md' : 'opacity-50'}`}>
+                    <CardContent className="p-4 text-center">
+                      <div className="text-3xl mb-2">
+                        {achievement.unlocked ? (
+                          achievement.rarity === 'legendary' ? '🏆' : 
+                          achievement.rarity === 'epic' ? '🥇' :
+                          achievement.rarity === 'rare' ? '🥈' : '🥉'
+                        ) : '🔒'}
+                      </div>
+                      <h3 className="font-semibold text-sm">{achievement.name}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{achievement.description}</p>
+                      <Badge variant="outline" className="mt-2 text-xs">
+                        {achievement.rarity}
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </TabsContent>
         </Tabs>
