@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { 
   Coins, Trophy, Users, Target, BookOpen, Star, Brain, ChartLine, 
-  GameController, Lightning, TrendUp, Medal, Fire, Clock
+  GameController, Lightning, TrendUp, Medal, Fire, Clock, Calculator
 } from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { MiniGameHub } from './game/components/MiniGameHub'
-import { EnhancedMiniGameHub } from './game/components/EnhancedMiniGameHub'
+import { ProfessionalGameHub } from './game/components/ProfessionalGameHub'
 import { toast } from 'sonner'
 
 interface UserProfile {
@@ -199,43 +199,47 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Advanced Header */}
-      <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+      {/* Professional Header */}
+      <header className="bg-white border-b shadow-sm">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-xl shadow-lg">
-                <Brain className="w-8 h-8" />
+              <div className="p-2 bg-blue-600 text-white rounded-lg shadow-md">
+                <Brain className="w-7 h-7" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <h1 className="text-2xl font-semibold text-gray-900">
                   FinanceQuest Pro
                 </h1>
-                <p className="text-sm text-muted-foreground">Advanced Financial Gaming Platform</p>
+                <p className="text-sm text-gray-600">Professional Financial Learning Platform</p>
               </div>
             </div>
             
             {userProfile?.name && (
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="font-semibold text-lg">Hi, {userProfile.name}!</p>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Medal className="w-4 h-4" />
-                    <span>Level {userProfile.level}</span>
+                  <p className="font-medium text-gray-900">Welcome, {userProfile.name}</p>
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <Medal className="w-4 h-4" />
+                      <span>Level {userProfile.level}</span>
+                    </div>
                     <Separator orientation="vertical" className="h-4" />
-                    <Fire className="w-4 h-4 text-orange-500" />
-                    <span>{userProfile.currentStreak} streak</span>
+                    <div className="flex items-center gap-1">
+                      <Fire className="w-4 h-4 text-orange-500" />
+                      <span>{userProfile.currentStreak} day streak</span>
+                    </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 rounded-full">
-                    <Coins className="w-5 h-5 text-accent" />
-                    <span className="font-bold text-accent">{userProfile.totalCoins.toLocaleString()}</span>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <Coins className="w-4 h-4 text-yellow-600" />
+                    <span className="font-semibold text-yellow-800">{userProfile.totalCoins.toLocaleString()}</span>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
-                    <TrendUp className="w-5 h-5 text-primary" />
-                    <span className="font-bold text-primary">{userProfile.xp} XP</span>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                    <TrendUp className="w-4 h-4 text-blue-600" />
+                    <span className="font-semibold text-blue-800">{userProfile.xp} XP</span>
                   </div>
                 </div>
               </div>
@@ -245,166 +249,182 @@ function App() {
           {/* Level Progress Bar */}
           {userProfile?.name && (
             <div className="mt-4">
-              <div className="flex justify-between text-sm mb-2">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
                 <span>Level {userProfile.level} Progress</span>
                 <span>{currentLevelXP}/{xpForNextLevel} XP</span>
               </div>
-              <Progress value={progressPercent} className="h-2" />
+              <Progress value={progressPercent} className="h-2 bg-gray-100" />
             </div>
           )}
         </div>
       </header>
 
-      {/* Enhanced Mini Game Hub Modal */}
+      {/* Professional Mini Game Hub Modal */}
       {isPlaying && (
         <Dialog open={isPlaying} onOpenChange={setIsPlaying}>
           <DialogContent className="max-w-7xl max-h-[95vh] overflow-y-auto p-0 border-0">
-            <EnhancedMiniGameHub
+            <ProfessionalGameHub
               onGameComplete={completeGame}
               onExit={() => setIsPlaying(false)}
+              userTier="middle" // This could be dynamic based on user profile
             />
           </DialogContent>
         </Dialog>
       )}
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="games">Mini-Games</TabsTrigger>
-            <TabsTrigger value="challenges">Daily Challenges</TabsTrigger>
-            <TabsTrigger value="progress">Analytics</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
-          </TabsList>
+      <div className="bg-gray-50 min-h-screen">
+        <div className="container mx-auto px-6 py-8">
+          <Tabs defaultValue="games" className="w-full">
+            <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm border">
+              <TabsTrigger value="games" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Games</TabsTrigger>
+              <TabsTrigger value="challenges" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Challenges</TabsTrigger>
+              <TabsTrigger value="progress" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Progress</TabsTrigger>
+              <TabsTrigger value="achievements" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700">Achievements</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="games" className="space-y-6">
-            <div className="text-center space-y-4">
-              <div className="text-6xl">🎮</div>
-              <h3 className="text-2xl font-bold">Revolutionary Learning Games</h3>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Master money management through motion-controlled games, brain-computer interfaces, and adaptive learning for all ages.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
-                <Badge className="bg-blue-100 text-blue-800">📱 Motion Controls</Badge>
-                <Badge className="bg-purple-100 text-purple-800">🧠 BCI Integration</Badge>
-                <Badge className="bg-green-100 text-green-800">🎯 VARK Adaptation</Badge>
-                <Badge className="bg-orange-100 text-orange-800">👥 Age-Tiered Content</Badge>
+          <TabsContent value="games" className="space-y-8">
+            <div className="text-center space-y-6">
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-3xl font-semibold text-gray-900 mb-4">Interactive Financial Learning Games</h2>
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  Master essential financial skills through engaging, interactive games that adapt to your learning style and age group.
+                </p>
               </div>
+              
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200 px-4 py-2">🎯 Skill-Based Learning</Badge>
+                <Badge className="bg-green-100 text-green-800 border-green-200 px-4 py-2">📊 Real-Time Feedback</Badge>
+                <Badge className="bg-purple-100 text-purple-800 border-purple-200 px-4 py-2">🎮 Interactive Gameplay</Badge>
+                <Badge className="bg-orange-100 text-orange-800 border-orange-200 px-4 py-2">🏆 Achievement System</Badge>
+              </div>
+              
               <Button 
                 size="lg"
                 onClick={() => setIsPlaying(true)}
-                className="text-lg px-8 py-3"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium shadow-md"
               >
-                <GameController className="w-6 h-6 mr-2" />
-                Start Advanced Learning
+                <GameController className="w-5 h-5 mr-2" />
+                Start Learning Games
               </Button>
             </div>
             
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="text-center">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">🍋</div>
-                  <h4 className="font-semibold mb-2">Retro Lemonade Stand</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    8-bit business sim with motion controls and BCI focus tracking
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-yellow-100 rounded-lg">
+                      <Coins className="w-6 h-6 text-yellow-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg text-gray-900">Coin Catcher</h4>
+                      <Badge variant="outline" className="text-xs border-green-200 text-green-700">Easy</Badge>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                    Catch falling coins while avoiding expenses in this fast-paced savings game that teaches smart spending decisions.
                   </p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    <Badge variant="outline" className="text-xs">Motion</Badge>
-                    <Badge variant="outline" className="text-xs">BCI</Badge>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Saving Skills</Badge>
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Quick Math</Badge>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="text-center">
+              <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">🫗</div>
-                  <h4 className="font-semibold mb-2">Motion Budget Jars</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Tilt your device to pour money into budget categories
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Calculator className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg text-gray-900">Budget Balancer</h4>
+                      <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">Medium</Badge>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                    Balance your monthly budget by categorizing expenses and making smart financial decisions.
                   </p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    <Badge variant="outline" className="text-xs">Kinesthetic</Badge>
-                    <Badge variant="outline" className="text-xs">VARK</Badge>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Budgeting</Badge>
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Planning</Badge>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="text-center">
+              <Card className="hover:shadow-lg transition-all duration-200 border-0 shadow-md bg-white">
                 <CardContent className="p-6">
-                  <div className="text-4xl mb-3">👥</div>
-                  <h4 className="font-semibold mb-2">Age-Adaptive Games</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Content automatically adjusts for elementary, middle, or adult learners
-                  </p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    <Badge variant="outline" className="text-xs">6-10</Badge>
-                    <Badge variant="outline" className="text-xs">11-14</Badge>
-                    <Badge variant="outline" className="text-xs">15+</Badge>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <TrendUp className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg text-gray-900">Investment Tower</h4>
+                      <Badge variant="outline" className="text-xs border-red-200 text-red-700">Hard</Badge>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="text-center">
-                <CardContent className="p-6">
-                  <div className="text-4xl mb-3">🧠</div>
-                  <h4 className="font-semibold mb-2">Brain-Enhanced Learning</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    EEG monitoring adapts difficulty based on focus and engagement
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                    Build your investment portfolio by stacking different asset blocks strategically to maximize returns.
                   </p>
-                  <div className="flex flex-wrap gap-1 justify-center">
-                    <Badge variant="outline" className="text-xs">Focus</Badge>
-                    <Badge variant="outline" className="text-xs">Flow</Badge>
+                  <div className="flex flex-wrap gap-1">
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Investing</Badge>
+                    <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">Strategy</Badge>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="challenges" className="space-y-6">
+          <TabsContent value="challenges" className="space-y-8">
             <div className="text-center space-y-4">
-              <div className="text-6xl">⚡</div>
-              <h3 className="text-2xl font-bold">Daily Challenges</h3>
-              <p className="text-muted-foreground">
-                New financial challenges refresh daily to keep your skills sharp!
+              <h2 className="text-2xl font-semibold text-gray-900">Daily Financial Challenges</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Test your financial skills with fresh challenges that reset daily. Build consistent learning habits and track your improvement over time.
               </p>
             </div>
             
             <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
+              <Card className="bg-white shadow-md border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <Lightning className="w-8 h-8 text-amber-500" />
-                    <Badge className="bg-green-100 text-green-800">Easy</Badge>
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <Lightning className="w-6 h-6 text-green-600" />
+                    </div>
+                    <Badge className="bg-green-100 text-green-800 border-green-200">Beginner</Badge>
                   </div>
-                  <CardTitle>Quick Budget Challenge</CardTitle>
-                  <CardDescription>Balance a budget in under 60 seconds</CardDescription>
+                  <CardTitle className="text-lg text-gray-900 mt-3">Quick Budget Challenge</CardTitle>
+                  <p className="text-gray-600 text-sm">Balance a simple budget in under 60 seconds</p>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                   <div className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4" />
                       <strong>Time Limit:</strong> 1 minute
                     </div>
-                    <Button className="w-full" disabled>
+                    <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
                       Coming Soon
                     </Button>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
+              <Card className="bg-white shadow-md border-0 hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <Lightning className="w-8 h-8 text-amber-500" />
-                    <Badge className="bg-blue-100 text-blue-800">Medium</Badge>
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <TrendUp className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">Intermediate</Badge>
                   </div>
-                  <CardTitle>Investment Speed Run</CardTitle>
-                  <CardDescription>Build a diversified portfolio quickly</CardDescription>
+                  <CardTitle className="text-lg text-gray-900 mt-3">Investment Speed Run</CardTitle>
+                  <p className="text-gray-600 text-sm">Build a diversified portfolio quickly and efficiently</p>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                   <div className="space-y-3">
-                    <div className="text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Clock className="w-4 h-4" />
                       <strong>Time Limit:</strong> 2 minutes
                     </div>
-                    <Button className="w-full" disabled>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled>
                       Coming Soon
                     </Button>
                   </div>
@@ -413,59 +433,61 @@ function App() {
             </div>
           </TabsContent>
 
-          <TabsContent value="progress" className="space-y-6">
+          <TabsContent value="progress" className="space-y-8">
             <div className="grid gap-6 md:grid-cols-3">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Stats</CardTitle>
+              <Card className="bg-white shadow-md border-0">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-900 text-lg">Learning Progress</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className="text-2xl font-bold text-primary">{userProfile?.gamesCompleted || 0}</p>
-                      <p className="text-sm text-muted-foreground">Scenarios Completed</p>
+                    <div className="p-3 bg-blue-50 rounded-lg">
+                      <p className="text-2xl font-bold text-blue-600">{userProfile?.gamesCompleted || 0}</p>
+                      <p className="text-sm text-gray-600">Games Completed</p>
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold text-accent">{userProfile?.currentStreak || 0}</p>
-                      <p className="text-sm text-muted-foreground">Current Streak</p>
+                    <div className="p-3 bg-green-50 rounded-lg">
+                      <p className="text-2xl font-bold text-green-600">{userProfile?.currentStreak || 0}</p>
+                      <p className="text-sm text-gray-600">Day Streak</p>
                     </div>
                   </div>
                   
                   <Separator />
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span>Level Progress</span>
-                      <span>{Math.round(progressPercent)}%</span>
+                      <span className="text-gray-700">Level Progress</span>
+                      <span className="text-gray-600">{Math.round(progressPercent)}%</span>
                     </div>
-                    <Progress value={progressPercent} className="w-full" />
+                    <Progress value={progressPercent} className="w-full h-2 bg-gray-100" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Performance</CardTitle>
+              <Card className="bg-white shadow-md border-0">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-900 text-lg">Recent Performance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {(gameScores?.length || 0) === 0 ? (
-                    <p className="text-muted-foreground text-center py-4">
-                      No games played yet. Start with a beginner scenario!
-                    </p>
+                    <div className="text-center py-8">
+                      <div className="text-gray-400 text-4xl mb-3">🎯</div>
+                      <p className="text-gray-500 text-sm">No games completed yet</p>
+                      <p className="text-gray-400 text-xs mt-1">Start with a learning game!</p>
+                    </div>
                   ) : (
                     <div className="space-y-3">
                       {(gameScores || []).slice(-5).reverse().map((score, index) => (
-                        <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
+                        <div key={index} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
                           <div>
-                            <span className="font-medium capitalize">{score.gameId.replace('-', ' ')}</span>
-                            <div className="text-xs text-muted-foreground">
-                              {score.finalNetWorth ? `Net Worth: $${score.finalNetWorth.toLocaleString()}` : ''}
+                            <span className="font-medium text-gray-900 capitalize">{score.gameId.replace('-', ' ')}</span>
+                            <div className="text-xs text-gray-500">
+                              {score.finalNetWorth ? `Result: $${score.finalNetWorth.toLocaleString()}` : `Score: ${score.score}`}
                             </div>
                           </div>
                           <div className="text-right">
-                            <span className="text-accent font-semibold">+{score.score}</span>
-                            <div className="text-xs text-muted-foreground">
-                              {Math.floor(score.timeSpent / 60000)}m {Math.floor((score.timeSpent % 60000) / 1000)}s
+                            <span className="text-green-600 font-semibold">+{score.score}</span>
+                            <div className="text-xs text-gray-500">
+                              {Math.floor(score.timeSpent / 60000)}:{String(Math.floor((score.timeSpent % 60000) / 1000)).padStart(2, '0')}
                             </div>
                           </div>
                         </div>
@@ -475,38 +497,38 @@ function App() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Skill Development</CardTitle>
+              <Card className="bg-white shadow-md border-0">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-gray-900 text-lg">Skill Development</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Financial Planning</span>
-                      <div className="flex items-center gap-2">
-                        <Progress value={75} className="w-16 h-2" />
-                        <span className="text-xs text-muted-foreground">75%</span>
+                      <span className="text-sm font-medium text-gray-700">Financial Planning</span>
+                      <div className="flex items-center gap-3">
+                        <Progress value={75} className="w-20 h-2 bg-gray-100" />
+                        <span className="text-sm text-gray-600 w-8">75%</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Investment Strategy</span>
-                      <div className="flex items-center gap-2">
-                        <Progress value={60} className="w-16 h-2" />
-                        <span className="text-xs text-muted-foreground">60%</span>
+                      <span className="text-sm font-medium text-gray-700">Investment Strategy</span>
+                      <div className="flex items-center gap-3">
+                        <Progress value={60} className="w-20 h-2 bg-gray-100" />
+                        <span className="text-sm text-gray-600 w-8">60%</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Risk Management</span>
-                      <div className="flex items-center gap-2">
-                        <Progress value={45} className="w-16 h-2" />
-                        <span className="text-xs text-muted-foreground">45%</span>
+                      <span className="text-sm font-medium text-gray-700">Risk Management</span>
+                      <div className="flex items-center gap-3">
+                        <Progress value={45} className="w-20 h-2 bg-gray-100" />
+                        <span className="text-sm text-gray-600 w-8">45%</span>
                       </div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Business Acumen</span>
-                      <div className="flex items-center gap-2">
-                        <Progress value={30} className="w-16 h-2" />
-                        <span className="text-xs text-muted-foreground">30%</span>
+                      <span className="text-sm font-medium text-gray-700">Business Skills</span>
+                      <div className="flex items-center gap-3">
+                        <Progress value={30} className="w-20 h-2 bg-gray-100" />
+                        <span className="text-sm text-gray-600 w-8">30%</span>
                       </div>
                     </div>
                   </div>
@@ -556,6 +578,7 @@ function App() {
             </div>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </div>
   )
