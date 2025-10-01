@@ -71,7 +71,11 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
   const [economicSystem] = useState(() => new EconomicSystem())
   const [progressionSystem] = useState(() => new ProgressionSystem())
   const [gameState, setGameState] = useState<GameState>(() => ({
-    ...scenario.initialConditions,
+    cash: scenario.initialConditions?.cash || 0,
+    income: scenario.initialConditions?.income || 0,
+    expenses: scenario.initialConditions?.expenses || 0,
+    assets: scenario.initialConditions?.assets || [],
+    liabilities: scenario.initialConditions?.liabilities || [],
     time: 0,
     netWorthHistory: []
   }))
@@ -174,7 +178,7 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
       })
 
       // Trigger time-based events
-      const currentEvent = scenario.events.find(event => 
+      const currentEvent = (scenario.events || []).find(event => 
         event.trigger === 'time' && 
         event.triggerValue === gameState.time &&
         !gameState.currentEvent
@@ -186,7 +190,7 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
 
       // Check win conditions
       const netWorth = calculateNetWorth()
-      const winConditionMet = scenario.winConditions.some(condition => {
+      const winConditionMet = (scenario.winConditions || []).some(condition => {
         switch (condition.type) {
           case 'net_worth':
             return netWorth >= condition.target
@@ -229,9 +233,11 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
 
   const handleEventChoice = (choiceIndex: number) => {
     const currentEvent = gameState.currentEvent
-    if (!currentEvent) return
+    if (!currentEvent || !currentEvent.choices) return
 
     const choice = currentEvent.choices[choiceIndex]
+    if (!choice) return
+    
     const consequences = choice.consequences
 
     // Record decision
@@ -402,7 +408,7 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {gameState.currentEvent.choices.map((choice, index) => (
+              {(gameState.currentEvent.choices || []).map((choice, index) => (
                 <Button
                   key={index}
                   variant="outline"
@@ -455,7 +461,7 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {scenario.winConditions.map((condition, index) => {
+            {(scenario.winConditions || []).map((condition, index) => {
               let progress = 0
               let current = 0
               
@@ -500,7 +506,7 @@ export const AdvancedGameEngine: React.FC<AdvancedGameEngineProps> = ({
         <Button variant="outline" onClick={onExit}>
           Exit Game
         </Button>
-        <Button onClick={() => handleGameComplete(true)} disabled={!scenario.winConditions.some(condition => {
+        <Button onClick={() => handleGameComplete(true)} disabled={!(scenario.winConditions || []).some(condition => {
           switch (condition.type) {
             case 'net_worth':
               return netWorth >= condition.target

@@ -137,7 +137,7 @@ function App() {
       }
 
       // Check for new achievements
-      const newAchievements = [...prevProfile.achievements]
+      const newAchievements = [...(prevProfile.achievements || [])]
       results.achievementsUnlocked.forEach(achievement => {
         if (!newAchievements.includes(achievement)) {
           newAchievements.push(achievement)
@@ -202,7 +202,7 @@ function App() {
     return advancedScenarios.filter(scenario => {
       // Check if user meets prerequisites
       const meetsPrereqs = scenario.prerequisites.every(prereq => 
-        userProfile?.skillsUnlocked.includes(prereq) || completedGames.has(prereq)
+        (userProfile?.skillsUnlocked || []).includes(prereq) || completedGames.has(prereq)
       )
       
       // Check difficulty appropriateness
