@@ -160,3 +160,25 @@
 ## Reflection
 
 This approach uniquely combines sophisticated game development with serious financial education, creating an experience that's both engaging and genuinely educational. The focus on consequence-driven learning and real-world application sets it apart from both traditional educational apps and simple gamification approaches.
+
+## Implemented Games (Latest Update)
+
+### Adventure Games (Full-featured, Educational, Playable)
+1. **Investment Tower** - Full portfolio management simulation with 10 rounds, market events, diversification mechanics, and real investment education
+2. **Credit Score Defender** - Decision-based game teaching all 5 credit factors through 8 real-world scenarios with explanations
+3. **Business Builder** - 10-month business simulation with marketing, operations, finance, and product decisions
+
+### Mini-Games (Polished, Complete, Engaging)
+1. **Budget Balance** - Interactive slider-based budget allocation with 50/30/20 rule, visual feedback, and time pressure
+2. **Investment Tower Mini** - Portfolio building with risk management and market conditions
+3. **Credit Card Memory** - Memory matching game teaching credit card types and features
+4. **Compound Growth** - Real-time compound interest calculator with visual charts and animations
+
+All games feature:
+- Comprehensive educational explanations
+- Real-time feedback and scoring
+- Multiple difficulty levels where appropriate
+- Professional UI with glassmorphic design
+- Progress tracking and achievements
+- Time-based challenges
+- Detailed results screens with key learnings
