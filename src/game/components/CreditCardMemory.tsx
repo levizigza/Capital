@@ -34,13 +34,13 @@ interface GameCard {
 }
 
 interface CreditCardMemoryProps {
-  difficulty: 'easy' | 'medium' | 'hard'
-  onComplete: (score: number, timeSpent: number) => void
+  difficulty?: 'easy' | 'medium' | 'hard'
+  onComplete: (score: number, additionalData?: any) => void
   onExit: () => void
 }
 
 export const CreditCardMemory: React.FC<CreditCardMemoryProps> = ({
-  difficulty,
+  difficulty = 'medium',
   onComplete,
   onExit
 }) => {
@@ -325,7 +325,12 @@ export const CreditCardMemory: React.FC<CreditCardMemoryProps> = ({
           </div>
         </div>
         <div className="space-y-2">
-          <Button onClick={() => onComplete(score, Date.now() - startTime.current)} className="w-full">
+          <Button onClick={() => onComplete(score, { 
+            timeSpent: Date.now() - startTime.current,
+            moves,
+            matches,
+            totalPairs: gameCards.length / 2
+          })} className="w-full">
             Continue
           </Button>
           <Button variant="outline" onClick={onExit} className="w-full">

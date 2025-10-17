@@ -16,10 +16,10 @@ import {
 import { toast } from 'sonner'
 
 interface CompoundGrowthProps {
-  targetAmount: number
-  timeLimit: number
-  difficulty: 'easy' | 'medium' | 'hard'
-  onComplete: (score: number, finalAmount: number, timeSpent: number) => void
+  targetAmount?: number
+  timeLimit?: number
+  difficulty?: 'easy' | 'medium' | 'hard'
+  onComplete: (score: number, additionalData?: any) => void
   onExit: () => void
 }
 
@@ -31,9 +31,9 @@ interface InvestmentData {
 }
 
 export const CompoundGrowth: React.FC<CompoundGrowthProps> = ({
-  targetAmount,
-  timeLimit,
-  difficulty,
+  targetAmount = 10000,
+  timeLimit = 300,
+  difficulty = 'medium',
   onComplete,
   onExit
 }) => {
@@ -204,7 +204,14 @@ export const CompoundGrowth: React.FC<CompoundGrowthProps> = ({
           </div>
         </div>
         <div className="space-y-2">
-          <Button onClick={() => onComplete(score, finalAmount, Date.now() - startTime.current)} className="w-full">
+          <Button onClick={() => onComplete(score, {
+            finalAmount,
+            timeSpent: Date.now() - startTime.current,
+            initialAmount: initialAmount[0],
+            monthlyContribution: monthlyContribution[0],
+            interestRate: interestRate[0],
+            investmentYears: investmentYears[0]
+          })} className="w-full">
             Continue
           </Button>
           <Button variant="outline" onClick={onExit} className="w-full">
