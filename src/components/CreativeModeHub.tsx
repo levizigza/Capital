@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 import { 
   Plant, Drop, Sun, CloudRain, Flower, Tree, Butterfly,
   GameController, Medal, Sparkle, GearSix, ArrowsClockwise,
   Trophy, Fire, Coins, Calculator, TrendUp, CreditCard, 
   Building, Target, Clock, Star, Lightbulb, ChartLine,
-  Brain, Rocket, Lightning
+  Brain, Rocket, Lightning, FlagBanner, CheckCircle, 
+  CalendarBlank, Timer
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -171,7 +173,29 @@ export default function CreativeModeHub({
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
   const [gameStartTime, setGameStartTime] = useState<number>(0)
   const [showSettings, setShowSettings] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'mini-games' | 'adventures' | 'progress'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'mini-games' | 'adventures' | 'challenges' | 'progress'>('overview')
+  
+  const [dailyChallenges, setDailyChallenges] = useKV<Array<{
+    id: string
+    title: string
+    description: string
+    gameId: string
+    requirement: { type: 'score' | 'time' | 'accuracy'; value: number }
+    reward: { xp: number; coins: number }
+    completed: boolean
+    expiresAt: string
+  }>>('daily-challenges', [])
+  
+  const [weeklyChallenges, setWeeklyChallenges] = useKV<Array<{
+    id: string
+    title: string
+    description: string
+    progress: number
+    target: number
+    reward: { xp: number; coins: number }
+    completed: boolean
+    expiresAt: string
+  }>>('weekly-challenges', [])
 
   const xpForNextLevel = Math.floor(100 * Math.pow(1.5, userProfile.level - 1))
   const currentLevelXP = userProfile.xp % xpForNextLevel
@@ -189,6 +213,9 @@ export default function CreativeModeHub({
     if (selectedGame) {
       const timeSpent = Date.now() - gameStartTime
       onGameComplete(selectedGame, score, timeSpent, additionalData)
+      
+      checkAndCompleteChallenges(selectedGame, score, timeSpent)
+      
       setSelectedGame(null)
       
       toast.success('🌱 Your garden grows!', {
@@ -196,6 +223,148 @@ export default function CreativeModeHub({
       })
     }
   }
+
+  const checkAndCompleteChallenges = (gameId: string, score: number, timeSpent: number) => {
+    setDailyChallenges(prevChallenges => {
+      const updated = (prevChallenges || []).map(challenge => {
+        if (challenge.gameId === gameId && !challenge.completed) {
+          let isCompleted = false
+          if (challenge.requirement.type === 'score' && score >= challenge.requirement.value) {
+            isCompleted = true
+          } else if (challenge.requirement.type === 'time' && timeSpent <= challenge.requirement.value) {
+            isCompleted = true
+          }
+          
+          if (isCompleted) {
+            setUserProfile(prev => ({
+              ...prev!,
+              xp: prev!.xp + challenge.reward.xp,
+              totalCoins: prev!.totalCoins + challenge.reward.coins
+            }))
+            
+            toast.success('🎯 Challenge Complete!', {
+              description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
+            })
+            
+            return { ...challenge, completed: true }
+          }
+        }
+        return challenge
+      })
+      return updated
+    })
+    
+    setWeeklyChallenges(prevChallenges => {
+      const updated = (prevChallenges || []).map(challenge => {
+        if (!challenge.completed) {
+          const newProgress = challenge.progress + 1
+          const isCompleted = newProgress >= challenge.target
+          
+          if (isCompleted) {
+            setUserProfile(prev => ({
+              ...prev!,
+              xp: prev!.xp + challenge.reward.xp,
+              totalCoins: prev!.totalCoins + challenge.reward.coins
+            }))
+            
+            toast.success('🏆 Weekly Challenge Complete!', {
+              description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
+            })
+          }
+          
+          return { ...challenge, progress: newProgress, completed: isCompleted }
+        }
+        return challenge
+      })
+      return updated
+    })
+  }
+
+  const initializeChallenges = () => {
+    const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+    
+    const nextWeek = new Date(now)
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    
+    if ((dailyChallenges?.length || 0) === 0 || new Date(dailyChallenges?.[0]?.expiresAt || 0) < now) {
+      const newDailyChallenges = [
+        {
+          id: `daily-1-${Date.now()}`,
+          title: 'Quick Saver',
+          description: 'Score 500+ in Coin Catcher',
+          gameId: 'coin-catcher',
+          requirement: { type: 'score' as const, value: 500 },
+          reward: { xp: 100, coins: 50 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        },
+        {
+          id: `daily-2-${Date.now()}`,
+          title: 'Budget Master',
+          description: 'Complete Budget Balancer with 90% accuracy',
+          gameId: 'budget-balancer',
+          requirement: { type: 'score' as const, value: 900 },
+          reward: { xp: 120, coins: 60 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        },
+        {
+          id: `daily-3-${Date.now()}`,
+          title: 'Memory Champion',
+          description: 'Score 800+ in Credit Card Memory',
+          gameId: 'credit-card-memory',
+          requirement: { type: 'score' as const, value: 800 },
+          reward: { xp: 150, coins: 75 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        }
+      ]
+      setDailyChallenges(newDailyChallenges)
+    }
+    
+    if ((weeklyChallenges?.length || 0) === 0 || new Date(weeklyChallenges?.[0]?.expiresAt || 0) < now) {
+      const newWeeklyChallenges = [
+        {
+          id: `weekly-1-${Date.now()}`,
+          title: 'Dedicated Learner',
+          description: 'Complete 10 games this week',
+          progress: 0,
+          target: 10,
+          reward: { xp: 500, coins: 250 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        },
+        {
+          id: `weekly-2-${Date.now()}`,
+          title: 'Jack of All Trades',
+          description: 'Play at least 3 different game types',
+          progress: 0,
+          target: 3,
+          reward: { xp: 400, coins: 200 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        },
+        {
+          id: `weekly-3-${Date.now()}`,
+          title: 'High Achiever',
+          description: 'Score 1000+ in any game',
+          progress: 0,
+          target: 1,
+          reward: { xp: 600, coins: 300 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        }
+      ]
+      setWeeklyChallenges(newWeeklyChallenges)
+    }
+  }
+
+  useState(() => {
+    initializeChallenges()
+  })
 
   const handleGameExit = () => {
     setSelectedGame(null)
@@ -336,7 +505,7 @@ export default function CreativeModeHub({
 
       <main className="container mx-auto px-6 py-12">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-8">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-4 bg-white/80 border border-green-200 shadow-sm h-auto">
+          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-5 bg-white/80 border border-green-200 shadow-sm h-auto">
             <TabsTrigger value="overview" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
               <Plant className="w-4 h-4 mr-2" />
               Garden
@@ -348,6 +517,10 @@ export default function CreativeModeHub({
             <TabsTrigger value="adventures" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
               <Rocket className="w-4 h-4 mr-2" />
               Adventures
+            </TabsTrigger>
+            <TabsTrigger value="challenges" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
+              <FlagBanner className="w-4 h-4 mr-2" />
+              Challenges
             </TabsTrigger>
             <TabsTrigger value="progress" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
               <Trophy className="w-4 h-4 mr-2" />
@@ -687,6 +860,211 @@ export default function CreativeModeHub({
                   <h3 className="text-2xl font-bold mb-3">Deep Financial Learning</h3>
                   <p className="text-orange-50 leading-relaxed">
                     Adventure games provide complex scenarios that mirror real-world financial challenges. Take your time and master advanced concepts!
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="challenges" className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h2 className="text-4xl font-bold text-green-900 mb-4">
+                Daily & Weekly Challenges
+              </h2>
+              <p className="text-xl text-green-600 max-w-2xl mx-auto">
+                Complete special challenges for bonus rewards! 🎯
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="bg-white/90 border-2 border-green-200 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-green-900 flex items-center gap-3">
+                    <CalendarBlank className="w-6 h-6" weight="fill" />
+                    Daily Challenges
+                  </CardTitle>
+                  <CardDescription>
+                    Reset every day at midnight - complete them before they expire!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {(dailyChallenges || []).map((challenge, index) => {
+                    const game = allGames.find(g => g.id === challenge.gameId)
+                    const timeUntilExpiry = new Date(challenge.expiresAt).getTime() - Date.now()
+                    const hoursLeft = Math.floor(timeUntilExpiry / (1000 * 60 * 60))
+                    
+                    return (
+                      <motion.div
+                        key={challenge.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className={`${challenge.completed ? 'bg-green-50/50 border-green-300' : 'bg-white border-green-200'} border-2 hover:shadow-md transition-all`}>
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-start gap-4 flex-1">
+                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-md ${
+                                  challenge.completed 
+                                    ? 'bg-gradient-to-br from-green-400 to-emerald-500' 
+                                    : 'bg-gradient-to-br from-amber-400 to-orange-500'
+                                }`}>
+                                  {challenge.completed ? (
+                                    <CheckCircle className="w-7 h-7 text-white" weight="fill" />
+                                  ) : (
+                                    game?.icon || <Target className="w-6 h-6 text-white" />
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="text-xl font-bold text-green-900 mb-2">{challenge.title}</h3>
+                                  <p className="text-gray-600 mb-3">{challenge.description}</p>
+                                  <div className="flex items-center gap-4 text-sm">
+                                    <div className="flex items-center gap-2 text-green-700">
+                                      <Sparkle className="w-4 h-4" weight="fill" />
+                                      <span className="font-semibold">+{challenge.reward.xp} XP</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-amber-700">
+                                      <Coins className="w-4 h-4" weight="fill" />
+                                      <span className="font-semibold">+{challenge.reward.coins} coins</span>
+                                    </div>
+                                    {!challenge.completed && (
+                                      <div className="flex items-center gap-2 text-orange-600">
+                                        <Timer className="w-4 h-4" weight="fill" />
+                                        <span className="font-medium">{hoursLeft}h left</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              {challenge.completed ? (
+                                <Badge className="bg-green-500 text-white border-0 shadow-md">
+                                  Complete
+                                </Badge>
+                              ) : (
+                                <Button
+                                  onClick={() => handleGameStart(challenge.gameId)}
+                                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                                >
+                                  <GameController className="w-4 h-4 mr-2" />
+                                  Play
+                                </Button>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Card className="bg-white/90 border-2 border-purple-200 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-purple-900 flex items-center gap-3">
+                    <Trophy className="w-6 h-6" weight="fill" />
+                    Weekly Challenges
+                  </CardTitle>
+                  <CardDescription>
+                    Longer term goals that reset every week - bigger rewards!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {(weeklyChallenges || []).map((challenge, index) => {
+                    const timeUntilExpiry = new Date(challenge.expiresAt).getTime() - Date.now()
+                    const daysLeft = Math.floor(timeUntilExpiry / (1000 * 60 * 60 * 24))
+                    const progressPercent = (challenge.progress / challenge.target) * 100
+                    
+                    return (
+                      <motion.div
+                        key={challenge.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className={`${challenge.completed ? 'bg-purple-50/50 border-purple-300' : 'bg-white border-purple-200'} border-2 hover:shadow-md transition-all`}>
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-3">
+                                  <h3 className="text-xl font-bold text-purple-900">{challenge.title}</h3>
+                                  {challenge.completed ? (
+                                    <Badge className="bg-purple-500 text-white border-0 shadow-md">
+                                      <CheckCircle className="w-4 h-4 mr-1" weight="fill" />
+                                      Complete
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="border-purple-300 text-purple-700">
+                                      {daysLeft} days left
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-gray-600 mb-4">{challenge.description}</p>
+                                
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-gray-600 font-medium">Progress</span>
+                                    <span className="text-purple-700 font-bold">
+                                      {challenge.progress} / {challenge.target}
+                                    </span>
+                                  </div>
+                                  <div className="h-3 bg-purple-100 rounded-full overflow-hidden">
+                                    <motion.div 
+                                      className="h-full bg-gradient-to-r from-purple-400 to-pink-500"
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${progressPercent}%` }}
+                                      transition={{ duration: 0.8, ease: "easeOut" }}
+                                    />
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-4 text-sm pt-2">
+                                    <div className="flex items-center gap-2 text-green-700">
+                                      <Sparkle className="w-4 h-4" weight="fill" />
+                                      <span className="font-semibold">+{challenge.reward.xp} XP</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-amber-700">
+                                      <Coins className="w-4 h-4" weight="fill" />
+                                      <span className="font-semibold">+{challenge.reward.coins} coins</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="max-w-2xl mx-auto"
+            >
+              <Card className="bg-gradient-to-br from-green-400 via-emerald-500 to-teal-500 border-0 shadow-2xl text-white">
+                <CardContent className="p-8 text-center">
+                  <FlagBanner className="w-12 h-12 mx-auto mb-4" weight="fill" />
+                  <h3 className="text-2xl font-bold mb-3">Challenge Yourself</h3>
+                  <p className="text-green-50 leading-relaxed">
+                    Complete daily and weekly challenges to earn extra rewards and level up faster! 
+                    New challenges appear automatically when old ones expire.
                   </p>
                 </CardContent>
               </Card>

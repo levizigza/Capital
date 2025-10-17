@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useKV } from '@github/spark/hooks'
 import { 
   ChartBar, ChartLine, TrendUp, TrendDown, Target, 
   GameController, GearSix, ArrowsClockwise, Calendar,
-  CheckCircle, Clock, Trophy, Coins
+  CheckCircle, Clock, Trophy, Coins, FlagBanner, Timer,
+  Sparkle
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -40,6 +42,28 @@ export default function StructuredModeHub({
 }: StructuredModeHubProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  
+  const [dailyChallenges, setDailyChallenges] = useKV<Array<{
+    id: string
+    title: string
+    description: string
+    gameId: string
+    requirement: { type: 'score' | 'time' | 'accuracy'; value: number }
+    reward: { xp: number; coins: number }
+    completed: boolean
+    expiresAt: string
+  }>>('daily-challenges-structured', [])
+  
+  const [weeklyChallenges, setWeeklyChallenges] = useKV<Array<{
+    id: string
+    title: string
+    description: string
+    progress: number
+    target: number
+    reward: { xp: number; coins: number }
+    completed: boolean
+    expiresAt: string
+  }>>('weekly-challenges-structured', [])
 
   const xpForNextLevel = Math.floor(100 * Math.pow(1.5, userProfile.level - 1))
   const currentLevelXP = userProfile.xp % xpForNextLevel
@@ -47,12 +71,155 @@ export default function StructuredModeHub({
 
   const handleGameComplete = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
     onGameComplete(gameId, score, timeSpent, additionalData)
+    checkAndCompleteChallenges(gameId, score, timeSpent)
     setIsPlaying(false)
     
     toast.success('Performance Recorded', {
       description: `Score: ${score} | Time: ${Math.floor(timeSpent / 1000)}s`
     })
   }
+
+  const checkAndCompleteChallenges = (gameId: string, score: number, timeSpent: number) => {
+    setDailyChallenges(prevChallenges => {
+      const updated = (prevChallenges || []).map(challenge => {
+        if (challenge.gameId === gameId && !challenge.completed) {
+          let isCompleted = false
+          if (challenge.requirement.type === 'score' && score >= challenge.requirement.value) {
+            isCompleted = true
+          } else if (challenge.requirement.type === 'time' && timeSpent <= challenge.requirement.value) {
+            isCompleted = true
+          }
+          
+          if (isCompleted) {
+            setUserProfile(prev => ({
+              ...prev!,
+              xp: prev!.xp + challenge.reward.xp,
+              totalCoins: prev!.totalCoins + challenge.reward.coins
+            }))
+            
+            toast.success('🎯 Challenge Complete!', {
+              description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
+            })
+            
+            return { ...challenge, completed: true }
+          }
+        }
+        return challenge
+      })
+      return updated
+    })
+    
+    setWeeklyChallenges(prevChallenges => {
+      const updated = (prevChallenges || []).map(challenge => {
+        if (!challenge.completed) {
+          const newProgress = challenge.progress + 1
+          const isCompleted = newProgress >= challenge.target
+          
+          if (isCompleted) {
+            setUserProfile(prev => ({
+              ...prev!,
+              xp: prev!.xp + challenge.reward.xp,
+              totalCoins: prev!.totalCoins + challenge.reward.coins
+            }))
+            
+            toast.success('🏆 Weekly Challenge Complete!', {
+              description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
+            })
+          }
+          
+          return { ...challenge, progress: newProgress, completed: isCompleted }
+        }
+        return challenge
+      })
+      return updated
+    })
+  }
+
+  const initializeChallenges = () => {
+    const now = new Date()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setHours(0, 0, 0, 0)
+    
+    const nextWeek = new Date(now)
+    nextWeek.setDate(nextWeek.getDate() + 7)
+    
+    if ((dailyChallenges?.length || 0) === 0 || new Date(dailyChallenges?.[0]?.expiresAt || 0) < now) {
+      const newDailyChallenges = [
+        {
+          id: `daily-1-${Date.now()}`,
+          title: 'Score Target',
+          description: 'Achieve a score of 500 or higher',
+          gameId: 'any',
+          requirement: { type: 'score' as const, value: 500 },
+          reward: { xp: 100, coins: 50 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        },
+        {
+          id: `daily-2-${Date.now()}`,
+          title: 'Quick Completion',
+          description: 'Complete any game in under 2 minutes',
+          gameId: 'any',
+          requirement: { type: 'time' as const, value: 120000 },
+          reward: { xp: 120, coins: 60 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        },
+        {
+          id: `daily-3-${Date.now()}`,
+          title: 'High Performer',
+          description: 'Score 800+ in any game',
+          gameId: 'any',
+          requirement: { type: 'score' as const, value: 800 },
+          reward: { xp: 150, coins: 75 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        }
+      ]
+      setDailyChallenges(newDailyChallenges)
+    }
+    
+    if ((weeklyChallenges?.length || 0) === 0 || new Date(weeklyChallenges?.[0]?.expiresAt || 0) < now) {
+      const newWeeklyChallenges = [
+        {
+          id: `weekly-1-${Date.now()}`,
+          title: 'Consistency Champion',
+          description: 'Complete 10 games this week',
+          progress: 0,
+          target: 10,
+          reward: { xp: 500, coins: 250 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        },
+        {
+          id: `weekly-2-${Date.now()}`,
+          title: 'Score Aggregator',
+          description: 'Accumulate 5000 total points across all games',
+          progress: 0,
+          target: 5000,
+          reward: { xp: 400, coins: 200 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        },
+        {
+          id: `weekly-3-${Date.now()}`,
+          title: 'Elite Performer',
+          description: 'Score 1000+ in any single game',
+          progress: 0,
+          target: 1,
+          reward: { xp: 600, coins: 300 },
+          completed: false,
+          expiresAt: nextWeek.toISOString()
+        }
+      ]
+      setWeeklyChallenges(newWeeklyChallenges)
+    }
+  }
+
+  useState(() => {
+    initializeChallenges()
+  })
 
   const avgScore = gameScores.length > 0 
     ? Math.round(gameScores.reduce((sum, s) => sum + s.score, 0) / gameScores.length)
@@ -155,6 +322,10 @@ export default function StructuredModeHub({
             <TabsTrigger value="overview" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
               <ChartBar className="w-4 h-4 mr-2" />
               Overview
+            </TabsTrigger>
+            <TabsTrigger value="challenges" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+              <FlagBanner className="w-4 h-4 mr-2" />
+              Challenges
             </TabsTrigger>
             <TabsTrigger value="performance" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
               <ChartLine className="w-4 h-4 mr-2" />
@@ -286,6 +457,165 @@ export default function StructuredModeHub({
                 </Card>
               </motion.div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="challenges" className="space-y-6">
+            <Card className="bg-white border-blue-200 shadow-md">
+              <CardHeader>
+                <CardTitle className="text-blue-900 flex items-center gap-3">
+                  <Calendar className="w-6 h-6" weight="fill" />
+                  Daily Performance Targets
+                </CardTitle>
+                <CardDescription>
+                  Complete these objectives before midnight for bonus XP and coins
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {(dailyChallenges || []).map((challenge, index) => {
+                  const timeUntilExpiry = new Date(challenge.expiresAt).getTime() - Date.now()
+                  const hoursLeft = Math.floor(timeUntilExpiry / (1000 * 60 * 60))
+                  
+                  return (
+                    <motion.div
+                      key={challenge.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className={`${challenge.completed ? 'bg-blue-50/50 border-blue-300' : 'bg-white border-blue-200'} border-2`}>
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                challenge.completed 
+                                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600' 
+                                  : 'bg-gradient-to-br from-gray-200 to-gray-300'
+                              }`}>
+                                {challenge.completed ? (
+                                  <CheckCircle className="w-6 h-6 text-white" weight="fill" />
+                                ) : (
+                                  <Target className="w-6 h-6 text-gray-600" weight="fill" />
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold text-blue-900 mb-1">{challenge.title}</h3>
+                                <p className="text-sm text-gray-600 mb-2">{challenge.description}</p>
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div className="flex items-center gap-1 text-blue-600">
+                                    <Sparkle className="w-4 h-4" />
+                                    <span className="font-semibold">+{challenge.reward.xp} XP</span>
+                                  </div>
+                                  <div className="flex items-center gap-1 text-amber-600">
+                                    <Coins className="w-4 h-4" />
+                                    <span className="font-semibold">+{challenge.reward.coins}</span>
+                                  </div>
+                                  {!challenge.completed && (
+                                    <div className="flex items-center gap-1 text-orange-600">
+                                      <Timer className="w-4 h-4" />
+                                      <span>{hoursLeft}h remaining</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            {challenge.completed ? (
+                              <Badge className="bg-blue-500 text-white">Completed</Badge>
+                            ) : (
+                              <Button
+                                onClick={() => setIsPlaying(true)}
+                                size="sm"
+                                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                              >
+                                Start
+                              </Button>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-purple-200 shadow-md">
+              <CardHeader>
+                <CardTitle className="text-purple-900 flex items-center gap-3">
+                  <Trophy className="w-6 h-6" weight="fill" />
+                  Weekly Milestones
+                </CardTitle>
+                <CardDescription>
+                  Long-term objectives with premium rewards
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {(weeklyChallenges || []).map((challenge, index) => {
+                  const timeUntilExpiry = new Date(challenge.expiresAt).getTime() - Date.now()
+                  const daysLeft = Math.floor(timeUntilExpiry / (1000 * 60 * 60 * 24))
+                  const progressPercent = (challenge.progress / challenge.target) * 100
+                  
+                  return (
+                    <motion.div
+                      key={challenge.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <Card className={`${challenge.completed ? 'bg-purple-50/50 border-purple-300' : 'bg-white border-purple-200'} border-2`}>
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-lg font-bold text-purple-900">{challenge.title}</h3>
+                            {challenge.completed ? (
+                              <Badge className="bg-purple-500 text-white">
+                                <CheckCircle className="w-4 h-4 mr-1" weight="fill" />
+                                Complete
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="border-purple-300 text-purple-700">
+                                {daysLeft} days left
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mb-4">{challenge.description}</p>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">Progress</span>
+                              <span className="text-purple-700 font-bold">
+                                {challenge.progress} / {challenge.target}
+                              </span>
+                            </div>
+                            <Progress value={progressPercent} className="h-2.5 bg-purple-100 [&>div]:bg-gradient-to-r [&>div]:from-purple-500 [&>div]:to-pink-500" />
+                            
+                            <div className="flex items-center gap-4 text-sm pt-2">
+                              <div className="flex items-center gap-1 text-blue-600">
+                                <Sparkle className="w-4 h-4" />
+                                <span className="font-semibold">+{challenge.reward.xp} XP</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-amber-600">
+                                <Coins className="w-4 h-4" />
+                                <span className="font-semibold">+{challenge.reward.coins}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )
+                })}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-blue-500 to-indigo-600 border-0 shadow-2xl text-white">
+              <CardContent className="p-8 text-center">
+                <FlagBanner className="w-12 h-12 mx-auto mb-4" weight="fill" />
+                <h3 className="text-2xl font-bold mb-3">Challenge System</h3>
+                <p className="text-blue-100 leading-relaxed">
+                  Complete daily and weekly challenges to maximize your XP gains and coin earnings. 
+                  Challenges refresh automatically when they expire.
+                </p>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="performance" className="space-y-8">
