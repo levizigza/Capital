@@ -48,16 +48,34 @@
 - First-time user onboarding flow
 
 **Creative Mode: Finance Garden**
-- Functionality: Transform financial health into living, growing ecosystem
+- Functionality: Transform financial health into living, growing ecosystem with interactive plant visualization
 - Purpose: Engage visual/narrative learners who prefer metaphors and storytelling
 - Visual Elements:
-  - Growing plants represent savings growth
-  - Garden sections for different financial areas (Emergency Fund Garden, Investment Orchard, Debt-Free Forest)
-  - Weather effects reflect financial conditions
-  - Unlockable decorations as achievements
-  - Day/night cycle based on progress
-- Progression: Plant seeds with activities → Water with good decisions → Harvest rewards → Expand garden
+  - Interactive plants representing each mini-game (lemon tree, bamboo, money tree, flowers)
+  - Growth system based on game scores and completions (0-100% growth per plant)
+  - Dynamic background that evolves from barren to lush based on overall garden health
+  - Animated sun, clouds, sparkles, and weather effects
+  - Each plant is clickable to launch its corresponding game
+  - Real-time growth animations and hover effects
+  - Overall garden health score displayed prominently
+- Plant Types:
+  - 🍋 Lemon Tree (Lemonade Boss) - Yellow gradient
+  - 🎋 Bamboo Stalks (Pixel Budget Runner) - Emerald green
+  - 🪙 Coin Flowers (Coin Catcher) - Orange/amber
+  - 🧮 Budget Bush (Budget Balancer) - Teal green
+  - 🧠 Memory Vines (Credit Card Memory) - Purple/pink
+  - 🌳 Compound Oak (Compound Growth) - Blue/cyan
+  - 🌴 Investment Palm (Investment Tower) - Indigo/blue
+  - 🌺 Credit Lily (Credit Score Defender) - Pink/rose
+  - 🍁 Business Maple (Business Builder) - Red/orange
+- Progression: Play games → Plants grow and become vibrant → Background becomes lush → Unlock visual rewards
 - Success Criteria: Users stay engaged 30%+ longer, complete more scenarios, report higher satisfaction
+- Encouraging Messages:
+  - "🌱 Plant your first seeds - your financial garden awaits!"
+  - "🌿 Your financial garden is taking root!"
+  - "🌸 Beautiful growth! Keep nurturing your skills!"
+  - "🌳 Your financial garden is flourishing!"
+  - "🌺 Magnificent! Your financial garden is in full bloom!"
 
 **Structured Mode: Analytics Dashboard**
 - Functionality: Clean data-focused interface with charts, tables, and metrics
