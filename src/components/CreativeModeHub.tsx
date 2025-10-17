@@ -3,15 +3,21 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plant, Drop, Sun, CloudRain, Flower, Tree, Butterfly,
   GameController, Medal, Sparkle, GearSix, ArrowsClockwise,
-  Trophy, Fire, Coins
+  Trophy, Fire, Coins, Calculator, TrendUp, CreditCard, 
+  Building, Target, Clock, Star
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
-import { ProfessionalGameHub } from '@/game/components/ProfessionalGameHub'
+import { CoinCatcherGame } from '@/game/components/games/CoinCatcherGame'
+import { BudgetBalancerGame } from '@/game/components/games/BudgetBalancerGame'
+import { InvestmentClimberGame } from '@/game/components/games/InvestmentClimberGame'
+import { CreditDefenderGame } from '@/game/components/games/CreditDefenderGame'
+import { BusinessBuilderGame } from '@/game/components/games/BusinessBuilderGame'
 import type { GameScore } from '@/App'
 
 interface CreativeModeHubProps {
@@ -35,6 +41,82 @@ interface CreativeModeHubProps {
   onModeSwitch: () => void
 }
 
+interface GameInfo {
+  id: string
+  title: string
+  description: string
+  icon: React.ReactNode
+  difficulty: 'Easy' | 'Medium' | 'Hard'
+  estimatedTime: string
+  skills: string[]
+  component: React.ComponentType<any>
+  category: 'savings' | 'investing' | 'credit' | 'business'
+  gardenType: string
+}
+
+const financialGames: GameInfo[] = [
+  {
+    id: 'coin-catcher',
+    title: 'Coin Catcher',
+    description: 'Catch falling coins while avoiding expenses in this fast-paced savings game',
+    icon: <Coins className="w-6 h-6" />,
+    difficulty: 'Easy',
+    estimatedTime: '2-3 min',
+    skills: ['Saving', 'Quick Math', 'Decision Making'],
+    component: CoinCatcherGame,
+    category: 'savings',
+    gardenType: 'Savings Meadow'
+  },
+  {
+    id: 'budget-balancer',
+    title: 'Budget Balancer',
+    description: 'Balance your monthly budget by dragging expenses to the right categories',
+    icon: <Calculator className="w-6 h-6" />,
+    difficulty: 'Medium',
+    estimatedTime: '3-5 min',
+    skills: ['Budgeting', 'Categorization', 'Planning'],
+    component: BudgetBalancerGame,
+    category: 'savings',
+    gardenType: 'Savings Meadow'
+  },
+  {
+    id: 'investment-climber',
+    title: 'Investment Tower',
+    description: 'Build your investment portfolio by stacking different asset blocks strategically',
+    icon: <TrendUp className="w-6 h-6" />,
+    difficulty: 'Hard',
+    estimatedTime: '5-7 min',
+    skills: ['Investing', 'Risk Management', 'Strategy'],
+    component: InvestmentClimberGame,
+    category: 'investing',
+    gardenType: 'Investment Orchard'
+  },
+  {
+    id: 'credit-defender',
+    title: 'Credit Score Defender',
+    description: 'Protect your credit score from bad financial decisions in this tower defense game',
+    icon: <CreditCard className="w-6 h-6" />,
+    difficulty: 'Medium',
+    estimatedTime: '4-6 min',
+    skills: ['Credit Management', 'Risk Assessment', 'Planning'],
+    component: CreditDefenderGame,
+    category: 'credit',
+    gardenType: 'Credit Garden'
+  },
+  {
+    id: 'business-builder',
+    title: 'Business Builder',
+    description: 'Run a virtual business, make decisions, and grow your profit in this simulation game',
+    icon: <Building className="w-6 h-6" />,
+    difficulty: 'Hard',
+    estimatedTime: '7-10 min',
+    skills: ['Entrepreneurship', 'Financial Planning', 'Strategy'],
+    component: BusinessBuilderGame,
+    category: 'business',
+    gardenType: 'Investment Orchard'
+  }
+]
+
 export default function CreativeModeHub({
   userProfile,
   setUserProfile,
@@ -42,8 +124,10 @@ export default function CreativeModeHub({
   onGameComplete,
   onModeSwitch
 }: CreativeModeHubProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [selectedGame, setSelectedGame] = useState<string | null>(null)
+  const [gameStartTime, setGameStartTime] = useState<number>(0)
   const [showSettings, setShowSettings] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'games'>('overview')
 
   const xpForNextLevel = Math.floor(100 * Math.pow(1.5, userProfile.level - 1))
   const currentLevelXP = userProfile.xp % xpForNextLevel
@@ -52,13 +136,25 @@ export default function CreativeModeHub({
   const gardenLevel = Math.floor(userProfile.level / 3) + 1
   const totalPlants = userProfile.gamesCompleted
 
-  const handleGameComplete = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
-    onGameComplete(gameId, score, timeSpent, additionalData)
-    setIsPlaying(false)
-    
-    toast.success('🌱 Your garden grows!', {
-      description: `New plant sprouted from your achievement!`
-    })
+  const handleGameStart = (gameId: string) => {
+    setSelectedGame(gameId)
+    setGameStartTime(Date.now())
+  }
+
+  const handleGameComplete = (score: number, additionalData?: any) => {
+    if (selectedGame) {
+      const timeSpent = Date.now() - gameStartTime
+      onGameComplete(selectedGame, score, timeSpent, additionalData)
+      setSelectedGame(null)
+      
+      toast.success('🌱 Your garden grows!', {
+        description: `New plant sprouted from your achievement!`
+      })
+    }
+  }
+
+  const handleGameExit = () => {
+    setSelectedGame(null)
   }
 
   const gardens = [
@@ -108,16 +204,20 @@ export default function CreativeModeHub({
     }
   ]
 
-  if (isPlaying) {
-    return (
-      <div className="fixed inset-0 z-50 bg-background">
-        <ProfessionalGameHub
-          onGameComplete={handleGameComplete}
-          onExit={() => setIsPlaying(false)}
-          userTier="middle"
-        />
-      </div>
-    )
+  if (selectedGame) {
+    const game = financialGames.find(g => g.id === selectedGame)
+    if (game) {
+      const GameComponent = game.component
+      return (
+        <div className="fixed inset-0 z-50 bg-background">
+          <GameComponent
+            onComplete={handleGameComplete}
+            onExit={handleGameExit}
+            userTier="middle"
+          />
+        </div>
+      )
+    }
   }
 
   return (
@@ -130,8 +230,8 @@ export default function CreativeModeHub({
                 <Plant className="w-6 h-6 text-white" weight="fill" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-green-900">Finance Garden</h1>
-                <p className="text-sm text-green-600">Watch your wealth bloom</p>
+                <h1 className="text-2xl font-bold text-green-900">FinanceQuest Pro</h1>
+                <p className="text-sm text-green-600">Creative Mode - Finance Garden</p>
               </div>
             </div>
 
@@ -190,150 +290,249 @@ export default function CreativeModeHub({
       </header>
 
       <main className="container mx-auto px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold text-green-900 mb-4">
-            Your Financial Garden
-          </h2>
-          <p className="text-xl text-green-600 max-w-2xl mx-auto">
-            Every game you play plants a seed. Every smart decision helps it grow. 
-            Watch your financial health flourish! 🌱
-          </p>
-        </motion.div>
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 bg-white/80 border border-green-200 shadow-sm">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900">
+              <Plant className="w-4 h-4 mr-2" />
+              Garden Overview
+            </TabsTrigger>
+            <TabsTrigger value="games" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900">
+              <GameController className="w-4 h-4 mr-2" />
+              Play Games
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {gardens.map((garden, index) => {
-            const Icon = garden.icon
-            return (
-              <motion.div
-                key={garden.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className={`${garden.bgColor} border-2 ${garden.borderColor} ${garden.unlocked ? 'shadow-lg hover:shadow-xl' : 'opacity-60'} transition-all duration-300`}>
-                  <CardContent className="p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${garden.color} flex items-center justify-center shadow-md`}>
-                          <Icon className="w-8 h-8 text-white" weight="fill" />
-                        </div>
-                        <div>
-                          <h3 className={`text-2xl font-bold ${garden.textColor}`}>
-                            {garden.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 mt-1">{garden.description}</p>
-                        </div>
-                      </div>
-                      {garden.unlocked && (
-                        <Badge className="bg-white/50 text-green-700 border-green-200">
-                          Level {gardenLevel}
-                        </Badge>
-                      )}
-                    </div>
+          <TabsContent value="overview" className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h2 className="text-4xl font-bold text-green-900 mb-4">
+                Your Financial Garden
+              </h2>
+              <p className="text-xl text-green-600 max-w-2xl mx-auto">
+                Every game you play plants a seed. Every smart decision helps it grow. 
+                Watch your financial health flourish! 🌱
+              </p>
+            </motion.div>
 
-                    {garden.unlocked ? (
-                      <>
-                        <div className="flex items-center gap-3 mb-4">
-                          <Plant className={`w-5 h-5 ${garden.textColor}`} weight="fill" />
-                          <span className={`text-lg font-semibold ${garden.textColor}`}>
-                            {garden.plants} plants growing
-                          </span>
+            <div className="grid md:grid-cols-2 gap-8">
+              {gardens.map((garden, index) => {
+                const Icon = garden.icon
+                return (
+                  <motion.div
+                    key={garden.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className={`${garden.bgColor} border-2 ${garden.borderColor} ${garden.unlocked ? 'shadow-lg hover:shadow-xl' : 'opacity-60'} transition-all duration-300`}>
+                      <CardContent className="p-8">
+                        <div className="flex items-start justify-between mb-6">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${garden.color} flex items-center justify-center shadow-md`}>
+                              <Icon className="w-8 h-8 text-white" weight="fill" />
+                            </div>
+                            <div>
+                              <h3 className={`text-2xl font-bold ${garden.textColor}`}>
+                                {garden.name}
+                              </h3>
+                              <p className="text-sm text-gray-600 mt-1">{garden.description}</p>
+                            </div>
+                          </div>
+                          {garden.unlocked && (
+                            <Badge className="bg-white/50 text-green-700 border-green-200">
+                              Level {gardenLevel}
+                            </Badge>
+                          )}
                         </div>
-                        
-                        <div className="grid grid-cols-8 gap-2 mb-4">
-                          {Array.from({ length: 8 }).map((_, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: i < garden.plants ? 1 : 0.3 }}
-                              transition={{ delay: i * 0.05 }}
-                              className={`aspect-square rounded-lg ${
-                                i < garden.plants 
-                                  ? `bg-gradient-to-br ${garden.color}` 
-                                  : 'bg-gray-200'
-                              } flex items-center justify-center`}
-                            >
-                              {i < garden.plants && (
-                                <Plant className="w-4 h-4 text-white" weight="fill" />
-                              )}
-                            </motion.div>
+
+                        {garden.unlocked ? (
+                          <>
+                            <div className="flex items-center gap-3 mb-4">
+                              <Plant className={`w-5 h-5 ${garden.textColor}`} weight="fill" />
+                              <span className={`text-lg font-semibold ${garden.textColor}`}>
+                                {garden.plants} plants growing
+                              </span>
+                            </div>
+                            
+                            <div className="grid grid-cols-8 gap-2 mb-4">
+                              {Array.from({ length: 8 }).map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: i < garden.plants ? 1 : 0.3 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className={`aspect-square rounded-lg ${
+                                    i < garden.plants 
+                                      ? `bg-gradient-to-br ${garden.color}` 
+                                      : 'bg-gray-200'
+                                  } flex items-center justify-center`}
+                                >
+                                  {i < garden.plants && (
+                                    <Plant className="w-4 h-4 text-white" weight="fill" />
+                                  )}
+                                </motion.div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center py-8">
+                            <div className="text-4xl mb-3">🔒</div>
+                            <p className="text-gray-500 font-medium">
+                              Reach Level {Math.ceil(index * 2.5 + 3)} to unlock
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="grid md:grid-cols-3 gap-6"
+            >
+              <Card className="bg-white/80 border-green-200 shadow-md">
+                <CardContent className="p-6 text-center">
+                  <Trophy className="w-10 h-10 text-amber-500 mx-auto mb-3" weight="fill" />
+                  <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.gamesCompleted}</p>
+                  <p className="text-sm text-green-600 font-medium">Games Completed</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white/80 border-green-200 shadow-md">
+                <CardContent className="p-6 text-center">
+                  <Fire className="w-10 h-10 text-orange-500 mx-auto mb-3" weight="fill" />
+                  <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.currentStreak}</p>
+                  <p className="text-sm text-green-600 font-medium">Day Streak</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white/80 border-green-200 shadow-md">
+                <CardContent className="p-6 text-center">
+                  <Medal className="w-10 h-10 text-purple-500 mx-auto mb-3" weight="fill" />
+                  <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.achievements.length}</p>
+                  <p className="text-sm text-green-600 font-medium">Achievements</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="games" className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h2 className="text-4xl font-bold text-green-900 mb-4">
+                Financial Mini-Games
+              </h2>
+              <p className="text-xl text-green-600 max-w-2xl mx-auto">
+                Choose a game to play. Each completion grows your garden and teaches valuable skills! 🎮
+              </p>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {financialGames.map((game, index) => {
+                const completions = gameScores.filter(s => s.gameId === game.id).length
+                const bestScore = gameScores
+                  .filter(s => s.gameId === game.id)
+                  .reduce((max, s) => Math.max(max, s.score), 0)
+
+                return (
+                  <motion.div
+                    key={game.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="bg-white/90 border-2 border-green-200 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                      <CardHeader>
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                            {game.icon}
+                          </div>
+                          <Badge variant={
+                            game.difficulty === 'Easy' ? 'default' : 
+                            game.difficulty === 'Medium' ? 'secondary' : 
+                            'destructive'
+                          }>
+                            {game.difficulty}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-green-900">{game.title}</CardTitle>
+                        <CardDescription className="text-gray-600">
+                          {game.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Clock className="w-4 h-4" />
+                          <span>{game.estimatedTime}</span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {game.skills.map(skill => (
+                            <Badge key={skill} variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
+                              {skill}
+                            </Badge>
                           ))}
                         </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="text-4xl mb-3">🔒</div>
-                        <p className="text-gray-500 font-medium">
-                          Reach Level {Math.ceil(index * 2.5 + 3)} to unlock
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )
-          })}
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="max-w-2xl mx-auto"
-        >
-          <Card className="bg-gradient-to-br from-green-400 to-emerald-500 border-0 shadow-2xl">
-            <CardContent className="p-10 text-center text-white">
-              <GameController className="w-16 h-16 mx-auto mb-6" weight="fill" />
-              <h3 className="text-3xl font-bold mb-4">Play Financial Games</h3>
-              <p className="text-lg text-green-50 mb-8 leading-relaxed">
-                Each game plants new seeds in your garden. The better you play, the faster they grow!
-              </p>
-              <Button 
-                size="lg"
-                onClick={() => setIsPlaying(true)}
-                className="bg-white text-green-600 hover:bg-green-50 px-10 py-6 text-xl font-bold shadow-lg hover:shadow-xl transition-all"
-              >
-                <Sparkle className="w-6 h-6 mr-3" weight="fill" />
-                Start Playing
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
+                        {completions > 0 && (
+                          <div className="pt-3 border-t border-gray-200">
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2 text-green-700">
+                                <Trophy className="w-4 h-4" weight="fill" />
+                                <span className="font-medium">Best: {bestScore}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <Target className="w-4 h-4" />
+                                <span>{completions} plays</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="grid md:grid-cols-3 gap-6 mt-12"
-        >
-          <Card className="bg-white/80 border-green-200 shadow-md">
-            <CardContent className="p-6 text-center">
-              <Trophy className="w-10 h-10 text-amber-500 mx-auto mb-3" weight="fill" />
-              <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.gamesCompleted}</p>
-              <p className="text-sm text-green-600 font-medium">Games Completed</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/80 border-green-200 shadow-md">
-            <CardContent className="p-6 text-center">
-              <Fire className="w-10 h-10 text-orange-500 mx-auto mb-3" weight="fill" />
-              <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.currentStreak}</p>
-              <p className="text-sm text-green-600 font-medium">Day Streak</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/80 border-green-200 shadow-md">
-            <CardContent className="p-6 text-center">
-              <Medal className="w-10 h-10 text-purple-500 mx-auto mb-3" weight="fill" />
-              <p className="text-3xl font-bold text-green-900 mb-2">{userProfile.achievements.length}</p>
-              <p className="text-sm text-green-600 font-medium">Achievements</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+                        <Button 
+                          onClick={() => handleGameStart(game.id)}
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md"
+                        >
+                          <Sparkle className="w-4 h-4 mr-2" weight="fill" />
+                          Play Now
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )
+              })}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="max-w-2xl mx-auto"
+            >
+              <Card className="bg-gradient-to-br from-green-400 to-emerald-500 border-0 shadow-2xl text-white">
+                <CardContent className="p-8 text-center">
+                  <Plant className="w-12 h-12 mx-auto mb-4" weight="fill" />
+                  <h3 className="text-2xl font-bold mb-3">How It Works</h3>
+                  <p className="text-green-50 leading-relaxed">
+                    Play games to earn XP and coins. Each completed game plants a new seed in your financial garden. 
+                    Level up to unlock new garden areas and more challenging games!
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   )
