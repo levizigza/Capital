@@ -25,6 +25,7 @@ import { BusinessBuilderGame } from '@/game/components/games/BusinessBuilderGame
 import { CreditCardMemory } from '@/game/components/CreditCardMemory'
 import { CompoundGrowth } from '@/game/components/CompoundGrowth'
 import { LemonadeBossGame } from '@/game/components/games/LemonadeBossGame'
+import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 import type { GameScore } from '@/App'
 
 interface CreativeModeHubProps {
@@ -86,6 +87,19 @@ const miniGames: GameInfo[] = [
     estimatedTime: '3-4 min',
     skills: ['Budgeting', 'Categorization', 'Planning'],
     component: BudgetBalancerGame,
+    category: 'mini-game',
+    type: 'savings',
+    gardenType: 'Savings Meadow'
+  },
+  {
+    id: 'pixel-budget-runner',
+    title: 'Pixel Budget Runner',
+    description: 'Side-scrolling endless runner teaching zero-based budgeting. Collect budget envelopes!',
+    icon: <GameController className="w-6 h-6" />,
+    difficulty: 'Easy',
+    estimatedTime: '2-4 min',
+    skills: ['Zero-Based Budgeting', 'Quick Reflexes', 'Resource Allocation'],
+    component: PixelBudgetRunner,
     category: 'mini-game',
     type: 'savings',
     gardenType: 'Savings Meadow'

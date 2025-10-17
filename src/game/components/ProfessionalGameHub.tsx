@@ -6,13 +6,14 @@ import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { 
   ArrowLeft, Clock, Trophy, Star, Target, Calculator,
-  PiggyBank, TrendUp, CreditCard, Building, Coins
+  PiggyBank, TrendUp, CreditCard, Building, Coins, GameController
 } from '@phosphor-icons/react'
 import { CoinCatcherGame } from './games/CoinCatcherGame'
 import { BudgetBalancerGame } from './games/BudgetBalancerGame'
 import { InvestmentClimberGame } from './games/InvestmentClimberGame'
 import { CreditDefenderGame } from './games/CreditDefenderGame'
 import { BusinessBuilderGame } from './games/BusinessBuilderGame'
+import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 
 interface GameHubProps {
   onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
@@ -42,6 +43,17 @@ const games: GameInfo[] = [
     estimatedTime: '2-3 min',
     skills: ['Saving', 'Quick Math', 'Decision Making'],
     component: CoinCatcherGame,
+    minAge: 8
+  },
+  {
+    id: 'pixel-budget-runner',
+    title: 'Pixel Budget Runner',
+    description: 'Side-scrolling endless runner teaching zero-based budgeting',
+    icon: <GameController className="w-6 h-6" />,
+    difficulty: 'Easy',
+    estimatedTime: '2-4 min',
+    skills: ['Zero-Based Budgeting', 'Quick Reflexes', 'Resource Allocation'],
+    component: PixelBudgetRunner,
     minAge: 8
   },
   {
