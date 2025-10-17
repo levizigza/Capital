@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
+import { Toaster } from 'sonner'
 import ModeSelection from '@/components/ModeSelection'
 import CreativeModeHub from '@/components/CreativeModeHub'
 import StructuredModeHub from '@/components/StructuredModeHub'
@@ -72,10 +73,30 @@ function App() {
 
   const handleModeSelect = (mode: LearningMode) => {
     setCurrentMode(mode)
-    setUserProfile(prev => ({
-      ...prev!,
-      preferredMode: mode
-    }))
+    setUserProfile(prev => {
+      if (!prev) {
+        return {
+          name: 'Player',
+          level: 1,
+          xp: 0,
+          totalCoins: 0,
+          gamesCompleted: 0,
+          achievements: [],
+          currentStreak: 0,
+          skillsUnlocked: [],
+          preferredMode: mode,
+          preferences: {
+            difficulty: 'adaptive',
+            gameTypes: [],
+            playTime: 'medium'
+          }
+        }
+      }
+      return {
+        ...prev,
+        preferredMode: mode
+      }
+    })
   }
 
   const handleModeSwitch = () => {
@@ -135,29 +156,40 @@ function App() {
   }
 
   if (!currentMode) {
-    return <ModeSelection onSelectMode={handleModeSelect} />
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <ModeSelection onSelectMode={handleModeSelect} />
+      </>
+    )
   }
 
   if (currentMode === 'creative') {
     return (
-      <CreativeModeHub
+      <>
+        <Toaster position="top-right" richColors />
+        <CreativeModeHub
+          userProfile={userProfile!}
+          setUserProfile={setUserProfile}
+          gameScores={gameScores || []}
+          onGameComplete={completeGame}
+          onModeSwitch={handleModeSwitch}
+        />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Toaster position="top-right" richColors />
+      <StructuredModeHub
         userProfile={userProfile!}
         setUserProfile={setUserProfile}
         gameScores={gameScores || []}
         onGameComplete={completeGame}
         onModeSwitch={handleModeSwitch}
       />
-    )
-  }
-
-  return (
-    <StructuredModeHub
-      userProfile={userProfile!}
-      setUserProfile={setUserProfile}
-      gameScores={gameScores || []}
-      onGameComplete={completeGame}
-      onModeSwitch={handleModeSwitch}
-    />
+    </>
   )
 }
 

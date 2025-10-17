@@ -257,9 +257,9 @@ function PixelBudgetRunner({
   const [collectibles, setCollectibles] = useState<Array<{x: number, lane: number, type: 'coin' | 'budget', id: string}>>([])
 
   useEffect(() => {
-    const gameLoop = setInterval(() => {
-      if (gameState.status !== 'playing') return
+    if (gameState.status !== 'playing') return
 
+    const gameLoop = setInterval(() => {
       // Move obstacles and collectibles
       setObstacles(prev => prev.map(obs => ({ ...obs, x: obs.x - 5 })).filter(obs => obs.x > -50))
       setCollectibles(prev => prev.map(col => ({ ...col, x: col.x - 5 })).filter(col => col.x > -50))
@@ -334,7 +334,7 @@ function PixelBudgetRunner({
     }, 50)
 
     return () => clearInterval(gameLoop)
-  }, [gameState.status, position, setGameState])
+  }, [gameState.status, position])
 
   const movePlayer = (direction: 'up' | 'down') => {
     setPosition(prev => {
@@ -346,9 +346,9 @@ function PixelBudgetRunner({
 
   // Add keyboard controls
   useEffect(() => {
+    if (gameState.status !== 'playing') return
+
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (gameState.status !== 'playing') return
-      
       switch (event.key) {
         case 'ArrowUp':
         case 'w':
@@ -474,9 +474,9 @@ function MarketTycoon({
   const [marketTrend, setMarketTrend] = useState<'bull' | 'bear' | 'stable'>('stable')
 
   useEffect(() => {
-    const marketLoop = setInterval(() => {
-      if (gameState.status !== 'playing') return
+    if (gameState.status !== 'playing') return
 
+    const marketLoop = setInterval(() => {
       // Simulate market movements
       setMarketPrices(prev => {
         const volatility = { stocks: 0.05, bonds: 0.02, crypto: 0.15 }
@@ -496,22 +496,29 @@ function MarketTycoon({
       }
 
       // Calculate portfolio value and update score
-      const totalValue = 
-        portfolio.stocks * marketPrices.stocks +
-        portfolio.bonds * marketPrices.bonds +
-        portfolio.crypto * marketPrices.crypto +
-        portfolio.savings
+      setPortfolio(currentPortfolio => {
+        setMarketPrices(currentPrices => {
+          const totalValue = 
+            currentPortfolio.stocks * currentPrices.stocks +
+            currentPortfolio.bonds * currentPrices.bonds +
+            currentPortfolio.crypto * currentPrices.crypto +
+            currentPortfolio.savings
 
-      setGameState(prev => ({
-        ...prev,
-        money: totalValue,
-        score: Math.floor(totalValue - 100), // Starting money was 100
-        level: Math.floor((totalValue - 100) / 200) + 1
-      }))
+          setGameState(prev => ({
+            ...prev,
+            money: totalValue,
+            score: Math.floor(totalValue - 100),
+            level: Math.floor((totalValue - 100) / 200) + 1
+          }))
+
+          return currentPrices
+        })
+        return currentPortfolio
+      })
     }, 2000)
 
     return () => clearInterval(marketLoop)
-  }, [gameState.status, portfolio, marketPrices, marketTrend, setGameState])
+  }, [gameState.status, marketTrend])
 
   const buyAsset = (asset: 'stocks' | 'bonds' | 'crypto', amount: number) => {
     const cost = marketPrices[asset] * amount
@@ -678,9 +685,9 @@ function DebtDash({
   const [paymentPowers, setPaymentPowers] = useState<Array<{x: number, lane: number, type: 'payment' | 'bonus', id: string, amount: number}>>([])
 
   useEffect(() => {
-    const gameLoop = setInterval(() => {
-      if (gameState.status !== 'playing') return
+    if (gameState.status !== 'playing') return
 
+    const gameLoop = setInterval(() => {
       // Move obstacles and power-ups
       setObstacles(prev => prev.map(obs => ({ ...obs, x: obs.x - 6 })).filter(obs => obs.x > -50))
       setPaymentPowers(prev => prev.map(pow => ({ ...pow, x: pow.x - 6 })).filter(pow => pow.x > -50))
@@ -721,17 +728,17 @@ function DebtDash({
         if (collected.length > 0) {
           collected.forEach(power => {
             // Apply payment to highest interest debt (avalanche method)
-            const highestRateDebt = debts.reduce((max, debt) => 
-              debt.rate > max.rate ? debt : max
-            )
-            
-            setDebts(prevDebts => 
-              prevDebts.map(debt => 
+            setDebts(prevDebts => {
+              const highestRateDebt = prevDebts.reduce((max, debt) => 
+                debt.rate > max.rate ? debt : max
+              )
+              
+              return prevDebts.map(debt => 
                 debt.id === highestRateDebt.id
                   ? { ...debt, balance: Math.max(0, debt.balance - power.amount) }
                   : debt
               )
-            )
+            })
           })
           
           setGameState(prev => ({
@@ -768,17 +775,20 @@ function DebtDash({
       }
 
       // Update score based on debt reduction
-      const totalDebt = debts.reduce((sum, debt) => sum + debt.balance, 0)
-      const debtReduction = Math.max(0, 11700 - totalDebt) // Started with $11,700 total debt
-      setGameState(prev => ({
-        ...prev,
-        score: Math.floor(debtReduction / 10)
-      }))
+      setDebts(currentDebts => {
+        const totalDebt = currentDebts.reduce((sum, debt) => sum + debt.balance, 0)
+        const debtReduction = Math.max(0, 11700 - totalDebt)
+        setGameState(prev => ({
+          ...prev,
+          score: Math.floor(debtReduction / 10)
+        }))
+        return currentDebts
+      })
 
     }, 50)
 
     return () => clearInterval(gameLoop)
-  }, [gameState.status, position, debts, setGameState])
+  }, [gameState.status, position, debts.length])
 
   const movePlayer = (direction: 'up' | 'down') => {
     setPosition(prev => {
@@ -790,9 +800,9 @@ function DebtDash({
 
   // Add keyboard controls for debt dash
   useEffect(() => {
+    if (gameState.status !== 'playing') return
+
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (gameState.status !== 'playing') return
-      
       switch (event.key) {
         case 'ArrowUp':
         case 'w':

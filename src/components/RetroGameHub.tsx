@@ -109,28 +109,44 @@ export function RetroGameHub({ onGameComplete, onExit, userTier = 'middle' }: Re
 
   console.log('RetroGameHub rendered with:', { selectedGame, isPlaying, showVARKAssessment })
 
-  // Auto-detect learning style preference from localStorage or use default
+  // Auto-detect learning style preference from storage or use default
   useEffect(() => {
-    const storedStyle = localStorage.getItem('learning-style')
-    if (storedStyle) {
-      setLearningStyle(JSON.parse(storedStyle))
-    } else {
-      // Skip assessment by default - use balanced learning style
-      const defaultStyle: LearningStyle = {
-        visual: 0.35,
-        auditory: 0.25,
-        readWrite: 0.2,
-        kinesthetic: 0.2,
-        dominant: 'visual'
+    const loadLearningStyle = async () => {
+      try {
+        const storedStyle = await window.spark.kv.get<LearningStyle>('learning-style')
+        if (storedStyle) {
+          setLearningStyle(storedStyle)
+        } else {
+          // Skip assessment by default - use balanced learning style
+          const defaultStyle: LearningStyle = {
+            visual: 0.35,
+            auditory: 0.25,
+            readWrite: 0.2,
+            kinesthetic: 0.2,
+            dominant: 'visual'
+          }
+          setLearningStyle(defaultStyle)
+          await window.spark.kv.set('learning-style', defaultStyle)
+        }
+      } catch (error) {
+        console.error('Error loading learning style:', error)
+        const defaultStyle: LearningStyle = {
+          visual: 0.35,
+          auditory: 0.25,
+          readWrite: 0.2,
+          kinesthetic: 0.2,
+          dominant: 'visual'
+        }
+        setLearningStyle(defaultStyle)
       }
-      setLearningStyle(defaultStyle)
-      localStorage.setItem('learning-style', JSON.stringify(defaultStyle))
     }
+
+    loadLearningStyle()
   }, [])
 
   const handleVARKComplete = (results: LearningStyle) => {
     setLearningStyle(results)
-    localStorage.setItem('learning-style', JSON.stringify(results))
+    window.spark.kv.set('learning-style', results)
     setShowVARKAssessment(false)
     
     // Auto-enable kinesthetic mode if dominant
@@ -146,11 +162,11 @@ export function RetroGameHub({ onGameComplete, onExit, userTier = 'middle' }: Re
       auditory: 0.25,
       readWrite: 0.2,
       kinesthetic: 0.25,
-      dominant: 'visual' // Default to visual for most users
+      dominant: 'visual'
     }
     
     setLearningStyle(defaultStyle)
-    localStorage.setItem('learning-style', JSON.stringify(defaultStyle))
+    window.spark.kv.set('learning-style', defaultStyle)
     setShowVARKAssessment(false)
   }
 
