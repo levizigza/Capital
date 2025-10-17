@@ -7,7 +7,7 @@ import {
   Trophy, Fire, Coins, Calculator, TrendUp, CreditCard, 
   Building, Target, Clock, Star, Lightbulb, ChartLine,
   Brain, Rocket, Lightning, FlagBanner, CheckCircle, 
-  CalendarBlank, Timer
+  CalendarBlank, Timer, Storefront
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -24,6 +24,7 @@ import { CreditDefenderGame } from '@/game/components/games/CreditDefenderGame'
 import { BusinessBuilderGame } from '@/game/components/games/BusinessBuilderGame'
 import { CreditCardMemory } from '@/game/components/CreditCardMemory'
 import { CompoundGrowth } from '@/game/components/CompoundGrowth'
+import { LemonadeBossGame } from '@/game/components/games/LemonadeBossGame'
 import type { GameScore } from '@/App'
 
 interface CreativeModeHubProps {
@@ -88,6 +89,19 @@ const miniGames: GameInfo[] = [
     category: 'mini-game',
     type: 'savings',
     gardenType: 'Savings Meadow'
+  },
+  {
+    id: 'lemonade-boss',
+    title: 'Lemonade Boss',
+    description: 'Run your own lemonade stand and master unit costs, pricing, and profit margins',
+    icon: <Storefront className="w-6 h-6" />,
+    difficulty: 'Easy',
+    estimatedTime: '3-5 min',
+    skills: ['Unit Cost', 'Pricing Strategy', 'Profit Margins'],
+    component: LemonadeBossGame,
+    category: 'mini-game',
+    type: 'business',
+    gardenType: 'Business Park'
   },
   {
     id: 'credit-card-memory',
@@ -303,6 +317,16 @@ export default function CreativeModeHub({
         },
         {
           id: `daily-2-${Date.now()}`,
+          title: 'Business Tycoon',
+          description: 'Make $15+ profit in Lemonade Boss',
+          gameId: 'lemonade-boss',
+          requirement: { type: 'score' as const, value: 150 },
+          reward: { xp: 120, coins: 60 },
+          completed: false,
+          expiresAt: tomorrow.toISOString()
+        },
+        {
+          id: `daily-3-${Date.now()}`,
           title: 'Budget Master',
           description: 'Complete Budget Balancer with 90% accuracy',
           gameId: 'budget-balancer',
@@ -312,7 +336,7 @@ export default function CreativeModeHub({
           expiresAt: tomorrow.toISOString()
         },
         {
-          id: `daily-3-${Date.now()}`,
+          id: `daily-4-${Date.now()}`,
           title: 'Memory Champion',
           description: 'Score 800+ in Credit Card Memory',
           gameId: 'credit-card-memory',
