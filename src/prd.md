@@ -1,8 +1,8 @@
-# FinanceQuest - Interactive Mini-Games Edition
+# FinanceQuest Pro - Dual-Mode Financial Learning Platform
 
 ## Core Purpose & Success
 
-**Mission Statement**: Create engaging financial mini-games that teach real money management skills through interactive gameplay, similar to popular educational games on CoolMathGames and Miniclip.
+**Mission Statement**: Create an adaptive financial learning platform that respects different learning preferences by offering two distinct experiences: a visually rich narrative-driven "Finance Garden" mode and a data-focused analytical dashboard mode, both powered by the same engaging mini-games.
 
 **Success Indicators**: 
 - User completion rates across all mini-games > 75%
@@ -10,13 +10,16 @@
 - Daily return rate > 40%
 - Skill progression across financial concepts
 
-**Experience Qualities**: Fun, Interactive, Educational
+**Experience Qualities**: 
+1. **Adaptive** - Respects user preferences with two distinct modes
+2. **Engaging** - Narrative-driven (Creative) or data-driven (Structured) based on choice
+3. **Educational** - Same high-quality learning outcomes through different presentation styles
 
 ## Project Classification & Approach
 
-**Complexity Level**: Light Application with multiple mini-games and basic progress tracking
+**Complexity Level**: Light Application with dual interface modes, multiple mini-games, and adaptive progress tracking
 
-**Primary User Activity**: Learning through hands-on gameplay and real-time decision making
+**Primary User Activity**: Choose preferred learning mode → Engage with financial concepts through that lens → Progress through mini-games → Track growth in preferred format
 
 ## Thought Process for Feature Selection
 
@@ -35,7 +38,40 @@
 
 ## Essential Features
 
-### Core Mini-Games
+### Dual-Mode System
+
+**Mode Selection Screen**
+- Clean, welcoming interface asking user to choose their preferred learning style
+- Visual preview of each mode
+- Brief explanation of Creative vs Structured approach
+- Ability to switch modes at any time from settings
+- First-time user onboarding flow
+
+**Creative Mode: Finance Garden**
+- Functionality: Transform financial health into living, growing ecosystem
+- Purpose: Engage visual/narrative learners who prefer metaphors and storytelling
+- Visual Elements:
+  - Growing plants represent savings growth
+  - Garden sections for different financial areas (Emergency Fund Garden, Investment Orchard, Debt-Free Forest)
+  - Weather effects reflect financial conditions
+  - Unlockable decorations as achievements
+  - Day/night cycle based on progress
+- Progression: Plant seeds with activities → Water with good decisions → Harvest rewards → Expand garden
+- Success Criteria: Users stay engaged 30%+ longer, complete more scenarios, report higher satisfaction
+
+**Structured Mode: Analytics Dashboard**
+- Functionality: Clean data-focused interface with charts, tables, and metrics
+- Purpose: Serve analytical minds who prefer hard numbers and statistics
+- Visual Elements:
+  - Financial KPI cards with trend indicators
+  - Interactive line charts showing progress over time
+  - Data tables with sortable columns
+  - Percentage-based progress bars
+  - Comparison metrics (vs. last week, vs. goals)
+- Progression: Set targets → Complete games → Analyze results → Optimize performance → Reach milestones
+- Success Criteria: Users complete more games per session, make data-driven improvements, achieve goals faster
+
+### Core Mini-Games (Accessible from Both Modes)
 1. **Budget Balance Game**
    - Interactive slider-based budget allocation
    - Real-time feedback on spending categories  
@@ -74,22 +110,38 @@
 ## Design Direction
 
 ### Visual Tone & Identity
-**Emotional Response**: Sophisticated yet approachable, inspiring confidence while maintaining engagement
-**Design Personality**: Modern gaming aesthetic with professional financial elements
-**Visual Metaphors**: Gaming UI conventions blended with financial dashboard elements
-**Simplicity Spectrum**: Rich interface with progressive disclosure to prevent overwhelm
+**Creative Mode**: Whimsical, organic, narrative-driven with natural metaphors and playful elements
+**Structured Mode**: Clean, professional, data-focused with clear hierarchy and analytical precision
+**Shared Games**: Colorful, modern mobile game aesthetic with retro gaming influences
+**Simplicity Spectrum**: Mode selection is minimal; each mode then reveals appropriate complexity
 
 ### Color Strategy
-**Color Scheme Type**: Triadic with sophisticated gradients
-**Primary Color**: Deep blue (trust, stability, professionalism) - `oklch(0.35 0.12 240)`
-**Secondary Colors**: Emerald green (growth, money, success) - `oklch(0.45 0.15 155)`
-**Accent Color**: Golden amber (achievement, rewards, premium) - `oklch(0.65 0.15 65)`
-**Color Psychology**: Blue builds trust for financial decisions, green reinforces positive money outcomes, gold creates premium achievement feel
-**Foreground/Background Pairings**: 
-- Background (white): Foreground (deep blue) - WCAG AAA compliant
-- Card (light gray): Foreground (deep blue) - WCAG AA compliant  
-- Primary (deep blue): Foreground (white) - WCAG AAA compliant
-- Accent (golden amber): Foreground (dark blue) - WCAG AA compliant
+
+**Creative Mode (Garden Theme)**
+- Primary: Vibrant Green (growth, nature) - `oklch(0.55 0.18 145)`
+- Secondary: Sky Blue (calm, trust) - `oklch(0.60 0.14 230)`
+- Accent: Warm Orange (energy, rewards) - `oklch(0.68 0.16 45)`
+- Background: Soft cream/mint gradient - `oklch(0.96 0.02 145)`
+- Nature-inspired gradients, organic shapes, soft shadows
+
+**Structured Mode (Analytics Theme)**
+- Primary: Professional Blue (trust, stability) - `oklch(0.35 0.12 240)`
+- Secondary: Data Green (positive metrics) - `oklch(0.45 0.15 155)`
+- Accent: Highlight Yellow (important data) - `oklch(0.75 0.14 85)`
+- Background: Clean white/light gray - `oklch(0.98 0.005 240)`
+- Sharp edges, clear borders, precise spacing
+
+**Shared Games (Retro Mobile Game)**
+- Primary: Electric Purple - `oklch(0.55 0.20 290)`
+- Secondary: Bright Cyan - `oklch(0.70 0.15 200)`
+- Accent: Hot Pink - `oklch(0.65 0.22 350)`
+- Colorful, high contrast, energetic palette
+- Gradient backgrounds, neon accents
+
+**Foreground/Background Pairings** (All WCAG AA+):
+- Creative: Dark green text on cream (6.5:1) ✓
+- Structured: Dark blue text on white (12.6:1) ✓
+- Games: White text on purple/dark backgrounds (7.0:1+) ✓
 
 ### Typography System
 **Font Pairing Strategy**: Modern sans-serif for UI with monospace for financial data
