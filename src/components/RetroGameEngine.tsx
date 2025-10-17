@@ -6,6 +6,7 @@ import {
   ArrowLeft, Clock, Coins, Lightning, Target, 
   Play, Pause, ArrowCounterClockwise, Trophy
 } from '@phosphor-icons/react'
+import MarketTycoonGame from './MarketTycoonGame'
 
 interface RetroGame {
   id: string
@@ -1039,12 +1040,14 @@ export function RetroGameEngine({
         )
       case 'market-tycoon':
         return (
-          <MarketTycoon
-            gameState={gameState}
-            setGameState={setGameState}
-            learningStyle={learningStyle}
-            kinestheticEnabled={kinestheticEnabled}
-          />
+          <div className="absolute inset-0">
+            <MarketTycoonGame
+              onComplete={(score, timeSpent, data) => {
+                onComplete(score, timeSpent, data)
+              }}
+              onBack={onExit}
+            />
+          </div>
         )
       case 'debt-dash':
         return (
@@ -1072,198 +1075,196 @@ export function RetroGameEngine({
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-900 text-white">
-      {/* Game Header */}
-      <div className="bg-slate-800 p-4 flex items-center justify-between border-b border-slate-700">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={onExit} className="text-white hover:bg-slate-700">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Exit
-          </Button>
-          <div>
-            <h1 className="text-lg font-bold">{game.title}</h1>
-            <div className="flex items-center gap-4 text-sm text-slate-300">
-              <div className="flex items-center gap-1">
-                <Trophy className="w-4 h-4" />
-                {gameState.score}
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                {Math.floor(gameState.timeRemaining / 60)}:{(gameState.timeRemaining % 60).toString().padStart(2, '0')}
-              </div>
-              <div className="flex items-center gap-1">
-                <Coins className="w-4 h-4" />
-                ${gameState.money}
-              </div>
-              {/* Win Goal Progress */}
-              <div className="flex items-center gap-1 text-yellow-300">
-                <Target className="w-4 h-4" />
-                {game.gameType === 'lemonade-boss' && `$${gameState.money}/500`}
-                {game.gameType === 'pixel-budget-runner' && `${gameState.score}/1000`}
-                {game.gameType === 'market-tycoon' && `$${gameState.money}/1000`}
-                {game.gameType === 'debt-dash' && `${gameState.score}/500`}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {kinestheticEnabled && (
-            <Badge variant="outline" className="text-xs">
-              Motion On
-            </Badge>
-          )}
-          {bciEnabled && (
-            <Badge variant="outline" className="text-xs">
-              BCI Active
-            </Badge>
-          )}
-          <Button variant="outline" size="sm" onClick={pauseGame}>
-            {gameState.status === 'playing' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)}>
-            ?
-          </Button>
-          <Button variant="outline" size="sm" onClick={resetGame}>
-            <ArrowCounterClockwise className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Game Content */}
-      <div className="flex-1 relative">
-        {/* Instructions Overlay */}
-        {(gameState.status === 'completed' || gameState.status === 'failed') && (
-          <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-            <div className="max-w-md bg-white rounded-lg p-8 text-center shadow-2xl">
-              <div className="text-6xl mb-4">
-                {gameState.status === 'completed' ? '🎉' : '💥'}
-              </div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-4">
-                {gameState.status === 'completed' ? 'Congratulations!' : 'Game Over'}
-              </h2>
-              <p className="text-slate-600 mb-6">
-                {gameState.status === 'completed' 
-                  ? 'You successfully completed the challenge!' 
-                  : 'Don\'t worry, try again to improve your score!'}
-              </p>
-              
-              <div className="bg-slate-50 rounded-lg p-4 mb-6 space-y-2">
-                <div className="flex justify-between">
-                  <span className="font-medium">Final Score:</span>
-                  <span className="font-bold text-green-600">{gameState.score}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Money Earned:</span>
-                  <span className="font-bold text-blue-600">${gameState.money}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">Level Reached:</span>
-                  <span className="font-bold text-purple-600">{gameState.level}</span>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <Button onClick={() => {
-                  const timeSpent = Date.now() - startTime
-                  onComplete(gameState.score, timeSpent, {
-                    finalMoney: gameState.money,
-                    level: gameState.level,
-                    lives: gameState.lives
-                  })
-                }} size="lg" className="w-full bg-green-600 hover:bg-green-700">
-                  <Trophy className="w-5 h-5 mr-2" />
-                  Continue to Progress
-                </Button>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={resetGame} className="flex-1">
-                    <ArrowCounterClockwise className="w-4 h-4 mr-2" />
-                    Play Again
-                  </Button>
-                  <Button variant="outline" onClick={onExit} className="flex-1">
-                    Back to Menu
-                  </Button>
+    <>
+      {game.gameType === 'market-tycoon' ? (
+        renderGame()
+      ) : (
+        <div className="h-full flex flex-col bg-slate-900 text-white">
+          {/* Game Header */}
+          <div className="bg-slate-800 p-4 flex items-center justify-between border-b border-slate-700">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={onExit} className="text-white hover:bg-slate-700">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Exit
+              </Button>
+              <div>
+                <h1 className="text-lg font-bold">{game.title}</h1>
+                <div className="flex items-center gap-4 text-sm text-slate-300">
+                  <div className="flex items-center gap-1">
+                    <Trophy className="w-4 h-4" />
+                    {gameState.score}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {Math.floor(gameState.timeRemaining / 60)}:{(gameState.timeRemaining % 60).toString().padStart(2, '0')}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Coins className="w-4 h-4" />
+                    ${gameState.money}
+                  </div>
+                  {/* Win Goal Progress */}
+                  <div className="flex items-center gap-1 text-yellow-300">
+                    <Target className="w-4 h-4" />
+                    {game.gameType === 'lemonade-boss' && `$${gameState.money}/500`}
+                    {game.gameType === 'pixel-budget-runner' && `${gameState.score}/1000`}
+                    {game.gameType === 'debt-dash' && `${gameState.score}/500`}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {showInstructions && (
-          <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-            <div className="max-w-md bg-white rounded-lg p-8 text-center shadow-2xl">
-              <div className="text-6xl mb-4">{game.gameType === 'lemonade-boss' ? '🍋' : game.gameType === 'pixel-budget-runner' ? '🏃' : game.gameType === 'market-tycoon' ? '📈' : '💳'}</div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-4">{game.title}</h2>
-              <p className="text-slate-600 mb-6">{game.description}</p>
-              
-              <div className="text-left space-y-3 mb-6">
-                <h3 className="font-bold text-slate-800">How to Play:</h3>
-                {game.gameType === 'pixel-budget-runner' ? (
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <p>• Use <strong>Arrow Keys</strong> or <strong>W/S</strong> to move up/down</p>
-                    <p>• <strong>Collect coins</strong> and <strong>budget items</strong> for points</p>
-                    <p>• <strong>Avoid obstacles</strong> to keep your lives</p>
-                    <p><strong>🎯 Win Goal:</strong> Score 1,000 points or survive 3 minutes!</p>
-                  </div>
-                ) : game.gameType === 'debt-dash' ? (
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <p>• Use <strong>Arrow Keys</strong> or <strong>W/S</strong> to move up/down</p>
-                    <p>• <strong>Collect payment power-ups</strong> to reduce debt</p>
-                    <p>• <strong>Avoid interest charges</strong> and fees</p>
-                    <p><strong>🎯 Win Goal:</strong> Score 500 points by managing debt!</p>
-                  </div>
-                ) : game.gameType === 'lemonade-boss' ? (
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <p>• <strong>Set prices</strong> for your lemonade</p>
-                    <p>• <strong>Manage inventory</strong> and costs</p>
-                    <p>• <strong>Adapt to weather</strong> changes</p>
-                    <p><strong>🎯 Win Goal:</strong> Earn $500 in profits!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <p>• <strong>Buy and sell</strong> investments</p>
-                    <p>• <strong>Watch market trends</strong></p>
-                    <p>• <strong>Diversify portfolio</strong> to reduce risk</p>
-                    <p><strong>🎯 Win Goal:</strong> Build a $1,000 portfolio!</p>
-                  </div>
-                )}
-              </div>
-              
-              <div className="space-y-3">
-                <Button onClick={startGame} size="lg" className="w-full bg-green-600 hover:bg-green-700">
-                  <Play className="w-5 h-5 mr-2" />
-                  Start Playing!
-                </Button>
-                <Button variant="outline" onClick={onExit} className="w-full">
-                  Back to Game Selection
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {gameState.status === 'paused' && !showInstructions && (
-          <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Game Paused</h2>
-              <Button onClick={pauseGame} size="lg">
-                <Play className="w-5 h-5 mr-2" />
-                Resume
+            
+            <div className="flex items-center gap-2">
+              {kinestheticEnabled && (
+                <Badge variant="outline" className="text-xs">
+                  Motion On
+                </Badge>
+              )}
+              {bciEnabled && (
+                <Badge variant="outline" className="text-xs">
+                  BCI Active
+                </Badge>
+              )}
+              <Button variant="outline" size="sm" onClick={pauseGame}>
+                {gameState.status === 'playing' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)}>
+                ?
+              </Button>
+              <Button variant="outline" size="sm" onClick={resetGame}>
+                <ArrowCounterClockwise className="w-4 h-4" />
               </Button>
             </div>
           </div>
-        )}
-        
-        {renderGame()}
-      </div>
 
-      {/* Progress Bar */}
-      <div className="bg-slate-800 p-2">
-        <Progress 
-          value={(180 - gameState.timeRemaining) / 180 * 100} 
-          className="h-2" 
-        />
-      </div>
-    </div>
+          {/* Game Content */}
+          <div className="flex-1 relative">
+            {/* Instructions Overlay */}
+            {(gameState.status === 'completed' || gameState.status === 'failed') && (
+              <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+                <div className="max-w-md bg-white rounded-lg p-8 text-center shadow-2xl">
+                  <div className="text-6xl mb-4">
+                    {gameState.status === 'completed' ? '🎉' : '💥'}
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4">
+                    {gameState.status === 'completed' ? 'Congratulations!' : 'Game Over'}
+                  </h2>
+                  <p className="text-slate-600 mb-6">
+                    {gameState.status === 'completed' 
+                      ? 'You successfully completed the challenge!' 
+                      : 'Don\'t worry, try again to improve your score!'}
+                  </p>
+                  
+                  <div className="bg-slate-50 rounded-lg p-4 mb-6 space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-medium">Final Score:</span>
+                      <span className="font-bold text-green-600">{gameState.score}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Money Earned:</span>
+                      <span className="font-bold text-blue-600">${gameState.money}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Level Reached:</span>
+                      <span className="font-bold text-purple-600">{gameState.level}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Button onClick={() => {
+                      const timeSpent = Date.now() - startTime
+                      onComplete(gameState.score, timeSpent, {
+                        finalMoney: gameState.money,
+                        level: gameState.level,
+                        lives: gameState.lives
+                      })
+                    }} size="lg" className="w-full bg-green-600 hover:bg-green-700">
+                      <Trophy className="w-5 h-5 mr-2" />
+                      Continue to Progress
+                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={resetGame} className="flex-1">
+                        <ArrowCounterClockwise className="w-4 h-4 mr-2" />
+                        Play Again
+                      </Button>
+                      <Button variant="outline" onClick={onExit} className="flex-1">
+                        Back to Menu
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showInstructions && (
+              <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+                <div className="max-w-md bg-white rounded-lg p-8 text-center shadow-2xl">
+                  <div className="text-6xl mb-4">{game.gameType === 'lemonade-boss' ? '🍋' : game.gameType === 'pixel-budget-runner' ? '🏃' : '💳'}</div>
+                  <h2 className="text-2xl font-bold text-slate-800 mb-4">{game.title}</h2>
+                  <p className="text-slate-600 mb-6">{game.description}</p>
+                  
+                  <div className="text-left space-y-3 mb-6">
+                    <h3 className="font-bold text-slate-800">How to Play:</h3>
+                    {game.gameType === 'pixel-budget-runner' ? (
+                      <div className="space-y-2 text-sm text-slate-600">
+                        <p>• Use <strong>Arrow Keys</strong> or <strong>W/S</strong> to move up/down</p>
+                        <p>• <strong>Collect coins</strong> and <strong>budget items</strong> for points</p>
+                        <p>• <strong>Avoid obstacles</strong> to keep your lives</p>
+                        <p><strong>🎯 Win Goal:</strong> Score 1,000 points or survive 3 minutes!</p>
+                      </div>
+                    ) : game.gameType === 'debt-dash' ? (
+                      <div className="space-y-2 text-sm text-slate-600">
+                        <p>• Use <strong>Arrow Keys</strong> or <strong>W/S</strong> to move up/down</p>
+                        <p>• <strong>Collect payment power-ups</strong> to reduce debt</p>
+                        <p>• <strong>Avoid interest charges</strong> and fees</p>
+                        <p><strong>🎯 Win Goal:</strong> Score 500 points by managing debt!</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 text-sm text-slate-600">
+                        <p>• <strong>Set prices</strong> for your lemonade</p>
+                        <p>• <strong>Manage inventory</strong> and costs</p>
+                        <p>• <strong>Adapt to weather</strong> changes</p>
+                        <p><strong>🎯 Win Goal:</strong> Earn $500 in profits!</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <Button onClick={startGame} size="lg" className="w-full bg-green-600 hover:bg-green-700">
+                      <Play className="w-5 h-5 mr-2" />
+                      Start Playing!
+                    </Button>
+                    <Button variant="outline" onClick={onExit} className="w-full">
+                      Back to Game Selection
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {gameState.status === 'paused' && !showInstructions && (
+              <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl font-bold">Game Paused</h2>
+                  <Button onClick={pauseGame} size="lg">
+                    <Play className="w-5 h-5 mr-2" />
+                    Resume
+                  </Button>
+                </div>
+              </div>
+            )}
+            
+            {renderGame()}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="bg-slate-800 p-2">
+            <Progress 
+              value={(180 - gameState.timeRemaining) / 180 * 100} 
+              className="h-2" 
+            />
+          </div>
+        </div>
+      )}
+    </>
   )
 }

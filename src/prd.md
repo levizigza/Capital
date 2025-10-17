@@ -250,6 +250,42 @@ This approach uniquely combines sophisticated game development with serious fina
 4. **Credit Score Defender** - Credit decision-based tower defense
 5. **Business Builder** - Business simulation with multi-factor decisions
 
+### Retro Finance Arcade Games (8-Bit Style Mini-Games)
+1. **🍋 Lemonade Boss** - Classic business simulation teaching:
+   - Unit cost analysis and profit margin calculation
+   - Market demand and pricing strategies
+   - Weather impact on business operations
+   - Inventory management fundamentals
+
+2. **🏃 Pixel Budget Runner** - Side-scrolling budgeting game with:
+   - Envelope method budgeting concepts
+   - Zero-based budgeting practice
+   - Real-time expense tracking
+   - Category-based financial decisions
+
+3. **📈 8-Bit Market Tycoon** - Investment diversification simulator (NEW!) with:
+   - **5 Industry Sectors**: Tech, Healthcare, Energy, Real Estate, Consumer Goods
+   - **Real-time Market Simulation**: Prices update every 5 seconds
+   - **Dynamic Market Events**: Random events affect sector prices (e.g., "Tech Boom! +20%")
+   - **Diversification Scoring**: Higher scores for spreading investments across sectors
+   - **Portfolio Management**: Buy/sell shares with live tracking
+   - **Retro Pixel Art Map**: Colorful world map aesthetic with sector locations
+   - **2-Minute Trading Sessions**: Fast-paced decision making
+   - **Risk/Return Education**: Learn about volatility and market timing
+   - **Performance Analytics**: Final portfolio value, returns, and diversification bonus
+   - Learning Objectives:
+     * Portfolio diversification strategies
+     * Risk-return tradeoff analysis
+     * Market timing and trend recognition
+     * Sector allocation and concentration risk
+     * Investment decision-making under uncertainty
+
+4. **💳 Debt Dash** - Debt repayment strategy runner teaching:
+   - Debt snowball and avalanche methods
+   - Interest rate optimization
+   - Payment prioritization strategies
+   - Debt reduction tactics
+
 ### Enhanced Features Across All Games
 - **Motion Design**: Framer Motion for smooth, purposeful animations
 - **Visual Hierarchy**: Clear information architecture following UX best practices
