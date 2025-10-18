@@ -241,92 +241,105 @@ export const RetroLemonadeStand: React.FC<RetroLemonadeProps> = ({
     const costs = { lemons: 0.50, sugar: 0.25, ice: 0.10, cups: 0.05 }
     const cost = costs[ingredient] * amount
 
-    if (gameState.money >= cost) {
-      setGameState(prev => ({
-        ...prev,
-        money: prev.money - cost,
-        ingredients: {
-          ...prev.ingredients,
-          [ingredient]: prev.ingredients[ingredient] + amount
+    setGameState(prev => {
+      if (prev.money >= cost) {
+        return {
+          ...prev,
+          money: prev.money - cost,
+          ingredients: {
+            ...prev.ingredients,
+            [ingredient]: prev.ingredients[ingredient] + amount
+          }
         }
-      }))
-    }
+      }
+      return prev
+    })
   }
 
   const simulateDay = () => {
     const { weather, temperature } = generateWeather()
     
-    // Calculate potential customers based on weather and reputation
-    let baseCustomers = 20
-    
-    if (weather === 'sunny') baseCustomers *= 1.5
-    else if (weather === 'rainy') baseCustomers *= 0.3
-    
-    if (temperature > 80) baseCustomers *= 1.3
-    else if (temperature < 60) baseCustomers *= 0.7
+    setGameState(prev => {
+      // Calculate potential customers based on weather and reputation
+      let baseCustomers = 20
+      
+      if (weather === 'sunny') baseCustomers *= 1.5
+      else if (weather === 'rainy') baseCustomers *= 0.3
+      
+      if (temperature > 80) baseCustomers *= 1.3
+      else if (temperature < 60) baseCustomers *= 0.7
 
-    baseCustomers *= (gameState.reputation / 100)
-    baseCustomers *= focusBonus // BCI focus bonus
+      baseCustomers *= (prev.reputation / 100)
+      baseCustomers *= focusBonus
 
-    const customers = Math.floor(baseCustomers + Math.random() * 10)
+      const customers = Math.floor(baseCustomers + Math.random() * 10)
 
-    // Calculate recipe quality
-    const optimalRatio = { lemons: 1.5, sugar: 1.2, ice: 1.0 }
-    const recipeScore = 1 - Math.abs(gameState.recipe.lemonsPerCup - optimalRatio.lemons) * 0.2
-                        - Math.abs(gameState.recipe.sugarPerCup - optimalRatio.sugar) * 0.2
-                        - Math.abs(gameState.recipe.icePerCup - optimalRatio.ice) * 0.2
+      // Calculate recipe quality
+      const optimalRatio = { lemons: 1.5, sugar: 1.2, ice: 1.0 }
+      const recipeScore = Math.max(0, 1 - Math.abs(prev.recipe.lemonsPerCup - optimalRatio.lemons) * 0.2
+                          - Math.abs(prev.recipe.sugarPerCup - optimalRatio.sugar) * 0.2
+                          - Math.abs(prev.recipe.icePerCup - optimalRatio.ice) * 0.2)
 
-    // Calculate demand based on price
-    const optimalPrice = 0.75
-    const priceScore = 1 - Math.abs(gameState.price - optimalPrice) / optimalPrice
+      // Calculate demand based on price with probability
+      const optimalPrice = 0.75
+      const priceScore = Math.max(0, 1 - Math.abs(prev.price - optimalPrice) / optimalPrice)
 
-    // Calculate cups that can be made
-    const cupsCanMake = Math.min(
-      gameState.ingredients.lemons / gameState.recipe.lemonsPerCup,
-      gameState.ingredients.sugar / gameState.recipe.sugarPerCup,
-      gameState.ingredients.ice / gameState.recipe.icePerCup,
-      gameState.ingredients.cups
-    )
+      // Calculate cups that can be made
+      const cupsCanMake = Math.floor(Math.min(
+        prev.ingredients.lemons / prev.recipe.lemonsPerCup,
+        prev.ingredients.sugar / prev.recipe.sugarPerCup,
+        prev.ingredients.ice / prev.recipe.icePerCup,
+        prev.ingredients.cups
+      ))
 
-    // Final sales calculation
-    const demandMultiplier = recipeScore * priceScore
-    const actualDemand = Math.floor(customers * demandMultiplier)
-    const cupsSold = Math.min(actualDemand, cupsCanMake)
+      // Final sales calculation with probability
+      const demandMultiplier = recipeScore * priceScore
+      const potentialDemand = Math.floor(customers * demandMultiplier)
+      
+      // Add randomness to sales - each customer has a probability to buy
+      let cupsSold = 0
+      for (let i = 0; i < Math.min(potentialDemand, cupsCanMake); i++) {
+        const saleProbability = demandMultiplier * 0.8 + 0.2
+        if (Math.random() < saleProbability) {
+          cupsSold++
+        }
+      }
 
-    const revenue = cupsSold * gameState.price
-    const dailyProfit = revenue
+      const revenue = cupsSold * prev.price
+      const dailyProfit = revenue
 
-    // Update reputation based on customer satisfaction
-    let reputationChange = 0
-    if (cupsSold === 0 && actualDemand > 0) {
-      reputationChange = -10 // Ran out of ingredients
-    } else if (recipeScore > 0.8) {
-      reputationChange = 5 // Great recipe
-    } else if (recipeScore < 0.4) {
-      reputationChange = -5 // Poor recipe
-    }
+      // Update reputation based on customer satisfaction
+      let reputationChange = 0
+      if (cupsSold === 0 && potentialDemand > 0) {
+        reputationChange = -10
+      } else if (recipeScore > 0.8) {
+        reputationChange = 5
+      } else if (recipeScore < 0.4) {
+        reputationChange = -5
+      }
 
-    // Consume ingredients
-    const newIngredients = {
-      lemons: gameState.ingredients.lemons - (cupsSold * gameState.recipe.lemonsPerCup),
-      sugar: gameState.ingredients.sugar - (cupsSold * gameState.recipe.sugarPerCup),
-      ice: gameState.ingredients.ice - (cupsSold * gameState.recipe.icePerCup),
-      cups: gameState.ingredients.cups - cupsSold
-    }
+      // Consume ingredients
+      const newIngredients = {
+        lemons: Math.max(0, prev.ingredients.lemons - (cupsSold * prev.recipe.lemonsPerCup)),
+        sugar: Math.max(0, prev.ingredients.sugar - (cupsSold * prev.recipe.sugarPerCup)),
+        ice: Math.max(0, prev.ingredients.ice - (cupsSold * prev.recipe.icePerCup)),
+        cups: Math.max(0, prev.ingredients.cups - cupsSold)
+      }
 
-    setGameState(prev => ({
-      ...prev,
-      weather,
-      temperature,
-      customers: actualDemand,
-      cupsSold,
-      dailyProfit,
-      totalProfit: prev.totalProfit + dailyProfit,
-      money: prev.money + revenue,
-      ingredients: newIngredients,
-      reputation: Math.max(0, Math.min(100, prev.reputation + reputationChange)),
-      day: prev.day + 1
-    }))
+      return {
+        ...prev,
+        weather,
+        temperature,
+        customers: potentialDemand,
+        cupsSold,
+        dailyProfit,
+        totalProfit: prev.totalProfit + dailyProfit,
+        money: prev.money + revenue,
+        ingredients: newIngredients,
+        reputation: Math.max(0, Math.min(100, prev.reputation + reputationChange)),
+        day: prev.day + 1
+      }
+    })
 
     setGamePhase('results')
   }

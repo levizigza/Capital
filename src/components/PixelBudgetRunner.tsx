@@ -159,20 +159,23 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
 
         if (platform.hasCoin && !platform.coinCollected) {
           platform.coinCollected = true
-          const newScore = score + 1
-          setScore(newScore)
+          setScore(prevScore => {
+            const newScore = prevScore + 1
 
-          if (newScore % 10 === 0 && newScore > lastTipScoreRef.current) {
-            const tipIndex = Math.floor(newScore / 10) % BUDGETING_TIPS.length
-            setCurrentTip(BUDGETING_TIPS[tipIndex])
-            setShowTip(true)
-            lastTipScoreRef.current = newScore
-            setTimeout(() => setShowTip(false), 3000)
-          }
+            if (newScore % 10 === 0 && newScore > lastTipScoreRef.current) {
+              const tipIndex = Math.floor(newScore / 10) % BUDGETING_TIPS.length
+              setCurrentTip(BUDGETING_TIPS[tipIndex])
+              setShowTip(true)
+              lastTipScoreRef.current = newScore
+              setTimeout(() => setShowTip(false), 3000)
+            }
 
-          if (newScore % 5 === 0) {
-            gameSpeedRef.current += 0.3
-          }
+            if (newScore % 5 === 0) {
+              gameSpeedRef.current += 0.3
+            }
+
+            return newScore
+          })
         }
       }
 
@@ -224,8 +227,8 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
     ctx.fillStyle = '#1F2937'
     ctx.fillRect(player.x + 8, player.y + 16, PLAYER_SIZE - 16, 4)
 
-    if (player.y > canvas.height || !onPlatform && player.y + PLAYER_SIZE >= GROUND_Y + 50) {
-      const timeSpent = Date.now() - startTime
+    if (player.y > canvas.height) {
+      const timeSpent = Math.round((Date.now() - startTime) / 1000)
       if (score > highScore) {
         setHighScore(score)
         localStorage.setItem('pixel-budget-runner-high-score', score.toString())

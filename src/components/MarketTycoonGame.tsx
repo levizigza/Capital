@@ -194,44 +194,47 @@ export default function MarketTycoonGame({ onComplete, onBack }: MarketTycoonGam
   }, [])
 
   const buySector = useCallback((sectorId: string) => {
-    const sector = sectors.find(s => s.id === sectorId)
-    if (!sector) return
-    
-    if (cash >= sector.pricePerShare) {
-      setCash(prev => prev - sector.pricePerShare)
-      setSectors(prev => 
-        prev.map(s => 
+    setSectors(prevSectors => {
+      const sector = prevSectors.find(s => s.id === sectorId)
+      if (!sector) return prevSectors
+      
+      if (cash >= sector.pricePerShare) {
+        setCash(prev => prev - sector.pricePerShare)
+        setTransactionHistory(prev => [...prev, {
+          type: 'buy',
+          sector: sectorId,
+          price: sector.pricePerShare,
+          time: GAME_DURATION - timeRemaining
+        }])
+        
+        return prevSectors.map(s => 
           s.id === sectorId ? { ...s, shares: s.shares + 1 } : s
         )
-      )
+      } else {
+        toast.error('Insufficient funds!')
+        return prevSectors
+      }
+    })
+  }, [cash, timeRemaining])
+
+  const sellSector = useCallback((sectorId: string) => {
+    setSectors(prevSectors => {
+      const sector = prevSectors.find(s => s.id === sectorId)
+      if (!sector || sector.shares === 0) return prevSectors
+      
+      setCash(prev => prev + sector.pricePerShare)
       setTransactionHistory(prev => [...prev, {
-        type: 'buy',
+        type: 'sell',
         sector: sectorId,
         price: sector.pricePerShare,
         time: GAME_DURATION - timeRemaining
       }])
-    } else {
-      toast.error('Insufficient funds!')
-    }
-  }, [sectors, cash, timeRemaining])
-
-  const sellSector = useCallback((sectorId: string) => {
-    const sector = sectors.find(s => s.id === sectorId)
-    if (!sector || sector.shares === 0) return
-    
-    setCash(prev => prev + sector.pricePerShare)
-    setSectors(prev => 
-      prev.map(s => 
+      
+      return prevSectors.map(s => 
         s.id === sectorId ? { ...s, shares: s.shares - 1 } : s
       )
-    )
-    setTransactionHistory(prev => [...prev, {
-      type: 'sell',
-      sector: sectorId,
-      price: sector.pricePerShare,
-      time: GAME_DURATION - timeRemaining
-    }])
-  }, [sectors, timeRemaining])
+    })
+  }, [timeRemaining])
 
   useEffect(() => {
     const timer = setInterval(() => {
