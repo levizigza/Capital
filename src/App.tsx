@@ -100,22 +100,56 @@ function App() {
 
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
-      setUserProfile(prev => ({
-        ...prev!,
-        tierProgression: {
-          currentTierId: 1,
-          tiers: initializeTiers(),
-          skillLines: {
-            cognition: 0,
-            values: 0,
-            morals: 0,
-            faith: 0
-          },
-          availableLineXP: 0
+      setUserProfile(prev => {
+        if (!prev) {
+          return {
+            name: 'Player',
+            level: 1,
+            xp: 0,
+            totalCoins: 0,
+            gamesCompleted: 0,
+            achievements: [],
+            currentStreak: 0,
+            skillsUnlocked: [],
+            preferredMode: null,
+            preferences: {
+              difficulty: 'adaptive',
+              gameTypes: [],
+              playTime: 'medium'
+            },
+            tierProgression: {
+              currentTierId: 1,
+              tiers: initializeTiers(),
+              skillLines: {
+                cognition: 0,
+                values: 0,
+                morals: 0,
+                faith: 0
+              },
+              availableLineXP: 0
+            }
+          }
         }
-      }))
+        
+        if (prev.tierProgression) return prev
+        
+        return {
+          ...prev,
+          tierProgression: {
+            currentTierId: 1,
+            tiers: initializeTiers(),
+            skillLines: {
+              cognition: 0,
+              values: 0,
+              morals: 0,
+              faith: 0
+            },
+            availableLineXP: 0
+          }
+        }
+      })
     }
-  }, [userProfile])
+  }, [userProfile?.tierProgression, setUserProfile])
 
   const handleModeSelect = (mode: LearningMode) => {
     setCurrentMode(mode)
