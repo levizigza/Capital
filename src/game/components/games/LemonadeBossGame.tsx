@@ -101,14 +101,14 @@ export function LemonadeBossGame({ onComplete, onExit }: LemonadeBossGameProps) 
 
     const customerTimer = setInterval(() => {
       const now = Date.now()
-      if (now - lastCustomerTimeRef.current >= CUSTOMER_INTERVAL) {
+      if (now - lastCustomerTimeRef.current >= CUSTOMER_INTERVAL && canMakeCup) {
         spawnCustomer()
         lastCustomerTimeRef.current = now
       }
     }, 100)
 
     return () => clearInterval(customerTimer)
-  }, [gameState, canMakeCup, lemons, sugar])
+  }, [gameState, canMakeCup])
 
   useEffect(() => {
     if (gameState !== 'playing') return
