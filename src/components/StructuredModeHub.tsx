@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { 
@@ -144,25 +144,36 @@ export default function StructuredModeHub({
     }
   ]
 
-  const getGameStats = (gameId: string): {
-    timesPlayed: number
-    highScore: number
-    lastPlayed: string | null
-    avgScore: number
-  } => {
-    const gameHistory = (gameScores || []).filter((s) => s.gameId === gameId)
-    return {
-      timesPlayed: gameHistory.length,
-      highScore: gameHistory.length > 0 ? Math.max(...gameHistory.map((s) => s.score)) : 0,
-      lastPlayed: gameHistory.length > 0 ? gameHistory[gameHistory.length - 1].date : null,
-      avgScore: gameHistory.length > 0 ? Math.round(gameHistory.reduce((sum, s) => sum + s.score, 0) / gameHistory.length) : 0
-    }
-  }
+  const gameStatsMap = useMemo(() => {
+    const statsMap = new Map<string, {
+      timesPlayed: number
+      highScore: number
+      lastPlayed: string | null
+      avgScore: number
+    }>()
+
+    availableGames.forEach(game => {
+      const gameHistory = (gameScores || []).filter((s) => s.gameId === game.id)
+      statsMap.set(game.id, {
+        timesPlayed: gameHistory.length,
+        highScore: gameHistory.length > 0 ? Math.max(...gameHistory.map((s) => s.score)) : 0,
+        lastPlayed: gameHistory.length > 0 ? gameHistory[gameHistory.length - 1].date : null,
+        avgScore: gameHistory.length > 0 ? Math.round(gameHistory.reduce((sum, s) => sum + s.score, 0) / gameHistory.length) : 0
+      })
+    })
+
+    return statsMap
+  }, [gameScores])
 
   const sortedGames = useMemo(() => {
     const gamesWithStats = availableGames.map((game) => ({
       ...game,
-      stats: getGameStats(game.id)
+      stats: gameStatsMap.get(game.id) || {
+        timesPlayed: 0,
+        highScore: 0,
+        lastPlayed: null,
+        avgScore: 0
+      }
     }))
 
     return gamesWithStats.sort((a, b) => {
@@ -187,7 +198,7 @@ export default function StructuredModeHub({
 
       return sortOrder === 'asc' ? compareValue : -compareValue
     })
-  }, [sortField, sortOrder, gameScores])
+  }, [gameStatsMap, sortField, sortOrder])
 
   const skillCategoryProgress = useMemo(() => {
     const categories = {

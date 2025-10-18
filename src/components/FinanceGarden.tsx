@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plant, Drop, Sun, CloudRain, Flower, Tree, Sparkle,
@@ -130,63 +130,79 @@ const plants: PlantData[] = [
 ]
 
 export default function FinanceGarden({ userProfile, gameScores = [], onGameSelect }: FinanceGardenProps) {
-  const getPlantGrowth = (gameId: string): number => {
-    if (!gameScores || gameScores.length === 0) return 0
-    
-    const scores = gameScores.filter(s => s.gameId === gameId)
-    if (scores.length === 0) return 0
-    
-    const bestScore = Math.max(...scores.map(s => s.score))
-    const completions = scores.length
-    
-    return Math.min(100, (bestScore / 10) + (completions * 5))
-  }
+  const [hoveredPlant, setHoveredPlant] = useState<string | null>(null)
 
-  const getPlantSize = (growth: number): number => {
+  const plantGrowthMap = useMemo(() => {
+    const growthMap = new Map<string, number>()
+    
+    if (!gameScores || gameScores.length === 0) {
+      plants.forEach(plant => growthMap.set(plant.gameId, 0))
+      return growthMap
+    }
+    
+    plants.forEach(plant => {
+      const scores = gameScores.filter(s => s.gameId === plant.gameId)
+      if (scores.length === 0) {
+        growthMap.set(plant.gameId, 0)
+      } else {
+        const bestScore = Math.max(...scores.map(s => s.score))
+        const completions = scores.length
+        growthMap.set(plant.gameId, Math.min(100, (bestScore / 10) + (completions * 5)))
+      }
+    })
+    
+    return growthMap
+  }, [gameScores])
+
+  const getPlantGrowth = useCallback((gameId: string): number => {
+    return plantGrowthMap.get(gameId) || 0
+  }, [plantGrowthMap])
+
+  const getPlantSize = useCallback((growth: number): number => {
     if (growth === 0) return 0
     if (growth < 25) return 40
     if (growth < 50) return 60
     if (growth < 75) return 80
     return 100
-  }
+  }, [])
 
-  const getPlantOpacity = (growth: number): number => {
+  const getPlantOpacity = useCallback((growth: number): number => {
     if (growth === 0) return 0.2
     if (growth < 25) return 0.5
     if (growth < 50) return 0.7
     if (growth < 75) return 0.85
     return 1
-  }
+  }, [])
 
-  const overallHealth = Math.round(
-    plants.reduce((sum, plant) => sum + getPlantGrowth(plant.gameId), 0) / Math.max(1, plants.length)
-  )
+  const overallHealth = useMemo(() => {
+    return Math.round(
+      plants.reduce((sum, plant) => sum + (plantGrowthMap.get(plant.gameId) || 0), 0) / Math.max(1, plants.length)
+    )
+  }, [plantGrowthMap])
 
-  const getBackgroundGradient = () => {
+  const getBackgroundGradient = useCallback(() => {
     if (overallHealth < 20) return 'from-stone-300 via-stone-200 to-stone-100'
     if (overallHealth < 40) return 'from-green-200/30 via-emerald-100/30 to-teal-100/30'
     if (overallHealth < 60) return 'from-green-300/50 via-emerald-200/50 to-teal-200/50'
     if (overallHealth < 80) return 'from-green-400/70 via-emerald-300/70 to-teal-300/70'
     return 'from-green-500/90 via-emerald-400/90 to-teal-400/90'
-  }
+  }, [overallHealth])
 
-  const getSkyColor = () => {
+  const getSkyColor = useCallback(() => {
     if (overallHealth < 20) return 'from-gray-300 to-gray-200'
     if (overallHealth < 40) return 'from-sky-200 to-blue-100'
     if (overallHealth < 60) return 'from-sky-300 to-blue-200'
     if (overallHealth < 80) return 'from-sky-400 to-blue-300'
     return 'from-sky-500 to-blue-400'
-  }
+  }, [overallHealth])
 
-  const getEncouragingMessage = () => {
+  const getEncouragingMessage = useCallback(() => {
     if (overallHealth < 20) return "🌱 Plant your first seeds - your financial garden awaits!"
     if (overallHealth < 40) return "🌿 Your financial garden is taking root!"
     if (overallHealth < 60) return "🌸 Beautiful growth! Keep nurturing your skills!"
     if (overallHealth < 80) return "🌳 Your financial garden is flourishing!"
     return "🌺 Magnificent! Your financial garden is in full bloom!"
-  }
-
-  const [hoveredPlant, setHoveredPlant] = useState<string | null>(null)
+  }, [overallHealth])
 
   return (
     <div className="relative w-full h-full min-h-[500px] sm:min-h-[600px] overflow-hidden rounded-xl sm:rounded-2xl">

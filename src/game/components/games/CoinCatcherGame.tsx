@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -50,8 +50,10 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
   const itemIdRef = useRef(0)
   const textIdRef = useRef(0)
   const lastSpawnRef = useRef(0)
+  const playerXRef = useRef(50)
+  const comboRef = useRef(0)
 
-  const getGameConfig = () => {
+  const config = useMemo(() => {
     switch (userTier) {
       case 'elementary':
         return {
@@ -98,9 +100,15 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
           ]
         }
     }
-  }
+  }, [userTier])
 
-  const config = getGameConfig()
+  useEffect(() => {
+    playerXRef.current = playerX
+  }, [playerX])
+
+  useEffect(() => {
+    comboRef.current = combo
+  }, [combo])
 
   const addFloatingText = useCallback((x: number, y: number, text: string, type: 'gain' | 'loss') => {
     const newText: FloatingText = {
@@ -191,10 +199,11 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
         const playerWidth = 14
         const collision = 
           item.y > 80 && item.y < 95 &&
-          Math.abs(item.x - playerX) < playerWidth / 2
+          Math.abs(item.x - playerXRef.current) < playerWidth / 2
 
         if (collision) {
-          const comboBonus = combo > 0 ? Math.floor(combo * 0.1 * item.value) : 0
+          const currentCombo = comboRef.current
+          const comboBonus = currentCombo > 0 ? Math.floor(currentCombo * 0.1 * item.value) : 0
           
           if (item.type === 'coin') {
             const totalGain = item.value + comboBonus
@@ -203,8 +212,8 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
             setItemsCaught(prev => prev + 1)
             addFloatingText(item.x, item.y, `+$${totalGain}`, 'gain')
             
-            if (combo > 0 && combo % 5 === 0) {
-              toast.success(`🔥 ${combo}x Combo!`, { duration: 1500 })
+            if (currentCombo > 0 && currentCombo % 5 === 0) {
+              toast.success(`🔥 ${currentCombo}x Combo!`, { duration: 1500 })
             }
           } else {
             setScore(prev => Math.max(0, prev - item.value))
@@ -232,7 +241,7 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
     })
 
     gameLoopRef.current = requestAnimationFrame(gameLoop)
-  }, [gameState, spawnItem, playerX, combo, addFloatingText])
+  }, [gameState, spawnItem, addFloatingText])
 
   useEffect(() => {
     if (gameState !== 'playing') return

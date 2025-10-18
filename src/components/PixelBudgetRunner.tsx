@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Play, Trophy, Coins, ArrowLeft } from '@phosphor-icons/react'
@@ -42,7 +43,7 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'gameover'>('menu')
   const [score, setScore] = useState(0)
-  const [highScore, setHighScore] = useState(0)
+  const [highScore, setHighScore] = useKV<number>('pixel-budget-runner-high-score', 0)
   const [currentTip, setCurrentTip] = useState<string>('')
   const [showTip, setShowTip] = useState(false)
   const [startTime, setStartTime] = useState(0)
@@ -64,14 +65,7 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
   const PLATFORM_HEIGHT = 16
   const GROUND_Y = 400
 
-  useEffect(() => {
-    const stored = localStorage.getItem('pixel-budget-runner-high-score')
-    if (stored) {
-      setHighScore(parseInt(stored))
-    }
-  }, [])
-
-  const initGame = () => {
+  const initGame = useCallback(() => {
     playerRef.current = {
       x: 100,
       y: 300,
@@ -96,16 +90,16 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
     setCurrentTip('')
     setShowTip(false)
     setStartTime(Date.now())
-  }
+  }, [])
 
-  const jump = () => {
+  const jump = useCallback(() => {
     if (gameState === 'playing' && !playerRef.current.isJumping) {
       playerRef.current.velocityY = JUMP_FORCE
       playerRef.current.isJumping = true
     }
-  }
+  }, [gameState, JUMP_FORCE])
 
-  const checkCollision = (player: Player, platform: Platform): boolean => {
+  const checkCollision = useCallback((player: Player, platform: Platform): boolean => {
     return (
       player.x + PLAYER_SIZE > platform.x &&
       player.x < platform.x + platform.width &&
@@ -113,7 +107,7 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
       player.y + PLAYER_SIZE <= platform.y + PLATFORM_HEIGHT + 10 &&
       player.velocityY >= 0
     )
-  }
+  }, [PLAYER_SIZE, PLATFORM_HEIGHT])
 
   const gameLoop = (): void => {
     const canvas = canvasRef.current
@@ -229,9 +223,8 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
 
     if (player.y > canvas.height) {
       const timeSpent = Math.round((Date.now() - startTime) / 1000)
-      if (score > highScore) {
+      if (score > (highScore || 0)) {
         setHighScore(score)
-        localStorage.setItem('pixel-budget-runner-high-score', score.toString())
       }
       setGameState('gameover')
       onComplete(score * 10, { timeSpent })
@@ -309,10 +302,10 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
               </div>
             </div>
 
-            {highScore > 0 && (
+            {(highScore || 0) > 0 && (
               <div className="flex items-center justify-center gap-2 text-accent font-semibold">
                 <Trophy weight="fill" className="w-6 h-6" />
-                <span>High Score: ${highScore}</span>
+                <span>High Score: ${highScore || 0}</span>
               </div>
             )}
 
@@ -368,7 +361,7 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
                 <p className="text-5xl font-bold text-primary">${score}</p>
               </div>
 
-              {score > highScore && (
+              {score > (highScore || 0) && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -381,10 +374,10 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
                 </motion.div>
               )}
 
-              {highScore > 0 && score < highScore && (
+              {(highScore || 0) > 0 && score < (highScore || 0) && (
                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
                   <Trophy weight="fill" className="w-5 h-5" />
-                  <span>High Score: ${highScore}</span>
+                  <span>High Score: ${highScore || 0}</span>
                 </div>
               )}
 

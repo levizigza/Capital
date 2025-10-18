@@ -167,7 +167,7 @@ function App() {
     window.history.pushState(newState, '', window.location.href)
   }, [])
 
-  const completeGame = (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
+  const completeGame = useCallback((gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
     const newScore: GameScore = {
       gameId: gameId,
       score: score,
@@ -228,9 +228,9 @@ function App() {
         currentStreak: prevProfile.currentStreak + 1
       }
     })
-  }
+  }, [userProfile?.preferences.difficulty, currentMode, setGameScores, setUserProfile])
 
-  const handleQuestComplete = (tierId: number, questId: string): void => {
+  const handleQuestComplete = useCallback((tierId: number, questId: string): void => {
     setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
 
@@ -295,9 +295,9 @@ function App() {
         }
       }
     })
-  }
+  }, [setUserProfile])
 
-  const handleAllocateLineXP = (line: SkillLine, amount: number): void => {
+  const handleAllocateLineXP = useCallback((line: SkillLine, amount: number): void => {
     setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
       
@@ -315,7 +315,7 @@ function App() {
         }
       }
     })
-  }
+  }, [setUserProfile])
 
   if (!currentMode) {
     return (
