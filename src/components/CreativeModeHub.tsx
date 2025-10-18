@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { 
@@ -419,9 +419,9 @@ export default function CreativeModeHub({
     }
   }
 
-  useState(() => {
+  useEffect(() => {
     initializeChallenges()
-  })
+  }, [])
 
   const handleGameExit = () => {
     setSelectedGame(null)

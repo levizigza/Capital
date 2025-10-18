@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plant, Drop, Sun, CloudRain, Flower, Tree, Sparkle,
@@ -183,7 +184,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
     return "🌺 Magnificent! Your financial garden is in full bloom!"
   }
 
-  const [hoveredPlant, setHoveredPlant] = React.useState<string | null>(null)
+  const [hoveredPlant, setHoveredPlant] = useState<string | null>(null)
 
   return (
     <div className="relative w-full h-full min-h-[600px] overflow-hidden rounded-2xl">

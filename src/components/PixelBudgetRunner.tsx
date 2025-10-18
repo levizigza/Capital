@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Play, Trophy, Coins } from '@phosphor-icons/react'
+import { Play, Trophy, Coins, ArrowLeft } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Platform {
@@ -32,7 +32,13 @@ const BUDGETING_TIPS = [
   "Zero-based doesn't mean zero in the bank!"
 ]
 
-export default function PixelBudgetRunner({ onGameComplete }: { onGameComplete?: (score: number, timeSpent: number) => void }) {
+interface PixelBudgetRunnerProps {
+  onComplete: (score: number, additionalData?: any) => void
+  onExit: () => void
+  userTier?: 'elementary' | 'middle' | 'adult'
+}
+
+export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'middle' }: PixelBudgetRunnerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'gameover'>('menu')
   const [score, setScore] = useState(0)
@@ -219,15 +225,13 @@ export default function PixelBudgetRunner({ onGameComplete }: { onGameComplete?:
     ctx.fillRect(player.x + 8, player.y + 16, PLAYER_SIZE - 16, 4)
 
     if (player.y > canvas.height || !onPlatform && player.y + PLAYER_SIZE >= GROUND_Y + 50) {
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000)
+      const timeSpent = Date.now() - startTime
       if (score > highScore) {
         setHighScore(score)
         localStorage.setItem('pixel-budget-runner-high-score', score.toString())
       }
       setGameState('gameover')
-      if (onGameComplete) {
-        onGameComplete(score * 10, timeSpent)
-      }
+      onComplete(score * 10, { timeSpent })
       return
     }
 
@@ -309,14 +313,25 @@ export default function PixelBudgetRunner({ onGameComplete }: { onGameComplete?:
               </div>
             )}
 
-            <Button
-              size="lg"
-              className="w-full text-lg py-6"
-              onClick={startGame}
-            >
-              <Play weight="fill" className="w-6 h-6 mr-2" />
-              Start Game
-            </Button>
+            <div className="space-y-3">
+              <Button
+                size="lg"
+                className="w-full text-lg py-6"
+                onClick={startGame}
+              >
+                <Play weight="fill" className="w-6 h-6 mr-2" />
+                Start Game
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full"
+                onClick={onExit}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Hub
+              </Button>
+            </div>
           </Card>
         </motion.div>
       </div>
@@ -392,7 +407,7 @@ export default function PixelBudgetRunner({ onGameComplete }: { onGameComplete?:
                 size="lg"
                 variant="outline"
                 className="w-full"
-                onClick={() => window.history.back()}
+                onClick={onExit}
               >
                 Back to Hub
               </Button>
@@ -407,20 +422,26 @@ export default function PixelBudgetRunner({ onGameComplete }: { onGameComplete?:
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-4xl space-y-4">
         <div className="flex justify-between items-center">
-          <div className="bg-card rounded-lg px-6 py-3 shadow-md border">
-            <p className="text-sm text-muted-foreground">Score</p>
-            <p className="text-3xl font-bold text-primary flex items-center gap-2">
-              <Coins weight="fill" className="w-6 h-6" />
-              ${score}
-            </p>
-          </div>
+          <Button variant="outline" size="sm" onClick={onExit}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Exit
+          </Button>
+          <div className="flex gap-4">
+            <div className="bg-card rounded-lg px-6 py-3 shadow-md border">
+              <p className="text-sm text-muted-foreground">Score</p>
+              <p className="text-3xl font-bold text-primary flex items-center gap-2">
+                <Coins weight="fill" className="w-6 h-6" />
+                ${score}
+              </p>
+            </div>
 
-          <div className="bg-card rounded-lg px-6 py-3 shadow-md border">
-            <p className="text-sm text-muted-foreground">High Score</p>
-            <p className="text-2xl font-bold text-accent flex items-center gap-2">
-              <Trophy weight="fill" className="w-5 h-5" />
-              ${highScore}
-            </p>
+            <div className="bg-card rounded-lg px-6 py-3 shadow-md border">
+              <p className="text-sm text-muted-foreground">High Score</p>
+              <p className="text-2xl font-bold text-accent flex items-center gap-2">
+                <Trophy weight="fill" className="w-5 h-5" />
+                ${highScore}
+              </p>
+            </div>
           </div>
         </div>
 
