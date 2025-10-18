@@ -145,7 +145,7 @@ function App() {
         }
       })
     }
-  }, [])
+  }, [userProfile?.tierProgression, setUserProfile])
 
   const handleModeSelect = (mode: LearningMode): void => {
     setCurrentMode(mode)
