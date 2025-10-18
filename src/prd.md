@@ -77,28 +77,48 @@
   - "🌳 Your financial garden is flourishing!"
   - "🌺 Magnificent! Your financial garden is in full bloom!"
 
-**Structured Mode: Analytics Dashboard** (Enhanced Professional Edition)
-- Functionality: Professional data-focused dashboard with advanced analytics and visualizations
+**Structured Mode: Analytics Dashboard** (Enhanced Professional Edition - February 2025)
+- Functionality: Professional multi-tab dashboard with comprehensive analytics and bilingual support (EN/FR)
 - Purpose: Serve analytical minds who prefer hard numbers, statistics, and data-driven insights
 - Visual Elements:
-  - **Dashboard Tab**: 4 KPI cards (Games Completed, Avg Score, Time Invested, Current Streak)
-  - **Games Grid**: Sortable game cards showing name, description, skill focus, last played, high score, and times played
-  - **Statistics Tab**: 
-    * Line chart showing score progression over time
+  - **Persistent Toolbar**: Home 🏠, Switch to Creative 🎮, Profile 👤, Language Toggle 🌐
+  - **Overview Tab**: 
+    * 4 KPI cards (Games Completed, Avg Score, Time Invested, Current Streak)
+    * Progress to next level with visual progress bar
+    * Experience Points, Total Coins, Skills Unlocked display
+    * Recent activity feed with last 5 games played
+    * Skill Progress indicators by category (Budgeting, Investing, Debt, Profit)
+  - **Analytics Tab**: 
+    * Line chart showing score progression over time (Recharts)
     * Bar chart comparing performance by skill category
     * Pie chart showing category distribution
-  - **Leaderboard**: Top 10 high scores with medals and detailed metrics
-  - **Skill Category Progress**: Four financial domains (Budgeting, Investing, Debt Management, Profit Calculation) with progress bars
-  - **Dark Mode Toggle**: Professional light/dark theme switcher
-  - **Sort & Filter**: Multiple sort options (name, last played, high score, times played)
-  - **Responsive Charts**: Built with Recharts for interactive data visualization
+    * All charts with descriptive aria-labels for accessibility
+  - **Goals Tab**:
+    * Create and track financial goals with targets and deadlines
+    * Visual progress bars for each goal
+    * Goal categories (Budgeting, Saving, Investing, Debt Reduction)
+    * Active vs. Completed goals separation
+    * KV-stored persistent goal data
+  - **Achievements Tab**:
+    * Unlocked vs. Locked achievements display
+    * Rarity system (Common, Rare, Epic, Legendary)
+    * Progress tracking for locked achievements
+    * Category-based organization (Financial, Gameplay, Social)
+    * Color-coded badges by rarity
+  - **Insights Tab**:
+    * AI-powered personalized insights based on performance data
+    * Four insight categories: Strengths, Improvements, Recommendations, Milestones
+    * Priority system (High, Medium, Low)
+    * Actionable recommendations with CTA buttons
 - Design Approach:
   - Minimalist, clean interface with focus on data clarity
-  - Professional color scheme (blues, purples, with accent colors)
+  - Professional color scheme (Primary #2546B0, Secondary #39B36E, Accent #F7931E)
+  - 12-column responsive grid (Mobile-first, tablet-optimized, desktop-enhanced)
   - Card-based layout with consistent spacing
   - Smooth animations using Framer Motion
-  - High contrast for readability
+  - High contrast for readability (WCAG AA compliant)
   - Touch-friendly 44px minimum touch targets
+  - Bilingual support (English/French) with language toggle
 - Features:
   - Overall completion percentage tracker
   - Total time spent across all games
@@ -107,6 +127,10 @@
   - Category-based skill assessment
   - Medal system for top performances
   - Real-time chart updates as data changes
+  - Shared color tokens for cross-mode cohesion
+  - Responsive charts with Recharts library
+  - Pseudonymous ID support (no personally identifiable data)
+  - Sandbox mode for safe experimentation
 - Progression: View analytics → Identify improvement areas → Play targeted games → Track measurable progress → Achieve mastery
 - Success Criteria: Users make data-informed decisions, complete more games per session, show measurable skill improvement, achieve personal bests
 

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useKV } from '@github/spark/hooks'
 import { User } from '@phosphor-icons/react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -6,6 +7,7 @@ import { toast } from 'sonner'
 import { ProfessionalGameHub } from '@/game/components/ProfessionalGameHub'
 import type { GameScore } from '@/App'
 import type { SkillLine } from '@/data/tiers'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 import StructuredModeDashboard from '@/components/StructuredModeDashboard'
 
 import type { UserProfile } from '@/App'
