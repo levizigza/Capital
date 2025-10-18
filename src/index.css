@@ -250,6 +250,122 @@ img, video, canvas, svg {
     0 1px 0 oklch(1 0 0 / 0.05) inset;
 }
 
+/* Accessibility Focus Indicators */
+[data-focus-style="standard"] *:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+[data-focus-style="enhanced"] *:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px oklch(from var(--ring) l c h / 0.2);
+}
+
+[data-focus-style="high-visibility"] *:focus-visible {
+  outline: 4px solid oklch(0.65 0.22 350);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 8px oklch(0.65 0.22 350 / 0.3);
+  animation: focusPulseHighVis 1s ease-in-out infinite;
+}
+
+@keyframes focusPulseHighVis {
+  0%, 100% {
+    box-shadow: 0 0 0 8px oklch(0.65 0.22 350 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(0.65 0.22 350 / 0.5);
+  }
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.25 0 0);
+  --border: oklch(0 0 0);
+  --input: oklch(0 0 0);
+}
+
+.high-contrast button,
+.high-contrast a,
+.high-contrast [role="button"] {
+  border: 2px solid oklch(0 0 0);
+}
+
+/* Color Blind Mode Adjustments */
+[data-colorblind-mode="protanopia"] {
+  filter: url(#protanopia-filter);
+}
+
+[data-colorblind-mode="deuteranopia"] {
+  filter: url(#deuteranopia-filter);
+}
+
+[data-colorblind-mode="tritanopia"] {
+  filter: url(#tritanopia-filter);
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: 125%;
+}
+
+.large-text h1 {
+  font-size: 2.5rem;
+}
+
+.large-text h2 {
+  font-size: 2rem;
+}
+
+.large-text h3 {
+  font-size: 1.75rem;
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Skip to Main Content */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 4px 4px;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
 .gradient-primary {
   background: linear-gradient(135deg, 
     oklch(0.35 0.12 240) 0%, 
