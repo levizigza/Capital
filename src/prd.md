@@ -2,21 +2,333 @@
 
 ## Core Purpose & Success
 
-**Mission Statement**: Create an adaptive financial learning platform that respects different learning preferences by offering two distinct experiences: a visually rich narrative-driven "Finance Garden" mode and a data-focused analytical dashboard mode, both powered by the same engaging mini-games. **NEW: The Financial Archetype System personalizes every facet of gameplay, UI, and learning path based on the user's natural finance-and-learning personality type.**
+**Mission Statement**: Create an adaptive financial learning platform that respects different learning preferences by offering two distinct experiences: a visually rich narrative-driven "Finance Garden" mode and a data-focused analytical dashboard mode, both powered by the same engaging mini-games. **NEW: The Financial Archetype System personalizes every facet of gameplay, UI, and learning path based on the user's natural finance-and-learning personality type. LATEST: Twin-Personality Dashboard combines playful engagement with serious analytics in one harmonious view.**
 
 **Success Indicators**: 
 - User completion rates across all mini-games > 75%
 - Average play session time > 10 minutes  
 - Daily return rate > 40%
 - Skill progression across financial concepts
-- **NEW: Archetype quiz completion rate > 80%**
-- **NEW: Personalized content engagement > 60% improvement**
+- Archetype quiz completion rate > 80%
+- Personalized content engagement > 60% improvement
+- **NEW: Dashboard engagement time > 5 minutes**
+- **NEW: Mode switching rate < 20% (users comfortable in their chosen mode)**
 
 **Experience Qualities**: 
 1. **Adaptive** - Respects user preferences with two distinct modes
 2. **Engaging** - Narrative-driven (Creative) or data-driven (Structured) based on choice
 3. **Educational** - Same high-quality learning outcomes through different presentation styles
 4. **Personalized** - Financial Archetype System tailors UI, quests, and difficulty to each user
+5. **Harmonious** - Twin-personality dashboard balances fun and seriousness intentionally
+
+## Latest Updates (Twin-Personality Dashboard - December 2024)
+
+### Structured Mode Dashboard Redesign
+
+**Twin-Personality Layout Concept:**
+The new Structured Mode dashboard divides the screen into two balanced sections that communicate both gameplay fun and analytic seriousness:
+
+**Left Half - Playful Side (50-60% width):**
+- Vibrant colors, dynamic charts, animated badges
+- Gamified summary with user avatar animation
+- XP wheel + progress rings with shimmer effects
+- Motivational quotes and reward notifications
+- Recent achievements display
+- Bright "Play Games" CTA button
+- Uses analogous/triadic color scheme:
+  - Primary: `oklch(0.80 0.15 145)` - Growth Green
+  - Secondary: `oklch(0.75 0.18 35)` - Energy Orange
+  - Accent: `oklch(0.70 0.20 350)` - Creativity Pink
+- Soft gradient backgrounds (mint → peach)
+- Micro-motion transitions (ease-out 200ms)
+
+**Right Half - Serious Side (40-50% width):**
+- Muted colors, minimalist graphs, plain typography
+- Analytics dashboard with performance metrics
+- Budget trend lines and spending analysis
+- Tabs: Overview / Performance / Insights
+- Recent games table with simple grid lines
+- KPIs: games completed, avg score, time played, streak
+- Professional color scheme:
+  - Primary: `oklch(0.35 0.12 240)` - Trust Navy
+  - Secondary: `oklch(0.45 0.15 155)` - Data Green  
+  - Accent: `oklch(0.75 0.14 85)` - Highlight Yellow
+- Clean backgrounds (neutral white-grey)
+- Structured layouts with consistent spacing
+
+**Adaptive Ratio System:**
+- Dynamo/Blaze archetypes: 60% playful, 40% serious
+- Steel/Tempo archetypes: 40% playful, 60% serious
+- Smooth 300ms transitions when ratio changes
+
+**Visual Harmony:**
+- Center gradient blend (soft-edge diagonal)
+- Seamless transition between sections
+- Unified navigation and typography
+- Consistent shadcn component usage
+- WCAG 2.1 AA contrast maintained (≥4.5:1)
+
+**Responsive Behavior:**
+- Mobile: Vertical stack (playful cards → analytics cards)
+- Desktop ≥1280px: 2-column split (50:50 or archetype-adjusted)
+
+### Enhanced Archetype Quiz
+
+**Navigation Improvements:**
+- Fixed all "Next," "Previous," and "Submit" button logic
+- Visual progress indicator showing "Question X of 10" with 0-100% bar
+- Smooth page transitions (300ms fade with x-offset)
+- No question skipping or repeating bugs
+- Proper state management with Record<number, number> for answers
+
+**Keyboard Navigation:**
+- Tab/Shift+Tab: Navigate between UI elements
+- Enter/Space: Advance to next question (when answered)
+- Arrow Left: Go back to previous question
+- 1-4 keys: Quick answer selection
+- All interactions have visible focus indicators
+
+**Screen Reader Optimization:**
+- Descriptive ARIA labels on all buttons
+- Progress announcements
+- Question and answer text properly structured
+- Result cards with semantic HTML
+
+**Results Page Enhancement:**
+- Animated confetti celebration on completion
+- Large archetype icon with color-coded background
+- Primary and secondary archetype display
+- Strengths and growth zones clearly listed
+- "Perfect For You" learning preferences
+- Three action buttons:
+  - "Begin Your Journey" (primary CTA)
+  - "Restart Quiz" (with ArrowsClockwise icon)
+  - "Return Home" (secondary action)
+
+### Visual Game Cards for Creative Mode
+
+**New GameCard Component:**
+- Large, colorful illustrated cards for each mini-game
+- Category-specific gradient backgrounds:
+  - Savings: emerald-400 → green-500
+  - Investing: blue-400 → indigo-500
+  - Credit: purple-400 → pink-500
+  - Business: orange-400 → red-500
+  - General: cyan-400 → blue-500
+
+**Card Features:**
+- 132px header with gradient background
+- SVG illustrations matching category theme:
+  - Savings: Piggy bank icon
+  - Investing: Trend line graph
+  - Credit: Credit card graphic
+  - Business: Bar chart columns
+  - General: Star badge
+- Large game icon (4xl size) in top-left
+- Difficulty badge in top-right corner
+- Game title, description (line-clamped to 2 lines)
+- Time estimate and category icons at bottom
+- Lock overlay for unavailable games
+
+**Hover Animations:**
+- translateY(-8px) + scale(1.02) on hover
+- scale(0.98) on tap/click
+- Pulsing glow ring animation (0-4px spread)
+- Gradient overlay (primary/10 to secondary/10)
+- Box shadow transitions (shadow-lg → shadow-2xl)
+
+**Locked State:**
+- 60% opacity
+- Lock icon (48px) centered
+- Black/50 overlay
+- cursor: not-allowed
+- No hover animations
+
+### Practical Images for Structured Mode
+
+**Widget Icons:**
+Each analytics widget now includes a relevant vector icon at the top:
+- Savings metrics: PiggyBank icon (20px)
+- Budget analysis: Wallet icon (20px)
+- Achievements: Trophy icon (20px)  
+- Spending categories: Receipt icon (20px)
+- Performance: ChartLine icon (24px)
+- Insights: Brain icon (20px)
+
+**Icon Style:**
+- Phosphor Icons library (consistent with app)
+- Color-matched to section theme
+- 16-20px size for compact info
+- 24-32px size for section headers
+- Proper spacing (gap-2 for horizontal layouts)
+
+**Animated Graph Updates:**
+- Progress bars: shimmer effect (2s infinite)
+- Stats: fade-in-scale animation (300ms)
+- Numbers: count-up animation on first render
+- Charts: draw-in effect for lines/bars (500ms ease-out)
+
+### Global Navigation Cohesion
+
+**Persistent Header (Structured Mode):**
+- Home button (House icon)
+- Mode indicator (ChartLine icon + "Structured Mode")
+- Switch to Creative Mode button (GameController icon)
+- User avatar (gradient circle with initial)
+
+**Persistent HUD (Creative Mode):**
+- Home button (House icon)
+- Switch to Structured button (ChartLine icon)
+- Quests, Mini Games, Profile buttons
+- Always visible, never blocked by game screens
+
+**Navigation Flow:**
+```
+Mode Selection → Archetype Quiz → Dashboard (chosen mode)
+↓
+Dashboard ↔ Games ↔ Profile ↔ Settings
+↓
+Mode Switch → Opposite Dashboard
+```
+
+**No Orphaned Routes:**
+- All back buttons properly configured
+- Browser back/forward supported via history API
+- State persists across mode switches
+- No broken links or 404 states
+
+### Design Token Updates
+
+**New Color Variables (index.css):**
+```css
+/* Playful Side Colors */
+--fun-primary: oklch(0.80 0.15 145);
+--fun-secondary: oklch(0.75 0.18 35);
+--fun-accent: oklch(0.70 0.20 350);
+--fun-bg: oklch(0.98 0.01 145);
+
+/* Serious Side Colors */
+--pro-primary: oklch(0.35 0.12 240);
+--pro-secondary: oklch(0.45 0.15 155);
+--pro-accent: oklch(0.75 0.14 85);
+--pro-bg: oklch(0.98 0.005 240);
+```
+
+**Animation Timings:**
+```typescript
+quick: 150-200ms     // Button press, immediate feedback
+normal: 200-300ms    // State changes, toggles
+moderate: 300-500ms  // Page transitions, modals
+```
+
+**Touch Targets:**
+- Minimum 44px (desktop)
+- Minimum 48px (mobile)
+- High-importance buttons: 56px
+
+### Testing Checklist
+
+**Quiz Navigation:**
+- [x] Next button advances question
+- [x] Previous button goes back
+- [x] Submit shows results page
+- [x] Progress bar updates correctly
+- [x] No question skipping
+- [x] No question repeating
+- [x] Keyboard navigation works
+- [x] Screen reader compatible
+- [x] Mobile touch works
+- [x] Confetti plays on results
+
+**Dashboard Layout:**
+- [x] Playful/Serious split renders correctly
+- [x] Adaptive ratio based on archetype
+- [x] Responsive on mobile (vertical stack)
+- [x] Responsive on tablet (adjusts ratio)
+- [x] Responsive on desktop (50:50 or adjusted)
+- [x] All stats display correctly
+- [x] All animations smooth (60fps)
+- [x] WCAG AA contrast maintained
+
+**Game Cards:**
+- [x] Cards render with illustrations
+- [x] Hover animations work
+- [x] Locked state displays properly
+- [x] Click handler fires correctly
+- [x] Category colors applied
+- [x] Difficulty badges shown
+- [x] Time/category icons visible
+
+**Overall Navigation:**
+- [x] Mode switch button works
+- [x] Home button returns to selection
+- [x] Profile button opens dialog
+- [x] No broken links
+- [x] Browser back/forward works
+- [x] State persists correctly
+
+### Performance Optimizations
+
+**Dashboard:**
+- `useMemo` for stats calculations
+- `useMemo` for game filtering/sorting
+- Memoized archetype-based ratio calculation
+- Debounced ratio transitions (300ms)
+
+**Game Cards:**
+- Lazy-loaded illustrations (SVG inline)
+- Optimized hover animations (transform only)
+- Will-change hints for frequent animations
+- Intersection observer for off-screen cards (future)
+
+**Quiz:**
+- Throttled answer selection (100ms)
+- Debounced navigation (300ms)
+- Memoized question rendering
+- Efficient state updates (Record vs Array)
+
+### Accessibility Enhancements
+
+**Quiz:**
+- All buttons have descriptive aria-labels
+- Progress announced to screen readers
+- Keyboard shortcuts documented
+- Focus visible on all interactive elements
+- High contrast maintained throughout
+
+**Dashboard:**
+- Landmark regions (main, aside, nav)
+- Semantic HTML (article, section, header)
+- Alt text on all decorative elements
+- Skip links for keyboard users (Alt+H, Alt+S)
+
+**Game Cards:**
+- Card role="button" for accessibility
+- Aria-label describes game purpose
+- Locked state announced to screen readers
+- Focus indicators on keyboard nav
+
+### Known Issues & Future Work
+
+**Completed:**
+- ✅ Fixed quiz navigation bugs
+- ✅ Added progress indicator to quiz
+- ✅ Implemented keyboard navigation
+- ✅ Added confetti to results
+- ✅ Created visual game cards
+- ✅ Added practical icons to dashboard
+- ✅ Implemented twin-personality layout
+- ✅ Fixed all navigation flows
+
+**Future Enhancements:**
+- [ ] Add more custom illustrations per game (pixel art style)
+- [ ] Implement dashboard widget drag-and-drop reordering
+- [ ] Add interactive onboarding tour
+- [ ] Create dashboard comparison view (current vs past week)
+- [ ] Add achievement animations when unlocked
+- [ ] Implement sound effects (with mute option)
+- [ ] Add haptic feedback on mobile
+- [ ] Create dashboard print/export feature
 
 ## Financial Archetype System (New - 2025)
 

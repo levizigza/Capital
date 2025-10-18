@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, Check, Sparkle } from '@phosphor-icons/react'
+import { ArrowLeft, ArrowRight, Check, Sparkle, ArrowsClockwise } from '@phosphor-icons/react'
+import { Confetti } from '@/components/Confetti'
 import {
   ARCHETYPE_QUESTIONS,
   ARCHETYPES,
@@ -21,51 +22,106 @@ interface ArchetypeQuizProps {
 
 export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<number[][]>(Array(ARCHETYPE_QUESTIONS.length).fill([]))
+  const [answers, setAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   const progress = ((currentQuestion + 1) / ARCHETYPE_QUESTIONS.length) * 100
 
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (showResults) return
+      
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (selectedAnswer !== null && !isTransitioning) {
+          e.preventDefault()
+          handleNext()
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        handleBack()
+      } else if (e.key >= '1' && e.key <= '4') {
+        const answerIndex = parseInt(e.key) - 1
+        const question = ARCHETYPE_QUESTIONS[currentQuestion]
+        if (answerIndex < question.answers.length) {
+          handleAnswerSelect(answerIndex)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [currentQuestion, selectedAnswer, isTransitioning, showResults])
+
   const handleAnswerSelect = (answerIndex: number) => {
     setSelectedAnswer(answerIndex)
-    const newAnswers = [...answers]
-    newAnswers[currentQuestion] = [answerIndex]
+    const newAnswers = { ...answers }
+    newAnswers[currentQuestion] = answerIndex
     setAnswers(newAnswers)
   }
 
   const handleNext = () => {
-    if (currentQuestion < ARCHETYPE_QUESTIONS.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
-      setSelectedAnswer(answers[currentQuestion + 1][0] || null)
-    } else {
-      setShowResults(true)
-    }
+    if (isTransitioning) return
+    if (selectedAnswer === null) return
+
+    setIsTransitioning(true)
+    setTimeout(() => {
+      if (currentQuestion < ARCHETYPE_QUESTIONS.length - 1) {
+        setCurrentQuestion(currentQuestion + 1)
+        setSelectedAnswer(answers[currentQuestion + 1] ?? null)
+      } else {
+        setShowResults(true)
+      }
+      setIsTransitioning(false)
+    }, 300)
   }
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
+    if (isTransitioning) return
+    if (currentQuestion === 0) return
+
+    setIsTransitioning(true)
+    setTimeout(() => {
       setCurrentQuestion(currentQuestion - 1)
-      setSelectedAnswer(answers[currentQuestion - 1][0] || null)
-    }
+      setSelectedAnswer(answers[currentQuestion - 1] ?? null)
+      setIsTransitioning(false)
+    }, 300)
   }
 
   const handleComplete = () => {
-    const scores = calculateArchetypeScores(answers)
+    const answersArray: number[][] = Array(ARCHETYPE_QUESTIONS.length).fill([]).map((_, idx) => 
+      answers[idx] !== undefined ? [answers[idx]] : []
+    )
+    
+    const scores = calculateArchetypeScores(answersArray)
     const primaryArchetype = getDominantArchetype(scores)
     const secondaryArchetype = getSecondaryArchetype(scores, primaryArchetype)
     onComplete(primaryArchetype, secondaryArchetype)
   }
 
+  const handleRestartQuiz = () => {
+    setCurrentQuestion(0)
+    setAnswers({})
+    setSelectedAnswer(null)
+    setShowResults(false)
+    setIsTransitioning(false)
+  }
+
   if (showResults) {
-    const scores = calculateArchetypeScores(answers)
+    const answersArray: number[][] = Array(ARCHETYPE_QUESTIONS.length).fill([]).map((_, idx) => 
+      answers[idx] !== undefined ? [answers[idx]] : []
+    )
+    const scores = calculateArchetypeScores(answersArray)
     const primaryArchetype = getDominantArchetype(scores)
     const secondaryArchetype = getSecondaryArchetype(scores, primaryArchetype)
     const primaryData = ARCHETYPES[primaryArchetype]
     const secondaryData = secondaryArchetype ? ARCHETYPES[secondaryArchetype] : null
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4">
+      <>
+        <Confetti trigger={showResults} />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -179,20 +235,40 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               </motion.div>
             </CardContent>
 
-            <CardFooter className="flex justify-center pt-8">
+            <CardFooter className="flex flex-col gap-4 pt-8">
               <Button
                 size="lg"
-                className="px-8 text-lg"
+                className="w-full px-8 text-lg"
                 onClick={handleComplete}
                 style={{ backgroundColor: primaryData.color.primary }}
               >
                 Begin Your Journey
                 <ArrowRight className="ml-2" weight="bold" />
               </Button>
+              <div className="flex gap-3 w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={handleRestartQuiz}
+                >
+                  <ArrowsClockwise className="mr-2" size={16} />
+                  Restart Quiz
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => window.location.reload()}
+                >
+                  Return Home
+                </Button>
+              </div>
             </CardFooter>
           </Card>
         </motion.div>
       </div>
+      </>
     )
   }
 

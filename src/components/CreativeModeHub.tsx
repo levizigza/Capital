@@ -30,6 +30,7 @@ import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 import type { GameScore } from '@/App'
 import { TierProgressionView } from '@/components/TierProgressionView'
 import type { SkillLine } from '@/data/tiers'
+import GameCard from '@/components/GameCard'
 import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 import type { Tier } from '@/data/tiers'
@@ -636,7 +637,7 @@ export default function CreativeModeHub({
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {miniGames.map((game, index) => {
                 const completions = gameScores.filter(s => s.gameId === game.id).length
                 const bestScore = gameScores
@@ -650,63 +651,17 @@ export default function CreativeModeHub({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="bg-white/90 border-2 border-green-200 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group h-full">
-                      <CardHeader>
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                            {game.icon}
-                          </div>
-                          <Badge variant={
-                            game.difficulty === 'Easy' ? 'default' : 
-                            game.difficulty === 'Medium' ? 'secondary' : 
-                            'destructive'
-                          }>
-                            {game.difficulty}
-                          </Badge>
-                        </div>
-                        <CardTitle className="text-green-900">{game.title}</CardTitle>
-                        <CardDescription className="text-gray-600">
-                          {game.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Clock className="w-4 h-4" />
-                          <span>{game.estimatedTime}</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {game.skills.map(skill => (
-                            <Badge key={skill} variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        {completions > 0 && (
-                          <div className="pt-3 border-t border-gray-200">
-                            <div className="flex items-center justify-between text-sm">
-                              <div className="flex items-center gap-2 text-green-700">
-                                <Trophy className="w-4 h-4" weight="fill" />
-                                <span className="font-medium">Best: {bestScore}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <Target className="w-4 h-4" />
-                                <span>{completions} plays</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <Button 
-                          onClick={() => handleGameStart(game.id)}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md"
-                        >
-                          <Sparkle className="w-4 h-4 mr-2" weight="fill" />
-                          Play Now
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    <GameCard
+                      id={game.id}
+                      title={game.title}
+                      description={game.description}
+                      icon={game.icon}
+                      difficulty={game.difficulty}
+                      estimatedTime={game.estimatedTime}
+                      category={game.type}
+                      isLocked={false}
+                      onSelect={() => handleGameStart(game.id)}
+                    />
                   </motion.div>
                 )
               })}
@@ -746,11 +701,6 @@ export default function CreativeModeHub({
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {adventureGames.map((game, index) => {
-                const completions = gameScores.filter(s => s.gameId === game.id).length
-                const bestScore = gameScores
-                  .filter(s => s.gameId === game.id)
-                  .reduce((max, s) => Math.max(max, s.score), 0)
-
                 return (
                   <motion.div
                     key={game.id}
@@ -758,63 +708,17 @@ export default function CreativeModeHub({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="bg-white/90 border-2 border-amber-200 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group h-full">
-                      <CardHeader>
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-                            {game.icon}
-                          </div>
-                          <Badge variant={
-                            game.difficulty === 'Easy' ? 'default' : 
-                            game.difficulty === 'Medium' ? 'secondary' : 
-                            'destructive'
-                          }>
-                            {game.difficulty}
-                          </Badge>
-                        </div>
-                        <CardTitle className="text-amber-900">{game.title}</CardTitle>
-                        <CardDescription className="text-gray-600">
-                          {game.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Clock className="w-4 h-4" />
-                          <span>{game.estimatedTime}</span>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {game.skills.map(skill => (
-                            <Badge key={skill} variant="outline" className="text-xs bg-amber-50 border-amber-200 text-amber-700">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        {completions > 0 && (
-                          <div className="pt-3 border-t border-gray-200">
-                            <div className="flex items-center justify-between text-sm">
-                              <div className="flex items-center gap-2 text-amber-700">
-                                <Trophy className="w-4 h-4" weight="fill" />
-                                <span className="font-medium">Best: {bestScore}</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-gray-600">
-                                <Target className="w-4 h-4" />
-                                <span>{completions} plays</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        <Button 
-                          onClick={() => handleGameStart(game.id)}
-                          className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-md"
-                        >
-                          <Rocket className="w-4 h-4 mr-2" weight="fill" />
-                          Start Adventure
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    <GameCard
+                      id={game.id}
+                      title={game.title}
+                      description={game.description}
+                      icon={game.icon}
+                      difficulty={game.difficulty}
+                      estimatedTime={game.estimatedTime}
+                      category={game.type}
+                      isLocked={false}
+                      onSelect={() => handleGameStart(game.id)}
+                    />
                   </motion.div>
                 )
               })}
