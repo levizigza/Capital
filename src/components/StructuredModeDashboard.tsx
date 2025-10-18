@@ -1,18 +1,16 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Sparkle, ChartLine, TrendUp, Target, Trophy, GameController,
-  Coins, Clock, Fire, Lightning, Brain, ChartBar, Wallet,
-  ArrowsClockwise, House, PiggyBank, Receipt
+import { 
+  ChartLine, GameController, House, User, Trophy, Target, 
+  Clock, Fire, Coins, TrendUp, Lightning, CheckCircle,
+  Calendar, Brain
 } from '@phosphor-icons/react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PracticalIcon } from '@/components/PracticalIcon'
 import type { UserProfile, GameScore } from '@/App'
-import { ARCHETYPES } from '@/data/archetype-questions'
 
 interface StructuredModeDashboardProps {
   userProfile: UserProfile
@@ -27,520 +25,374 @@ export default function StructuredModeDashboard({
   onModeSwitch,
   onOpenProfile
 }: StructuredModeDashboardProps) {
-  const [layoutRatio, setLayoutRatio] = useState(50)
-  
-  const archetype = userProfile?.archetype?.primary ? ARCHETYPES[userProfile.archetype.primary] : ARCHETYPES.tempo
-
-  const playfulRatio = useMemo(() => {
-    if (!userProfile?.archetype?.primary) return 50
-    const archetypeId = userProfile.archetype.primary
-    if (archetypeId === 'dynamo' || archetypeId === 'blaze') return 60
-    if (archetypeId === 'steel' || archetypeId === 'tempo') return 40
-    return 50
-  }, [userProfile?.archetype?.primary])
-
   const stats = useMemo(() => {
-    const totalGames = gameScores.length
-    const avgScore = totalGames > 0 
-      ? Math.round(gameScores.reduce((sum, g) => sum + g.score, 0) / totalGames)
+    const total = gameScores.length
+    const avgScore = total > 0 
+      ? Math.round(gameScores.reduce((sum, g) => sum + g.score, 0) / total) 
       : 0
     const totalTime = gameScores.reduce((sum, g) => sum + g.timeSpent, 0)
+    const avgTime = total > 0 ? Math.round(totalTime / total / 1000) : 0
     
-    return {
-      totalGames,
-      avgScore,
-      totalTime: Math.floor(totalTime / 60000),
-      streak: userProfile.currentStreak || 0,
-      level: userProfile.level || 1,
-      xp: userProfile.xp || 0,
-      coins: userProfile.totalCoins || 0,
-      nextLevelXP: ((userProfile.level || 1) * 100)
-    }
-  }, [gameScores, userProfile])
-
-  const recentGames = useMemo(() => {
-    return [...gameScores]
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5)
+    return { total, avgScore, avgTime, totalTime }
   }, [gameScores])
 
+  const progressToNextLevel = useMemo(() => {
+    const currentLevelXP = (userProfile.level - 1) * 100
+    const nextLevelXP = userProfile.level * 100
+    const progress = ((userProfile.xp - currentLevelXP) / 100) * 100
+    return Math.min(Math.max(progress, 0), 100)
+  }, [userProfile.level, userProfile.xp])
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onModeSwitch}
-              className="gap-2"
-            >
-              <House size={20} />
-              Home
-            </Button>
-            <div className="flex items-center gap-2">
-              <ChartLine className="text-primary" size={24} weight="bold" />
-              <h1 className="text-xl font-bold">Structured Mode</h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onModeSwitch}
-              className="gap-2"
-            >
-              <GameController size={20} />
-              Creative Mode
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onOpenProfile}
-              className="gap-2"
-            >
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground text-sm font-bold">
-                {userProfile.name?.[0] || 'U'}
+    <div className="mode-structured min-h-screen mode-transition-enter">
+      <div className="mode-indicator structured" />
+      
+      {/* Professional Navigation Header */}
+      <header className="sticky top-0 z-50 bg-structured-card border-b border-structured-border backdrop-blur-sm bg-opacity-95">
+        <div className="container-pro">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-6">
+              <button
+                onClick={onModeSwitch}
+                className="flex items-center gap-2 text-sm font-medium text-structured-fg hover:text-structured-primary transition-colors"
+                aria-label="Return to mode selection"
+              >
+                <House size={20} weight="fill" />
+                <span className="hidden sm:inline">Home</span>
+              </button>
+              
+              <div className="flex items-center gap-2 text-sm text-structured-muted-fg">
+                <ChartLine size={18} weight="fill" />
+                <span className="font-medium">Structured Mode</span>
               </div>
-            </Button>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onModeSwitch}
+                className="gap-2"
+              >
+                <GameController size={18} weight="fill" />
+                <span className="hidden sm:inline">Switch to Creative</span>
+              </Button>
+              
+              <button
+                onClick={onOpenProfile}
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-structured-primary to-structured-secondary flex items-center justify-center text-white font-semibold text-sm shadow-sm hover:shadow-md transition-all"
+                aria-label="Open profile"
+              >
+                {userProfile.name?.[0] || 'U'}
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="container px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 relative">
+      {/* Main Dashboard Content */}
+      <main className="container-pro py-8">
+        {/* Hero Stats Section */}
+        <section className="mb-8">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
-            style={{
-              gridColumn: `span ${Math.round((playfulRatio / 100) * 2)} / span ${Math.round((playfulRatio / 100) * 2)}`
-            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="relative rounded-3xl overflow-hidden p-8 bg-gradient-to-br from-[oklch(0.80_0.15_145)] to-[oklch(0.75_0.18_35)] text-white shadow-2xl">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-20"></div>
-              
-              <div className="relative space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-3xl font-bold mb-1">Level {stats.level}</h2>
-                    <p className="text-white/80 text-sm">Keep up the amazing work! 🎉</p>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--structured-fg)' }}>
+              Financial Progress Dashboard
+            </h1>
+            <p className="text-lg" style={{ color: 'var(--structured-muted-fg)' }}>
+              Track your journey to financial mastery
+            </p>
+          </motion.div>
+        </section>
+
+        {/* KPI Cards Grid */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            { 
+              icon: Trophy, 
+              label: 'Games Completed', 
+              value: stats.total, 
+              color: 'oklch(0.58 0.18 145)',
+              bgColor: 'oklch(0.58 0.18 145 / 0.08)'
+            },
+            { 
+              icon: Target, 
+              label: 'Average Score', 
+              value: `${stats.avgScore}%`, 
+              color: 'oklch(0.60 0.14 240)',
+              bgColor: 'oklch(0.60 0.14 240 / 0.08)'
+            },
+            { 
+              icon: Clock, 
+              label: 'Avg. Time', 
+              value: `${stats.avgTime}s`, 
+              color: 'oklch(0.68 0.16 80)',
+              bgColor: 'oklch(0.68 0.16 80 / 0.08)'
+            },
+            { 
+              icon: Fire, 
+              label: 'Current Streak', 
+              value: userProfile.currentStreak, 
+              color: 'oklch(0.65 0.22 35)',
+              bgColor: 'oklch(0.65 0.22 35 / 0.08)'
+            }
+          ].map((stat, idx) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1, duration: 0.3 }}
+            >
+              <Card className="pro-card hover:border-structured-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <div 
+                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                      style={{ 
+                        backgroundColor: stat.bgColor,
+                        color: stat.color
+                      }}
+                    >
+                      <stat.icon size={20} weight="fill" />
+                    </div>
                   </div>
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                    className="text-5xl"
-                  >
-                    {archetype.icon}
-                  </motion.div>
+                  <div className="text-3xl font-bold mb-1" style={{ color: 'var(--structured-fg)' }}>
+                    {stat.value}
+                  </div>
+                  <div className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                    {stat.label}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </section>
+
+        {/* Level Progress */}
+        <motion.section
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Card className="pro-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightning size={20} weight="fill" style={{ color: 'var(--structured-primary)' }} />
+                    Level Progress
+                  </CardTitle>
+                  <CardDescription className="mt-1">
+                    Level {userProfile.level} • {userProfile.xp} XP
+                  </CardDescription>
                 </div>
+                <Badge 
+                  variant="secondary" 
+                  className="text-sm px-3 py-1"
+                  style={{
+                    backgroundColor: 'var(--structured-muted)',
+                    color: 'var(--structured-fg)'
+                  }}
+                >
+                  {Math.round(progressToNextLevel)}% to Level {userProfile.level + 1}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Progress 
+                value={progressToNextLevel} 
+                className="h-3"
+              />
+              <div className="flex justify-between text-xs mt-2" style={{ color: 'var(--structured-muted-fg)' }}>
+                <span>Level {userProfile.level}</span>
+                <span>Level {userProfile.level + 1}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.section>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">XP Progress</span>
-                    <span className="font-bold">{stats.xp} / {stats.nextLevelXP}</span>
-                  </div>
-                  <div className="relative">
-                    <Progress 
-                      value={(stats.xp / stats.nextLevelXP) * 100} 
-                      className="h-3 bg-white/20"
-                    />
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                      animate={{ x: ['-100%', '200%'] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                      style={{ borderRadius: 'inherit' }}
-                    />
-                  </div>
-                </div>
+        {/* Tabbed Content */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="achievements">Achievements</TabsTrigger>
+              <TabsTrigger value="insights">Insights</TabsTrigger>
+            </TabsList>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center"
-                  >
-                    <Fire size={28} weight="fill" className="mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{stats.streak}</div>
-                    <div className="text-xs text-white/80">Day Streak</div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center"
-                  >
-                    <Coins size={28} weight="fill" className="mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{stats.coins}</div>
-                    <div className="text-xs text-white/80">Coins</div>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center"
-                  >
-                    <Trophy size={28} weight="fill" className="mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{stats.totalGames}</div>
-                    <div className="text-xs text-white/80">Games</div>
-                  </motion.div>
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Sparkle size={20} weight="fill" />
-                    <span className="font-semibold">Recent Achievements</span>
-                  </div>
-                  {userProfile.achievements && userProfile.achievements.length > 0 ? (
-                    <div className="space-y-2">
-                      {userProfile.achievements.slice(0, 3).map((achievement, idx) => (
-                        <motion.div
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          className="flex items-center gap-2 text-sm bg-white/10 rounded-lg p-2"
-                        >
-                          <Trophy size={16} weight="fill" />
-                          <span>{achievement}</span>
-                        </motion.div>
-                      ))}
+            <TabsContent value="overview" className="space-y-6">
+              {/* Recent Activity */}
+              <Card className="pro-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar size={20} weight="fill" />
+                    Recent Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {gameScores.length === 0 ? (
+                    <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                      <GameController size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
+                      <p className="text-sm">No games played yet</p>
+                      <p className="text-xs mt-1">Start playing to see your progress here</p>
                     </div>
                   ) : (
-                    <p className="text-sm text-white/70">Complete games to unlock achievements!</p>
-                  )}
-                </div>
-
-                <Button
-                  size="lg"
-                  className="w-full bg-white text-primary hover:bg-white/90 font-bold text-lg py-6 rounded-2xl shadow-lg"
-                  onClick={onModeSwitch}
-                >
-                  <GameController size={24} weight="fill" className="mr-2" />
-                  Play Mini-Games
-                </Button>
-              </div>
-            </div>
-
-            <Card className="border-2 shadow-lg overflow-hidden bg-gradient-to-br from-white to-[oklch(0.98_0.01_145)]">
-              <CardHeader className="bg-gradient-to-r from-[oklch(0.85_0.15_145)] to-[oklch(0.80_0.18_35)] text-white">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Lightning size={24} weight="fill" />
-                    Quick Stats
-                  </CardTitle>
-                  <div className="w-12 h-12 opacity-60">
-                    <PracticalIcon type="coins" animate={true} />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <motion.div 
-                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.55_0.18_145)]/20 hover:shadow-md transition-shadow"
-                    whileHover={{ y: -4 }}
-                  >
-                    <div className="w-12 h-12 mx-auto mb-2">
-                      <PracticalIcon type="bar-chart" animate={false} />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">{stats.avgScore}</div>
-                    <div className="text-xs text-muted-foreground">Avg Score</div>
-                  </motion.div>
-                  <motion.div 
-                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.70_0.18_35)]/20 hover:shadow-md transition-shadow"
-                    whileHover={{ y: -4 }}
-                  >
-                    <Clock size={32} className="mx-auto mb-2 text-[oklch(0.70_0.18_35)]" weight="fill" />
-                    <div className="text-2xl font-bold text-foreground">{stats.totalTime}m</div>
-                    <div className="text-xs text-muted-foreground">Time Played</div>
-                  </motion.div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <motion.div 
-                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.80_0.12_35)]/20 hover:shadow-md transition-shadow"
-                    whileHover={{ y: -4 }}
-                  >
-                    <div className="w-12 h-12 mx-auto mb-2">
-                      <PracticalIcon type="piggy-bank" animate={false} />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">{userProfile.totalCoins}</div>
-                    <div className="text-xs text-muted-foreground">Savings</div>
-                  </motion.div>
-                  <motion.div 
-                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-purple-300/20 hover:shadow-md transition-shadow"
-                    whileHover={{ y: -4 }}
-                  >
-                    <div className="w-12 h-12 mx-auto mb-2">
-                      <PracticalIcon type="trophy" animate={false} />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">{userProfile.achievements.length}</div>
-                    <div className="text-xs text-muted-foreground">Achievements</div>
-                  </motion.div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="space-y-6"
-            style={{
-              gridColumn: `span ${2 - Math.round((playfulRatio / 100) * 2)} / span ${2 - Math.round((playfulRatio / 100) * 2)}`
-            }}
-          >
-            <Card className="border shadow-md">
-              <CardHeader className="border-b bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-primary">
-                      <ChartLine size={24} weight="bold" />
-                      Analytics Dashboard
-                    </CardTitle>
-                    <CardDescription>Track your financial learning progress</CardDescription>
-                  </div>
-                  <div className="w-16 h-16">
-                    <PracticalIcon type="bar-chart" animate={true} />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="performance">Performance</TabsTrigger>
-                    <TabsTrigger value="insights">Insights</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="overview" className="space-y-6">
-                    <div className="flex justify-center mb-4">
-                      <div className="w-20 h-20">
-                        <PracticalIcon type="trophy" animate={true} />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Target size={16} />
-                          <span>Games Completed</span>
-                        </div>
-                        <motion.div 
-                          className="text-3xl font-bold text-foreground"
-                          initial={{ opacity: 0, scale: 0.5 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          {stats.totalGames}
-                        </motion.div>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <TrendUp size={16} />
-                          <span>Average Score</span>
-                        </div>
-                        <motion.div 
-                          className="text-3xl font-bold text-foreground"
-                          initial={{ opacity: 0, scale: 0.5 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5, delay: 0.1 }}
-                        >
-                          {stats.avgScore}
-                        </motion.div>
-                      </div>
-                    </div>
-
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Progress to Level {stats.level + 1}</span>
-                        <span className="font-mono text-xs">{Math.round((stats.xp / stats.nextLevelXP) * 100)}%</span>
-                      </div>
-                      <motion.div
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.8, delay: 0.3 }}
-                        style={{ transformOrigin: 'left' }}
-                      >
-                        <Progress value={(stats.xp / stats.nextLevelXP) * 100} className="h-2" />
-                      </motion.div>
-                    </div>
-
-                    <div className="pt-4 border-t space-y-3">
-                      <h4 className="font-semibold text-sm flex items-center gap-2">
-                        <PiggyBank size={18} />
-                        Key Metrics
-                      </h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        <motion.div 
-                          className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg"
-                          whileHover={{ scale: 1.02 }}
-                          transition={{ duration: 0.2 }}
+                      {gameScores.slice(-5).reverse().map((score, idx) => (
+                        <div 
+                          key={idx}
+                          className="flex items-center justify-between p-3 rounded-lg hover:bg-structured-muted/50 transition-colors"
                         >
-                          <Wallet size={20} className="text-primary" />
-                          <div>
-                            <div className="text-xs text-muted-foreground">Total Coins</div>
-                            <div className="font-bold">{stats.coins}</div>
-                          </div>
-                        </motion.div>
-                        <motion.div 
-                          className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg"
-                          whileHover={{ scale: 1.02 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <Fire size={20} className="text-orange-500" />
-                          <div>
-                            <div className="text-xs text-muted-foreground">Streak</div>
-                            <div className="font-bold">{stats.streak} days</div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="performance" className="space-y-6">
-                    <div className="flex justify-center mb-4">
-                      <div className="w-20 h-20">
-                        <PracticalIcon type="trend-up" animate={true} />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-sm flex items-center gap-2">
-                          <Receipt size={18} />
-                          Recent Games
-                        </h4>
-                        <Badge variant="outline">{recentGames.length} games</Badge>
-                      </div>
-
-                      {recentGames.length > 0 ? (
-                        <div className="space-y-2">
-                          {recentGames.map((game, idx) => (
-                            <motion.div
-                              key={idx}
-                              className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border hover:border-primary/50 transition-colors"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: idx * 0.1 }}
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-10 h-10 rounded-lg flex items-center justify-center"
+                              style={{ backgroundColor: 'var(--structured-muted)' }}
                             >
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{game.gameId}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {new Date(game.date).toLocaleDateString()}
-                                </div>
+                              <CheckCircle size={20} weight="fill" style={{ color: 'var(--structured-primary)' }} />
+                            </div>
+                            <div>
+                              <div className="font-medium text-sm" style={{ color: 'var(--structured-fg)' }}>
+                                {score.gameId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                               </div>
-                              <div className="text-right">
-                                <div className="font-bold text-primary">{game.score}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {Math.floor(game.timeSpent / 1000)}s
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <GameController size={48} className="mx-auto mb-3 opacity-30" />
-                          <p className="text-sm">No games played yet</p>
-                          <p className="text-xs mt-1">Start playing to see your performance!</p>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="insights" className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Brain size={20} className="text-primary" />
-                        <h4 className="font-semibold text-sm">Personalized Insights</h4>
-                      </div>
-
-                      <div className="space-y-3">
-                        {stats.totalGames > 0 ? (
-                          <>
-                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                              <div className="flex items-start gap-3">
-                                <TrendUp size={20} className="text-blue-600 mt-0.5" />
-                                <div>
-                                  <div className="font-semibold text-sm text-blue-900">Strong Start!</div>
-                                  <p className="text-xs text-blue-700 mt-1">
-                                    You've completed {stats.totalGames} games with an average score of {stats.avgScore}.
-                                  </p>
-                                </div>
+                              <div className="text-xs" style={{ color: 'var(--structured-muted-fg)' }}>
+                                {new Date(score.date).toLocaleDateString()}
                               </div>
                             </div>
-
-                            {stats.streak > 2 && (
-                              <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                                <div className="flex items-start gap-3">
-                                  <Fire size={20} className="text-orange-600 mt-0.5" weight="fill" />
-                                  <div>
-                                    <div className="font-semibold text-sm text-orange-900">Consistency Wins!</div>
-                                    <p className="text-xs text-orange-700 mt-1">
-                                      Your {stats.streak}-day streak shows great dedication to learning.
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-
-                            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                              <div className="flex items-start gap-3">
-                                <Target size={20} className="text-green-600 mt-0.5" />
-                                <div>
-                                  <div className="font-semibold text-sm text-green-900">Next Milestone</div>
-                                  <p className="text-xs text-green-700 mt-1">
-                                    You're {stats.nextLevelXP - stats.xp} XP away from Level {stats.level + 1}!
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="text-center py-8 text-muted-foreground">
-                            <Brain size={48} className="mx-auto mb-3 opacity-30" />
-                            <p className="text-sm">No insights yet</p>
-                            <p className="text-xs mt-1">Play some games to get personalized insights!</p>
                           </div>
-                        )}
-                      </div>
+                          <div className="text-right">
+                            <div className="font-semibold" style={{ color: 'var(--structured-primary)' }}>
+                              {score.score}%
+                            </div>
+                            <div className="text-xs" style={{ color: 'var(--structured-muted-fg)' }}>
+                              {Math.round(score.timeSpent / 1000)}s
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
 
-            <Card className="border shadow-md">
-              <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="flex items-center gap-2 text-primary text-base">
-                  <ArrowsClockwise size={20} weight="bold" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    className="h-auto flex-col gap-2 p-4"
-                    onClick={onModeSwitch}
-                  >
-                    <GameController size={24} />
-                    <span className="text-xs">Play Games</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="h-auto flex-col gap-2 p-4"
-                    onClick={onOpenProfile}
-                  >
-                    <Trophy size={24} />
-                    <span className="text-xs">View Profile</span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              {/* Start Playing CTA */}
+              <Card className="pro-card" style={{ borderColor: 'var(--structured-primary)', borderWidth: '2px' }}>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--structured-fg)' }}>
+                        Ready to improve your skills?
+                      </h3>
+                      <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                        Play mini-games to earn XP and level up your financial knowledge
+                      </p>
+                    </div>
+                    <Button 
+                      className="btn-primary whitespace-nowrap"
+                      size="lg"
+                      onClick={onModeSwitch}
+                    >
+                      <GameController size={20} weight="fill" className="mr-2" />
+                      Play Games
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="achievements">
+              <Card className="pro-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy size={20} weight="fill" />
+                    Your Achievements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                    <Trophy size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
+                    <p className="text-sm">No achievements unlocked yet</p>
+                    <p className="text-xs mt-1">Complete challenges to earn badges</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="insights">
+              <Card className="pro-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain size={20} weight="fill" />
+                    Performance Insights
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {stats.total > 0 ? (
+                      <>
+                        <div className="section-muted p-4">
+                          <div className="flex items-start gap-3">
+                            <TrendUp size={20} weight="fill" style={{ color: 'var(--structured-primary)' }} className="mt-0.5" />
+                            <div>
+                              <h4 className="font-medium mb-1" style={{ color: 'var(--structured-fg)' }}>
+                                Strong Performance
+                              </h4>
+                              <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                                Your average score of {stats.avgScore}% shows good financial decision-making skills.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="section-muted p-4">
+                          <div className="flex items-start gap-3">
+                            <Coins size={20} weight="fill" style={{ color: 'oklch(0.68 0.16 80)' }} className="mt-0.5" />
+                            <div>
+                              <h4 className="font-medium mb-1" style={{ color: 'var(--structured-fg)' }}>
+                                Consistent Progress
+                              </h4>
+                              <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                                You've completed {stats.total} game{stats.total !== 1 ? 's' : ''} with a {userProfile.currentStreak}-day streak. Keep it up!
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                        <Brain size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
+                        <p className="text-sm">No insights available yet</p>
+                        <p className="text-xs mt-1">Play games to unlock personalized insights</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </motion.section>
+      </main>
+
+      {/* Professional Footer */}
+      <footer className="border-t border-structured-border mt-16" style={{ backgroundColor: 'var(--structured-card)' }}>
+        <div className="container-pro py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+            <div>© 2024 FinanceQuest Pro. All rights reserved.</div>
+            <div className="flex items-center gap-6">
+              <a href="#" className="hover:text-structured-primary transition-colors">Privacy</a>
+              <a href="#" className="hover:text-structured-primary transition-colors">Terms</a>
+              <a href="#" className="hover:text-structured-primary transition-colors">Help</a>
+            </div>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   )
 }

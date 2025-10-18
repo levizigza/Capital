@@ -8,87 +8,110 @@
 }
 
 :root {
-  /* Enhanced Color System - Based on Color Theory Principles */
-  --background: oklch(0.99 0.005 240);
-  --background-subtle: oklch(0.97 0.008 240);
-  --foreground: oklch(0.18 0.015 240);
-  --foreground-muted: oklch(0.42 0.010 240);
+  /* STRUCTURED MODE - Professional/Award-Winning Colors (Awwwards Style) */
+  --structured-bg: oklch(0.98 0.002 240);
+  --structured-fg: oklch(0.20 0.010 240);
+  --structured-card: oklch(1.0 0.0 0);
+  --structured-card-fg: oklch(0.20 0.010 240);
+  --structured-primary: oklch(0.32 0.14 245);
+  --structured-primary-fg: oklch(0.98 0.002 245);
+  --structured-secondary: oklch(0.42 0.12 220);
+  --structured-secondary-fg: oklch(0.98 0.002 220);
+  --structured-accent: oklch(0.68 0.15 80);
+  --structured-accent-fg: oklch(0.20 0.010 80);
+  --structured-muted: oklch(0.95 0.005 240);
+  --structured-muted-fg: oklch(0.48 0.008 240);
+  --structured-border: oklch(0.90 0.004 240);
   
-  /* Cards with elevated hierarchy */
+  /* CREATIVE MODE - Playful/Coolmath4kids Style */
+  --creative-bg: oklch(0.95 0.04 120);
+  --creative-fg: oklch(0.25 0.08 120);
+  --creative-card: oklch(0.98 0.03 120);
+  --creative-card-fg: oklch(0.25 0.08 120);
+  --creative-primary: oklch(0.58 0.20 145);
+  --creative-primary-fg: oklch(0.98 0.03 145);
+  --creative-secondary: oklch(0.65 0.22 35);
+  --creative-secondary-fg: oklch(0.98 0.02 35);
+  --creative-accent: oklch(0.60 0.24 280);
+  --creative-accent-fg: oklch(0.98 0.02 280);
+  --creative-muted: oklch(0.92 0.03 120);
+  --creative-muted-fg: oklch(0.45 0.06 120);
+  --creative-border: oklch(0.78 0.08 120);
+  
+  /* DEFAULT (Mode Selection & Global) - Use neutral elegant style */
+  --background: oklch(0.99 0.002 240);
+  --foreground: oklch(0.18 0.012 240);
   --card: oklch(1.0 0.0 0);
-  --card-foreground: oklch(0.18 0.015 240);
-  --card-hover: oklch(0.98 0.005 240);
-  
-  /* Popovers and overlays */
+  --card-foreground: oklch(0.18 0.012 240);
   --popover: oklch(1.0 0.0 0);
-  --popover-foreground: oklch(0.18 0.015 240);
+  --popover-foreground: oklch(0.18 0.012 240);
   
-  /* Primary: Refined Electric Purple (Analogous harmony: 260-290) */
-  --primary: oklch(0.55 0.20 280);
-  --primary-light: oklch(0.70 0.16 280);
-  --primary-dark: oklch(0.40 0.24 280);
-  --primary-foreground: oklch(0.98 0.005 280);
+  /* Primary: Sophisticated Purple for mode selection */
+  --primary: oklch(0.50 0.18 280);
+  --primary-light: oklch(0.65 0.15 280);
+  --primary-dark: oklch(0.38 0.22 280);
+  --primary-foreground: oklch(0.98 0.002 280);
   
-  /* Secondary: Bright Cyan (Complementary to primary: ~100° difference) */
-  --secondary: oklch(0.68 0.16 200);
-  --secondary-light: oklch(0.78 0.13 200);
-  --secondary-dark: oklch(0.53 0.19 200);
-  --secondary-foreground: oklch(0.15 0.015 200);
+  /* Secondary: Elegant Teal */
+  --secondary: oklch(0.58 0.14 200);
+  --secondary-light: oklch(0.70 0.12 200);
+  --secondary-dark: oklch(0.45 0.16 200);
+  --secondary-foreground: oklch(0.98 0.002 200);
   
-  /* Accent: Warm Coral (Triadic harmony) */
-  --accent: oklch(0.70 0.18 25);
-  --accent-light: oklch(0.80 0.15 25);
-  --accent-dark: oklch(0.60 0.21 25);
-  --accent-foreground: oklch(0.15 0.015 25);
+  /* Accent: Warm Gold */
+  --accent: oklch(0.68 0.16 80);
+  --accent-light: oklch(0.78 0.13 80);
+  --accent-dark: oklch(0.58 0.18 80);
+  --accent-foreground: oklch(0.20 0.010 80);
   
-  /* Muted: Sophisticated neutrals with subtle warmth */
-  --muted: oklch(0.96 0.008 240);
-  --muted-light: oklch(0.98 0.005 240);
-  --muted-dark: oklch(0.92 0.012 240);
-  --muted-foreground: oklch(0.48 0.010 240);
+  /* Muted: Sophisticated neutrals */
+  --muted: oklch(0.96 0.004 240);
+  --muted-light: oklch(0.98 0.002 240);
+  --muted-dark: oklch(0.92 0.006 240);
+  --muted-foreground: oklch(0.48 0.008 240);
   
-  /* Semantic Colors - Enhanced for accessibility */
+  /* Semantic Colors */
   --success: oklch(0.58 0.18 145);
   --success-light: oklch(0.73 0.15 145);
-  --success-foreground: oklch(0.98 0.005 145);
+  --success-foreground: oklch(0.98 0.002 145);
   
   --warning: oklch(0.72 0.16 80);
   --warning-light: oklch(0.82 0.13 80);
-  --warning-foreground: oklch(0.15 0.015 80);
+  --warning-foreground: oklch(0.20 0.010 80);
   
   --error: oklch(0.58 0.22 25);
   --error-light: oklch(0.73 0.18 25);
-  --error-foreground: oklch(0.98 0.005 25);
+  --error-foreground: oklch(0.98 0.002 25);
   
-  --info: oklch(0.62 0.15 240);
-  --info-light: oklch(0.77 0.12 240);
-  --info-foreground: oklch(0.98 0.005 240);
+  --info: oklch(0.60 0.14 240);
+  --info-light: oklch(0.75 0.12 240);
+  --info-foreground: oklch(0.98 0.002 240);
   
-  /* Borders with depth */
-  --border: oklch(0.90 0.008 240);
-  --border-light: oklch(0.94 0.005 240);
-  --border-dark: oklch(0.82 0.012 240);
+  /* Borders */
+  --border: oklch(0.90 0.004 240);
+  --border-light: oklch(0.94 0.002 240);
+  --border-dark: oklch(0.82 0.006 240);
   
   /* Input states */
-  --input: oklch(0.92 0.008 240);
-  --input-hover: oklch(0.88 0.012 240);
-  --input-focus: oklch(0.98 0.005 240);
+  --input: oklch(0.92 0.004 240);
+  --input-hover: oklch(0.88 0.006 240);
+  --input-focus: oklch(0.98 0.002 240);
   
-  /* Focus ring with accessibility */
-  --ring: oklch(0.55 0.20 280);
+  /* Focus ring */
+  --ring: oklch(0.50 0.18 280);
   --ring-offset: oklch(1.0 0.0 0);
   
-  /* Shadows for depth perception */
-  --shadow-sm: 0 1px 2px 0 oklch(0.18 0.015 240 / 0.05);
-  --shadow-md: 0 4px 6px -1px oklch(0.18 0.015 240 / 0.1), 0 2px 4px -2px oklch(0.18 0.015 240 / 0.1);
-  --shadow-lg: 0 10px 15px -3px oklch(0.18 0.015 240 / 0.1), 0 4px 6px -4px oklch(0.18 0.015 240 / 0.1);
-  --shadow-xl: 0 20px 25px -5px oklch(0.18 0.015 240 / 0.1), 0 8px 10px -6px oklch(0.18 0.015 240 / 0.1);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 oklch(0.18 0.012 240 / 0.04);
+  --shadow-md: 0 4px 6px -1px oklch(0.18 0.012 240 / 0.08), 0 2px 4px -2px oklch(0.18 0.012 240 / 0.08);
+  --shadow-lg: 0 10px 15px -3px oklch(0.18 0.012 240 / 0.1), 0 4px 6px -4px oklch(0.18 0.012 240 / 0.1);
+  --shadow-xl: 0 20px 25px -5px oklch(0.18 0.012 240 / 0.12), 0 8px 10px -6px oklch(0.18 0.012 240 / 0.12);
   
-  /* Border radius following golden ratio */
-  --radius: 0.75rem;
-  --radius-sm: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  /* Border radius - Professional but friendly */
+  --radius: 0.625rem;
+  --radius-sm: 0.375rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
 }
 
 .dark {
@@ -135,17 +158,25 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive: var(--error);
+  --color-destructive-foreground: var(--error-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  
+  /* Mode-specific theme tokens */
+  --color-structured-bg: var(--structured-bg);
+  --color-structured-fg: var(--structured-fg);
+  --color-structured-primary: var(--structured-primary);
+  --color-creative-bg: var(--creative-bg);
+  --color-creative-fg: var(--creative-fg);
+  --color-creative-primary: var(--creative-primary);
 
-  /* Enhanced radius system for gaming UI */
-  --radius-sm: calc(var(--radius) * 0.5);
+  /* Radius system */
+  --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) * 1.25);
-  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
   --radius-2xl: calc(var(--radius) * 2);
   --radius-full: 9999px;
 }
@@ -1812,4 +1843,322 @@ html {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* ============================================
+   DUAL MODE AESTHETICS
+   ============================================ */
+
+/* STRUCTURED MODE - Professional/Award-Winning (Awwwards Style) */
+.mode-structured {
+  --background: var(--structured-bg);
+  --foreground: var(--structured-fg);
+  --card: var(--structured-card);
+  --card-foreground: var(--structured-card-fg);
+  --primary: var(--structured-primary);
+  --primary-foreground: var(--structured-primary-fg);
+  --secondary: var(--structured-secondary);
+  --secondary-foreground: var(--structured-secondary-fg);
+  --accent: var(--structured-accent);
+  --accent-foreground: var(--structured-accent-fg);
+  --muted: var(--structured-muted);
+  --muted-foreground: var(--structured-muted-fg);
+  --border: var(--structured-border);
+  
+  background: var(--structured-bg);
+  color: var(--structured-fg);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.mode-structured .pro-card {
+  background: var(--structured-card);
+  border: 1px solid var(--structured-border);
+  box-shadow: 0 1px 3px oklch(0.20 0.010 240 / 0.04), 
+              0 1px 2px oklch(0.20 0.010 240 / 0.03);
+  border-radius: var(--radius-sm);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-structured .pro-card:hover {
+  box-shadow: 0 4px 12px oklch(0.20 0.010 240 / 0.08), 
+              0 2px 6px oklch(0.20 0.010 240 / 0.06);
+  border-color: oklch(0.85 0.006 240);
+  transform: translateY(-1px);
+}
+
+.mode-structured h1,
+.mode-structured h2,
+.mode-structured h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--structured-fg);
+}
+
+.mode-structured .btn-primary {
+  background: var(--structured-primary);
+  color: var(--structured-primary-fg);
+  border: none;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 2px oklch(0.32 0.14 245 / 0.12);
+}
+
+.mode-structured .btn-primary:hover {
+  background: oklch(0.36 0.16 245);
+  box-shadow: 0 2px 4px oklch(0.32 0.14 245 / 0.18);
+}
+
+/* Structured mode layout constraints - max-width, centered */
+.mode-structured .container-pro {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.mode-structured .grid-pro {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Professional charts and data viz */
+.mode-structured .chart-container {
+  background: var(--structured-card);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--structured-border);
+}
+
+/* Muted backgrounds for data sections */
+.mode-structured .section-muted {
+  background: var(--structured-muted);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+/* CREATIVE MODE - Playful/Game-Focused (Coolmath4kids Style) */
+.mode-creative {
+  --background: var(--creative-bg);
+  --foreground: var(--creative-fg);
+  --card: var(--creative-card);
+  --card-foreground: var(--creative-card-fg);
+  --primary: var(--creative-primary);
+  --primary-foreground: var(--creative-primary-fg);
+  --secondary: var(--creative-secondary);
+  --secondary-foreground: var(--creative-secondary-fg);
+  --accent: var(--creative-accent);
+  --accent-foreground: var(--creative-accent-fg);
+  --muted: var(--creative-muted);
+  --muted-foreground: var(--creative-muted-fg);
+  --border: var(--creative-border);
+  
+  background: linear-gradient(135deg, 
+    oklch(0.95 0.04 120) 0%, 
+    oklch(0.93 0.05 140) 50%, 
+    oklch(0.95 0.04 160) 100%);
+  color: var(--creative-fg);
+  font-weight: 500;
+}
+
+.mode-creative .game-card {
+  background: var(--creative-card);
+  border: 3px solid var(--creative-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px oklch(0.25 0.08 120 / 0.15),
+              0 2px 6px oklch(0.25 0.08 120 / 0.1);
+  transition: all 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.mode-creative .game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    transparent 0%, 
+    oklch(1 0 0 / 0.15) 50%, 
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 200ms;
+  pointer-events: none;
+}
+
+.mode-creative .game-card:hover::before {
+  opacity: 1;
+}
+
+.mode-creative .game-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 24px oklch(0.25 0.08 120 / 0.25),
+              0 6px 12px oklch(0.25 0.08 120 / 0.15),
+              0 0 0 4px oklch(0.58 0.20 145 / 0.2);
+  border-color: oklch(0.58 0.20 145);
+}
+
+.mode-creative .game-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.mode-creative h1,
+.mode-creative h2,
+.mode-creative h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--creative-fg);
+  text-shadow: 0 1px 2px oklch(1 0 0 / 0.3);
+}
+
+.mode-creative .btn-play {
+  background: linear-gradient(135deg, 
+    oklch(0.58 0.20 145) 0%, 
+    oklch(0.52 0.22 155) 100%);
+  color: oklch(0.98 0.03 145);
+  border: 3px solid oklch(0.48 0.24 145);
+  font-weight: 700;
+  font-size: 1.125rem;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 8px oklch(0.58 0.20 145 / 0.35),
+              inset 0 1px 0 oklch(1 0 0 / 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mode-creative .btn-play:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.62 0.22 145) 0%, 
+    oklch(0.56 0.24 155) 100%);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px oklch(0.58 0.20 145 / 0.4),
+              inset 0 1px 0 oklch(1 0 0 / 0.3),
+              0 0 0 3px oklch(0.58 0.20 145 / 0.2);
+}
+
+.mode-creative .btn-play:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 4px oklch(0.58 0.20 145 / 0.3),
+              inset 0 1px 0 oklch(1 0 0 / 0.2);
+}
+
+/* Creative mode uses full-width layouts with playful spacing */
+.mode-creative .container-creative {
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.mode-creative .grid-games {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (max-width: 768px) {
+  .mode-creative .grid-games {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Playful badges and icons */
+.mode-creative .badge-fun {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.22 35) 0%, 
+    oklch(0.60 0.24 45) 100%);
+  color: oklch(0.98 0.02 35);
+  border: 2px solid oklch(0.55 0.24 35);
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px oklch(0.65 0.22 35 / 0.3);
+}
+
+/* Bright colored categories for games */
+.mode-creative .category-savings {
+  background: linear-gradient(135deg, 
+    oklch(0.75 0.18 145) 0%, 
+    oklch(0.68 0.20 155) 100%);
+}
+
+.mode-creative .category-investing {
+  background: linear-gradient(135deg, 
+    oklch(0.70 0.20 220) 0%, 
+    oklch(0.65 0.22 240) 100%);
+}
+
+.mode-creative .category-credit {
+  background: linear-gradient(135deg, 
+    oklch(0.68 0.22 320) 0%, 
+    oklch(0.63 0.24 340) 100%);
+}
+
+.mode-creative .category-business {
+  background: linear-gradient(135deg, 
+    oklch(0.72 0.20 35) 0%, 
+    oklch(0.67 0.22 45) 100%);
+}
+
+/* Pulsing animation for attention */
+.mode-creative .pulse-play {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.58 0.20 145 / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px oklch(0.58 0.20 145 / 0);
+  }
+}
+
+/* MODE TRANSITION ANIMATIONS */
+.mode-transition-enter {
+  animation: modeSlideIn 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Color morphing indicator for context switch */
+.mode-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  transition: background 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-indicator.structured {
+  background: linear-gradient(90deg, 
+    var(--structured-primary) 0%, 
+    var(--structured-secondary) 50%, 
+    var(--structured-accent) 100%);
+}
+
+.mode-indicator.creative {
+  background: linear-gradient(90deg, 
+    var(--creative-primary) 0%, 
+    var(--creative-secondary) 50%, 
+    var(--creative-accent) 100%);
 }
