@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PracticalIllustration } from '@/components/PracticalIllustration'
 import type { UserProfile, GameScore } from '@/App'
 import { ARCHETYPES } from '@/data/archetype-questions'
 
@@ -254,11 +255,16 @@ export default function StructuredModeDashboard({
           >
             <Card className="border shadow-md">
               <CardHeader className="border-b bg-muted/30">
-                <CardTitle className="flex items-center gap-2 text-primary">
-                  <ChartLine size={24} weight="bold" />
-                  Analytics Dashboard
-                </CardTitle>
-                <CardDescription>Track your financial learning progress</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-primary">
+                      <ChartLine size={24} weight="bold" />
+                      Analytics Dashboard
+                    </CardTitle>
+                    <CardDescription>Track your financial learning progress</CardDescription>
+                  </div>
+                  <PracticalIllustration type="analytics" size={60} className="opacity-80" />
+                </div>
               </CardHeader>
               <CardContent className="p-6">
                 <Tabs defaultValue="overview" className="w-full">
@@ -269,20 +275,38 @@ export default function StructuredModeDashboard({
                   </TabsList>
 
                   <TabsContent value="overview" className="space-y-6">
+                    <div className="flex justify-center mb-4">
+                      <PracticalIllustration type="progress" size={80} />
+                    </div>
+                    
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Target size={16} />
                           <span>Games Completed</span>
                         </div>
-                        <div className="text-3xl font-bold text-foreground">{stats.totalGames}</div>
+                        <motion.div 
+                          className="text-3xl font-bold text-foreground"
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          {stats.totalGames}
+                        </motion.div>
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <TrendUp size={16} />
                           <span>Average Score</span>
                         </div>
-                        <div className="text-3xl font-bold text-foreground">{stats.avgScore}</div>
+                        <motion.div 
+                          className="text-3xl font-bold text-foreground"
+                          initial={{ opacity: 0, scale: 0.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.5, delay: 0.1 }}
+                        >
+                          {stats.avgScore}
+                        </motion.div>
                       </div>
                     </div>
 
@@ -291,7 +315,14 @@ export default function StructuredModeDashboard({
                         <span className="text-muted-foreground">Progress to Level {stats.level + 1}</span>
                         <span className="font-mono text-xs">{Math.round((stats.xp / stats.nextLevelXP) * 100)}%</span>
                       </div>
-                      <Progress value={(stats.xp / stats.nextLevelXP) * 100} className="h-2" />
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 0.8, delay: 0.3 }}
+                        style={{ transformOrigin: 'left' }}
+                      >
+                        <Progress value={(stats.xp / stats.nextLevelXP) * 100} className="h-2" />
+                      </motion.div>
                     </div>
 
                     <div className="pt-4 border-t space-y-3">
@@ -300,25 +331,37 @@ export default function StructuredModeDashboard({
                         Key Metrics
                       </h4>
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+                        <motion.div 
+                          className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg"
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <Wallet size={20} className="text-primary" />
                           <div>
                             <div className="text-xs text-muted-foreground">Total Coins</div>
                             <div className="font-bold">{stats.coins}</div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+                        </motion.div>
+                        <motion.div 
+                          className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg"
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <Fire size={20} className="text-orange-500" />
                           <div>
                             <div className="text-xs text-muted-foreground">Streak</div>
                             <div className="font-bold">{stats.streak} days</div>
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="performance" className="space-y-6">
+                    <div className="flex justify-center mb-4">
+                      <PracticalIllustration type="spending" size={70} />
+                    </div>
+                    
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="font-semibold text-sm flex items-center gap-2">
@@ -331,9 +374,12 @@ export default function StructuredModeDashboard({
                       {recentGames.length > 0 ? (
                         <div className="space-y-2">
                           {recentGames.map((game, idx) => (
-                            <div
+                            <motion.div
                               key={idx}
                               className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border hover:border-primary/50 transition-colors"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ duration: 0.3, delay: idx * 0.1 }}
                             >
                               <div className="flex-1">
                                 <div className="font-medium text-sm">{game.gameId}</div>
@@ -347,7 +393,7 @@ export default function StructuredModeDashboard({
                                   {Math.floor(game.timeSpent / 1000)}s
                                 </div>
                               </div>
-                            </div>
+                            </motion.div>
                           ))}
                         </div>
                       ) : (

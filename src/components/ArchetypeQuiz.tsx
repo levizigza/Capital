@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, ArrowRight, Check, Sparkle, ArrowsClockwise } from '@phosphor-icons/react'
 import { Confetti } from '@/components/Confetti'
+import { ScoreRing } from '@/components/ScoreRing'
 import {
   ARCHETYPE_QUESTIONS,
   ARCHETYPES,
@@ -38,13 +39,17 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
           e.preventDefault()
           handleNext()
         }
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === 'ArrowLeft' && !isTransitioning) {
         e.preventDefault()
         handleBack()
+      } else if (e.key === 'ArrowRight' && selectedAnswer !== null && !isTransitioning) {
+        e.preventDefault()
+        handleNext()
       } else if (e.key >= '1' && e.key <= '4') {
         const answerIndex = parseInt(e.key) - 1
         const question = ARCHETYPE_QUESTIONS[currentQuestion]
         if (answerIndex < question.answers.length) {
+          e.preventDefault()
           handleAnswerSelect(answerIndex)
         }
       }
@@ -66,15 +71,22 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
     if (selectedAnswer === null) return
 
     setIsTransitioning(true)
-    setTimeout(() => {
-      if (currentQuestion < ARCHETYPE_QUESTIONS.length - 1) {
-        setCurrentQuestion(currentQuestion + 1)
-        setSelectedAnswer(answers[currentQuestion + 1] ?? null)
-      } else {
+    
+    if (currentQuestion < ARCHETYPE_QUESTIONS.length - 1) {
+      setTimeout(() => {
+        setCurrentQuestion((prev) => prev + 1)
+        setSelectedAnswer((prevAnswers) => {
+          const nextQuestion = currentQuestion + 1
+          return answers[nextQuestion] ?? null
+        })
+        setIsTransitioning(false)
+      }, 200)
+    } else {
+      setTimeout(() => {
         setShowResults(true)
-      }
-      setIsTransitioning(false)
-    }, 300)
+        setIsTransitioning(false)
+      }, 200)
+    }
   }
 
   const handleBack = () => {
@@ -83,10 +95,13 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
 
     setIsTransitioning(true)
     setTimeout(() => {
-      setCurrentQuestion(currentQuestion - 1)
-      setSelectedAnswer(answers[currentQuestion - 1] ?? null)
+      setCurrentQuestion((prev) => prev - 1)
+      setSelectedAnswer((prevAnswers) => {
+        const prevQuestion = currentQuestion - 1
+        return answers[prevQuestion] ?? null
+      })
       setIsTransitioning(false)
-    }, 300)
+    }, 200)
   }
 
   const handleComplete = () => {
@@ -134,15 +149,27 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                className="inline-flex items-center justify-center w-24 h-24 mx-auto rounded-full text-6xl"
-                style={{ backgroundColor: primaryData.color.primary + '20' }}
+                className="flex flex-col items-center gap-4"
               >
-                {primaryData.icon}
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full text-6xl"
+                  style={{ backgroundColor: primaryData.color.primary + '20' }}>
+                  {primaryData.icon}
+                </div>
+                
+                <ScoreRing 
+                  score={Math.round((scores[primaryArchetype] / ARCHETYPE_QUESTIONS.length) * 100)}
+                  maxScore={100}
+                  size={100}
+                  strokeWidth={8}
+                  color={primaryData.color.primary}
+                  delay={0.4}
+                />
               </motion.div>
+              
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.6 }}
               >
                 <CardTitle className="text-4xl font-bold mb-2">
                   You are {primaryData.name}!
@@ -153,7 +180,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
+                  transition={{ delay: 0.8 }}
                 >
                   <Badge variant="outline" className="text-base px-4 py-1">
                     Secondary: {secondaryData.name} {secondaryData.icon}
@@ -166,7 +193,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 1.0 }}
               >
                 <blockquote className="text-center text-xl font-medium italic border-l-4 pl-4 py-2"
                   style={{ borderColor: primaryData.color.primary }}>
@@ -177,7 +204,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1.0 }}
+                transition={{ delay: 1.2 }}
                 className="space-y-2"
               >
                 <h3 className="text-lg font-semibold">About You</h3>
@@ -187,7 +214,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1.2 }}
+                transition={{ delay: 1.4 }}
                 className="grid md:grid-cols-2 gap-6"
               >
                 <div className="space-y-3">
@@ -221,7 +248,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 1.4 }}
+                transition={{ delay: 1.6 }}
                 className="space-y-3"
               >
                 <h3 className="text-lg font-semibold">Perfect For You</h3>
@@ -241,9 +268,10 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 className="w-full px-8 text-lg"
                 onClick={handleComplete}
                 style={{ backgroundColor: primaryData.color.primary }}
+                aria-label="Begin your financial learning journey"
               >
                 Begin Your Journey
-                <ArrowRight className="ml-2" weight="bold" />
+                <ArrowRight className="ml-2" weight="bold" aria-hidden="true" />
               </Button>
               <div className="flex gap-3 w-full">
                 <Button
@@ -251,15 +279,20 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                   size="sm"
                   className="flex-1"
                   onClick={handleRestartQuiz}
+                  aria-label="Restart the archetype quiz"
                 >
-                  <ArrowsClockwise className="mr-2" size={16} />
+                  <ArrowsClockwise className="mr-2" size={16} aria-hidden="true" />
                   Restart Quiz
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="flex-1"
-                  onClick={() => window.location.reload()}
+                  onClick={() => {
+                    onSkip?.()
+                    window.history.pushState({ mode: null }, '', window.location.href)
+                  }}
+                  aria-label="Return to home screen"
                 >
                   Return Home
                 </Button>
@@ -287,10 +320,26 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
 
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>Question {currentQuestion + 1} of {ARCHETYPE_QUESTIONS.length}</span>
-            <span>{Math.round(progress)}% Complete</span>
+            <span className="font-medium">Question {currentQuestion + 1} of {ARCHETYPE_QUESTIONS.length}</span>
+            <span className="font-semibold">{Math.round(progress)}% Complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2.5" aria-label={`Quiz progress: ${Math.round(progress)}% complete`} />
+          
+          <div className="flex justify-center gap-1.5 pt-2" role="navigation" aria-label="Question progress">
+            {ARCHETYPE_QUESTIONS.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-2 rounded-full transition-all ${
+                  idx === currentQuestion
+                    ? 'w-8 bg-purple-600'
+                    : idx < currentQuestion
+                    ? 'w-2 bg-purple-400'
+                    : 'w-2 bg-gray-200'
+                }`}
+                aria-label={`Question ${idx + 1}${idx === currentQuestion ? ' (current)' : idx < currentQuestion ? ' (completed)' : ''}`}
+              />
+            ))}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -314,21 +363,32 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                   <motion.button
                     key={index}
                     onClick={() => handleAnswerSelect(index)}
-                    className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleAnswerSelect(index)
+                      }
+                    }}
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-300 ${
                       selectedAnswer === index
                         ? 'border-purple-600 bg-purple-50 shadow-md'
                         : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
                     }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    aria-pressed={selectedAnswer === index}
+                    aria-label={`Answer option ${index + 1}: ${answer.text}`}
+                    role="radio"
+                    tabIndex={0}
                   >
                     <div className="flex items-start gap-3">
                       <div
-                        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all ${
                           selectedAnswer === index
                             ? 'border-purple-600 bg-purple-600'
                             : 'border-gray-300'
                         }`}
+                        aria-hidden="true"
                       >
                         {selectedAnswer === index && (
                           <Check weight="bold" className="text-white" size={14} />
@@ -344,28 +404,37 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 <Button
                   variant="outline"
                   onClick={handleBack}
-                  disabled={currentQuestion === 0}
+                  disabled={currentQuestion === 0 || isTransitioning}
+                  aria-label="Go to previous question"
                 >
-                  <ArrowLeft className="mr-2" weight="bold" />
+                  <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
                   Back
                 </Button>
 
                 <div className="flex gap-2">
                   {onSkip && (
-                    <Button variant="ghost" onClick={onSkip}>
+                    <Button 
+                      variant="ghost" 
+                      onClick={onSkip}
+                      aria-label="Skip archetype quiz"
+                    >
                       Skip Quiz
                     </Button>
                   )}
-                  <Button onClick={handleNext} disabled={!isAnswered}>
+                  <Button 
+                    onClick={handleNext} 
+                    disabled={!isAnswered || isTransitioning}
+                    aria-label={currentQuestion < ARCHETYPE_QUESTIONS.length - 1 ? "Go to next question" : "See quiz results"}
+                  >
                     {currentQuestion < ARCHETYPE_QUESTIONS.length - 1 ? (
                       <>
                         Next
-                        <ArrowRight className="ml-2" weight="bold" />
+                        <ArrowRight className="ml-2" weight="bold" aria-hidden="true" />
                       </>
                     ) : (
                       <>
                         See Results
-                        <Sparkle className="ml-2" weight="fill" />
+                        <Sparkle className="ml-2" weight="fill" aria-hidden="true" />
                       </>
                     )}
                   </Button>
