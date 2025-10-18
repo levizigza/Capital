@@ -238,6 +238,17 @@ export default function CreativeModeHub({
     expiresAt: string
   }>>('weekly-challenges', [])
 
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.game === null && selectedGame) {
+        setSelectedGame(null)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [selectedGame])
+
   const xpForNextLevel = Math.floor(100 * Math.pow(1.5, userProfile.level - 1))
   const currentLevelXP = userProfile.xp % xpForNextLevel
   const progressPercent = (currentLevelXP / xpForNextLevel) * 100
@@ -245,6 +256,7 @@ export default function CreativeModeHub({
   const handleGameStart = (gameId: string) => {
     setSelectedGame(gameId)
     setGameStartTime(Date.now())
+    window.history.pushState({ mode: 'creative', game: gameId }, '', window.location.href)
   }
 
   const handleGameComplete = (score: number, additionalData?: any) => {
@@ -255,6 +267,7 @@ export default function CreativeModeHub({
       checkAndCompleteChallenges(selectedGame, score, timeSpent)
       
       setSelectedGame(null)
+      window.history.pushState({ mode: 'creative', game: null }, '', window.location.href)
       
       const messages = [
         '🌱 Your garden grows stronger!',
@@ -425,6 +438,11 @@ export default function CreativeModeHub({
 
   const handleGameExit = () => {
     setSelectedGame(null)
+    if (window.history.state && window.history.state.game) {
+      window.history.back()
+    } else {
+      window.history.pushState({ mode: 'creative', game: null }, '', window.location.href)
+    }
   }
 
   if (selectedGame) {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { 
@@ -87,6 +87,17 @@ export default function StructuredModeHub({
   const [darkMode, setDarkMode] = useKV<boolean>('structured-dark-mode', false)
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
+
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.playing === false && isPlaying) {
+        setIsPlaying(false)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [isPlaying])
 
   const availableGames: GameInfo[] = [
     {
@@ -274,10 +285,29 @@ export default function StructuredModeHub({
   const handleGameComplete = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
     onGameComplete(gameId, score, timeSpent, additionalData)
     setIsPlaying(false)
+    if (window.history.state && window.history.state.playing) {
+      window.history.back()
+    } else {
+      window.history.pushState({ mode: 'structured', playing: false }, '', window.location.href)
+    }
     
     toast.success('Game Completed!', {
       description: `Score: ${score} • Time: ${Math.floor(timeSpent / 1000)}s`
     })
+  }
+
+  const handleGameStart = () => {
+    setIsPlaying(true)
+    window.history.pushState({ mode: 'structured', playing: true }, '', window.location.href)
+  }
+
+  const handleGameExit = () => {
+    setIsPlaying(false)
+    if (window.history.state && window.history.state.playing) {
+      window.history.back()
+    } else {
+      window.history.pushState({ mode: 'structured', playing: false }, '', window.location.href)
+    }
   }
 
   const toggleSort = (field: SortField) => {
@@ -294,7 +324,7 @@ export default function StructuredModeHub({
       <div className="fixed inset-0 z-50 bg-background">
         <ProfessionalGameHub
           onGameComplete={handleGameComplete}
-          onExit={() => setIsPlaying(false)}
+          onExit={handleGameExit}
           userTier="middle"
         />
       </div>
@@ -610,7 +640,7 @@ export default function StructuredModeHub({
                           </div>
 
                           <Button 
-                            onClick={() => setIsPlaying(true)} 
+                            onClick={handleGameStart} 
                             className="w-full"
                             size="lg"
                           >

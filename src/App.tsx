@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from 'sonner'
 import ModeSelection from '@/components/ModeSelection'
@@ -8,6 +8,11 @@ import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
 
 export type LearningMode = 'creative' | 'structured' | null
+
+type NavigationState = {
+  mode: LearningMode
+  page?: string
+}
 
 interface UserProfile {
   name: string
@@ -93,6 +98,27 @@ function App() {
   const [currentMode, setCurrentMode] = useState<LearningMode>(userProfile?.preferredMode || null)
 
   useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.mode !== undefined) {
+        setCurrentMode(event.state.mode)
+      } else {
+        setCurrentMode(null)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    const initialState: NavigationState = { mode: currentMode }
+    if (window.history.state === null || window.history.state.mode === undefined) {
+      window.history.replaceState(initialState, '', window.location.href)
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
+  useEffect(() => {
     if (userProfile?.preferredMode && !currentMode) {
       setCurrentMode(userProfile.preferredMode)
     }
@@ -153,6 +179,9 @@ function App() {
 
   const handleModeSelect = (mode: LearningMode) => {
     setCurrentMode(mode)
+    const newState: NavigationState = { mode }
+    window.history.pushState(newState, '', window.location.href)
+    
     setUserProfile(prev => {
       if (!prev) {
         return {
@@ -179,9 +208,11 @@ function App() {
     })
   }
 
-  const handleModeSwitch = () => {
+  const handleModeSwitch = useCallback(() => {
     setCurrentMode(null)
-  }
+    const newState: NavigationState = { mode: null }
+    window.history.pushState(newState, '', window.location.href)
+  }, [])
 
   const completeGame = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
     const newScore: GameScore = {
