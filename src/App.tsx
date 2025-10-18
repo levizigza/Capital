@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Toaster } from 'sonner'
+import { motion } from 'framer-motion'
+import { Sparkle } from '@phosphor-icons/react'
 import ModeSelection from '@/components/ModeSelection'
 import CreativeModeHub from '@/components/CreativeModeHub'
 import StructuredModeHub from '@/components/StructuredModeHub'
+import { DebugPanel } from '@/components/DebugPanel'
 import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
 
@@ -95,9 +98,15 @@ const DEFAULT_USER_PROFILE: UserProfile = {
 
 function App() {
   const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', DEFAULT_USER_PROFILE)
-
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
   const [currentMode, setCurrentMode] = useState<LearningMode>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    if (userProfile) {
+      setIsInitialized(true)
+    }
+  }, [userProfile])
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
@@ -120,11 +129,12 @@ function App() {
     }
   }, [])
 
-  useEffect(() => {
-    if (userProfile?.preferredMode && currentMode === null) {
-      setCurrentMode(userProfile.preferredMode)
-    }
-  }, [userProfile?.preferredMode])
+  // Commented out auto-selection to always show mode selection first
+  // useEffect(() => {
+  //   if (isInitialized && userProfile?.preferredMode && currentMode === null) {
+  //     setCurrentMode(userProfile.preferredMode)
+  //   }
+  // }, [userProfile?.preferredMode, isInitialized, currentMode])
 
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
@@ -299,6 +309,28 @@ function App() {
     })
   }, [setUserProfile])
 
+  if (!isInitialized || !userProfile) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+          <div className="text-center">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 mb-6 shadow-2xl"
+            >
+              <Sparkle className="w-10 h-10 text-white" weight="fill" />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading FinanceQuest Pro</h2>
+            <p className="text-lg text-gray-600">Initializing your financial journey...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   if (!currentMode) {
     return (
       <>
@@ -308,23 +340,16 @@ function App() {
     )
   }
 
-  if (!userProfile) {
-    return (
-      <>
-        <Toaster position="top-right" richColors />
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-lg text-muted-foreground">Loading profile...</p>
-          </div>
-        </div>
-      </>
-    )
-  }
-
   if (currentMode === 'creative') {
     return (
       <>
         <Toaster position="top-right" richColors />
+        <DebugPanel 
+          userProfile={userProfile}
+          currentMode={currentMode}
+          isInitialized={isInitialized}
+          gameScores={gameScores || []}
+        />
         <CreativeModeHub
           userProfile={userProfile}
           setUserProfile={setUserProfile}
@@ -341,6 +366,12 @@ function App() {
   return (
     <>
       <Toaster position="top-right" richColors />
+      <DebugPanel 
+        userProfile={userProfile}
+        currentMode={currentMode}
+        isInitialized={isInitialized}
+        gameScores={gameScores || []}
+      />
       <StructuredModeHub
         userProfile={userProfile}
         setUserProfile={setUserProfile}
