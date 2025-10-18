@@ -207,6 +207,7 @@ export default function CreativeModeHub({
   const [gameStartTime, setGameStartTime] = useState<number>(0)
   const [showSettings, setShowSettings] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'mini-games' | 'adventures' | 'challenges' | 'progress' | 'progression'>('overview')
+  const [gameFilter, setGameFilter] = useState<'all' | 'savings' | 'investing' | 'credit' | 'business' | 'general'>('all')
   
   const [dailyChallenges, setDailyChallenges] = useKV<Array<{
     id: string
@@ -637,34 +638,68 @@ export default function CreativeModeHub({
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {miniGames.map((game, index) => {
-                const completions = gameScores.filter(s => s.gameId === game.id).length
-                const bestScore = gameScores
-                  .filter(s => s.gameId === game.id)
-                  .reduce((max, s) => Math.max(max, s.score), 0)
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto"
+            >
+              {[
+                { value: 'all' as const, label: 'All Games', icon: <GameController size={18} weight="fill" /> },
+                { value: 'savings' as const, label: 'Savings', icon: <Coins size={18} weight="fill" /> },
+                { value: 'investing' as const, label: 'Investing', icon: <TrendUp size={18} weight="fill" /> },
+                { value: 'credit' as const, label: 'Credit', icon: <CreditCard size={18} weight="fill" /> },
+                { value: 'business' as const, label: 'Business', icon: <Building size={18} weight="fill" /> }
+              ].map((filter) => (
+                <Button
+                  key={filter.value}
+                  variant={gameFilter === filter.value ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setGameFilter(filter.value)}
+                  className={`transition-all ${
+                    gameFilter === filter.value 
+                      ? 'bg-green-600 hover:bg-green-700 shadow-md scale-105' 
+                      : 'border-green-200 hover:bg-green-50'
+                  }`}
+                >
+                  {filter.icon}
+                  <span className="ml-2">{filter.label}</span>
+                </Button>
+              ))}
+            </motion.div>
 
-                return (
-                  <motion.div
-                    key={game.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <GameCard
-                      id={game.id}
-                      title={game.title}
-                      description={game.description}
-                      icon={game.icon}
-                      difficulty={game.difficulty}
-                      estimatedTime={game.estimatedTime}
-                      category={game.type}
-                      isLocked={false}
-                      onSelect={() => handleGameStart(game.id)}
-                    />
-                  </motion.div>
-                )
-              })}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {miniGames
+                .filter(game => gameFilter === 'all' || game.type === gameFilter)
+                .map((game, index) => {
+                  const completions = gameScores.filter(s => s.gameId === game.id).length
+                  const bestScore = gameScores
+                    .filter(s => s.gameId === game.id)
+                    .reduce((max, s) => Math.max(max, s.score), 0)
+
+                  return (
+                    <motion.div
+                      key={game.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      layout
+                    >
+                      <GameCard
+                        id={game.id}
+                        title={game.title}
+                        description={game.description}
+                        icon={game.icon}
+                        difficulty={game.difficulty}
+                        estimatedTime={game.estimatedTime}
+                        category={game.type}
+                        isLocked={false}
+                        onSelect={() => handleGameStart(game.id)}
+                      />
+                    </motion.div>
+                  )
+                })
+              }
             </div>
 
             <motion.div

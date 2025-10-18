@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PracticalIllustration } from '@/components/PracticalIllustration'
+import { PracticalIcon } from '@/components/PracticalIcon'
 import type { UserProfile, GameScore } from '@/App'
 import { ARCHETYPES } from '@/data/archetype-questions'
 
@@ -222,23 +222,59 @@ export default function StructuredModeDashboard({
 
             <Card className="border-2 shadow-lg overflow-hidden bg-gradient-to-br from-white to-[oklch(0.98_0.01_145)]">
               <CardHeader className="bg-gradient-to-r from-[oklch(0.85_0.15_145)] to-[oklch(0.80_0.18_35)] text-white">
-                <CardTitle className="flex items-center gap-2">
-                  <Lightning size={24} weight="fill" />
-                  Quick Stats
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Lightning size={24} weight="fill" />
+                    Quick Stats
+                  </CardTitle>
+                  <div className="w-12 h-12 opacity-60">
+                    <PracticalIcon type="coins" animate={true} />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm">
-                    <ChartBar size={32} className="mx-auto mb-2 text-[oklch(0.55_0.18_145)]" weight="fill" />
+                  <motion.div 
+                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.55_0.18_145)]/20 hover:shadow-md transition-shadow"
+                    whileHover={{ y: -4 }}
+                  >
+                    <div className="w-12 h-12 mx-auto mb-2">
+                      <PracticalIcon type="bar-chart" animate={false} />
+                    </div>
                     <div className="text-2xl font-bold text-foreground">{stats.avgScore}</div>
                     <div className="text-xs text-muted-foreground">Avg Score</div>
-                  </div>
-                  <div className="text-center p-4 bg-white rounded-xl shadow-sm">
+                  </motion.div>
+                  <motion.div 
+                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.70_0.18_35)]/20 hover:shadow-md transition-shadow"
+                    whileHover={{ y: -4 }}
+                  >
                     <Clock size={32} className="mx-auto mb-2 text-[oklch(0.70_0.18_35)]" weight="fill" />
                     <div className="text-2xl font-bold text-foreground">{stats.totalTime}m</div>
                     <div className="text-xs text-muted-foreground">Time Played</div>
-                  </div>
+                  </motion.div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <motion.div 
+                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-[oklch(0.80_0.12_35)]/20 hover:shadow-md transition-shadow"
+                    whileHover={{ y: -4 }}
+                  >
+                    <div className="w-12 h-12 mx-auto mb-2">
+                      <PracticalIcon type="piggy-bank" animate={false} />
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">{userProfile.totalCoins}</div>
+                    <div className="text-xs text-muted-foreground">Savings</div>
+                  </motion.div>
+                  <motion.div 
+                    className="text-center p-4 bg-white rounded-xl shadow-sm border border-purple-300/20 hover:shadow-md transition-shadow"
+                    whileHover={{ y: -4 }}
+                  >
+                    <div className="w-12 h-12 mx-auto mb-2">
+                      <PracticalIcon type="trophy" animate={false} />
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">{userProfile.achievements.length}</div>
+                    <div className="text-xs text-muted-foreground">Achievements</div>
+                  </motion.div>
                 </div>
               </CardContent>
             </Card>
@@ -263,7 +299,9 @@ export default function StructuredModeDashboard({
                     </CardTitle>
                     <CardDescription>Track your financial learning progress</CardDescription>
                   </div>
-                  <PracticalIllustration type="analytics" size={60} className="opacity-80" />
+                  <div className="w-16 h-16">
+                    <PracticalIcon type="bar-chart" animate={true} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6">
@@ -276,7 +314,9 @@ export default function StructuredModeDashboard({
 
                   <TabsContent value="overview" className="space-y-6">
                     <div className="flex justify-center mb-4">
-                      <PracticalIllustration type="progress" size={80} />
+                      <div className="w-20 h-20">
+                        <PracticalIcon type="trophy" animate={true} />
+                      </div>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
@@ -359,7 +399,9 @@ export default function StructuredModeDashboard({
 
                   <TabsContent value="performance" className="space-y-6">
                     <div className="flex justify-center mb-4">
-                      <PracticalIllustration type="spending" size={70} />
+                      <div className="w-20 h-20">
+                        <PracticalIcon type="trend-up" animate={true} />
+                      </div>
                     </div>
                     
                     <div className="space-y-4">

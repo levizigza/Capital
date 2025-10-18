@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Lock, Clock, Trophy } from '@phosphor-icons/react'
+import { GameIllustration } from '@/components/GameIllustration'
 
 interface GameCardProps {
   id: string
@@ -102,6 +103,7 @@ const categoryIllustrations = {
 }
 
 export default function GameCard({
+  id,
   title,
   description,
   icon,
@@ -117,6 +119,22 @@ export default function GameCard({
     Medium: 'bg-yellow-100 text-yellow-700 border-yellow-200',
     Hard: 'bg-red-100 text-red-700 border-red-200'
   }
+
+  const gameIllustrationMap: Record<string, 'lemonade-stand' | 'budget-runner' | 'market-tycoon' | 'debt-dash' | 'coin-catcher' | 'investment-tower' | 'credit-defender' | 'business-builder'> = {
+    'lemonade-boss': 'lemonade-stand',
+    'pixel-budget-runner': 'budget-runner',
+    'market-tycoon': 'market-tycoon',
+    'debt-dash': 'debt-dash',
+    'coin-catcher': 'coin-catcher',
+    'budget-balancer': 'budget-runner',
+    'investment-climber': 'investment-tower',
+    'credit-defender': 'credit-defender',
+    'credit-card-memory': 'credit-defender',
+    'business-builder': 'business-builder',
+    'compound-growth': 'investment-tower'
+  }
+
+  const illustrationType = gameIllustrationMap[id]
 
   return (
     <motion.div
@@ -143,10 +161,10 @@ export default function GameCard({
       >
         <div className={`relative h-36 bg-gradient-to-br ${categoryColors[category]} overflow-hidden`}>
           <motion.div 
-            className="absolute inset-0 flex items-center justify-center text-white"
+            className="absolute inset-0 flex items-center justify-center"
             animate={{ 
-              scale: [1, 1.05, 1],
-              opacity: [0.3, 0.4, 0.3]
+              scale: [1, 1.02, 1],
+              opacity: [0.9, 1, 0.9]
             }}
             transition={{ 
               duration: 3, 
@@ -154,7 +172,15 @@ export default function GameCard({
               ease: "easeInOut"
             }}
           >
-            {illustration || categoryIllustrations[category]}
+            {illustrationType ? (
+              <div className="w-full h-full p-4">
+                <GameIllustration type={illustrationType} animate={!isLocked} />
+              </div>
+            ) : illustration ? (
+              illustration
+            ) : (
+              categoryIllustrations[category]
+            )}
           </motion.div>
           
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
