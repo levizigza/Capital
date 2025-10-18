@@ -6,9 +6,11 @@ import { Sparkle } from '@phosphor-icons/react'
 import ModeSelection from '@/components/ModeSelection'
 import CreativeModeHub from '@/components/CreativeModeHub'
 import StructuredModeHub from '@/components/StructuredModeHub'
+import ArchetypeQuiz from '@/components/ArchetypeQuiz'
 import { DebugPanel } from '@/components/DebugPanel'
 import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
+import type { ArchetypeId } from '@/data/archetype-questions'
 
 export type LearningMode = 'creative' | 'structured' | null
 
@@ -27,6 +29,11 @@ export interface UserProfile {
   currentStreak: number
   skillsUnlocked: string[]
   preferredMode: LearningMode
+  archetype?: {
+    primary: ArchetypeId
+    secondary: ArchetypeId | null
+    completedQuiz: boolean
+  }
   gardenProgress?: {
     plants: Array<{ type: string; growth: number; position: { x: number; y: number } }>
     gardenLevel: number
@@ -101,12 +108,17 @@ function App() {
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
   const [currentMode, setCurrentMode] = useState<LearningMode>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [showArchetypeQuiz, setShowArchetypeQuiz] = useState(false)
 
   useEffect(() => {
     if (userProfile) {
       setIsInitialized(true)
+      
+      if (!userProfile.archetype?.completedQuiz && currentMode !== null) {
+        setShowArchetypeQuiz(true)
+      }
     }
-  }, [userProfile])
+  }, [userProfile, currentMode])
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
@@ -161,6 +173,40 @@ function App() {
         preferredMode: mode
       }
     })
+    
+    if (!userProfile?.archetype?.completedQuiz) {
+      setShowArchetypeQuiz(true)
+    }
+  }
+
+  const handleArchetypeComplete = (primaryArchetype: ArchetypeId, secondaryArchetype: ArchetypeId | null) => {
+    setUserProfile((prev): UserProfile => {
+      if (!prev) return prev!
+      return {
+        ...prev,
+        archetype: {
+          primary: primaryArchetype,
+          secondary: secondaryArchetype,
+          completedQuiz: true
+        }
+      }
+    })
+    setShowArchetypeQuiz(false)
+  }
+
+  const handleSkipArchetype = () => {
+    setUserProfile((prev): UserProfile => {
+      if (!prev) return prev!
+      return {
+        ...prev,
+        archetype: {
+          primary: 'tempo',
+          secondary: null,
+          completedQuiz: false
+        }
+      }
+    })
+    setShowArchetypeQuiz(false)
   }
 
   const handleModeSwitch = useCallback(() => {
@@ -336,6 +382,18 @@ function App() {
       <>
         <Toaster position="top-right" richColors />
         <ModeSelection onSelectMode={handleModeSelect} />
+      </>
+    )
+  }
+
+  if (showArchetypeQuiz && !userProfile?.archetype?.completedQuiz) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <ArchetypeQuiz 
+          onComplete={handleArchetypeComplete}
+          onSkip={handleSkipArchetype}
+        />
       </>
     )
   }

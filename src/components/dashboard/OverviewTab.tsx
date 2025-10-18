@@ -14,6 +14,7 @@ import {
   Target,
 } from '@phosphor-icons/react'
 import type { UserProfile, GameScore } from '@/App'
+import ArchetypeCard from '@/components/ArchetypeCard'
 
 interface OverviewTabProps {
   userProfile: UserProfile
@@ -195,6 +196,21 @@ export default function OverviewTab({
           </Card>
         </div>
       </motion.div>
+
+      {userProfile.archetype?.completedQuiz && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="lg:col-span-12"
+        >
+          <ArchetypeCard 
+            primaryArchetype={userProfile.archetype.primary}
+            secondaryArchetype={userProfile.archetype.secondary}
+            variant="compact"
+          />
+        </motion.div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

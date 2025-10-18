@@ -1,19 +1,95 @@
-# FinanceQuest Pro - Dual-Mode Financial Learning Platform
+# FinanceQuest Pro - Dual-Mode Financial Learning Platform with Financial Archetype System
 
 ## Core Purpose & Success
 
-**Mission Statement**: Create an adaptive financial learning platform that respects different learning preferences by offering two distinct experiences: a visually rich narrative-driven "Finance Garden" mode and a data-focused analytical dashboard mode, both powered by the same engaging mini-games.
+**Mission Statement**: Create an adaptive financial learning platform that respects different learning preferences by offering two distinct experiences: a visually rich narrative-driven "Finance Garden" mode and a data-focused analytical dashboard mode, both powered by the same engaging mini-games. **NEW: The Financial Archetype System personalizes every facet of gameplay, UI, and learning path based on the user's natural finance-and-learning personality type.**
 
 **Success Indicators**: 
 - User completion rates across all mini-games > 75%
 - Average play session time > 10 minutes  
 - Daily return rate > 40%
 - Skill progression across financial concepts
+- **NEW: Archetype quiz completion rate > 80%**
+- **NEW: Personalized content engagement > 60% improvement**
 
 **Experience Qualities**: 
 1. **Adaptive** - Respects user preferences with two distinct modes
 2. **Engaging** - Narrative-driven (Creative) or data-driven (Structured) based on choice
 3. **Educational** - Same high-quality learning outcomes through different presentation styles
+4. **Personalized** - Financial Archetype System tailors UI, quests, and difficulty to each user
+
+## Financial Archetype System (New - 2025)
+
+### Four Financial Archetypes
+
+**Blaze 🔥 - The Connector-Trader**
+- People-oriented, fast decision-makers, thrive on social challenges
+- Strengths: Quick decisions, networking, negotiation, social competition
+- Growth Zones: Long-term analysis, systematic tracking, patience
+- UI Preferences: Social-first dashboard, minimal charts, high reward frequency, energetic tone
+- VARK Bias: High Aural (40%), Moderate Visual/Kinesthetic
+- Ideal Content: Team savings challenges, group investments, social trading tournaments
+
+**Steel 🛡️ - The Analyst-Planner**
+- Detail-driven, cautious, loves structure and data
+- Strengths: Attention to detail, systematic planning, data-driven decisions
+- Growth Zones: Comfort with uncertainty, social collaboration, creative experimentation
+- UI Preferences: Analytics-first dashboard, detailed charts, milestone rewards, professional tone
+- VARK Bias: High Read/Write (45%), Moderate Visual
+- Ideal Content: Portfolio optimization, budget efficiency puzzles, risk analysis
+
+**Dynamo ⚡ - The Innovator-Builder**
+- Big-idea thinkers, enjoy creative problem-solving
+- Strengths: Creative problem-solving, big-picture thinking, entrepreneurial mindset
+- Growth Zones: Operational details, consistent execution, valuing proven methods
+- UI Preferences: Visual-first dashboard, predictive charts, milestone rewards, inspirational tone
+- VARK Bias: High Visual (40%), High Kinesthetic (30%)
+- Ideal Content: Business building, investment innovation, startup funding scenarios
+
+**Tempo 🌱 - The Grounded-Guardian**
+- Consistent savers, values stability and steady progress
+- Strengths: Consistency, discipline, patient perspective, risk management
+- Growth Zones: Calculated risks, comfort with change, adaptability, creative thinking
+- UI Preferences: Simple-first dashboard, progress bars, steady rewards, calm tone
+- VARK Bias: Balanced across all VARK dimensions
+- Ideal Content: Savings habits, compound growth trackers, emergency fund challenges
+
+### Archetype Discovery Quiz
+
+**Quiz Mechanics**:
+- 10 multiple-choice "In a money situation…" questions
+- Each answer maps to weighted archetype scores (0-3 points per archetype)
+- Playful animation reveals dominant archetype (and secondary)
+- Displays taglines explaining strengths and growth zones
+- Results stored as `userProfile.archetype` with primary, secondary, and quiz completion status
+
+**Quiz Flow**:
+1. Mode Selection → User chooses Creative or Structured
+2. Archetype Quiz → 10 questions with progress bar
+3. Animated Results → Celebration animation with archetype reveal
+4. Dashboard Entry → Personalized experience begins
+
+**Skip Option**: Users can skip the quiz and receive Tempo (balanced) archetype as default
+
+### Personalization Impact
+
+**UI/Theme Customization**:
+- Default colors adapt to archetype palette
+- Dashboard module order prioritizes archetype preferences
+- Chart types match archetype visualization preferences
+- Reward frequency and celebration intensity tuned to archetype
+
+**Learning Path Adaptation**:
+- Quest recommendations prioritize archetype-aligned challenges
+- Difficulty pacing adjusted (fast/adaptive/exploratory/gradual)
+- Narrative tone changes (energetic/professional/inspirational/calm)
+- Mini-game parameters adapt (volatility, speed, feedback frequency)
+
+**Analytics & Insights**:
+- Metrics framed in archetype language
+- Recommendations highlight archetype strengths
+- Growth suggestions target archetype development zones
+- AI Coach explains decisions using archetype context
 
 ## Project Classification & Approach
 
