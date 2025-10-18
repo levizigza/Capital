@@ -35,9 +35,31 @@ export class SecurityService {
     const trimmed = input.trim().slice(0, SECURITY_CONFIG.maxInputLength)
     
     return trimmed
-      .replace(/[<>]/g, '')
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<[^>]*>/g, '')
       .replace(/javascript:/gi, '')
-      .replace(/on\w+=/gi, '')
+      .replace(/on\w+\s*=/gi, '')
+      .replace(/data:text\/html/gi, '')
+      .replace(/vbscript:/gi, '')
+      .replace(/<iframe/gi, '')
+      .replace(/onerror=/gi, '')
+      .replace(/eval\(/gi, '')
+  }
+  
+  static sanitizeURL(url: string): string {
+    if (!url) return ''
+    
+    try {
+      const parsed = new URL(url)
+      
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        return ''
+      }
+      
+      return url
+    } catch {
+      return ''
+    }
   }
 
   static validateEmail(email: string): boolean {
@@ -141,5 +163,16 @@ export class SecurityService {
 
   static clearSensitiveData() {
     this.requestLog.clear()
+  }
+  
+  static generateCSRFToken(): string {
+    const array = new Uint8Array(32)
+    crypto.getRandomValues(array)
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+  }
+  
+  static validateCSRFToken(token: string, storedToken: string): boolean {
+    if (!token || !storedToken) return false
+    return token === storedToken
   }
 }

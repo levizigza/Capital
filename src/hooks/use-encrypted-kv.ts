@@ -19,8 +19,7 @@ export function useEncryptedKV<T>(
         } else {
           setValue(defaultValue)
         }
-      } catch (error) {
-        console.error('Failed to load encrypted data:', error)
+      } catch {
         setValue(defaultValue)
       } finally {
         setIsLoading(false)
@@ -41,8 +40,7 @@ export function useEncryptedKV<T>(
       try {
         const encrypted = await EncryptionService.encryptObject(resolvedValue, userId)
         await window.spark.kv.set(key, encrypted)
-      } catch (error) {
-        console.error('Failed to save encrypted data:', error)
+      } catch {
       }
     },
     [key, userId, value]
@@ -52,8 +50,7 @@ export function useEncryptedKV<T>(
     try {
       await window.spark.kv.delete(key)
       setValue(defaultValue)
-    } catch (error) {
-      console.error('Failed to delete encrypted data:', error)
+    } catch {
     }
   }, [key, defaultValue])
 

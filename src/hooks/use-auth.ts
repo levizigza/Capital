@@ -76,8 +76,7 @@ export function useAuth() {
         } else {
           setIsAuthenticated(false)
         }
-      } catch (error) {
-        console.error('Authentication error:', error)
+      } catch {
         setIsAuthenticated(false)
       } finally {
         setIsLoading(false)

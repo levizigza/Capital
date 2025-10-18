@@ -45,7 +45,6 @@ export class EncryptionService {
 
       return btoa(String.fromCharCode(...combined))
     } catch (error) {
-      console.error('Encryption error:', error)
       throw new Error('Failed to encrypt data')
     }
   }
@@ -69,7 +68,6 @@ export class EncryptionService {
 
       return this.decoder.decode(decryptedData)
     } catch (error) {
-      console.error('Decryption error:', error)
       throw new Error('Failed to decrypt data')
     }
   }
