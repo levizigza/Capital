@@ -239,7 +239,7 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
     return () => clearInterval(timer)
   }, [gameState])
 
-  const startGame = () => {
+  const startGame = (): void => {
     setGameState('playing')
     setScore(0)
     setTimeLeft(120)
@@ -247,18 +247,18 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
     setWrongPlacements(0)
     const data = getGameData()
     setBudgetItems([...data.items])
-    setCategories(data.categories.map(cat => ({ ...cat, current: 0, items: [] })))
+    setCategories(data.categories.map((cat) => ({ ...cat, current: 0, items: [] })))
   }
 
-  const handleDragStart = (item: BudgetItem) => {
+  const handleDragStart = (item: BudgetItem): void => {
     setDraggedItem(item)
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault()
   }
 
-  const handleDrop = (categoryName: string) => {
+  const handleDrop = (categoryName: string): void => {
     if (!draggedItem || draggedItem.isPlaced) return
 
     const isCorrect = draggedItem.category === categoryName
@@ -274,7 +274,7 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
       toast.error(`✗ Wrong category! -${Math.floor(draggedItem.amount * 0.3)} points`, { duration: 1500 })
     }
 
-    setCategories(prev => prev.map(cat => 
+    setCategories((prev) => prev.map((cat) => 
       cat.name === categoryName 
         ? { 
             ...cat, 
@@ -284,7 +284,7 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
         : cat
     ))
 
-    setBudgetItems(prev => prev.map(item => 
+    setBudgetItems((prev) => prev.map((item) => 
       item.id === draggedItem.id 
         ? { ...item, isPlaced: true }
         : item
@@ -292,12 +292,12 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
 
     setDraggedItem(null)
 
-    if (budgetItems.filter(i => !i.isPlaced).length === 1) {
+    if (budgetItems.filter((i) => !i.isPlaced).length === 1) {
       setTimeout(() => endGame(), 1000)
     }
   }
 
-  const endGame = () => {
+  const endGame = (): void => {
     setGameState('ended')
     const totalItems = budgetItems.length
     const accuracy = (correctPlacements / totalItems) * 100
@@ -310,14 +310,14 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
     })
   }
 
-  const getBudgetBalance = () => {
+  const getBudgetBalance = (): number => {
     const totalSpent = categories.reduce((sum, cat) => sum + cat.current, 0)
     return gameData.income - totalSpent
   }
 
-  const getCompletionPercentage = () => {
+  const getCompletionPercentage = (): number => {
     const total = budgetItems.length
-    const placed = budgetItems.filter(i => i.isPlaced).length
+    const placed = budgetItems.filter((i) => i.isPlaced).length
     return (placed / total) * 100
   }
 

@@ -144,18 +144,23 @@ export default function StructuredModeHub({
     }
   ]
 
-  const getGameStats = (gameId: string) => {
-    const gameHistory = (gameScores || []).filter(s => s.gameId === gameId)
+  const getGameStats = (gameId: string): {
+    timesPlayed: number
+    highScore: number
+    lastPlayed: string | null
+    avgScore: number
+  } => {
+    const gameHistory = (gameScores || []).filter((s) => s.gameId === gameId)
     return {
       timesPlayed: gameHistory.length,
-      highScore: gameHistory.length > 0 ? Math.max(...gameHistory.map(s => s.score)) : 0,
+      highScore: gameHistory.length > 0 ? Math.max(...gameHistory.map((s) => s.score)) : 0,
       lastPlayed: gameHistory.length > 0 ? gameHistory[gameHistory.length - 1].date : null,
       avgScore: gameHistory.length > 0 ? Math.round(gameHistory.reduce((sum, s) => sum + s.score, 0) / gameHistory.length) : 0
     }
   }
 
   const sortedGames = useMemo(() => {
-    const gamesWithStats = availableGames.map(game => ({
+    const gamesWithStats = availableGames.map((game) => ({
       ...game,
       stats: getGameStats(game.id)
     }))
@@ -192,8 +197,8 @@ export default function StructuredModeHub({
       profit: { name: 'Profit Calculation', games: 0, totalScore: 0, icon: <Target className="w-5 h-5" /> }
     }
 
-    ;(gameScores || []).forEach(score => {
-      const game = availableGames.find(g => g.id === score.gameId)
+    ;(gameScores || []).forEach((score) => {
+      const game = availableGames.find((g) => g.id === score.gameId)
       if (game && categories[game.category]) {
         categories[game.category].games++
         categories[game.category].totalScore += score.score
@@ -215,7 +220,7 @@ export default function StructuredModeHub({
     
     const dailyScores: { [key: string]: { total: number; count: number } } = {}
     
-    gameScores.forEach(score => {
+    gameScores.forEach((score) => {
       const date = new Date(score.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       if (!dailyScores[date]) {
         dailyScores[date] = { total: 0, count: 0 }
@@ -232,8 +237,8 @@ export default function StructuredModeHub({
   }, [gameScores])
 
   const leaderboardData = useMemo(() => {
-    const allScores = (gameScores || []).map(score => {
-      const game = availableGames.find(g => g.id === score.gameId)
+    const allScores = (gameScores || []).map((score) => {
+      const game = availableGames.find((g) => g.id === score.gameId)
       return {
         ...score,
         gameName: game?.name || score.gameId
@@ -251,8 +256,8 @@ export default function StructuredModeHub({
       profit: 0
     }
 
-    ;(gameScores || []).forEach(score => {
-      const game = availableGames.find(g => g.id === score.gameId)
+    ;(gameScores || []).forEach((score) => {
+      const game = availableGames.find((g) => g.id === score.gameId)
       if (game) {
         distribution[game.category]++
       }
@@ -270,7 +275,7 @@ export default function StructuredModeHub({
     : 0
   const completionPercentage = Math.min(Math.round((userProfile.gamesCompleted / 50) * 100), 100)
 
-  const handleGameComplete = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
+  const handleGameComplete = (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
     onGameComplete(gameId, score, timeSpent, additionalData)
     setIsPlaying(false)
     if (window.history.state && window.history.state.playing) {

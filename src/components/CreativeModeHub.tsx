@@ -243,13 +243,13 @@ export default function CreativeModeHub({
   const currentLevelXP = userProfile.xp % xpForNextLevel
   const progressPercent = Math.min(100, Math.max(0, (currentLevelXP / xpForNextLevel) * 100))
 
-  const handleGameStart = (gameId: string) => {
+  const handleGameStart = (gameId: string): void => {
     setSelectedGame(gameId)
     setGameStartTime(Date.now())
     window.history.pushState({ mode: 'creative', game: gameId }, '', window.location.href)
   }
 
-  const handleGameComplete = (score: number, additionalData?: any) => {
+  const handleGameComplete = (score: number, additionalData?: Record<string, unknown>) => {
     if (selectedGame) {
       const timeSpent = Date.now() - gameStartTime
       onGameComplete(selectedGame, score, timeSpent, additionalData)
@@ -274,12 +274,12 @@ export default function CreativeModeHub({
     }
   }
 
-  const checkAndCompleteChallenges = (gameId: string, score: number, timeSpent: number) => {
+  const checkAndCompleteChallenges = (gameId: string, score: number, timeSpent: number): void => {
     let totalXPReward = 0
     let totalCoinsReward = 0
     
-    setDailyChallenges(prevChallenges => {
-      const updated = (prevChallenges || []).map(challenge => {
+    setDailyChallenges((prevChallenges) => {
+      const updated = (prevChallenges || []).map((challenge) => {
         if (challenge.gameId === gameId && !challenge.completed) {
           let isCompleted = false
           if (challenge.requirement.type === 'score' && score >= challenge.requirement.value) {
@@ -304,8 +304,8 @@ export default function CreativeModeHub({
       return updated
     })
     
-    setWeeklyChallenges(prevChallenges => {
-      const updated = (prevChallenges || []).map(challenge => {
+    setWeeklyChallenges((prevChallenges) => {
+      const updated = (prevChallenges || []).map((challenge) => {
         if (!challenge.completed) {
           const newProgress = challenge.progress + 1
           const isCompleted = newProgress >= challenge.target
@@ -327,7 +327,7 @@ export default function CreativeModeHub({
     })
     
     if (totalXPReward > 0 || totalCoinsReward > 0) {
-      setUserProfile(prev => ({
+      setUserProfile((prev): UserProfile => ({
         ...prev!,
         xp: prev!.xp + totalXPReward,
         totalCoins: prev!.totalCoins + totalCoinsReward
@@ -335,7 +335,7 @@ export default function CreativeModeHub({
     }
   }
 
-  const initializeChallenges = () => {
+  const initializeChallenges = (): void => {
     const now = new Date()
     const tomorrow = new Date(now)
     tomorrow.setDate(tomorrow.getDate() + 1)
