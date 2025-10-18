@@ -381,5 +381,7 @@ Line-XP earned from quests can be allocated by users to develop their preferred 
 4. **Progressive Disclosure** - Complex information revealed gradually
 5. **Consistent Interactions** - Similar patterns across all games
 6. **Professional Motion** - Purposeful animations that enhance understanding
-7. **Accessibility First** - Keyboard navigation, high contrast, large targets
-8. **Mobile Optimization** - Touch-friendly, responsive layouts
+7. **Accessibility First** - Keyboard navigation, high contrast, large targets (44px minimum)
+8. **Mobile Optimization** - Touch-friendly, responsive layouts, adaptive text sizing
+9. **Visual Bug Fixes** - All text readable, no overlapping elements, proper mobile scaling
+10. **Performance Optimized** - Smooth progress bar animations, proper z-index stacking

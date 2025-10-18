@@ -187,7 +187,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
   const [hoveredPlant, setHoveredPlant] = useState<string | null>(null)
 
   return (
-    <div className="relative w-full h-full min-h-[600px] overflow-hidden rounded-2xl">
+    <div className="relative w-full h-full min-h-[500px] sm:min-h-[600px] overflow-hidden rounded-xl sm:rounded-2xl">
       <motion.div
         className={cn(
           "absolute inset-0 bg-gradient-to-b transition-all duration-1000",
@@ -204,7 +204,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
       />
 
       <motion.div
-        className="absolute top-8 right-8"
+        className="absolute top-4 sm:top-8 right-4 sm:right-8"
         animate={{
           scale: [1, 1.2, 1],
           rotate: [0, 10, 0]
@@ -215,7 +215,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
           ease: "easeInOut"
         }}
       >
-        <Sun className="w-16 h-16 text-yellow-400" weight="fill" />
+        <Sun className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-yellow-400" weight="fill" />
       </motion.div>
 
       {overallHealth > 30 && (
@@ -331,7 +331,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
             >
               <motion.div
                 className={cn(
-                  "relative rounded-full p-4 shadow-2xl backdrop-blur-sm",
+                  "relative rounded-full p-3 sm:p-4 shadow-2xl backdrop-blur-sm",
                   `bg-gradient-to-br ${plant.color}`,
                   growth === 0 && "grayscale"
                 )}
@@ -354,46 +354,46 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
 
                 {growth > 0 && (
                   <motion.div
-                    className="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-green-500"
+                    className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-green-500"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                   >
-                    <span className="text-xs font-bold text-green-700">
+                    <span className="text-[10px] sm:text-xs font-bold text-green-700">
                       {Math.round(growth)}
                     </span>
                   </motion.div>
                 )}
 
                 {growth === 0 && (
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-xs font-bold text-gray-600">?</span>
+                  <div className="absolute -top-1 sm:-top-2 -right-1 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-gray-300 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-[10px] sm:text-xs font-bold text-gray-600">?</span>
                   </div>
                 )}
 
                 <AnimatePresence>
                   {hoveredPlant === plant.id && (
                     <motion.div
-                      className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-64 pointer-events-none"
+                      className="absolute top-full mt-2 sm:mt-4 left-1/2 -translate-x-1/2 w-56 sm:w-64 pointer-events-none z-50"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                     >
                       <Card className="shadow-2xl border-2 border-white/50 backdrop-blur-lg bg-white/95">
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3 mb-3">
+                        <CardContent className="p-3 sm:p-4">
+                          <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
                             <div className={cn(
-                              "w-12 h-12 rounded-xl flex items-center justify-center shadow-md",
+                              "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-md flex-shrink-0",
                               `bg-gradient-to-br ${plant.color}`
                             )}>
                               <div className="text-white scale-75">
                                 {plant.icon}
                               </div>
                             </div>
-                            <div className="flex-1">
-                              <h3 className="font-bold text-gray-900 text-sm mb-1">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-bold text-gray-900 text-xs sm:text-sm mb-1 truncate">
                                 {plant.name}
                               </h3>
-                              <p className="text-xs text-gray-600">
+                              <p className="text-[10px] sm:text-xs text-gray-600 line-clamp-2">
                                 {plant.description}
                               </p>
                             </div>
@@ -401,29 +401,29 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
 
                           {growth > 0 ? (
                             <>
-                              <div className="space-y-2 mb-3">
-                                <div className="flex items-center justify-between text-xs">
+                              <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3">
+                                <div className="flex items-center justify-between text-[10px] sm:text-xs">
                                   <span className="text-gray-600">Growth</span>
                                   <span className="font-bold text-green-700">{Math.round(growth)}%</span>
                                 </div>
-                                <Progress value={growth} className="h-2" />
+                                <Progress value={growth} className="h-1.5 sm:h-2" />
                               </div>
 
-                              <div className="flex items-center justify-between text-xs text-gray-600 mb-3">
+                              <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-600 mb-2 sm:mb-3">
                                 <div className="flex items-center gap-1">
-                                  <Coins className="w-3 h-3" weight="fill" />
-                                  <span>Best: {bestScore}</span>
+                                  <Coins className="w-3 h-3 flex-shrink-0" weight="fill" />
+                                  <span className="truncate">Best: {bestScore}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Sparkle className="w-3 h-3" weight="fill" />
-                                  <span>{completions} plays</span>
+                                  <Sparkle className="w-3 h-3 flex-shrink-0" weight="fill" />
+                                  <span className="truncate">{completions} plays</span>
                                 </div>
                               </div>
 
                               <Button 
                                 size="sm" 
                                 className={cn(
-                                  "w-full text-xs shadow-md",
+                                  "w-full text-[10px] sm:text-xs shadow-md min-h-[36px]",
                                   `bg-gradient-to-r ${plant.color} hover:opacity-90 text-white`
                                 )}
                                 onClick={() => onGameSelect(plant.gameId)}
@@ -433,13 +433,13 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
                             </>
                           ) : (
                             <div className="text-center py-2">
-                              <p className="text-xs text-gray-500 mb-2">
+                              <p className="text-[10px] sm:text-xs text-gray-500 mb-2">
                                 Play to grow this plant!
                               </p>
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                className="w-full text-xs"
+                                className="w-full text-[10px] sm:text-xs min-h-[36px]"
                                 onClick={() => onGameSelect(plant.gameId)}
                               >
                                 Start Growing
@@ -475,36 +475,36 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
         })}
       </div>
 
-      <div className="absolute top-6 left-6 right-6 z-30">
+      <div className="absolute top-4 sm:top-6 left-2 sm:left-4 md:left-6 right-2 sm:right-4 md:right-6 z-30">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <Card className="shadow-2xl border-2 border-white/50 backdrop-blur-lg bg-white/90">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-green-900 mb-1">
+            <CardContent className="p-3 sm:p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-green-900 mb-1 truncate">
                     Finance Garden
                   </h2>
-                  <p className="text-sm text-green-600">
+                  <p className="text-xs sm:text-sm text-green-600 line-clamp-2">
                     {getEncouragingMessage()}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-green-500 text-white text-lg px-4 py-2 shadow-md">
-                    <Plant className="w-5 h-5 mr-2" weight="fill" />
-                    Health: {overallHealth}%
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <Badge className="bg-green-500 text-white text-sm sm:text-base md:text-lg px-2 sm:px-3 md:px-4 py-1 sm:py-2 shadow-md">
+                    <Plant className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mr-1 sm:mr-2" weight="fill" />
+                    {overallHealth}%
                   </Badge>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
+              <div className="space-y-1 sm:space-y-2">
+                <div className="flex items-center justify-between text-xs sm:text-sm">
                   <span className="text-gray-600 font-medium">Overall Garden Health</span>
                   <span className="font-bold text-green-700">{overallHealth}%</span>
                 </div>
-                <div className="h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+                <div className="h-3 sm:h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                   <motion.div 
                     className="h-full bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 shadow-lg"
                     initial={{ width: 0 }}
@@ -514,24 +514,24 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-900">
                     {plants.filter(p => getPlantGrowth(p.gameId) > 0).length}
                   </p>
-                  <p className="text-xs text-gray-600">Plants Growing</p>
+                  <p className="text-[10px] sm:text-xs text-gray-600">Plants Growing</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-900">
                     {plants.filter(p => getPlantGrowth(p.gameId) >= 75).length}
                   </p>
-                  <p className="text-xs text-gray-600">Fully Bloomed</p>
+                  <p className="text-[10px] sm:text-xs text-gray-600">Fully Bloomed</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-900">
                     {userProfile.gamesCompleted}
                   </p>
-                  <p className="text-xs text-gray-600">Total Harvests</p>
+                  <p className="text-[10px] sm:text-xs text-gray-600">Total Harvests</p>
                 </div>
               </div>
             </CardContent>
@@ -539,15 +539,15 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
         </motion.div>
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30">
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 w-[90%] sm:w-auto max-w-md px-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
           <Card className="shadow-xl border-2 border-white/50 backdrop-blur-lg bg-white/90">
-            <CardContent className="p-4 px-6">
-              <p className="text-sm text-gray-600 text-center">
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xs sm:text-sm text-gray-600 text-center">
                 <span className="font-semibold text-green-700">Click on any plant</span> to play its game and help it grow!
               </p>
             </CardContent>
