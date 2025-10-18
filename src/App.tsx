@@ -95,7 +95,7 @@ function App() {
   })
 
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
-  const [currentMode, setCurrentMode] = useState<LearningMode>(userProfile?.preferredMode || null)
+  const [currentMode, setCurrentMode] = useState<LearningMode>(null)
 
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
@@ -119,45 +119,15 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (userProfile?.preferredMode && !currentMode) {
+    if (userProfile?.preferredMode && currentMode === null) {
       setCurrentMode(userProfile.preferredMode)
     }
-  }, [userProfile?.preferredMode, currentMode])
+  }, [userProfile?.preferredMode])
 
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
       setUserProfile(prev => {
-        if (!prev) {
-          return {
-            name: 'Player',
-            level: 1,
-            xp: 0,
-            totalCoins: 0,
-            gamesCompleted: 0,
-            achievements: [],
-            currentStreak: 0,
-            skillsUnlocked: [],
-            preferredMode: null,
-            preferences: {
-              difficulty: 'adaptive',
-              gameTypes: [],
-              playTime: 'medium'
-            },
-            tierProgression: {
-              currentTierId: 1,
-              tiers: initializeTiers(),
-              skillLines: {
-                cognition: 0,
-                values: 0,
-                morals: 0,
-                faith: 0
-              },
-              availableLineXP: 0
-            }
-          }
-        }
-        
-        if (prev.tierProgression) return prev
+        if (!prev || prev.tierProgression) return prev!
         
         return {
           ...prev,
@@ -175,7 +145,7 @@ function App() {
         }
       })
     }
-  }, [userProfile?.tierProgression, setUserProfile])
+  }, [])
 
   const handleModeSelect = (mode: LearningMode) => {
     setCurrentMode(mode)
@@ -183,24 +153,7 @@ function App() {
     window.history.pushState(newState, '', window.location.href)
     
     setUserProfile(prev => {
-      if (!prev) {
-        return {
-          name: 'Player',
-          level: 1,
-          xp: 0,
-          totalCoins: 0,
-          gamesCompleted: 0,
-          achievements: [],
-          currentStreak: 0,
-          skillsUnlocked: [],
-          preferredMode: mode,
-          preferences: {
-            difficulty: 'adaptive',
-            gameTypes: [],
-            playTime: 'medium'
-          }
-        }
-      }
+      if (!prev) return prev!
       return {
         ...prev,
         preferredMode: mode
@@ -272,7 +225,7 @@ function App() {
         level: newLevel,
         totalCoins: prevProfile.totalCoins + coinsEarned,
         gamesCompleted: prevProfile.gamesCompleted + 1,
-        currentStreak: prevProfile.currentStreak + 1,
+        currentStreak: prevProfile.currentStreak + 1
       }
     })
   }
@@ -373,12 +326,25 @@ function App() {
     )
   }
 
+  if (!userProfile) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground">Loading profile...</p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   if (currentMode === 'creative') {
     return (
       <>
         <Toaster position="top-right" richColors />
         <CreativeModeHub
-          userProfile={userProfile!}
+          userProfile={userProfile}
           setUserProfile={setUserProfile}
           gameScores={gameScores || []}
           onGameComplete={completeGame}
@@ -394,7 +360,7 @@ function App() {
     <>
       <Toaster position="top-right" richColors />
       <StructuredModeHub
-        userProfile={userProfile!}
+        userProfile={userProfile}
         setUserProfile={setUserProfile}
         gameScores={gameScores || []}
         onGameComplete={completeGame}

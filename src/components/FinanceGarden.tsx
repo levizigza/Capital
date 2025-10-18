@@ -129,8 +129,10 @@ const plants: PlantData[] = [
   }
 ]
 
-export default function FinanceGarden({ userProfile, gameScores, onGameSelect }: FinanceGardenProps) {
+export default function FinanceGarden({ userProfile, gameScores = [], onGameSelect }: FinanceGardenProps) {
   const getPlantGrowth = (gameId: string): number => {
+    if (!gameScores || gameScores.length === 0) return 0
+    
     const scores = gameScores.filter(s => s.gameId === gameId)
     if (scores.length === 0) return 0
     
@@ -157,7 +159,7 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
   }
 
   const overallHealth = Math.round(
-    plants.reduce((sum, plant) => sum + getPlantGrowth(plant.gameId), 0) / plants.length
+    plants.reduce((sum, plant) => sum + getPlantGrowth(plant.gameId), 0) / Math.max(1, plants.length)
   )
 
   const getBackgroundGradient = () => {
@@ -297,8 +299,8 @@ export default function FinanceGarden({ userProfile, gameScores, onGameSelect }:
           const growth = getPlantGrowth(plant.gameId)
           const size = getPlantSize(growth)
           const opacity = getPlantOpacity(growth)
-          const completions = gameScores.filter(s => s.gameId === plant.gameId).length
-          const bestScore = gameScores
+          const completions = (gameScores || []).filter(s => s.gameId === plant.gameId).length
+          const bestScore = (gameScores || [])
             .filter(s => s.gameId === plant.gameId)
             .reduce((max, s) => Math.max(max, s.score), 0)
 

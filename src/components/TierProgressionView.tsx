@@ -37,7 +37,7 @@ export function TierProgressionView({
   const [selectedQuest, setSelectedQuest] = useState<Quest | null>(null)
   const [activeTab, setActiveTab] = useState<'ladder' | 'skills'>('ladder')
 
-  const currentTier = userTiers.find(t => t.id === currentTierId)
+  const currentTier = userTiers?.find(t => t.id === currentTierId) || null
   const completedQuests = currentTier?.quests.filter(q => q.completed).length || 0
   const totalQuests = currentTier?.quests.length || 0
   const progressToNextTier = totalQuests > 0 ? (completedQuests / totalQuests) * 100 : 0
@@ -139,7 +139,7 @@ export function TierProgressionView({
               Your Journey
             </h3>
             <div className="space-y-3">
-              {userTiers.map((tier, index) => {
+              {(userTiers || []).map((tier, index) => {
                 const isUnlocked = tier.unlocked
                 const isCurrent = tier.id === currentTierId
                 const isCompleted = tier.completed

@@ -157,7 +157,7 @@ export default function StructuredModeHub({
   ]
 
   const getGameStats = (gameId: string) => {
-    const gameHistory = gameScores.filter(s => s.gameId === gameId)
+    const gameHistory = (gameScores || []).filter(s => s.gameId === gameId)
     return {
       timesPlayed: gameHistory.length,
       highScore: gameHistory.length > 0 ? Math.max(...gameHistory.map(s => s.score)) : 0,
@@ -204,7 +204,7 @@ export default function StructuredModeHub({
       profit: { name: 'Profit Calculation', games: 0, totalScore: 0, icon: <Target className="w-5 h-5" /> }
     }
 
-    gameScores.forEach(score => {
+    ;(gameScores || []).forEach(score => {
       const game = availableGames.find(g => g.id === score.gameId)
       if (game && categories[game.category]) {
         categories[game.category].games++
@@ -223,7 +223,7 @@ export default function StructuredModeHub({
   }, [gameScores])
 
   const progressOverTime = useMemo(() => {
-    if (gameScores.length === 0) return []
+    if (!gameScores || gameScores.length === 0) return []
     
     const dailyScores: { [key: string]: { total: number; count: number } } = {}
     
@@ -244,7 +244,7 @@ export default function StructuredModeHub({
   }, [gameScores])
 
   const leaderboardData = useMemo(() => {
-    const allScores = gameScores.map(score => {
+    const allScores = (gameScores || []).map(score => {
       const game = availableGames.find(g => g.id === score.gameId)
       return {
         ...score,
@@ -263,7 +263,7 @@ export default function StructuredModeHub({
       profit: 0
     }
 
-    gameScores.forEach(score => {
+    ;(gameScores || []).forEach(score => {
       const game = availableGames.find(g => g.id === score.gameId)
       if (game) {
         distribution[game.category]++
@@ -277,8 +277,8 @@ export default function StructuredModeHub({
   }, [gameScores])
 
   const totalTimeSpent = gameScores.reduce((sum, s) => sum + s.timeSpent, 0)
-  const avgScore = gameScores.length > 0 
-    ? Math.round(gameScores.reduce((sum, s) => sum + s.score, 0) / gameScores.length)
+  const avgScore = (gameScores || []).length > 0 
+    ? Math.round((gameScores || []).reduce((sum, s) => sum + s.score, 0) / (gameScores || []).length)
     : 0
   const completionPercentage = Math.min(Math.round((userProfile.gamesCompleted / 50) * 100), 100)
 

@@ -249,9 +249,9 @@ export default function CreativeModeHub({
     return () => window.removeEventListener('popstate', handlePopState)
   }, [selectedGame])
 
-  const xpForNextLevel = Math.floor(100 * Math.pow(1.5, userProfile.level - 1))
+  const xpForNextLevel = Math.max(100, Math.floor(100 * Math.pow(1.5, userProfile.level - 1)))
   const currentLevelXP = userProfile.xp % xpForNextLevel
-  const progressPercent = (currentLevelXP / xpForNextLevel) * 100
+  const progressPercent = Math.min(100, Math.max(0, (currentLevelXP / xpForNextLevel) * 100))
 
   const handleGameStart = (gameId: string) => {
     setSelectedGame(gameId)
@@ -285,6 +285,9 @@ export default function CreativeModeHub({
   }
 
   const checkAndCompleteChallenges = (gameId: string, score: number, timeSpent: number) => {
+    let totalXPReward = 0
+    let totalCoinsReward = 0
+    
     setDailyChallenges(prevChallenges => {
       const updated = (prevChallenges || []).map(challenge => {
         if (challenge.gameId === gameId && !challenge.completed) {
@@ -296,11 +299,8 @@ export default function CreativeModeHub({
           }
           
           if (isCompleted) {
-            setUserProfile(prev => ({
-              ...prev!,
-              xp: prev!.xp + challenge.reward.xp,
-              totalCoins: prev!.totalCoins + challenge.reward.coins
-            }))
+            totalXPReward += challenge.reward.xp
+            totalCoinsReward += challenge.reward.coins
             
             toast.success('🎯 Challenge Complete!', {
               description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
@@ -321,11 +321,8 @@ export default function CreativeModeHub({
           const isCompleted = newProgress >= challenge.target
           
           if (isCompleted) {
-            setUserProfile(prev => ({
-              ...prev!,
-              xp: prev!.xp + challenge.reward.xp,
-              totalCoins: prev!.totalCoins + challenge.reward.coins
-            }))
+            totalXPReward += challenge.reward.xp
+            totalCoinsReward += challenge.reward.coins
             
             toast.success('🏆 Weekly Challenge Complete!', {
               description: `+${challenge.reward.xp} XP, +${challenge.reward.coins} coins`
@@ -338,6 +335,14 @@ export default function CreativeModeHub({
       })
       return updated
     })
+    
+    if (totalXPReward > 0 || totalCoinsReward > 0) {
+      setUserProfile(prev => ({
+        ...prev!,
+        xp: prev!.xp + totalXPReward,
+        totalCoins: prev!.totalCoins + totalCoinsReward
+      }))
+    }
   }
 
   const initializeChallenges = () => {
