@@ -7,7 +7,7 @@ import {
   Trophy, Fire, Coins, Calculator, TrendUp, CreditCard, 
   Building, Target, Clock, Star, Lightbulb, ChartLine,
   Brain, Rocket, Lightning, FlagBanner, CheckCircle, 
-  CalendarBlank, Timer, Storefront
+  CalendarBlank, Timer, Storefront, Path
 } from '@phosphor-icons/react'
 import FinanceGarden from '@/components/FinanceGarden'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,8 @@ import { CompoundGrowth } from '@/game/components/CompoundGrowth'
 import { LemonadeBossGame } from '@/game/components/games/LemonadeBossGame'
 import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 import type { GameScore } from '@/App'
+import { TierProgressionView } from '@/components/TierProgressionView'
+import type { SkillLine } from '@/data/tiers'
 
 interface CreativeModeHubProps {
   userProfile: {
@@ -43,11 +45,19 @@ interface CreativeModeHubProps {
       gardenLevel: number
       unlockedAreas: string[]
     }
+    tierProgression?: {
+      currentTierId: number
+      tiers: Array<any>
+      skillLines: Record<SkillLine, number>
+      availableLineXP: number
+    }
   }
   setUserProfile: (updater: (prev: any) => any) => void
   gameScores: GameScore[]
   onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
   onModeSwitch: () => void
+  onQuestComplete: (tierId: number, questId: string) => void
+  onAllocateLineXP: (line: SkillLine, amount: number) => void
 }
 
 interface GameInfo {
@@ -197,12 +207,14 @@ export default function CreativeModeHub({
   setUserProfile,
   gameScores,
   onGameComplete,
-  onModeSwitch
+  onModeSwitch,
+  onQuestComplete,
+  onAllocateLineXP
 }: CreativeModeHubProps) {
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
   const [gameStartTime, setGameStartTime] = useState<number>(0)
   const [showSettings, setShowSettings] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'mini-games' | 'adventures' | 'challenges' | 'progress'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'mini-games' | 'adventures' | 'challenges' | 'progress' | 'progression'>('overview')
   
   const [dailyChallenges, setDailyChallenges] = useKV<Array<{
     id: string
@@ -503,10 +515,14 @@ export default function CreativeModeHub({
 
       <main className="container mx-auto px-6 py-12">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="space-y-8">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-5 bg-white/80 border border-green-200 shadow-sm h-auto">
+          <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-6 bg-white/80 border border-green-200 shadow-sm h-auto">
             <TabsTrigger value="overview" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
               <Plant className="w-4 h-4 mr-2" />
               Garden
+            </TabsTrigger>
+            <TabsTrigger value="progression" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
+              <Path className="w-4 h-4 mr-2" />
+              Progression
             </TabsTrigger>
             <TabsTrigger value="mini-games" className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900 py-3">
               <Lightning className="w-4 h-4 mr-2" />
@@ -570,6 +586,26 @@ export default function CreativeModeHub({
                 </CardContent>
               </Card>
             </motion.div>
+          </TabsContent>
+
+          <TabsContent value="progression" className="space-y-6">
+            {userProfile.tierProgression ? (
+              <TierProgressionView
+                userTiers={userProfile.tierProgression.tiers}
+                currentTierId={userProfile.tierProgression.currentTierId}
+                skillLines={userProfile.tierProgression.skillLines}
+                onQuestComplete={onQuestComplete}
+                onAllocateLineXP={onAllocateLineXP}
+                availableLineXP={userProfile.tierProgression.availableLineXP}
+              />
+            ) : (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <Path className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                  <p className="text-muted-foreground">Tier progression system loading...</p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="mini-games" className="space-y-8">

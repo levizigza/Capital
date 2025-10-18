@@ -4,6 +4,8 @@ import { Toaster } from 'sonner'
 import ModeSelection from '@/components/ModeSelection'
 import CreativeModeHub from '@/components/CreativeModeHub'
 import StructuredModeHub from '@/components/StructuredModeHub'
+import type { Tier, SkillLine } from '@/data/tiers'
+import { TIER_DATA } from '@/data/tiers'
 
 export type LearningMode = 'creative' | 'structured' | null
 
@@ -27,6 +29,12 @@ interface UserProfile {
     gameTypes: string[]
     playTime: 'short' | 'medium' | 'long'
   }
+  tierProgression?: {
+    currentTierId: number
+    tiers: Tier[]
+    skillLines: Record<SkillLine, number>
+    availableLineXP: number
+  }
 }
 
 export interface GameScore {
@@ -45,6 +53,14 @@ export interface GameScore {
 }
 
 function App() {
+  const initializeTiers = (): Tier[] => {
+    return TIER_DATA.map((tierData, index) => ({
+      ...tierData,
+      unlocked: index === 0,
+      completed: false
+    }))
+  }
+
   const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', {
     name: '',
     level: 1,
@@ -59,6 +75,17 @@ function App() {
       difficulty: 'adaptive',
       gameTypes: [],
       playTime: 'medium'
+    },
+    tierProgression: {
+      currentTierId: 1,
+      tiers: initializeTiers(),
+      skillLines: {
+        cognition: 0,
+        values: 0,
+        morals: 0,
+        faith: 0
+      },
+      availableLineXP: 0
     }
   })
 
@@ -70,6 +97,25 @@ function App() {
       setCurrentMode(userProfile.preferredMode)
     }
   }, [userProfile?.preferredMode, currentMode])
+
+  useEffect(() => {
+    if (userProfile && !userProfile.tierProgression) {
+      setUserProfile(prev => ({
+        ...prev!,
+        tierProgression: {
+          currentTierId: 1,
+          tiers: initializeTiers(),
+          skillLines: {
+            cognition: 0,
+            values: 0,
+            morals: 0,
+            faith: 0
+          },
+          availableLineXP: 0
+        }
+      }))
+    }
+  }, [userProfile])
 
   const handleModeSelect = (mode: LearningMode) => {
     setCurrentMode(mode)
@@ -136,6 +182,17 @@ function App() {
             difficulty: 'adaptive',
             gameTypes: [],
             playTime: 'medium'
+          },
+          tierProgression: {
+            currentTierId: 1,
+            tiers: initializeTiers(),
+            skillLines: {
+              cognition: 0,
+              values: 0,
+              morals: 0,
+              faith: 0
+            },
+            availableLineXP: 0
           }
         }
         return defaultProfile
@@ -151,6 +208,93 @@ function App() {
         totalCoins: prevProfile.totalCoins + coinsEarned,
         gamesCompleted: prevProfile.gamesCompleted + 1,
         currentStreak: prevProfile.currentStreak + 1,
+      }
+    })
+  }
+
+  const handleQuestComplete = (tierId: number, questId: string) => {
+    setUserProfile(prevProfile => {
+      if (!prevProfile?.tierProgression) return prevProfile!
+
+      const updatedTiers = prevProfile.tierProgression.tiers.map(tier => {
+        if (tier.id === tierId) {
+          const updatedQuests = tier.quests.map(quest => {
+            if (quest.id === questId && !quest.completed) {
+              const financialComplete = quest.financialKPI.current >= quest.financialKPI.target
+              const softSkillComplete = quest.softSkillKPI.completed
+              
+              if (financialComplete && softSkillComplete) {
+                return { ...quest, completed: true }
+              }
+            }
+            return quest
+          })
+
+          const allQuestsComplete = updatedQuests.every(q => q.completed)
+          
+          return {
+            ...tier,
+            quests: updatedQuests,
+            completed: allQuestsComplete
+          }
+        }
+        return tier
+      })
+
+      const currentTier = updatedTiers.find(t => t.id === tierId)
+      const completedQuest = currentTier?.quests.find(q => q.id === questId && q.completed)
+      
+      let newXP = prevProfile.xp
+      let newAvailableLineXP = prevProfile.tierProgression.availableLineXP
+      let newLevel = prevProfile.level
+
+      if (completedQuest && !prevProfile.tierProgression.tiers.find(t => t.id === tierId)?.quests.find(q => q.id === questId)?.completed) {
+        newXP += completedQuest.financeXP
+        newAvailableLineXP += completedQuest.lineXPReward
+        newLevel = Math.floor(newXP / 100) + 1
+      }
+
+      const currentTierComplete = currentTier?.completed
+      let newCurrentTierId = prevProfile.tierProgression.currentTierId
+      
+      if (currentTierComplete && tierId === prevProfile.tierProgression.currentTierId) {
+        const nextTier = updatedTiers.find(t => t.id === tierId + 1)
+        if (nextTier) {
+          updatedTiers[tierId] = { ...updatedTiers[tierId], unlocked: true }
+          newCurrentTierId = tierId + 1
+        }
+      }
+
+      return {
+        ...prevProfile,
+        xp: newXP,
+        level: newLevel,
+        tierProgression: {
+          ...prevProfile.tierProgression,
+          currentTierId: newCurrentTierId,
+          tiers: updatedTiers,
+          availableLineXP: newAvailableLineXP
+        }
+      }
+    })
+  }
+
+  const handleAllocateLineXP = (line: SkillLine, amount: number) => {
+    setUserProfile(prevProfile => {
+      if (!prevProfile?.tierProgression) return prevProfile!
+      
+      if (prevProfile.tierProgression.availableLineXP < amount) return prevProfile
+
+      return {
+        ...prevProfile,
+        tierProgression: {
+          ...prevProfile.tierProgression,
+          skillLines: {
+            ...prevProfile.tierProgression.skillLines,
+            [line]: prevProfile.tierProgression.skillLines[line] + amount
+          },
+          availableLineXP: prevProfile.tierProgression.availableLineXP - amount
+        }
       }
     })
   }
@@ -174,6 +318,8 @@ function App() {
           gameScores={gameScores || []}
           onGameComplete={completeGame}
           onModeSwitch={handleModeSwitch}
+          onQuestComplete={handleQuestComplete}
+          onAllocateLineXP={handleAllocateLineXP}
         />
       </>
     )
@@ -188,6 +334,8 @@ function App() {
         gameScores={gameScores || []}
         onGameComplete={completeGame}
         onModeSwitch={handleModeSwitch}
+        onQuestComplete={handleQuestComplete}
+        onAllocateLineXP={handleAllocateLineXP}
       />
     </>
   )

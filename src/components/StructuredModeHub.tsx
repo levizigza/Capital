@@ -6,7 +6,8 @@ import {
   GameController, GearSix, ArrowsClockwise, Calendar,
   CheckCircle, Clock, Trophy, Coins, Moon, Sun,
   Play, ChartPie, SortAscending, SortDescending,
-  Medal, Fire, Sparkle, Wallet, Bank, CreditCard, ChartLineUp
+  Medal, Fire, Sparkle, Wallet, Bank, CreditCard, ChartLineUp,
+  Path
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,6 +25,8 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
+import { TierProgressionView } from '@/components/TierProgressionView'
+import type { SkillLine } from '@/data/tiers'
 
 interface StructuredModeHubProps {
   userProfile: {
@@ -34,11 +37,19 @@ interface StructuredModeHubProps {
     gamesCompleted: number
     achievements: string[]
     currentStreak: number
+    tierProgression?: {
+      currentTierId: number
+      tiers: Array<any>
+      skillLines: Record<SkillLine, number>
+      availableLineXP: number
+    }
   }
   setUserProfile: (updater: (prev: any) => any) => void
   gameScores: GameScore[]
   onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
   onModeSwitch: () => void
+  onQuestComplete: (tierId: number, questId: string) => void
+  onAllocateLineXP: (line: SkillLine, amount: number) => void
 }
 
 interface GameInfo {
@@ -67,7 +78,9 @@ export default function StructuredModeHub({
   setUserProfile,
   gameScores,
   onGameComplete,
-  onModeSwitch
+  onModeSwitch,
+  onQuestComplete,
+  onAllocateLineXP
 }: StructuredModeHubProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -365,6 +378,10 @@ export default function StructuredModeHub({
                 <ChartBar className="w-4 h-4 mr-2" />
                 Dashboard
               </TabsTrigger>
+              <TabsTrigger value="progression">
+                <Path className="w-4 h-4 mr-2" />
+                Progression
+              </TabsTrigger>
               <TabsTrigger value="games">
                 <GameController className="w-4 h-4 mr-2" />
                 Games
@@ -512,6 +529,26 @@ export default function StructuredModeHub({
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="progression" className="space-y-6">
+              {userProfile.tierProgression ? (
+                <TierProgressionView
+                  userTiers={userProfile.tierProgression.tiers}
+                  currentTierId={userProfile.tierProgression.currentTierId}
+                  skillLines={userProfile.tierProgression.skillLines}
+                  onQuestComplete={onQuestComplete}
+                  onAllocateLineXP={onAllocateLineXP}
+                  availableLineXP={userProfile.tierProgression.availableLineXP}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Path className="w-16 h-16 mx-auto mb-4 opacity-20" />
+                    <p className="text-muted-foreground">Tier progression system loading...</p>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="games" className="space-y-6">

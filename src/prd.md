@@ -252,7 +252,44 @@
 
 This approach uniquely combines sophisticated game development with serious financial education, creating an experience that's both engaging and genuinely educational. The focus on consequence-driven learning and real-world application sets it apart from both traditional educational apps and simple gamification approaches.
 
-## Implemented Games (Latest Update - Professional UX Enhanced)
+## Implemented Games (Latest Update - Professional UX Enhanced + Tier Progression System)
+
+### Tier-Based Progression System
+FinanceQuest Pro now features an 8-tier progression system that guides users through increasingly sophisticated financial mastery:
+
+**Tier Structure:**
+1. **Survive (Red)** - Basic needs budgeting and expense awareness
+2. **Connect (Purple)** - Shared finances and family budgeting  
+3. **Control (Blue)** - Self-discipline and emergency funds
+4. **Achieve (Orange)** - Goal-setting and investments
+5. **Belong (Green)** - Community financial wellness
+6. **Understand (Yellow)** - Complex financial systems
+7. **Harmonize (Teal)** - Integrated money management
+8. **Sanctify (Turquoise)** - Financial wisdom mastery
+
+**Quest System:**
+- Each tier contains 3-5 quests that must be completed to advance
+- Every quest requires BOTH:
+  - **Financial KPI**: Measurable financial action (e.g., "Save $500 in emergency fund")
+  - **Soft Skill KPI**: Human development component (e.g., "Share your strategy with others")
+- Completing quests awards Finance-XP (levels up user) and Line-XP (allocatable to skill lines)
+
+**Skill Lines System:**
+Users independently level up four dimensions of financial wisdom:
+- 🧠 **Cognition**: Analytical thinking and financial problem-solving
+- ⚖️ **Values**: Understanding financial priorities and trade-offs  
+- 💚 **Morals**: Ethical money decisions and social impact
+- ✨ **Faith**: Long-term vision and financial wisdom
+
+Line-XP earned from quests can be allocated by users to develop their preferred skill dimensions, creating personalized progression paths.
+
+**UI Features:**
+- Visual tier ladder showing current position and locked future tiers
+- Progress bars indicating advancement toward next tier
+- Distinct color-coded badges for each tier
+- Skill tree interface for Line-XP allocation
+- Quest tracking with dual KPI requirements
+- Available in both Creative and Structured modes via "Progression" tab
 
 ### Main Adventure Games (Fully Polished with Professional UX)
 1. **Coin Catcher** - Fast-paced savings game with:
