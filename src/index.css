@@ -8,41 +8,87 @@
 }
 
 :root {
-  /* Base theme for shared games - Colorful Retro Mobile Game Style */
-  --background: oklch(0.98 0.008 240);
-  --foreground: oklch(0.12 0.015 240);
+  /* Enhanced Color System - Based on Color Theory Principles */
+  --background: oklch(0.99 0.005 240);
+  --background-subtle: oklch(0.97 0.008 240);
+  --foreground: oklch(0.18 0.015 240);
+  --foreground-muted: oklch(0.42 0.010 240);
+  
+  /* Cards with elevated hierarchy */
   --card: oklch(1.0 0.0 0);
-  --card-foreground: oklch(0.12 0.015 240);
+  --card-foreground: oklch(0.18 0.015 240);
+  --card-hover: oklch(0.98 0.005 240);
+  
+  /* Popovers and overlays */
   --popover: oklch(1.0 0.0 0);
-  --popover-foreground: oklch(0.12 0.015 240);
+  --popover-foreground: oklch(0.18 0.015 240);
   
-  /* Primary: Electric Purple for games */
-  --primary: oklch(0.55 0.20 290);
-  --primary-foreground: oklch(0.98 0.005 240);
+  /* Primary: Refined Electric Purple (Analogous harmony: 260-290) */
+  --primary: oklch(0.55 0.20 280);
+  --primary-light: oklch(0.70 0.16 280);
+  --primary-dark: oklch(0.40 0.24 280);
+  --primary-foreground: oklch(0.98 0.005 280);
   
-  /* Secondary: Bright Cyan */
-  --secondary: oklch(0.70 0.15 200);
-  --secondary-foreground: oklch(0.12 0.015 240);
+  /* Secondary: Bright Cyan (Complementary to primary: ~100° difference) */
+  --secondary: oklch(0.68 0.16 200);
+  --secondary-light: oklch(0.78 0.13 200);
+  --secondary-dark: oklch(0.53 0.19 200);
+  --secondary-foreground: oklch(0.15 0.015 200);
   
-  /* Muted: Sophisticated grays */
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.45 0.008 240);
+  /* Accent: Warm Coral (Triadic harmony) */
+  --accent: oklch(0.70 0.18 25);
+  --accent-light: oklch(0.80 0.15 25);
+  --accent-dark: oklch(0.60 0.21 25);
+  --accent-foreground: oklch(0.15 0.015 25);
   
-  /* Accent: Hot Pink */
-  --accent: oklch(0.65 0.22 350);
-  --accent-foreground: oklch(0.98 0.005 240);
+  /* Muted: Sophisticated neutrals with subtle warmth */
+  --muted: oklch(0.96 0.008 240);
+  --muted-light: oklch(0.98 0.005 240);
+  --muted-dark: oklch(0.92 0.012 240);
+  --muted-foreground: oklch(0.48 0.010 240);
   
-  /* Destructive: Professional red */
-  --destructive: oklch(0.58 0.20 25);
-  --destructive-foreground: oklch(0.98 0.005 240);
+  /* Semantic Colors - Enhanced for accessibility */
+  --success: oklch(0.58 0.18 145);
+  --success-light: oklch(0.73 0.15 145);
+  --success-foreground: oklch(0.98 0.005 145);
   
-  /* Borders and Inputs */
-  --border: oklch(0.88 0.02 240);
+  --warning: oklch(0.72 0.16 80);
+  --warning-light: oklch(0.82 0.13 80);
+  --warning-foreground: oklch(0.15 0.015 80);
+  
+  --error: oklch(0.58 0.22 25);
+  --error-light: oklch(0.73 0.18 25);
+  --error-foreground: oklch(0.98 0.005 25);
+  
+  --info: oklch(0.62 0.15 240);
+  --info-light: oklch(0.77 0.12 240);
+  --info-foreground: oklch(0.98 0.005 240);
+  
+  /* Borders with depth */
+  --border: oklch(0.90 0.008 240);
+  --border-light: oklch(0.94 0.005 240);
+  --border-dark: oklch(0.82 0.012 240);
+  
+  /* Input states */
   --input: oklch(0.92 0.008 240);
-  --ring: oklch(0.55 0.20 290);
+  --input-hover: oklch(0.88 0.012 240);
+  --input-focus: oklch(0.98 0.005 240);
   
-  /* Modern border radius with gaming feel */
+  /* Focus ring with accessibility */
+  --ring: oklch(0.55 0.20 280);
+  --ring-offset: oklch(1.0 0.0 0);
+  
+  /* Shadows for depth perception */
+  --shadow-sm: 0 1px 2px 0 oklch(0.18 0.015 240 / 0.05);
+  --shadow-md: 0 4px 6px -1px oklch(0.18 0.015 240 / 0.1), 0 2px 4px -2px oklch(0.18 0.015 240 / 0.1);
+  --shadow-lg: 0 10px 15px -3px oklch(0.18 0.015 240 / 0.1), 0 4px 6px -4px oklch(0.18 0.015 240 / 0.1);
+  --shadow-xl: 0 20px 25px -5px oklch(0.18 0.015 240 / 0.1), 0 8px 10px -6px oklch(0.18 0.015 240 / 0.1);
+  
+  /* Border radius following golden ratio */
   --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
 .dark {
@@ -110,13 +156,82 @@ body {
   background: var(--background);
   color: var(--foreground);
   line-height: 1.6;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
-/* Enhanced button states and interactions */
+/* Enhanced Typography System */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+  margin-bottom: 0.5em;
+}
+
+h1 { 
+  font-size: clamp(2rem, 5vw, 3rem); 
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+h2 { 
+  font-size: clamp(1.5rem, 4vw, 2.25rem); 
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+h3 { 
+  font-size: clamp(1.25rem, 3vw, 1.875rem); 
+  font-weight: 600;
+}
+
+h4 { 
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem); 
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+  max-width: 65ch;
+}
+
+small {
+  font-size: 0.875em;
+  color: var(--muted-foreground);
+}
+
+strong {
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+/* Optimal reading experience */
+.prose {
+  max-width: 65ch;
+  line-height: 1.75;
+  font-size: 1.0625rem;
+}
+
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose h2 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.prose h3 {
+  margin-top: 1.75em;
+  margin-bottom: 0.75em;
+}
+
+/* Enhanced button states and interactions - Following Fitts's Law */
 button:disabled, 
 [disabled], 
 [aria-disabled="true"] {
@@ -127,9 +242,20 @@ button:disabled,
 
 button:not(:disabled):not([aria-disabled="true"]) {
   cursor: pointer;
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Ensure all interactive elements have proper cursor and touch target */
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Enhanced interactive elements with proper touch targets (44px minimum) */
 button, 
 a, 
 [role="button"],
@@ -137,13 +263,66 @@ a,
 [role="menuitem"],
 .cursor-pointer {
   cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  touch-action: manipulation;
 }
 
-/* Prevent double-tap zoom on buttons */
-button {
-  touch-action: manipulation;
+/* Visual feedback for interactive elements */
+button, a, [role="button"] {
+  position: relative;
+  overflow: hidden;
+}
+
+button::before, a::before, [role="button"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: oklch(1 0 0 / 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:active::before, a:active::before, [role="button"]:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Enhanced focus indicators for accessibility */
+*:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+  transition: outline-offset 150ms ease;
+}
+
+*:focus-visible:hover {
+  outline-offset: 4px;
+}
+
+/* Skip to main content for keyboard navigation */
+.skip-to-main {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: top 200ms ease;
+}
+
+.skip-to-main:focus {
+  top: 1rem;
 }
 
 /* Ensure z-index layering is correct */
@@ -219,24 +398,187 @@ img, video, canvas, svg {
   }
 }
 
+/* Enhanced responsive design following mobile-first principles */
 @media (max-width: 768px) {
   body {
     font-size: 16px;
+    line-height: 1.5;
   }
   
   h1 {
-    font-size: 1.75rem;
-    line-height: 1.2;
+    font-size: 2rem;
+    line-height: 1.15;
+    margin-bottom: 1rem;
   }
   
   h2 {
     font-size: 1.5rem;
-    line-height: 1.3;
+    line-height: 1.25;
+    margin-bottom: 0.875rem;
   }
   
   h3 {
     font-size: 1.25rem;
-    line-height: 1.4;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Larger touch targets on mobile */
+  button, a, [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+    font-size: 1rem;
+  }
+  
+  /* Adjusted spacing for mobile */
+  .glass-card, .elevated-card {
+    padding: 1rem;
+    border-radius: var(--radius);
+  }
+  
+  /* Stack layouts vertically on mobile */
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+  .responsive-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  /* Parallax hover effects on desktop */
+  .elevated-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+/* Large screens - prevent content from stretching too wide */
+@media (min-width: 1536px) {
+  .container-bounded {
+    max-width: 1536px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Utility classes following design system */
+.spacing-xs { padding: 0.25rem; }
+.spacing-sm { padding: 0.5rem; }
+.spacing-md { padding: 1rem; }
+.spacing-lg { padding: 1.5rem; }
+.spacing-xl { padding: 2rem; }
+.spacing-2xl { padding: 3rem; }
+
+.gap-xs { gap: 0.25rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 1rem; }
+.gap-lg { gap: 1.5rem; }
+.gap-xl { gap: 2rem; }
+.gap-2xl { gap: 3rem; }
+
+/* Visual hierarchy helpers */
+.text-primary { color: var(--foreground); }
+.text-secondary { color: var(--foreground-muted); }
+.text-muted { color: var(--muted-foreground); }
+
+.bg-primary { background: var(--primary); color: var(--primary-foreground); }
+.bg-secondary { background: var(--secondary); color: var(--secondary-foreground); }
+.bg-accent { background: var(--accent); color: var(--accent-foreground); }
+.bg-muted { background: var(--muted); color: var(--muted-foreground); }
+
+/* Rule of thirds layout helper */
+.layout-thirds {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .layout-thirds {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Golden ratio layout helper */
+.layout-golden {
+  display: grid;
+  grid-template-columns: 1.618fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .layout-golden {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Visual balance with asymmetric layouts */
+.layout-asymmetric {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .layout-asymmetric {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Focal point positioning */
+.focal-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.focal-golden-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 38.2vh;
+}
+
+/* Proximity grouping */
+.group-related {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.group-separate {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Card grid with optimal spacing */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -1235,19 +1577,223 @@ html {
   }
 }
 
-/* Glassmorphism effects for modern design */
+/* Enhanced glassmorphism with proper depth */
 .glass-card {
-  background: oklch(0.98 0.01 240 / 0.8);
-  backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid oklch(0.88 0.02 240 / 0.3);
+  background: oklch(1 0 0 / 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid oklch(0.90 0.008 240 / 0.3);
+  box-shadow: 
+    0 8px 32px oklch(0.18 0.015 240 / 0.08),
+    0 1px 0 oklch(1 0 0 / 0.1) inset,
+    0 0 0 1px oklch(1 0 0 / 0.05) inset;
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Sophisticated data visualization styles */
+.glass-card:hover {
+  background: oklch(1 0 0 / 0.9);
+  border-color: oklch(0.82 0.012 240 / 0.4);
+  box-shadow: 
+    0 12px 40px oklch(0.18 0.015 240 / 0.12),
+    0 1px 0 oklch(1 0 0 / 0.15) inset,
+    0 0 0 1px oklch(1 0 0 / 0.08) inset;
+  transform: translateY(-2px);
+}
+
+/* Enhanced card with elevation */
+.elevated-card {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elevated-card:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-3px);
+}
+
+/* Card with subtle gradient background */
+.gradient-card {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--card) 0%,
+    var(--muted-light) 100%
+  );
+  overflow: hidden;
+}
+
+.gradient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 30% 20%,
+    oklch(0.55 0.20 280 / 0.05) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+}
+
+/* Sophisticated data visualization styles with better readability */
 .chart-container {
   background: var(--card);
   border-radius: var(--radius-lg);
-  padding: 1rem;
-  box-shadow: 0 4px 12px oklch(0.35 0.12 240 / 0.1);
+  padding: 1.5rem;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 250ms ease;
+}
+
+.chart-container:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Enhanced animations following principles of motion design */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Attention-grabbing animations with purpose */
+.animate-fade-in {
+  animation: fadeIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Staggered animations for lists */
+.stagger-item {
+  animation: fadeIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 100ms; }
+.stagger-item:nth-child(4) { animation-delay: 150ms; }
+.stagger-item:nth-child(5) { animation-delay: 200ms; }
+.stagger-item:nth-child(6) { animation-delay: 250ms; }
+.stagger-item:nth-child(7) { animation-delay: 300ms; }
+.stagger-item:nth-child(8) { animation-delay: 350ms; }
+
+/* Loading states with shimmer effect */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    var(--muted-light) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius);
+}
+
+/* Smooth state transitions */
+.transition-smooth {
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-fast {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-slow {
+  transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Game event notification styles */
