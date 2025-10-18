@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Pause, Play, Coins, X, Heart, Star } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 interface CoinCatcherGameProps {
   onComplete: (score: number, additionalData?: Record<string, unknown>) => void
@@ -292,7 +293,7 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
     }
   }, [lives, gameState])
 
-  const startGame = () => {
+  const startGame = useThrottledCallback(() => {
     setGameState('playing')
     setScore(0)
     setLives(3)
@@ -304,13 +305,13 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
     setCombo(0)
     setItemsCaught(0)
     setItemsAvoided(0)
-  }
+  }, 500)
 
-  const pauseGame = () => {
+  const pauseGame = useThrottledCallback(() => {
     setGameState(gameState === 'paused' ? 'playing' : 'paused')
-  }
+  }, 300)
 
-  const endGame = () => {
+  const endGame = useThrottledCallback(() => {
     const accuracy = itemsCaught / Math.max(1, itemsCaught + (3 - lives))
     const finalScore = Math.max(score, 0)
     
@@ -321,7 +322,11 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
       livesRemaining: lives,
       maxCombo: combo
     })
-  }
+  }, 500)
+
+  const handleExit = useThrottledCallback(() => {
+    onExit()
+  }, 500)
 
   if (gameState === 'ended') {
     const accuracy = itemsCaught / Math.max(1, itemsCaught + (3 - lives))
@@ -433,7 +438,7 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onExit} className="hover:bg-primary/10">
+              <Button variant="ghost" size="sm" onClick={handleExit} className="hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Exit
               </Button>

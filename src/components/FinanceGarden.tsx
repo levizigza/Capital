@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
 import type { GameScore } from '@/App'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 interface FinanceGardenProps {
   userProfile: {
@@ -131,6 +132,10 @@ const plants: PlantData[] = [
 
 export default function FinanceGarden({ userProfile, gameScores = [], onGameSelect }: FinanceGardenProps) {
   const [hoveredPlant, setHoveredPlant] = useState<string | null>(null)
+  
+  const handleGameSelect = useThrottledCallback((gameId: string) => {
+    onGameSelect(gameId)
+  }, 500)
 
   const plantGrowthMap = useMemo(() => {
     const growthMap = new Map<string, number>()
@@ -345,7 +350,23 @@ export default function FinanceGarden({ userProfile, gameScores = [], onGameSele
               }}
               onHoverStart={() => setHoveredPlant(plant.id)}
               onHoverEnd={() => setHoveredPlant(null)}
-              onClick={() => growth > 0 ? onGameSelect(plant.gameId) : null}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (growth > 0) handleGameSelect(plant.gameId)
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+                if (growth > 0) handleGameSelect(plant.gameId)
+              }}
+              role="button"
+              tabIndex={growth > 0 ? 0 : -1}
+              onKeyDown={(e) => {
+                if (growth > 0 && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleGameSelect(plant.gameId)
+                }
+              }}
             >
               <motion.div
                 className={cn(
@@ -441,10 +462,10 @@ export default function FinanceGarden({ userProfile, gameScores = [], onGameSele
                               <Button 
                                 size="sm" 
                                 className={cn(
-                                  "w-full text-[10px] sm:text-xs shadow-md min-h-[36px]",
+                                  "w-full text-[10px] sm:text-xs shadow-md min-h-[36px] pointer-events-none",
                                   `bg-gradient-to-r ${plant.color} hover:opacity-90 text-white`
                                 )}
-                                onClick={() => onGameSelect(plant.gameId)}
+                                tabIndex={-1}
                               >
                                 Play Game
                               </Button>

@@ -116,6 +116,64 @@ body {
   overflow-x: hidden;
 }
 
+/* Enhanced button states and interactions */
+button:disabled, 
+[disabled], 
+[aria-disabled="true"] {
+  pointer-events: none !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+button:not(:disabled):not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* Ensure all interactive elements have proper cursor and touch target */
+button, 
+a, 
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+.cursor-pointer {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Prevent double-tap zoom on buttons */
+button {
+  touch-action: manipulation;
+}
+
+/* Ensure z-index layering is correct */
+.dialog-overlay,
+[data-radix-portal] {
+  z-index: 9998 !important;
+}
+
+.toast-container {
+  z-index: 9999 !important;
+}
+
+/* Fix any pointer-events issues */
+.pointer-events-none {
+  pointer-events: none !important;
+}
+
+.pointer-events-auto {
+  pointer-events: auto !important;
+}
+
+/* Ensure motion.div doesn't block clicks unless intended */
+[data-framer-component-type] {
+  pointer-events: auto;
+}
+
+[data-framer-component-type].no-pointer {
+  pointer-events: none;
+}
+
 * {
   box-sizing: border-box;
 }

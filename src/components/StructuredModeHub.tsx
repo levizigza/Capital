@@ -27,6 +27,7 @@ import {
 } from 'recharts'
 import { TierProgressionView } from '@/components/TierProgressionView'
 import type { SkillLine } from '@/data/tiers'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 import type { UserProfile } from '@/App'
 
@@ -300,19 +301,19 @@ export default function StructuredModeHub({
     })
   }
 
-  const handleGameStart = () => {
+  const handleGameStart = useThrottledCallback(() => {
     setIsPlaying(true)
     window.history.pushState({ mode: 'structured', playing: true }, '', window.location.href)
-  }
+  }, 500)
 
-  const handleGameExit = () => {
+  const handleGameExit = useCallback(() => {
     setIsPlaying(false)
     if (window.history.state && window.history.state.playing) {
       window.history.back()
     } else {
       window.history.pushState({ mode: 'structured', playing: false }, '', window.location.href)
     }
-  }
+  }, [])
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {

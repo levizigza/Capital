@@ -30,6 +30,7 @@ import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 import type { GameScore } from '@/App'
 import { TierProgressionView } from '@/components/TierProgressionView'
 import type { SkillLine } from '@/data/tiers'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 import type { Tier } from '@/data/tiers'
 import type { UserProfile } from '@/App'
@@ -243,11 +244,11 @@ export default function CreativeModeHub({
   const currentLevelXP = userProfile.xp % xpForNextLevel
   const progressPercent = Math.min(100, Math.max(0, (currentLevelXP / xpForNextLevel) * 100))
 
-  const handleGameStart = (gameId: string): void => {
+  const handleGameStart = useThrottledCallback((gameId: string): void => {
     setSelectedGame(gameId)
     setGameStartTime(Date.now())
     window.history.pushState({ mode: 'creative', game: gameId }, '', window.location.href)
-  }
+  }, 500)
 
   const handleGameComplete = (score: number, additionalData?: Record<string, unknown>) => {
     if (selectedGame) {

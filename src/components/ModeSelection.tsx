@@ -3,12 +3,17 @@ import { Plant, ChartBar, Sparkle, TrendUp } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { LearningMode } from '@/App'
+import { useThrottledCallback } from '@/hooks/use-debounced-callback'
 
 interface ModeSelectionProps {
   onSelectMode: (mode: LearningMode) => void
 }
 
 export default function ModeSelection({ onSelectMode }: ModeSelectionProps) {
+  const handleSelectMode = useThrottledCallback((mode: LearningMode) => {
+    onSelectMode(mode)
+  }, 500)
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-4 sm:p-6">
       <motion.div 
@@ -54,8 +59,18 @@ export default function ModeSelection({ onSelectMode }: ModeSelectionProps) {
             whileHover={{ scale: 1.02 }}
             className="w-full"
           >
-            <Card className="p-4 sm:p-6 md:p-8 h-full border-2 border-green-200/50 hover:border-green-400/50 transition-all duration-300 bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm cursor-pointer group shadow-xl hover:shadow-2xl"
-              onClick={() => onSelectMode('creative')}
+            <Card 
+              className="p-4 sm:p-6 md:p-8 h-full border-2 border-green-200/50 hover:border-green-400/50 transition-all duration-300 bg-gradient-to-br from-green-50/80 to-emerald-50/80 backdrop-blur-sm cursor-pointer group shadow-xl hover:shadow-2xl"
+              onClick={() => handleSelectMode('creative')}
+              onTouchStart={() => handleSelectMode('creative')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelectMode('creative')
+                }
+              }}
             >
               <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0">
@@ -91,7 +106,8 @@ export default function ModeSelection({ onSelectMode }: ModeSelectionProps) {
 
                 <Button 
                   size="lg"
-                  className="w-full min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-base sm:text-lg py-3 sm:py-6 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full min-h-[44px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-base sm:text-lg py-3 sm:py-6 shadow-lg hover:shadow-xl transition-all pointer-events-none"
+                  tabIndex={-1}
                 >
                   <Plant className="w-4 h-4 sm:w-5 sm:h-5 mr-2" weight="fill" />
                   Start Growing
@@ -107,8 +123,18 @@ export default function ModeSelection({ onSelectMode }: ModeSelectionProps) {
             whileHover={{ scale: 1.02 }}
             className="w-full"
           >
-            <Card className="p-4 sm:p-6 md:p-8 h-full border-2 border-blue-200/50 hover:border-blue-400/50 transition-all duration-300 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm cursor-pointer group shadow-xl hover:shadow-2xl"
-              onClick={() => onSelectMode('structured')}
+            <Card 
+              className="p-4 sm:p-6 md:p-8 h-full border-2 border-blue-200/50 hover:border-blue-400/50 transition-all duration-300 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 backdrop-blur-sm cursor-pointer group shadow-xl hover:shadow-2xl"
+              onClick={() => handleSelectMode('structured')}
+              onTouchStart={() => handleSelectMode('structured')}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleSelectMode('structured')
+                }
+              }}
             >
               <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow flex-shrink-0">
@@ -144,7 +170,8 @@ export default function ModeSelection({ onSelectMode }: ModeSelectionProps) {
 
                 <Button 
                   size="lg"
-                  className="w-full min-h-[44px] bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base sm:text-lg py-3 sm:py-6 shadow-lg hover:shadow-xl transition-all"
+                  className="w-full min-h-[44px] bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base sm:text-lg py-3 sm:py-6 shadow-lg hover:shadow-xl transition-all pointer-events-none"
+                  tabIndex={-1}
                 >
                   <TrendUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2" weight="fill" />
                   View Dashboard
