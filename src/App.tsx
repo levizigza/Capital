@@ -57,42 +57,44 @@ export interface GameScore {
   }>
 }
 
-function App() {
-  const initializeTiers = (): Tier[] => {
-    return TIER_DATA.map((tierData, index) => ({
-      ...tierData,
-      unlocked: index === 0,
-      completed: false
-    }))
-  }
+const initializeTiers = (): Tier[] => {
+  return TIER_DATA.map((tierData, index) => ({
+    ...tierData,
+    unlocked: index === 0,
+    completed: false
+  }))
+}
 
-  const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', {
-    name: '',
-    level: 1,
-    xp: 0,
-    totalCoins: 0,
-    gamesCompleted: 0,
-    achievements: [],
-    currentStreak: 0,
-    skillsUnlocked: [],
-    preferredMode: null,
-    preferences: {
-      difficulty: 'adaptive',
-      gameTypes: [],
-      playTime: 'medium'
+const DEFAULT_USER_PROFILE: UserProfile = {
+  name: '',
+  level: 1,
+  xp: 0,
+  totalCoins: 0,
+  gamesCompleted: 0,
+  achievements: [],
+  currentStreak: 0,
+  skillsUnlocked: [],
+  preferredMode: null,
+  preferences: {
+    difficulty: 'adaptive',
+    gameTypes: [],
+    playTime: 'medium'
+  },
+  tierProgression: {
+    currentTierId: 1,
+    tiers: initializeTiers(),
+    skillLines: {
+      cognition: 0,
+      values: 0,
+      morals: 0,
+      faith: 0
     },
-    tierProgression: {
-      currentTierId: 1,
-      tiers: initializeTiers(),
-      skillLines: {
-        cognition: 0,
-        values: 0,
-        morals: 0,
-        faith: 0
-      },
-      availableLineXP: 0
-    }
-  } as UserProfile)
+    availableLineXP: 0
+  }
+}
+
+function App() {
+  const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', DEFAULT_USER_PROFILE)
 
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
   const [currentMode, setCurrentMode] = useState<LearningMode>(null)
@@ -131,17 +133,7 @@ function App() {
         
         return {
           ...prev,
-          tierProgression: {
-            currentTierId: 1,
-            tiers: initializeTiers(),
-            skillLines: {
-              cognition: 0,
-              values: 0,
-              morals: 0,
-              faith: 0
-            },
-            availableLineXP: 0
-          }
+          tierProgression: DEFAULT_USER_PROFILE.tierProgression!
         }
       })
     }
@@ -201,17 +193,7 @@ function App() {
             gameTypes: [],
             playTime: 'medium'
           },
-          tierProgression: {
-            currentTierId: 1,
-            tiers: initializeTiers(),
-            skillLines: {
-              cognition: 0,
-              values: 0,
-              morals: 0,
-              faith: 0
-            },
-            availableLineXP: 0
-          }
+          tierProgression: DEFAULT_USER_PROFILE.tierProgression
         }
         return defaultProfile
       }
