@@ -26,7 +26,7 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    const initAuth = async () => {
+  const initAuth = async (): Promise<void> => {
       try {
         const user = await window.spark.user()
         
@@ -50,8 +50,13 @@ export function useAuth() {
             }
             setUserProfile(newProfile)
           } else {
-            setUserProfile((prev) => ({
-              ...prev!,
+            setUserProfile((prev): UserProfile => ({
+              ...(prev || {
+                githubUser: githubUserData,
+                role: 'student',
+                displayName: user.login,
+                assignedClasses: []
+              }),
               githubUser: githubUserData
             }))
           }
@@ -94,18 +99,18 @@ export function useAuth() {
     return () => clearInterval(activityInterval)
   }, [session, isAuthenticated])
 
-  const updateActivity = () => {
+  const updateActivity = (): void => {
     if (session && isAuthenticated) {
-      setSession((prevSession) => {
+      setSession((prevSession): SessionData | null => {
         if (!prevSession) return null
         return SecurityService.updateActivity(prevSession)
       })
     }
   }
 
-  const setRememberMe = (remember: boolean) => {
+  const setRememberMe = (remember: boolean): void => {
     if (session) {
-      setSession((prevSession) => {
+      setSession((prevSession): SessionData | null => {
         if (!prevSession) return null
         return {
           ...prevSession,
@@ -115,33 +120,45 @@ export function useAuth() {
     }
   }
 
-  const changeRole = (newRole: UserRole) => {
+  const changeRole = (newRole: UserRole): void => {
     if (userProfile && session) {
-      setUserProfile((prev) => ({
-        ...prev!,
-        role: newRole
-      }))
-      setSession((prev) => ({
-        ...prev!,
-        role: newRole
-      }))
+      setUserProfile((prev): UserProfile | null => {
+        if (!prev) return null
+        return {
+          ...prev,
+          role: newRole
+        }
+      })
+      setSession((prev): SessionData | null => {
+        if (!prev) return null
+        return {
+          ...prev,
+          role: newRole
+        }
+      })
     }
   }
 
-  const assignClasses = (classes: string[]) => {
+  const assignClasses = (classes: string[]): void => {
     if (userProfile && session) {
-      setUserProfile((prev) => ({
-        ...prev!,
-        assignedClasses: classes
-      }))
-      setSession((prev) => ({
-        ...prev!,
-        assignedClasses: classes
-      }))
+      setUserProfile((prev): UserProfile | null => {
+        if (!prev) return null
+        return {
+          ...prev,
+          assignedClasses: classes
+        }
+      })
+      setSession((prev): SessionData | null => {
+        if (!prev) return null
+        return {
+          ...prev,
+          assignedClasses: classes
+        }
+      })
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     setSession(null)
     setIsAuthenticated(false)
     SecurityService.clearSensitiveData()

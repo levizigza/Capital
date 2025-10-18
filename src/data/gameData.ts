@@ -42,7 +42,7 @@ export interface GameScenario {
 export interface GameEvent {
   id: string
   trigger: 'time' | 'action' | 'condition' | 'random'
-  triggerValue?: any
+  triggerValue?: number | string | boolean
   probability?: number
   title: string
   description: string

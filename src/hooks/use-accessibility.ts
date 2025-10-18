@@ -37,31 +37,31 @@ export function useAccessibility() {
     }
   }, [settings])
 
-  const toggleHighContrast = () => {
-    setSettings(prev => ({
-      ...prev!,
-      highContrastMode: !prev!.highContrastMode,
+  const toggleHighContrast = (): void => {
+    setSettings((prev): AccessibilitySettings => ({
+      ...(prev || DEFAULT_SETTINGS),
+      highContrastMode: !(prev || DEFAULT_SETTINGS).highContrastMode,
     }))
   }
 
-  const toggleReducedMotion = () => {
-    setSettings(prev => ({
-      ...prev!,
-      reducedMotion: !prev!.reducedMotion,
+  const toggleReducedMotion = (): void => {
+    setSettings((prev): AccessibilitySettings => ({
+      ...(prev || DEFAULT_SETTINGS),
+      reducedMotion: !(prev || DEFAULT_SETTINGS).reducedMotion,
     }))
   }
 
-  const toggleKeyboardNavigation = () => {
-    setSettings(prev => ({
-      ...prev!,
-      keyboardNavigationEnabled: !prev!.keyboardNavigationEnabled,
+  const toggleKeyboardNavigation = (): void => {
+    setSettings((prev): AccessibilitySettings => ({
+      ...(prev || DEFAULT_SETTINGS),
+      keyboardNavigationEnabled: !(prev || DEFAULT_SETTINGS).keyboardNavigationEnabled,
     }))
   }
 
-  const toggleScreenReaderOptimization = () => {
-    setSettings(prev => ({
-      ...prev!,
-      screenReaderOptimized: !prev!.screenReaderOptimized,
+  const toggleScreenReaderOptimization = (): void => {
+    setSettings((prev): AccessibilitySettings => ({
+      ...(prev || DEFAULT_SETTINGS),
+      screenReaderOptimized: !(prev || DEFAULT_SETTINGS).screenReaderOptimized,
     }))
   }
 

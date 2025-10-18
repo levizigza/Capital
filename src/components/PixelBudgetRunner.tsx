@@ -33,7 +33,7 @@ const BUDGETING_TIPS = [
 ]
 
 interface PixelBudgetRunnerProps {
-  onComplete: (score: number, additionalData?: any) => void
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
   userTier?: 'elementary' | 'middle' | 'adult'
 }

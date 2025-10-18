@@ -14,7 +14,7 @@ type NavigationState = {
   page?: string
 }
 
-interface UserProfile {
+export interface UserProfile {
   name: string
   level: number
   xp: number
@@ -92,7 +92,7 @@ function App() {
       },
       availableLineXP: 0
     }
-  })
+  } as UserProfile)
 
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
   const [currentMode, setCurrentMode] = useState<LearningMode>(null)
@@ -126,7 +126,7 @@ function App() {
 
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
-      setUserProfile(prev => {
+      setUserProfile((prev): UserProfile => {
         if (!prev || prev.tierProgression) return prev!
         
         return {
@@ -147,12 +147,12 @@ function App() {
     }
   }, [])
 
-  const handleModeSelect = (mode: LearningMode) => {
+  const handleModeSelect = (mode: LearningMode): void => {
     setCurrentMode(mode)
     const newState: NavigationState = { mode }
     window.history.pushState(newState, '', window.location.href)
     
-    setUserProfile(prev => {
+    setUserProfile((prev): UserProfile => {
       if (!prev) return prev!
       return {
         ...prev,
@@ -167,7 +167,7 @@ function App() {
     window.history.pushState(newState, '', window.location.href)
   }, [])
 
-  const completeGame = (gameId: string, score: number, timeSpent: number, additionalData?: any) => {
+  const completeGame = (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
     const newScore: GameScore = {
       gameId: gameId,
       score: score,
@@ -175,16 +175,16 @@ function App() {
       timeSpent: timeSpent,
       date: new Date().toISOString(),
       difficulty: userProfile?.preferences.difficulty || 'adaptive',
-      finalNetWorth: additionalData?.finalAmount || 0,
+      finalNetWorth: (additionalData?.finalAmount as number | undefined) || 0,
       decisions: []
     }
 
-    setGameScores(prevScores => [...(prevScores || []), newScore])
+    setGameScores((prevScores): GameScore[] => [...(prevScores || []), newScore])
     
     const xpEarned = Math.floor(score * 0.5) + 50
     const coinsEarned = Math.floor(score * 0.3) + 25
     
-    setUserProfile(prevProfile => {
+    setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile) {
         const defaultProfile: UserProfile = {
           name: 'Player',
@@ -230,8 +230,8 @@ function App() {
     })
   }
 
-  const handleQuestComplete = (tierId: number, questId: string) => {
-    setUserProfile(prevProfile => {
+  const handleQuestComplete = (tierId: number, questId: string): void => {
+    setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
 
       const updatedTiers = prevProfile.tierProgression.tiers.map(tier => {
@@ -297,8 +297,8 @@ function App() {
     })
   }
 
-  const handleAllocateLineXP = (line: SkillLine, amount: number) => {
-    setUserProfile(prevProfile => {
+  const handleAllocateLineXP = (line: SkillLine, amount: number): void => {
+    setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
       
       if (prevProfile.tierProgression.availableLineXP < amount) return prevProfile

@@ -7,7 +7,7 @@ import { ArrowLeft, CreditCard, Warning, ShieldCheck, Trophy, X, Check } from '@
 import { toast } from 'sonner'
 
 interface CreditDefenderGameProps {
-  onComplete: (score: number, additionalData?: any) => void
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
   userTier?: 'elementary' | 'middle' | 'adult'
 }

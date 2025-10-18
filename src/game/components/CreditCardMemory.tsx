@@ -35,7 +35,7 @@ interface GameCard {
 
 interface CreditCardMemoryProps {
   difficulty?: 'easy' | 'medium' | 'hard'
-  onComplete: (score: number, additionalData?: any) => void
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
 }
 

@@ -33,7 +33,7 @@ interface MiniGame {
 }
 
 interface MiniGameHubProps {
-  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
+  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
 }
 
@@ -116,17 +116,17 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
     }
   ]
 
-  const handleGameSelect = (game: MiniGame) => {
+  const handleGameSelect = (game: MiniGame): void => {
     setSelectedGame(game)
   }
 
-  const handleStartGame = () => {
+  const handleStartGame = (): void => {
     if (selectedGame) {
       setIsPlaying(true)
     }
   }
 
-  const handleGameComplete = (score: number, timeSpent: number, additionalData?: any) => {
+  const handleGameComplete = (score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
     if (selectedGame) {
       onGameComplete(selectedGame.id, score, timeSpent, additionalData)
       setIsPlaying(false)
@@ -134,12 +134,12 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
     }
   }
 
-  const handleGameExit = () => {
+  const handleGameExit = (): void => {
     setIsPlaying(false)
     setSelectedGame(null)
   }
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (category: string): string => {
     switch (category) {
       case 'budgeting': return 'bg-blue-100 text-blue-800'
       case 'investing': return 'bg-green-100 text-green-800'
@@ -149,7 +149,7 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
     }
   }
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: string): string => {
     switch (difficulty) {
       case 'easy': return 'bg-green-100 text-green-800'
       case 'medium': return 'bg-yellow-100 text-yellow-800'
@@ -158,13 +158,27 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
     }
   }
 
-  const renderGameComponent = () => {
+  const renderGameComponent = (): React.ReactNode => {
     if (!selectedGame || !isPlaying) return null
 
-    const commonProps = {
-      difficulty: selectedDifficulty,
-      onComplete: handleGameComplete,
-      onExit: handleGameExit
+    const startTime = Date.now()
+
+    const handleBudgetBalanceComplete = (score: number, timeSpent: number): void => {
+      handleGameComplete(score, timeSpent)
+    }
+
+    const handleInvestmentTowerComplete = (score: number, finalValue: number, timeSpent: number): void => {
+      handleGameComplete(score, timeSpent, { finalValue })
+    }
+
+    const handleCreditMemoryComplete = (score: number, additionalData?: Record<string, unknown>): void => {
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000)
+      handleGameComplete(score, timeSpent, additionalData)
+    }
+
+    const handleCompoundGrowthComplete = (score: number, additionalData?: Record<string, unknown>): void => {
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000)
+      handleGameComplete(score, timeSpent, additionalData)
     }
 
     switch (selectedGame.id) {
@@ -172,7 +186,9 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
         return (
           <BudgetBalance
             income={5000}
-            {...commonProps}
+            difficulty={selectedDifficulty}
+            onComplete={handleBudgetBalanceComplete}
+            onExit={handleGameExit}
           />
         )
       case 'investment-tower':
@@ -181,13 +197,17 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
             startingAmount={10000}
             targetGrowth={50}
             timeLimit={selectedDifficulty === 'easy' ? 300 : selectedDifficulty === 'medium' ? 240 : 180}
-            {...commonProps}
+            difficulty={selectedDifficulty}
+            onComplete={handleInvestmentTowerComplete}
+            onExit={handleGameExit}
           />
         )
       case 'credit-memory':
         return (
           <CreditCardMemory
-            {...commonProps}
+            difficulty={selectedDifficulty}
+            onComplete={handleCreditMemoryComplete}
+            onExit={handleGameExit}
           />
         )
       case 'compound-growth':
@@ -195,7 +215,9 @@ export const MiniGameHub: React.FC<MiniGameHubProps> = ({
           <CompoundGrowth
             targetAmount={100000}
             timeLimit={selectedDifficulty === 'easy' ? 240 : selectedDifficulty === 'medium' ? 180 : 120}
-            {...commonProps}
+            difficulty={selectedDifficulty}
+            onComplete={handleCompoundGrowthComplete}
+            onExit={handleGameExit}
           />
         )
       default:

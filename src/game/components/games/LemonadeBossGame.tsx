@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
 interface LemonadeBossGameProps {
-  onComplete: (score: number, additionalData?: any) => void
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
   userTier?: 'elementary' | 'middle' | 'adult'
 }

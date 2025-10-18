@@ -24,7 +24,7 @@ export function useBanking() {
     }
   }, [provider])
 
-  const loadData = async () => {
+  const loadData = async (): Promise<void> => {
     if (!provider) return
     
     setLoading(true)
@@ -54,16 +54,16 @@ export function useBanking() {
     }
   }
 
-  const toggleMode = async () => {
-    const newMode = mode === 'simulator' ? 'plaid' : 'simulator'
+  const toggleMode = async (): Promise<void> => {
+    const newMode: BankingMode = mode === 'simulator' ? 'plaid' : 'simulator'
     setMode(newMode)
   }
 
-  const refreshData = async () => {
+  const refreshData = async (): Promise<void> => {
     await loadData()
   }
 
-  const resetSimulator = async () => {
+  const resetSimulator = async (): Promise<void> => {
     if (provider instanceof SimulatorBankingProvider) {
       await provider.resetSimulator()
       await loadData()

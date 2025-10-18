@@ -31,30 +31,14 @@ import type { GameScore } from '@/App'
 import { TierProgressionView } from '@/components/TierProgressionView'
 import type { SkillLine } from '@/data/tiers'
 
+import type { Tier } from '@/data/tiers'
+import type { UserProfile } from '@/App'
+
 interface CreativeModeHubProps {
-  userProfile: {
-    name: string
-    level: number
-    xp: number
-    totalCoins: number
-    gamesCompleted: number
-    achievements: string[]
-    currentStreak: number
-    gardenProgress?: {
-      plants: Array<{ type: string; growth: number; position: { x: number; y: number } }>
-      gardenLevel: number
-      unlockedAreas: string[]
-    }
-    tierProgression?: {
-      currentTierId: number
-      tiers: Array<any>
-      skillLines: Record<SkillLine, number>
-      availableLineXP: number
-    }
-  }
-  setUserProfile: (updater: (prev: any) => any) => void
+  userProfile: UserProfile
+  setUserProfile: (updater: (prev: UserProfile) => UserProfile) => void
   gameScores: GameScore[]
-  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
+  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>) => void
   onModeSwitch: () => void
   onQuestComplete: (tierId: number, questId: string) => void
   onAllocateLineXP: (line: SkillLine, amount: number) => void
@@ -68,11 +52,17 @@ interface GameInfo {
   difficulty: 'Easy' | 'Medium' | 'Hard'
   estimatedTime: string
   skills: string[]
-  component: React.ComponentType<any>
+  component: React.ComponentType<GameComponentProps>
   category: 'mini-game' | 'adventure'
   type: 'savings' | 'investing' | 'credit' | 'business' | 'general'
   gardenType: string
-  props?: any
+  props?: Record<string, unknown>
+}
+
+interface GameComponentProps {
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
+  onExit: () => void
+  userTier?: 'elementary' | 'middle' | 'adult'
 }
 
 const miniGames: GameInfo[] = [

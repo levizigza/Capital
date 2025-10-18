@@ -16,7 +16,7 @@ import { BusinessBuilderGame } from './games/BusinessBuilderGame'
 import PixelBudgetRunner from '@/components/PixelBudgetRunner'
 
 interface GameHubProps {
-  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
+  onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>) => void
   onExit: () => void
   userTier?: 'elementary' | 'middle' | 'adult'
 }
@@ -29,8 +29,14 @@ interface GameInfo {
   difficulty: 'Easy' | 'Medium' | 'Hard'
   estimatedTime: string
   skills: string[]
-  component: React.ComponentType<any>
+  component: React.ComponentType<GameComponentProps>
   minAge: number
+}
+
+interface GameComponentProps {
+  onComplete: (score: number, additionalData?: Record<string, unknown>) => void
+  onExit: () => void
+  userTier?: 'elementary' | 'middle' | 'adult'
 }
 
 const games: GameInfo[] = [
@@ -107,7 +113,7 @@ export function ProfessionalGameHub({ onGameComplete, onExit, userTier = 'middle
   const [gameStartTime, setGameStartTime] = useState<number>(0)
 
   // Filter games based on user tier
-  const getAgeLimit = () => {
+  const getAgeLimit = (): number => {
     switch (userTier) {
       case 'elementary': return 12
       case 'middle': return 16
@@ -118,12 +124,12 @@ export function ProfessionalGameHub({ onGameComplete, onExit, userTier = 'middle
 
   const availableGames = games.filter(game => game.minAge <= getAgeLimit())
 
-  const handleGameStart = (gameId: string) => {
+  const handleGameStart = (gameId: string): void => {
     setSelectedGame(gameId)
     setGameStartTime(Date.now())
   }
 
-  const handleGameComplete = (score: number, additionalData?: any) => {
+  const handleGameComplete = (score: number, additionalData?: Record<string, unknown>): void => {
     if (selectedGame) {
       const timeSpent = Date.now() - gameStartTime
       onGameComplete(selectedGame, score, timeSpent, additionalData)
@@ -131,7 +137,7 @@ export function ProfessionalGameHub({ onGameComplete, onExit, userTier = 'middle
     setSelectedGame(null)
   }
 
-  const handleGameExit = () => {
+  const handleGameExit = (): void => {
     setSelectedGame(null)
   }
 
