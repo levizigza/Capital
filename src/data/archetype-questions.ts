@@ -1,10 +1,10 @@
-export type ArchetypeId = 'blaze' | 'steel' | 'dynamo' | 'tempo'
+export type ArchetypeId = 'navigator' | 'strategist' | 'creator' | 'guardian'
 
 export interface ArchetypeWeights {
-  blaze: number
-  steel: number
-  dynamo: number
-  tempo: number
+  navigator: number
+  strategist: number
+  creator: number
+  guardian: number
 }
 
 export interface ArchetypeQuestion {
@@ -25,19 +25,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Invest in a promising new opportunity or startup',
-        weights: { blaze: 2, steel: 0, dynamo: 3, tempo: 0 }
+        weights: { navigator: 2, strategist: 0, creator: 3, guardian: 0 }
       },
       {
         text: 'Put it straight into savings and research the best account rates',
-        weights: { blaze: 0, steel: 3, dynamo: 0, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 0, guardian: 2 }
       },
       {
         text: 'Split it: some for fun, some for bills, tracked carefully',
-        weights: { blaze: 0, steel: 2, dynamo: 1, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 1, guardian: 3 }
       },
       {
         text: 'Share it with friends for a group experience or investment',
-        weights: { blaze: 3, steel: 0, dynamo: 1, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 1, guardian: 1 }
       }
     ]
   },
@@ -48,19 +48,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Detailed spreadsheets comparing every spec and price',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 1 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 1 }
       },
       {
         text: 'Recommendations from trusted friends and reviews',
-        weights: { blaze: 3, steel: 1, dynamo: 0, tempo: 2 }
+        weights: { navigator: 3, strategist: 1, creator: 0, guardian: 2 }
       },
       {
         text: 'How innovative or unique the product is',
-        weights: { blaze: 1, steel: 0, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 0, creator: 3, guardian: 0 }
       },
       {
         text: 'Whether it is practical, reliable, and within budget',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -71,19 +71,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Interactive workshops with group discussions',
-        weights: { blaze: 3, steel: 0, dynamo: 2, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 2, guardian: 1 }
       },
       {
         text: 'Self-paced online courses with detailed modules',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Creative simulations and hands-on experiments',
-        weights: { blaze: 1, steel: 0, dynamo: 3, tempo: 1 }
+        weights: { navigator: 1, strategist: 0, creator: 3, guardian: 1 }
       },
       {
         text: 'Structured step-by-step guides I can follow consistently',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -94,19 +94,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Talk it through with others and seek collaborative solutions',
-        weights: { blaze: 3, steel: 1, dynamo: 1, tempo: 1 }
+        weights: { navigator: 3, strategist: 1, creator: 1, guardian: 1 }
       },
       {
         text: 'Analyze data to find the optimal logical path forward',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Brainstorm creative alternatives and pivot if needed',
-        weights: { blaze: 1, steel: 0, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 0, creator: 3, guardian: 0 }
       },
       {
         text: 'Return to proven strategies that have worked before',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -117,19 +117,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Social and competitive—I thrive on shared challenges',
-        weights: { blaze: 3, steel: 0, dynamo: 1, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 1, guardian: 1 }
       },
       {
         text: 'Data-driven with specific metrics and milestones',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Big-picture visionary with room for creative adaptation',
-        weights: { blaze: 1, steel: 1, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 1, creator: 3, guardian: 0 }
       },
       {
         text: 'Steady and incremental, building habits over time',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -140,19 +140,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Exciting when shared—calculated risks with partners',
-        weights: { blaze: 3, steel: 0, dynamo: 2, tempo: 0 }
+        weights: { navigator: 3, strategist: 0, creator: 2, guardian: 0 }
       },
       {
         text: 'Only acceptable when thoroughly analyzed and managed',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 1 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 1 }
       },
       {
         text: 'Essential for innovation—I embrace uncertainty',
-        weights: { blaze: 1, steel: 0, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 0, creator: 3, guardian: 0 }
       },
       {
         text: 'Prefer to minimize—I value stability and consistency',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -163,19 +163,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Flexible—I negotiate and adjust with my circle',
-        weights: { blaze: 3, steel: 0, dynamo: 2, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 2, guardian: 1 }
       },
       {
         text: 'Precise—every dollar tracked in detailed categories',
-        weights: { blaze: 0, steel: 3, dynamo: 0, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 0, guardian: 2 }
       },
       {
         text: 'Experimental—I try new systems and optimize constantly',
-        weights: { blaze: 1, steel: 1, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 1, creator: 3, guardian: 0 }
       },
       {
         text: 'Routine-based—same categories, same amounts monthly',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -186,19 +186,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Social proof—what are successful people buying?',
-        weights: { blaze: 3, steel: 0, dynamo: 1, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 1, guardian: 1 }
       },
       {
         text: 'Financial statements, ratios, and historical data',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Future potential and disruptive innovation stories',
-        weights: { blaze: 1, steel: 1, dynamo: 3, tempo: 0 }
+        weights: { navigator: 1, strategist: 1, creator: 3, guardian: 0 }
       },
       {
         text: 'Proven dividend stocks with consistent track records',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -209,19 +209,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Community benchmarks and collaborative goals',
-        weights: { blaze: 3, steel: 0, dynamo: 1, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 1, guardian: 1 }
       },
       {
         text: 'Detailed charts, trends, and analytical breakdowns',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Big-picture patterns and future projections',
-        weights: { blaze: 1, steel: 1, dynamo: 3, tempo: 1 }
+        weights: { navigator: 1, strategist: 1, creator: 3, guardian: 1 }
       },
       {
         text: 'Simple progress bars and streak trackers',
-        weights: { blaze: 0, steel: 2, dynamo: 0, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 0, guardian: 3 }
       }
     ]
   },
@@ -232,19 +232,19 @@ export const ARCHETYPE_QUESTIONS: ArchetypeQuestion[] = [
     answers: [
       {
         text: 'Stories, examples, and learning from each other',
-        weights: { blaze: 3, steel: 0, dynamo: 2, tempo: 1 }
+        weights: { navigator: 3, strategist: 0, creator: 2, guardian: 1 }
       },
       {
         text: 'Facts, principles, and logical frameworks',
-        weights: { blaze: 0, steel: 3, dynamo: 1, tempo: 2 }
+        weights: { navigator: 0, strategist: 3, creator: 1, guardian: 2 }
       },
       {
         text: 'Creative metaphors and innovative perspectives',
-        weights: { blaze: 1, steel: 1, dynamo: 3, tempo: 1 }
+        weights: { navigator: 1, strategist: 1, creator: 3, guardian: 1 }
       },
       {
         text: 'Practical steps and reliable habits',
-        weights: { blaze: 0, steel: 2, dynamo: 1, tempo: 3 }
+        weights: { navigator: 0, strategist: 2, creator: 1, guardian: 3 }
       }
     ]
   }
@@ -282,11 +282,11 @@ export interface Archetype {
 }
 
 export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  blaze: {
-    id: 'blaze',
-    name: 'Blaze',
-    tagline: 'The Connector-Trader',
-    description: 'You thrive on social energy and fast-paced decision-making. Financial success for you is about building networks, negotiating deals, and collaborative ventures.',
+  navigator: {
+    id: 'navigator',
+    name: 'Navigator',
+    tagline: 'The Social Connector',
+    description: 'You thrive on relationships and teamwork. Financial success for you is about building networks, collaborative ventures, and shared financial goals.',
     strengths: [
       'Quick decision-making in dynamic situations',
       'Natural networking and relationship building',
@@ -334,10 +334,10 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     motto: 'Together we thrive, alone we survive',
     icon: '🔥'
   },
-  steel: {
-    id: 'steel',
-    name: 'Steel',
-    tagline: 'The Analyst-Planner',
+  strategist: {
+    id: 'strategist',
+    name: 'Strategist',
+    tagline: 'The Analytical Planner',
     description: 'You excel at detailed analysis and systematic planning. Financial mastery for you means understanding every number, building robust systems, and making data-driven decisions.',
     strengths: [
       'Exceptional attention to detail and accuracy',
@@ -386,10 +386,10 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     motto: 'Measure twice, invest once',
     icon: '🛡️'
   },
-  dynamo: {
-    id: 'dynamo',
-    name: 'Dynamo',
-    tagline: 'The Innovator-Builder',
+  creator: {
+    id: 'creator',
+    name: 'Creator',
+    tagline: 'The Innovative Builder',
     description: 'You see possibilities where others see problems. Financial success for you is about creative problem-solving, innovation, and building something new from the ground up.',
     strengths: [
       'Creative problem-solving and innovation',
@@ -438,10 +438,10 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     motto: 'Build the future, one bold idea at a time',
     icon: '⚡'
   },
-  tempo: {
-    id: 'tempo',
-    name: 'Tempo',
-    tagline: 'The Grounded-Guardian',
+  guardian: {
+    id: 'guardian',
+    name: 'Guardian',
+    tagline: 'The Steady Protector',
     description: 'You value consistency, stability, and steady progress. Financial success for you is about building reliable systems, maintaining discipline, and achieving sustainable growth.',
     strengths: [
       'Exceptional consistency and discipline',
@@ -494,10 +494,10 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
 
 export function calculateArchetypeScores(answers: number[][]): Record<ArchetypeId, number> {
   const scores: Record<ArchetypeId, number> = {
-    blaze: 0,
-    steel: 0,
-    dynamo: 0,
-    tempo: 0
+    navigator: 0,
+    strategist: 0,
+    creator: 0,
+    guardian: 0
   }
 
   answers.forEach((answerIndices, questionIndex) => {
@@ -506,10 +506,10 @@ export function calculateArchetypeScores(answers: number[][]): Record<ArchetypeI
       const answer = question.answers[answerIndex]
       
       if (answer) {
-        scores.blaze += answer.weights.blaze
-        scores.steel += answer.weights.steel
-        scores.dynamo += answer.weights.dynamo
-        scores.tempo += answer.weights.tempo
+        scores.navigator += answer.weights.navigator
+        scores.strategist += answer.weights.strategist
+        scores.creator += answer.weights.creator
+        scores.guardian += answer.weights.guardian
       }
     })
   })
@@ -519,7 +519,7 @@ export function calculateArchetypeScores(answers: number[][]): Record<ArchetypeI
 
 export function getDominantArchetype(scores: Record<ArchetypeId, number>): ArchetypeId {
   let maxScore = -1
-  let dominant: ArchetypeId = 'tempo'
+  let dominant: ArchetypeId = 'guardian'
 
   Object.entries(scores).forEach(([id, score]) => {
     if (score > maxScore) {

@@ -1,0 +1,738 @@
+/**
+ * FinanceQuest Animation System
+ * Smooth transitions and engaging micro-animations
+ */
+
+/* ============================================================================
+   MODE SWITCHING TRANSITIONS
+   ============================================================================ */
+
+/* Mode fade transition container */
+.mode-transition-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fade out animation */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mode switching classes */
+.mode-exit {
+  animation: fadeOut 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.mode-enter {
+  animation: fadeIn 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Color palette slide for mode switch */
+@keyframes colorSlide {
+  0% {
+    filter: hue-rotate(0deg) saturate(100%);
+  }
+  50% {
+    filter: hue-rotate(30deg) saturate(150%);
+  }
+  100% {
+    filter: hue-rotate(0deg) saturate(100%);
+  }
+}
+
+.mode-color-transition {
+  animation: colorSlide 600ms ease-in-out;
+}
+
+/* ============================================================================
+   QUEST COMPLETION POPUP
+   ============================================================================ */
+
+/* Slide up from bottom */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Bounce effect */
+@keyframes bounceIn {
+  0% {
+    transform: translateY(100%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Quest completion popup */
+.quest-completion-popup {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 100%;
+  max-width: 500px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, 
+    oklch(0.95 0.03 145) 0%,
+    oklch(0.98 0.01 145) 100%);
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 
+    0 -4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  animation: slideUp 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-completion-popup {
+    animation: fadeIn 300ms ease-out;
+  }
+}
+
+/* Popup close animation */
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.quest-completion-popup.closing {
+  animation: slideDown 400ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ============================================================================
+   PROGRESS BAR ANIMATIONS
+   ============================================================================ */
+
+/* Smooth fill animation */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+}
+
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 1rem;
+  background: oklch(0.90 0 0);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    oklch(0.55 0.18 145) 0%,
+    oklch(0.65 0.18 145) 100%);
+  border-radius: 9999px;
+  transition: width 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: progressFill 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Shimmer effect on progress bar */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Circular progress (for skills) */
+@keyframes circularProgress {
+  from {
+    stroke-dashoffset: 283; /* 2 * PI * 45 (radius) */
+  }
+}
+
+.circular-progress {
+  stroke-dasharray: 283;
+  stroke-dashoffset: 283;
+  transition: stroke-dashoffset 1000ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: circularProgress 1000ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   CONFETTI PARTICLE EFFECT
+   ============================================================================ */
+
+/* Confetti container */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Individual confetti piece */
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: oklch(0.60 0.22 40);
+  top: -10px;
+  opacity: 0;
+  animation: confettiFall 3s ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotateZ(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotateZ(720deg);
+  }
+}
+
+/* Different confetti colors */
+.confetti:nth-child(odd) {
+  background: oklch(0.65 0.20 30); /* Orange */
+}
+
+.confetti:nth-child(3n) {
+  background: oklch(0.60 0.22 290); /* Purple */
+}
+
+.confetti:nth-child(4n) {
+  background: oklch(0.60 0.18 145); /* Green */
+}
+
+.confetti:nth-child(5n) {
+  background: oklch(0.60 0.16 240); /* Blue */
+}
+
+/* Confetti variations */
+.confetti.square {
+  border-radius: 0;
+}
+
+.confetti.circle {
+  border-radius: 50%;
+}
+
+.confetti.triangle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid currentColor;
+}
+
+/* Random delays and positions via inline styles */
+/* Use JavaScript to set: left, animation-delay, animation-duration */
+
+/* ============================================================================
+   BUTTON PULSE ANIMATION
+   ============================================================================ */
+
+/* Gentle pulse for CTAs */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.4);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
+  }
+}
+
+.btn-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-pulse {
+    animation: none;
+  }
+}
+
+/* Hover enhancement */
+.btn-pulse:hover {
+  animation: none;
+  transform: scale(1.05);
+  transition: transform 200ms ease-out;
+}
+
+/* "Start Quest" specific pulse */
+@keyframes questPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      0 0 0 12px rgba(34, 197, 94, 0);
+  }
+}
+
+.start-quest-btn {
+  position: relative;
+  animation: questPulse 2.5s ease-in-out infinite;
+}
+
+/* Glow effect on hover */
+.start-quest-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(34, 197, 94, 0.2) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.start-quest-btn:hover::before {
+  opacity: 1;
+}
+
+/* ============================================================================
+   TIER UNLOCK CELEBRATION
+   ============================================================================ */
+
+/* Tier unlock banner */
+@keyframes tierUnlockBanner {
+  0% {
+    transform: translateY(-100%) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    transform: translateY(0) scale(1.1);
+    opacity: 1;
+  }
+  20%, 80% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  90% {
+    transform: translateY(0) scale(1.05);
+  }
+  100% {
+    transform: translateY(-100%) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.tier-unlock-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9998;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg,
+    oklch(0.70 0.22 40) 0%,
+    oklch(0.65 0.20 30) 100%);
+  color: white;
+  border-radius: 1rem;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: tierUnlockBanner 4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================================
+   CARD HOVER ANIMATIONS
+   ============================================================================ */
+
+/* Lift effect on hover */
+.card-hover {
+  transition: 
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hover:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   LOADING ANIMATIONS
+   ============================================================================ */
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid oklch(0.90 0 0);
+  border-top-color: oklch(0.55 0.18 240);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+/* Dots loading */
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.loading-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: currentColor;
+  border-radius: 50%;
+  animation: dotPulse 1.4s infinite ease-in-out;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ============================================================================
+   NUMBER COUNTER ANIMATION
+   ============================================================================ */
+
+/* Animated number change */
+@keyframes numberChange {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.number-change {
+  display: inline-block;
+  animation: numberChange 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================================
+   BADGE/ACHIEVEMENT UNLOCK
+   ============================================================================ */
+
+@keyframes badgeUnlock {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  75% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.badge-unlock {
+  animation: badgeUnlock 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Shine effect */
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+.badge-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 100%
+  );
+  animation: shine 2s ease-in-out infinite;
+}
+
+/* ============================================================================
+   TOAST NOTIFICATIONS
+   ============================================================================ */
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast-enter {
+  animation: toastSlideIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast-exit {
+  animation: toastSlideOut 300ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* ============================================================================
+   SKELETON LOADING
+   ============================================================================ */
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    oklch(0.93 0 0) 25%,
+    oklch(0.95 0 0) 50%,
+    oklch(0.93 0 0) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================================================
+   PAGE TRANSITIONS
+   ============================================================================ */
+
+/* Page enter */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger children */
+.stagger-children > * {
+  animation: pageEnter 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+
+/* ============================================================================
+   ACCESSIBILITY - REDUCED MOTION
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Keep essential transitions */
+  .progress-bar-fill {
+    transition-duration: 200ms !important;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Fade utilities */
+.fade-in {
+  animation: fadeIn 400ms ease-out;
+}
+
+.fade-out {
+  animation: fadeOut 400ms ease-in;
+}
+
+/* Scale utilities */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-in {
+  animation: scaleIn 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bounce attention */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 500ms ease-in-out;
+}
+
+/* Shake (for errors) */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake {
+  animation: shake 500ms ease-in-out;
+}

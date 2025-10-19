@@ -1,0 +1,820 @@
+/**
+ * DUAL MODE AESTHETICS
+ * Professional Awwwards-inspired Structured Mode
+ * Playful Coolmath4kids-inspired Creative Mode
+ * 
+ * Note: Google Fonts are imported in index.css
+ */
+
+/* ============================================
+   STRUCTURED MODE - PROFESSIONAL/AWWWARDS STYLE
+   ============================================ */
+
+.mode-structured {
+  /* Background with subtle gradient */
+  background: linear-gradient(180deg, 
+    oklch(0.99 0.001 240) 0%, 
+    oklch(0.98 0.002 240) 50%, 
+    oklch(0.97 0.003 240) 100%);
+  color: oklch(0.20 0.010 240);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  transition: background 600ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Container constraints for professional look */
+.mode-structured .max-w-container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Sophisticated card styling */
+.mode-structured .pro-card {
+  background: oklch(1.0 0.0 0);
+  border: 1px solid oklch(0.90 0.004 240);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px oklch(0.20 0.010 240 / 0.04), 
+              0 1px 2px oklch(0.20 0.010 240 / 0.03);
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-structured .pro-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    oklch(0.32 0.14 245) 50%, 
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 250ms;
+}
+
+.mode-structured .pro-card:hover {
+  border-color: oklch(0.85 0.006 240);
+  box-shadow: 0 4px 12px oklch(0.20 0.010 240 / 0.08), 
+              0 2px 6px oklch(0.20 0.010 240 / 0.06);
+  transform: translateY(-1px);
+}
+
+.mode-structured .pro-card:hover::before {
+  opacity: 1;
+}
+
+/* Professional typography */
+.mode-structured h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: oklch(0.20 0.010 240);
+  margin-bottom: 0.75rem;
+}
+
+.mode-structured h2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: oklch(0.22 0.010 240);
+  margin-bottom: 0.625rem;
+}
+
+.mode-structured h3 {
+  font-size: clamp(1.25rem, 2.5vw, 1.875rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+  color: oklch(0.24 0.010 240);
+  margin-bottom: 0.5rem;
+}
+
+.mode-structured p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: oklch(0.42 0.008 240);
+  letter-spacing: -0.005em;
+}
+
+.mode-structured .text-muted {
+  color: oklch(0.58 0.006 240);
+}
+
+/* Professional buttons */
+.mode-structured .btn-primary-pro {
+  background: oklch(0.32 0.14 245);
+  color: oklch(0.98 0.002 245);
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 2px oklch(0.32 0.14 245 / 0.12);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mode-structured .btn-primary-pro:hover {
+  background: oklch(0.36 0.16 245);
+  box-shadow: 0 2px 4px oklch(0.32 0.14 245 / 0.18),
+              0 4px 8px oklch(0.32 0.14 245 / 0.08);
+  transform: translateY(-1px);
+}
+
+.mode-structured .btn-primary-pro:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px oklch(0.32 0.14 245 / 0.12);
+}
+
+.mode-structured .btn-secondary-pro {
+  background: oklch(0.42 0.12 190);
+  color: oklch(0.98 0.002 190);
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.625rem 1.5rem;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  box-shadow: 0 1px 2px oklch(0.42 0.12 190 / 0.12);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.mode-structured .btn-secondary-pro:hover {
+  background: oklch(0.46 0.14 190);
+  box-shadow: 0 2px 4px oklch(0.42 0.12 190 / 0.18);
+  transform: translateY(-1px);
+}
+
+/* Dashboard grid */
+.mode-structured .dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* Metrics card */
+.mode-structured .metric-card {
+  background: oklch(1.0 0.0 0);
+  border: 1px solid oklch(0.90 0.004 240);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px oklch(0.20 0.010 240 / 0.04);
+  transition: all 200ms;
+}
+
+.mode-structured .metric-card:hover {
+  box-shadow: 0 4px 12px oklch(0.20 0.010 240 / 0.08);
+  transform: translateY(-2px);
+}
+
+.mode-structured .metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: oklch(0.32 0.14 245);
+  line-height: 1;
+}
+
+.mode-structured .metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: oklch(0.58 0.006 240);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+
+/* Data visualization */
+.mode-structured .chart-container-pro {
+  background: oklch(1.0 0.0 0);
+  border: 1px solid oklch(0.90 0.004 240);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.mode-structured .chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: oklch(0.20 0.010 240);
+  margin-bottom: 1rem;
+}
+
+/* Professional badge */
+.mode-structured .badge-pro {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: oklch(0.96 0.004 240);
+  border: 1px solid oklch(0.90 0.004 240);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: oklch(0.42 0.008 240);
+  letter-spacing: 0.01em;
+}
+
+/* ============================================
+   CREATIVE MODE - PLAYFUL/COOLMATH4KIDS STYLE
+   ============================================ */
+
+.mode-creative {
+  /* Vibrant gradient background */
+  background: linear-gradient(135deg, 
+    oklch(0.95 0.04 120) 0%, 
+    oklch(0.93 0.05 140) 25%,
+    oklch(0.95 0.04 160) 50%,
+    oklch(0.93 0.05 180) 75%,
+    oklch(0.95 0.04 120) 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  color: oklch(0.25 0.08 120);
+  font-family: 'Fredoka', 'Nunito', 'Comic Sans MS', sans-serif;
+  font-weight: 500;
+  transition: background 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Full-width creative container */
+.mode-creative .container-creative {
+  width: 100%;
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+/* Game card styling */
+.mode-creative .game-card {
+  background: oklch(0.98 0.03 120);
+  border: 4px solid oklch(0.78 0.08 120);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 16px oklch(0.25 0.08 120 / 0.18), 
+              0 3px 8px oklch(0.25 0.08 120 / 0.12);
+  transition: all 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-creative .game-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, 
+    oklch(1 0 0 / 0.3) 0%, 
+    transparent 70%);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.mode-creative .game-card:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mode-creative .game-card:hover {
+  transform: translateY(-8px) scale(1.03) rotate(-1deg);
+  border-color: oklch(0.58 0.20 145);
+  box-shadow: 0 12px 24px oklch(0.25 0.08 120 / 0.25),
+              0 6px 12px oklch(0.25 0.08 120 / 0.15),
+              0 0 0 6px oklch(0.58 0.20 145 / 0.15);
+}
+
+.mode-creative .game-card:active {
+  transform: translateY(-4px) scale(1) rotate(0deg);
+  box-shadow: 0 6px 16px oklch(0.25 0.08 120 / 0.18);
+}
+
+/* Playful typography */
+.mode-creative h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: oklch(0.25 0.08 120);
+  text-shadow: 0 2px 4px oklch(1 0 0 / 0.3),
+               0 1px 0 oklch(1 0 0 / 0.5);
+  margin-bottom: 1rem;
+}
+
+.mode-creative h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0em;
+  line-height: 1.1;
+  color: oklch(0.28 0.08 120);
+  text-shadow: 0 1px 2px oklch(1 0 0 / 0.3);
+  margin-bottom: 0.875rem;
+}
+
+.mode-creative h3 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: 0em;
+  line-height: 1.2;
+  color: oklch(0.30 0.08 120);
+  text-shadow: 0 1px 2px oklch(1 0 0 / 0.2);
+  margin-bottom: 0.75rem;
+}
+
+.mode-creative p {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: oklch(0.40 0.06 120);
+  letter-spacing: 0em;
+}
+
+/* Big playful buttons */
+.mode-creative .btn-play {
+  background: linear-gradient(135deg, 
+    oklch(0.58 0.20 145) 0%, 
+    oklch(0.52 0.22 155) 100%);
+  color: oklch(0.98 0.03 145);
+  border: 4px solid oklch(0.48 0.24 145);
+  border-radius: 1rem;
+  padding: 1rem 2.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 12px oklch(0.58 0.20 145 / 0.35),
+              inset 0 2px 0 oklch(1 0 0 / 0.3),
+              inset 0 -2px 0 oklch(0 0 0 / 0.2);
+  transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mode-creative .btn-play::after {
+  content: '▶';
+  font-size: 1.5rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 200ms;
+}
+
+.mode-creative .btn-play:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mode-creative .btn-play:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.62 0.22 145) 0%, 
+    oklch(0.56 0.24 155) 100%);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 18px oklch(0.58 0.20 145 / 0.4),
+              inset 0 2px 0 oklch(1 0 0 / 0.4),
+              0 0 0 4px oklch(0.58 0.20 145 / 0.2);
+  animation: buttonWiggle 0.5s ease;
+}
+
+@keyframes buttonWiggle {
+  0%, 100% { transform: translateY(-3px) scale(1.05) rotate(0deg); }
+  25% { transform: translateY(-3px) scale(1.05) rotate(2deg); }
+  75% { transform: translateY(-3px) scale(1.05) rotate(-2deg); }
+}
+
+.mode-creative .btn-play:active {
+  transform: translateY(-1px) scale(1);
+  box-shadow: 0 4px 8px oklch(0.58 0.20 145 / 0.3),
+              inset 0 1px 0 oklch(1 0 0 / 0.2);
+}
+
+/* Secondary playful button */
+.mode-creative .btn-secondary-fun {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.22 35) 0%, 
+    oklch(0.60 0.24 45) 100%);
+  color: oklch(0.98 0.02 35);
+  border: 4px solid oklch(0.55 0.24 35);
+  border-radius: 1rem;
+  padding: 0.875rem 2rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 12px oklch(0.65 0.22 35 / 0.35),
+              inset 0 2px 0 oklch(1 0 0 / 0.3);
+  transition: all 150ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.mode-creative .btn-secondary-fun:hover {
+  background: linear-gradient(135deg, 
+    oklch(0.70 0.24 35) 0%, 
+    oklch(0.65 0.26 45) 100%);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 16px oklch(0.65 0.22 35 / 0.4),
+              inset 0 2px 0 oklch(1 0 0 / 0.4);
+}
+
+/* Game grid */
+.mode-creative .grid-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .mode-creative .grid-games {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Category badges with vibrant colors */
+.mode-creative .category-badge-savings {
+  background: linear-gradient(135deg, 
+    oklch(0.68 0.20 145) 0%, 
+    oklch(0.62 0.22 155) 100%);
+  color: oklch(0.98 0.03 145);
+  border: 3px solid oklch(0.58 0.22 145);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  box-shadow: 0 3px 6px oklch(0.68 0.20 145 / 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.mode-creative .category-badge-investing {
+  background: linear-gradient(135deg, 
+    oklch(0.65 0.22 240) 0%, 
+    oklch(0.60 0.24 250) 100%);
+  color: oklch(0.98 0.02 240);
+  border: 3px solid oklch(0.55 0.24 240);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  box-shadow: 0 3px 6px oklch(0.65 0.22 240 / 0.3);
+}
+
+.mode-creative .category-badge-credit {
+  background: linear-gradient(135deg, 
+    oklch(0.63 0.24 320) 0%, 
+    oklch(0.58 0.26 330) 100%);
+  color: oklch(0.98 0.02 320);
+  border: 3px solid oklch(0.53 0.26 320);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  box-shadow: 0 3px 6px oklch(0.63 0.24 320 / 0.3);
+}
+
+.mode-creative .category-badge-business {
+  background: linear-gradient(135deg, 
+    oklch(0.67 0.22 45) 0%, 
+    oklch(0.62 0.24 55) 100%);
+  color: oklch(0.20 0.08 45);
+  border: 3px solid oklch(0.57 0.24 45);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  box-shadow: 0 3px 6px oklch(0.67 0.22 45 / 0.3);
+}
+
+/* Star rating display */
+.mode-creative .star-rating {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 1.5rem;
+}
+
+.mode-creative .star-filled {
+  color: oklch(0.70 0.20 80);
+  text-shadow: 0 2px 4px oklch(0.70 0.20 80 / 0.4);
+  animation: starTwinkle 2s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+}
+
+/* Playful icons with bounce */
+.mode-creative .icon-bounce {
+  animation: iconBounce 1s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Progress bar - colorful */
+.mode-creative .progress-bar-fun {
+  width: 100%;
+  height: 2rem;
+  background: oklch(0.90 0.04 120);
+  border: 3px solid oklch(0.78 0.08 120);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px oklch(0 0 0 / 0.1);
+}
+
+.mode-creative .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,
+    oklch(0.58 0.20 145) 0%,
+    oklch(0.62 0.22 160) 25%,
+    oklch(0.65 0.20 180) 50%,
+    oklch(0.62 0.22 200) 75%,
+    oklch(0.58 0.20 220) 100%);
+  background-size: 200% 100%;
+  animation: progressShine 2s linear infinite;
+  border-radius: 9999px;
+  box-shadow: 0 0 10px oklch(0.58 0.20 145 / 0.5);
+  position: relative;
+}
+
+.mode-creative .progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    oklch(1 0 0 / 0.4) 50%,
+    transparent 100%);
+  animation: progressGloss 1.5s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+@keyframes progressGloss {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Coin/rewards display */
+.mode-creative .coin-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg,
+    oklch(0.75 0.18 70) 0%,
+    oklch(0.70 0.20 80) 100%);
+  color: oklch(0.98 0.02 70);
+  border: 3px solid oklch(0.65 0.22 70);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  box-shadow: 0 4px 8px oklch(0.75 0.18 70 / 0.35),
+              inset 0 1px 0 oklch(1 0 0 / 0.3);
+}
+
+.mode-creative .coin-icon {
+  font-size: 1.5rem;
+  animation: coinSpin 3s linear infinite;
+}
+
+@keyframes coinSpin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* Locked game indicator */
+.mode-creative .game-locked {
+  position: relative;
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  pointer-events: none;
+}
+
+.mode-creative .game-locked::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  text-shadow: 0 4px 8px oklch(0 0 0 / 0.5);
+}
+
+/* Tooltip playful */
+.mode-creative .tooltip-fun {
+  background: oklch(0.25 0.08 120);
+  color: oklch(0.98 0.03 120);
+  border: 3px solid oklch(0.58 0.20 145);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 6px 12px oklch(0.25 0.08 120 / 0.4);
+  position: relative;
+}
+
+.mode-creative .tooltip-fun::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid oklch(0.58 0.20 145);
+}
+
+/* ============================================
+   MODE TRANSITION ANIMATIONS
+   ============================================ */
+
+.mode-transition-enter {
+  animation: modeTransitionIn 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modeTransitionIn {
+  0% {
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.mode-transition-exit {
+  animation: modeTransitionOut 400ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+@keyframes modeTransitionOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
+    filter: blur(10px);
+  }
+}
+
+/* Mode indicator bar */
+.mode-indicator-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 9999;
+  transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-indicator-bar.structured {
+  background: linear-gradient(90deg,
+    oklch(0.32 0.14 245) 0%,
+    oklch(0.42 0.12 190) 50%,
+    oklch(0.68 0.15 75) 100%);
+}
+
+.mode-indicator-bar.creative {
+  background: linear-gradient(90deg,
+    oklch(0.58 0.20 145) 0%,
+    oklch(0.65 0.22 35) 25%,
+    oklch(0.60 0.24 280) 50%,
+    oklch(0.65 0.22 240) 75%,
+    oklch(0.58 0.20 145) 100%);
+  background-size: 200% 100%;
+  animation: rainbowFlow 3s linear infinite;
+}
+
+@keyframes rainbowFlow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .mode-structured .max-w-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .mode-structured .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .mode-creative .container-creative {
+    padding: 1rem;
+  }
+  
+  .mode-creative h1 {
+    font-size: 2rem;
+  }
+  
+  .mode-creative .btn-play {
+    padding: 0.875rem 2rem;
+    font-size: 1.125rem;
+  }
+  
+  .mode-creative .game-card {
+    padding: 1.25rem;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-structured *,
+  .mode-creative * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mode-structured .pro-card {
+    border-width: 2px;
+    border-color: oklch(0.20 0.010 240);
+  }
+  
+  .mode-creative .game-card {
+    border-width: 5px;
+    border-color: oklch(0.25 0.08 120);
+  }
+}
+
+/* Focus visible enhancements */
+.mode-structured *:focus-visible {
+  outline: 3px solid oklch(0.32 0.14 245);
+  outline-offset: 3px;
+}
+
+.mode-creative *:focus-visible {
+  outline: 4px solid oklch(0.58 0.20 145);
+  outline-offset: 4px;
+  animation: focusPulseCreative 1s ease-in-out infinite;
+}
+
+@keyframes focusPulseCreative {
+  0%, 100% { outline-color: oklch(0.58 0.20 145); }
+  50% { outline-color: oklch(0.65 0.22 35); }
+}

@@ -1,4 +1,5 @@
 import { ComponentProps } from "react"
+import { sfx } from "@/lib/sfx"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -35,11 +36,13 @@ const buttonVariants = cva(
   }
 )
 
+
 function Button({
   className,
   variant,
   size,
   asChild = false,
+  onClick,
   ...props
 }: ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -47,10 +50,19 @@ function Button({
   }) {
   const Comp = asChild ? Slot : "button"
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (typeof onClick === 'function') onClick(e)
+    // Play click sound only for left mouse button and if not disabled
+    if (!props.disabled && e.button === 0 && sfx?.click) {
+      sfx.click.play()
+    }
+  }
+
   return (
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
       {...props}
     />
   )

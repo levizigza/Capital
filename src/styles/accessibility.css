@@ -1,0 +1,658 @@
+/**
+ * Accessibility Styles for FinanceQuest
+ * WCAG 2.1 Level AA/AAA compliant
+ */
+
+/* ============================================================================
+   FOCUS STYLES - KEYBOARD NAVIGATION
+   ============================================================================ */
+
+/* Remove default outline */
+*:focus {
+  outline: none;
+}
+
+/* Custom focus indicators for better visibility */
+:focus-visible {
+  outline: 3px solid oklch(0.55 0.18 240);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* High contrast focus for buttons */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid oklch(0.55 0.18 240);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px oklch(0.55 0.18 240 / 0.2);
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 10000;
+  padding: 1rem 2rem;
+  background: oklch(0.55 0.18 240);
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-to-main:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ============================================================================
+   SCREEN READER ONLY CONTENT
+   ============================================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ============================================================================
+   COLOR CONTRAST - TEXT LABELS FOR COLOR-CODED ELEMENTS
+   ============================================================================ */
+
+/* Ensure all color-coded elements have text labels */
+.color-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-indicator::before {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid currentColor;
+}
+
+/* Status indicators with text */
+.status-success,
+.status-error,
+.status-warning,
+.status-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.status-success {
+  background: oklch(0.95 0.05 145);
+  color: oklch(0.35 0.15 145);
+}
+
+.status-success::before {
+  content: '✓';
+  font-weight: bold;
+}
+
+.status-error {
+  background: oklch(0.95 0.05 25);
+  color: oklch(0.40 0.15 25);
+}
+
+.status-error::before {
+  content: '✕';
+  font-weight: bold;
+}
+
+.status-warning {
+  background: oklch(0.95 0.05 80);
+  color: oklch(0.40 0.15 80);
+}
+
+.status-warning::before {
+  content: '⚠';
+  font-weight: bold;
+}
+
+.status-info {
+  background: oklch(0.95 0.05 240);
+  color: oklch(0.40 0.15 240);
+}
+
+.status-info::before {
+  content: 'ℹ';
+  font-weight: bold;
+}
+
+/* Progress indicators with text */
+.progress-with-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+  /* Increase border contrast */
+  *,
+  *::before,
+  *::after {
+    border-color: currentColor !important;
+  }
+  
+  /* Stronger focus indicators */
+  :focus-visible {
+    outline-width: 4px;
+    outline-offset: 3px;
+  }
+  
+  /* High contrast text */
+  body {
+    color: oklch(0.10 0 0);
+    background: oklch(1.00 0 0);
+  }
+  
+  /* High contrast buttons */
+  button,
+  .button {
+    border: 2px solid currentColor;
+    font-weight: bold;
+  }
+  
+  /* High contrast links */
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+  
+  /* High contrast cards */
+  .card {
+    border: 2px solid oklch(0.20 0 0);
+  }
+}
+
+/* High contrast mode toggle class */
+body.high-contrast {
+  /* Force high contrast colors */
+  --color-text: oklch(0.10 0 0);
+  --color-bg: oklch(1.00 0 0);
+  --color-border: oklch(0.20 0 0);
+  --color-primary: oklch(0.40 0.20 240);
+  --color-accent: oklch(0.45 0.20 30);
+  
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+body.high-contrast * {
+  border-color: var(--color-border) !important;
+}
+
+body.high-contrast button,
+body.high-contrast .button {
+  border: 3px solid currentColor;
+  font-weight: bold;
+}
+
+body.high-contrast a {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+body.high-contrast .card {
+  border: 3px solid var(--color-border);
+}
+
+/* ============================================================================
+   FORM ACCESSIBILITY
+   ============================================================================ */
+
+/* Visible labels for all inputs */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: oklch(0.30 0 0);
+}
+
+/* Required field indicator */
+label.required::after {
+  content: ' *';
+  color: oklch(0.55 0.20 25);
+  font-weight: bold;
+}
+
+/* Input focus states */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: oklch(0.55 0.18 240);
+  box-shadow: 0 0 0 3px oklch(0.55 0.18 240 / 0.2);
+}
+
+/* Error states with text */
+input:invalid,
+select:invalid,
+textarea:invalid {
+  border-color: oklch(0.55 0.20 25);
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: oklch(0.45 0.20 25);
+  font-size: 0.875rem;
+}
+
+.form-error::before {
+  content: '⚠';
+  font-weight: bold;
+}
+
+/* Success states */
+input:valid,
+select:valid,
+textarea:valid {
+  border-color: oklch(0.55 0.18 145);
+}
+
+/* Helper text */
+.form-help {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: oklch(0.50 0 0);
+}
+
+/* ============================================================================
+   KEYBOARD NAVIGATION
+   ============================================================================ */
+
+/* Tab focus order helper */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Interactive element spacing for keyboard navigation */
+.keyboard-nav > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Keyboard-only hints */
+.keyboard-hint {
+  font-size: 0.75rem;
+  color: oklch(0.50 0 0);
+  margin-left: 0.5rem;
+}
+
+/* ============================================================================
+   ARIA LIVE REGIONS
+   ============================================================================ */
+
+.aria-live-polite {
+  position: absolute;
+  left: -9999px;
+}
+
+.aria-live-assertive {
+  position: absolute;
+  left: -9999px;
+}
+
+/* Notification announcements */
+.notification[role="alert"] {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid currentColor;
+}
+
+/* ============================================================================
+   LINK ACCESSIBILITY
+   ============================================================================ */
+
+/* External link indicator */
+a[target="_blank"]::after {
+  content: ' (opens in new tab)';
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+@media screen and (min-width: 768px) {
+  a[target="_blank"]::after {
+    content: ' ↗';
+  }
+}
+
+/* Download link indicator */
+a[download]::after {
+  content: ' (download)';
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ============================================================================
+   IMAGE ACCESSIBILITY
+   ============================================================================ */
+
+/* Decorative images should have empty alt text */
+img[alt=""],
+img:not([alt]) {
+  /* Style for decorative images */
+  opacity: 0.9;
+}
+
+/* Informative images must have alt text */
+img[alt]:not([alt=""]) {
+  /* Style for informative images */
+}
+
+/* Image with caption */
+figure {
+  margin: 1rem 0;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: oklch(0.50 0 0);
+  font-style: italic;
+}
+
+/* ============================================================================
+   TABLE ACCESSIBILITY
+   ============================================================================ */
+
+/* Table headers must have scope */
+th {
+  font-weight: bold;
+  text-align: left;
+  background: oklch(0.95 0 0);
+}
+
+/* Table caption */
+caption {
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  caption-side: top;
+}
+
+/* ============================================================================
+   BUTTON ACCESSIBILITY
+   ============================================================================ */
+
+/* Icon-only buttons must have aria-label */
+button:not(:has(span)),
+button:empty {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Disabled button states */
+button:disabled,
+button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading state */
+button[aria-busy="true"] {
+  position: relative;
+  color: transparent;
+}
+
+button[aria-busy="true"]::after {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: 50%;
+  left: 50%;
+  margin-left: -0.5rem;
+  margin-top: -0.5rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+/* ============================================================================
+   MODAL/DIALOG ACCESSIBILITY
+   ============================================================================ */
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+}
+
+/* Modal container */
+[role="dialog"],
+[role="alertdialog"] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal title */
+[role="dialog"] h2,
+[role="alertdialog"] h2 {
+  margin-top: 0;
+}
+
+/* Modal close button */
+[role="dialog"] button[aria-label*="close"],
+[role="alertdialog"] button[aria-label*="close"] {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+/* ============================================================================
+   NAVIGATION ACCESSIBILITY
+   ============================================================================ */
+
+/* Skip navigation */
+nav[aria-label="Main navigation"] {
+  /* Main nav styles */
+}
+
+/* Breadcrumb navigation */
+nav[aria-label="Breadcrumb"] ol {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  gap: 0.5rem;
+}
+
+nav[aria-label="Breadcrumb"] li:not(:last-child)::after {
+  content: '/';
+  margin-left: 0.5rem;
+  color: oklch(0.60 0 0);
+}
+
+/* Current page indicator */
+[aria-current="page"] {
+  font-weight: bold;
+  color: oklch(0.30 0 0);
+}
+
+/* ============================================================================
+   ACCORDION ACCESSIBILITY
+   ============================================================================ */
+
+/* Accordion button */
+[aria-expanded] {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border: none;
+  background: oklch(0.98 0 0);
+}
+
+[aria-expanded]::after {
+  content: '+';
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: transform 200ms;
+}
+
+[aria-expanded="true"]::after {
+  content: '−';
+}
+
+/* Accordion panel */
+[aria-expanded] + [role="region"] {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+}
+
+[aria-expanded="true"] + [role="region"] {
+  max-height: 1000px;
+}
+
+/* ============================================================================
+   TOOLTIP ACCESSIBILITY
+   ============================================================================ */
+
+[role="tooltip"] {
+  position: absolute;
+  z-index: 10000;
+  padding: 0.5rem 1rem;
+  background: oklch(0.20 0 0);
+  color: white;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Keep focus transitions */
+  :focus-visible {
+    transition: none;
+  }
+}
+
+/* ============================================================================
+   PRINT ACCESSIBILITY
+   ============================================================================ */
+
+@media print {
+  /* Ensure good contrast for printing */
+  * {
+    color: black !important;
+    background: white !important;
+  }
+  
+  /* Underline links for print */
+  a {
+    text-decoration: underline;
+  }
+  
+  /* Show link URLs */
+  a[href]::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+  }
+  
+  /* Hide interactive elements */
+  button,
+  input,
+  select,
+  textarea {
+    border: 1px solid black;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Focusable but visually hidden */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+/* Not screen reader content */
+[aria-hidden="true"] {
+  display: none !important;
+}
+
+/* Disabled content */
+[inert] {
+  pointer-events: none;
+  opacity: 0.5;
+}

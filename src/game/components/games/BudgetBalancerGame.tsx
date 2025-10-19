@@ -1,4 +1,9 @@
 import { useState, useEffect } from 'react'
+import { World } from '@/game/ecs/World'
+import type { Entity } from '@/game/ecs/Entity'
+import { OnboardingSystem } from '@/game/ecs/systems/OnboardingSystem'
+import { XPSystem } from '@/game/ecs/systems/XPSystem'
+import type { OnboardingComponent } from '@/game/ecs/components/Onboarding'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -31,13 +36,73 @@ interface BudgetCategory {
   items: BudgetItem[]
 }
 
-export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: BudgetBalancerGameProps) {
+export default function BudgetBalancerGame({ onComplete, onExit, userTier = 'elementary' }: BudgetBalancerGameProps) {
   const [gameState, setGameState] = useState<'ready' | 'playing' | 'ended'>('ready')
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(120)
   const [draggedItem, setDraggedItem] = useState<BudgetItem | null>(null)
   const [correctPlacements, setCorrectPlacements] = useState(0)
   const [wrongPlacements, setWrongPlacements] = useState(0)
+  // ECS state
+  const [entities, setEntities] = useState<Entity[]>([])
+  const [xp, setXp] = useState(0)
+  const [level, setLevel] = useState(1)
+  const [achievementUnlocked, setAchievementUnlocked] = useState(false)
+  const [onboardingStep, setOnboardingStep] = useState(0)
+  const [onboardingComplete, setOnboardingComplete] = useState(false)
+  // ECS world/entity initialization
+  useEffect(() => {
+    const world = new World()
+    world.addEntity({
+      id: 0,
+      components: {
+        onboarding: { type: 'onboarding', completed: false, step: 0 } as OnboardingComponent
+      }
+    })
+    setEntities(world.entities)
+  }, [])
+
+  // ECS onboarding system effect
+  useEffect(() => {
+    const player = entities.find(e => e.id === 0)
+    if (!player) return
+    const onboarding = player.components['onboarding'] as OnboardingComponent | undefined
+    if (onboarding) {
+      OnboardingSystem([player], () => setOnboardingComplete(true))
+      setOnboardingStep(onboarding.step)
+      setOnboardingComplete(onboarding.completed)
+    }
+    // ECS XP/level
+    const xpComp = player.components['xp']
+    if (xpComp) {
+      setXp(xpComp.value)
+      setLevel(xpComp.level)
+    }
+    // ECS Achievement
+    const ach = player.components['achievement']
+    if (ach) {
+      setAchievementUnlocked(ach.unlocked)
+    }
+  }, [entities])
+
+  // Advance onboarding step
+  const handleAdvanceOnboarding = () => {
+    setEntities(prev => prev.map(e => {
+      if (e.id === 0 && e.components['onboarding']) {
+        return {
+          ...e,
+          components: {
+            ...e.components,
+            onboarding: {
+              ...e.components['onboarding'],
+              step: e.components['onboarding'].step + 1
+            }
+          }
+        }
+      }
+      return e
+    }))
+  }
   
   const getGameData = () => {
     switch (userTier) {
@@ -54,38 +119,10 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
             { id: 7, name: 'Piggy Bank', amount: 10, category: 'Savings', emoji: '🐷' }
           ],
           categories: [
-            { 
-              name: 'Food', 
-              target: 33, 
-              current: 0, 
-              color: 'from-green-100 to-green-50 border-green-300',
-              description: 'Meals and snacks',
-              items: []
-            },
-            { 
-              name: 'Fun', 
-              target: 27, 
-              current: 0, 
-              color: 'from-blue-100 to-blue-50 border-blue-300',
-              description: 'Games and entertainment',
-              items: []
-            },
-            { 
-              name: 'School', 
-              target: 30, 
-              current: 0, 
-              color: 'from-purple-100 to-purple-50 border-purple-300',
-              description: 'Learning materials',
-              items: []
-            },
-            { 
-              name: 'Savings', 
-              target: 10, 
-              current: 0, 
-              color: 'from-yellow-100 to-yellow-50 border-yellow-300',
-              description: 'Money for later',
-              items: []
-            }
+            { name: 'Food', target: 33, current: 0, color: 'from-green-100 to-green-50 border-green-300', description: 'Meals & snacks', items: [] },
+            { name: 'Fun', target: 27, current: 0, color: 'from-blue-100 to-blue-50 border-blue-300', description: 'Toys & entertainment', items: [] },
+            { name: 'School', target: 30, current: 0, color: 'from-purple-100 to-purple-50 border-purple-300', description: 'School supplies', items: [] },
+            { name: 'Savings', target: 10, current: 0, color: 'from-yellow-100 to-yellow-50 border-yellow-300', description: 'Piggy bank', items: [] }
           ]
         }
       case 'middle':
@@ -269,6 +306,12 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
     if (isCorrect) {
       setCorrectPlacements(prev => prev + 1)
       toast.success(`✓ Correct! +${draggedItem.amount} points`, { duration: 1500 })
+      // ECS: Award XP for correct placement
+      setEntities(prev => {
+        const updated = [...prev]
+        XPSystem(updated.filter(e => e.id === 0), 20)
+        return updated
+      })
     } else {
       setWrongPlacements(prev => prev + 1)
       toast.error(`✗ Wrong category! -${Math.floor(draggedItem.amount * 0.3)} points`, { duration: 1500 })
@@ -326,7 +369,24 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
     const balance = gameData.income - totalBudgeted
     const accuracy = (correctPlacements / budgetItems.length) * 100
     const performanceRating = accuracy >= 90 ? 'Outstanding!' : accuracy >= 75 ? 'Great Job!' : accuracy >= 60 ? 'Good Work!' : 'Keep Practicing!'
-    
+    // ECS: Unlock achievement for perfect score
+    if (!achievementUnlocked && Math.round(accuracy) === 100) {
+      setEntities(prev => prev.map(e => {
+        if (e.id === 0 && e.components['achievement']) {
+          return {
+            ...e,
+            components: {
+              ...e.components,
+              achievement: {
+                ...e.components['achievement'],
+                unlocked: true
+              }
+            }
+          }
+        }
+        return e
+      }))
+    }
     return (
       <motion.div 
         initial={{ opacity: 0 }}
@@ -344,8 +404,15 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
               <div className="text-7xl mb-4">📊</div>
               <h2 className="text-3xl font-bold text-foreground mb-2">Budget Complete!</h2>
               <p className="text-xl text-accent font-semibold">{performanceRating}</p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 16, marginBottom: 16 }}>
+                <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '8px 16px', fontWeight: 'bold', color: '#2563eb' }}>
+                  XP: {xp} | Level: {level}
+                </div>
+                <div style={{ background: achievementUnlocked ? '#d1fae5' : '#f3f4f6', borderRadius: 8, padding: '8px 16px', fontWeight: 'bold', color: achievementUnlocked ? '#059669' : '#6b7280' }}>
+                  {achievementUnlocked ? '🏆 Achievement: Perfect Budgeter' : 'Achievement: Locked'}
+                </div>
+              </div>
             </motion.div>
-            
             <div className="grid md:grid-cols-3 gap-4 mb-8">
               <motion.div
                 initial={{ x: -20, opacity: 0 }}
@@ -506,6 +573,40 @@ export function BudgetBalancerGame({ onComplete, onExit, userTier = 'middle' }: 
           </div>
         </div>
       </div>
+
+      {/* ECS Onboarding UI */}
+      {!onboardingComplete && (
+        <div style={{
+          background: '#fffbe6',
+          border: '1px solid #ffe58f',
+          borderRadius: 12,
+          padding: 24,
+          margin: '24px auto',
+          maxWidth: 400,
+          textAlign: 'center',
+          boxShadow: '0 2px 8px #ffd70033'
+        }}>
+          <h3 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 12 }}>Welcome to Budget Balancer!</h3>
+          <p style={{ marginBottom: 16 }}>
+            {onboardingStep === 0 && 'Drag and drop each item to the correct budget category.'}
+            {onboardingStep === 1 && 'Earn points for every correct placement.'}
+            {onboardingStep === 2 && 'Achieve a perfect score to unlock a special achievement!'}
+          </p>
+          <button onClick={handleAdvanceOnboarding} style={{
+            background: '#ffd700',
+            color: '#222',
+            fontWeight: 'bold',
+            fontSize: 16,
+            padding: '8px 24px',
+            border: 'none',
+            borderRadius: 8,
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px #ffd70055'
+          }}>
+            {onboardingStep < 2 ? 'Next' : 'Finish Onboarding'}
+          </button>
+        </div>
+      )}
 
       <div className="p-6">
         {gameState === 'ready' ? (

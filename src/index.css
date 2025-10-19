@@ -1,11 +1,11 @@
+/* Tailwind and animations - Fonts loaded in index.html */
 @import 'tailwindcss';
 @import "tw-animate-css";
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-}
+/* Import dual-mode aesthetics */
+@import './styles/dual-mode.css';
+
+
 
 :root {
   /* STRUCTURED MODE - Professional/Award-Winning Colors (Awwwards Style) */
@@ -143,7 +143,8 @@
   --ring: oklch(0.60 0.22 290);
 }
 
-@theme {
+
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -163,7 +164,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
+
   /* Mode-specific theme tokens */
   --color-structured-bg: var(--structured-bg);
   --color-structured-fg: var(--structured-fg);
@@ -870,6 +871,7 @@ img, video, canvas, svg {
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -878,6 +880,7 @@ img, video, canvas, svg {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -886,6 +889,7 @@ img, video, canvas, svg {
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

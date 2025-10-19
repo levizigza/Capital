@@ -288,10 +288,7 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                   variant="ghost"
                   size="sm"
                   className="flex-1"
-                  onClick={() => {
-                    onSkip?.()
-                    window.history.pushState({ mode: null }, '', window.location.href)
-                  }}
+                  onClick={onSkip}
                   aria-label="Return to home screen"
                 >
                   Return Home
@@ -401,26 +398,31 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
               </CardContent>
 
               <CardFooter className="flex justify-between pt-6">
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  disabled={currentQuestion === 0 || isTransitioning}
-                  aria-label="Go to previous question"
-                >
-                  <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
-                  Back
-                </Button>
-
                 <div className="flex gap-2">
-                  {onSkip && (
-                    <Button 
-                      variant="ghost" 
+                  {currentQuestion === 0 && onSkip && (
+                    <Button
+                      variant="outline"
                       onClick={onSkip}
-                      aria-label="Skip archetype quiz"
+                      aria-label="Skip quiz and continue"
                     >
+                      <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
                       Skip Quiz
                     </Button>
                   )}
+                  {currentQuestion > 0 && (
+                    <Button
+                      variant="outline"
+                      onClick={handleBack}
+                      disabled={isTransitioning}
+                      aria-label="Go to previous question"
+                    >
+                      <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
+                      Back
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
                   <Button 
                     onClick={handleNext} 
                     disabled={!isAnswered || isTransitioning}

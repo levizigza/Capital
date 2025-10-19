@@ -44,43 +44,40 @@ export default function StructuredModeDashboard({
   }, [userProfile.level, userProfile.xp])
 
   return (
-    <div className="mode-structured min-h-screen mode-transition-enter">
-      <div className="mode-indicator structured" />
-      
-      {/* Professional Navigation Header */}
-      <header className="sticky top-0 z-50 bg-structured-card border-b border-structured-border backdrop-blur-sm bg-opacity-95">
-        <div className="container-pro">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-6">
+    <div className="mode-structured min-h-screen mode-transition-enter bg-gradient-to-br from-structured-bg via-white to-structured-muted/60">
+      <div className="mode-indicator-bar structured" />
+      {/* Awwwards-style Navigation Header with Glassmorphism and animated underline */}
+      <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/70 border-b border-structured-border/40 shadow-lg">
+        <div className="max-w-container">
+          <div className="flex items-center justify-between h-20 px-2 md:px-0">
+            <div className="flex items-center gap-8">
               <button
                 onClick={onModeSwitch}
-                className="flex items-center gap-2 text-sm font-medium text-structured-fg hover:text-structured-primary transition-colors"
+                className="flex items-center gap-2 text-lg font-semibold text-structured-fg hover:text-structured-primary transition-colors relative group focus:outline-none"
                 aria-label="Return to mode selection"
               >
-                <House size={20} weight="fill" />
+                <House size={24} weight="fill" className="drop-shadow-md" />
                 <span className="hidden sm:inline">Home</span>
+                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-structured-primary transition-all group-hover:w-full" />
               </button>
-              
-              <div className="flex items-center gap-2 text-sm text-structured-muted-fg">
-                <ChartLine size={18} weight="fill" />
-                <span className="font-medium">Structured Mode</span>
+              <div className="flex items-center gap-2 text-base text-structured-muted-fg font-medium">
+                <ChartLine size={20} weight="fill" className="animate-pulse" />
+                <span>Structured Mode</span>
               </div>
             </div>
-            
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
-                size="sm"
+                size="lg"
                 onClick={onModeSwitch}
-                className="gap-2"
+                className="gap-2 text-base font-semibold hover:bg-structured-primary/10"
               >
-                <GameController size={18} weight="fill" />
+                <GameController size={20} weight="fill" className="transition-transform group-hover:scale-110" />
                 <span className="hidden sm:inline">Switch to Creative</span>
               </Button>
-              
               <button
                 onClick={onOpenProfile}
-                className="w-9 h-9 rounded-full bg-gradient-to-br from-structured-primary to-structured-secondary flex items-center justify-center text-white font-semibold text-sm shadow-sm hover:shadow-md transition-all"
+                className="w-11 h-11 rounded-full bg-gradient-to-br from-structured-primary to-structured-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg hover:scale-105 transition-all border-2 border-white/60 focus:outline-none focus:ring-2 focus:ring-structured-primary"
                 aria-label="Open profile"
               >
                 {userProfile.name?.[0] || 'U'}
@@ -91,25 +88,25 @@ export default function StructuredModeDashboard({
       </header>
 
       {/* Main Dashboard Content */}
-      <main className="container-pro py-8">
+      <main className="max-w-container py-12">
         {/* Hero Stats Section */}
-        <section className="mb-8">
+  <section className="mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h1 className="text-4xl font-bold mb-2" style={{ color: 'var(--structured-fg)' }}>
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 tracking-tight bg-gradient-to-r from-structured-primary via-structured-secondary to-structured-fg bg-clip-text text-transparent drop-shadow-lg animate-fade-in">
               Financial Progress Dashboard
             </h1>
-            <p className="text-lg" style={{ color: 'var(--structured-muted-fg)' }}>
+            <p className="text-2xl md:text-3xl font-medium text-structured-muted-fg animate-fade-in-slow">
               Track your journey to financial mastery
             </p>
           </motion.div>
         </section>
 
         {/* KPI Cards Grid */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
             { 
               icon: Trophy, 
@@ -144,25 +141,40 @@ export default function StructuredModeDashboard({
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1, duration: 0.3 }}
+              transition={{ 
+                delay: idx * 0.08, 
+                duration: 0.4,
+                ease: [0.4, 0, 0.2, 1]
+              }}
+              whileHover={{ 
+                y: -4,
+                transition: { duration: 0.2 }
+              }}
             >
-              <Card className="pro-card hover:border-structured-primary/20">
-                <CardContent className="pt-6">
+              <Card className="pro-card hover:border-structured-primary/40 group overflow-hidden relative shadow-xl backdrop-blur-xl bg-white/60 border border-structured-border/30">
+                <div className="absolute inset-0 bg-gradient-to-br from-structured-primary/10 via-white/0 to-structured-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <CardContent className="pt-8 relative z-10">
                   <div className="flex items-start justify-between mb-3">
-                    <div 
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    <motion.div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-110 shadow-md"
                       style={{ 
                         backgroundColor: stat.bgColor,
                         color: stat.color
                       }}
+                      whileHover={{ rotate: 5 }}
                     >
                       <stat.icon size={20} weight="fill" />
-                    </div>
+                    </motion.div>
                   </div>
-                  <div className="text-3xl font-bold mb-1" style={{ color: 'var(--structured-fg)' }}>
+                  <motion.div 
+                    className="text-4xl font-extrabold mb-2 transition-colors text-structured-fg drop-shadow-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: (idx * 0.08) + 0.2 }}
+                  >
                     {stat.value}
-                  </div>
-                  <div className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                  </motion.div>
+                  <div className="text-base font-medium transition-colors text-structured-muted-fg">
                     {stat.label}
                   </div>
                 </CardContent>
@@ -173,12 +185,12 @@ export default function StructuredModeDashboard({
 
         {/* Level Progress */}
         <motion.section
-          className="mb-8"
+          className="mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="pro-card">
+          <Card className="pro-card shadow-2xl backdrop-blur-xl bg-white/70 border border-structured-border/30">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -221,16 +233,16 @@ export default function StructuredModeDashboard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+          <Tabs defaultValue="overview" className="w-full animate-fade-in-slow">
+            <TabsList className="grid w-full grid-cols-3 mb-8 rounded-xl bg-gradient-to-r from-structured-muted/40 to-structured-card/60 shadow-sm">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="achievements">Achievements</TabsTrigger>
               <TabsTrigger value="insights">Insights</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-6">
+            <TabsContent value="overview" className="space-y-8">
               {/* Recent Activity */}
-              <Card className="pro-card">
+              <Card className="pro-card shadow-lg backdrop-blur-xl bg-white/70 border border-structured-border/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Calendar size={20} weight="fill" />
@@ -283,7 +295,7 @@ export default function StructuredModeDashboard({
               </Card>
 
               {/* Start Playing CTA */}
-              <Card className="pro-card" style={{ borderColor: 'var(--structured-primary)', borderWidth: '2px' }}>
+              <Card className="pro-card shadow-lg border-2 border-structured-primary/60 bg-gradient-to-br from-structured-primary/10 to-white/80 backdrop-blur-xl">
                 <CardContent className="pt-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
@@ -308,7 +320,7 @@ export default function StructuredModeDashboard({
             </TabsContent>
 
             <TabsContent value="achievements">
-              <Card className="pro-card">
+              <Card className="pro-card shadow-lg backdrop-blur-xl bg-white/70 border border-structured-border/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Trophy size={20} weight="fill" />
@@ -326,7 +338,7 @@ export default function StructuredModeDashboard({
             </TabsContent>
 
             <TabsContent value="insights">
-              <Card className="pro-card">
+              <Card className="pro-card shadow-lg backdrop-blur-xl bg-white/70 border border-structured-border/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Brain size={20} weight="fill" />
@@ -381,14 +393,14 @@ export default function StructuredModeDashboard({
       </main>
 
       {/* Professional Footer */}
-      <footer className="border-t border-structured-border mt-16" style={{ backgroundColor: 'var(--structured-card)' }}>
-        <div className="container-pro py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+      <footer className="border-t border-structured-border/40 mt-20 bg-gradient-to-t from-structured-card/80 to-white/60 shadow-inner">
+        <div className="max-w-container py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-base font-medium text-structured-muted-fg">
             <div>© 2024 FinanceQuest Pro. All rights reserved.</div>
-            <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-structured-primary transition-colors">Privacy</a>
-              <a href="#" className="hover:text-structured-primary transition-colors">Terms</a>
-              <a href="#" className="hover:text-structured-primary transition-colors">Help</a>
+            <div className="flex items-center gap-8">
+              <a href="#" className="hover:text-structured-primary transition-colors underline-offset-4">Privacy</a>
+              <a href="#" className="hover:text-structured-primary transition-colors underline-offset-4">Terms</a>
+              <a href="#" className="hover:text-structured-primary transition-colors underline-offset-4">Help</a>
             </div>
           </div>
         </div>

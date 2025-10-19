@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useKV } from '@github/spark/hooks'
+// @ts-ignore
 import { Toaster } from 'sonner'
 import { motion } from 'framer-motion'
 import { Sparkle } from '@phosphor-icons/react'
@@ -11,6 +12,7 @@ import { DebugPanel } from '@/components/DebugPanel'
 import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
 import type { ArchetypeId } from '@/data/archetype-questions'
+import ThreeFinanceGarden from '@/components/ThreeFinanceGarden'
 
 export type LearningMode = 'creative' | 'structured' | null
 
@@ -113,7 +115,6 @@ function App() {
   useEffect(() => {
     if (userProfile) {
       setIsInitialized(true)
-      
       if (!userProfile.archetype?.completedQuiz && currentMode !== null) {
         setShowArchetypeQuiz(true)
       }
@@ -141,18 +142,10 @@ function App() {
     }
   }, [])
 
-  // Commented out auto-selection to always show mode selection first
-  // useEffect(() => {
-  //   if (isInitialized && userProfile?.preferredMode && currentMode === null) {
-  //     setCurrentMode(userProfile.preferredMode)
-  //   }
-  // }, [userProfile?.preferredMode, isInitialized, currentMode])
-
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
       setUserProfile((prev): UserProfile => {
         if (!prev || prev.tierProgression) return prev!
-        
         return {
           ...prev,
           tierProgression: DEFAULT_USER_PROFILE.tierProgression!
@@ -165,7 +158,6 @@ function App() {
     setCurrentMode(mode)
     const newState: NavigationState = { mode }
     window.history.pushState(newState, '', window.location.href)
-    
     setUserProfile((prev): UserProfile => {
       if (!prev) return prev!
       return {
@@ -173,7 +165,6 @@ function App() {
         preferredMode: mode
       }
     })
-    
     if (!userProfile?.archetype?.completedQuiz) {
       setShowArchetypeQuiz(true)
     }
@@ -200,9 +191,9 @@ function App() {
       return {
         ...prev,
         archetype: {
-          primary: 'tempo',
+          primary: 'guardian',
           secondary: null,
-          completedQuiz: false
+          completedQuiz: true // Changed to true so quiz doesn't keep showing
         }
       }
     })
@@ -226,12 +217,9 @@ function App() {
       finalNetWorth: (additionalData?.finalAmount as number | undefined) || 0,
       decisions: []
     }
-
     setGameScores((prevScores): GameScore[] => [...(prevScores || []), newScore])
-    
     const xpEarned = Math.floor(score * 0.5) + 50
     const coinsEarned = Math.floor(score * 0.3) + 25
-    
     setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile) {
         const defaultProfile: UserProfile = {
@@ -253,10 +241,8 @@ function App() {
         }
         return defaultProfile
       }
-      
       const newXP = prevProfile.xp + xpEarned
       const newLevel = Math.floor(newXP / 100) + 1
-
       return {
         ...prevProfile,
         xp: newXP,
@@ -271,23 +257,19 @@ function App() {
   const handleQuestComplete = useCallback((tierId: number, questId: string): void => {
     setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
-
       const updatedTiers = prevProfile.tierProgression.tiers.map(tier => {
         if (tier.id === tierId) {
           const updatedQuests = tier.quests.map(quest => {
             if (quest.id === questId && !quest.completed) {
               const financialComplete = quest.financialKPI.current >= quest.financialKPI.target
               const softSkillComplete = quest.softSkillKPI.completed
-              
               if (financialComplete && softSkillComplete) {
                 return { ...quest, completed: true }
               }
             }
             return quest
           })
-
           const allQuestsComplete = updatedQuests.every(q => q.completed)
-          
           return {
             ...tier,
             quests: updatedQuests,
@@ -296,23 +278,18 @@ function App() {
         }
         return tier
       })
-
       const currentTier = updatedTiers.find(t => t.id === tierId)
       const completedQuest = currentTier?.quests.find(q => q.id === questId && q.completed)
-      
       let newXP = prevProfile.xp
       let newAvailableLineXP = prevProfile.tierProgression.availableLineXP
       let newLevel = prevProfile.level
-
       if (completedQuest && !prevProfile.tierProgression.tiers.find(t => t.id === tierId)?.quests.find(q => q.id === questId)?.completed) {
         newXP += completedQuest.financeXP
         newAvailableLineXP += completedQuest.lineXPReward
         newLevel = Math.floor(newXP / 100) + 1
       }
-
       const currentTierComplete = currentTier?.completed
       let newCurrentTierId = prevProfile.tierProgression.currentTierId
-      
       if (currentTierComplete && tierId === prevProfile.tierProgression.currentTierId) {
         const nextTier = updatedTiers.find(t => t.id === tierId + 1)
         if (nextTier) {
@@ -320,7 +297,6 @@ function App() {
           newCurrentTierId = tierId + 1
         }
       }
-
       return {
         ...prevProfile,
         xp: newXP,
@@ -338,9 +314,7 @@ function App() {
   const handleAllocateLineXP = useCallback((line: SkillLine, amount: number): void => {
     setUserProfile((prevProfile): UserProfile => {
       if (!prevProfile?.tierProgression) return prevProfile!
-      
       if (prevProfile.tierProgression.availableLineXP < amount) return prevProfile
-
       return {
         ...prevProfile,
         tierProgression: {
@@ -390,7 +364,7 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <ArchetypeQuiz 
+        <ArchetypeQuiz
           onComplete={handleArchetypeComplete}
           onSkip={handleSkipArchetype}
         />
@@ -402,12 +376,19 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <DebugPanel 
+        <DebugPanel
           userProfile={userProfile}
           currentMode={currentMode}
           isInitialized={isInitialized}
           gameScores={gameScores || []}
         />
+        <div className="mb-8">
+          <ThreeFinanceGarden
+            savings={userProfile?.tierProgression?.skillLines.cognition ?? 0}
+            investments={userProfile?.tierProgression?.skillLines.values ?? 0}
+            credit={userProfile?.tierProgression?.skillLines.morals ?? 0}
+          />
+        </div>
         <CreativeModeHub
           userProfile={userProfile}
           setUserProfile={setUserProfile}
@@ -424,7 +405,7 @@ function App() {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <DebugPanel 
+      <DebugPanel
         userProfile={userProfile}
         currentMode={currentMode}
         isInitialized={isInitialized}
