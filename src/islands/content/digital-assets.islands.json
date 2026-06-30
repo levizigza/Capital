@@ -1,0 +1,232 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "digital_assets",
+      "name": "Digital Asset Atoll",
+      "description": "Explore cryptocurrency wallets, mock transactions, and learn about volatility the hard way.",
+      "icon": "🪙",
+      "requiredItems": ["re_island_medallion"],
+      "provenance": {
+        "learning_objectives": [
+          "Understand cryptocurrency wallets and transactions",
+          "Learn about blockchain concepts at a high level",
+          "Experience price volatility and its emotional impact on decisions",
+          "Differentiate speculative assets from stable investments"
+        ],
+        "mechanics_used": ["market-simulation", "resource-management", "quiz-challenge", "npc-dialogue-tree"],
+        "originality_notes": "Theme: atoll with distinct crypto-themed zones (not a trading app clone). Verb: quest-driven exploration with mock transactions (not live trading). Structure: NPC mentors guide through volatility scenarios with quiz gates (not open sandbox). Combines resource management with guided dialogue scenarios.",
+        "forbidden_references": ["Coinbase", "Binance", "CryptoKitties", "Axie Infinity"]
+      },
+      "areas": [
+        {
+          "id": "da_wallet_wharf",
+          "name": "Wallet Wharf",
+          "description": "Set up your first digital wallet and learn about public/private keys.",
+          "icon": "👛",
+          "connections": ["da_exchange_plaza", "da_volatility_valley"]
+        },
+        {
+          "id": "da_exchange_plaza",
+          "name": "Exchange Plaza",
+          "description": "A bustling marketplace where digital assets are bought and sold.",
+          "icon": "🔄",
+          "connections": ["da_wallet_wharf", "da_volatility_valley"]
+        },
+        {
+          "id": "da_volatility_valley",
+          "name": "Volatility Valley",
+          "description": "Watch prices swing wildly. Learn why crypto is risky and when hype overtakes fundamentals.",
+          "icon": "🎢",
+          "connections": ["da_wallet_wharf", "da_exchange_plaza"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_satoshi",
+          "name": "Satoshi the Guide",
+          "icon": "🧑‍💻",
+          "areaId": "da_wallet_wharf",
+          "dialogueGraphId": "dlg_satoshi"
+        },
+        {
+          "id": "npc_exchange_emma",
+          "name": "Exchange Emma",
+          "icon": "💱",
+          "areaId": "da_exchange_plaza",
+          "dialogueGraphId": "dlg_emma"
+        },
+        {
+          "id": "npc_fomo_fred",
+          "name": "FOMO Fred",
+          "icon": "🤑",
+          "areaId": "da_volatility_valley",
+          "dialogueGraphId": "dlg_fred"
+        },
+        {
+          "id": "npc_hodl_hannah",
+          "name": "HODL Hannah",
+          "icon": "💎",
+          "areaId": "da_volatility_valley",
+          "dialogueGraphId": "dlg_hannah"
+        }
+      ],
+      "items": [
+        {
+          "id": "da_wallet_key",
+          "name": "Wallet Seed Phrase",
+          "description": "Your 12-word recovery phrase. Guard it with your life!",
+          "icon": "🔑",
+          "location": { "areaId": "da_wallet_wharf" }
+        },
+        {
+          "id": "da_mock_coin",
+          "name": "MockCoin Token",
+          "description": "A simulated cryptocurrency used for learning transactions.",
+          "icon": "🪙",
+          "location": { "areaId": "da_exchange_plaza" }
+        },
+        {
+          "id": "da_volatility_chart",
+          "name": "Volatility Report",
+          "description": "A chart showing extreme price swings and the emotions that drive them.",
+          "icon": "📉",
+          "location": { "areaId": "da_volatility_valley" }
+        },
+        {
+          "id": "da_island_medallion",
+          "name": "Digital Asset Medallion",
+          "description": "You understand the basics of digital assets and their risks.",
+          "icon": "🏅",
+          "location": { "areaId": "da_volatility_valley" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_wallet_setup",
+          "title": "Wallet & First Transaction",
+          "description": "Set up a simulated crypto wallet, send and receive mock transactions, and understand gas fees.",
+          "hint": "Talk to Satoshi at Wallet Wharf to create your wallet, then visit Exchange Emma to make your first trade.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_satoshi" },
+            { "type": "collectItem", "itemId": "da_wallet_key" },
+            { "type": "talkToNpc", "npcId": "npc_exchange_emma" },
+            { "type": "completeMinigame", "minigameId": "mg_mock_exchange" }
+          ],
+          "rewards": { "coins": 75, "xp": 150, "items": ["da_mock_coin"] }
+        },
+        {
+          "id": "q_volatility_lesson",
+          "title": "Riding the Rollercoaster",
+          "description": "Experience a simulated crypto crash. Learn why timing the market fails and how emotions drive bad decisions.",
+          "hint": "Visit Volatility Valley. Talk to FOMO Fred and HODL Hannah for opposing viewpoints.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_fomo_fred" },
+            { "type": "talkToNpc", "npcId": "npc_hodl_hannah" },
+            { "type": "collectItem", "itemId": "da_volatility_chart" }
+          ],
+          "rewards": { "coins": 100, "xp": 200, "items": ["da_island_medallion"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_satoshi",
+          "startNodeId": "s1",
+          "nodes": [
+            {
+              "id": "s1",
+              "speaker": "Satoshi the Guide",
+              "text": "Welcome to Wallet Wharf! A crypto wallet doesn't actually hold coins — it holds the keys that prove ownership. Let me show you how it works.",
+              "choices": [
+                { "id": "s1c1", "text": "Set up my wallet!", "nextNodeId": "s2", "effects": [{ "type": "startQuest", "questId": "q_wallet_setup" }, { "type": "giveItem", "itemId": "da_wallet_key" }] },
+                { "id": "s1c2", "text": "What's a private key?", "nextNodeId": "s3" }
+              ]
+            },
+            { "id": "s2", "speaker": "Satoshi the Guide", "text": "Here's your seed phrase — 12 random words that can recover your wallet. Never share it! Now head to Exchange Plaza to make your first trade.", "end": true },
+            {
+              "id": "s3",
+              "speaker": "Satoshi the Guide",
+              "text": "Think of it like a password that signs every transaction. Your public key is like your email address — anyone can send you crypto. But only you can send crypto out, using your private key.",
+              "choices": [
+                { "id": "s3c1", "text": "Create my wallet!", "nextNodeId": "s2", "effects": [{ "type": "startQuest", "questId": "q_wallet_setup" }, { "type": "giveItem", "itemId": "da_wallet_key" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_emma",
+          "startNodeId": "e1",
+          "nodes": [
+            {
+              "id": "e1",
+              "speaker": "Exchange Emma",
+              "text": "This is the Exchange! You can buy and sell digital assets here. Every transaction has a fee — we call it 'gas'. Want to try a mock trade?",
+              "choices": [
+                { "id": "e1c1", "text": "Let's trade!", "nextNodeId": "e2", "effects": [{ "type": "startMinigame", "minigameId": "mg_mock_exchange" }] },
+                { "id": "e1c2", "text": "How do fees work?", "nextNodeId": "e3" }
+              ]
+            },
+            { "id": "e2", "speaker": "Exchange Emma", "text": "Opening the exchange simulator…", "end": true },
+            {
+              "id": "e3",
+              "speaker": "Exchange Emma",
+              "text": "Every transaction on the blockchain costs a small fee that goes to 'miners' or 'validators' who process it. Fees spike when the network is busy — sometimes a $10 transfer costs $50 in fees!",
+              "choices": [
+                { "id": "e3c1", "text": "Okay, let me try trading!", "nextNodeId": "e2", "effects": [{ "type": "startMinigame", "minigameId": "mg_mock_exchange" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_fred",
+          "startNodeId": "f1",
+          "nodes": [
+            {
+              "id": "f1",
+              "speaker": "FOMO Fred",
+              "text": "BRO! CryptoCoin is up 300% this week! I'm going ALL IN! You should too before it's too late!!",
+              "choices": [
+                { "id": "f1c1", "text": "That sounds risky…", "nextNodeId": "f2" },
+                { "id": "f1c2", "text": "What if it crashes?", "nextNodeId": "f3" }
+              ]
+            },
+            { "id": "f2", "speaker": "FOMO Fred", "text": "Risk?! The only risk is missing out! …okay fine, last time I went all-in on MoonToken and lost 80%. But THIS TIME is different!", "end": true },
+            {
+              "id": "f3",
+              "speaker": "FOMO Fred",
+              "text": "Crashes are just buying opportunities! …although I did panic-sell my whole portfolio at the bottom last time. Don't be like me. Maybe talk to Hannah — she's way calmer about this stuff.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_hannah",
+          "startNodeId": "h1",
+          "nodes": [
+            {
+              "id": "h1",
+              "speaker": "HODL Hannah",
+              "text": "Ignore the hype and the FUD. If you believe in the technology long-term, hold through the volatility. But never invest more than you can afford to lose.",
+              "choices": [
+                { "id": "h1c1", "text": "What's the #1 mistake in crypto?", "nextNodeId": "h2", "effects": [{ "type": "startQuest", "questId": "q_volatility_lesson" }] },
+                { "id": "h1c2", "text": "Thanks for the wisdom.", "nextNodeId": "h3" }
+              ]
+            },
+            { "id": "h2", "speaker": "HODL Hannah", "text": "Investing with emotion. People buy when they're euphoric and sell when they're terrified — the exact opposite of what works. Study the Volatility Report and you'll understand.", "end": true },
+            { "id": "h3", "speaker": "HODL Hannah", "text": "Stay grounded. 💎🤲", "end": true }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_mock_exchange",
+          "name": "Mock Crypto Exchange",
+          "description": "Buy and sell simulated crypto tokens. Learn about order books, fees, and slippage.",
+          "icon": "🔄",
+          "componentId": "MockExchangeGame",
+          "areaId": "da_exchange_plaza"
+        }
+      ]
+    }
+  ]
+}

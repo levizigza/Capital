@@ -1,0 +1,30 @@
+name: Asset Registry
+
+on:
+  pull_request:
+    paths:
+      - "content/assets/**"
+      - "scripts/validate-asset-registry.mjs"
+      - "scripts/export-asset-credits.mjs"
+      - "src/content/assets/**"
+  push:
+    branches: [main, master]
+    paths:
+      - "content/assets/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run assets:validate
+      - run: npm run assets:export-credits
+      - name: Check exported files are committed
+        run: |
+          git diff --exit-code public/CREDITS.txt public/THIRD_PARTY_LICENSES.txt || \
+            (echo "::error::Run npm run assets:export-credits and commit public/*.txt" && exit 1)

@@ -1,0 +1,182 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "starter_key_cove",
+      "name": "Key Cove",
+      "description": "A calm cove where you learn the basics of exploring, talking, and collecting.",
+      "icon": "🗝️",
+      "provenance": {
+        "learning_objectives": [
+          "Understand the concept of saving money",
+          "Learn the 50/30/20 budgeting rule",
+          "Practice exploring and collecting information before making decisions"
+        ],
+        "mechanics_used": ["npc-dialogue-tree", "grid-navigation", "quiz-challenge"],
+        "originality_notes": "Theme: tropical cove exploration (not a board game). Verb: dialogue + item collection (not roll-and-move). Structure: quest-chain progression unlocking areas (not competitive elimination). Combines adventure-game exploration with financial dialogue trees — no single-source inspiration.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday"]
+      },
+      "areas": [
+        {
+          "id": "dock",
+          "name": "Dock",
+          "description": "Boats creak and gulls circle above. A friendly guide is waiting.",
+          "icon": "⚓",
+          "connections": ["market", "vault"]
+        },
+        {
+          "id": "market",
+          "name": "Market",
+          "description": "Stalls and signs. Someone dropped a shiny token.",
+          "icon": "🏪",
+          "connections": ["dock"]
+        },
+        {
+          "id": "vault",
+          "name": "Savings Vault",
+          "description": "A heavy iron door. You need the Cove Token to enter.",
+          "icon": "🔐",
+          "connections": ["dock"],
+          "requiredItems": ["token_001"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "guide_gus",
+          "name": "Guide Gus",
+          "icon": "🧭",
+          "areaId": "dock",
+          "dialogueGraphId": "gus_intro"
+        },
+        {
+          "id": "banker_beth",
+          "name": "Banker Beth",
+          "icon": "🏦",
+          "areaId": "vault",
+          "dialogueGraphId": "beth_intro"
+        }
+      ],
+      "items": [
+        {
+          "id": "token_001",
+          "name": "Cove Token",
+          "description": "A curious token with tiny waves etched into it.",
+          "icon": "🪙",
+          "location": { "areaId": "market" }
+        },
+        {
+          "id": "savings_badge",
+          "name": "Savings Badge",
+          "description": "Proof you understand the power of saving!",
+          "icon": "🎖️",
+          "location": { "areaId": "vault" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_start_here",
+          "title": "First Steps",
+          "description": "Talk to Guide Gus, then pick up the Cove Token.",
+          "hint": "Head to the Dock and talk to Guide Gus first.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "guide_gus" },
+            { "type": "collectItem", "itemId": "token_001" }
+          ],
+          "rewards": { "coins": 25, "xp": 50 }
+        },
+        {
+          "id": "q_vault_visit",
+          "title": "Unlock the Vault",
+          "description": "Use the Cove Token to enter the Savings Vault and meet Banker Beth.",
+          "hint": "Collect the Cove Token from the Market, then enter the Vault from the Dock.",
+          "objectives": [
+            { "type": "collectItem", "itemId": "token_001" },
+            { "type": "talkToNpc", "npcId": "banker_beth" }
+          ],
+          "rewards": { "coins": 50, "xp": 100, "items": ["savings_badge"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "gus_intro",
+          "startNodeId": "n1",
+          "nodes": [
+            {
+              "id": "n1",
+              "speaker": "Guide Gus",
+              "text": "Welcome to Key Cove! Want a tiny quest to get started?",
+              "choices": [
+                {
+                  "id": "c1",
+                  "text": "Yes, I'm ready!",
+                  "nextNodeId": "n2",
+                  "effects": [{ "type": "startQuest", "questId": "q_start_here" }]
+                },
+                { "id": "c2", "text": "Maybe later.", "nextNodeId": "n3" }
+              ]
+            },
+            {
+              "id": "n2",
+              "speaker": "Guide Gus",
+              "text": "Head to the Market and pick up the Cove Token. Once you have it, you can unlock the Savings Vault!",
+              "end": true
+            },
+            {
+              "id": "n3",
+              "speaker": "Guide Gus",
+              "text": "No worries. Explore around and come back when you're ready.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "beth_intro",
+          "startNodeId": "b1",
+          "nodes": [
+            {
+              "id": "b1",
+              "speaker": "Banker Beth",
+              "text": "You made it into the Vault! Saving money is the first step to financial freedom. Want to learn more?",
+              "choices": [
+                {
+                  "id": "bc1",
+                  "text": "Tell me about saving!",
+                  "nextNodeId": "b2",
+                  "effects": [{ "type": "startQuest", "questId": "q_vault_visit" }]
+                },
+                {
+                  "id": "bc2",
+                  "text": "Show me your secret tip.",
+                  "nextNodeId": "b3",
+                  "requiresItems": ["savings_badge"]
+                }
+              ]
+            },
+            {
+              "id": "b2",
+              "speaker": "Banker Beth",
+              "text": "The 50/30/20 rule: 50% needs, 30% wants, 20% savings. Stick to that and you'll do great! Pick up the Savings Badge before you leave.",
+              "end": true
+            },
+            {
+              "id": "b3",
+              "speaker": "Banker Beth",
+              "text": "Compound interest is your best friend. Even small amounts grow huge over time!",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_budget_basics",
+          "name": "Budget Basics",
+          "description": "Sort expenses into needs vs wants.",
+          "icon": "📊",
+          "componentId": "BudgetBalancerGame",
+          "areaId": "vault"
+        }
+      ]
+    }
+  ]
+}

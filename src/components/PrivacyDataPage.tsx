@@ -1,3 +1,4 @@
+import React from 'react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -21,7 +22,7 @@ interface PrivacyDataPageProps {
 export function PrivacyDataPage({ onBack }: PrivacyDataPageProps) {
   const policyContent = PIPEDAComplianceService.getPrivacyPolicyContent()
 
-  const iconMap: Record<string, any> = {
+  const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     'What We Collect & Why': Eye,
     'How We Protect Your Information': Lock,
     'Your Rights & Control': UserCircle,
@@ -70,7 +71,7 @@ export function PrivacyDataPage({ onBack }: PrivacyDataPageProps) {
             <div className="mb-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
               <p className="text-sm leading-relaxed">
                 <strong>Easy to understand:</strong> This policy is written in plain language (Grade 6 reading level) 
-                so everyone can understand their privacy rights. FinanceQuest Pro follows Canadian PIPEDA laws to 
+                so everyone can understand their privacy rights. Capital follows Canadian PIPEDA laws to 
                 protect your personal information.
               </p>
             </div>

@@ -1,0 +1,88 @@
+/* Juice system — motion + feedback (respects .motion-reduce) */
+
+.juice-viewport {
+  transform: translateZ(0);
+  transition: transform 0.15s ease-out;
+}
+
+.juice-viewport[data-juice-level="high"] .game-ui-btn:not(:disabled):hover {
+  box-shadow: 0 4px 14px rgb(59 130 246 / 0.35);
+}
+
+.juice-viewport[data-juice-level="low"] .game-ui-btn:not(:disabled):hover,
+.juice-viewport[data-juice-level="high"] .game-ui-btn:not(:disabled):hover {
+  filter: brightness(1.03);
+}
+
+@keyframes juice-shake {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  15% { transform: translate3d(-4px, 1px, 0); }
+  30% { transform: translate3d(4px, -1px, 0); }
+  45% { transform: translate3d(-3px, 0, 0); }
+  60% { transform: translate3d(3px, 0, 0); }
+  75% { transform: translate3d(-1px, 0, 0); }
+}
+
+.juice-viewport.juice-shake-active {
+  animation: juice-shake 0.42s ease-in-out;
+}
+
+.juice-viewport[data-juice-level="low"].juice-shake-active {
+  animation-duration: 0.28s;
+}
+
+@keyframes juice-nudge {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  35% { transform: translate3d(0, -3px, 0) scale(1.008); }
+  70% { transform: translate3d(0, 1px, 0) scale(1.002); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.juice-viewport.juice-nudge-active {
+  animation: juice-nudge 0.38s ease-out;
+}
+
+@keyframes juice-ui-bounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(0.94); }
+  70% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.juice-ui-bounce {
+  animation: juice-ui-bounce 0.22s ease-out;
+}
+
+@keyframes juice-burst-particle {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--jx)),
+      calc(-50% + var(--jy))
+    ) scale(1.1);
+  }
+}
+
+.juice-burst-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 90;
+  font-size: 1.25rem;
+  animation: juice-burst-particle 0.65s ease-out forwards;
+}
+
+.motion-reduce .juice-viewport.juice-shake-active,
+.motion-reduce .juice-viewport.juice-nudge-active,
+.juice-viewport[data-reduced-motion="true"].juice-shake-active,
+.juice-viewport[data-reduced-motion="true"].juice-nudge-active {
+  animation: none;
+}
+
+.motion-reduce .juice-burst-particle,
+.juice-viewport[data-reduced-motion="true"] .juice-burst-particle {
+  display: none;
+}

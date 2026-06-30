@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`deterministic minigame test runs > coincraft coin sort minigame session runs without error 1`] = `
+{
+  "finalMoney": 0,
+  "finalScore": 0,
+  "finalTurn": 1,
+  "seed": 100,
+  "telemetryEvents": [
+    "earn_spend.earned",
+    "earn_spend.spent",
+  ],
+}
+`;
+
+exports[`deterministic minigame test runs > event deck draws are reproducible with the same seed 1`] = `
+{
+  "choiceIndices": [
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  "deckId": "finance_kids",
+  "drawCount": 5,
+  "eventIds": [
+    "fk_sharing_is_caring",
+    "fk_chore_chart",
+    "fk_birthday_money",
+    "fk_needs_vs_wants",
+    "fk_piggy_bank_full",
+  ],
+  "finalMoney": 53,
+  "finalScore": 46,
+  "seed": 42,
+}
+`;
+
+exports[`deterministic minigame test runs > modular EventDeck session is deterministic via module seed config 1`] = `
+{
+  "finalMoney": 15,
+  "finalScore": 25,
+  "finalTurn": 3,
+  "seed": 777,
+  "telemetryEvents": [
+    "event_deck.draw",
+    "event_deck.choose",
+    "event_deck.draw",
+    "event_deck.choose",
+  ],
+}
+`;
+
+exports[`deterministic minigame test runs > simulateDraws distribution is stable with seeded RNG 1`] = `
+{
+  "draws": [
+    {
+      "count": 15,
+      "eventId": "fk_broken_toy",
+      "title": "Oops! Broken Toy",
+    },
+    {
+      "count": 15,
+      "eventId": "fk_found_coin",
+      "title": "Lucky Coin",
+    },
+    {
+      "count": 14,
+      "eventId": "fk_birthday_money",
+      "title": "Birthday Bonanza",
+    },
+    {
+      "count": 14,
+      "eventId": "fk_needs_vs_wants",
+      "title": "Sticker vs. Snack",
+    },
+    {
+      "count": 12,
+      "eventId": "fk_chore_chart",
+      "title": "Chore Chart Challenge",
+    },
+    {
+      "count": 12,
+      "eventId": "fk_lemonade_stand",
+      "title": "Lemonade Day",
+    },
+    {
+      "count": 9,
+      "eventId": "fk_sharing_is_caring",
+      "title": "Sharing Jar",
+    },
+    {
+      "count": 9,
+      "eventId": "fk_piggy_bank_full",
+      "title": "Piggy Bank Surprise",
+    },
+  ],
+  "excluded": [],
+  "totalDraws": 100,
+}
+`;

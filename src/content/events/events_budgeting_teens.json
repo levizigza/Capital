@@ -1,0 +1,265 @@
+{
+  "deckId": "budgeting_teens",
+  "displayName": "Budget Boss (Teens)",
+  "events": [
+    {
+      "id": "bt_phone_bill",
+      "title": "Phone Bill Shock",
+      "prompt": "Your phone bill came in higher than expected because you went over your data limit. You need to decide how to handle it.",
+      "icon": "📱",
+      "triggers": [{ "type": "minMoney", "value": 15 }],
+      "choices": [
+        {
+          "label": "Pay the full bill now and downgrade your plan",
+          "effects": [
+            { "type": "money", "amount": -20 },
+            { "type": "score", "amount": 15 },
+            { "type": "skillStats", "skill": "budget_discipline", "delta": 1 }
+          ],
+          "learningNote": "Paying in full avoids compounding interest. Downgrading your plan also reduces future bills — a double win."
+        },
+        {
+          "label": "Pay the minimum and deal with the rest later",
+          "effects": [
+            { "type": "money", "amount": -10 },
+            { "type": "debt", "amount": 10 },
+            { "type": "score", "amount": 5 }
+          ],
+          "learningNote": "Minimum payments keep you in good standing but the remaining balance accrues interest, costing more over time."
+        }
+      ],
+      "explanation": "Paying bills in full avoids interest charges. If a bill is too high, look for ways to reduce future costs like switching plans.",
+      "weight": 10,
+      "tags": ["bills", "fixed-expenses"]
+    },
+    {
+      "id": "bt_group_outing",
+      "title": "Friend Group Plans",
+      "prompt": "Your friends want to go to an escape room this weekend. It costs $25 per person, but you only budgeted $15 for fun this month.",
+      "icon": "🎉",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Go anyway and overspend your fun budget",
+          "effects": [
+            { "type": "money", "amount": -25 },
+            { "type": "reputation", "amount": 3 },
+            { "type": "score", "amount": 3 }
+          ],
+          "learningNote": "Overspending your 'fun' category means borrowing from savings or essentials — a slippery slope."
+        },
+        {
+          "label": "Suggest a cheaper activity instead",
+          "effects": [
+            { "type": "money", "amount": -10 },
+            { "type": "reputation", "amount": 1 },
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "negotiation", "delta": 1 }
+          ],
+          "learningNote": "Proposing alternatives keeps you social AND on budget. Negotiation is a key financial life skill."
+        },
+        {
+          "label": "Skip this time and save for next month",
+          "effects": [
+            { "type": "score", "amount": 8 },
+            { "type": "skillStats", "skill": "budget_discipline", "delta": 1 }
+          ],
+          "learningNote": "Sometimes saying no is the smartest financial move. You can plan ahead for next month's outing."
+        }
+      ],
+      "explanation": "Peer pressure can wreck a budget. Suggesting alternatives shows leadership and keeps your finances healthy.",
+      "weight": 10,
+      "tags": ["peer-pressure", "discretionary"]
+    },
+    {
+      "id": "bt_first_paycheck",
+      "title": "First Paycheck!",
+      "prompt": "You got your first paycheck from your part-time job: $120! Time to make a plan for it.",
+      "icon": "💵",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "50-30-20 split: needs, wants, savings",
+          "effects": [
+            { "type": "money", "amount": 24 },
+            { "type": "score", "amount": 20 },
+            { "type": "counter", "key": "paychecks_budgeted", "delta": 1 },
+            { "type": "skillStats", "skill": "budget_discipline", "delta": 2 }
+          ]
+        },
+        {
+          "label": "Save it all",
+          "effects": [
+            { "type": "money", "amount": 120 },
+            { "type": "score", "amount": 12 }
+          ]
+        },
+        {
+          "label": "Treat yourself — you earned it!",
+          "effects": [
+            { "type": "money", "amount": -10 },
+            { "type": "score", "amount": 5 },
+            { "type": "reputation", "amount": 2 }
+          ]
+        }
+      ],
+      "explanation": "The 50-30-20 rule is a popular budgeting method: 50% needs, 30% wants, 20% savings. It helps balance enjoying money AND growing it.",
+      "weight": 9,
+      "tags": ["income", "budgeting-rules"]
+    },
+    {
+      "id": "bt_subscription_creep",
+      "title": "Subscription Overload",
+      "prompt": "You just realized you're paying for 4 different streaming services. You only really watch 2 of them.",
+      "icon": "📺",
+      "triggers": [{ "type": "minCounter", "key": "paychecks_budgeted", "value": 1 }],
+      "choices": [
+        {
+          "label": "Cancel the two you don't use",
+          "effects": [
+            { "type": "money", "amount": 16 },
+            { "type": "score", "amount": 15 },
+            { "type": "skillStats", "skill": "expense_tracking", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Keep them all — you might watch them later",
+          "effects": [
+            { "type": "money", "amount": -16 },
+            { "type": "score", "amount": 2 }
+          ]
+        }
+      ],
+      "explanation": "Subscription creep is when small recurring charges add up without you noticing. Auditing subscriptions regularly saves real money.",
+      "weight": 8,
+      "tags": ["subscriptions", "expense-tracking"]
+    },
+    {
+      "id": "bt_emergency_flat_tire",
+      "title": "Flat Tire!",
+      "prompt": "Your bike got a flat tire on the way to work. A repair costs $15, or you can buy a patch kit for $5 and fix it yourself.",
+      "icon": "🚲",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Pay $15 for the shop to fix it",
+          "effects": [
+            { "type": "money", "amount": -15 },
+            { "type": "score", "amount": 5 }
+          ]
+        },
+        {
+          "label": "Buy the $5 patch kit and learn to fix it",
+          "effects": [
+            { "type": "money", "amount": -5 },
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "resourcefulness", "delta": 1 },
+            { "type": "inventory", "itemId": "patch_kit", "action": "add" }
+          ]
+        }
+      ],
+      "explanation": "Learning basic repairs saves money long term. The patch kit can be reused, making future fixes nearly free!",
+      "weight": 9,
+      "tags": ["emergency", "resourcefulness"]
+    },
+    {
+      "id": "bt_sale_trap",
+      "title": "Flash Sale Alert!",
+      "prompt": "Your favorite store is having a 50% off sale! The jacket you wanted is $40 instead of $80. But it wasn't in your budget.",
+      "icon": "🏷️",
+      "triggers": [{ "type": "minMoney", "value": 40 }],
+      "choices": [
+        {
+          "label": "Buy it — half price is too good to miss!",
+          "effects": [
+            { "type": "money", "amount": -40 },
+            { "type": "inventory", "itemId": "sale_jacket", "action": "add" },
+            { "type": "score", "amount": 4 }
+          ]
+        },
+        {
+          "label": "Wait 24 hours and decide tomorrow",
+          "effects": [
+            { "type": "score", "amount": 14 },
+            { "type": "skillStats", "skill": "impulse_control", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Move $40 from next month's wants budget",
+          "effects": [
+            { "type": "money", "amount": -40 },
+            { "type": "inventory", "itemId": "sale_jacket", "action": "add" },
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "budget_discipline", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "A sale only saves money if you were going to buy it anyway. The 24-hour rule helps avoid impulse purchases.",
+      "weight": 10,
+      "tags": ["impulse-spending", "sales"]
+    },
+    {
+      "id": "bt_side_hustle_idea",
+      "title": "Side Hustle Opportunity",
+      "prompt": "A neighbor asks if you can walk their dog every afternoon for $8/day. It would take about an hour after school.",
+      "icon": "🐕",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Accept — steady extra income!",
+          "effects": [
+            { "type": "money", "amount": 40 },
+            { "type": "counter", "key": "income_streams", "delta": 1 },
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "work_ethic", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Decline — need time for homework",
+          "effects": [
+            { "type": "score", "amount": 6 },
+            { "type": "skillStats", "skill": "time_management", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Side income is great, but time is also valuable. Balance earning with your other responsibilities like school.",
+      "weight": 8,
+      "tags": ["earning", "time-management"]
+    },
+    {
+      "id": "bt_unexpected_expense",
+      "title": "Lost Textbook Fee",
+      "prompt": "The school says you lost a textbook and owe a $30 replacement fee. You don't remember losing it, but the fee is due Friday.",
+      "icon": "📖",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Pay from your emergency fund",
+          "effects": [
+            { "type": "money", "amount": -30 },
+            { "type": "score", "amount": 12 }
+          ],
+          "triggers": [{ "type": "minMoney", "value": 30 }]
+        },
+        {
+          "label": "Search everywhere for the book first",
+          "effects": [
+            { "type": "score", "amount": 15 },
+            { "type": "skillStats", "skill": "problem_solving", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Ask to set up a payment plan",
+          "effects": [
+            { "type": "debt", "amount": 30 },
+            { "type": "score", "amount": 8 },
+            { "type": "skillStats", "skill": "negotiation", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Emergency funds exist for surprise expenses. If you don't have one, negotiating a payment plan is the next best option.",
+      "weight": 9,
+      "tags": ["emergency-fund", "unexpected-expenses"]
+    }
+  ]
+}

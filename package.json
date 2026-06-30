@@ -4,10 +4,22 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "node --require ./scripts/patch-fs-retry.cjs ./node_modules/vite/bin/vite.js",
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
         "lint": "eslint .",
+        "test": "vitest run",
+        "test:e2e": "playwright test",
+        "test:e2e:smoke": "playwright test e2e/islands-smoke.spec.ts",
+        "test:qa": "vitest run src/qa",
+        "content:validate": "node scripts/validate-content.mjs",
+        "assets:xelu-prompts": "node scripts/sync-xelu-prompts.mjs",
+        "assets:validate": "node scripts/validate-asset-registry.mjs",
+        "assets:export-credits": "node scripts/export-asset-credits.mjs",
+        "assets:check": "npm run assets:validate && npm run assets:export-credits",
+        "pixel:sample": "node scripts/generate-sample-npc-sprites.mjs",
+        "pixel:pack": "node scripts/pack-pixel-atlas.mjs",
+        "prebuild": "npm run assets:check",
         "optimize": "vite optimize",
         "preview": "vite preview"
     },
@@ -84,7 +96,10 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.21.0",
-        "@tailwindcss/postcss": "^4.1.8",
+        "@playwright/test": "^1.58.2",
+        "@tailwindcss/postcss": "^4.1.14",
+        "@types/howler": "^2.2.12",
+        "@types/node": "^25.3.3",
         "@types/react": "^19.2.2",
         "@types/react-dom": "^19.2.2",
         "@types/three": "^0.180.0",
@@ -94,10 +109,12 @@
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.19",
         "globals": "^16.0.0",
+        "pngjs": "^7.0.0",
         "tailwindcss": "^4.1.14",
         "typescript": "~5.7.2",
         "typescript-eslint": "^8.38.0",
-        "vite": "^6.3.5"
+        "vite": "^6.4.0",
+        "vitest": "^4.0.18"
     },
     "workspaces": {
         "packages": [

@@ -73,7 +73,7 @@ export function EnhancedNotification({
         <Icon size={24} weight="fill" />
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0" title={message} data-ux-tooltip={message}>
         <h4 className={cn('font-semibold text-sm mb-1', colors.text)}>{title}</h4>
         <p className="text-sm text-foreground-muted leading-relaxed">{message}</p>
       </div>
@@ -87,6 +87,8 @@ export function EnhancedNotification({
             colors.text
           )}
           aria-label="Close notification"
+          title="Close notification"
+          data-ux-tooltip="Dismiss this message"
         >
           <XCircle size={18} />
         </button>

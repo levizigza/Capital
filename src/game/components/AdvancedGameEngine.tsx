@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import { GameEngine, GameEntity } from '../GameEngine'
 import { EconomicSystem, MarketCondition } from '../systems/EconomicSystem'
 import { ProgressionSystem, SkillNode, Achievement } from '../systems/ProgressionSystem'

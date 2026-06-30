@@ -1,0 +1,34 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "credit_kingdom",
+      "name": "Credit Kingdom",
+      "description": "Master credit scores, loans, and debt management. Locked until you complete Asset Island.",
+      "icon": "🏰",
+      "requiredItems": ["fa_island_medallion"],
+      "provenance": {
+        "learning_objectives": [
+          "Understand how credit scores are calculated",
+          "Learn responsible borrowing and debt management",
+          "Compare loan types: secured vs unsecured, fixed vs variable"
+        ],
+        "mechanics_used": ["resource-management", "debt-elimination", "npc-dialogue-tree", "quiz-challenge"],
+        "originality_notes": "Theme: medieval kingdom metaphor for credit system (not a bank sim). Verb: quest-based debt challenges + NPC mentorship (not spreadsheet tracking). Structure: story-driven progression through credit concepts (not competitive). Combines debt-elimination strategy with dialogue exploration.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Credit Karma"]
+      },
+      "areas": [
+        {
+          "id": "ck_gate",
+          "name": "Kingdom Gate",
+          "description": "The grand gate to Credit Kingdom. More content coming soon!",
+          "icon": "🚪"
+        }
+      ],
+      "npcs": [],
+      "items": [],
+      "quests": [],
+      "dialogues": []
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+/* FinanceQuest game UI kit — layout tokens & responsive scale */
+
+.game-viewport {
+  --game-safe-top: max(env(safe-area-inset-top, 0px), 0.5rem);
+  --game-safe-right: max(env(safe-area-inset-right, 0px), 0.5rem);
+  --game-safe-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+  --game-safe-left: max(env(safe-area-inset-left, 0px), 0.5rem);
+
+  --game-gap: 0.75rem;
+  --game-gap-lg: 1rem;
+  --game-panel-pad: 1rem;
+  --game-hud-pad: 0.75rem 1rem;
+  --game-title-size: clamp(1.5rem, 4vw + 0.5rem, 2.25rem);
+  --game-content-max: min(72rem, 100%);
+  --game-pin-size: 5rem;
+  --game-interactable: 6rem;
+}
+
+.game-viewport[data-ui-scale="compact"] {
+  --game-gap: 0.5rem;
+  --game-gap-lg: 0.75rem;
+  --game-panel-pad: 0.75rem;
+  --game-hud-pad: 0.5rem 0.75rem;
+  --game-pin-size: 4rem;
+  --game-interactable: 4.5rem;
+}
+
+.game-viewport[data-ui-scale="wide"] {
+  --game-gap: 1rem;
+  --game-gap-lg: 1.25rem;
+  --game-panel-pad: 1.25rem;
+  --game-content-max: min(80rem, 100%);
+}
+
+/* 4:3 / tall — stack HUD, tighter vertical rhythm */
+.game-viewport[data-ui-aspect="tall"] {
+  --game-gap-lg: 0.75rem;
+}
+
+/* Ultrawide — letterbox content, prevent pin stretch */
+.game-viewport[data-ui-aspect="ultrawide"] .game-viewport__stage {
+  max-width: min(100%, 1600px);
+  margin-inline: auto;
+}
+
+.game-panel {
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius, 0.625rem);
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+  border: 1px solid rgb(0 0 0 / 0.06);
+}
+
+.contrast-more .game-panel,
+.game-viewport[data-high-contrast="true"] .game-panel {
+  background: #fff;
+  border: 2px solid #1e293b;
+  box-shadow: none;
+}
+
+.game-hud-chip {
+  background: rgb(255 255 255 / 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  padding: var(--game-hud-pad);
+  max-width: min(100%, 20rem);
+}
+
+.game-hud-layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  min-height: 100dvh;
+  min-height: 100vh;
+  padding:
+    var(--game-safe-top)
+    var(--game-safe-right)
+    var(--game-safe-bottom)
+    var(--game-safe-left);
+  gap: var(--game-gap);
+  overflow: hidden;
+}
+
+.game-hud-layout__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--game-gap);
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.game-hud-layout__main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 10;
+}
+
+.game-hud-layout__bottom {
+  flex-shrink: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--game-gap);
+  padding-bottom: var(--game-safe-bottom);
+}
+
+.game-viewport[data-ui-scale="compact"] .game-hud-layout__top {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.game-viewport[data-ui-scale="compact"] .game-hud-layout__top > * {
+  max-width: 100%;
+}
+
+.motion-reduce .game-ui-animate,
+.game-viewport[data-reduced-motion="true"] .game-ui-animate {
+  animation: none !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.game-toast-stack {
+  position: fixed;
+  top: calc(var(--game-safe-top) + 0.5rem);
+  right: var(--game-safe-right);
+  left: var(--game-safe-left);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.game-viewport[data-ui-scale="compact"] .game-toast-stack {
+  align-items: stretch;
+}

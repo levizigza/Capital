@@ -1,0 +1,17 @@
+{
+  "id": "xelu-controller-prompts",
+  "name": "Xelu's FREE Controller & Keyboard Prompts",
+  "type": "image",
+  "source": "opengameart",
+  "sourceUrl": "https://opengameart.org/content/free-keyboard-and-controllers-prompts-pack",
+  "author": "Nicolae \"Xelu\" Berbece (Those Awesome Guys)",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "attributionText": "Controller and keyboard button prompts by Nicolae \"Xelu\" Berbece, released under CC0 1.0 Universal.",
+  "modifications": "Synced subset into public/input-prompts/xelu/ via scripts/sync-xelu-prompts.mjs; PlayStation symbol buttons omitted per OpenGameArt distribution notes.",
+  "files": [
+    "public/input-prompts/xelu/**",
+    "public/input-prompts/ATTRIBUTION.md",
+    "scripts/sync-xelu-prompts.mjs"
+  ]
+}

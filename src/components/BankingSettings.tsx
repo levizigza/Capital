@@ -64,7 +64,7 @@ export function BankingSettings({ onBack }: BankingSettingsProps) {
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={onBack} className="gap-2">
+          <Button variant="ghost" onClick={onBack} className="gap-2" aria-label="Go back to dashboard" title="Go back to dashboard" data-ux-tooltip="Return to dashboard">
             <ArrowLeft />
             Back
           </Button>
@@ -92,7 +92,7 @@ export function BankingSettings({ onBack }: BankingSettingsProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-border" aria-label="Simulator Mode" title="Simulator Mode" data-ux-tooltip="Practice with simulated data">
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                     isSimulated ? 'bg-purple-500/10' : 'bg-muted'
@@ -111,7 +111,7 @@ export function BankingSettings({ onBack }: BankingSettingsProps) {
                 )}
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-border opacity-60" aria-label="Real Bank Connection" title="Real Bank Connection" data-ux-tooltip="Connect to your real bank account">
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                     !isSimulated ? 'bg-green-500/10' : 'bg-muted'

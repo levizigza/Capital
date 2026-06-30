@@ -1,0 +1,84 @@
+/* ===== SimpleFinanceGarden (App.tsx) ===== */
+.finance-garden {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 32px;
+  background: #f0f9ff;
+  border-radius: 24px;
+  box-shadow: 0 4px 32px #bae6fd;
+  padding: 24px;
+}
+
+.finance-garden__title {
+  text-align: center;
+  font-weight: 900;
+  font-size: 28px;
+  color: #2563eb;
+  margin-bottom: 12px;
+}
+
+.finance-garden__stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.finance-garden__stat--savings  { color: #3ba935; }
+.finance-garden__stat--invest   { color: #3b56a9; }
+.finance-garden__stat--credit   { color: #a97d3b; }
+
+.finance-garden__icons {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.finance-garden__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+}
+
+.finance-garden__icon--savings {
+  background: #bbf7d0;
+  color: #3ba935;
+}
+
+.finance-garden__icon--invest {
+  background: #dbeafe;
+  color: #3b56a9;
+}
+
+.finance-garden__icon--credit {
+  background: #fef9c3;
+  color: #a97d3b;
+}
+
+/* ===== PixelBudgetRunner canvas ===== */
+.pixel-canvas {
+  image-rendering: pixelated;
+}
+
+/* ===== Dynamic-color helpers (use CSS custom properties) ===== */
+.dynamic-bg-color {
+  background-color: var(--dynamic-color);
+}
+
+.dynamic-gradient-header {
+  background: linear-gradient(180deg, var(--header-color) 0%, var(--header-color-end) 100%);
+}
+
+.dynamic-bg-tint {
+  background-color: var(--tint-color);
+}
+
+.dynamic-border-color {
+  border-color: var(--border-color);
+}

@@ -70,7 +70,7 @@ export function ParentConsentPending({
               <div>
                 <h3 className="font-semibold mb-1">What happens next?</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your parent will receive an email explaining what FinanceQuest Pro is, what data we collect, 
+                  Your parent will receive an email explaining what Capital is, what data we collect, 
                   and how we protect it. They can approve or decline, and they can withdraw permission anytime.
                 </p>
               </div>
@@ -83,7 +83,7 @@ export function ParentConsentPending({
               <div>
                 <h3 className="font-semibold mb-1">What's included in the email?</h3>
                 <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  <li>• What FinanceQuest Pro teaches</li>
+                  <li>• What Capital teaches</li>
                   <li>• What information we collect (very little!)</li>
                   <li>• How we protect their child's data</li>
                   <li>• A simple approve/decline button</li>

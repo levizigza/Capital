@@ -65,7 +65,7 @@ export interface SimulatorState {
 // MERCHANT DATA
 // ============================================================================
 
-const MERCHANTS = {
+const MERCHANTS: Record<string, string[]> = {
   food_dining: [
     'Starbucks', 'McDonald\'s', 'Chipotle', 'Subway', 'Panera Bread',
     'Olive Garden', 'Red Lobster', 'Pizza Hut', 'Domino\'s', 'Taco Bell',
@@ -110,7 +110,7 @@ const MERCHANTS = {
     'Tax Refund',
     'Investment Dividend'
   ]
-} as const
+}
 
 // ============================================================================
 // AMOUNT RANGES

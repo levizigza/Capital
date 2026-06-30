@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Play, Trophy, Coins, ArrowLeft } from '@phosphor-icons/react'
@@ -447,8 +447,7 @@ export default function PixelBudgetRunner({ onComplete, onExit, userTier = 'midd
             width={800}
             height={500}
             onClick={handleCanvasClick}
-            className="w-full border-4 border-card rounded-lg shadow-2xl cursor-pointer bg-white"
-            style={{ imageRendering: 'pixelated' }}
+            className="w-full border-4 border-card rounded-lg shadow-2xl cursor-pointer bg-white pixel-canvas"
           />
           
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full text-sm">

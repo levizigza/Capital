@@ -1,0 +1,228 @@
+{
+  "deckId": "finance_kids",
+  "displayName": "Money Adventures (Kids)",
+  "events": [
+    {
+      "id": "fk_lemonade_stand",
+      "title": "Lemonade Day",
+      "prompt": "Your neighbor asks if you want to help run a lemonade stand this weekend. You could earn some coins, but you need to spend a little on supplies first.",
+      "icon": "🍋",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Spend 5 coins on supplies and help out",
+          "effects": [
+            { "type": "money", "amount": -5 },
+            { "type": "score", "amount": 10 },
+            { "type": "counter", "key": "jobs_completed", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Say no thanks and save your coins",
+          "effects": [
+            { "type": "score", "amount": 2 }
+          ]
+        }
+      ],
+      "explanation": "Spending a little to earn more is called investing. Sometimes you need to spend money to make money!",
+      "weight": 10,
+      "tags": ["earning", "investing-basics"]
+    },
+    {
+      "id": "fk_piggy_bank_full",
+      "title": "Piggy Bank Surprise",
+      "prompt": "You shake your piggy bank and it feels really heavy! You have enough saved to buy a toy you've wanted or keep saving for something bigger.",
+      "icon": "🐷",
+      "triggers": [{ "type": "minMoney", "value": 20 }],
+      "choices": [
+        {
+          "label": "Buy the small toy now",
+          "effects": [
+            { "type": "money", "amount": -15 },
+            { "type": "inventory", "itemId": "small_toy", "action": "add" },
+            { "type": "score", "amount": 5 }
+          ]
+        },
+        {
+          "label": "Keep saving for the big toy",
+          "effects": [
+            { "type": "score", "amount": 15 },
+            { "type": "flag", "key": "saving_for_big_toy", "value": true }
+          ]
+        }
+      ],
+      "explanation": "Delayed gratification means waiting for a bigger reward instead of taking a smaller one now. It's a superpower for saving!",
+      "weight": 8,
+      "tags": ["saving", "delayed-gratification"]
+    },
+    {
+      "id": "fk_found_coin",
+      "title": "Lucky Coin",
+      "prompt": "You found a shiny coin on the ground! What will you do with it?",
+      "icon": "🪙",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Put it in your savings jar",
+          "effects": [
+            { "type": "money", "amount": 3 },
+            { "type": "score", "amount": 8 }
+          ]
+        },
+        {
+          "label": "Spend it at the candy shop",
+          "effects": [
+            { "type": "score", "amount": 3 },
+            { "type": "reputation", "amount": 1 }
+          ]
+        }
+      ],
+      "explanation": "Every small amount adds up over time. Saving even a little bit regularly is how big savings grow!",
+      "weight": 12,
+      "tags": ["saving", "found-money"]
+    },
+    {
+      "id": "fk_chore_chart",
+      "title": "Chore Chart Challenge",
+      "prompt": "Your family put up a chore chart. Each chore earns coins. You can do easy chores or try the harder ones that pay more.",
+      "icon": "📋",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Do two easy chores (quick and safe)",
+          "effects": [
+            { "type": "money", "amount": 6 },
+            { "type": "counter", "key": "jobs_completed", "delta": 2 },
+            { "type": "score", "amount": 6 }
+          ]
+        },
+        {
+          "label": "Try one hard chore (more reward, more effort)",
+          "effects": [
+            { "type": "money", "amount": 10 },
+            { "type": "counter", "key": "jobs_completed", "delta": 1 },
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "effort", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Harder work often pays more, but it takes more effort. Choosing what's right for you is part of earning wisely.",
+      "weight": 10,
+      "tags": ["earning", "effort"]
+    },
+    {
+      "id": "fk_sharing_is_caring",
+      "title": "Sharing Jar",
+      "prompt": "Your class is collecting coins to buy books for kids who don't have any. Do you want to donate some of your coins?",
+      "icon": "📚",
+      "triggers": [{ "type": "minMoney", "value": 5 }],
+      "choices": [
+        {
+          "label": "Donate 5 coins to the book fund",
+          "effects": [
+            { "type": "money", "amount": -5 },
+            { "type": "reputation", "amount": 5 },
+            { "type": "score", "amount": 12 }
+          ]
+        },
+        {
+          "label": "Keep your coins for now",
+          "effects": [
+            { "type": "score", "amount": 2 }
+          ]
+        }
+      ],
+      "explanation": "Giving to others is called generosity. Many people split their money into Save, Spend, and Share jars!",
+      "weight": 7,
+      "tags": ["giving", "budgeting-basics"]
+    },
+    {
+      "id": "fk_needs_vs_wants",
+      "title": "Sticker vs. Snack",
+      "prompt": "You're at the school store. You see a cool sticker sheet AND your favorite healthy snack, but you only have enough coins for one.",
+      "icon": "🤔",
+      "triggers": [{ "type": "minMoney", "value": 3 }],
+      "choices": [
+        {
+          "label": "Buy the snack (you're hungry!)",
+          "effects": [
+            { "type": "money", "amount": -3 },
+            { "type": "score", "amount": 8 },
+            { "type": "skillStats", "skill": "needs_awareness", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Buy the stickers (they're so cool!)",
+          "effects": [
+            { "type": "money", "amount": -3 },
+            { "type": "score", "amount": 5 }
+          ]
+        }
+      ],
+      "explanation": "A need is something you must have (like food). A want is something nice to have. Learning the difference helps you spend wisely!",
+      "weight": 10,
+      "tags": ["needs-vs-wants", "spending"]
+    },
+    {
+      "id": "fk_birthday_money",
+      "title": "Birthday Bonanza",
+      "prompt": "Happy Birthday! Grandma gave you 20 coins. What's your plan?",
+      "icon": "🎂",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Save all of it",
+          "effects": [
+            { "type": "money", "amount": 20 },
+            { "type": "score", "amount": 15 }
+          ]
+        },
+        {
+          "label": "Save half and spend half",
+          "effects": [
+            { "type": "money", "amount": 10 },
+            { "type": "score", "amount": 12 },
+            { "type": "reputation", "amount": 1 }
+          ]
+        },
+        {
+          "label": "Spend it all at the toy shop",
+          "effects": [
+            { "type": "score", "amount": 4 },
+            { "type": "inventory", "itemId": "birthday_toy", "action": "add" }
+          ]
+        }
+      ],
+      "explanation": "When you get a lump sum, splitting it into save/spend/share buckets helps you enjoy it AND build your savings.",
+      "weight": 9,
+      "tags": ["windfall", "budgeting-basics"]
+    },
+    {
+      "id": "fk_broken_toy",
+      "title": "Oops! Broken Toy",
+      "prompt": "Oh no — your favorite toy broke! You can try to fix it for free or buy a new one.",
+      "icon": "🔧",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Try to fix it yourself",
+          "effects": [
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "resourcefulness", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Buy a replacement",
+          "effects": [
+            { "type": "money", "amount": -8 },
+            { "type": "score", "amount": 3 }
+          ],
+          "triggers": [{ "type": "minMoney", "value": 8 }]
+        }
+      ],
+      "explanation": "Before buying something new, see if you can fix what you have. Being resourceful saves money!",
+      "weight": 8,
+      "tags": ["resourcefulness", "spending"]
+    }
+  ]
+}

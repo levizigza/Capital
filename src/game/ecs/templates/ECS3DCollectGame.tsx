@@ -1,77 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { World } from '../World';
-import type { Entity } from '../Entity';
-import type { PositionComponent } from '../components/Position';
-import type { CollectibleComponent } from '../components/Collectible';
-import { CollectSystem } from '../systems/CollectSystem';
-
-function CollectibleMesh({ entity }: { entity: Entity }) {
-  const meshRef = React.useRef<any>(null);
-  const pos = entity.components['position'] as PositionComponent;
-  const collectible = entity.components['collectible'] as CollectibleComponent;
-  useFrame(() => {
-    if (meshRef.current) meshRef.current.rotation.y += 0.05;
-  });
-  if (collectible.collected) return null;
-  return (
-    <mesh ref={meshRef} position={[pos.x, pos.y, pos.z]}>
-      <sphereGeometry args={[0.3, 32, 32]} />
-      <meshStandardMaterial color="#10b981" />
-    </mesh>
-  );
-}
-
-export default function ECS3DCollectGame() {
-  const [entities, setEntities] = useState<Entity[]>([]);
-  const [playerPos] = useState({ x: 0, y: 0, z: 0 });
+// 2D Collect Game (formerly ECS3DCollectGame)
+import React, { useState } from 'react';
+export default function CollectGame2D({ onComplete, onExit }: { onComplete: (score: number) => void; onExit: () => void }) {
   const [score, setScore] = useState(0);
+  const [round, setRound] = useState(1);
+  const [gameOver, setGameOver] = useState(false);
 
-  useEffect(() => {
-    const world = new World();
-    for (let i = 0; i < 5; i++) {
-      world.addEntity({
-        id: i + 1,
-        components: {
-          position: { type: 'position', x: i * 1.5 - 3, y: 1 + Math.random() * 2, z: 0 },
-          collectible: { type: 'collectible', collected: false }
-        }
-      });
-    }
-    setEntities(world.entities);
-  }, []);
-
-  const handleCollect = (entity: Entity) => {
+  function handleCollect() {
     setScore(s => s + 1);
-    setEntities(prev => prev.map(e => e.id === entity.id ? {
-      ...e,
-      components: {
-        ...e.components,
-        collectible: { ...e.components['collectible'], collected: true }
-      }
-    } : e));
-  };
+    setRound(r => r + 1);
+  }
+  function handleMiss() {
+    setScore(s => Math.max(0, s - 1));
+    setRound(r => r + 1);
+  }
+  function handleFinish() {
+    setGameOver(true);
+    if (onComplete) onComplete(score);
+  }
 
-  const handleCollectAll = () => {
-    for (const entity of entities) {
-      const collectible = entity.components['collectible'] as CollectibleComponent;
-      if (!collectible.collected) {
-        CollectSystem([entity], playerPos, handleCollect);
-      }
-    }
-  };
+  if (gameOver) return (
+    <div style={{padding:40, textAlign:'center'}}>
+      <h2 style={{fontSize:32, color:'#10b981'}}>Game Over!</h2>
+      <p style={{fontSize:24}}>Final Score: {score}</p>
+      <button onClick={onExit} style={{marginTop:24, fontSize:20, padding:'12px 32px', borderRadius:12, background:'#10b981', color:'#fff', border:'none'}}>Exit</button>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 style={{ textAlign: 'center', fontSize: 24, fontWeight: 'bold' }}>3D Collect Game - Score: {score}</h2>
-      <button onClick={handleCollectAll} style={{ display: 'block', margin: '0 auto 16px', fontSize: 18, padding: '8px 24px', borderRadius: 8, background: '#10b981', color: '#fff', fontWeight: 'bold', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px #10b98155' }}>
-        Collect All (ECS Demo)
-      </button>
-      <Canvas style={{ width: '100%', height: 400 }}>
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        {entities.map(entity => <CollectibleMesh key={entity.id} entity={entity} />)}
-      </Canvas>
+    <div style={{padding:40, textAlign:'center'}}>
+      <h2 style={{fontSize:28, color:'#10b981'}}>Collect Game 2D</h2>
+      <p style={{fontSize:20}}>Round {round} | Score: {score}</p>
+      <div style={{margin:'32px 0'}}>
+        <button onClick={handleCollect} style={{fontSize:18, marginRight:16, padding:'10px 24px', borderRadius:8, background:'#22c55e', color:'#fff', border:'none'}}>Collect</button>
+        <button onClick={handleMiss} style={{fontSize:18, marginLeft:16, padding:'10px 24px', borderRadius:8, background:'#ef4444', color:'#fff', border:'none'}}>Miss</button>
+      </div>
+      {round < 6 ? (
+        <button onClick={handleFinish} style={{fontSize:16, marginTop:16, padding:'8px 20px', borderRadius:8, background:'#f59e0b', color:'#fff', border:'none'}}>Finish Early</button>
+      ) : (
+        <button onClick={handleFinish} style={{fontSize:16, marginTop:16, padding:'8px 20px', borderRadius:8, background:'#f59e0b', color:'#fff', border:'none'}}>Finish Game</button>
+      )}
     </div>
   );
 }

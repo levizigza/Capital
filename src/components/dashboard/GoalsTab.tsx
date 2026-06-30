@@ -22,7 +22,7 @@ import {
   Coins,
 } from '@phosphor-icons/react'
 import type { UserProfile } from '@/App'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 
 interface GoalsTabProps {
   userProfile: UserProfile
@@ -286,6 +286,7 @@ export default function GoalsTab({ userProfile, language }: GoalsTabProps) {
                   <Label htmlFor="category">{t.category}</Label>
                   <select
                     id="category"
+                    title="Goal category"
                     value={newGoal.category}
                     onChange={(e) =>
                       setNewGoal((prev) => ({

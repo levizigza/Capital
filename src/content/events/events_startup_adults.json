@@ -1,0 +1,280 @@
+{
+  "deckId": "startup_adults",
+  "displayName": "Founder's Inbox (Adults)",
+  "events": [
+    {
+      "id": "sa_angel_offer",
+      "title": "Angel Investor Ping",
+      "prompt": "An angel investor saw your pitch deck and wants to meet. They'd invest $50k for 15% equity. Your runway is getting short.",
+      "icon": "👼",
+      "triggers": [{ "type": "minCounter", "key": "pitch_count", "value": 1 }],
+      "choices": [
+        {
+          "label": "Take the deal — runway matters more right now",
+          "effects": [
+            { "type": "money", "amount": 500 },
+            { "type": "counter", "key": "equity_sold_pct", "delta": 15 },
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "fundraising", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Negotiate for 10% equity instead",
+          "effects": [
+            { "type": "money", "amount": 500 },
+            { "type": "counter", "key": "equity_sold_pct", "delta": 10 },
+            { "type": "score", "amount": 18 },
+            { "type": "skillStats", "skill": "negotiation", "delta": 2 }
+          ]
+        },
+        {
+          "label": "Decline — bootstrap a bit longer",
+          "effects": [
+            { "type": "score", "amount": 8 },
+            { "type": "flag", "key": "bootstrapping", "value": true }
+          ]
+        }
+      ],
+      "explanation": "Equity is permanent — once sold, it's gone. Negotiate hard, and only raise when you truly need the runway.",
+      "weight": 8,
+      "tags": ["fundraising", "equity"]
+    },
+    {
+      "id": "sa_server_crash",
+      "title": "Server Meltdown",
+      "prompt": "Your app went viral overnight and the servers crashed. You need to scale up immediately or lose new users.",
+      "icon": "🔥",
+      "triggers": [{ "type": "hasFlag", "key": "product_launched", "value": true }],
+      "choices": [
+        {
+          "label": "Emergency scale-up — pay for premium cloud tier",
+          "effects": [
+            { "type": "money", "amount": -80 },
+            { "type": "reputation", "amount": 5 },
+            { "type": "score", "amount": 15 }
+          ]
+        },
+        {
+          "label": "Put up a waitlist page and scale gradually",
+          "effects": [
+            { "type": "money", "amount": -20 },
+            { "type": "reputation", "amount": -2 },
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "ops", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Scaling costs money, but losing early users during traction is worse. A waitlist preserves hype while buying you time.",
+      "weight": 7,
+      "tags": ["operations", "scaling"]
+    },
+    {
+      "id": "sa_cofounder_split",
+      "title": "Co-founder Conversation",
+      "prompt": "Your co-founder wants to renegotiate the equity split from 50-50 to 60-40 in their favor because they handle all the tech.",
+      "icon": "🤝",
+      "triggers": [{ "type": "minTurn", "value": 3 }],
+      "choices": [
+        {
+          "label": "Agree — keeping the partnership healthy matters",
+          "effects": [
+            { "type": "counter", "key": "equity_sold_pct", "delta": 10 },
+            { "type": "reputation", "amount": 3 },
+            { "type": "score", "amount": 8 }
+          ]
+        },
+        {
+          "label": "Propose vesting schedules tied to milestones instead",
+          "effects": [
+            { "type": "score", "amount": 20 },
+            { "type": "skillStats", "skill": "negotiation", "delta": 2 },
+            { "type": "skillStats", "skill": "leadership", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Refuse — the split was agreed on",
+          "effects": [
+            { "type": "reputation", "amount": -3 },
+            { "type": "score", "amount": 5 }
+          ]
+        }
+      ],
+      "explanation": "Vesting schedules protect both founders. They tie equity to contribution over time, preventing disputes if someone leaves early.",
+      "weight": 7,
+      "tags": ["equity", "partnership"]
+    },
+    {
+      "id": "sa_first_revenue",
+      "title": "First Paying Customer!",
+      "prompt": "Someone just paid for your product! It's only $29/month, but it's real revenue. How do you reinvest?",
+      "icon": "🎉",
+      "triggers": [{ "type": "hasFlag", "key": "product_launched", "value": true }],
+      "choices": [
+        {
+          "label": "Reinvest into marketing to get more customers",
+          "effects": [
+            { "type": "money", "amount": -20 },
+            { "type": "counter", "key": "customers", "delta": 3 },
+            { "type": "score", "amount": 14 },
+            { "type": "skillStats", "skill": "marketing", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Save it — build a cash reserve first",
+          "effects": [
+            { "type": "money", "amount": 29 },
+            { "type": "score", "amount": 10 }
+          ]
+        },
+        {
+          "label": "Use it to improve the product",
+          "effects": [
+            { "type": "money", "amount": -15 },
+            { "type": "reputation", "amount": 3 },
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "product", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Early revenue is a signal, not a salary. Reinvesting wisely — whether in growth, product, or reserves — compounds over time.",
+      "weight": 9,
+      "tags": ["revenue", "reinvestment"]
+    },
+    {
+      "id": "sa_hire_or_outsource",
+      "title": "Growing Pains",
+      "prompt": "You can't handle all the work alone anymore. You can hire a part-time employee or outsource to a freelancer.",
+      "icon": "👥",
+      "triggers": [{ "type": "minMoney", "value": 100 }, { "type": "minTurn", "value": 4 }],
+      "choices": [
+        {
+          "label": "Hire part-time — invest in the team",
+          "effects": [
+            { "type": "money", "amount": -100 },
+            { "type": "counter", "key": "team_size", "delta": 1 },
+            { "type": "score", "amount": 15 },
+            { "type": "skillStats", "skill": "leadership", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Outsource the project to a freelancer",
+          "effects": [
+            { "type": "money", "amount": -50 },
+            { "type": "score", "amount": 10 }
+          ]
+        },
+        {
+          "label": "Grind through it yourself for now",
+          "effects": [
+            { "type": "score", "amount": 5 },
+            { "type": "reputation", "amount": -1 },
+            { "type": "skillStats", "skill": "burnout_risk", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Full-time hires cost more but build culture. Freelancers are flexible but may not stay. Grinding alone risks burnout — the hidden cost.",
+      "weight": 8,
+      "tags": ["hiring", "scaling"]
+    },
+    {
+      "id": "sa_pivot_signal",
+      "title": "Market Signal: Pivot?",
+      "prompt": "User data shows people love one feature but ignore the rest of your product. Should you pivot to focus on just that feature?",
+      "icon": "📊",
+      "triggers": [{ "type": "minCounter", "key": "customers", "value": 2 }],
+      "choices": [
+        {
+          "label": "Pivot — double down on what works",
+          "effects": [
+            { "type": "score", "amount": 18 },
+            { "type": "reputation", "amount": 2 },
+            { "type": "skillStats", "skill": "product", "delta": 2 },
+            { "type": "flag", "key": "pivoted", "value": true }
+          ]
+        },
+        {
+          "label": "Stay the course — the full vision matters",
+          "effects": [
+            { "type": "score", "amount": 6 },
+            { "type": "money", "amount": -30 }
+          ]
+        },
+        {
+          "label": "A/B test for two more weeks",
+          "effects": [
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "analytics", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Data-driven pivots are a startup superpower. Many successful companies started as something completely different.",
+      "weight": 8,
+      "tags": ["pivot", "product-market-fit"]
+    },
+    {
+      "id": "sa_tax_surprise",
+      "title": "Tax Season Reality",
+      "prompt": "It's tax time and you owe $2,000 in self-employment tax. You didn't set money aside for this.",
+      "icon": "🧾",
+      "triggers": [{ "type": "minTurn", "value": 6 }],
+      "choices": [
+        {
+          "label": "Pay it from savings — lesson learned",
+          "effects": [
+            { "type": "money", "amount": -200 },
+            { "type": "score", "amount": 10 },
+            { "type": "skillStats", "skill": "tax_planning", "delta": 1 }
+          ],
+          "triggers": [{ "type": "minMoney", "value": 200 }]
+        },
+        {
+          "label": "Set up a payment plan with the tax authority",
+          "effects": [
+            { "type": "debt", "amount": 200 },
+            { "type": "score", "amount": 8 },
+            { "type": "skillStats", "skill": "tax_planning", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Hire an accountant to find deductions",
+          "effects": [
+            { "type": "money", "amount": -50 },
+            { "type": "score", "amount": 16 },
+            { "type": "skillStats", "skill": "tax_planning", "delta": 2 }
+          ]
+        }
+      ],
+      "explanation": "Self-employment means paying your own taxes quarterly. Set aside 25-30% of income for taxes to avoid year-end surprises.",
+      "weight": 7,
+      "tags": ["taxes", "planning"]
+    },
+    {
+      "id": "sa_pitch_competition",
+      "title": "Pitch Competition Invite",
+      "prompt": "You're invited to a startup pitch competition. First prize is $10k, but prep takes a full week away from building product.",
+      "icon": "🎤",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Enter the competition — exposure + prize money",
+          "effects": [
+            { "type": "counter", "key": "pitch_count", "delta": 1 },
+            { "type": "reputation", "amount": 4 },
+            { "type": "score", "amount": 12 },
+            { "type": "skillStats", "skill": "pitching", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Skip it and keep building",
+          "effects": [
+            { "type": "score", "amount": 8 },
+            { "type": "skillStats", "skill": "product", "delta": 1 }
+          ]
+        }
+      ],
+      "explanation": "Pitch competitions build your network and storytelling skills. But time spent not building product has a real opportunity cost.",
+      "weight": 10,
+      "tags": ["pitching", "opportunity-cost"]
+    }
+  ]
+}

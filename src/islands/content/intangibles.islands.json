@@ -1,0 +1,241 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "intangibles",
+      "name": "Intangible Isle",
+      "description": "Explore the invisible assets: intellectual property, brand value, goodwill, and patents.",
+      "icon": "💡",
+      "requiredItems": ["ba_island_medallion"],
+      "provenance": {
+        "learning_objectives": [
+          "Understand intellectual property: patents, trademarks, copyrights",
+          "Learn about brand value and goodwill as intangible assets",
+          "Explore how intangible assets are valued on a balance sheet",
+          "Differentiate tangible from intangible assets"
+        ],
+        "mechanics_used": ["npc-dialogue-tree", "sorting-categorization", "quiz-challenge", "card-matching"],
+        "originality_notes": "Theme: mysterious isle of ideas and invisible treasures (not a law office). Verb: categorize and match intangible concepts through NPC scenarios (not lecture-based). Structure: discovery quests that reveal hidden value in everyday brands (not exam prep). Combines sorting puzzles with dialogue exploration.",
+        "forbidden_references": ["Shark Tank", "Dragons Den", "Patent Troll"]
+      },
+      "areas": [
+        {
+          "id": "in_patent_office",
+          "name": "Patent Office",
+          "description": "Rows of filing cabinets and inventors pitching ideas. Learn how IP creates value.",
+          "icon": "📝",
+          "connections": ["in_brand_boulevard", "in_goodwill_garden"]
+        },
+        {
+          "id": "in_brand_boulevard",
+          "name": "Brand Boulevard",
+          "description": "Billboards and logos everywhere. Discover why a name can be worth billions.",
+          "icon": "🏷️",
+          "connections": ["in_patent_office", "in_goodwill_garden"]
+        },
+        {
+          "id": "in_goodwill_garden",
+          "name": "Goodwill Garden",
+          "description": "A peaceful park where deals are made. Understand goodwill in acquisitions.",
+          "icon": "🌳",
+          "connections": ["in_patent_office", "in_brand_boulevard"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_inventor_iris",
+          "name": "Inventor Iris",
+          "icon": "🔬",
+          "areaId": "in_patent_office",
+          "dialogueGraphId": "dlg_iris"
+        },
+        {
+          "id": "npc_branding_ben",
+          "name": "Branding Ben",
+          "icon": "🎨",
+          "areaId": "in_brand_boulevard",
+          "dialogueGraphId": "dlg_ben"
+        },
+        {
+          "id": "npc_merger_maya",
+          "name": "Merger Maya",
+          "icon": "🤝",
+          "areaId": "in_goodwill_garden",
+          "dialogueGraphId": "dlg_maya"
+        },
+        {
+          "id": "npc_lawyer_leon",
+          "name": "Lawyer Leon",
+          "icon": "⚖️",
+          "areaId": "in_patent_office",
+          "dialogueGraphId": "dlg_leon"
+        }
+      ],
+      "items": [
+        {
+          "id": "in_patent",
+          "name": "Patent Certificate",
+          "description": "A patent protects your invention for 20 years. Nobody else can copy it.",
+          "icon": "📜",
+          "location": { "areaId": "in_patent_office" }
+        },
+        {
+          "id": "in_brand_valuation",
+          "name": "Brand Valuation Report",
+          "description": "Analysis showing how brand recognition translates into revenue.",
+          "icon": "📊",
+          "location": { "areaId": "in_brand_boulevard" }
+        },
+        {
+          "id": "in_goodwill_report",
+          "name": "Goodwill Analysis",
+          "description": "Shows the premium paid in an acquisition above the tangible asset value.",
+          "icon": "📋",
+          "location": { "areaId": "in_goodwill_garden" }
+        },
+        {
+          "id": "in_island_medallion",
+          "name": "Intangible Isle Medallion",
+          "description": "You understand the hidden value of intangible assets!",
+          "icon": "🏅",
+          "location": { "areaId": "in_goodwill_garden" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_ip_creator",
+          "title": "IP Creator",
+          "description": "File a mock patent, learn about trademarks and copyrights, and see how IP drives company value.",
+          "hint": "Talk to Inventor Iris at the Patent Office and consult Lawyer Leon about protection strategies.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_inventor_iris" },
+            { "type": "talkToNpc", "npcId": "npc_lawyer_leon" },
+            { "type": "completeMinigame", "minigameId": "mg_ip_scenario" }
+          ],
+          "rewards": { "coins": 75, "xp": 150, "items": ["in_patent"] }
+        },
+        {
+          "id": "q_brand_and_goodwill",
+          "title": "Brand Power & Goodwill",
+          "description": "Discover why companies pay billions for a brand name and what 'goodwill' means on a balance sheet.",
+          "hint": "Visit Branding Ben on Brand Boulevard, then find Merger Maya in Goodwill Garden.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_branding_ben" },
+            { "type": "collectItem", "itemId": "in_brand_valuation" },
+            { "type": "talkToNpc", "npcId": "npc_merger_maya" },
+            { "type": "collectItem", "itemId": "in_goodwill_report" }
+          ],
+          "rewards": { "coins": 100, "xp": 200, "items": ["in_island_medallion"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_iris",
+          "startNodeId": "ir1",
+          "nodes": [
+            {
+              "id": "ir1",
+              "speaker": "Inventor Iris",
+              "text": "I just invented a new gadget! But without a patent, anyone could copy it. Intellectual property — patents, trademarks, copyrights — protects creators. Want to learn how?",
+              "choices": [
+                { "id": "ir1c1", "text": "Teach me about IP!", "nextNodeId": "ir2", "effects": [{ "type": "startQuest", "questId": "q_ip_creator" }] },
+                { "id": "ir1c2", "text": "What's the difference between them?", "nextNodeId": "ir3" }
+              ]
+            },
+            { "id": "ir2", "speaker": "Inventor Iris", "text": "A patent protects inventions (20 years). A trademark protects brand names and logos (forever, if renewed). A copyright protects creative works like music and code (your lifetime + 70 years). Talk to Lawyer Leon for the legal details!", "end": true },
+            {
+              "id": "ir3",
+              "speaker": "Inventor Iris",
+              "text": "Patents = inventions. Trademarks = brand identity. Copyrights = creative works. Each has different rules and time limits. The important thing: IP can be your most valuable asset, even more than physical property!",
+              "choices": [
+                { "id": "ir3c1", "text": "I want to protect my inventions!", "nextNodeId": "ir2", "effects": [{ "type": "startQuest", "questId": "q_ip_creator" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_leon",
+          "startNodeId": "le1",
+          "nodes": [
+            {
+              "id": "le1",
+              "speaker": "Lawyer Leon",
+              "text": "IP law is complex but crucial. Without protection, your ideas are free for anyone to steal. Ready to file a mock patent and see how the system works?",
+              "choices": [
+                { "id": "le1c1", "text": "Let's file a patent!", "nextNodeId": "le2", "effects": [{ "type": "startMinigame", "minigameId": "mg_ip_scenario" }] },
+                { "id": "le1c2", "text": "What does a patent cost?", "nextNodeId": "le3" }
+              ]
+            },
+            { "id": "le2", "speaker": "Lawyer Leon", "text": "Opening the IP scenario simulator…", "end": true },
+            {
+              "id": "le3",
+              "speaker": "Lawyer Leon",
+              "text": "A real patent costs $5,000-$15,000+ in fees and can take 2-3 years to approve. But if your invention makes millions, that's a tiny investment. The real cost is NOT patenting and watching someone else profit from your idea.",
+              "choices": [
+                { "id": "le3c1", "text": "Let me try the simulator!", "nextNodeId": "le2", "effects": [{ "type": "startMinigame", "minigameId": "mg_ip_scenario" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_ben",
+          "startNodeId": "bn1",
+          "nodes": [
+            {
+              "id": "bn1",
+              "speaker": "Branding Ben",
+              "text": "Why is a plain white t-shirt $5, but the same shirt with a swoosh logo $45? Brand value! A strong brand lets you charge premium prices because customers trust the name.",
+              "choices": [
+                { "id": "bn1c1", "text": "How much is a brand worth?", "nextNodeId": "bn2", "effects": [{ "type": "startQuest", "questId": "q_brand_and_goodwill" }, { "type": "giveItem", "itemId": "in_brand_valuation" }] },
+                { "id": "bn1c2", "text": "Can a brand lose value?", "nextNodeId": "bn3" }
+              ]
+            },
+            { "id": "bn2", "speaker": "Branding Ben", "text": "Apple's brand alone is worth over $500 billion! Here's a brand valuation report showing how companies measure this invisible asset. Now visit Merger Maya to learn about goodwill.", "end": true },
+            {
+              "id": "bn3",
+              "speaker": "Branding Ben",
+              "text": "Absolutely. One scandal, one data breach, one terrible product can destroy decades of trust overnight. Brand value is powerful but fragile.",
+              "choices": [
+                { "id": "bn3c1", "text": "Show me how brands are valued.", "nextNodeId": "bn2", "effects": [{ "type": "startQuest", "questId": "q_brand_and_goodwill" }, { "type": "giveItem", "itemId": "in_brand_valuation" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_maya",
+          "startNodeId": "my1",
+          "nodes": [
+            {
+              "id": "my1",
+              "speaker": "Merger Maya",
+              "text": "When one company buys another, they often pay MORE than the sum of its assets. That 'extra' is called goodwill — it represents brand, customer relationships, patents, and team talent.",
+              "choices": [
+                { "id": "my1c1", "text": "Show me an example!", "nextNodeId": "my2", "effects": [{ "type": "giveItem", "itemId": "in_goodwill_report" }] },
+                { "id": "my1c2", "text": "Can goodwill go bad?", "nextNodeId": "my3" }
+              ]
+            },
+            { "id": "my2", "speaker": "Merger Maya", "text": "Say a company has $10M in assets but is bought for $15M. That extra $5M is goodwill — the buyer believes the brand, customer base, and team are worth it. Here's an analysis report!", "end": true },
+            {
+              "id": "my3",
+              "speaker": "Merger Maya",
+              "text": "Yes! If the acquired company underperforms, the buyer has to 'write down' goodwill — admitting they overpaid. It's a huge hit to the balance sheet. That's why due diligence matters.",
+              "choices": [
+                { "id": "my3c1", "text": "Fascinating! Show me the numbers.", "nextNodeId": "my2", "effects": [{ "type": "giveItem", "itemId": "in_goodwill_report" }] }
+              ]
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_ip_scenario",
+          "name": "IP Strategy Scenario",
+          "description": "Navigate branching decisions about protecting your invention: patent, trademark, or open-source?",
+          "icon": "⚖️",
+          "componentId": "IPScenarioGame",
+          "areaId": "in_patent_office"
+        }
+      ]
+    }
+  ]
+}

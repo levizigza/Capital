@@ -1,0 +1,283 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "venture_foundry",
+      "name": "Venture Foundry",
+      "description": "An industrial innovation district where aspiring entrepreneurs learn to launch, fund, and scale a business from scratch.",
+      "icon": "🔥",
+      "provenance": {
+        "learning_objectives": [
+          "Understand the steps from business idea to minimum viable product",
+          "Learn revenue models: subscription, per-unit, freemium, and service fees",
+          "Read a basic profit-and-loss statement",
+          "Evaluate funding options: bootstrapping, loans, and equity investment"
+        ],
+        "mechanics_used": ["resource-management", "trade-negotiation", "npc-dialogue-tree", "budget-allocation"],
+        "originality_notes": "Theme: industrial foundry district with workshops and pitching stages (not a corporate boardroom or office tycoon). Verb: negotiate with NPC investors and allocate startup budget across departments (not passive empire building). Structure: milestone-based quest chain where each quest represents a startup phase — idea, build, fund, scale (not sandbox or elimination). Combines trade-negotiation with budget-allocation through original NPC mentorship scenarios.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Shark Tank", "Dragons Den", "Lemonade Stand", "AdVenture Capitalist", "SimCity"]
+      },
+      "areas": [
+        {
+          "id": "vf_workshop",
+          "name": "The Workshop",
+          "description": "A gritty maker space with 3D printers, whiteboards, and prototype stations. Ideas become real here.",
+          "icon": "🔧",
+          "connections": ["vf_pitch_stage", "vf_growth_lab"]
+        },
+        {
+          "id": "vf_pitch_stage",
+          "name": "Pitch Stage",
+          "description": "A small theater where founders present their ideas to mentors and investors. Bright lights, big stakes.",
+          "icon": "🎤",
+          "connections": ["vf_workshop", "vf_growth_lab"]
+        },
+        {
+          "id": "vf_growth_lab",
+          "name": "Growth Lab",
+          "description": "Screens show revenue dashboards and customer metrics. Scale-up strategists work here around the clock.",
+          "icon": "🚀",
+          "connections": ["vf_workshop", "vf_pitch_stage"],
+          "requiredItems": ["vf_seed_funding"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_founder_fern",
+          "name": "Founder Fern",
+          "icon": "💡",
+          "areaId": "vf_workshop",
+          "dialogueGraphId": "dlg_founder_fern"
+        },
+        {
+          "id": "npc_investor_ike",
+          "name": "Investor Ike",
+          "icon": "💼",
+          "areaId": "vf_pitch_stage",
+          "dialogueGraphId": "dlg_investor_ike"
+        },
+        {
+          "id": "npc_strategist_sara",
+          "name": "Strategist Sara",
+          "icon": "📊",
+          "areaId": "vf_growth_lab",
+          "dialogueGraphId": "dlg_strategist_sara"
+        },
+        {
+          "id": "npc_mentor_malik",
+          "name": "Mentor Malik",
+          "icon": "🎓",
+          "areaId": "vf_workshop",
+          "dialogueGraphId": "dlg_mentor_malik"
+        }
+      ],
+      "items": [
+        {
+          "id": "vf_business_plan",
+          "name": "Business Plan",
+          "description": "A one-page plan covering your idea, target customer, and how you'll make money.",
+          "icon": "📝",
+          "location": { "areaId": "vf_workshop" }
+        },
+        {
+          "id": "vf_seed_funding",
+          "name": "Seed Funding",
+          "description": "Your first round of capital. Use it wisely — it has to last until revenue starts flowing.",
+          "icon": "🌱",
+          "location": { "areaId": "vf_pitch_stage" }
+        },
+        {
+          "id": "vf_pnl_sheet",
+          "name": "Profit & Loss Sheet",
+          "description": "A simple P&L that shows whether your venture is making or losing money.",
+          "icon": "📋",
+          "location": { "areaId": "vf_growth_lab" }
+        },
+        {
+          "id": "vf_foundry_badge",
+          "name": "Foundry Badge",
+          "description": "Awarded to entrepreneurs who complete the full startup journey from idea to growth.",
+          "icon": "🎖️",
+          "location": { "areaId": "vf_growth_lab" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_vf_idea_to_plan",
+          "title": "Idea to Plan",
+          "description": "Meet Founder Fern in the Workshop to brainstorm a business idea, then work with Mentor Malik to turn it into a one-page business plan.",
+          "hint": "Start at The Workshop. Talk to Fern for inspiration, then Malik for structure.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_founder_fern" },
+            { "type": "talkToNpc", "npcId": "npc_mentor_malik" },
+            { "type": "collectItem", "itemId": "vf_business_plan" },
+            { "type": "completeMinigame", "minigameId": "mg_startup_budget" }
+          ],
+          "rewards": { "coins": 60, "xp": 120 }
+        },
+        {
+          "id": "q_vf_pitch_and_grow",
+          "title": "Pitch and Grow",
+          "description": "Take your business plan to the Pitch Stage and convince Investor Ike to fund you. Then enter the Growth Lab to learn about scaling.",
+          "hint": "You need a Business Plan before pitching. Head to Pitch Stage, then Growth Lab.",
+          "objectives": [
+            { "type": "collectItem", "itemId": "vf_business_plan" },
+            { "type": "talkToNpc", "npcId": "npc_investor_ike" },
+            { "type": "collectItem", "itemId": "vf_seed_funding" },
+            { "type": "talkToNpc", "npcId": "npc_strategist_sara" }
+          ],
+          "rewards": { "coins": 100, "xp": 200, "items": ["vf_pnl_sheet", "vf_foundry_badge"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_founder_fern",
+          "startNodeId": "ff1",
+          "nodes": [
+            {
+              "id": "ff1",
+              "speaker": "Founder Fern",
+              "text": "Every great business starts with a problem worth solving. What bugs you? What could be better? That frustration is your starting point!",
+              "choices": [
+                {
+                  "id": "ff1_a",
+                  "text": "I have an idea! Help me develop it.",
+                  "nextNodeId": "ff2",
+                  "effects": [{ "type": "startQuest", "questId": "q_vf_idea_to_plan" }]
+                },
+                { "id": "ff1_b", "text": "I'm still brainstorming.", "nextNodeId": "ff3" }
+              ]
+            },
+            {
+              "id": "ff2",
+              "speaker": "Founder Fern",
+              "text": "Awesome! First question: who is your customer? Second: what problem do you solve for them? Third: how will you make money? Answer those three and you've got the bones of a business. Go see Mentor Malik to write it up!",
+              "end": true
+            },
+            {
+              "id": "ff3",
+              "speaker": "Founder Fern",
+              "text": "No rush! Walk around the Workshop, look at what others are building, and let inspiration strike.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_mentor_malik",
+          "startNodeId": "mk1",
+          "nodes": [
+            {
+              "id": "mk1",
+              "speaker": "Mentor Malik",
+              "text": "A business plan doesn't need to be 50 pages. One page is enough: your idea, your customer, your revenue model, and your first-year costs. Let's draft yours.",
+              "choices": [
+                {
+                  "id": "mk1_a",
+                  "text": "Let's write it!",
+                  "nextNodeId": "mk2",
+                  "effects": [{ "type": "giveItem", "itemId": "vf_business_plan" }]
+                },
+                {
+                  "id": "mk1_b",
+                  "text": "What's a revenue model?",
+                  "nextNodeId": "mk3"
+                }
+              ]
+            },
+            {
+              "id": "mk2",
+              "speaker": "Mentor Malik",
+              "text": "Here's your Business Plan template. Fill in the blanks, then try the Startup Budget minigame to practice allocating your first funds. After that, you're ready to pitch!",
+              "end": true
+            },
+            {
+              "id": "mk3",
+              "speaker": "Mentor Malik",
+              "text": "A revenue model is HOW you make money. Do customers pay per item? A monthly subscription? A one-time fee? Each model has trade-offs. Pick the one that fits your customer best.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_investor_ike",
+          "startNodeId": "ike1",
+          "nodes": [
+            {
+              "id": "ike1",
+              "speaker": "Investor Ike",
+              "text": "So you want funding? I've heard a thousand pitches. Show me your Business Plan and tell me: what makes YOUR idea worth betting on?",
+              "choices": [
+                {
+                  "id": "ike1_a",
+                  "text": "Here's my plan — it solves a real problem!",
+                  "nextNodeId": "ike2",
+                  "effects": [{ "type": "giveItem", "itemId": "vf_seed_funding" }],
+                  "requiresItems": ["vf_business_plan"]
+                },
+                { "id": "ike1_b", "text": "What do investors look for?", "nextNodeId": "ike3" }
+              ]
+            },
+            {
+              "id": "ike2",
+              "speaker": "Investor Ike",
+              "text": "I like it. Clear problem, clear customer, clear revenue path. Here's your Seed Funding — use it wisely! Head to the Growth Lab to learn how to scale without burning through cash.",
+              "end": true
+            },
+            {
+              "id": "ike3",
+              "speaker": "Investor Ike",
+              "text": "Three things: a real problem, a clear customer, and a plan to make money. If you can show me all three, I'll invest. If not, go back to the Workshop and refine your idea.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_strategist_sara",
+          "startNodeId": "ss1",
+          "nodes": [
+            {
+              "id": "ss1",
+              "speaker": "Strategist Sara",
+              "text": "Congratulations on getting funded! Now the hard part: growing without running out of money. Revenue minus expenses equals profit. Let me show you how to track it.",
+              "choices": [
+                {
+                  "id": "ss1_a",
+                  "text": "Teach me about profit and loss!",
+                  "nextNodeId": "ss2",
+                  "effects": [{ "type": "giveItem", "itemId": "vf_pnl_sheet" }]
+                },
+                {
+                  "id": "ss1_b",
+                  "text": "What's the biggest mistake new businesses make?",
+                  "nextNodeId": "ss3"
+                }
+              ]
+            },
+            {
+              "id": "ss2",
+              "speaker": "Strategist Sara",
+              "text": "Here's your P&L sheet. Revenue at the top, subtract all costs, and the bottom line is your profit — or loss. Keep this positive and you'll survive. Keep it growing and you'll thrive!",
+              "end": true
+            },
+            {
+              "id": "ss3",
+              "speaker": "Strategist Sara",
+              "text": "Spending too fast. They get funding and hire everyone, buy everything. Smart founders keep costs low until revenue is steady. Grow lean!",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_startup_budget",
+          "name": "Startup Budget",
+          "description": "Allocate a limited seed budget across product development, marketing, operations, and savings. Aim for a balanced spend that survives 12 simulated months.",
+          "icon": "💰",
+          "componentId": "StartupBudgetGame",
+          "areaId": "vf_workshop"
+        }
+      ]
+    }
+  ]
+}

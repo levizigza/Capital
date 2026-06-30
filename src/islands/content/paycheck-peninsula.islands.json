@@ -1,0 +1,330 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "paycheck_peninsula",
+      "name": "Paycheck Peninsula",
+      "description": "A bustling coastal town where middle schoolers learn to budget their first earnings, track expenses, and plan ahead.",
+      "icon": "💵",
+      "provenance": {
+        "learning_objectives": [
+          "Create a basic monthly budget from a fixed income",
+          "Categorize expenses into fixed, variable, and discretionary",
+          "Understand opportunity cost when making spending choices",
+          "Practice adjusting a budget when unexpected expenses arise"
+        ],
+        "mechanics_used": ["budget-allocation", "resource-management", "npc-dialogue-tree", "sorting-categorization"],
+        "originality_notes": "Theme: coastal peninsula with neighborhood districts (not a spreadsheet or office). Verb: allocate budget across NPC requests and drag-sort expenses (not passive income collection). Structure: branching quest scenarios where budget choices affect NPC outcomes (not competitive or score-based). Combines budget-allocation puzzles with story-driven NPC consequence chains.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Banzai"]
+      },
+      "areas": [
+        {
+          "id": "pp_main_street",
+          "name": "Main Street",
+          "description": "The heart of the peninsula. Shops, a post office, and a community board with odd jobs.",
+          "icon": "🏘️",
+          "connections": ["pp_budget_bureau", "pp_rainy_day_park"]
+        },
+        {
+          "id": "pp_budget_bureau",
+          "name": "Budget Bureau",
+          "description": "A cozy office with whiteboards and pie charts. The town planner works here.",
+          "icon": "📊",
+          "connections": ["pp_main_street", "pp_rainy_day_park"]
+        },
+        {
+          "id": "pp_rainy_day_park",
+          "name": "Rainy Day Park",
+          "description": "A peaceful park with a fountain. Locals come here to think about unexpected expenses.",
+          "icon": "🌧️",
+          "connections": ["pp_main_street", "pp_budget_bureau"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_payroll_pat",
+          "name": "Payroll Pat",
+          "icon": "📬",
+          "areaId": "pp_main_street",
+          "dialogueGraphId": "dlg_payroll_pat"
+        },
+        {
+          "id": "npc_planner_priya",
+          "name": "Planner Priya",
+          "icon": "📋",
+          "areaId": "pp_budget_bureau",
+          "dialogueGraphId": "dlg_planner_priya"
+        },
+        {
+          "id": "npc_coach_carlos",
+          "name": "Coach Carlos",
+          "icon": "🏋️",
+          "areaId": "pp_rainy_day_park",
+          "dialogueGraphId": "dlg_coach_carlos"
+        },
+        {
+          "id": "npc_vendor_vee",
+          "name": "Vendor Vee",
+          "icon": "🛒",
+          "areaId": "pp_main_street",
+          "dialogueGraphId": "dlg_vendor_vee"
+        }
+      ],
+      "items": [
+        {
+          "id": "pp_first_paycheck",
+          "name": "First Paycheck",
+          "description": "Your very first earnings! Now you need to decide how to use them.",
+          "icon": "💰",
+          "location": { "areaId": "pp_main_street" }
+        },
+        {
+          "id": "pp_budget_planner",
+          "name": "Budget Planner",
+          "description": "A notebook to track income and expenses. The foundation of smart money management.",
+          "icon": "📓",
+          "location": { "areaId": "pp_budget_bureau" }
+        },
+        {
+          "id": "pp_rainy_day_fund",
+          "name": "Rainy Day Fund",
+          "description": "A small emergency stash. You'll be glad you have it when surprises happen!",
+          "icon": "☂️",
+          "location": { "areaId": "pp_rainy_day_park" }
+        },
+        {
+          "id": "pp_peninsula_badge",
+          "name": "Peninsula Budget Badge",
+          "description": "Awarded for mastering the basics of budgeting.",
+          "icon": "🎖️",
+          "location": { "areaId": "pp_budget_bureau" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_pp_budget_basics",
+          "title": "Budget Basics",
+          "description": "Collect your first paycheck from Pat, then visit Planner Priya to learn how to split it into categories.",
+          "hint": "Start on Main Street, talk to Payroll Pat, then head to the Budget Bureau.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_payroll_pat" },
+            { "type": "collectItem", "itemId": "pp_first_paycheck" },
+            { "type": "talkToNpc", "npcId": "npc_planner_priya" },
+            { "type": "completeMinigame", "minigameId": "mg_budget_split" }
+          ],
+          "rewards": { "coins": 40, "xp": 80, "items": ["pp_budget_planner"] }
+        },
+        {
+          "id": "q_pp_rainy_day",
+          "title": "Expect the Unexpected",
+          "description": "Coach Carlos has a surprise expense challenge. Learn why an emergency fund matters.",
+          "hint": "Head to Rainy Day Park after completing Budget Basics.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_coach_carlos" },
+            { "type": "talkToNpc", "npcId": "npc_vendor_vee" },
+            { "type": "collectItem", "itemId": "pp_rainy_day_fund" }
+          ],
+          "rewards": { "coins": 60, "xp": 120, "items": ["pp_peninsula_badge"] }
+        },
+        {
+          "id": "q_pp_inbox_storm",
+          "title": "Inbox Storm",
+          "description": "Your inbox is overflowing with real-life money decisions. Open each message, weigh the options, and make smart choices before time runs out!",
+          "hint": "Head to Main Street and check your inbox. Think before you click!",
+          "objectives": [
+            { "type": "completeMinigame", "minigameId": "mg_inbox_storm", "scoreThreshold": { "explorer": 30, "apprentice": 50, "strategist": 80 } }
+          ],
+          "rewards": { "coins": 80, "xp": 150, "items": [] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_payroll_pat",
+          "startNodeId": "pat1",
+          "nodes": [
+            {
+              "id": "pat1",
+              "speaker": "Payroll Pat",
+              "text": {
+                "explorer": "Hi! You earned your first paycheck! Let's figure out how to split it up so you can buy fun stuff AND save some too.",
+                "apprentice": "Hey there! You've been working hard and your first paycheck is ready. But before you spend it all, have you thought about where each dollar should go?",
+                "strategist": "Congratulations on your first paycheck. Before you allocate funds, consider the 50/30/20 rule — needs, wants, and savings. How you distribute this income now sets the tone for your financial habits."
+              },
+              "choices": [
+                {
+                  "id": "pat1_a",
+                  "text": "I want to learn how to budget!",
+                  "nextNodeId": "pat2",
+                  "effects": [{ "type": "startQuest", "questId": "q_pp_budget_basics" }]
+                },
+                { "id": "pat1_b", "text": "I'll figure it out myself.", "nextNodeId": "pat3" }
+              ]
+            },
+            {
+              "id": "pat2",
+              "speaker": "Payroll Pat",
+              "text": "Smart move! Grab your paycheck here, then visit Planner Priya at the Budget Bureau. She's the best in town at helping people plan their spending.",
+              "end": true
+            },
+            {
+              "id": "pat3",
+              "speaker": "Payroll Pat",
+              "text": "Fair enough! But if you change your mind, Planner Priya is over at the Budget Bureau.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_planner_priya",
+          "startNodeId": "pri1",
+          "nodes": [
+            {
+              "id": "pri1",
+              "speaker": "Planner Priya",
+              "text": "Welcome to the Budget Bureau! The golden rule: split your money into three buckets — needs, wants, and savings. Ready to try?",
+              "choices": [
+                {
+                  "id": "pri1_a",
+                  "text": "Let's do it!",
+                  "nextNodeId": "pri2",
+                  "effects": [{ "type": "startMinigame", "minigameId": "mg_budget_split" }]
+                },
+                { "id": "pri1_b", "text": "Tell me more first.", "nextNodeId": "pri3" }
+              ]
+            },
+            {
+              "id": "pri2",
+              "speaker": "Planner Priya",
+              "text": "Drag each expense into the right bucket. Rent and food are needs. Entertainment is a want. And always put something into savings!",
+              "end": true
+            },
+            {
+              "id": "pri3",
+              "speaker": "Planner Priya",
+              "text": "Needs are things you must pay for — housing, food, transport. Wants are things you enjoy but could skip. Savings is money you set aside for the future. The trick is balancing all three!",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_coach_carlos",
+          "startNodeId": "cc1",
+          "nodes": [
+            {
+              "id": "cc1",
+              "speaker": "Coach Carlos",
+              "text": "Life throws curveballs! What if your phone breaks or you need new shoes? That's why you need a Rainy Day Fund. Want to build one?",
+              "choices": [
+                {
+                  "id": "cc1_a",
+                  "text": "Teach me about emergency funds!",
+                  "nextNodeId": "cc2",
+                  "effects": [{ "type": "startQuest", "questId": "q_pp_rainy_day" }]
+                },
+                { "id": "cc1_b", "text": "I'll manage without one.", "nextNodeId": "cc3" }
+              ]
+            },
+            {
+              "id": "cc2",
+              "speaker": "Coach Carlos",
+              "text": "An emergency fund is money you don't touch unless something unexpected happens. Even saving a little each week adds up. Go talk to Vendor Vee — she'll show you what surprise expenses look like!",
+              "end": true
+            },
+            {
+              "id": "cc3",
+              "speaker": "Coach Carlos",
+              "text": "Bold strategy! But trust me, surprises always come. Swing by when you're ready.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_vendor_vee",
+          "startNodeId": "vv1",
+          "nodes": [
+            {
+              "id": "vv1",
+              "speaker": "Vendor Vee",
+              "text": "Oh no, the town fountain just broke and we need supplies to fix it! This is exactly the kind of surprise expense Coach Carlos was talking about. Good thing we planned ahead!",
+              "choices": [
+                {
+                  "id": "vv1_a",
+                  "text": "Good thing I have my Rainy Day Fund!",
+                  "nextNodeId": "vv2",
+                  "effects": [{ "type": "giveItem", "itemId": "pp_rainy_day_fund" }]
+                },
+                {
+                  "id": "vv1_b",
+                  "text": "How much does it cost?",
+                  "nextNodeId": "vv3"
+                }
+              ]
+            },
+            {
+              "id": "vv2",
+              "speaker": "Vendor Vee",
+              "text": "See? That's the power of an emergency fund. You handled a surprise without going into debt. Impressive!",
+              "end": true
+            },
+            {
+              "id": "vv3",
+              "speaker": "Vendor Vee",
+              "text": "30 coins for parts. If you'd been saving a bit each week, you'd have this covered no problem. That's the lesson!",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_budget_split",
+          "name": "Budget Splitter",
+          "description": "Drag expense cards into Needs, Wants, and Savings buckets to balance a monthly budget.",
+          "icon": "📊",
+          "componentId": "BudgetSplitterGame",
+          "areaId": "pp_budget_bureau"
+        },
+        {
+          "id": "mg_treasure_hunt",
+          "name": "Main Street Treasure Hunt",
+          "description": "Walk the peninsula grid, talk to locals, and solve budget puzzles hidden in chests.",
+          "icon": "🗺️",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "pp_main_street",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "mg_inbox_storm",
+          "name": "Inbox Storm",
+          "description": "Your inbox is flooded with money decisions! Open each message, read the scenario, and choose wisely.",
+          "icon": "📨",
+          "componentId": "ModularMinigame",
+          "areaId": "pp_main_street",
+          "modules": [
+            {
+              "id": "EarnSpend",
+              "config": {
+                "startingBalance": 120,
+                "earnOptions": [
+                  { "id": "part_time_job", "label": "Part-Time Shift", "amount": 40 }
+                ],
+                "spendOptions": []
+              }
+            },
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": ["budgeting_teens"],
+                "tags": [],
+                "maxDraws": 8
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,11 +4,49 @@ import "@github/spark/spark"
 
 import App from './App.tsx'
 import { ErrorFallback } from './components/ErrorFallback'
+import { DevErrorOverlay } from './components/DevErrorOverlay'
+import { InputProvider } from '@/input'
 
 import "./main.css"
 
-createRoot(document.getElementById('root')!).render(
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
-    <App />
-   </ErrorBoundary>
-)
+const isPixelPreview =
+  import.meta.env.DEV &&
+  new URLSearchParams(window.location.search).get("pixelPreview") === "1";
+
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+  document.body.innerHTML = '<h1 style="color: red; text-align: center; margin-top: 50px;">Error: Root element not found</h1>';
+} else {
+  try {
+    const root = createRoot(rootElement);
+
+    if (isPixelPreview) {
+      import("@/pixel/tools/SpritePreviewTool").then(({ default: SpritePreviewTool }) => {
+        root.render(
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
+            <SpritePreviewTool />
+          </ErrorBoundary>
+        );
+      });
+    } else {
+      root.render(
+        <ErrorBoundary 
+          FallbackComponent={ErrorFallback}
+          onError={(error, info) => {
+            console.error('[ErrorBoundary] Caught error:', error);
+            console.error('[ErrorBoundary] Component stack:', info.componentStack);
+          }}
+        >
+          <InputProvider>
+            <App />
+          </InputProvider>
+          {import.meta.env.DEV ? <DevErrorOverlay /> : null}
+        </ErrorBoundary>
+      );
+    }
+  } catch (error) {
+    console.error('[ERROR] Failed to render App:', error);
+    rootElement.innerHTML = `<h1 style="color: red; text-align: center; margin-top: 50px;">Error: ${error}</h1>`;
+  }
+}

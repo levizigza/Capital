@@ -1,0 +1,14 @@
+FinanceQuest Pro — Third-Party Licenses
+================================================
+
+This file lists third-party assets bundled with or referenced by the application
+and their respective licenses. See CREDITS.txt for attribution text.
+
+[xelu-controller-prompts] Xelu's FREE Controller & Keyboard Prompts
+  Type: image
+  License: CC0-1.0
+  License URL: https://creativecommons.org/publicdomain/zero/1.0/
+  Source URL: https://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
+  Files: public/input-prompts/xelu/**, public/input-prompts/ATTRIBUTION.md, scripts/sync-xelu-prompts.mjs
+
+— End of third-party licenses —

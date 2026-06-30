@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { House, ArrowLeft } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+import { UserAvatar } from '@/components/UserAvatar'
+import type { UserProfile } from '@/App'
 
 interface BreadcrumbItem {
   label: string
@@ -16,6 +18,8 @@ interface NavigationHeaderProps {
   showBackButton?: boolean
   onBack?: () => void
   rightContent?: React.ReactNode
+  mode?: 'Creative' | 'Structured' | 'Classic' | string
+  userProfile?: UserProfile | null
 }
 
 export function NavigationHeader({
@@ -25,6 +29,8 @@ export function NavigationHeader({
   showBackButton = false,
   onBack,
   rightContent,
+  mode,
+  userProfile,
 }: NavigationHeaderProps) {
   useKeyboardShortcuts([
     {
@@ -51,22 +57,40 @@ export function NavigationHeader({
               className="min-w-[44px] min-h-[44px]"
               aria-label="Go to home (Alt+H)"
               title="Go to home (Alt+H)"
+              data-ux-tooltip="Return to main dashboard"
             >
               <House size={20} weight="duotone" />
             </Button>
           )}
 
           {showBackButton && onBack && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onBack}
-              className="min-w-[44px] min-h-[44px]"
-              aria-label="Go back"
-              title="Go back"
+            <motion.div whileTap={{ scale: 0.95 }} style={{ display: 'inline-block' }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="min-w-[44px] min-h-[44px]"
+                aria-label="Go back"
+                title="Go back"
+                data-ux-tooltip="Go to previous screen"
+              >
+                <ArrowLeft size={20} weight="duotone" />
+              </Button>
+            </motion.div>
+          )}
+
+          {/* Mode indicator for user orientation */}
+          {mode && (
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="ml-2 px-3 py-1 rounded bg-primary/10 text-primary font-semibold text-sm shadow-sm"
+              aria-label={`Current mode: ${mode}`}
+              title={`Current mode: ${mode}`}
+              data-ux-tooltip={`You are in ${mode} mode`}
             >
-              <ArrowLeft size={20} weight="duotone" />
-            </Button>
+              {mode} Mode
+            </motion.span>
           )}
 
           <nav aria-label="Breadcrumb" className="flex items-center">
@@ -103,7 +127,12 @@ export function NavigationHeader({
           </nav>
         </div>
 
-        {rightContent && <div className="flex items-center gap-2">{rightContent}</div>}
+        <div className="flex items-center gap-2">
+          {rightContent}
+          {userProfile && (
+            <UserAvatar userProfile={userProfile} size="sm" />
+          )}
+        </div>
       </div>
     </motion.header>
   )

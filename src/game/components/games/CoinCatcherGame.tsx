@@ -524,7 +524,6 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
                     Test your reflexes and financial decision-making! Catch valuable coins while avoiding impulse expenses.
                   </p>
                 </div>
-                
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   <div className="glass-card bg-accent/5 p-6 rounded-xl border-l-4 border-l-accent">
                     <div className="flex items-center gap-3 mb-3">
@@ -538,7 +537,6 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
                       Every coin you catch adds to your savings. Chain catches to multiply your earnings!
                     </p>
                   </div>
-                  
                   <div className="glass-card bg-destructive/5 p-6 rounded-xl border-l-4 border-l-destructive">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="text-3xl">💸</div>
@@ -552,7 +550,6 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
                     </p>
                   </div>
                 </div>
-
                 <div className="bg-muted/30 p-6 rounded-xl mb-8">
                   <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
                     <Star className="w-5 h-5 text-accent" weight="fill" />
@@ -582,9 +579,8 @@ export function CoinCatcherGame({ onComplete, onExit, userTier = 'middle' }: Coi
                     </div>
                   </div>
                 </div>
-
-                <div className="flex justify-center">
-                  <Button onClick={startGame} size="lg" className="btn-primary-gaming px-12 py-6 text-lg shadow-2xl">
+                <div className="flex justify-center mt-8">
+                  <Button onClick={startGame} size="lg" className="btn-primary-gaming px-12 py-6 text-lg shadow-2xl animate-bounce">
                     <Play className="w-5 h-5 mr-2" />
                     Start Game
                   </Button>

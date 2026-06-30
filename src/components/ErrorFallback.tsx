@@ -28,6 +28,9 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
             onClick={resetErrorBoundary}
             className="w-full"
             variant="outline"
+            aria-label="Try again"
+            title="Try again"
+            data-ux-tooltip="Retry the last action"
           >
             <ArrowCounterClockwise className="w-4 h-4 mr-2" />
             Try Again

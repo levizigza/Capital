@@ -1,0 +1,51 @@
+{
+  "id": "pixel_captain_penny",
+  "name": "Captain Penny",
+  "category": "npc",
+  "entityId": "npc_captain_penny",
+  "meta": {
+    "image": "spritesheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "pixelScale": 1
+  },
+  "frames": {
+    "idle_0": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_1": {
+      "x": 32,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_2": {
+      "x": 64,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_3": {
+      "x": 96,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    }
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        "idle_0",
+        "idle_1",
+        "idle_2",
+        "idle_3"
+      ],
+      "fps": 4,
+      "loop": true
+    }
+  },
+  "defaultAnimation": "idle"
+}

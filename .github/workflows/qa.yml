@@ -1,0 +1,51 @@
+name: QA
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - "scripts/validate-content.mjs"
+      - "playwright.config.ts"
+      - "vite.config.ts"
+      - "package.json"
+      - "package-lock.json"
+  push:
+    branches: [main, master]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run content:validate
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install chromium --with-deps
+      - run: npm run test:e2e:smoke
+        env:
+          CI: "true"

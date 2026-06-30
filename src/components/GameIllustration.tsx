@@ -12,7 +12,7 @@ export function GameIllustration({ type, className = "w-full h-full", animate = 
     animate: { 
       scale: 1, 
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.6, ease: "easeOut" as const }
     },
     hover: {
       scale: 1.05,
@@ -27,7 +27,7 @@ export function GameIllustration({ type, className = "w-full h-full", animate = 
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: "easeInOut" as const
       }
     }
   }

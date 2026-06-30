@@ -60,7 +60,7 @@ export function RoleSelector({ currentRole, onRoleChange }: RoleSelectorProps) {
       <div>
         <h3 className="text-lg font-semibold mb-2">Select Your Role</h3>
         <p className="text-sm text-muted-foreground">
-          Choose how you'll use FinanceQuest Pro. This determines what data you can access.
+          Choose how you'll use Capital. This determines what data you can access.
         </p>
       </div>
 

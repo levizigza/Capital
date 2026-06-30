@@ -12,7 +12,7 @@ export function PracticalIcon({ type, className = "w-full h-full", animate = tru
     animate: { 
       scale: 1, 
       opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.5, ease: "easeOut" as const }
     }
   }
 

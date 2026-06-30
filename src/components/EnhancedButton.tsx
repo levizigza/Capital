@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import { motion, HTMLMotionProps } from 'framer-motion'
-import { Loader } from 'lucide-react'
+import { Loader } from '@/lib/lucide'
 import { cn } from '@/lib/utils'
 
 interface EnhancedButtonProps extends Omit<HTMLMotionProps<'button'>, 'size' | 'children'> {

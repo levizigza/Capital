@@ -32,3 +32,17 @@ pids
 .devcontainer/
 
 .spark-workbench-id
+
+# Local caches and generated artifacts
+.cache/
+.claude/
+playwright-report/
+test-results/
+dev-log.txt
+
+# Local caches and test artifacts
+.cache/
+.claude/
+playwright-report/
+test-results/
+dev-log.txt

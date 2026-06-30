@@ -28,7 +28,7 @@ export function ConsentDialog({ ageRange, onComplete, onSkip }: ConsentDialogPro
 
   const sections = [
     {
-      title: 'Welcome to FinanceQuest Pro! 🎮',
+      title: 'Welcome to Capital! 🎮',
       icon: Shield,
       content: (
         <div className="space-y-4">
@@ -196,7 +196,7 @@ export function ConsentDialog({ ageRange, onComplete, onSkip }: ConsentDialogPro
       content: (
         <div className="space-y-4">
           <p className="text-base leading-relaxed">
-            Because you're under 13, we need a parent or guardian's permission before you can use FinanceQuest Pro.
+            Because you're under 13, we need a parent or guardian's permission before you can use Capital.
           </p>
           <p className="text-base leading-relaxed">
             This is required by law to protect children's privacy.

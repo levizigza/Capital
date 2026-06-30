@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import type { BankingProvider, Account, Transaction, BankingSummary } from '@/lib/banking-provider'
 import { SimulatorBankingProvider } from '@/lib/simulator-provider'
 import { PlaidBankingProvider } from '@/lib/plaid-provider'

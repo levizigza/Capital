@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import { User } from '@phosphor-icons/react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'

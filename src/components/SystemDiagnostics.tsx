@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, XCircle, Warning, Info } from '@phosphor-icons/react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 
 interface DiagnosticResult {
   name: string
@@ -12,105 +12,105 @@ interface DiagnosticResult {
 
 export function SystemDiagnostics() {
   const [results, setResults] = useState<DiagnosticResult[]>([])
-  const [userProfile] = useKV<any>('user-profile', null)
-  const [gameScores] = useKV<any[]>('game-scores', [])
+  const [userProfile] = useKV<Record<string, unknown> | null>('user-profile', null)
+  const [gameScores] = useKV<unknown[]>('game-scores', [])
 
   useEffect(() => {
+    const runDiagnostics = async () => {
+      const diagnostics: DiagnosticResult[] = []
+
+      diagnostics.push({
+        name: 'Local Storage',
+        status: typeof localStorage !== 'undefined' ? 'pass' : 'fail',
+        message: typeof localStorage !== 'undefined' 
+          ? 'localStorage is available' 
+          : 'localStorage is not available (required for saving progress)'
+      })
+
+      diagnostics.push({
+        name: 'User Profile',
+        status: userProfile ? 'pass' : 'warning',
+        message: userProfile 
+          ? `Profile loaded: Level ${(userProfile as Record<string, unknown>).level}` 
+          : 'No user profile found (will be created on first action)'
+      })
+
+      diagnostics.push({
+        name: 'Game Scores',
+        status: Array.isArray(gameScores) ? 'pass' : 'warning',
+        message: `${gameScores?.length || 0} game scores recorded`
+      })
+
+      diagnostics.push({
+        name: 'Spark KV',
+        status: typeof window.spark !== 'undefined' && window.spark.kv ? 'pass' : 'fail',
+        message: typeof window.spark !== 'undefined' && window.spark.kv
+          ? 'Spark KV persistence is available'
+          : 'Spark KV not available (critical for data persistence)'
+      })
+
+      diagnostics.push({
+        name: 'GitHub User',
+        status: typeof window.spark !== 'undefined' ? 'pass' : 'warning',
+        message: typeof window.spark !== 'undefined'
+          ? 'Spark SDK loaded'
+          : 'Spark SDK may not be loaded'
+      })
+
+      const hasWebGL = (() => {
+        try {
+          const canvas = document.createElement('canvas')
+          return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+        } catch {
+          return false
+        }
+      })()
+
+      diagnostics.push({
+        name: 'WebGL Support',
+        status: hasWebGL ? 'pass' : 'info',
+        message: hasWebGL 
+          ? 'WebGL is supported (enables 3D games)' 
+          : 'WebGL not available (3D games may not work)'
+      })
+
+      diagnostics.push({
+        name: 'Animation Support',
+        status: typeof window.requestAnimationFrame !== 'undefined' ? 'pass' : 'warning',
+        message: typeof window.requestAnimationFrame !== 'undefined'
+          ? 'RequestAnimationFrame available'
+          : 'Limited animation support'
+      })
+
+      diagnostics.push({
+        name: 'Touch Support',
+        status: 'ontouchstart' in window ? 'info' : 'info',
+        message: 'ontouchstart' in window 
+          ? 'Touch events supported (mobile device)' 
+          : 'Mouse input detected (desktop device)'
+      })
+
+      const screenSize = `${window.innerWidth}x${window.innerHeight}`
+      diagnostics.push({
+        name: 'Screen Resolution',
+        status: 'info',
+        message: `${screenSize} - ${window.innerWidth < 768 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablet' : 'Desktop'} layout`
+      })
+
+      diagnostics.push({
+        name: 'Browser',
+        status: 'info',
+        message: navigator.userAgent.includes('Chrome') ? 'Chrome' :
+                 navigator.userAgent.includes('Firefox') ? 'Firefox' :
+                 navigator.userAgent.includes('Safari') ? 'Safari' :
+                 navigator.userAgent.includes('Edge') ? 'Edge' : 'Unknown'
+      })
+
+      setResults(diagnostics)
+    }
+
     runDiagnostics()
-  }, [])
-
-  const runDiagnostics = async () => {
-    const diagnostics: DiagnosticResult[] = []
-
-    diagnostics.push({
-      name: 'Local Storage',
-      status: typeof localStorage !== 'undefined' ? 'pass' : 'fail',
-      message: typeof localStorage !== 'undefined' 
-        ? 'localStorage is available' 
-        : 'localStorage is not available (required for saving progress)'
-    })
-
-    diagnostics.push({
-      name: 'User Profile',
-      status: userProfile ? 'pass' : 'warning',
-      message: userProfile 
-        ? `Profile loaded: Level ${userProfile.level}` 
-        : 'No user profile found (will be created on first action)'
-    })
-
-    diagnostics.push({
-      name: 'Game Scores',
-      status: Array.isArray(gameScores) ? 'pass' : 'warning',
-      message: `${gameScores?.length || 0} game scores recorded`
-    })
-
-    diagnostics.push({
-      name: 'Spark KV',
-      status: typeof window.spark !== 'undefined' && window.spark.kv ? 'pass' : 'fail',
-      message: typeof window.spark !== 'undefined' && window.spark.kv
-        ? 'Spark KV persistence is available'
-        : 'Spark KV not available (critical for data persistence)'
-    })
-
-    diagnostics.push({
-      name: 'GitHub User',
-      status: typeof window.spark !== 'undefined' ? 'pass' : 'warning',
-      message: typeof window.spark !== 'undefined'
-        ? 'Spark SDK loaded'
-        : 'Spark SDK may not be loaded'
-    })
-
-    const hasWebGL = (() => {
-      try {
-        const canvas = document.createElement('canvas')
-        return !!(canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-      } catch {
-        return false
-      }
-    })()
-
-    diagnostics.push({
-      name: 'WebGL Support',
-      status: hasWebGL ? 'pass' : 'info',
-      message: hasWebGL 
-        ? 'WebGL is supported (enables 3D games)' 
-        : 'WebGL not available (3D games may not work)'
-    })
-
-    diagnostics.push({
-      name: 'Animation Support',
-      status: typeof window.requestAnimationFrame !== 'undefined' ? 'pass' : 'warning',
-      message: typeof window.requestAnimationFrame !== 'undefined'
-        ? 'RequestAnimationFrame available'
-        : 'Limited animation support'
-    })
-
-    diagnostics.push({
-      name: 'Touch Support',
-      status: 'ontouchstart' in window ? 'info' : 'info',
-      message: 'ontouchstart' in window 
-        ? 'Touch events supported (mobile device)' 
-        : 'Mouse input detected (desktop device)'
-    })
-
-    const screenSize = `${window.innerWidth}x${window.innerHeight}`
-    diagnostics.push({
-      name: 'Screen Resolution',
-      status: 'info',
-      message: `${screenSize} - ${window.innerWidth < 768 ? 'Mobile' : window.innerWidth < 1024 ? 'Tablet' : 'Desktop'} layout`
-    })
-
-    diagnostics.push({
-      name: 'Browser',
-      status: 'info',
-      message: navigator.userAgent.includes('Chrome') ? 'Chrome' :
-               navigator.userAgent.includes('Firefox') ? 'Firefox' :
-               navigator.userAgent.includes('Safari') ? 'Safari' :
-               navigator.userAgent.includes('Edge') ? 'Edge' : 'Unknown'
-    })
-
-    setResults(diagnostics)
-  }
+  }, [userProfile, gameScores])
 
   const getStatusIcon = (status: DiagnosticResult['status']) => {
     switch (status) {
@@ -132,7 +132,7 @@ export function SystemDiagnostics() {
       warning: 'secondary',
       info: 'outline'
     }
-    return <Badge variant={variants[status] as any}>{status.toUpperCase()}</Badge>
+    return <Badge variant={variants[status] as 'default' | 'destructive' | 'secondary' | 'outline'}>{status.toUpperCase()}</Badge>
   }
 
   const passCount = results.filter(r => r.status === 'pass').length
@@ -181,7 +181,7 @@ export function SystemDiagnostics() {
               ✅ All Systems Operational
             </p>
             <p className="text-sm text-muted-foreground">
-              FinanceQuest Pro is ready to use. Start playing games to begin your financial learning journey!
+              Capital is ready to use. Start playing games to begin your financial learning journey!
             </p>
           </div>
         )}

@@ -438,212 +438,74 @@ export function InvestmentClimberGame({ onComplete, onExit, userTier = 'middle' 
 
   if (gameState === 'ready') {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5"
-      >
-        <div className="glass-card border-b-0 shadow-md">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onExit} className="hover:bg-primary/10">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Exit
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="gradient-secondary p-2 rounded-xl">
-                  <TrendUp className="w-6 h-6 text-secondary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-foreground">Investment Tower</h1>
-                  <p className="text-xs text-muted-foreground">Build wealth strategically</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 via-blue-50 to-pink-50 p-8">
+        <div className="w-full max-w-2xl glass-card shadow-2xl p-12 flex flex-col items-center gap-8">
+          <div className="text-8xl mb-4">🏢</div>
+          <h2 className="text-4xl font-bold text-foreground mb-2">Welcome to Investment Tower!</h2>
+          <p className="text-xl text-muted-foreground mb-8 text-center max-w-lg">
+            Invest wisely to climb the tower! Make smart choices to maximize your returns.
+          </p>
+          <Button onClick={startGame} className="game-arcade-btn w-full max-w-md text-2xl">
+            <ArrowLeft className="w-6 h-6 mr-3" />
+            Start Investing
+          </Button>
+          <Button onClick={onExit} variant="outline" className="w-full max-w-md text-lg mt-2 border-2">
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Exit
+          </Button>
         </div>
-
-        <div className="p-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card className="glass-card shadow-2xl">
-              <CardContent className="p-10">
-                <div className="text-center">
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="text-8xl mb-6"
-                  >
-                    📈
-                  </motion.div>
-                  <h2 className="text-3xl font-bold text-foreground mb-4">Investment Tower</h2>
-                  <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                    Build and manage a diversified investment portfolio over 10 market rounds. Buy and sell assets strategically as market conditions change to maximize your returns!
-                  </p>
-                </div>
-
-                <div className="glass-card bg-secondary/10 p-6 rounded-xl mb-8 border-2 border-secondary/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-muted-foreground font-medium">Starting Capital</span>
-                    <div className="text-3xl font-bold text-secondary">$10,000</div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Invest wisely across 6 different asset types to grow your wealth
-                  </p>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                  <div className="glass-card p-6 rounded-xl border-l-4 border-l-secondary">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="text-3xl">📊</div>
-                      <div>
-                        <div className="font-bold text-secondary text-lg">Diversify</div>
-                        <div className="text-sm text-muted-foreground">Spread risk across assets</div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Invest in different asset types to reduce risk and increase stability
-                    </p>
-                  </div>
-                  
-                  <div className="glass-card p-6 rounded-xl border-l-4 border-l-accent">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="text-3xl">⚡</div>
-                      <div>
-                        <div className="font-bold text-accent text-lg">React to Markets</div>
-                        <div className="text-sm text-muted-foreground">Adapt your strategy</div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Market events affect assets differently - adjust your portfolio accordingly
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-muted/30 p-6 rounded-xl mb-8">
-                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-primary" />
-                    How to Play
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-start gap-2">
-                      <div className="text-primary font-bold text-lg">1.</div>
-                      <div>
-                        <div className="font-semibold text-foreground">Start with $10,000</div>
-                        <div className="text-muted-foreground">Use cash to buy assets at $1,000 each</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <div className="text-primary font-bold text-lg">2.</div>
-                      <div>
-                        <div className="font-semibold text-foreground">Choose Your Assets</div>
-                        <div className="text-muted-foreground">Pick from 6 different investment types</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <div className="text-primary font-bold text-lg">3.</div>
-                      <div>
-                        <div className="font-semibold text-foreground">Navigate Market Events</div>
-                        <div className="text-muted-foreground">Each round brings new market conditions</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <div className="text-primary font-bold text-lg">4.</div>
-                      <div>
-                        <div className="font-semibold text-foreground">Maximize Returns</div>
-                        <div className="text-muted-foreground">Beat the market over 10 rounds</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
-                  <Button onClick={startGame} size="lg" className="btn-secondary-gaming px-12 py-6 text-lg shadow-2xl">
-                    <TrendUp className="w-5 h-5 mr-2" />
-                    Start Investing
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </motion.div>
+      </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <div className="glass-card border-b-0 shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onExit} className="hover:bg-primary/10">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Exit
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="gradient-secondary p-2 rounded-xl">
-                  <TrendUp className="w-6 h-6 text-secondary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-foreground">Investment Tower</h1>
-                  <p className="text-xs text-muted-foreground">Round {round} of {maxRounds}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">
-                  ${getTotalValue().toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </div>
-                <div className="text-xs text-muted-foreground">Total Value</div>
-              </div>
-              
-              <div className="text-center">
-                <div className={`text-2xl font-bold ${getReturnPercent() >= 0 ? 'text-secondary' : 'text-destructive'}`}>
-                  {getReturnPercent() >= 0 ? '+' : ''}{getReturnPercent().toFixed(1)}%
-                </div>
-                <div className="text-xs text-muted-foreground">Return</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-3">
-            <Progress value={(round / maxRounds) * 100} className="h-2 bg-muted/50" />
-          </div>
+    <div className="game-arcade-container">
+      <div className="game-arcade-header flex items-center gap-4 mb-6">
+        <span className="text-5xl">🏢</span>
+        Investment Tower
+      </div>
+      <div className="game-arcade-stats">
+        <div className="game-arcade-stat">
+          <div className="text-2xl font-bold text-green-600">${score}</div>
+          <div className="text-xs text-muted-foreground">Score</div>
+        </div>
+        <div className="game-arcade-stat">
+          <div className="text-2xl font-bold text-blue-600">{round}</div>
+          <div className="text-xs text-muted-foreground">Level</div>
         </div>
       </div>
+      <div className="game-arcade-actions">
+        <button className="game-arcade-btn" onClick={startGame}>Invest</button>
+        <button className="game-arcade-btn" onClick={nextRound}>Next Round</button>
+        <button className="game-arcade-btn" onClick={onExit}>Exit</button>
+      </div>
 
-      <AnimatePresence>
-        {showEvent && currentEvent && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="glass-card border-b-0 overflow-hidden"
-          >
-            <div className="container mx-auto px-6 py-6">
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                className="flex items-center justify-center gap-4"
-              >
-                <div className="text-5xl">{currentEvent.emoji}</div>
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground">{currentEvent.message}</h3>
-                  <p className="text-muted-foreground">{currentEvent.description}</p>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="game-arcade-content">
+        <AnimatePresence>
+          {showEvent && currentEvent && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="glass-card border-b-0 overflow-hidden"
+            >
+              <div className="container mx-auto px-6 py-6">
+                <motion.div
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  className="flex items-center justify-center gap-4"
+                >
+                  <div className="text-5xl">{currentEvent.emoji}</div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-foreground">{currentEvent.message}</h3>
+                    <p className="text-muted-foreground">{currentEvent.description}</p>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      <div className="container mx-auto p-6">
         <div className="grid lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <Card className="glass-card shadow-lg">

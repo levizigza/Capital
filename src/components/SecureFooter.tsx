@@ -1,4 +1,5 @@
-import { Shield, Lock } from '@phosphor-icons/react'
+import { Shield, Lock, BookOpen } from '@phosphor-icons/react'
+import { CreditsAttributions } from '@/components/CreditsAttributions'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -25,6 +26,23 @@ export function SecureFooter() {
             </span>
           </div>
           
+          <div className="flex flex-wrap items-center gap-2">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <BookOpen className="w-4 h-4" />
+                Credits
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Credits & Attributions</DialogTitle>
+                <DialogDescription>Third-party assets and licenses</DialogDescription>
+              </DialogHeader>
+              <CreditsAttributions />
+            </DialogContent>
+          </Dialog>
+
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2">
@@ -120,6 +138,7 @@ export function SecureFooter() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
       </div>
     </footer>

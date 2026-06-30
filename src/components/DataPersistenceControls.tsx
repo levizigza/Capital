@@ -10,6 +10,7 @@ import {
   Warning
 } from '@phosphor-icons/react'
 import { useDataPersistence } from '@/hooks/use-data-persistence'
+import { OfflineSettings } from '@/hooks/use-offline-support'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -147,8 +148,7 @@ export function DataPersistenceControls() {
               Save Now
             </Button>
             
-            <Button
-              onClick={handleExport}
+            <Button onClick={handleExport} title="Export your data" data-ux-tooltip="Download your progress as a file"
               variant="outline"
               className="flex-1 gap-2"
               aria-label="Export progress as JSON file"
@@ -175,6 +175,8 @@ export function DataPersistenceControls() {
               variant="outline"
               className="flex-1 gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
               aria-label="Clear all saved data"
+              title="Clear all data"
+              data-ux-tooltip="Delete all saved progress"
             >
               <Warning className="w-4 h-4" aria-hidden="true" />
               Clear All Data
@@ -203,6 +205,11 @@ export function DataPersistenceControls() {
           </ul>
         </div>
       </Card>
+
+      {/* Offline Support Section */}
+      <div className="mt-6">
+        <OfflineSettings />
+      </div>
 
       <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
         <AlertDialogContent>

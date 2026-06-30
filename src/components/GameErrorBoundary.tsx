@@ -40,69 +40,26 @@ export class GameErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      const { gameName, onExit } = this.props
-      const { error } = this.state
-
       return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
-          <Card className="max-w-2xl w-full border-destructive">
-            <CardHeader>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                  <Warning className="w-6 h-6 text-destructive" weight="fill" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl">Game Error</CardTitle>
-                  <CardDescription>
-                    {gameName ? `${gameName} encountered an error` : 'The game encountered an error'}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert variant="destructive">
-                <Warning className="w-4 h-4" />
-                <AlertTitle>Something went wrong</AlertTitle>
-                <AlertDescription>
-                  The game crashed unexpectedly. Your progress has been saved, and you can try playing again.
-                </AlertDescription>
-              </Alert>
-
-              {error && (
-                <div className="bg-muted p-4 rounded-lg border">
-                  <h4 className="text-sm font-semibold text-muted-foreground mb-2">Error Details:</h4>
-                  <pre className="text-xs bg-background p-3 rounded border overflow-auto max-h-32">
-                    {error.message}
-                  </pre>
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                {onExit && (
-                  <Button 
-                    onClick={onExit}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Games
-                  </Button>
-                )}
-                <Button 
-                  onClick={this.handleReset}
-                  className="flex-1"
-                >
-                  <ArrowClockwise className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-              </div>
-
-              <p className="text-xs text-muted-foreground text-center">
-                If this problem persists, try refreshing the page or clearing your browser cache.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <Alert variant="destructive" className="max-w-lg mx-auto mt-12 shadow-lg animate-shake">
+          <AlertTitle className="flex items-center gap-2 text-lg font-bold">
+            <Warning size={24} weight="duotone" className="text-red-500" />
+            Oops! Something went wrong in {this.props.gameName || 'the game'}.
+          </AlertTitle>
+          <AlertDescription className="mb-4">
+            {this.state.error?.message || 'An unexpected error occurred. Please try again or exit.'}
+          </AlertDescription>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={this.handleReset} aria-label="Retry game" title="Retry game" data-ux-tooltip="Try again">
+              <ArrowClockwise size={18} /> Retry
+            </Button>
+            {this.props.onExit && (
+              <Button variant="ghost" onClick={this.props.onExit} aria-label="Exit to dashboard" title="Exit to dashboard" data-ux-tooltip="Return to dashboard">
+                <ArrowLeft size={18} /> Exit
+              </Button>
+            )}
+          </div>
+        </Alert>
       )
     }
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
-  ChartLine, GameController, House, User, Trophy, Target, 
+  ChartLine, GameController, House, Trophy, Target, 
   Clock, Fire, Coins, TrendUp, Lightning, CheckCircle,
   Calendar, Brain
 } from '@phosphor-icons/react'
@@ -38,7 +38,6 @@ export default function StructuredModeDashboard({
 
   const progressToNextLevel = useMemo(() => {
     const currentLevelXP = (userProfile.level - 1) * 100
-    const nextLevelXP = userProfile.level * 100
     const progress = ((userProfile.xp - currentLevelXP) / 100) * 100
     return Math.min(Math.max(progress, 0), 100)
   }, [userProfile.level, userProfile.xp])
@@ -55,6 +54,7 @@ export default function StructuredModeDashboard({
                 onClick={onModeSwitch}
                 className="flex items-center gap-2 text-lg font-semibold text-structured-fg hover:text-structured-primary transition-colors relative group focus:outline-none"
                 aria-label="Return to mode selection"
+                title="Go to Home / Mode Selection"
               >
                 <House size={24} weight="fill" className="drop-shadow-md" />
                 <span className="hidden sm:inline">Home</span>
@@ -71,6 +71,7 @@ export default function StructuredModeDashboard({
                 size="lg"
                 onClick={onModeSwitch}
                 className="gap-2 text-base font-semibold hover:bg-structured-primary/10"
+                title="Switch to Creative Mode for free play"
               >
                 <GameController size={20} weight="fill" className="transition-transform group-hover:scale-110" />
                 <span className="hidden sm:inline">Switch to Creative</span>
@@ -79,6 +80,7 @@ export default function StructuredModeDashboard({
                 onClick={onOpenProfile}
                 className="w-11 h-11 rounded-full bg-gradient-to-br from-structured-primary to-structured-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg hover:scale-105 transition-all border-2 border-white/60 focus:outline-none focus:ring-2 focus:ring-structured-primary"
                 aria-label="Open profile"
+                title="View your profile and achievements"
               >
                 {userProfile.name?.[0] || 'U'}
               </button>
@@ -104,6 +106,14 @@ export default function StructuredModeDashboard({
             </p>
           </motion.div>
         </section>
+
+        {/* Add a classic subtitle and instructions for Structured Mode */}
+        <motion.div className="text-center mb-8">
+          <h2 className="text-3xl font-black text-blue-700 mb-2">Structured Mode</h2>
+          <p className="text-lg font-bold text-blue-600">
+            Follow the guided lessons and quizzes below to build your financial literacy step by step. Your progress and achievements are tracked here.
+          </p>
+        </motion.div>
 
         {/* KPI Cards Grid */}
   <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -219,7 +229,7 @@ export default function StructuredModeDashboard({
                 value={progressToNextLevel} 
                 className="h-3"
               />
-              <div className="flex justify-between text-xs mt-2" style={{ color: 'var(--structured-muted-fg)' }}>
+              <div className="flex justify-between text-xs mt-2 text-structured-muted-fg">
                 <span>Level {userProfile.level}</span>
                 <span>Level {userProfile.level + 1}</span>
               </div>
@@ -251,7 +261,7 @@ export default function StructuredModeDashboard({
                 </CardHeader>
                 <CardContent>
                   {gameScores.length === 0 ? (
-                    <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                    <div className="text-center py-12 text-structured-muted-fg">
                       <GameController size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
                       <p className="text-sm">No games played yet</p>
                       <p className="text-xs mt-1">Start playing to see your progress here</p>
@@ -265,25 +275,24 @@ export default function StructuredModeDashboard({
                         >
                           <div className="flex items-center gap-3">
                             <div 
-                              className="w-10 h-10 rounded-lg flex items-center justify-center"
-                              style={{ backgroundColor: 'var(--structured-muted)' }}
+                              className="w-10 h-10 rounded-lg flex items-center justify-center bg-structured-muted"
                             >
-                              <CheckCircle size={20} weight="fill" style={{ color: 'var(--structured-primary)' }} />
+                              <CheckCircle size={20} weight="fill" className="text-structured-primary" />
                             </div>
                             <div>
-                              <div className="font-medium text-sm" style={{ color: 'var(--structured-fg)' }}>
+                              <div className="font-medium text-sm text-structured-fg">
                                 {score.gameId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                               </div>
-                              <div className="text-xs" style={{ color: 'var(--structured-muted-fg)' }}>
+                              <div className="text-xs text-structured-muted-fg">
                                 {new Date(score.date).toLocaleDateString()}
                               </div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-semibold" style={{ color: 'var(--structured-primary)' }}>
+                            <div className="font-semibold text-structured-primary">
                               {score.score}%
                             </div>
-                            <div className="text-xs" style={{ color: 'var(--structured-muted-fg)' }}>
+                            <div className="text-xs text-structured-muted-fg">
                               {Math.round(score.timeSpent / 1000)}s
                             </div>
                           </div>
@@ -299,10 +308,10 @@ export default function StructuredModeDashboard({
                 <CardContent className="pt-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                      <h3 className="font-semibold text-lg mb-1" style={{ color: 'var(--structured-fg)' }}>
+                      <h3 className="font-semibold text-lg mb-1 text-structured-fg">
                         Ready to improve your skills?
                       </h3>
-                      <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                      <p className="text-sm text-structured-muted-fg">
                         Play mini-games to earn XP and level up your financial knowledge
                       </p>
                     </div>
@@ -328,7 +337,7 @@ export default function StructuredModeDashboard({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                  <div className="text-center py-12 text-structured-muted-fg">
                     <Trophy size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
                     <p className="text-sm">No achievements unlocked yet</p>
                     <p className="text-xs mt-1">Complete challenges to earn badges</p>
@@ -351,12 +360,12 @@ export default function StructuredModeDashboard({
                       <>
                         <div className="section-muted p-4">
                           <div className="flex items-start gap-3">
-                            <TrendUp size={20} weight="fill" style={{ color: 'var(--structured-primary)' }} className="mt-0.5" />
+                            <TrendUp size={20} weight="fill" className="mt-0.5 text-structured-primary" />
                             <div>
-                              <h4 className="font-medium mb-1" style={{ color: 'var(--structured-fg)' }}>
+                              <h4 className="font-medium mb-1 text-structured-fg">
                                 Strong Performance
                               </h4>
-                              <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                              <p className="text-sm text-structured-muted-fg">
                                 Your average score of {stats.avgScore}% shows good financial decision-making skills.
                               </p>
                             </div>
@@ -365,12 +374,12 @@ export default function StructuredModeDashboard({
 
                         <div className="section-muted p-4">
                           <div className="flex items-start gap-3">
-                            <Coins size={20} weight="fill" style={{ color: 'oklch(0.68 0.16 80)' }} className="mt-0.5" />
+                            <Coins size={20} weight="fill" className="mt-0.5 text-amber-600" />
                             <div>
-                              <h4 className="font-medium mb-1" style={{ color: 'var(--structured-fg)' }}>
+                              <h4 className="font-medium mb-1 text-structured-fg">
                                 Consistent Progress
                               </h4>
-                              <p className="text-sm" style={{ color: 'var(--structured-muted-fg)' }}>
+                              <p className="text-sm text-structured-muted-fg">
                                 You've completed {stats.total} game{stats.total !== 1 ? 's' : ''} with a {userProfile.currentStreak}-day streak. Keep it up!
                               </p>
                             </div>
@@ -378,7 +387,7 @@ export default function StructuredModeDashboard({
                         </div>
                       </>
                     ) : (
-                      <div className="text-center py-12" style={{ color: 'var(--structured-muted-fg)' }}>
+                      <div className="text-center py-12 text-structured-muted-fg">
                         <Brain size={48} weight="duotone" className="mx-auto mb-3 opacity-40" />
                         <p className="text-sm">No insights available yet</p>
                         <p className="text-xs mt-1">Play games to unlock personalized insights</p>
@@ -396,7 +405,7 @@ export default function StructuredModeDashboard({
       <footer className="border-t border-structured-border/40 mt-20 bg-gradient-to-t from-structured-card/80 to-white/60 shadow-inner">
         <div className="max-w-container py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-base font-medium text-structured-muted-fg">
-            <div>© 2024 FinanceQuest Pro. All rights reserved.</div>
+            <div>© 2024 Capital. All rights reserved.</div>
             <div className="flex items-center gap-8">
               <a href="#" className="hover:text-structured-primary transition-colors underline-offset-4">Privacy</a>
               <a href="#" className="hover:text-structured-primary transition-colors underline-offset-4">Terms</a>

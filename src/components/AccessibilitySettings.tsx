@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { GLOBAL_SHORTCUTS } from '@/hooks/use-keyboard-shortcuts'
 import { toast } from 'sonner'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 
 interface AccessibilitySettingsProps {
   onClose?: () => void

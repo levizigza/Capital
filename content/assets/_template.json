@@ -1,0 +1,13 @@
+{
+  "id": "your-asset-id",
+  "name": "Asset display name",
+  "type": "image",
+  "source": "opengameart",
+  "sourceUrl": "https://opengameart.org/content/...",
+  "author": "Author Name",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "attributionText": "Asset Name by Author Name, licensed under CC0 1.0.",
+  "modifications": "None",
+  "files": ["public/path/to/asset/**"]
+}

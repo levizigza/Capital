@@ -1,0 +1,103 @@
+/* =============================================
+   ModeSelection component styles
+   ============================================= */
+
+/* Background gradient overlay */
+.ms-gradient-overlay {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(241, 239, 248, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(237, 245, 247, 0.2) 0%, transparent 50%);
+}
+
+/* Page title */
+.ms-title {
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #1e1f24;
+  font-weight: 700;
+}
+
+/* Page subtitle */
+.ms-subtitle {
+  color: #62646e;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+/* Mode card shared styles */
+.ms-card {
+  border-color: #e6e7eb;
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(30, 31, 36, 0.06);
+}
+
+/* Card title (h2) */
+.ms-card-title {
+  color: #2b2c32;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Card label (e.g. "Finance Garden") */
+.ms-card-label {
+  color: #62646e;
+  letter-spacing: -0.01em;
+}
+
+/* Card description paragraph */
+.ms-card-desc {
+  color: #717380;
+  line-height: 1.7;
+}
+
+/* Feature list item text */
+.ms-feature-text {
+  color: #717380;
+}
+
+/* Card action button */
+.ms-card-btn {
+  background: #2b2c32;
+  color: white;
+  letter-spacing: -0.01em;
+}
+
+/* Footer hint text */
+.ms-footer {
+  color: #7e8090;
+  letter-spacing: -0.005em;
+}
+
+/* --- Creative mode (green) accents --- */
+.ms-accent-creative {
+  background: #2d8c4e;
+}
+
+.ms-icon-bg-creative {
+  background: rgba(45, 140, 78, 0.08);
+}
+
+.ms-icon-creative {
+  color: #1a6e38;
+}
+
+.ms-dot-creative {
+  background: #2d8c4e;
+}
+
+/* --- Structured mode (blue) accents --- */
+.ms-accent-structured {
+  background: #3360a8;
+}
+
+.ms-icon-bg-structured {
+  background: rgba(51, 96, 168, 0.08);
+}
+
+.ms-icon-structured {
+  color: #1d4a88;
+}
+
+.ms-dot-structured {
+  background: #3360a8;
+}

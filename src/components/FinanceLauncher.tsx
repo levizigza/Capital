@@ -27,7 +27,7 @@ export function FinanceLauncher() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('dashboard')}>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('dashboard')} aria-label="Open Financial Dashboard" title="Open Financial Dashboard" data-ux-tooltip="View your financial dashboard">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -46,13 +46,13 @@ export function FinanceLauncher() {
                 <li>• Monitor account balance</li>
                 <li>• Analyze financial trends</li>
               </ul>
-              <Button className="w-full mt-4">
+              <Button className="w-full mt-4" aria-label="Open Dashboard" title="Open Dashboard" data-ux-tooltip="Go to your dashboard">
                 Open Dashboard
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('settings')}>
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setCurrentView('settings')} aria-label="Open Banking Settings" title="Open Banking Settings" data-ux-tooltip="Manage your banking settings">
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
@@ -61,17 +61,11 @@ export function FinanceLauncher() {
                 Banking Settings
               </CardTitle>
               <CardDescription>
-                Configure data source and simulator options
+                Connect accounts, set preferences, and manage security
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="text-sm text-muted-foreground space-y-2">
-                <li>• Switch between simulator and real banking</li>
-                <li>• Reset practice data</li>
-                <li>• Manage bank connections</li>
-                <li>• Configure preferences</li>
-              </ul>
-              <Button variant="outline" className="w-full mt-4">
+              <Button className="w-full mt-4" aria-label="Open Settings" title="Open Settings" data-ux-tooltip="Go to banking settings">
                 Open Settings
               </Button>
             </CardContent>

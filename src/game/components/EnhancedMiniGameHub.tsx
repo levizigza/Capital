@@ -6,18 +6,17 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { 
-  Users, GraduationCap, Briefcase, Lightning, Brain, Eye, 
-  SpeakerHigh, FileText, Hand, GameController, Trophy, Gear,
+  Users, GraduationCap, Briefcase, Brain, Eye, 
+  SpeakerHigh, FileText, Hand, Trophy, Gear,
   Play, Clock, Star
 } from '@phosphor-icons/react'
 import { MotionControlSystem } from '../systems/MotionControlSystem'
 import { BCISystem, CognitiveState } from '../systems/BCISystem'
-import { VARKSystem, VARKQuestion } from '../systems/VARKSystem'
-import { AgeTierSystem, AgeTier } from '../systems/AgeTierSystem'
+import { VARKSystem } from '../systems/VARKSystem'
+import { AgeTierSystem } from '../systems/AgeTierSystem'
 import { RetroLemonadeStand } from './RetroLemonadeStand'
 import { MotionBudgetGame } from './MotionBudgetGame'
 
@@ -32,20 +31,23 @@ interface GameDefinition {
   motionEnabled: boolean
   bciEnabled: boolean
   estimatedTime: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
 }
 
 interface EnhancedMiniGameHubProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onGameComplete: (gameId: string, score: number, timeSpent: number, additionalData?: any) => void
   onExit: () => void
 }
 
 export const EnhancedMiniGameHub: React.FC<EnhancedMiniGameHubProps> = ({
   onGameComplete,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onExit
 }) => {
   const [currentView, setCurrentView] = useState<'ageSelect' | 'varkAssessment' | 'gameHub' | 'playing'>('ageSelect')
-  const [selectedAge, setSelectedAge] = useState<number | null>(null)
+  const [, setSelectedAge] = useState<number | null>(null)
   const [varkAssessmentStep, setVarkAssessmentStep] = useState(0)
   const [varkResponses, setVarkResponses] = useState<{ questionId: string, selectedOption: number }[]>([])
   const [selectedGame, setSelectedGame] = useState<GameDefinition | null>(null)
@@ -173,7 +175,7 @@ export const EnhancedMiniGameHub: React.FC<EnhancedMiniGameHubProps> = ({
   const renderAgeSelection = () => (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-bold">Welcome to FinanceQuest Pro!</h2>
+        <h2 className="text-3xl font-bold">Welcome to Capital!</h2>
         <p className="text-lg text-muted-foreground">Choose your learning level to get started</p>
       </div>
       
@@ -414,6 +416,7 @@ export const EnhancedMiniGameHub: React.FC<EnhancedMiniGameHubProps> = ({
     )
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGameComplete = (score: number, timeSpent: number, additionalData?: any) => {
     if (selectedGame) {
       // Update VARK system with performance data

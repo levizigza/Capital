@@ -364,10 +364,13 @@ export default function BudgetBalancerGame({ onComplete, onExit, userTier = 'ele
     return (placed / total) * 100
   }
 
+  // Add accuracy calculation for main render
+  const accuracy = budgetItems.length > 0 ? (correctPlacements / budgetItems.length) * 100 : 0
+
   if (gameState === 'ended') {
     const totalBudgeted = categories.reduce((sum, cat) => sum + cat.current, 0)
     const balance = gameData.income - totalBudgeted
-    const accuracy = (correctPlacements / budgetItems.length) * 100
+    const accuracy = (correctPlacements / budgetItems.length) + 100
     const performanceRating = accuracy >= 90 ? 'Outstanding!' : accuracy >= 75 ? 'Great Job!' : accuracy >= 60 ? 'Good Work!' : 'Keep Practicing!'
     // ECS: Unlock achievement for perfect score
     if (!achievementUnlocked && Math.round(accuracy) === 100) {
@@ -528,50 +531,38 @@ export default function BudgetBalancerGame({ onComplete, onExit, userTier = 'ele
   const unplacedItems = budgetItems.filter(i => !i.isPlaced)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
-      <div className="glass-card border-b-0 shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onExit} className="hover:bg-primary/10">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Exit
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="gradient-primary p-2 rounded-xl">
-                  <Calculator className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-foreground">Budget Balancer</h1>
-                  <p className="text-xs text-muted-foreground">Organize your finances</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-accent">{score}</div>
-                <div className="text-xs text-muted-foreground">Score</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">{timeLeft}s</div>
-                <div className="text-xs text-muted-foreground">Time</div>
-              </div>
-              
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">
-                  {unplacedItems.length}/{budgetItems.length}
-                </div>
-                <div className="text-xs text-muted-foreground">Remaining</div>
-              </div>
-            </div>
+    <div className="game-arcade-container">
+      <div className="game-arcade-header flex items-center gap-4 mb-6">
+        <span className="text-5xl">💸</span>
+        Budget Balancer
+      </div>
+      <div className="game-arcade-stats">
+        <div className="game-arcade-stat">
+          <div className="text-2xl font-bold text-green-600">${score}</div>
+          <div className="text-xs text-muted-foreground">Score</div>
+        </div>
+        <div className="game-arcade-stat">
+          <div className="text-2xl font-bold text-blue-600">{Math.round(accuracy)}%</div>
+          <div className="text-xs text-muted-foreground">Accuracy</div>
+        </div>
+        <div className="game-arcade-stat">
+          <div className="text-2xl font-bold text-red-600">
+            ${Math.abs(getBudgetBalance())}
           </div>
-          
-          <div className="mt-3">
-            <Progress value={getCompletionPercentage()} className="h-2 bg-muted/50" />
+          <div className="text-xs text-muted-foreground">
+            {getBudgetBalance() >= 0 ? 'Saved' : 'Over Budget'}
           </div>
         </div>
+      </div>
+      <div className="game-arcade-actions">
+        <Button onClick={startGame} className="game-arcade-btn">
+          <Calculator className="w-4 h-4 mr-2" />
+          Budget Again
+        </Button>
+        <Button onClick={() => onComplete(score)} variant="outline" className="game-arcade-btn">
+          Continue
+          <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+        </Button>
       </div>
 
       {/* ECS Onboarding UI */}
@@ -610,222 +601,99 @@ export default function BudgetBalancerGame({ onComplete, onExit, userTier = 'ele
 
       <div className="p-6">
         {gameState === 'ready' ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card className="glass-card shadow-2xl">
-              <CardContent className="p-10">
-                <div className="text-center">
-                  <motion.div
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-8xl mb-6"
-                  >
-                    📊
-                  </motion.div>
-                  <h2 className="text-3xl font-bold text-foreground mb-4">Budget Balancer</h2>
-                  <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-                    Master the art of budgeting! Drag each expense to its correct category and learn to organize your finances like a pro.
-                  </p>
-                </div>
-                
-                <div className="glass-card bg-accent/10 p-6 rounded-xl mb-8 border-2 border-accent/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground font-medium">Monthly Income</span>
-                    <div className="text-3xl font-bold text-accent">${gameData.income}</div>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Allocate all expenses to their proper categories within your budget
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6 mb-8">
-                  <div className="glass-card p-6 rounded-xl border-l-4 border-l-accent">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="text-3xl">✓</div>
-                      <div>
-                        <div className="font-bold text-accent text-lg">Correct Match</div>
-                        <div className="text-sm text-muted-foreground">Earn full points</div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Place each item in the right category to maximize your score
+          <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-50 via-blue-50 to-pink-50 p-8">
+            <div className="w-full max-w-2xl glass-card shadow-2xl p-12 flex flex-col items-center gap-8">
+              <div className="text-8xl mb-4">💸</div>
+              <h2 className="text-4xl font-bold text-foreground mb-2">Welcome to Budget Balancer!</h2>
+              <p className="text-xl text-muted-foreground mb-8 text-center max-w-lg">
+                Drag and drop items to balance your budget. Make sure you don’t overspend!
+              </p>
+              <Button onClick={startGame} className="game-arcade-btn w-full max-w-md text-2xl">
+                <ArrowLeft className="w-6 h-6 mr-3" />
+                Start Game
+              </Button>
+              <Button onClick={onExit} variant="outline" className="w-full max-w-md text-lg mt-2 border-2">
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Exit
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-4xl mx-auto"
+            >
+              <Card className="glass-card shadow-2xl">
+                <CardContent className="p-10">
+                  <div className="text-center">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-8xl mb-6"
+                    >
+                      📊
+                    </motion.div>
+                    <h2 className="text-3xl font-bold text-foreground mb-4">Budget Balancer</h2>
+                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+                      Master the art of budgeting! Drag each expense to its correct category and learn to organize your finances like a pro.
                     </p>
                   </div>
                   
-                  <div className="glass-card p-6 rounded-xl border-l-4 border-l-destructive">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="text-3xl">✗</div>
-                      <div>
-                        <div className="font-bold text-destructive text-lg">Wrong Match</div>
-                        <div className="text-sm text-muted-foreground">Lose some points</div>
-                      </div>
+                  <div className="glass-card bg-accent/10 p-6 rounded-xl mb-8 border-2 border-accent/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-muted-foreground font-medium">Monthly Income</span>
+                      <div className="text-3xl font-bold text-accent">${gameData.income}</div>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Incorrect placements will deduct from your score
+                      Allocate all expenses to their proper categories within your budget
                     </p>
                   </div>
-                </div>
 
-                <div className="flex justify-center">
-                  <Button onClick={startGame} size="lg" className="btn-primary-gaming px-12 py-6 text-lg shadow-2xl">
-                    <Calculator className="w-5 h-5 mr-2" />
-                    Start Budgeting
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : (
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="mb-6"
-            >
-              <Card className="glass-card shadow-lg">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-1">Monthly Budget</div>
-                      <div className="text-3xl font-bold text-foreground">${gameData.income}</div>
-                    </div>
-                    <ArrowsDownUp className="w-8 h-8 text-muted-foreground" />
-                    <div>
-                      <div className="text-sm text-muted-foreground mb-1">Balance</div>
-                      <div className={`text-3xl font-bold ${getBudgetBalance() >= 0 ? 'text-secondary' : 'text-destructive'}`}>
-                        ${Math.abs(getBudgetBalance())}
+                  <div className="grid md:grid-cols-2 gap-6 mb-8">
+                    <div className="glass-card p-6 rounded-xl border-l-4 border-l-accent">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="text-3xl">✓</div>
+                        <div>
+                          <div className="font-bold text-accent text-lg">Correct Match</div>
+                          <div className="text-sm text-muted-foreground">Earn full points</div>
+                        </div>
                       </div>
+                      <p className="text-sm text-muted-foreground">
+                        Place each item in the right category to maximize your score
+                      </p>
                     </div>
+                    
+                    <div className="glass-card p-6 rounded-xl border-l-4 border-l-destructive">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="text-3xl">✗</div>
+                        <div>
+                          <div className="font-bold text-destructive text-lg">Wrong Match</div>
+                          <div className="text-sm text-muted-foreground">Lose some points</div>
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Incorrect placements will deduct from your score
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center mt-8">
+                    <Button onClick={startGame} size="lg" className="btn-primary-gaming px-12 py-6 text-lg shadow-2xl animate-bounce">
+                      <Calculator className="w-5 h-5 mr-2" />
+                      Start Budgeting
+                    </Button>
+                  </div>
+                  {/* Fallback button for extra clarity */}
+                  <div className="flex justify-center mt-4">
+                    <button onClick={startGame} style={{fontSize:'1.5rem',fontWeight:'bold',background:'#10b981',color:'#fff',padding:'1rem 2rem',borderRadius:'1rem',boxShadow:'0 2px 8px #0002',border:'none',cursor:'pointer'}}>
+                      Start Budgeting
+                    </button>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
-
-            <div className="grid lg:grid-cols-4 gap-6">
-              <motion.div 
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="lg:col-span-1"
-              >
-                <Card className="glass-card shadow-lg h-full">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <TrendUp className="w-5 h-5 text-primary" />
-                      Budget Items
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      Drag to categories →
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <AnimatePresence>
-                        {unplacedItems.map((item, index) => (
-                          <motion.div
-                            key={item.id}
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            draggable
-                            onDragStart={() => handleDragStart(item)}
-                            className="p-4 glass-card border-2 border-border rounded-xl cursor-grab active:cursor-grabbing hover:border-primary hover:shadow-lg transition-all transform hover:scale-105"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="text-2xl">{item.emoji}</div>
-                              <div className="flex-1 min-w-0">
-                                <div className="font-semibold text-foreground text-sm truncate">{item.name}</div>
-                                <Badge variant="outline" className="text-xs mt-1">${item.amount}</Badge>
-                              </div>
-                            </div>
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-                      
-                      {unplacedItems.length === 0 && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="p-8 text-center text-muted-foreground"
-                        >
-                          <Check className="w-12 h-12 mx-auto mb-2 text-green-600" />
-                          <p className="font-semibold">All items placed!</p>
-                        </motion.div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-
-              <motion.div
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="lg:col-span-3"
-              >
-                <Card className="glass-card shadow-lg">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Budget Categories</CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      Drop items into the correct category
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-                      {categories.map((category, index) => (
-                        <motion.div
-                          key={category.name}
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.1 + index * 0.1 }}
-                          onDragOver={handleDragOver}
-                          onDrop={() => handleDrop(category.name)}
-                          className={`p-5 border-2 border-dashed rounded-xl min-h-48 bg-gradient-to-br ${category.color} transition-all hover:shadow-xl hover:scale-105`}
-                        >
-                          <div className="mb-4">
-                            <h3 className="font-bold text-lg text-foreground mb-1">{category.name}</h3>
-                            <p className="text-xs text-muted-foreground">{category.description}</p>
-                          </div>
-                          
-                          <div className="mb-3">
-                            <div className="flex justify-between items-center mb-2">
-                              <span className="text-sm text-muted-foreground">Budget</span>
-                              <span className="text-sm font-bold text-foreground">
-                                ${category.current} / ${category.target}
-                              </span>
-                            </div>
-                            <Progress 
-                              value={Math.min((category.current / category.target) * 100, 100)} 
-                              className="h-2"
-                            />
-                          </div>
-
-                          <div className="space-y-2 mt-4">
-                            {category.items.map(item => (
-                              <div key={item.id} className="flex items-center gap-2 text-xs bg-white/60 rounded p-2">
-                                <span>{item.emoji}</span>
-                                <span className="flex-1 truncate">{item.name}</span>
-                                <span className="font-bold">${item.amount}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <div className="inline-flex items-center gap-4 glass-card px-6 py-3 rounded-full text-sm text-muted-foreground">
-                <span>💡 Tip: Drag and drop items to their correct budget categories</span>
-              </div>
-            </div>
           </div>
         )}
       </div>

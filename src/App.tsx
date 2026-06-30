@@ -1,20 +1,30 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useKV } from '@github/spark/hooks'
-// @ts-ignore
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useKV } from '@/hooks/use-safe-kv'
 import { Toaster } from 'sonner'
 import { motion } from 'framer-motion'
 import { Sparkle } from '@phosphor-icons/react'
-import ModeSelection from '@/components/ModeSelection'
-import CreativeModeHub from '@/components/CreativeModeHub'
+import React from 'react'
+import { ISLANDS_ENABLED } from '@/islands/featureFlags'
+
+// Use the new 3D mode selection
+import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
 import StructuredModeHub from '@/components/StructuredModeHub'
-import ArchetypeQuiz from '@/components/ArchetypeQuiz'
-import { DebugPanel } from '@/components/DebugPanel'
+import { MusicPlayer } from '@/components/MusicPlayer'
+import { OfflineIndicator } from '@/hooks/use-offline-support'
 import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
 import type { ArchetypeId } from '@/data/archetype-questions'
-import ThreeFinanceGarden from '@/components/ThreeFinanceGarden'
 
-export type LearningMode = 'creative' | 'structured' | null
+// Lazy load heavy components
+const EnhancedGameHub = React.lazy(() => import('@/components/EnhancedGameHub'))
+const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
+const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
+const DebugPanel = React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
+const IslandsApp = React.lazy(() => import('@/islands/IslandsApp'))
+const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
+const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
+
+export type LearningMode = 'creative' | 'structured' | 'islands' | null
 
 type NavigationState = {
   mode: LearningMode
@@ -22,6 +32,7 @@ type NavigationState = {
 }
 
 export interface UserProfile {
+  id?: string
   name: string
   level: number
   xp: number
@@ -55,6 +66,7 @@ export interface UserProfile {
 }
 
 export interface GameScore {
+  userId?: string
   gameId: string
   score: number
   completed: boolean
@@ -67,6 +79,7 @@ export interface GameScore {
     choice: number
     outcome: string
   }>
+  additionalData?: Record<string, unknown>
 }
 
 const initializeTiers = (): Tier[] => {
@@ -87,6 +100,12 @@ const DEFAULT_USER_PROFILE: UserProfile = {
   currentStreak: 0,
   skillsUnlocked: [],
   preferredMode: null,
+  archetype: {
+    primary: 'navigator', // Use a valid ArchetypeId
+    secondary: 'strategist', // Use a valid ArchetypeId
+    completedQuiz: false // Always require quiz before Creative Mode
+  },
+  gardenProgress: undefined,
   preferences: {
     difficulty: 'adaptive',
     gameTypes: [],
@@ -105,12 +124,42 @@ const DEFAULT_USER_PROFILE: UserProfile = {
   }
 }
 
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+      <div className="text-center">
+        <div className="animate-spin w-16 h-16 border-4 border-yellow-400 border-t-transparent rounded-full mx-auto mb-4" />
+        <p className="text-xl text-white font-bold">Loading...</p>
+      </div>
+    </div>
+  )
+}
+
 function App() {
+  // ?fresh query param wipes saved state for a clean demo
+  if (typeof window !== 'undefined' && window.location.search.includes('fresh')) {
+    localStorage.removeItem('kv_user-profile')
+    localStorage.removeItem('kv_game-scores')
+    window.history.replaceState(null, '', window.location.pathname)
+    window.location.reload()
+  }
+
   const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', DEFAULT_USER_PROFILE)
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
-  const [currentMode, setCurrentMode] = useState<LearningMode>(null)
+  const [currentMode, setCurrentMode] = useState<LearningMode>(() => {
+    if (typeof window === "undefined") return null;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mode") === "islands" && (import.meta.env.VITE_ISLANDS === "1" || import.meta.env.VITE_QA === "1")) {
+      return "islands";
+    }
+    return null;
+  })
   const [isInitialized, setIsInitialized] = useState(false)
   const [showArchetypeQuiz, setShowArchetypeQuiz] = useState(false)
+  const [profileError, setProfileError] = useState(false)
+  const [showIPLint, setShowIPLint] = useState(false)
+  const [showDeckSim, setShowDeckSim] = useState(false)
 
   useEffect(() => {
     if (userProfile) {
@@ -140,7 +189,7 @@ function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState)
     }
-  }, [])
+  }, [currentMode])
 
   useEffect(() => {
     if (userProfile && !userProfile.tierProgression) {
@@ -152,7 +201,22 @@ function App() {
         }
       })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userProfile?.tierProgression, setUserProfile])
+
+  // Robust profile/game score loading
+  useEffect(() => {
+    try {
+      if (!userProfile || typeof userProfile !== 'object') {
+        setProfileError(true)
+      }
+      if (!Array.isArray(gameScores)) {
+        setProfileError(true)
+      }
+    } catch {
+      setProfileError(true)
+    }
+  }, [userProfile, gameScores])
 
   const handleModeSelect = (mode: LearningMode): void => {
     setCurrentMode(mode)
@@ -183,6 +247,7 @@ function App() {
       }
     })
     setShowArchetypeQuiz(false)
+    setCurrentMode('creative') // Automatically route to Creative Game Hub after quiz
   }
 
   const handleSkipArchetype = () => {
@@ -329,6 +394,26 @@ function App() {
     })
   }, [setUserProfile])
 
+  const handleResetProfile = () => {
+    try {
+      window.localStorage.clear()
+      window.location.reload()
+    } catch {
+      setProfileError(true)
+    }
+  }
+
+  if (profileError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-red-50">
+        <h2 className="text-2xl font-bold text-red-700 mb-4">Profile or game data is corrupted</h2>
+        <button className="px-6 py-3 rounded-xl bg-pink-600 text-white font-black text-lg shadow-lg border-4 border-pink-900" onClick={handleResetProfile}>
+          Reset Profile & Restart
+        </button>
+      </div>
+    )
+  }
+
   if (!isInitialized || !userProfile) {
     return (
       <>
@@ -343,7 +428,7 @@ function App() {
             >
               <Sparkle className="w-10 h-10 text-white" weight="fill" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading FinanceQuest Pro</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading Capital</h2>
             <p className="text-lg text-gray-600">Initializing your financial journey...</p>
           </div>
         </div>
@@ -355,7 +440,38 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <ModeSelection onSelectMode={handleModeSelect} />
+        <div className="fixed top-4 right-4 z-50">
+          <MusicPlayer />
+        </div>
+        <ThreeJSModeSelection onSelectMode={handleModeSelect} />
+        {import.meta.env.DEV && (
+          <>
+            <button
+              onClick={() => setShowIPLint(true)}
+              className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="IP Lint Scanner"
+            >
+              IP
+            </button>
+            {showIPLint && (
+              <Suspense fallback={null}>
+                <IPLintScreen onClose={() => setShowIPLint(false)} />
+              </Suspense>
+            )}
+            <button
+              onClick={() => setShowDeckSim(true)}
+              className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="Scenario Deck Simulator"
+            >
+              🎲
+            </button>
+            {showDeckSim && (
+              <Suspense fallback={null}>
+                <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
+              </Suspense>
+            )}
+          </>
+        )}
       </>
     )
   }
@@ -364,10 +480,12 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <ArchetypeQuiz
-          onComplete={handleArchetypeComplete}
-          onSkip={handleSkipArchetype}
-        />
+        <Suspense fallback={<LoadingFallback />}>
+          <ArchetypeQuiz
+            onComplete={handleArchetypeComplete}
+            onSkip={handleSkipArchetype}
+          />
+        </Suspense>
       </>
     )
   }
@@ -376,41 +494,146 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
+        <OfflineIndicator />
+        <div className="fixed top-4 right-4 z-50">
+          <MusicPlayer />
+        </div>
+        <Suspense fallback={<LoadingFallback />}>
+          {/* AI Chat Helper - always available */}
+          <AIChatHelper 
+            playerName={userProfile.name || 'Explorer'}
+          />
+          <DebugPanel
+            userProfile={userProfile}
+            currentMode={currentMode}
+            isInitialized={isInitialized}
+            gameScores={gameScores || []}
+          />
+          {import.meta.env.DEV && (
+            <>
+              <button
+                onClick={() => setShowIPLint(true)}
+                className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
+                title="IP Lint Scanner"
+              >
+                IP
+              </button>
+              {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
+              <button
+                onClick={() => setShowDeckSim(true)}
+                className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
+                title="Scenario Deck Simulator"
+              >
+                🎲
+              </button>
+              {showDeckSim && (
+                <Suspense fallback={null}>
+                  <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
+                </Suspense>
+              )}
+            </>
+          )}
+          {/* Enhanced Game Hub with 3D world, story mode, and more */}
+          <EnhancedGameHub
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            gameScores={gameScores || []}
+            onGameComplete={completeGame}
+            onModeSwitch={handleModeSwitch}
+          />
+        </Suspense>
+      </>
+    )
+  }
+
+   if (currentMode === 'islands' && ISLANDS_ENABLED) {
+     return (
+       <>
+         <Toaster position="top-right" richColors />
+         <OfflineIndicator />
+         <div className="fixed top-4 right-4 z-50">
+           <MusicPlayer />
+         </div>
+         <Suspense fallback={<LoadingFallback />}>
+           <DebugPanel
+             userProfile={userProfile}
+             currentMode={currentMode}
+             isInitialized={isInitialized}
+             gameScores={gameScores || []}
+           />
+           {import.meta.env.DEV && (
+             <>
+               <button
+                 onClick={() => setShowIPLint(true)}
+                 className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
+                 title="IP Lint Scanner"
+               >
+                 IP
+               </button>
+               {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
+               <button
+                 onClick={() => setShowDeckSim(true)}
+                 className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
+                 title="Scenario Deck Simulator"
+               >
+                 🎲
+               </button>
+               {showDeckSim && (
+                 <Suspense fallback={null}>
+                   <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
+                 </Suspense>
+               )}
+             </>
+           )}
+           <IslandsApp
+             userProfile={userProfile}
+             setUserProfile={setUserProfile}
+             onExit={handleModeSwitch}
+           />
+         </Suspense>
+       </>
+     )
+   }
+
+  return (
+    <>
+      <Toaster position="top-right" richColors />
+      <OfflineIndicator />
+      <div className="fixed top-4 right-4 z-50">
+        <MusicPlayer />
+      </div>
+      <Suspense fallback={<LoadingFallback />}>
         <DebugPanel
           userProfile={userProfile}
           currentMode={currentMode}
           isInitialized={isInitialized}
           gameScores={gameScores || []}
         />
-        <div className="mb-8">
-          <ThreeFinanceGarden
-            savings={userProfile?.tierProgression?.skillLines.cognition ?? 0}
-            investments={userProfile?.tierProgression?.skillLines.values ?? 0}
-            credit={userProfile?.tierProgression?.skillLines.morals ?? 0}
-          />
-        </div>
-        <CreativeModeHub
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          gameScores={gameScores || []}
-          onGameComplete={completeGame}
-          onModeSwitch={handleModeSwitch}
-          onQuestComplete={handleQuestComplete}
-          onAllocateLineXP={handleAllocateLineXP}
-        />
-      </>
-    )
-  }
-
-  return (
-    <>
-      <Toaster position="top-right" richColors />
-      <DebugPanel
-        userProfile={userProfile}
-        currentMode={currentMode}
-        isInitialized={isInitialized}
-        gameScores={gameScores || []}
-      />
+        {import.meta.env.DEV && (
+          <>
+            <button
+              onClick={() => setShowIPLint(true)}
+              className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="IP Lint Scanner"
+            >
+              IP
+            </button>
+            {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
+            <button
+              onClick={() => setShowDeckSim(true)}
+              className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="Scenario Deck Simulator"
+            >
+              🎲
+            </button>
+            {showDeckSim && (
+              <Suspense fallback={null}>
+                <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
+              </Suspense>
+            )}
+          </>
+        )}
+      </Suspense>
       <StructuredModeHub
         userProfile={userProfile}
         setUserProfile={setUserProfile}

@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`content validation snapshots > all event deck JSON files pass schema validation 1`] = `
+{
+  "events_budgeting_teens.json": {
+    "errors": [],
+  },
+  "events_finance_kids.json": {
+    "errors": [],
+  },
+  "events_startup_adults.json": {
+    "errors": [],
+  },
+}
+`;
+
+exports[`content validation snapshots > all island JSON files pass schema + cross-ref validation 1`] = `
+{
+  "business-assets.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "coincraft-cove.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "demo.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "digital-assets.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "financial-assets.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "intangibles.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "island2-placeholder.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "paycheck-peninsula.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "real-estate.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "signal-city.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+  "venture-foundry.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
+}
+`;
+
+exports[`content validation snapshots > loaded event decks match on-disk JSON count 1`] = `
+[
+  "budgeting_teens",
+  "finance_kids",
+  "startup_adults",
+]
+`;

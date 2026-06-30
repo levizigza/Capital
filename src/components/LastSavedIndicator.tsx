@@ -45,6 +45,8 @@ export function LastSavedIndicator({
         role="status"
         aria-live="polite"
         aria-label={`Last saved ${getTimeSinceLastSave()}`}
+        title={`Last saved: ${getTimeSinceLastSave()}`}
+        data-ux-tooltip={`Last saved: ${getTimeSinceLastSave()}`}
       >
         {showIcon && (
           isSaving ? (
@@ -72,6 +74,8 @@ export function LastSavedIndicator({
       role="status"
       aria-live="polite"
       aria-label={`Last saved ${getTimeSinceLastSave()}`}
+      title={`Last saved: ${getTimeSinceLastSave()}`}
+      data-ux-tooltip={`Last saved: ${getTimeSinceLastSave()}`}
     >
       {showIcon && (
         isSaving ? (

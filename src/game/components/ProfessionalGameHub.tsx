@@ -9,7 +9,7 @@ import {
   PiggyBank, TrendUp, CreditCard, Building, Coins, GameController
 } from '@phosphor-icons/react'
 import { CoinCatcherGame } from './games/CoinCatcherGame'
-import { BudgetBalancerGame } from './games/BudgetBalancerGame'
+import BudgetBalancerGame from './games/BudgetBalancerGame'
 import { InvestmentClimberGame } from './games/InvestmentClimberGame'
 import { CreditDefenderGame } from './games/CreditDefenderGame'
 import { BusinessBuilderGame } from './games/BusinessBuilderGame'

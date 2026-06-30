@@ -1,0 +1,85 @@
+{
+  "id": "pixel_shelly_trader",
+  "name": "Shelly (Trader)",
+  "category": "npc",
+  "entityId": "npc_shelly",
+  "meta": {
+    "image": "spritesheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "pixelScale": 1
+  },
+  "frames": {
+    "idle_0": {
+      "x": 0,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_1": {
+      "x": 32,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_2": {
+      "x": 64,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "idle_3": {
+      "x": 96,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "wave_0": {
+      "x": 128,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "wave_1": {
+      "x": 160,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "wave_2": {
+      "x": 192,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    },
+    "wave_3": {
+      "x": 224,
+      "y": 0,
+      "w": 32,
+      "h": 32
+    }
+  },
+  "animations": {
+    "idle": {
+      "frames": [
+        "idle_0",
+        "idle_1",
+        "idle_2",
+        "idle_3"
+      ],
+      "fps": 5,
+      "loop": true
+    },
+    "wave": {
+      "frames": [
+        "wave_0",
+        "wave_1",
+        "wave_2",
+        "wave_3"
+      ],
+      "fps": 8,
+      "loop": true
+    }
+  },
+  "defaultAnimation": "idle"
+}

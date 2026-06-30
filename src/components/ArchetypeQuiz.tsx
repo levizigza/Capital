@@ -64,6 +64,20 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
     const newAnswers = { ...answers }
     newAnswers[currentQuestion] = answerIndex
     setAnswers(newAnswers)
+
+    // Auto-advance after a short delay so the user sees their selection
+    if (!isTransitioning) {
+      setTimeout(() => {
+        if (currentQuestion < ARCHETYPE_QUESTIONS.length - 1) {
+          setIsTransitioning(true)
+          setTimeout(() => {
+            setCurrentQuestion((prev) => prev + 1)
+            setSelectedAnswer(newAnswers[currentQuestion + 1] ?? null)
+            setIsTransitioning(false)
+          }, 200)
+        }
+      }, 400)
+    }
   }
 
   const handleNext = () => {
@@ -151,8 +165,8 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                 className="flex flex-col items-center gap-4"
               >
-                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full text-6xl"
-                  style={{ backgroundColor: primaryData.color.primary + '20' }}>
+                <div className="inline-flex items-center justify-center w-24 h-24 rounded-full text-6xl dynamic-bg-tint"
+                  ref={(el) => { if (el) el.style.setProperty('--tint-color', primaryData.color.primary + '20') }}>
                   {primaryData.icon}
                 </div>
                 
@@ -195,8 +209,8 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1.0 }}
               >
-                <blockquote className="text-center text-xl font-medium italic border-l-4 pl-4 py-2"
-                  style={{ borderColor: primaryData.color.primary }}>
+                <blockquote className="text-center text-xl font-medium italic border-l-4 pl-4 py-2 dynamic-border-color"
+                  ref={(el) => { if (el) el.style.setProperty('--border-color', primaryData.color.primary) }}>
                   "{primaryData.motto}"
                 </blockquote>
               </motion.div>
@@ -315,25 +329,34 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex items-center justify-between text-sm text-gray-600">
             <span className="font-medium">Question {currentQuestion + 1} of {ARCHETYPE_QUESTIONS.length}</span>
-            <span className="font-semibold">{Math.round(progress)}% Complete</span>
+            <span className="font-semibold">{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} className="h-2.5" aria-label={`Quiz progress: ${Math.round(progress)}% complete`} />
+          <Progress value={progress} className="h-2" aria-label={`Quiz progress: ${Math.round(progress)}% complete`} />
           
-          <div className="flex justify-center gap-1.5 pt-2" role="navigation" aria-label="Question progress">
+          {/* Clickable step dots */}
+          <div className="flex justify-center gap-2 pt-1" role="navigation" aria-label="Question progress">
             {ARCHETYPE_QUESTIONS.map((_, idx) => (
-              <div
+              <button
                 key={idx}
-                className={`h-2 rounded-full transition-all ${
+                type="button"
+                onClick={() => {
+                  if (idx < currentQuestion || (idx <= currentQuestion && answers[idx] !== undefined)) {
+                    setCurrentQuestion(idx)
+                    setSelectedAnswer(answers[idx] ?? null)
+                  }
+                }}
+                disabled={idx > currentQuestion && answers[idx] === undefined}
+                className={`rounded-full transition-all duration-300 ${
                   idx === currentQuestion
-                    ? 'w-8 bg-purple-600'
-                    : idx < currentQuestion
-                    ? 'w-2 bg-purple-400'
-                    : 'w-2 bg-gray-200'
+                    ? 'w-8 h-2.5 bg-purple-600 shadow-sm'
+                    : answers[idx] !== undefined
+                    ? 'w-2.5 h-2.5 bg-purple-400 hover:bg-purple-500 cursor-pointer'
+                    : 'w-2.5 h-2.5 bg-gray-200'
                 }`}
-                aria-label={`Question ${idx + 1}${idx === currentQuestion ? ' (current)' : idx < currentQuestion ? ' (completed)' : ''}`}
+                aria-label={`Question ${idx + 1}${idx === currentQuestion ? ' (current)' : answers[idx] !== undefined ? ' (answered)' : ''}`}
               />
             ))}
           </div>
@@ -368,79 +391,79 @@ export default function ArchetypeQuiz({ onComplete, onSkip }: ArchetypeQuizProps
                     }}
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-300 ${
                       selectedAnswer === index
-                        ? 'border-purple-600 bg-purple-50 shadow-md'
+                        ? 'border-purple-600 bg-purple-50 shadow-md ring-1 ring-purple-200'
                         : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
                     }`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     aria-pressed={selectedAnswer === index}
                     aria-label={`Answer option ${index + 1}: ${answer.text}`}
                     role="radio"
                     tabIndex={0}
                   >
                     <div className="flex items-start gap-3">
-                      <div
-                        className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mt-0.5 transition-all ${
-                          selectedAnswer === index
-                            ? 'border-purple-600 bg-purple-600'
-                            : 'border-gray-300'
-                        }`}
-                        aria-hidden="true"
-                      >
-                        {selectedAnswer === index && (
-                          <Check weight="bold" className="text-white" size={14} />
+                      <span className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
+                        selectedAnswer === index
+                          ? 'bg-purple-600 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-500'
+                      }`} aria-hidden="true">
+                        {selectedAnswer === index ? (
+                          <Check weight="bold" size={14} />
+                        ) : (
+                          index + 1
                         )}
-                      </div>
-                      <span className="flex-1 text-gray-900">{answer.text}</span>
+                      </span>
+                      <span className="flex-1 text-gray-900 pt-0.5">{answer.text}</span>
                     </div>
                   </motion.button>
                 ))}
               </CardContent>
 
-              <CardFooter className="flex justify-between pt-6">
-                <div className="flex gap-2">
-                  {currentQuestion === 0 && onSkip && (
-                    <Button
-                      variant="outline"
-                      onClick={onSkip}
-                      aria-label="Skip quiz and continue"
-                    >
-                      <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
-                      Skip Quiz
-                    </Button>
-                  )}
-                  {currentQuestion > 0 && (
-                    <Button
-                      variant="outline"
-                      onClick={handleBack}
-                      disabled={isTransitioning}
-                      aria-label="Go to previous question"
-                    >
-                      <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
-                      Back
-                    </Button>
-                  )}
-                </div>
+              <CardFooter className="flex flex-col gap-4 pt-6">
+                <div className="flex justify-between w-full">
+                  <div className="flex gap-2">
+                    {currentQuestion === 0 && onSkip && (
+                      <Button
+                        variant="outline"
+                        onClick={onSkip}
+                        aria-label="Skip quiz and continue"
+                      >
+                        <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
+                        Skip Quiz
+                      </Button>
+                    )}
+                    {currentQuestion > 0 && (
+                      <Button
+                        variant="outline"
+                        onClick={handleBack}
+                        disabled={isTransitioning}
+                        aria-label="Go to previous question"
+                      >
+                        <ArrowLeft className="mr-2" weight="bold" aria-hidden="true" />
+                        Back
+                      </Button>
+                    )}
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleNext} 
-                    disabled={!isAnswered || isTransitioning}
-                    aria-label={currentQuestion < ARCHETYPE_QUESTIONS.length - 1 ? "Go to next question" : "See quiz results"}
-                  >
-                    {currentQuestion < ARCHETYPE_QUESTIONS.length - 1 ? (
-                      <>
-                        Next
-                        <ArrowRight className="ml-2" weight="bold" aria-hidden="true" />
-                      </>
-                    ) : (
-                      <>
+                  <div className="flex gap-2">
+                    {currentQuestion === ARCHETYPE_QUESTIONS.length - 1 && isAnswered && (
+                      <Button 
+                        onClick={handleNext} 
+                        disabled={isTransitioning}
+                        aria-label="See quiz results"
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
                         See Results
                         <Sparkle className="ml-2" weight="fill" aria-hidden="true" />
-                      </>
+                      </Button>
                     )}
-                  </Button>
+                  </div>
                 </div>
+
+                {/* Keyboard shortcut hint */}
+                <p className="text-xs text-gray-400 text-center select-none" aria-hidden="true">
+                  Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border text-gray-500 font-mono text-[10px]">1</kbd>–<kbd className="px-1.5 py-0.5 bg-gray-100 rounded border text-gray-500 font-mono text-[10px]">4</kbd> to pick · <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border text-gray-500 font-mono text-[10px]">←</kbd> back · <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border text-gray-500 font-mono text-[10px]">→</kbd> next
+                </p>
               </CardFooter>
             </Card>
           </motion.div>

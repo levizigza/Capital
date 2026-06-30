@@ -32,12 +32,14 @@ export function EmptyState({
         animate={{ scale: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
         className="mb-6 p-6 rounded-full bg-muted"
+        aria-label={title}
+        data-ux-tooltip={title}
       >
         <Icon size={64} weight="duotone" className="text-muted-foreground" />
       </motion.div>
 
-      <h3 className="text-2xl font-semibold mb-3 text-foreground">{title}</h3>
-      <p className="text-muted-foreground max-w-md mb-8 leading-relaxed">{description}</p>
+      <h3 className="text-2xl font-semibold mb-3 text-foreground" title={title} data-ux-tooltip={title}>{title}</h3>
+      <p className="text-muted-foreground max-w-md mb-8 leading-relaxed" title={description} data-ux-tooltip={description}>{description}</p>
 
       <div className="flex flex-col sm:flex-row gap-3">
         {actionLabel && onAction && (
@@ -45,6 +47,9 @@ export function EmptyState({
             onClick={onAction}
             size="lg"
             className="min-w-[160px] min-h-[44px]"
+            aria-label={actionLabel}
+            title={actionLabel}
+            data-ux-tooltip={actionLabel}
           >
             {actionLabel}
           </Button>
@@ -55,6 +60,9 @@ export function EmptyState({
             variant="outline"
             size="lg"
             className="min-w-[160px] min-h-[44px]"
+            aria-label={secondaryActionLabel}
+            title={secondaryActionLabel}
+            data-ux-tooltip={secondaryActionLabel}
           >
             {secondaryActionLabel}
           </Button>

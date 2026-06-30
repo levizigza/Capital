@@ -1,0 +1,7 @@
+.chart-bar-h {
+  height: var(--bar-h, 8px);
+}
+
+.chart-bar-w {
+  width: var(--bar-w, 0%);
+}

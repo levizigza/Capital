@@ -1,0 +1,379 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "coincraft_cove",
+      "name": "Coincraft Cove",
+      "description": "A friendly seaside village where young explorers learn to count, save, and spend coins wisely.",
+      "icon": "🏖️",
+      "provenance": {
+        "learning_objectives": [
+          "Identify coins and bills by value",
+          "Practice making change for purchases",
+          "Understand the difference between needs and wants",
+          "Learn that saving now lets you buy bigger things later"
+        ],
+        "mechanics_used": ["sorting-categorization", "npc-dialogue-tree", "speed-collection", "quiz-challenge"],
+        "originality_notes": "Theme: seaside craft village with artisan shops (not a bank or store sim). Verb: sort coins into craft-supply purchases and dialogue-driven saving decisions (not roll-and-collect). Structure: cooperative quest chain helping NPC villagers solve problems (not competitive accumulation). Blends sorting puzzles with NPC mentorship scenarios unique to this project.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Lemonade Stand"]
+      },
+      "areas": [
+        {
+          "id": "cc_harbor",
+          "name": "Coin Harbor",
+          "description": "Boats bob in the sparkling water. A cheerful dockworker sorts crates of supplies.",
+          "icon": "⚓",
+          "connections": ["cc_craft_market", "cc_savings_lighthouse"]
+        },
+        {
+          "id": "cc_craft_market",
+          "name": "Craft Market",
+          "description": "Colorful stalls sell paints, shells, and driftwood. Everything has a price tag!",
+          "icon": "🎨",
+          "connections": ["cc_harbor", "cc_savings_lighthouse"]
+        },
+        {
+          "id": "cc_savings_lighthouse",
+          "name": "Savings Lighthouse",
+          "description": "A tall lighthouse with a glowing coin jar at the top. The keeper tracks how much the village has saved.",
+          "icon": "🏠",
+          "connections": ["cc_harbor", "cc_craft_market"],
+          "requiredItems": ["cc_coin_pouch"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_captain_penny",
+          "name": "Captain Penny",
+          "icon": "🧑‍✈️",
+          "areaId": "cc_harbor",
+          "dialogueGraphId": "dlg_captain_penny"
+        },
+        {
+          "id": "npc_artisan_alma",
+          "name": "Artisan Alma",
+          "icon": "👩‍🎨",
+          "areaId": "cc_craft_market",
+          "dialogueGraphId": "dlg_artisan_alma"
+        },
+        {
+          "id": "npc_keeper_kira",
+          "name": "Keeper Kira",
+          "icon": "🔦",
+          "areaId": "cc_savings_lighthouse",
+          "dialogueGraphId": "dlg_keeper_kira"
+        },
+        {
+          "id": "npc_shelly",
+          "name": "Shelly the Shell Seller",
+          "icon": "🐚",
+          "areaId": "cc_craft_market",
+          "dialogueGraphId": "dlg_shelly"
+        }
+      ],
+      "items": [
+        {
+          "id": "cc_coin_pouch",
+          "name": "Coin Pouch",
+          "description": "A small pouch that jingles with your first earnings.",
+          "icon": "👛",
+          "location": { "areaId": "cc_harbor" }
+        },
+        {
+          "id": "cc_savings_jar",
+          "name": "Savings Jar",
+          "description": "A glass jar that shows how your coins pile up over time.",
+          "icon": "🫙",
+          "location": { "areaId": "cc_savings_lighthouse" }
+        },
+        {
+          "id": "cc_craft_badge",
+          "name": "Coincraft Badge",
+          "description": "Proof you understand the basics of earning, spending, and saving!",
+          "icon": "🎖️",
+          "location": { "areaId": "cc_savings_lighthouse" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_cc_first_coins",
+          "title": {
+            "explorer": "First Coins",
+            "apprentice": "First Coins",
+            "strategist": "Coin Fundamentals"
+          },
+          "description": {
+            "explorer": "Meet Captain Penny, get your Coin Pouch, and sort coins!",
+            "apprentice": "Meet Captain Penny at the harbor, earn your Coin Pouch, and learn to count different denominations.",
+            "strategist": "Master denomination math at the harbor — earn your pouch and prove exact-change proficiency."
+          },
+          "hint": {
+            "explorer": "Talk to Captain Penny at the harbor. She loves helping new sailors!",
+            "apprentice": "Start at Coin Harbor and talk to Captain Penny. She'll teach you about coins!",
+            "strategist": "Harbor first: Captain Penny, then the Coin Sort minigame — aim for a high score."
+          },
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_captain_penny" },
+            { "type": "collectItem", "itemId": "cc_coin_pouch" },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_coin_sort",
+              "scoreThreshold": { "explorer": 20, "apprentice": 35, "strategist": 55 }
+            }
+          ],
+          "rewards": { "coins": 30, "xp": 60 }
+        },
+        {
+          "id": "q_cc_save_or_spend",
+          "title": "Save or Spend?",
+          "description": "Help Artisan Alma sort her supplies into needs and wants, then visit Keeper Kira to start saving.",
+          "hint": "Visit the Craft Market and talk to Alma, then head to the Savings Lighthouse.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_artisan_alma" },
+            { "type": "talkToNpc", "npcId": "npc_keeper_kira" },
+            { "type": "collectItem", "itemId": "cc_savings_jar" }
+          ],
+          "rewards": { "coins": 50, "xp": 100, "items": ["cc_craft_badge"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_captain_penny",
+          "startNodeId": "cp1",
+          "nodes": [
+            {
+              "id": "cp1",
+              "speaker": "Captain Penny",
+              "text": {
+                "explorer": "Ahoy, little explorer! See these shiny coins? One is worth more than the other. Want to learn which?",
+                "apprentice": "Ahoy, young explorer! Ever counted real coins before? I've got a pouch here with your name on it — but first, can you tell me which coin is worth more?",
+                "strategist": "Ahoy. Before you handle a float, you need denomination fluency — penny, nickel, dime, quarter. Ready for a quick audit?"
+              },
+              "choices": [
+                {
+                  "id": "cp1_a",
+                  "text": {
+                    "explorer": "Yes! Teach me!",
+                    "apprentice": "Teach me about coins!",
+                    "strategist": "Run me through the denominations."
+                  },
+                  "nextNodeId": "cp2",
+                  "effects": [{ "type": "startQuest", "questId": "q_cc_first_coins" }]
+                },
+                {
+                  "id": "cp1_b",
+                  "text": {
+                    "explorer": "Maybe later.",
+                    "apprentice": "I'll come back later.",
+                    "strategist": "I'll review on my own first."
+                  },
+                  "nextNodeId": "cp3"
+                }
+              ]
+            },
+            {
+              "id": "cp2",
+              "speaker": "Captain Penny",
+              "text": {
+                "explorer": "A penny is 1 cent, a nickel is 5, a dime is 10, and a quarter is 25. Grab your Coin Pouch and try sorting!",
+                "apprentice": "Great spirit! A penny is 1 cent, a nickel is 5, a dime is 10, and a quarter is 25. Grab that Coin Pouch on the dock and try sorting some coins!",
+                "strategist": "Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢. Exact change avoids overpaying — collect your pouch and run the sort challenge."
+              },
+              "end": true
+            },
+            {
+              "id": "cp3",
+              "speaker": "Captain Penny",
+              "text": "No rush, sailor. The harbor's not going anywhere!",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_artisan_alma",
+          "startNodeId": "aa1",
+          "nodes": [
+            {
+              "id": "aa1",
+              "speaker": "Artisan Alma",
+              "text": "Oh, you have a Coin Pouch! I need help sorting my supplies. Some things I NEED for my art, and some things I just WANT. Can you help?",
+              "choices": [
+                {
+                  "id": "aa1_a",
+                  "text": "Sure! What's the difference?",
+                  "nextNodeId": "aa2",
+                  "effects": [{ "type": "startQuest", "questId": "q_cc_save_or_spend" }]
+                },
+                { "id": "aa1_b", "text": "Not right now.", "nextNodeId": "aa3" }
+              ]
+            },
+            {
+              "id": "aa2",
+              "speaker": "Artisan Alma",
+              "text": "Needs are things you can't do without — like paintbrushes for an artist. Wants are nice extras — like glitter. If you spend all your coins on wants, you might not have enough for needs!",
+              "end": true
+            },
+            {
+              "id": "aa3",
+              "speaker": "Artisan Alma",
+              "text": "No problem! Come back when you're ready to sort.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_keeper_kira",
+          "startNodeId": "kk1",
+          "nodes": [
+            {
+              "id": "kk1",
+              "speaker": "Keeper Kira",
+              "text": "Welcome to the Savings Lighthouse! Every coin you put in the jar today means more to spend tomorrow. Want to start saving?",
+              "choices": [
+                {
+                  "id": "kk1_a",
+                  "text": "Yes! Show me how saving works.",
+                  "nextNodeId": "kk2",
+                  "effects": [{ "type": "giveItem", "itemId": "cc_savings_jar" }]
+                },
+                { "id": "kk1_b", "text": "Maybe later.", "nextNodeId": "kk3" }
+              ]
+            },
+            {
+              "id": "kk2",
+              "speaker": "Keeper Kira",
+              "text": "Here's your Savings Jar! Every time you earn coins, try putting some in here instead of spending them all. You'll be amazed how fast they grow!",
+              "end": true
+            },
+            {
+              "id": "kk3",
+              "speaker": "Keeper Kira",
+              "text": "The lighthouse will be here when you're ready!",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_shelly",
+          "startNodeId": "sh1",
+          "nodes": [
+            {
+              "id": "sh1",
+              "speaker": "Shelly",
+              "text": "Pretty shells! Only 5 coins each. But ask yourself — do you NEED a shell, or do you just WANT one? That's the secret to smart spending!",
+              "choices": [
+                {
+                  "id": "sh1_a",
+                  "text": "That's a want, not a need!",
+                  "nextNodeId": "sh2"
+                },
+                {
+                  "id": "sh1_b",
+                  "text": "I'll think about it.",
+                  "nextNodeId": "sh3"
+                }
+              ]
+            },
+            {
+              "id": "sh2",
+              "speaker": "Shelly",
+              "text": "You got it! Wants are okay sometimes, but needs come first. Smart thinking!",
+              "end": true
+            },
+            {
+              "id": "sh3",
+              "speaker": "Shelly",
+              "text": "Taking time to think before buying — that's already a great money habit!",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_coin_sort",
+          "name": "Coin Sort Challenge",
+          "description": "Earn coins from odd jobs, then make exact change to buy craft supplies.",
+          "icon": "🪙",
+          "componentId": "ModularMinigame",
+          "areaId": "cc_harbor",
+          "modules": [
+            {
+              "id": "EarnSpend",
+              "config": {
+                "startingBalance": 0,
+                "earnOptions": [
+                  { "id": "sort_crates", "label": "Sort Crates", "amount": 15 },
+                  { "id": "clean_deck", "label": "Clean the Deck", "amount": 10 },
+                  { "id": "deliver_mail", "label": "Deliver Mail", "amount": 20 }
+                ],
+                "spendOptions": [
+                  { "id": "paint_set", "label": "Paint Set", "cost": 25 },
+                  { "id": "shell_kit", "label": "Shell Kit", "cost": 15 },
+                  { "id": "driftwood_bundle", "label": "Driftwood Bundle", "cost": 30 }
+                ]
+              }
+            },
+            {
+              "id": "ChangeMaking",
+              "config": {
+                "denominations": [
+                  { "label": "Penny", "value": 1, "icon": "🟤" },
+                  { "label": "Nickel", "value": 5, "icon": "⚪" },
+                  { "label": "Dime", "value": 10, "icon": "🔘" },
+                  { "label": "Quarter", "value": 25, "icon": "🪙" }
+                ],
+                "minTarget": 5,
+                "maxTarget": 50,
+                "pointsPerCorrect": 15,
+                "penaltyPerWrong": 5
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_coin_catcher",
+          "name": "Coin Catcher Arcade",
+          "description": "Retro arcade action! Catch falling coins and dodge impulse buys.",
+          "icon": "🕹️",
+          "componentId": "CoinCatcherMinigame",
+          "areaId": "cc_craft_market",
+          "genre": "arcade",
+          "complexity": "easy",
+          "visualShell": "arcade",
+          "estimatedMinutes": 2
+        },
+        {
+          "id": "mg_treasure_vault",
+          "name": "Treasure Vault Explorer",
+          "description": "Explore rooms, collect coins, and solve needs-vs-wants puzzles to unlock the vault.",
+          "icon": "🗺️",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "cc_savings_lighthouse",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore",
+          "estimatedMinutes": 8
+        },
+        {
+          "id": "mg_news_shocks",
+          "name": "Island News & Surprises",
+          "description": "The island economy brings unexpected events — navigate news shocks, surprise expenses, and lucky windfalls!",
+          "icon": "📰",
+          "componentId": "ModularMinigame",
+          "areaId": "cc_craft_market",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": ["finance_kids"],
+                "tags": [],
+                "maxDraws": 8
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

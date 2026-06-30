@@ -1,0 +1,226 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "real_estate",
+      "name": "Real Estate Row",
+      "description": "Learn property investing: auctions, rent, flipping, REITs, and how location drives value.",
+      "icon": "🏘️",
+      "requiredItems": ["fa_island_medallion"],
+      "provenance": {
+        "learning_objectives": [
+          "Understand property auctions and bidding strategy",
+          "Learn rental yield and passive income concepts",
+          "Compare REITs vs direct ownership",
+          "Understand how location affects property value"
+        ],
+        "mechanics_used": ["auction-bidding", "resource-management", "npc-dialogue-tree", "trade-negotiation"],
+        "originality_notes": "Theme: tropical real-estate row with distinct districts (not a board). Verb: auction bidding + renovation choices (not roll-and-buy). Structure: quest-driven learning with NPC mentors (not competitive property accumulation). Blends auction mechanics with resource management through guided NPC scenarios.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Landlord", "Property Tycoon"]
+      },
+      "areas": [
+        {
+          "id": "re_auction_yard",
+          "name": "Auction Yard",
+          "description": "Properties go to the highest bidder. Learn to spot deals and avoid overpaying.",
+          "icon": "🔨",
+          "connections": ["re_rental_district", "re_reit_tower"]
+        },
+        {
+          "id": "re_rental_district",
+          "name": "Rental District",
+          "description": "Row houses and apartments. Manage tenants, collect rent, and handle repairs.",
+          "icon": "🏠",
+          "connections": ["re_auction_yard", "re_reit_tower"]
+        },
+        {
+          "id": "re_reit_tower",
+          "name": "REIT Tower",
+          "description": "A gleaming skyscraper. Invest in real estate without owning property directly.",
+          "icon": "🏢",
+          "connections": ["re_auction_yard", "re_rental_district"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_auctioneer",
+          "name": "Auctioneer Al",
+          "icon": "🔨",
+          "areaId": "re_auction_yard",
+          "dialogueGraphId": "dlg_auctioneer"
+        },
+        {
+          "id": "npc_flipper",
+          "name": "Flipper Fiona",
+          "icon": "🏗️",
+          "areaId": "re_auction_yard",
+          "dialogueGraphId": "dlg_flipper"
+        },
+        {
+          "id": "npc_landlord",
+          "name": "Landlord Larry",
+          "icon": "🔑",
+          "areaId": "re_rental_district",
+          "dialogueGraphId": "dlg_landlord"
+        },
+        {
+          "id": "npc_reit_advisor",
+          "name": "REIT Rachel",
+          "icon": "📊",
+          "areaId": "re_reit_tower",
+          "dialogueGraphId": "dlg_reit_advisor"
+        }
+      ],
+      "items": [
+        {
+          "id": "re_deed",
+          "name": "Property Deed",
+          "description": "Proof that you successfully purchased a property at auction.",
+          "icon": "📜",
+          "location": { "areaId": "re_auction_yard" }
+        },
+        {
+          "id": "re_rental_ledger",
+          "name": "Rental Ledger",
+          "description": "Records of rental income, expenses, and net cash flow.",
+          "icon": "📒",
+          "location": { "areaId": "re_rental_district" }
+        },
+        {
+          "id": "re_reit_share",
+          "name": "REIT Share Certificate",
+          "description": "A share in a diversified real estate investment trust.",
+          "icon": "🏦",
+          "location": { "areaId": "re_reit_tower" }
+        },
+        {
+          "id": "re_island_medallion",
+          "name": "Real Estate Medallion",
+          "description": "Mastery of property investing. Unlocks the next island!",
+          "icon": "🏅",
+          "location": { "areaId": "re_reit_tower" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_auction_flip",
+          "title": "Auction & Flip",
+          "description": "Buy a property at auction, renovate it, and sell for a profit. Learn the buy/rent/flip loop.",
+          "hint": "Talk to Auctioneer Al to learn about bidding, then visit Flipper Fiona for renovation tips.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_auctioneer" },
+            { "type": "talkToNpc", "npcId": "npc_flipper" },
+            { "type": "completeMinigame", "minigameId": "mg_property_auction" }
+          ],
+          "rewards": { "coins": 75, "xp": 150, "items": ["re_deed"] }
+        },
+        {
+          "id": "q_passive_income",
+          "title": "Passive Income Pipeline",
+          "description": "Understand rental yield, REIT dividends, and how location affects property value.",
+          "hint": "Manage rentals with Landlord Larry, then compare REITs with Rachel at the tower.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_landlord" },
+            { "type": "talkToNpc", "npcId": "npc_reit_advisor" },
+            { "type": "collectItem", "itemId": "re_reit_share" }
+          ],
+          "rewards": { "coins": 100, "xp": 200, "items": ["re_rental_ledger", "re_island_medallion"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_auctioneer",
+          "startNodeId": "aa1",
+          "nodes": [
+            {
+              "id": "aa1",
+              "speaker": "Auctioneer Al",
+              "text": "Welcome to the Auction Yard! Every property here starts at a base price — your job is to bid smart. Overpay and you'll never make a profit. Want to learn the ropes?",
+              "choices": [
+                { "id": "aa1c1", "text": "Teach me about property auctions!", "nextNodeId": "aa2", "effects": [{ "type": "startQuest", "questId": "q_auction_flip" }] },
+                { "id": "aa1c2", "text": "Not right now.", "nextNodeId": "aa3" }
+              ]
+            },
+            { "id": "aa2", "speaker": "Auctioneer Al", "text": "The key is knowing the After-Repair Value (ARV). That's what the property will be worth after renovations. Never bid more than 70% of ARV minus repair costs. Now go talk to Flipper Fiona — she's the renovation expert.", "end": true },
+            { "id": "aa3", "speaker": "Auctioneer Al", "text": "No rush! The auction runs all day.", "end": true }
+          ]
+        },
+        {
+          "id": "dlg_flipper",
+          "startNodeId": "ff1",
+          "nodes": [
+            {
+              "id": "ff1",
+              "speaker": "Flipper Fiona",
+              "text": "I've flipped 30 houses! The secret? Budget your renovation tightly and know when to walk away from a money pit. Ready to try the property auction simulator?",
+              "choices": [
+                { "id": "ff1c1", "text": "Let's do it!", "nextNodeId": "ff2", "effects": [{ "type": "startMinigame", "minigameId": "mg_property_auction" }] },
+                { "id": "ff1c2", "text": "What mistakes should I avoid?", "nextNodeId": "ff3" }
+              ]
+            },
+            { "id": "ff2", "speaker": "Flipper Fiona", "text": "Opening the simulator…", "end": true },
+            {
+              "id": "ff3",
+              "speaker": "Flipper Fiona",
+              "text": "Number one: emotional bidding. Number two: underestimating repair costs. Number three: ignoring location — a great house in a bad neighborhood won't sell.",
+              "choices": [
+                { "id": "ff3c1", "text": "Got it — let's try the auction!", "nextNodeId": "ff2", "effects": [{ "type": "startMinigame", "minigameId": "mg_property_auction" }] }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_landlord",
+          "startNodeId": "ll1",
+          "nodes": [
+            {
+              "id": "ll1",
+              "speaker": "Landlord Larry",
+              "text": "Rental income sounds like free money, but there's a LOT to manage — tenants, maintenance, vacancies. The key metric is Net Operating Income: rent minus all expenses.",
+              "choices": [
+                { "id": "ll1c1", "text": "How do I calculate if a rental is worth it?", "nextNodeId": "ll2", "effects": [{ "type": "startQuest", "questId": "q_passive_income" }] },
+                { "id": "ll1c2", "text": "I'll come back later.", "nextNodeId": "ll3" }
+              ]
+            },
+            { "id": "ll2", "speaker": "Landlord Larry", "text": "Use the Cap Rate: NOI divided by purchase price. A 6-8% cap rate is solid. Below 4% and you're barely beating inflation. Head to REIT Tower to see Rachel — she'll show you how to invest in real estate without being a landlord.", "end": true },
+            { "id": "ll3", "speaker": "Landlord Larry", "text": "Tenants wait for no one! But sure, come back anytime.", "end": true }
+          ]
+        },
+        {
+          "id": "dlg_reit_advisor",
+          "startNodeId": "rr1",
+          "nodes": [
+            {
+              "id": "rr1",
+              "speaker": "REIT Rachel",
+              "text": "A REIT — Real Estate Investment Trust — lets you invest in properties like malls, apartments, and offices without owning them directly. They trade like stocks and pay dividends. Want to compare some?",
+              "choices": [
+                { "id": "rr1c1", "text": "Show me the data!", "nextNodeId": "rr2", "effects": [{ "type": "giveItem", "itemId": "re_reit_share" }] },
+                { "id": "rr1c2", "text": "What's the catch?", "nextNodeId": "rr3" }
+              ]
+            },
+            { "id": "rr2", "speaker": "REIT Rachel", "text": "Here's your first REIT share! REITs must pay out 90% of income as dividends, making them great for passive income. But they're still affected by interest rates and property values.", "end": true },
+            {
+              "id": "rr3",
+              "speaker": "REIT Rachel",
+              "text": "REITs are sensitive to interest rates — when rates rise, REIT prices often drop. And you don't get to pick which specific properties the trust buys. But for diversification and passive income, they're hard to beat.",
+              "choices": [
+                { "id": "rr3c1", "text": "Sign me up!", "nextNodeId": "rr2", "effects": [{ "type": "giveItem", "itemId": "re_reit_share" }] }
+              ]
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_property_auction",
+          "name": "Property Auction Simulator",
+          "description": "Bid on properties, estimate renovation costs, and flip for profit. Learn the buy/rent/flip loop.",
+          "icon": "🔨",
+          "componentId": "PropertyAuctionGame",
+          "areaId": "re_auction_yard"
+        }
+      ]
+    }
+  ]
+}

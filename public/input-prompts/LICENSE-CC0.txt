@@ -1,0 +1,7 @@
+Xelu's Controller & Keyboard Prompts — Creative Commons Zero 1.0 Universal
+
+The original asset pack by Nicolae Berbece is released into the public domain under CC0.
+See https://creativecommons.org/publicdomain/zero/1.0/
+
+See `content/assets/README.md`. In-app credits: Settings → Credits, or footer **Credits** dialog.
+Generated text files: `public/CREDITS.txt`, `public/THIRD_PARTY_LICENSES.txt` (run `npm run assets:export-credits`).

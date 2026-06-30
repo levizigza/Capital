@@ -1,0 +1,393 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "financial_assets",
+      "name": "Asset Island",
+      "description": "Learn about stocks, bonds, ETFs, and mutual funds on this bustling financial hub.",
+      "icon": "📈",
+      "provenance": {
+        "learning_objectives": [
+          "Understand stocks, bonds, ETFs, and mutual funds",
+          "Learn portfolio diversification and risk management",
+          "Compare asset classes by volatility, yield, and fees"
+        ],
+        "mechanics_used": ["market-simulation", "portfolio-builder", "npc-dialogue-tree", "sorting-categorization"],
+        "originality_notes": "Theme: bustling island marketplace (not a trading floor simulator). Verb: NPC-guided quests + paper-trading minigame (not pure day-trading). Structure: sequential quest unlocks teaching one concept at a time (not open-ended trading). Blends adventure exploration with simplified market mechanics.",
+        "forbidden_references": ["Cashflow", "Stock Market Game", "Wall Street Survivor", "Robinhood"]
+      },
+      "areas": [
+        {
+          "id": "fa_market_street",
+          "name": "Market Street",
+          "description": "Bright ticker screens line the streets. Traders hustle between stalls.",
+          "icon": "🏙️",
+          "connections": ["fa_broker_hall", "fa_news_stand"]
+        },
+        {
+          "id": "fa_broker_hall",
+          "name": "Broker Hall",
+          "description": "A grand marble hall where brokers execute trades. Practice paper trading here.",
+          "icon": "🏛️",
+          "connections": ["fa_market_street", "fa_etf_lab"],
+          "requiredItems": ["fa_trading_license"]
+        },
+        {
+          "id": "fa_news_stand",
+          "name": "News Stand",
+          "description": "Newspapers and screens everywhere. News events move the markets.",
+          "icon": "📰",
+          "connections": ["fa_market_street"]
+        },
+        {
+          "id": "fa_etf_lab",
+          "name": "ETF Research Lab",
+          "description": "Quiet desks with data terminals. Compare funds and pick the best one.",
+          "icon": "🔬",
+          "connections": ["fa_broker_hall"],
+          "requiredItems": ["fa_bond_certificate"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_penny",
+          "name": "Penny the Trader",
+          "icon": "💹",
+          "areaId": "fa_market_street",
+          "dialogueGraphId": "dlg_penny"
+        },
+        {
+          "id": "npc_marcus",
+          "name": "Marcus the Broker",
+          "icon": "🤵",
+          "areaId": "fa_broker_hall",
+          "dialogueGraphId": "dlg_marcus"
+        },
+        {
+          "id": "npc_nina",
+          "name": "Nina the Analyst",
+          "icon": "📊",
+          "areaId": "fa_news_stand",
+          "dialogueGraphId": "dlg_nina"
+        },
+        {
+          "id": "npc_dr_fund",
+          "name": "Dr. Fund",
+          "icon": "🧑‍🔬",
+          "areaId": "fa_etf_lab",
+          "dialogueGraphId": "dlg_dr_fund"
+        },
+        {
+          "id": "npc_old_timer",
+          "name": "Old Timer Walt",
+          "icon": "👴",
+          "areaId": "fa_market_street",
+          "dialogueGraphId": "dlg_old_timer"
+        }
+      ],
+      "items": [
+        {
+          "id": "fa_trading_license",
+          "name": "Trading License",
+          "description": "Penny gave you this license to enter Broker Hall.",
+          "icon": "📜",
+          "location": { "areaId": "fa_market_street" }
+        },
+        {
+          "id": "fa_portfolio_report",
+          "name": "Portfolio Report",
+          "description": "Proof that you successfully built a diversified paper portfolio.",
+          "icon": "📋",
+          "location": { "areaId": "fa_broker_hall" }
+        },
+        {
+          "id": "fa_bond_certificate",
+          "name": "Bond Certificate",
+          "description": "Earned by understanding the difference between bonds and stocks.",
+          "icon": "🏦",
+          "location": { "areaId": "fa_news_stand" }
+        },
+        {
+          "id": "fa_etf_badge",
+          "name": "ETF Detective Badge",
+          "description": "Awarded for correctly matching ETFs to investor goals.",
+          "icon": "🔍",
+          "location": { "areaId": "fa_etf_lab" }
+        },
+        {
+          "id": "fa_island_medallion",
+          "name": "Asset Island Medallion",
+          "description": "The ultimate proof of financial asset mastery. Unlocks the next island!",
+          "icon": "🏅",
+          "location": { "areaId": "fa_etf_lab" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_portfolio_starter",
+          "title": "Portfolio Starter",
+          "description": "Learn diversification by building a starter portfolio with virtual money.",
+          "hint": "Talk to Penny on Market Street to get your Trading License, then visit Marcus in Broker Hall.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_penny" },
+            { "type": "collectItem", "itemId": "fa_trading_license" },
+            { "type": "talkToNpc", "npcId": "npc_marcus" },
+            { "type": "completeMinigame", "minigameId": "mg_paper_trading" }
+          ],
+          "rewards": { "coins": 50, "xp": 100, "items": ["fa_portfolio_report"] }
+        },
+        {
+          "id": "q_bonds_vs_stocks",
+          "title": "Bonds vs Stocks",
+          "description": "Understand volatility, yield, and how news events move markets.",
+          "hint": "Head to the News Stand and talk to Nina the Analyst.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_nina" },
+            { "type": "completeMinigame", "minigameId": "mg_bonds_vs_stocks" }
+          ],
+          "rewards": { "coins": 50, "xp": 100, "items": ["fa_bond_certificate"] }
+        },
+        {
+          "id": "q_etf_detective",
+          "title": "ETF Detective",
+          "description": "Compare ETFs on fees, holdings, and sector exposure. Pick the best match for each goal.",
+          "hint": "Enter the ETF Research Lab (requires Bond Certificate) and talk to Dr. Fund.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_dr_fund" },
+            { "type": "completeMinigame", "minigameId": "mg_etf_detective" }
+          ],
+          "rewards": { "coins": 100, "xp": 200, "items": ["fa_etf_badge", "fa_island_medallion"] }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_penny",
+          "startNodeId": "p1",
+          "nodes": [
+            {
+              "id": "p1",
+              "speaker": "Penny the Trader",
+              "text": "Welcome to Market Street! I'm Penny. Want to learn how to trade stocks, bonds, and more?",
+              "choices": [
+                {
+                  "id": "p1c1",
+                  "text": "Yes! Teach me about portfolios.",
+                  "nextNodeId": "p2",
+                  "effects": [{ "type": "startQuest", "questId": "q_portfolio_starter" }]
+                },
+                { "id": "p1c2", "text": "Just browsing for now.", "nextNodeId": "p3" }
+              ]
+            },
+            {
+              "id": "p2",
+              "speaker": "Penny the Trader",
+              "text": "Great! First rule: diversification. Don't put all your eggs in one basket. Take this Trading License — it'll get you into Broker Hall where Marcus can set up your paper trading account.",
+              "choices": [
+                {
+                  "id": "p2c1",
+                  "text": "Got it!",
+                  "nextNodeId": "p2b",
+                  "effects": [{ "type": "giveItem", "itemId": "fa_trading_license" }]
+                }
+              ]
+            },
+            {
+              "id": "p2b",
+              "speaker": "Penny the Trader",
+              "text": "Head to Broker Hall — it's connected from here. Marcus will show you the trading simulator. Good luck!",
+              "end": true
+            },
+            {
+              "id": "p3",
+              "speaker": "Penny the Trader",
+              "text": "No problem! Come back when you're ready to start. The markets will wait.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_marcus",
+          "startNodeId": "m1",
+          "nodes": [
+            {
+              "id": "m1",
+              "speaker": "Marcus the Broker",
+              "text": "Ah, you have a Trading License! Ready to try paper trading? You'll get $10,000 in virtual cash to build a portfolio over 30 simulated trading days.",
+              "choices": [
+                {
+                  "id": "m1c1",
+                  "text": "Let's trade!",
+                  "nextNodeId": "m2",
+                  "effects": [{ "type": "startMinigame", "minigameId": "mg_paper_trading" }]
+                },
+                { "id": "m1c2", "text": "What's a portfolio?", "nextNodeId": "m3" }
+              ]
+            },
+            {
+              "id": "m2",
+              "speaker": "Marcus the Broker",
+              "text": "Opening the trading floor now…",
+              "end": true
+            },
+            {
+              "id": "m3",
+              "speaker": "Marcus the Broker",
+              "text": "A portfolio is your collection of investments — stocks, bonds, etc. The key is spreading your money across different asset types so one bad day doesn't wipe you out. That's diversification!",
+              "choices": [
+                {
+                  "id": "m3c1",
+                  "text": "Got it — let's trade!",
+                  "nextNodeId": "m2",
+                  "effects": [{ "type": "startMinigame", "minigameId": "mg_paper_trading" }]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_nina",
+          "startNodeId": "n1",
+          "nodes": [
+            {
+              "id": "n1",
+              "speaker": "Nina the Analyst",
+              "text": "Markets move on news. Bonds and stocks react very differently to the same headlines. Want to see how?",
+              "choices": [
+                {
+                  "id": "n1c1",
+                  "text": "Show me!",
+                  "nextNodeId": "n2",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_bonds_vs_stocks" },
+                    { "type": "startMinigame", "minigameId": "mg_bonds_vs_stocks" }
+                  ]
+                },
+                { "id": "n1c2", "text": "What are bonds exactly?", "nextNodeId": "n3" }
+              ]
+            },
+            {
+              "id": "n2",
+              "speaker": "Nina the Analyst",
+              "text": "Loading the scenario simulator…",
+              "end": true
+            },
+            {
+              "id": "n3",
+              "speaker": "Nina the Analyst",
+              "text": "A bond is like an IOU. You lend money to a company or government, and they pay you back with interest. Bonds are usually less risky than stocks but offer lower returns. Ready to compare them?",
+              "choices": [
+                {
+                  "id": "n3c1",
+                  "text": "Let's do it!",
+                  "nextNodeId": "n2",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_bonds_vs_stocks" },
+                    { "type": "startMinigame", "minigameId": "mg_bonds_vs_stocks" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_dr_fund",
+          "startNodeId": "d1",
+          "nodes": [
+            {
+              "id": "d1",
+              "speaker": "Dr. Fund",
+              "text": "Welcome to the ETF Research Lab! An ETF — Exchange-Traded Fund — bundles many assets together so you can invest in a whole market with one purchase. Want to become an ETF Detective?",
+              "choices": [
+                {
+                  "id": "d1c1",
+                  "text": "Absolutely!",
+                  "nextNodeId": "d2",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_etf_detective" },
+                    { "type": "startMinigame", "minigameId": "mg_etf_detective" }
+                  ]
+                },
+                { "id": "d1c2", "text": "What makes ETFs different from stocks?", "nextNodeId": "d3" }
+              ]
+            },
+            {
+              "id": "d2",
+              "speaker": "Dr. Fund",
+              "text": "Let me pull up the comparison terminal…",
+              "end": true
+            },
+            {
+              "id": "d3",
+              "speaker": "Dr. Fund",
+              "text": "When you buy a stock, you own a piece of one company. An ETF is like a basket — it holds shares in many companies. You get instant diversification! But watch the fees — they eat into your returns over time.",
+              "choices": [
+                {
+                  "id": "d3c1",
+                  "text": "Let's compare some ETFs!",
+                  "nextNodeId": "d2",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_etf_detective" },
+                    { "type": "startMinigame", "minigameId": "mg_etf_detective" }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dlg_old_timer",
+          "startNodeId": "ot1",
+          "nodes": [
+            {
+              "id": "ot1",
+              "speaker": "Old Timer Walt",
+              "text": "Been in markets for 40 years, kid. Want some free advice?",
+              "choices": [
+                { "id": "ot1c1", "text": "What's the #1 rule?", "nextNodeId": "ot2" },
+                { "id": "ot1c2", "text": "What's the biggest mistake beginners make?", "nextNodeId": "ot3" }
+              ]
+            },
+            {
+              "id": "ot2",
+              "speaker": "Old Timer Walt",
+              "text": "Rule #1: Time in the market beats timing the market. Don't try to predict when to buy and sell. Just invest regularly, stay diversified, and let compound growth do the work.",
+              "end": true
+            },
+            {
+              "id": "ot3",
+              "speaker": "Old Timer Walt",
+              "text": "Panic selling. Markets drop 20-30% sometimes — it's normal. Beginners sell at the bottom and miss the recovery. If you have a long time horizon, stay the course.",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_paper_trading",
+          "name": "Paper Trading Simulator",
+          "description": "Build a diversified portfolio with $10,000 virtual cash over 30 trading days.",
+          "icon": "📈",
+          "componentId": "PaperTradingGame",
+          "areaId": "fa_broker_hall"
+        },
+        {
+          "id": "mg_bonds_vs_stocks",
+          "name": "Bonds vs Stocks Challenge",
+          "description": "React to news events by choosing bonds or stocks. Learn volatility vs yield.",
+          "icon": "📊",
+          "componentId": "BondsVsStocksGame",
+          "areaId": "fa_news_stand"
+        },
+        {
+          "id": "mg_etf_detective",
+          "name": "ETF Detective",
+          "description": "Compare ETFs and pick the best match for each investor goal.",
+          "icon": "🔍",
+          "componentId": "ETFDetectiveGame",
+          "areaId": "fa_etf_lab"
+        }
+      ]
+    }
+  ]
+}

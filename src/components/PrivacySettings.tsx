@@ -24,7 +24,7 @@ import {
   XCircle
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import type { ConsentSettings, UserPrivacyData } from '@/lib/pipeda-compliance'
 import { PIPEDAComplianceService } from '@/lib/pipeda-compliance'
 

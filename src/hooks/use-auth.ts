@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/hooks/use-safe-kv'
 import { SecurityService, type SessionData, type UserRole } from '@/lib/security'
 
 interface GitHubUser {

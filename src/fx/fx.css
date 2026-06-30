@@ -1,0 +1,35 @@
+.fx-fallback-vignette::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 29;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(2, 8, 20, 0.35) 100%
+  );
+  transition: opacity 0.2s;
+}
+
+.game-fx--no-webgl.fx-fallback-vignette::after {
+  opacity: 1;
+}
+
+.game-fx-overlay--css-fallback {
+  display: none;
+}
+
+/* Subtle hover ring on interactables (works with or without WebGL) */
+[data-fx-interactable]:not([disabled]) {
+  position: relative;
+}
+
+[data-fx-interactable]:not([disabled]):hover,
+[data-fx-interactable]:not([disabled]):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.35),
+    0 0 18px rgba(59, 130, 246, 0.2);
+}

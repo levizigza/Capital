@@ -1,0 +1,135 @@
+/* Performance profiling overlay — dev HUD for budget violations */
+
+.perf-overlay {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 45;
+  pointer-events: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.35;
+  color: rgba(220, 255, 230, 0.95);
+  background: rgba(8, 12, 16, 0.82);
+  border: 1px solid rgba(80, 200, 120, 0.35);
+  border-radius: 6px;
+  padding: 0.45rem 0.55rem;
+  min-width: 11.5rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.perf-overlay--violation {
+  border-color: rgba(255, 90, 90, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 60, 60, 0.25), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.perf-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.perf-overlay__title {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(120, 255, 160, 0.95);
+}
+
+.perf-overlay--violation .perf-overlay__title {
+  color: rgba(255, 120, 120, 0.95);
+}
+
+.perf-overlay__badge {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background: rgba(255, 60, 60, 0.85);
+  color: #fff;
+  animation: perf-pulse 1.2s ease-in-out infinite;
+}
+
+.perf-overlay__hint {
+  margin-left: auto;
+  opacity: 0.45;
+  font-size: 8px;
+}
+
+.perf-section {
+  margin-top: 0.25rem;
+}
+
+.perf-section__title {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+  margin-bottom: 0.15rem;
+}
+
+.perf-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 0.25rem 0.35rem;
+  align-items: baseline;
+}
+
+.perf-row__label {
+  opacity: 0.75;
+}
+
+.perf-row__value {
+  text-align: right;
+  font-weight: 600;
+}
+
+.perf-row__budget {
+  opacity: 0.4;
+  font-size: 8px;
+  text-align: right;
+}
+
+.perf-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  align-self: center;
+}
+
+.perf-dot--ok {
+  background: #4ade80;
+  box-shadow: 0 0 4px rgba(74, 222, 128, 0.6);
+}
+
+.perf-dot--warn {
+  background: #fbbf24;
+  box-shadow: 0 0 4px rgba(251, 191, 36, 0.6);
+}
+
+.perf-dot--over {
+  background: #f87171;
+  box-shadow: 0 0 6px rgba(248, 113, 113, 0.8);
+  animation: perf-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes perf-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perf-overlay__badge,
+  .perf-dot--over {
+    animation: none;
+  }
+}

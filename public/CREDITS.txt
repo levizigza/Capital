@@ -1,0 +1,15 @@
+FinanceQuest Pro — Credits
+================================================
+
+Third-party assets and attributions.
+Generated: 2026-06-26
+
+Xelu's FREE Controller & Keyboard Prompts
+-----------------------------------------
+Controller and keyboard button prompts by Nicolae "Xelu" Berbece, released under CC0 1.0 Universal.
+Author: Nicolae "Xelu" Berbece (Those Awesome Guys)
+Source: OpenGameArt — https://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Modifications: Synced subset into public/input-prompts/xelu/ via scripts/sync-xelu-prompts.mjs; PlayStation symbol buttons omitted per OpenGameArt distribution notes.
+
+— End of credits —
