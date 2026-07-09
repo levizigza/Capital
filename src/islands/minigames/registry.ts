@@ -16,6 +16,9 @@ const MINIGAME_COMPONENTS: Record<string, () => Promise<{ default: ComponentType
   PropertyAuctionGame: () => import("./PropertyAuctionGame"),
   IPScenarioGame: () => import("./IPScenarioGame"),
   BudgetBalancerGame: () => import("./BudgetBalancerMinigame"),
+  CompoundSnowballGame: () => import("./CompoundSnowballGame"),
+  DiversifyBasketsGame: () => import("./DiversifyBasketsGame"),
+  PriceItRightGame: () => import("./PriceItRightGame"),
 };
 
 export function getMinigameComponent(componentId: string): ComponentType<MinigameProps> | null {

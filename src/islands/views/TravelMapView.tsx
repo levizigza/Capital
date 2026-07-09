@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useCallback, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import {
   GameHudLayout,
@@ -7,27 +8,31 @@ import {
   GameTooltipProvider,
   HudChip,
   useGameMotion,
-  useGameUi,
 } from "@/game-ui";
 import { useInputAction, InputPromptHint } from "@/input";
 
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
+import { getAnimationStyle } from "../animationStyles";
+import { getBoatTier, nextBoatTier } from "../boats";
+import { CharacterAvatar } from "./CharacterAvatar";
+import { BoatVoyageOverlay } from "./BoatVoyageOverlay";
 
 const ISLAND_POSITIONS = [
-  { x: 15, y: 70 },
-  { x: 35, y: 55 },
-  { x: 55, y: 68 },
-  { x: 75, y: 52 },
-  { x: 25, y: 40 },
-  { x: 48, y: 35 },
-  { x: 70, y: 38 },
-  { x: 85, y: 25 },
-  { x: 15, y: 22 },
-  { x: 38, y: 18 },
-  { x: 60, y: 15 },
-  { x: 82, y: 12 },
+  { x: 12, y: 72 },
+  { x: 28, y: 58 },
+  { x: 44, y: 70 },
+  { x: 62, y: 55 },
+  { x: 78, y: 68 },
+  { x: 22, y: 38 },
+  { x: 42, y: 32 },
+  { x: 58, y: 36 },
+  { x: 76, y: 28 },
+  { x: 10, y: 20 },
+  { x: 32, y: 14 },
+  { x: 54, y: 12 },
+  { x: 78, y: 10 },
 ];
 
 const PIN_SHAPE: Record<string, string> = {
@@ -55,38 +60,78 @@ export function TravelMapView({
   useInputAction("cancel", onBack);
 
   const { reduced } = useGameMotion();
-  const { uiAspect } = useGameUi();
+  const boat = getBoatTier(userProfile.totalCoins);
+  const nextBoat = nextBoatTier(userProfile.totalCoins);
 
-  const clouds =
-    reduced ? null : (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(uiAspect === "ultrawide" ? 3 : 5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-4xl sm:text-6xl opacity-60"
-            initial={{ x: -100 }}
-            animate={{ x: "100vw" }}
-            transition={{ duration: 30 + i * 5, repeat: Infinity, delay: i * 6, ease: "linear" }}
-            style={{ top: `${10 + i * 15}%` }}
-          >
-            ☁️
-          </motion.div>
-        ))}
-      </div>
-    );
+  const [voyage, setVoyage] = useState<{
+    islandId: string;
+    name: string;
+    animationStyle: string;
+  } | null>(null);
+
+  const beginVoyage = useCallback(
+    (island: IslandDefinition) => {
+      const theme = getIslandTheme(island.id, island.themeId);
+      setVoyage({
+        islandId: island.id,
+        name: island.name,
+        animationStyle: theme.animationStyle,
+      });
+    },
+    []
+  );
+
+  const completeVoyage = useCallback(() => {
+    if (!voyage) return;
+    const id = voyage.islandId;
+    setVoyage(null);
+    onEnterIsland(id);
+  }, [voyage, onEnterIsland]);
+
+  const waves = useMemo(
+    () =>
+      reduced ? null : (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute left-0 right-0 h-8 rounded-[50%] bg-white/30"
+              style={{ bottom: `${8 + i * 6}%` }}
+              animate={{ x: ["-5%", "5%", "-5%"] }}
+              transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+        </div>
+      ),
+    [reduced]
+  );
 
   return (
     <GameTooltipProvider>
+      <AnimatePresence>
+        {voyage ? (
+          <BoatVoyageOverlay
+            key="voyage"
+            boat={boat}
+            character={save.character}
+            targetAnimationStyle={voyage.animationStyle}
+            destinationName={voyage.name}
+            onComplete={completeVoyage}
+          />
+        ) : null}
+      </AnimatePresence>
+
       <GameHudLayout
         background={
-          <div className="absolute inset-0 bg-gradient-to-b from-indigo-400 via-sky-200 to-emerald-300">
-            {clouds}
+          <div className="cap-surface absolute inset-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#7dd3fc] via-[#bae6fd] to-[color-mix(in_oklab,var(--cap-tide)_25%,#ecfdf5)]" />
+            {waves}
           </div>
         }
         topLeft={
           <HudChip
-            title={userProfile.name || "Adventurer"}
-            subtitle={`⭐ Level ${userProfile.level} · 🧭 ${save.discovered.islands.length} islands`}
+            title={userProfile.name || "Captain"}
+            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins}`}
           />
         }
         topRight={
@@ -94,50 +139,81 @@ export function TravelMapView({
             Back
           </GameButton>
         }
+        bottom={
+          <div className="flex flex-col items-center gap-1 px-4 pb-2 text-center">
+            {save.character ? (
+              <CharacterAvatar
+                character={save.character}
+                size={56}
+                animationStyle="capital-default"
+              />
+            ) : null}
+            <div className="voyage-sailing relative">
+              <span
+                className="voyage-boat inline-block text-4xl"
+                style={{ transform: `scale(${boat.scale})` }}
+                title={boat.label}
+              >
+                {boat.emoji}
+              </span>
+              <div className="voyage-wake" />
+            </div>
+            {nextBoat ? (
+              <p className="text-[10px] font-medium text-[var(--cap-ink-soft)]">
+                {nextBoat.minCoins - userProfile.totalCoins} more coins for a {nextBoat.label}
+              </p>
+            ) : (
+              <p className="text-[10px] font-bold text-[var(--cap-gold-deep)]">Mega yacht unlocked!</p>
+            )}
+          </div>
+        }
       >
         <div className="relative mx-auto h-full min-h-[280px] w-full max-w-[var(--game-content-max)]">
-          <h1
-            className="mb-2 text-center font-black text-white drop-shadow-lg"
-            style={{
-              fontSize: "var(--game-title-size)",
-              textShadow: "2px 2px 0 #000, -2px -2px 0 #000",
-            }}
-          >
-            🎈 Island Blimp
-          </h1>
-          <p className="text-center text-sm text-white/90 mb-4 max-w-md mx-auto">
-            Each island is its own world — different art, games, and quests. Like Poptropica!
+          <div className="text-center shrink-0 mb-3">
+            <div className="cap-eyebrow">Sail the Capital sea</div>
+            <h1 className="cap-display text-[var(--cap-ink)]" style={{ fontSize: "var(--game-title-size)" }}>
+              Voyage Map
+            </h1>
+          </div>
+          <p className="text-center text-sm text-[var(--cap-ink-soft)] mb-2 max-w-lg mx-auto">
+            Each island is its own game era — Poptropica sketch, Flash flat, Miniclip arcade. Sail there and
+            your character morphs into that world&apos;s style.
           </p>
           <p className="text-center mb-2">
-            <InputPromptHint action="interact" className="justify-center text-gray-800">
-              Hop to an island —
+            <InputPromptHint action="interact" className="justify-center text-[var(--cap-ink-soft)]">
+              Chart a course —
             </InputPromptHint>
           </p>
-          <div className="relative h-[min(60dvh,520px)] w-full">
+
+          <div className="relative h-[min(52dvh,480px)] w-full">
             {islands.map((island, index) => {
               const theme = getIslandTheme(island.id, island.themeId);
+              const era = getAnimationStyle(theme.animationStyle);
               const pos = ISLAND_POSITIONS[index] || ISLAND_POSITIONS[index % ISLAND_POSITIONS.length];
               const missingItems = (island.requiredItems || []).filter((id) => !save.inventory.includes(id));
               const isLocked = missingItems.length > 0;
               const pinSize = "w-[var(--game-pin-size)] h-[var(--game-pin-size)]";
               const shapeClass = PIN_SHAPE[theme.mapPinShape] ?? PIN_SHAPE.round;
               const discovered = save.discovered.islands.includes(island.id);
+              const isFuture = island.id === "future_shores";
 
               const pin = (
                 <motion.button
                   type="button"
-                  disabled={isLocked}
+                  disabled={isLocked || Boolean(voyage)}
                   data-testid={`island-pin-${island.id}`}
                   className={`absolute ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}
                   style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: "translate(-50%, -50%)" }}
                   initial={reduced ? false : { scale: 0 }}
-                  animate={{ scale: 1, opacity: isLocked ? 0.5 : 1 }}
-                  whileHover={isLocked || reduced ? undefined : { scale: 1.12 }}
-                  onClick={() => !isLocked && onEnterIsland(island.id)}
+                  animate={{ scale: 1, opacity: isLocked ? 0.45 : 1 }}
+                  whileHover={isLocked || reduced || voyage ? undefined : { scale: 1.1 }}
+                  onClick={() => !isLocked && beginVoyage(island)}
                 >
                   <div className="relative flex flex-col items-center">
                     <div
-                      className={`${pinSize} ${shapeClass} flex items-center justify-center text-2xl sm:text-4xl shadow-xl border-4 overflow-hidden`}
+                      className={`${pinSize} ${shapeClass} flex items-center justify-center text-2xl sm:text-4xl shadow-xl border-4 overflow-hidden ${
+                        isFuture ? "island-pin-future" : ""
+                      }`}
                       style={{
                         borderColor: isLocked ? "#9ca3af" : theme.accent,
                         background: isLocked ? "#e5e7eb" : theme.background,
@@ -148,18 +224,25 @@ export function TravelMapView({
                         {isLocked ? "🔒" : island.icon}
                       </span>
                     </div>
-                    <div
-                      className="mt-2 max-w-[9rem] truncate rounded-lg px-2 py-0.5 text-center text-[10px] sm:text-xs font-bold shadow-md"
+                    <span
+                      className="era-badge mt-1.5"
                       style={{
-                        background: isLocked ? "#e5e7eb" : "rgba(255,255,255,0.95)",
+                        borderColor: isLocked ? "#9ca3af" : theme.accent,
                         color: isLocked ? "#6b7280" : "#1f2937",
+                      }}
+                    >
+                      {era.eraLabel}
+                    </span>
+                    <div
+                      className="mt-1 max-w-[9rem] truncate rounded-lg px-2 py-0.5 text-center text-[10px] sm:text-xs font-bold shadow-md"
+                      style={{
+                        background: isLocked ? "#e5e7eb" : "var(--cap-card)",
+                        color: isLocked ? "#6b7280" : "var(--cap-ink)",
+                        border: `2px solid ${isLocked ? "#9ca3af" : "var(--cap-ink)"}`,
                         borderBottom: discovered ? `3px solid ${theme.accent}` : undefined,
                       }}
                     >
                       {island.name}
-                    </div>
-                    <div className="text-[9px] text-white/90 font-medium mt-0.5 max-w-[8rem] truncate drop-shadow">
-                      {theme.mood}
                     </div>
                   </div>
                 </motion.button>
@@ -171,7 +254,7 @@ export function TravelMapView({
                   content={
                     isLocked
                       ? `Locked — requires: ${missingItems.join(", ")}`
-                      : `${island.description}\n\n${theme.mood} · ${theme.genre} · ${theme.complexity}`
+                      : `${island.description}\n\n${era.tagline}\n${theme.mood}`
                   }
                 >
                   {pin}

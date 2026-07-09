@@ -234,6 +234,21 @@
           "icon": "⚖️",
           "componentId": "IPScenarioGame",
           "areaId": "in_patent_office"
+        },
+        {
+          "id": "mg_license_pricing",
+          "name": "Price Your License",
+          "description": "You own the patent — now set the licensing fee. Slide the price and watch how many partners sign on. Find the profit peak.",
+          "icon": "⚖️",
+          "componentId": "PriceItRightGame",
+          "areaId": "in_patent_office",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "notebook",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "PriceConfig", "config": { "product": "your patent license", "emoji": "⚖️", "cost": 3, "maxDemand": 30, "chokePrice": 20 } }
+          ]
         }
       ]
     }

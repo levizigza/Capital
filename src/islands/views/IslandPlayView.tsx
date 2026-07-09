@@ -39,21 +39,30 @@ import { createDefaultEconomyState } from "../economy";
 import { createDefaultSkillStats } from "../skillStats";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";
 import { getIslandTheme } from "../themes/islandThemes";
+import { getAnimationStyle, type AnimationStyleId } from "../animationStyles";
+import { CharacterAvatar } from "./CharacterAvatar";
+import { WealthHud } from "./WealthHud";
+import type { CapitalCharacter } from "../character";
 
 type IslandSection = "explore" | "quests" | "bag";
 
 export type IslandPlayViewProps = {
   island: IslandDefinition;
   save: IslandSaveV1;
+  totalCoins?: number;
   activeAreaId?: AreaId;
   learningProfile: LearningProfileId;
   objectiveKey: (obj: QuestObjective) => string;
+  character?: CapitalCharacter;
+  animationStyle?: AnimationStyleId | string;
   onEnterArea: (areaId: AreaId) => void;
   onTalkNpc: (npcId: NpcId) => void;
   onCollectItem: (itemId: ItemId) => void;
   onStartQuest: (questId: QuestId) => void;
   onOpenTravel: () => void;
   onOpenHub: () => void;
+  onOpenStudio?: () => void;
+  onPlayMinigame?: (minigameId: string) => void;
   devCheats?: ReactNode;
 };
 
@@ -167,19 +176,25 @@ function QuestLogPanel({
 export function IslandPlayView({
   island,
   save,
+  totalCoins,
   activeAreaId,
   learningProfile,
   objectiveKey,
+  character,
+  animationStyle,
   onEnterArea,
   onTalkNpc,
   onCollectItem,
   onStartQuest,
   onOpenTravel,
   onOpenHub,
+  onOpenStudio,
+  onPlayMinigame,
   devCheats,
 }: IslandPlayViewProps) {
   const { uiScale } = useGameUi();
   const compact = uiScale === "compact";
+  const era = getAnimationStyle(animationStyle);
   const [section, setSection] = useState<IslandSection>("explore");
   const profileDef = getProfileDef(learningProfile);
 
@@ -335,6 +350,13 @@ export function IslandPlayView({
       }
       topRight={
         <div className="flex flex-wrap items-center justify-end gap-2">
+          {typeof totalCoins === "number" ? <WealthHud totalCoins={totalCoins} compact /> : null}
+          {character ? (
+            <div className="flex flex-col items-center gap-0.5">
+              <CharacterAvatar character={character} size={44} animationStyle={animationStyle} />
+              <span className="era-badge text-[9px]">{era.eraLabel}</span>
+            </div>
+          ) : null}
           <HudBadge className="bg-indigo-50 text-indigo-900" title={profileDef.description}>
             {profileDef.icon} {profileDef.label}
           </HudBadge>
@@ -342,7 +364,7 @@ export function IslandPlayView({
             <LazyEconomyWeather economy={save.economyState ?? createDefaultEconomyState()} />
           </Suspense>
           <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
-            🧭 Map
+            ⛵ Sail
           </GameButton>
           <GameButton variant="primary" size="sm" onClick={onOpenHub}>
             🏠 Hub
@@ -351,6 +373,54 @@ export function IslandPlayView({
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-[var(--game-gap)] pb-4">
+        {island.id === "future_shores" && onOpenStudio ? (
+          <GamePanel padding="default" className="border-dashed border-amber-400 bg-amber-50/80">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="cap-eyebrow text-amber-800">Kids of the future</div>
+                <p className="text-sm font-medium text-amber-950">
+                  This island is unfinished on purpose. Open VibeCode Studio to carve out games for your era.
+                </p>
+              </div>
+              <GameButton variant="primary" onClick={onOpenStudio}>
+                ✨ Open VibeCode Studio
+              </GameButton>
+            </div>
+          </GamePanel>
+        ) : null}
+
+        {onPlayMinigame && (island.minigames?.length ?? 0) > 0 ? (
+          <GamePanel title="Learn-by-doing games" padding="default">
+            <p className="mb-3 text-sm text-gray-600">
+              Hands-on challenges on {island.name}. Play to learn by doing — no quizzes.
+            </p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {island.minigames!.map((mg) => {
+                const cleared = save.completedMinigames?.includes(mg.id);
+                return (
+                  <button
+                    key={mg.id}
+                    type="button"
+                    data-testid={`island-minigame-${mg.id}`}
+                    onClick={() => onPlayMinigame(mg.id)}
+                    className="flex items-center gap-3 rounded-xl border-2 border-black/15 bg-white/80 p-3 text-left transition-transform hover:-translate-y-0.5 hover:border-black/40"
+                  >
+                    <span className="text-2xl shrink-0">{mg.icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2 font-bold">
+                        {mg.name}
+                        {cleared ? <span className="text-xs text-emerald-600">✓ cleared</span> : null}
+                      </span>
+                      <span className="line-clamp-2 text-xs text-gray-600">{mg.description}</span>
+                    </span>
+                    <span className="shrink-0 text-lg">▶</span>
+                  </button>
+                );
+              })}
+            </div>
+          </GamePanel>
+        ) : null}
+
         <Suspense fallback={null}>
           <LazySkillStatsPanel
             stats={(save.skillStats ?? createDefaultSkillStats()).current}

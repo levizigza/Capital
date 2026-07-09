@@ -4,7 +4,7 @@ import { Toaster } from 'sonner'
 import { motion } from 'framer-motion'
 import { Sparkle } from '@phosphor-icons/react'
 import React from 'react'
-import { ISLANDS_ENABLED } from '@/islands/featureFlags'
+import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -21,6 +21,9 @@ const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
 const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
 const DebugPanel = React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
 const IslandsApp = React.lazy(() => import('@/islands/IslandsApp'))
+const CapitalOpeningIntro = React.lazy(() =>
+  import('@/islands/views/CapitalOpeningIntro').then((m) => ({ default: m.CapitalOpeningIntro }))
+)
 const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
 const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
 
@@ -150,9 +153,13 @@ function App() {
   const [currentMode, setCurrentMode] = useState<LearningMode>(() => {
     if (typeof window === "undefined") return null;
     const params = new URLSearchParams(window.location.search);
-    if (params.get("mode") === "islands" && (import.meta.env.VITE_ISLANDS === "1" || import.meta.env.VITE_QA === "1")) {
-      return "islands";
-    }
+    const requested = params.get("mode");
+    // Explicit overrides always win (e.g. ?mode=creative, ?mode=select).
+    if (requested === "creative" || requested === "structured") return requested;
+    if (requested === "select") return null;
+    if (requested === "islands" && ISLANDS_ENABLED) return "islands";
+    // Capital now boots straight into the island launcher by default.
+    if (ISLANDS_DEFAULT) return "islands";
     return null;
   })
   const [isInitialized, setIsInitialized] = useState(false)
@@ -160,6 +167,14 @@ function App() {
   const [profileError, setProfileError] = useState(false)
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
+  const [showCapitalIntro, setShowCapitalIntro] = useState(() => {
+    if (typeof window === "undefined") return false
+    // Play the opening title animation on every fresh page load.
+    // Only an explicit ?skipIntro=1 override bypasses it.
+    const params = new URLSearchParams(window.location.search)
+    if (params.get("skipIntro") === "1") return false
+    return true
+  })
 
   useEffect(() => {
     if (userProfile) {
@@ -247,7 +262,9 @@ function App() {
       }
     })
     setShowArchetypeQuiz(false)
-    setCurrentMode('creative') // Automatically route to Creative Game Hub after quiz
+    // Route into the island launcher after the intro, unless the player is
+    // deliberately in a legacy mode.
+    setCurrentMode((prev) => (prev === 'creative' || prev === 'structured') ? prev : (ISLANDS_DEFAULT ? 'islands' : 'creative'))
   }
 
   const handleSkipArchetype = () => {
@@ -476,6 +493,17 @@ function App() {
     )
   }
 
+  if (showCapitalIntro && currentMode === 'islands' && ISLANDS_ENABLED) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <Suspense fallback={<LoadingFallback />}>
+          <CapitalOpeningIntro onComplete={() => setShowCapitalIntro(false)} />
+        </Suspense>
+      </>
+    )
+  }
+
   if (showArchetypeQuiz && !userProfile?.archetype?.completedQuiz) {
     return (
       <>
@@ -585,11 +613,12 @@ function App() {
                )}
              </>
            )}
-           <IslandsApp
-             userProfile={userProfile}
-             setUserProfile={setUserProfile}
-             onExit={handleModeSwitch}
-           />
+          <IslandsApp
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            onExit={handleModeSwitch}
+            onReplayIntro={() => setShowCapitalIntro(true)}
+          />
          </Suspense>
        </>
      )

@@ -1,0 +1,168 @@
+/* =====================================================================
+   CAPITAL — Design Language
+   ---------------------------------------------------------------------
+   A signature aesthetic: editorial serif display (Fraunces) paired with
+   a modern grotesk (Space Grotesk), a warm "paper + ink" canvas, a
+   marigold-gold / tide-teal / coral accent trio, tactile hard-offset
+   shadows, and a whisper of paper grain.
+
+   Distinct — but grounded in familiar cards, pills, and type so it never
+   feels jarring. This file is imported LAST so its tokens win.
+   ===================================================================== */
+
+:root {
+  /* ---- Type ---------------------------------------------------------- */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Capital palette ---------------------------------------------- */
+  --cap-paper: #f4ecda;      /* warm bone canvas          */
+  --cap-paper-2: #ece0c6;    /* deeper paper for wells    */
+  --cap-card: #fffdf6;       /* raised surfaces           */
+  --cap-ink: #16283b;        /* near-black navy ink       */
+  --cap-ink-2: #24384c;      /* softer ink                */
+  --cap-ink-soft: #5c6b78;   /* muted ink for captions    */
+  --cap-gold: #f4a629;       /* marigold — the signature  */
+  --cap-gold-deep: #dd8710;
+  --cap-tide: #12b3a6;       /* fresh teal                */
+  --cap-tide-deep: #0d8c82;
+  --cap-coral: #ff6f5e;      /* warm pop / alerts         */
+  --cap-grape: #7b61ff;      /* rare electric accent      */
+  --cap-line: #d8c9a8;       /* warm hairline             */
+
+  /* Tactile hard-offset shadow (the t:actile "sticker" feel) */
+  --cap-shadow-sm: 3px 3px 0 rgba(22, 40, 59, 0.14);
+  --cap-shadow: 6px 6px 0 rgba(22, 40, 59, 0.13);
+  --cap-shadow-ink: 4px 4px 0 var(--cap-ink);
+
+  /* ---- Map the app's shadcn/game tokens onto Capital ---------------- */
+  --background: var(--cap-paper);
+  --foreground: var(--cap-ink);
+  --card: var(--cap-card);
+  --card-foreground: var(--cap-ink);
+  --popover: var(--cap-card);
+  --popover-foreground: var(--cap-ink);
+  --primary: var(--cap-ink);
+  --primary-foreground: #fbf5e6;
+  --secondary: var(--cap-paper-2);
+  --secondary-foreground: var(--cap-ink);
+  --muted: var(--cap-paper-2);
+  --muted-foreground: var(--cap-ink-soft);
+  --accent: var(--cap-gold);
+  --accent-foreground: var(--cap-ink);
+  --destructive: var(--cap-coral);
+  --border: var(--cap-line);
+  --input: var(--cap-line);
+  --ring: var(--cap-gold);
+  --radius: 0.95rem;
+  --shadow-md: var(--cap-shadow);
+}
+
+/* Keep body text on the grotesk; give headings the editorial serif. */
+body {
+  font-family: var(--font-sans);
+  background: var(--cap-paper);
+  color: var(--cap-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+.cap-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+.cap-display {
+  font-weight: 900;
+}
+
+.cap-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.72rem;
+  color: var(--cap-ink-soft);
+}
+
+/* ---------------------------------------------------------------------
+   Paper grain — a reusable, non-interactive overlay. Apply .cap-surface
+   to full-bleed backdrops to get warm paper + a soft light mesh + grain.
+   --------------------------------------------------------------------- */
+.cap-grain::after,
+.cap-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+}
+
+.cap-surface {
+  position: relative;
+  background:
+    radial-gradient(1100px 620px at 12% -8%, rgba(244, 166, 41, 0.16), transparent 60%),
+    radial-gradient(900px 700px at 108% 4%, rgba(18, 179, 166, 0.14), transparent 58%),
+    radial-gradient(1000px 900px at 50% 118%, rgba(123, 97, 255, 0.10), transparent 60%),
+    linear-gradient(180deg, var(--cap-paper) 0%, var(--cap-paper-2) 100%);
+}
+
+.cap-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------------
+   Game-UI primitives re-skinned to the paper/ink language.
+   --------------------------------------------------------------------- */
+.game-panel {
+  background: var(--cap-card);
+  border: 2px solid color-mix(in oklab, var(--cap-ink) 82%, transparent);
+  border-radius: var(--radius);
+  box-shadow: var(--cap-shadow);
+  backdrop-filter: none;
+}
+
+.contrast-more .game-panel,
+.game-viewport[data-high-contrast="true"] .game-panel {
+  background: var(--cap-card);
+  border: 2px solid var(--cap-ink);
+  box-shadow: none;
+}
+
+.game-hud-chip {
+  background: var(--cap-card);
+  border: 2px solid color-mix(in oklab, var(--cap-ink) 78%, transparent);
+  border-radius: 999px;
+  box-shadow: var(--cap-shadow-sm);
+  backdrop-filter: none;
+}
+
+/* A reusable "sticker card": paper tile with ink outline + hard shadow. */
+.cap-card {
+  background: var(--cap-card);
+  border: 2px solid var(--cap-ink);
+  border-radius: var(--radius);
+  box-shadow: var(--cap-shadow);
+}
+
+.cap-tab-active {
+  background: var(--cap-gold);
+  color: var(--cap-ink);
+  border: 2px solid var(--cap-ink);
+  box-shadow: var(--cap-shadow-sm);
+}

@@ -276,6 +276,21 @@
           "icon": "💰",
           "componentId": "StartupBudgetGame",
           "areaId": "vf_workshop"
+        },
+        {
+          "id": "mg_price_it_right",
+          "name": "Price Your Product",
+          "description": "Launch day! Slide your product's price and watch demand and profit react live. Discover the profit-maximizing price.",
+          "icon": "🚀",
+          "componentId": "PriceItRightGame",
+          "areaId": "vf_workshop",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "notebook",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "PriceConfig", "config": { "product": "your app subscription", "emoji": "📱", "cost": 3, "maxDemand": 60, "chokePrice": 25 } }
+          ]
         }
       ]
     }

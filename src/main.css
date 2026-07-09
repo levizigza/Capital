@@ -10,6 +10,10 @@
 @import './art/coincraft/coincraft-skin.css';
 @import './islands/themes/island-themes.css';
 @import './islands/quiz/livingQuiz.css';
+@import './islands/styles/animation-morphs.css';
+@import './islands/styles/capital-opening.css';
+/* Capital design language — imported last so its tokens win. */
+@import './styles/capital-theme.css';
 
 /* Pixel art pipeline — crisp integer scaling */
 .pixel-canvas,

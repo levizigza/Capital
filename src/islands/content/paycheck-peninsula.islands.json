@@ -323,6 +323,21 @@
               }
             }
           ]
+        },
+        {
+          "id": "mg_price_it_right",
+          "name": "Set the Price",
+          "description": "Run a lemonade stand: slide the price and watch the crowd and your profit react. Find the sweet spot.",
+          "icon": "🍋",
+          "componentId": "PriceItRightGame",
+          "areaId": "pp_main_street",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "notebook",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "PriceConfig", "config": { "product": "Lemonade", "emoji": "🍋", "cost": 2, "maxDemand": 40, "chokePrice": 12 } }
+          ]
         }
       ]
     }

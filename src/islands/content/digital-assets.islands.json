@@ -225,6 +225,18 @@
           "icon": "🔄",
           "componentId": "MockExchangeGame",
           "areaId": "da_exchange_plaza"
+        },
+        {
+          "id": "mg_diversify_baskets",
+          "name": "Don't Break the Basket",
+          "description": "Crypto swings hard. Spread coins across assets and weather a volatile market year instead of betting it all on one token.",
+          "icon": "🧺",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "da_exchange_plaza",
+          "genre": "strategy",
+          "complexity": "easy",
+          "visualShell": "flat",
+          "estimatedMinutes": 4
         }
       ]
     }

@@ -386,6 +386,33 @@
           "icon": "🔍",
           "componentId": "ETFDetectiveGame",
           "areaId": "fa_etf_lab"
+        },
+        {
+          "id": "mg_diversify_baskets",
+          "name": "Don't Break the Basket",
+          "description": "Allocate your coins across cash, bonds, index funds, stocks, and crypto — then weather live market years. Feel why spreading risk wins.",
+          "icon": "🧺",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "fa_broker_hall",
+          "genre": "strategy",
+          "complexity": "easy",
+          "visualShell": "flat",
+          "estimatedMinutes": 4
+        },
+        {
+          "id": "mg_compound_snowball",
+          "name": "Compound Snowball",
+          "description": "Reinvest your gains each year and watch the curve balloon, or cash out and stay flat. Compounding, learned by doing.",
+          "icon": "⛄",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "fa_etf_lab",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "retro",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "CompoundConfig", "config": { "principal": 1000, "ratePct": 10, "years": 15, "label": "your portfolio" } }
+          ]
         }
       ]
     }

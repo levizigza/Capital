@@ -1,0 +1,550 @@
+/* Character morphs — same avatar, different island art languages */
+
+.char-morph-capital span:first-child {
+  filter: none;
+}
+
+/* Poptropica: thick ink outline, saturated cartoon */
+.char-morph-poptropica {
+  filter: saturate(1.25) contrast(1.05);
+}
+.char-morph-poptropica > div:first-child {
+  border-width: 5px !important;
+  border-color: #1a1a2e !important;
+  box-shadow:
+    4px 4px 0 #1a1a2e,
+    inset 0 0 0 2px rgba(255, 255, 255, 0.4) !important;
+  border-radius: 38% 42% 40% 44% / 42% 38% 44% 40% !important;
+}
+
+/* Flash: flat bold, slight pixel crispness */
+.char-morph-flash {
+  image-rendering: pixelated;
+}
+.char-morph-flash > div:first-child {
+  border-radius: 12% !important;
+  border-width: 4px !important;
+  border-color: #000 !important;
+  box-shadow: 3px 3px 0 #000 !important;
+  background: radial-gradient(circle at 40% 30%, #fff8 0%, transparent 55%) !important;
+}
+
+/* Miniclip: glossy ring, arcade shine */
+.char-morph-miniclip > div:first-child {
+  border-width: 3px !important;
+  border-color: #fff !important;
+  box-shadow:
+    0 0 0 3px #2563eb,
+    0 8px 20px rgba(37, 99, 235, 0.45),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.15) !important;
+  background: linear-gradient(145deg, #ffffff44, transparent 60%) !important;
+}
+
+/* Newgrounds: indie tilt, gritty edge */
+.char-morph-newgrounds {
+  transform: rotate(-2deg);
+}
+.char-morph-newgrounds > div:first-child {
+  border-radius: 8px !important;
+  border-width: 3px !important;
+  border-color: #7c2d12 !important;
+  box-shadow: 4px 4px 0 #451a03 !important;
+}
+
+/* Future shores: wireframe / under construction */
+.char-morph-future {
+  opacity: 0.92;
+}
+.char-morph-future > div:first-child {
+  border-style: dashed !important;
+  border-width: 3px !important;
+  border-color: #f59e0b !important;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    rgba(245, 158, 11, 0.12) 6px,
+    rgba(245, 158, 11, 0.12) 12px
+  ) !important;
+  box-shadow: none !important;
+  animation: future-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes future-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+/* Voyage map boat wake */
+.voyage-boat {
+  filter: drop-shadow(0 4px 8px rgba(22, 40, 59, 0.25));
+  transition: transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.voyage-wake {
+  position: absolute;
+  width: 120%;
+  height: 8px;
+  bottom: -6px;
+  left: -10%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  border-radius: 50%;
+  animation: wake-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes wake-shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleX(0.8);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scaleX(1.1);
+  }
+}
+
+.voyage-sailing .voyage-boat {
+  animation: boat-bob 0.9s ease-in-out infinite;
+}
+
+@keyframes boat-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(1deg);
+  }
+}
+
+.era-badge {
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--cap-ink);
+  background: var(--cap-card);
+  white-space: nowrap;
+}
+
+.island-pin-future {
+  border-style: dashed !important;
+  animation: future-island-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes future-island-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.35);
+  }
+}
+
+/* =====================================================================
+   POV boat driving — first-person view over the bow, racing toward the
+   destination island. Sea rushes toward the viewer in perspective.
+   ===================================================================== */
+.pov-voyage {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffe6a3 0%, #ffd06b 18%, #bfe9f4 46%);
+  perspective: 520px;
+}
+
+/* sky sun */
+.pov-sun {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: clamp(60px, 8vw, 110px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 36%, #fff7d6, #ffd23f 55%, #ff9e2c 100%);
+  box-shadow: 0 0 60px 14px rgba(255, 190, 70, 0.6);
+}
+
+/* the sea plane, tilted away in perspective, scrolling toward the viewer */
+.pov-sea {
+  position: absolute;
+  left: -30%;
+  right: -30%;
+  top: 46%;
+  bottom: -8%;
+  background: linear-gradient(180deg, #4fd8e6 0%, #17a8c9 40%, #0e6f9c 100%);
+  transform: rotateX(66deg);
+  transform-origin: top center;
+  overflow: hidden;
+}
+.pov-sea::before {
+  content: "";
+  position: absolute;
+  inset: -50% -10% -10%;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 90px);
+  animation: pov-sea-rush 0.7s linear infinite;
+}
+@keyframes pov-sea-rush {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(46px); }
+}
+
+/* destination island sitting on the horizon, growing as we approach */
+.pov-island {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -100%);
+  font-size: clamp(2.5rem, 9vw, 6rem);
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgba(3, 40, 70, 0.4));
+  z-index: 2;
+}
+
+/* the boat bow / cockpit in the foreground */
+.pov-bow {
+  position: absolute;
+  left: 50%;
+  bottom: -2%;
+  transform: translateX(-50%);
+  width: min(88vw, 720px);
+  height: 42%;
+  z-index: 4;
+  /* trapezoid hull narrowing toward the horizon */
+  clip-path: polygon(50% 0%, 78% 100%, 22% 100%);
+  background: linear-gradient(180deg, #e9edf2 0%, #c3ccd6 40%, #8a97a6 100%);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+  border-top: 3px solid rgba(255, 255, 255, 0.7);
+}
+.pov-bow::after {
+  /* deck seam */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6%;
+  bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* steering wheel over the bow */
+.pov-wheel {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  font-size: clamp(3rem, 12vw, 6rem);
+  z-index: 5;
+  animation: pov-wheel-sway 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35));
+}
+@keyframes pov-wheel-sway {
+  0%, 100% { transform: translateX(-50%) rotate(-7deg); }
+  50% { transform: translateX(-50%) rotate(7deg); }
+}
+
+/* bow spray on each side */
+.pov-spray {
+  position: absolute;
+  bottom: 30%;
+  width: 26%;
+  height: 30%;
+  z-index: 5;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.85), transparent 70%);
+  filter: blur(2px);
+  animation: pov-spray-pulse 0.6s ease-in-out infinite;
+}
+.pov-spray--l { left: 14%; }
+.pov-spray--r { right: 14%; }
+@keyframes pov-spray-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85) translateY(0); }
+  50% { opacity: 0.75; transform: scale(1.05) translateY(-6px); }
+}
+
+/* speed streaks toward the viewer */
+.pov-speed {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(ellipse 40% 60% at 50% 46%, transparent 40%, rgba(255, 255, 255, 0.12) 100%);
+  animation: pov-speed-flash 0.9s ease-in-out infinite;
+}
+@keyframes pov-speed-flash {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.pov-throttle {
+  animation: pov-throttle-shake 0.18s linear infinite;
+}
+@keyframes pov-throttle-shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, -1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pov-sea::before,
+  .pov-wheel,
+  .pov-spray,
+  .pov-speed,
+  .pov-throttle {
+    animation: none !important;
+  }
+}
+
+/* =====================================================================
+   POV VOYAGE — first-person: stand on the island, board the paddle boat,
+   then row across open water. (povv-* namespace)
+   ===================================================================== */
+.povv-root,
+.povv-beach {
+  position: absolute;
+  inset: 0;
+  user-select: none;
+  touch-action: none;
+}
+
+.povv-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- Beach (board the boat) ---- */
+.povv-beach-sky {
+  position: absolute;
+  inset: 0 0 46% 0;
+  background: linear-gradient(180deg, #ffe3a0 0%, #ffd07a 55%, #bfe6f0 100%);
+}
+.povv-beach-sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 46%;
+  height: 22%;
+  background: linear-gradient(180deg, #4fd8e6, #17a8c9);
+  box-shadow: inset 0 6px 12px rgba(255, 255, 255, 0.3);
+}
+.povv-beach-sand {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -6%;
+  height: 42%;
+  background: radial-gradient(120% 100% at 50% 0%, #f3e2b0, #e6cf8f 60%, #d9bd72);
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  box-shadow: inset 0 8px 16px rgba(255, 255, 255, 0.35);
+}
+
+.povv-paddle-boat {
+  font-size: clamp(4rem, 16vw, 8rem);
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
+  animation: povv-boat-bob 2.6s ease-in-out infinite;
+}
+@keyframes povv-boat-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+.povv-dock-arrow {
+  font-size: 2rem;
+  color: #16283b;
+  margin: -0.5rem 0 0.75rem;
+  animation: povv-arrow-nudge 1.3s ease-in-out infinite;
+}
+@keyframes povv-arrow-nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+.povv-board-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  border: 3px solid var(--cap-ink, #16283b);
+  background: var(--cap-gold, #f4a629);
+  color: var(--cap-ink, #16283b);
+  font-family: var(--font-sans, sans-serif);
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28);
+  animation: povv-pulse 1.8s ease-in-out infinite;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.povv-board-btn:hover { transform: translateY(-2px); }
+.povv-board-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28); }
+@keyframes povv-pulse {
+  0%, 100% { box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28), 0 0 0 0 rgba(244, 166, 41, 0.5); }
+  50% { box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28), 0 0 0 12px rgba(244, 166, 41, 0); }
+}
+
+/* ---- Sailing HUD ---- */
+.povv-back {
+  position: absolute;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 20;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid var(--cap-ink, #16283b);
+  background: rgba(255, 253, 246, 0.9);
+  color: var(--cap-ink, #16283b);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.povv-compass {
+  position: absolute;
+  top: max(0.75rem, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  background: rgba(12, 22, 34, 0.6);
+  color: #fff;
+  backdrop-filter: blur(4px);
+  text-align: center;
+  min-width: 12rem;
+}
+.povv-compass__hint {
+  font-family: var(--font-sans, sans-serif);
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: #ffe9b8;
+}
+.povv-compass__heading {
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.povv-speedo {
+  position: absolute;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+.povv-speedo__readout {
+  margin-top: -1.6rem;
+  font-family: var(--font-display, serif);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.povv-speedo__readout small { font-size: 0.7rem; opacity: 0.8; }
+
+.povv-cadence {
+  position: absolute;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.povv-cadence button {
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid var(--cap-ink, #16283b);
+  background: rgba(255, 253, 246, 0.9);
+  color: var(--cap-ink, #16283b);
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.povv-cadence button.is-active {
+  background: var(--cap-gold, #f4a629);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+.povv-cadence button:active { transform: translateY(2px); }
+
+.povv-steer {
+  position: absolute;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 20;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 2px solid var(--cap-ink, #16283b);
+  background: rgba(255, 253, 246, 0.85);
+  color: var(--cap-ink, #16283b);
+  font-size: 1.4rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: none;
+}
+.povv-steer:active { background: var(--cap-gold, #f4a629); }
+.povv-steer--l { left: max(1rem, env(safe-area-inset-left)); }
+.povv-steer--r { left: calc(max(1rem, env(safe-area-inset-left)) + 4.75rem); }
+
+.povv-arrive {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 16, 26, 0.55);
+  animation: povv-fade-in 0.3s ease;
+}
+.povv-arrive__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.5rem 2rem;
+  border-radius: 1.25rem;
+  background: rgba(12, 22, 34, 0.7);
+  backdrop-filter: blur(6px);
+  text-align: center;
+}
+@keyframes povv-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .povv-paddle-boat,
+  .povv-dock-arrow,
+  .povv-board-btn {
+    animation: none !important;
+  }
+}

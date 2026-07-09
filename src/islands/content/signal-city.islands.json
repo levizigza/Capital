@@ -266,6 +266,18 @@
           "icon": "📡",
           "componentId": "SignalScannerGame",
           "areaId": "sc_signal_plaza"
+        },
+        {
+          "id": "mg_diversify_baskets",
+          "name": "Don't Break the Basket",
+          "description": "Spread your coins across assets, then weather a live market year. Concentrate and a crash stings; diversify and you ride it out.",
+          "icon": "🧺",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "sc_signal_plaza",
+          "genre": "strategy",
+          "complexity": "easy",
+          "visualShell": "flat",
+          "estimatedMinutes": 4
         }
       ]
     }

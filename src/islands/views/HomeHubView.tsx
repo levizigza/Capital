@@ -16,8 +16,13 @@ import { useInputAction, InputPromptHint } from "@/input";
 import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
 import { getIslandById } from "../content/loader";
+import { getBoatTier } from "../boats";
 import { getProfileDef, type LearningProfileId } from "../learningProfile";
 import type { AccessibilitySettings } from "../settings";
+import type { CapitalCharacter } from "../character";
+import { CharacterCreator } from "./CharacterCreator";
+import { CharacterAvatar } from "./CharacterAvatar";
+import { WealthHud } from "./WealthHud";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -28,12 +33,15 @@ export type HomeHubViewProps = {
   save: IslandSaveV1;
   content: IslandsContent;
   learningProfile: LearningProfileId;
+  character?: CapitalCharacter;
+  onSaveCharacter: (c: CapitalCharacter) => void;
   hubModal: HubModal;
   setHubModal: (m: HubModal) => void;
   onExit: () => void;
   onOpenTravel: () => void;
   onOpenArcade: () => void;
   onOpenStudio: () => void;
+  onReplayIntro?: () => void;
   onResume: () => void;
   onOpenEditor?: () => void;
   onOpenAnalytics?: () => void;
@@ -45,18 +53,19 @@ export type HomeHubViewProps = {
 function HubInteractable({
   icon,
   label,
-  borderClass,
+  accentClass,
   onClick,
 }: {
   icon: string;
   label: string;
-  borderClass: string;
+  accentClass: string;
   onClick: () => void;
 }) {
   const { hover, tap, reduced } = useGameMotion();
   const { uiScale } = useGameUi();
   const size =
     uiScale === "compact" ? "w-[var(--game-interactable)] h-[calc(var(--game-interactable)*1.15)]" : "w-24 h-28";
+  const halo = uiScale === "compact" ? "w-12 h-12 text-3xl" : "w-16 h-16 text-4xl";
 
   return (
     <motion.button
@@ -67,11 +76,15 @@ function HubInteractable({
       whileTap={reduced ? undefined : tap}
     >
       <div
-        className={`${size} rounded-2xl bg-white/90 shadow-xl border-4 flex flex-col items-center justify-center transition-colors ${borderClass}`}
+        className={`${size} cap-card flex flex-col items-center justify-center transition-transform group-hover:-translate-y-1`}
       >
-        <span className={uiScale === "compact" ? "text-4xl" : "text-5xl"}>{icon}</span>
+        <span
+          className={`flex items-center justify-center rounded-2xl ${accentClass} ${halo} border-2 border-[var(--cap-ink)]/15`}
+        >
+          {icon}
+        </span>
       </div>
-      <span className="text-sm font-bold text-white drop-shadow truncate max-w-[6rem]">{label}</span>
+      <span className="text-sm font-bold text-[var(--cap-ink)] truncate max-w-[6rem]">{label}</span>
     </motion.button>
   );
 }
@@ -81,12 +94,15 @@ export function HomeHubView({
   save,
   content,
   learningProfile,
+  character,
+  onSaveCharacter,
   hubModal,
   setHubModal,
   onExit,
   onOpenTravel,
   onOpenArcade,
   onOpenStudio,
+  onReplayIntro,
   onResume,
   onOpenEditor,
   onOpenAnalytics,
@@ -98,28 +114,43 @@ export function HomeHubView({
   useInputAction("menu", () => setHubModal("settings"));
 
   const profile = getProfileDef(learningProfile);
-  const hudSubtitle =
-    profile.hudMode === "simplified"
-      ? `⭐ Level ${userProfile.level}`
-      : `⭐ Level ${userProfile.level} · 🪙 ${userProfile.totalCoins} · ✨ ${userProfile.xp} XP`;
+  const boat = getBoatTier(userProfile.totalCoins);
+  const simplified = profile.hudMode === "simplified";
+  const hudSubtitle = `⭐ Level ${userProfile.level} · ${boat.emoji} ${boat.label}`;
 
   const background = (
-    <>
-      <div className="absolute inset-0 bg-gradient-to-b from-sky-300 via-sky-100 to-emerald-200" />
-      <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-emerald-400 to-emerald-200 rounded-t-[40%]" />
-    </>
+    <div className="cap-surface absolute inset-0">
+      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-t-[45%] bg-gradient-to-t from-[color-mix(in_oklab,var(--cap-tide)_22%,var(--cap-paper))] to-transparent" />
+    </div>
   );
 
   return (
     <>
       <GameHudLayout
         background={background}
-        topLeft={<HudChip title={userProfile.name || "Adventurer"} subtitle={hudSubtitle} />}
+        topLeft={
+          <div className="flex items-center gap-2">
+            {character ? (
+              <button type="button" onClick={() => setHubModal("avatar")} aria-label="Edit character">
+                <CharacterAvatar character={character} size={40} />
+              </button>
+            ) : null}
+            <WealthHud totalCoins={userProfile.totalCoins} compact={simplified} />
+            <div className="hidden sm:block">
+              <HudChip title={character?.name || userProfile.name || "Adventurer"} subtitle={hudSubtitle} />
+            </div>
+          </div>
+        }
         topRight={
           <>
             <HudBadge>
               {profile.icon} {profile.label}
             </HudBadge>
+            {onReplayIntro ? (
+              <GameButton variant="ghost" size="sm" onClick={onReplayIntro} title="Replay opening animation">
+                ↻ Intro
+              </GameButton>
+            ) : null}
             <GameButton variant="outline" size="sm" onClick={onExit}>
               Exit
             </GameButton>
@@ -128,9 +159,9 @@ export function HomeHubView({
         bottom={
           <div className="flex w-full max-w-lg flex-col items-center gap-[var(--game-gap)] px-2">
             <GameButton variant="primary" size="lg" onClick={onOpenTravel} className="w-full max-w-xs shadow-xl" data-testid="hub-travel-map">
-              🧭 Open Travel Map
+              ⛵ Set Sail
             </GameButton>
-            <InputPromptHint action="map" className="text-white drop-shadow">
+            <InputPromptHint action="map" className="text-[var(--cap-ink-soft)]">
               or press
             </InputPromptHint>
             {save.currentIslandId ? (
@@ -152,21 +183,23 @@ export function HomeHubView({
         }
       >
         <div className="flex h-full min-h-0 flex-col items-center justify-center gap-[var(--game-gap-lg)] px-2 py-4">
-          <h1
-            className="text-center font-black text-white drop-shadow-lg shrink-0"
-            style={{ fontSize: "var(--game-title-size)", textShadow: "2px 2px 0 #0008" }}
-          >
-            🏠 Home Hub
-          </h1>
-          <p className="text-center text-sm text-white/90 max-w-md shrink-0">
-            Your clubhouse — customize, shop, play arcade games, or hop the blimp to distinct islands.
+          <div className="text-center shrink-0">
+            <div className="cap-eyebrow mb-1">Your island home base</div>
+            <h1 className="cap-display text-[var(--cap-ink)]" style={{ fontSize: "var(--game-title-size)" }}>
+              Capital
+              <span className="ml-2 inline-block h-[0.55em] w-[0.55em] -translate-y-[0.1em] rounded-sm bg-[var(--cap-gold)]" />
+            </h1>
+          </div>
+          <p className="text-center text-sm text-[var(--cap-ink-soft)] max-w-md shrink-0">
+            Customize your character, play arcade games, build your own levels, then sail by boat to distinct
+            island worlds — each with its own game-era style.
           </p>
           <div className="flex flex-wrap items-end justify-center gap-[var(--game-gap-lg)] max-w-full overflow-x-auto pb-2">
-            <HubInteractable icon="🧑" label="Character" borderClass="border-amber-300 group-hover:border-amber-400" onClick={() => setHubModal("avatar")} />
-            <HubInteractable icon="🛒" label="Shop" borderClass="border-violet-300 group-hover:border-violet-400" onClick={() => setHubModal("shop")} />
-            <HubInteractable icon="🕹️" label="Arcade" borderClass="border-rose-300 group-hover:border-rose-400" onClick={onOpenArcade} />
-            <HubInteractable icon="✨" label="VibeCode" borderClass="border-cyan-300 group-hover:border-cyan-400" onClick={onOpenStudio} />
-            <HubInteractable icon="⚙️" label="Settings" borderClass="border-slate-300 group-hover:border-slate-400" onClick={() => setHubModal("settings")} />
+            <HubInteractable icon="🧑" label="Character" accentClass="bg-amber-200" onClick={() => setHubModal("avatar")} />
+            <HubInteractable icon="🛒" label="Shop" accentClass="bg-violet-200" onClick={() => setHubModal("shop")} />
+            <HubInteractable icon="🕹️" label="Arcade" accentClass="bg-rose-200" onClick={onOpenArcade} />
+            <HubInteractable icon="✨" label="VibeCode" accentClass="bg-cyan-200" onClick={onOpenStudio} />
+            <HubInteractable icon="⚙️" label="Settings" accentClass="bg-slate-200" onClick={() => setHubModal("settings")} />
           </div>
         </div>
       </GameHudLayout>
@@ -178,20 +211,19 @@ export function HomeHubView({
         usePanel={hubModal !== "settings"}
       >
         {hubModal === "avatar" ? (
-          <div className="space-y-4 text-center">
-            <div className="text-5xl">🧑</div>
-            <div className="text-xl font-black">Character / Avatar</div>
-            <p className="text-muted-foreground text-sm">Customize your look and view your stats. Coming soon!</p>
+          <div className="space-y-4">
+            <CharacterCreator
+              character={character}
+              defaultName={userProfile.name}
+              onSave={(c) => {
+                onSaveCharacter(c);
+                setHubModal(null);
+              }}
+              onCancel={() => setHubModal(null)}
+            />
             <GamePanel padding="default" className="text-left text-sm">
-              <div><span className="font-bold">Name:</span> {userProfile.name || "Adventurer"}</div>
-              <div><span className="font-bold">Level:</span> {userProfile.level}</div>
-              <div><span className="font-bold">Coins:</span> {userProfile.totalCoins}</div>
-              <div><span className="font-bold">XP:</span> {userProfile.xp}</div>
-              <div><span className="font-bold">Items:</span> {save.inventory.length}</div>
+              <div><span className="font-bold">Level:</span> {userProfile.level} · <span className="font-bold">Coins:</span> 🪙 {userProfile.totalCoins} · <span className="font-bold">XP:</span> ✨ {userProfile.xp} · <span className="font-bold">Items:</span> {save.inventory.length}</div>
             </GamePanel>
-            <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
-              Close
-            </GameButton>
           </div>
         ) : null}
         {hubModal === "shop" ? (

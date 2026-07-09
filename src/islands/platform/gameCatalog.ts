@@ -48,6 +48,9 @@ const COMPONENT_META: Record<
   PropertyAuctionGame: { genre: "strategy", complexity: "medium", visualShell: "flat", estimatedMinutes: 6 },
   IPScenarioGame: { genre: "puzzle", complexity: "medium", visualShell: "notebook", estimatedMinutes: 5 },
   BudgetBalancerGame: { genre: "puzzle", complexity: "easy", visualShell: "notebook", estimatedMinutes: 3 },
+  CompoundSnowballGame: { genre: "simulation", complexity: "easy", visualShell: "retro", estimatedMinutes: 3 },
+  DiversifyBasketsGame: { genre: "strategy", complexity: "easy", visualShell: "flat", estimatedMinutes: 4 },
+  PriceItRightGame: { genre: "simulation", complexity: "easy", visualShell: "notebook", estimatedMinutes: 3 },
 };
 
 const ISLAND_SHELL_OVERRIDES: Partial<Record<string, MinigameVisualShell>> = {

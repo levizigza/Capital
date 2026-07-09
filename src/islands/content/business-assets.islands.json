@@ -220,6 +220,21 @@
           "icon": "💵",
           "componentId": "CashFlowSimGame",
           "areaId": "ba_storefront"
+        },
+        {
+          "id": "mg_price_it_right",
+          "name": "Set the Price",
+          "description": "Price the products in your store. Slide the price and watch foot traffic and profit move in real time to find the sweet spot.",
+          "icon": "🏷️",
+          "componentId": "PriceItRightGame",
+          "areaId": "ba_storefront",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "notebook",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "PriceConfig", "config": { "product": "your signature item", "emoji": "🥐", "cost": 4, "maxDemand": 50, "chokePrice": 16 } }
+          ]
         }
       ]
     }

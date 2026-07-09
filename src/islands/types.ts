@@ -210,4 +210,8 @@ export type IslandSaveV1 = {
   skillStats?: import("./skillStats").SkillStatsState;
   /** Dynamic economy macro-phase state (Boom/Normal/Recession) */
   economyState?: import("./economy").EconomyState;
+  /** Player's home-island avatar/character */
+  character?: import("./character").CapitalCharacter;
+  /** Whether the first-run world onboarding has been completed */
+  onboardingComplete?: boolean;
 };

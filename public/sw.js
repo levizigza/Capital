@@ -1,6 +1,7 @@
 // Service Worker for offline functionality
-const CACHE_NAME = 'finance-quest-v1'
-const RUNTIME_CACHE = 'finance-quest-runtime-v1'
+// v7: continuous mural across puzzle pieces + clock-driven sun/moon.
+const CACHE_NAME = 'capital-v7'
+const RUNTIME_CACHE = 'capital-runtime-v7'
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -22,75 +23,100 @@ self.addEventListener('install', (event) => {
   self.skipWaiting()
 })
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches (including any prior versions)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
-          .map((name) => caches.delete(name))
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames
+            .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
+            .map((name) => caches.delete(name))
+        )
       )
-    })
+      .then(() => self.clients.claim())
   )
-  // Take control of all pages immediately
-  return self.clients.claim()
 })
 
-// Fetch event - serve from cache, fallback to network
+// A response is cacheable only if it's a same-origin, successful, basic response.
+function isCacheable(response) {
+  return response && response.status === 200 && response.type === 'basic'
+}
+
+// Static media (images, fonts, audio) — safe to serve cache-first.
+function isStaticAsset(url) {
+  return /\.(?:png|jpe?g|gif|svg|webp|ico|woff2?|ttf|otf|mp3|ogg|wav)$/i.test(url.pathname)
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
 
-  // Skip non-GET requests
-  if (request.method !== 'GET') {
-    return
-  }
+  if (request.method !== 'GET') return
+  if (!url.protocol.startsWith('http')) return
 
-  // Skip chrome-extension and other non-http(s) requests
-  if (!url.protocol.startsWith('http')) {
-    return
-  }
+  const isNavigation =
+    request.mode === 'navigate' || request.destination === 'document'
 
-  // Strategy: Cache First, then Network
-  event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse
-      }
-
-      return fetch(request)
+  // Network-first for navigations and code (HTML/JS/CSS): always try to get the
+  // latest, fall back to cache only when offline. This prevents stale app shells
+  // and stale chunks from ever masking a new release.
+  if (isNavigation || request.destination === 'script' || request.destination === 'style') {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
-          // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response
+          if (isCacheable(response)) {
+            const copy = response.clone()
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy))
           }
-
-          // Clone the response
-          const responseToCache = response.clone()
-
-          // Cache the response
-          caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(request, responseToCache)
-          })
-
           return response
         })
-        .catch(() => {
-          // Network failed, try to serve a fallback
-          if (request.destination === 'document') {
-            return caches.match('/index.html')
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match('/index.html'))
+        )
+    )
+    return
+  }
+
+  // Cache-first for static media assets.
+  if (isStaticAsset(url)) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached
+        return fetch(request).then((response) => {
+          if (isCacheable(response)) {
+            const copy = response.clone()
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy))
           }
-          // Return a basic offline response for other requests
-          return new Response('Offline', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
-          })
+          return response
         })
-    })
+      })
+    )
+    return
+  }
+
+  // Everything else: network with cache fallback.
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        if (isCacheable(response)) {
+          const copy = response.clone()
+          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy))
+        }
+        return response
+      })
+      .catch(() =>
+        caches.match(request).then(
+          (cached) =>
+            cached ||
+            new Response('Offline', {
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: new Headers({ 'Content-Type': 'text/plain' }),
+            })
+        )
+      )
   )
 })
 
@@ -99,15 +125,11 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
-  
+
   if (event.data && event.data.type === 'CACHE_URLS') {
     const urls = event.data.urls || []
     event.waitUntil(
-      caches.open(RUNTIME_CACHE).then((cache) => {
-        return cache.addAll(urls)
-      })
+      caches.open(RUNTIME_CACHE).then((cache) => cache.addAll(urls))
     )
   }
 })
-
-// export {}

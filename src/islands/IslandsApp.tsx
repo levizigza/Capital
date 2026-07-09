@@ -10,11 +10,14 @@ import {
 } from "@/game-ui";
 
 import { HomeHubView } from "./views/HomeHubView";
-import { TravelMapView } from "./views/TravelMapView";
+import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandPlayView } from "./views/IslandPlayView";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
 import { IslandThemeProvider } from "./themes/IslandThemeProvider";
+import { getIslandTheme } from "./themes/islandThemes";
+import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
+import type { CapitalCharacter } from "./character";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -83,6 +86,7 @@ type IslandsAppProps = {
   userProfile: UserProfile;
   setUserProfile: (updater: (prev: UserProfile) => UserProfile) => void;
   onExit: () => void;
+  onReplayIntro?: () => void;
 };
 
 type View = "home" | "travel" | "island" | "arcade" | "studio";
@@ -106,7 +110,7 @@ function findNode(graph: DialogueGraph, nodeId: DialogueNodeId): DialogueNode | 
   return graph.nodes.find((n) => n.id === nodeId);
 }
 
-export default function IslandsApp({ userProfile, setUserProfile, onExit }: IslandsAppProps) {
+export default function IslandsApp({ userProfile, setUserProfile, onExit, onReplayIntro }: IslandsAppProps) {
   const [contentTick, setContentTick] = useState(0);
   const content = useMemo(() => {
     void contentTick;
@@ -219,6 +223,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit }: Isla
       return next;
     });
   }, []);
+
+  const saveCharacter = useCallback(
+    (character: CapitalCharacter) => {
+      updateSave((prev) => ({ ...prev, character }));
+      if (character.name) {
+        setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev));
+      }
+      void analytics.track("character_saved", { base: character.base, color: character.color });
+    },
+    [updateSave, setUserProfile]
+  );
+
+  const completeOnboarding = useCallback(() => {
+    updateSave((prev) => ({ ...prev, onboardingComplete: true }));
+    void analytics.track("onboarding_completed", {});
+  }, [updateSave]);
 
   const enterIsland = useCallback(
     async (islandId: string) => {
@@ -790,6 +810,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit }: Isla
     );
   }
 
+  // First-run world onboarding: the home island where players build a
+  // character and learn what they can do before branching to other islands.
+  if (!save.onboardingComplete && content.islands.length > 0 && import.meta.env.VITE_QA !== "1") {
+    return (
+      <WelcomeOnboarding
+        playerName={userProfile.name}
+        character={save.character}
+        islandsCount={content.islands.length}
+        onSaveCharacter={saveCharacter}
+        onComplete={completeOnboarding}
+        onSkip={completeOnboarding}
+      />
+    );
+  }
+
   const rootA11yClasses = [
     a11y.highContrast ? "contrast-more" : "",
     a11y.reducedMotion ? "motion-reduce" : "",
@@ -934,12 +969,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit }: Isla
             save={save}
             content={content}
             learningProfile={learningProfile}
+            character={save.character}
+            onSaveCharacter={saveCharacter}
             hubModal={hubModal}
             setHubModal={setHubModal}
             onExit={handleExit}
             onOpenTravel={() => setView("travel")}
             onOpenArcade={() => setView("arcade")}
             onOpenStudio={() => setView("studio")}
+            onReplayIntro={onReplayIntro}
             onOpenAnalytics={() => setShowAnalytics(true)}
             onResume={() => {
               setActiveIslandId(save.currentIslandId || null);
@@ -951,7 +989,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit }: Isla
             updateLearningProfile={updateLearningProfile}
           />
         ) : view === "travel" ? (
-          <TravelMapView
+          <PovVoyageView
             userProfile={userProfile}
             islands={content.islands}
             save={save}
@@ -977,15 +1015,32 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit }: Isla
           <IslandPlayView
             island={activeIsland}
             save={save}
+            totalCoins={userProfile.totalCoins}
             activeAreaId={save.currentAreaId}
             learningProfile={learningProfile}
             objectiveKey={objectiveKey}
+            character={save.character}
+            animationStyle={getIslandTheme(activeIsland.id, activeIsland.themeId).animationStyle}
             onEnterArea={enterArea}
             onTalkNpc={openNpcDialogue}
             onCollectItem={collectItem}
             onStartQuest={startQuest}
             onOpenTravel={() => setView("travel")}
             onOpenHub={() => setView("home")}
+            onOpenStudio={() => setView("studio")}
+            onPlayMinigame={(mgId) => {
+              setActiveMinigameId(mgId as MinigameId);
+              setMinigameStartedAt(Date.now());
+              void analytics.track("minigame_started", {
+                islandId: activeIsland.id,
+                minigameId: mgId,
+                source: "island",
+              });
+              void trackScreenEnter(`minigame:${mgId}`, {
+                islandId: activeIsland.id,
+                minigameId: mgId,
+              });
+            }}
             devCheats={devCheatsPanel}
           />
           <GameModal

@@ -372,6 +372,21 @@
               }
             }
           ]
+        },
+        {
+          "id": "mg_compound_snowball",
+          "name": "Compound Snowball",
+          "description": "Roll your savings down the hill! Reinvest each year and watch your coins grow faster and faster.",
+          "icon": "⛄",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "cc_savings_lighthouse",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "retro",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "CompoundConfig", "config": { "principal": 50, "ratePct": 15, "years": 8, "label": "your coins" } }
+          ]
         }
       ]
     }

@@ -1,0 +1,130 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "future_shores",
+      "name": "Future Shores",
+      "description": "An unfinished island at the edge of Capital — for the kids of the future to carve out their piece and build the games of their era.",
+      "icon": "🏗️",
+      "themeId": "future_shores",
+      "provenance": {
+        "learning_objectives": [
+          "Understand that game worlds are built by people — including you",
+          "Experiment with level design and sharing creations",
+          "See how financial literacy can be taught through any game style"
+        ],
+        "mechanics_used": ["community-creation", "vibe-code-studio", "exploration"],
+        "originality_notes": "Homage to unfinished zones in classic island games — scaffolding left on purpose so the next generation finishes it.",
+        "forbidden_references": []
+      },
+      "areas": [
+        {
+          "id": "fs_scaffold",
+          "name": "The Scaffold",
+          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished — waiting for your ideas.",
+          "icon": "🚧",
+          "connections": ["fs_blank_canvas", "fs_community_dock"]
+        },
+        {
+          "id": "fs_blank_canvas",
+          "name": "Blank Canvas Bay",
+          "description": "Empty lots marked with chalk grids. Each plot is a game someone hasn't dreamed up yet. Maybe that someone is you.",
+          "icon": "📐",
+          "connections": ["fs_scaffold", "fs_community_dock"]
+        },
+        {
+          "id": "fs_community_dock",
+          "name": "Community Dock",
+          "description": "Where creators moor their prototypes. Open VibeCode Studio from home base to publish levels that can live here someday.",
+          "icon": "⚓",
+          "connections": ["fs_scaffold", "fs_blank_canvas"]
+        }
+      ],
+      "npcs": [
+        {
+          "id": "npc_future_keeper",
+          "name": "The Keeper",
+          "icon": "🧑‍🎨",
+          "areaId": "fs_scaffold",
+          "dialogueGraphId": "dlg_future_keeper"
+        }
+      ],
+      "items": [
+        {
+          "id": "fs_builder_chalk",
+          "name": "Builder's Chalk",
+          "description": "Mark your territory on the blank canvas.",
+          "icon": "🖍️",
+          "location": { "areaId": "fs_blank_canvas" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_fs_claim_plot",
+          "title": "Claim Your Plot",
+          "description": "The kids of the future get to finish what we started. Explore Future Shores and pick up builder's chalk.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_future_keeper" },
+            { "type": "collectItem", "itemId": "fs_builder_chalk" }
+          ],
+          "rewards": {
+            "xp": 25,
+            "coins": 50
+          }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_future_keeper",
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "id": "start",
+              "speaker": "The Keeper",
+              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn — carve out games for your era in VibeCode Studio.",
+              "choices": [
+                {
+                  "id": "c1",
+                  "text": "So I get to build what comes next?",
+                  "nextNodeId": "build"
+                },
+                {
+                  "id": "c2",
+                  "text": "What happened to the old islands?",
+                  "nextNodeId": "old"
+                }
+              ]
+            },
+            {
+              "id": "build",
+              "speaker": "The Keeper",
+              "text": "Exactly. Sail to the other islands to see how each era looked — Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
+              "end": true,
+              "choices": [
+                {
+                  "id": "c3",
+                  "text": "I'm ready to explore.",
+                  "effects": [{ "type": "startQuest", "questId": "q_fs_claim_plot" }]
+                }
+              ]
+            },
+            {
+              "id": "old",
+              "speaker": "The Keeper",
+              "text": "They're still out there — each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
+              "end": true,
+              "choices": [
+                {
+                  "id": "c4",
+                  "text": "Let me look around.",
+                  "effects": [{ "type": "startQuest", "questId": "q_fs_claim_plot" }]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "minigames": []
+    }
+  ]
+}

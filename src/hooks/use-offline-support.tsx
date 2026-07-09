@@ -19,13 +19,23 @@ export function useOfflineSupport() {
   const [cacheStatus, setCacheStatus] = useState<'idle' | 'caching' | 'cached' | 'error'>('idle')
 
   useEffect(() => {
-    // Check if service worker is registered
-    if ('serviceWorker' in navigator) {
+    // In development, never let a cached service worker mask live code changes.
+    // Unregister any existing worker and clear its caches so dev is always fresh.
+    if (import.meta.env.DEV) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((regs) => {
+          regs.forEach((r) => r.unregister())
+        })
+      }
+      if (typeof caches !== 'undefined') {
+        caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
+      }
+    } else if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(() => {
         setIsInstalled(true)
       })
 
-      // Register service worker
+      // Register service worker (production only)
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {

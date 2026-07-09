@@ -6,16 +6,21 @@ import { cn } from "@/lib/utils";
 import { useGameMotion } from "../useGameMotion";
 
 const gameButtonVariants = cva(
-  "game-ui-btn inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 min-h-11 min-w-[2.75rem] touch-manipulation shrink-0",
+  "game-ui-btn inline-flex items-center justify-center gap-2 rounded-[var(--radius)] font-semibold outline-none transition-[transform,box-shadow,background-color,border-color] duration-150 focus-visible:ring-2 focus-visible:ring-[var(--cap-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--cap-paper)] disabled:pointer-events-none disabled:opacity-50 min-h-11 min-w-[2.75rem] touch-manipulation shrink-0 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
   {
     variants: {
       variant: {
-        primary: "bg-blue-600 text-white shadow-md hover:bg-blue-700",
-        secondary: "bg-gray-100 text-gray-900 border border-gray-200 hover:bg-gray-200",
-        outline: "bg-white/90 text-gray-900 border border-gray-200 shadow-sm hover:bg-white",
-        ghost: "bg-transparent text-gray-800 hover:bg-black/5",
-        danger: "bg-red-600 text-white hover:bg-red-700",
-        choice: "w-full justify-start bg-gray-50 text-gray-900 border border-gray-200 hover:bg-blue-50 hover:border-blue-300 text-left",
+        primary:
+          "border-2 border-[var(--cap-ink)] bg-[var(--cap-gold)] text-[var(--cap-ink)] shadow-[var(--cap-shadow-ink)] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:bg-[var(--cap-gold-deep)]",
+        secondary:
+          "border-2 border-[var(--cap-ink)] bg-[var(--cap-card)] text-[var(--cap-ink)] shadow-[var(--cap-shadow-sm)] hover:-translate-y-[1px] hover:bg-[var(--cap-paper-2)]",
+        outline:
+          "border-2 border-[var(--cap-ink)]/45 bg-transparent text-[var(--cap-ink)] hover:border-[var(--cap-ink)] hover:bg-[var(--cap-card)]",
+        ghost: "bg-transparent text-[var(--cap-ink)] hover:bg-[var(--cap-ink)]/8",
+        danger:
+          "border-2 border-[var(--cap-ink)] bg-[var(--cap-coral)] text-[var(--cap-ink)] shadow-[var(--cap-shadow-ink)] hover:-translate-y-[1px] hover:brightness-105",
+        choice:
+          "w-full justify-start text-left border-2 border-[var(--cap-ink)]/25 bg-[var(--cap-card)] text-[var(--cap-ink)] hover:border-[var(--cap-ink)] hover:bg-[color-mix(in_oklab,var(--cap-gold)_16%,var(--cap-card))] hover:shadow-[var(--cap-shadow-sm)]",
       },
       size: {
         sm: "text-sm px-3 py-2 min-h-9",

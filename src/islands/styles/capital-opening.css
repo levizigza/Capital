@@ -1,0 +1,706 @@
+/* =====================================================================
+   Capital opening — ONE mural of the same beach resort, painted six
+   times: once per generation of game graphics (1983 CGA → today). The
+   six puzzle pieces are windows onto the SAME continuous panorama, so
+   they interlock into a single picture while each renders that picture
+   in its era's authentic art style. A real, clock-driven sun/moon arcs
+   across the whole mural and is re-drawn in each era as it crosses.
+   ===================================================================== */
+
+.cap-opening-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0c1622 0%, #0a1119 100%);
+  transition: background 1.2s ease;
+}
+/* Time-of-day ambience for the surrounding sea/sky frame */
+.cap-opening-root[data-phase="dawn"]  { background: linear-gradient(180deg, #2a1e33 0%, #3a2340 100%); }
+.cap-opening-root[data-phase="day"]   { background: linear-gradient(180deg, #0c1622 0%, #0a1119 100%); }
+.cap-opening-root[data-phase="dusk"]  { background: linear-gradient(180deg, #331a24 0%, #241019 100%); }
+.cap-opening-root[data-phase="night"] { background: linear-gradient(180deg, #060a14 0%, #04060c 100%); }
+
+.cap-opening-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0.2;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+}
+
+.cap-bg-layer,
+.cap-fg-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.cap-fg-layer { z-index: 3; }
+
+.cap-puzzle-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ---- surrounding ocean the island floats in ------------------------- */
+.cap-sky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(1400px 700px at 50% -20%, rgba(255, 230, 168, 0.14), transparent 60%);
+  transition: opacity 1.2s ease;
+}
+.cap-sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26%;
+  z-index: 2;
+  background: linear-gradient(180deg, rgba(23, 168, 201, 0.55) 0%, rgba(14, 111, 156, 0.75) 60%, rgba(9, 60, 92, 0.9) 100%);
+}
+.cap-sea::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0 2px, transparent 2px 16px);
+  opacity: 0.4;
+  animation: cap-sea-shimmer 5s ease-in-out infinite;
+}
+@keyframes cap-sea-shimmer {
+  0%, 100% { opacity: 0.28; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(-3px); }
+}
+
+/* ---- The island frame ---------------------------------------------- */
+.cap-isle-wrap {
+  position: absolute;
+  left: 50%;
+  top: 11%;
+  width: min(96vw, 1300px);
+  height: min(56vh, 500px);
+  transform: translateX(-50%);
+  z-index: 3;
+  animation: cap-isle-bob 6s ease-in-out infinite;
+}
+.cap-opening-root--revealed .cap-isle-wrap {
+  top: 6%;
+  height: min(60vh, 540px);
+}
+@keyframes cap-isle-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -7px); }
+}
+.cap-isle-wrap::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -6%;
+  height: 16%;
+  background: radial-gradient(ellipse at center, rgba(3, 30, 60, 0.5), transparent 70%);
+  filter: blur(6px);
+  z-index: -1;
+}
+
+.cap-isle {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: visible;
+  border-radius: 20% 20% 18% 18% / 30% 30% 28% 28%;
+  filter: drop-shadow(0 16px 0 rgba(0, 0, 0, 0.14));
+}
+.cap-isle--puzzle { gap: 0; }
+
+/* ---- A single puzzle piece = a clipped window onto the mural -------- */
+.isle-patch {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: visible; /* clip-path shapes the piece incl. tabs */
+  transition:
+    transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1),
+    filter 0.5s ease;
+}
+.isle-patch--piece-0 { z-index: 1; }
+.isle-patch--piece-1 { z-index: 2; }
+.isle-patch--piece-2 { z-index: 3; }
+.isle-patch--piece-3 { z-index: 4; }
+.isle-patch--piece-4 { z-index: 5; }
+.isle-patch--piece-5 { z-index: 6; }
+
+/* The full-width mural, shifted so each window shows its own slice */
+.mural-window {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  overflow: visible;
+}
+.mural {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* dark seam line so pieces read as separate tiles of one picture */
+.isle-patch__seam {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.22), inset -2px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* before assembly: pieces hover apart, waiting to be placed */
+.isle-patch.is-floating.isle-patch--piece-0 { transform: translate(-6px, -14px) rotate(-1.1deg); }
+.isle-patch.is-floating.isle-patch--piece-1 { transform: translate(0, -22px) rotate(0.8deg); }
+.isle-patch.is-floating.isle-patch--piece-2 { transform: translate(4px, -18px) rotate(-0.6deg); }
+.isle-patch.is-floating.isle-patch--piece-3 { transform: translate(-2px, -24px) rotate(0.9deg); }
+.isle-patch.is-floating.isle-patch--piece-4 { transform: translate(5px, -16px) rotate(-0.8deg); }
+.isle-patch.is-floating.isle-patch--piece-5 { transform: translate(8px, -20px) rotate(1deg); }
+
+.cap-opening-root--assembled .isle-patch.is-assembled {
+  animation: puzzle-snap-in 0.65s cubic-bezier(0.34, 1.45, 0.64, 1) backwards;
+}
+.cap-opening-root--assembled .isle-patch--piece-0.is-assembled { animation-delay: 0ms; }
+.cap-opening-root--assembled .isle-patch--piece-1.is-assembled { animation-delay: 70ms; }
+.cap-opening-root--assembled .isle-patch--piece-2.is-assembled { animation-delay: 140ms; }
+.cap-opening-root--assembled .isle-patch--piece-3.is-assembled { animation-delay: 210ms; }
+.cap-opening-root--assembled .isle-patch--piece-4.is-assembled { animation-delay: 280ms; }
+.cap-opening-root--assembled .isle-patch--piece-5.is-assembled { animation-delay: 350ms; }
+@keyframes puzzle-snap-in {
+  0% { transform: translateY(-26px) scale(1.04); }
+  55% { transform: translateY(3px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.isle-patch.is-dim { filter: brightness(0.72) saturate(0.85); }
+.isle-patch.is-spot {
+  filter: brightness(1.08) saturate(1.18) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.4));
+  transform: translateY(-10px) scale(1.05) !important;
+  z-index: 20;
+}
+
+/* ---- year badge + era tag ------------------------------------------ */
+.isle-patch__year {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-family: var(--font-sans, sans-serif);
+  font-size: clamp(0.68rem, 1.4vw, 0.92rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: rgba(12, 22, 34, 0.85);
+  color: #ffe9b8;
+  border: 1px solid rgba(255, 233, 184, 0.55);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.isle-patch__tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 0.35rem 0.2rem;
+  text-align: center;
+  font-family: var(--font-sans, sans-serif);
+  font-size: clamp(0.6rem, 1.3vw, 0.82rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: linear-gradient(to top, rgba(6, 12, 20, 0.82), transparent);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.isle-patch.is-spot .isle-patch__tag { opacity: 1; transform: translateY(0); }
+
+/* =====================================================================
+   THE MURAL — shared geometry (identical positions in every era)
+   Positions are % of the full island width so the picture is continuous.
+   ===================================================================== */
+.mural { background: #0b1a2a; }
+.m-sky, .m-stars, .m-clouds, .m-hills, .m-sea, .m-sea-glint, .m-beach, .m-fx {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.m-sky { inset: 0; }
+.m-sea { bottom: 0; height: 30%; }
+.m-sea-glint { bottom: 0; height: 30%; pointer-events: none; }
+.m-beach { bottom: 28%; height: 6%; }
+.m-hills { bottom: 32%; height: 20%; }
+.m-stars { inset: 0; opacity: 0; }
+.m-clouds { top: 6%; height: 20%; opacity: 0; }
+.m-fx { inset: 0; z-index: 6; pointer-events: none; }
+
+/* celestial body (positioned by JS clock) */
+.m-cel {
+  position: absolute;
+  width: 9%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.m-cel-core, .m-cel-glow, .m-cel-flare {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.m-cel-glow { inset: -60%; border-radius: 50%; }
+
+/* landmarks */
+.m-palm { position: absolute; bottom: 30%; width: 8%; height: 26%; z-index: 3; }
+.m-palm--a { left: 9%; }
+.m-palm--b { left: 66%; }
+.m-palm-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 44%;
+  width: 12%;
+  height: 68%;
+}
+.m-palm-crown {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 60%;
+  height: 40%;
+  transform: translateX(-50%);
+}
+.m-hotel { position: absolute; bottom: 30%; left: 30%; width: 15%; height: 22%; z-index: 3; }
+.m-hotel-roof { position: absolute; top: 0; left: 0; right: 0; height: 26%; }
+.m-hotel-windows { position: absolute; top: 30%; left: 8%; right: 8%; bottom: 0; }
+.m-pool { position: absolute; bottom: 12%; left: 46%; width: 12%; height: 12%; z-index: 3; }
+.m-dock { position: absolute; bottom: 20%; left: 80%; width: 14%; height: 4%; z-index: 3; }
+.m-boat { position: absolute; bottom: 12%; left: 87%; width: 8%; height: 8%; z-index: 3; }
+.m-boat-sail { position: absolute; bottom: 60%; left: 40%; width: 40%; height: 90%; }
+
+/* =====================================================================
+   ERA 1 · 1983 CGA 8-BIT — 4 fixed colors, chunky pixels, scanlines
+   Palette: black #000, cyan #55ffff, magenta #ff55ff, white #fff
+   ===================================================================== */
+.mural--e8bit { background: #000; image-rendering: pixelated; }
+.mural--e8bit .m-sky { background: #000; }
+.mural--e8bit .m-hills { background: #ff55ff; bottom: 32%; height: 14%;
+  clip-path: polygon(0 100%, 12% 30%, 24% 100%, 40% 20%, 55% 100%, 72% 40%, 88% 100%, 100% 25%, 100% 100%); }
+.mural--e8bit .m-sea { background: repeating-linear-gradient(0deg, #55ffff 0 4px, #000 4px 8px); height: 30%; }
+.mural--e8bit .m-beach { background: #ff55ff; }
+.mural--e8bit .m-sea-glint { display: none; }
+/* celestial: blocky pixel disc, 2-color */
+.mural--e8bit .m-cel-core { border-radius: 0; background: #ffff55;
+  box-shadow: 8px 0 0 #ffff55, -8px 0 0 #ffff55, 0 8px 0 #ffff55, 0 -8px 0 #ffff55; }
+.mural--e8bit .m-cel-glow { display: none; }
+.mural--e8bit .m-cel-flare { display: none; }
+.mural--e8bit .m-cel--sun .m-cel-core { animation: e8-blink 0.7s step-end infinite; }
+.mural--e8bit .m-cel--moon .m-cel-core { background: #55ffff; box-shadow: 8px 0 0 #55ffff, -8px 0 0 #55ffff, 0 8px 0 #55ffff, 0 -8px 0 #55ffff; }
+/* landmarks as chunky 2-color pixel blocks */
+.mural--e8bit .m-palm-trunk { background: #ff55ff; }
+.mural--e8bit .m-palm-crown { background: #55ffff; border-radius: 0;
+  box-shadow: -10px 6px 0 #55ffff, 10px 6px 0 #55ffff; animation: e8-blink 2.4s step-end infinite; }
+.mural--e8bit .m-hotel-roof { background: #ff55ff; }
+.mural--e8bit .m-hotel-windows { background: repeating-linear-gradient(90deg, #55ffff 0 25%, #000 25% 50%); }
+.mural--e8bit .m-hotel { box-shadow: inset 0 0 0 2px #fff; background: #000; }
+.mural--e8bit .m-pool { background: #55ffff; border-radius: 0; box-shadow: inset 0 0 0 2px #fff; }
+.mural--e8bit .m-dock { background: #ff55ff; }
+.mural--e8bit .m-boat { background: #fff; clip-path: polygon(0 60%, 100% 60%, 85% 100%, 15% 100%); }
+.mural--e8bit .m-boat-sail { background: #55ffff; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e8bit .m-fx {
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.5) 100%);
+  animation: e8-scan 5s linear infinite;
+}
+@keyframes e8-blink { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0.55; } }
+@keyframes e8-scan { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 4px, 0 0; } }
+
+/* =====================================================================
+   ERA 2 · 1991 SNES 16-BIT — dithered gradient skies, rich palette,
+   Mode-7 style scrolling tide
+   ===================================================================== */
+.mural--e16bit {
+  background:
+    radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px) 0 0 / 4px 4px,
+    linear-gradient(180deg, #6fd6ff 0%, #8fe0f0 40%, #ffd98a 46%, #f0c060 52%, #24c4a2 52%);
+}
+.mural--e16bit .m-sky {
+  background:
+    radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px) 0 0 / 4px 4px,
+    linear-gradient(180deg, #6fd6ff, #a6e6f2 60%, #ffe6b0 100%);
+}
+.mural--e16bit .m-hills {
+  background: linear-gradient(180deg, #3aa06a, #2d8a54);
+  clip-path: polygon(0 100%, 10% 45%, 22% 70%, 38% 30%, 52% 65%, 66% 35%, 80% 60%, 92% 40%, 100% 70%, 100% 100%);
+}
+.mural--e16bit .m-beach { background: linear-gradient(180deg, #ecc879, #d8b25c); }
+.mural--e16bit .m-sea {
+  background: repeating-linear-gradient(180deg, #2fd0aa 0 3px, #1fb894 3px 6px);
+  animation: e16-tide 3s linear infinite;
+}
+.mural--e16bit .m-sea-glint {
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 7px);
+  animation: e16-shear 4s ease-in-out infinite;
+}
+.mural--e16bit .m-cel-core { background: radial-gradient(circle at 36% 32%, #fff8b0, #ffd23f 55%, #ff9e2c); }
+.mural--e16bit .m-cel-glow { background: radial-gradient(circle, rgba(255,210,63,0.5), transparent 70%); animation: cel-pulse 3s ease-in-out infinite; }
+.mural--e16bit .m-cel-flare { display: none; }
+.mural--e16bit .m-cel--moon .m-cel-core { background: radial-gradient(circle at 38% 34%, #fff, #d6e2f0 60%, #9fb2cc); }
+.mural--e16bit .m-palm-trunk { background: linear-gradient(90deg, #6b4226, #8a5a34); border-radius: 2px; }
+.mural--e16bit .m-palm-crown {
+  background: #3cb868; border-radius: 50% 50% 40% 40%;
+  box-shadow: -12px 4px 0 -2px #2d9a52, 12px 4px 0 -2px #2d9a52, 0 -6px 0 -2px #55d47a;
+  animation: e16-sway 4s ease-in-out infinite;
+}
+.mural--e16bit .m-hotel { background: linear-gradient(180deg, #f4e6c8, #e0cfa4); border-radius: 2px; }
+.mural--e16bit .m-hotel-roof { background: linear-gradient(180deg, #e0556a, #c53a52); }
+.mural--e16bit .m-hotel-windows {
+  background: repeating-linear-gradient(90deg, #2a4a6a 0 22%, transparent 22% 33%),
+             repeating-linear-gradient(0deg, #2a4a6a 0 30%, transparent 30% 50%);
+}
+.mural--e16bit .m-pool { background: linear-gradient(180deg, #5ef0ea, #1ab8c8); border-radius: 6px; box-shadow: inset 0 4px 8px rgba(255,255,255,0.4); }
+.mural--e16bit .m-dock { background: linear-gradient(180deg, #a5723e, #7a5228); }
+.mural--e16bit .m-boat { background: #eee; border-radius: 0 0 40% 40%; }
+.mural--e16bit .m-boat-sail { background: #e0556a; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e16bit .m-fx { background: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px) 0 0 / 3px 3px; opacity: 0.5; }
+@keyframes e16-tide { 0% { background-position: 0 0; } 100% { background-position: 0 6px; } }
+@keyframes e16-shear { 0%, 100% { transform: skewX(0); } 50% { transform: skewX(-3deg); } }
+@keyframes e16-sway { 0%, 100% { transform: translateX(-50%) rotate(-2deg); } 50% { transform: translateX(-50%) rotate(3deg); } }
+
+/* =====================================================================
+   ERA 3 · 1998 PS1 EARLY-3D — affine texture warp, vertex jitter, fog,
+   flat-shaded low-poly
+   ===================================================================== */
+.mural--e3d {
+  background: linear-gradient(180deg, #c9b9f0 0%, #8a7cc8 34%, #4b6db0 60%, #1a5a7a 100%);
+  animation: e3d-jitter 0.14s steps(3) infinite;
+}
+.mural--e3d .m-sky { background: linear-gradient(180deg, #c9b9f0, #9a8cd0 60%, #6a7cc0); }
+.mural--e3d .m-hills {
+  background: linear-gradient(180deg, #5a6a9a, #3d5a7a);
+  clip-path: polygon(0 100%, 16% 20%, 33% 100%, 50% 12%, 67% 100%, 84% 25%, 100% 100%);
+  filter: drop-shadow(0 -2px 0 rgba(255,255,255,0.12));
+}
+.mural--e3d .m-beach { background: linear-gradient(180deg, #b0a878, #8a7c52); }
+.mural--e3d .m-sea { background: linear-gradient(180deg, #2a7a9a, #0d4a6a); animation: e3d-warp 4s ease-in-out infinite; }
+.mural--e3d .m-sea-glint {
+  background: repeating-linear-gradient(100deg, rgba(255,255,255,0.14) 0 6px, transparent 6px 20px);
+  animation: e3d-warp 3s ease-in-out infinite reverse;
+}
+.mural--e3d .m-cel-core { background: radial-gradient(circle at 40% 36%, #fff2c0, #ffcf5a 60%, #e89a30); clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); }
+.mural--e3d .m-cel-glow { background: radial-gradient(circle, rgba(255,200,90,0.4), transparent 70%); }
+.mural--e3d .m-cel-flare { display: none; }
+.mural--e3d .m-cel--moon .m-cel-core { background: radial-gradient(circle at 40% 36%, #eef2fa, #b8c6da 60%, #8090aa); }
+.mural--e3d .m-palm-trunk { background: linear-gradient(90deg, #3a5a3a, #2a4a2a); clip-path: polygon(30% 0, 70% 0, 60% 100%, 40% 100%); }
+.mural--e3d .m-palm-crown { background: #2a6a3a; clip-path: polygon(50% 0, 100% 60%, 75% 100%, 25% 100%, 0 60%); filter: brightness(1.1); }
+.mural--e3d .m-hotel { background: linear-gradient(120deg, #8a8a9a, #6a6a7a); }
+.mural--e3d .m-hotel-roof { background: #5a5a6a; clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+.mural--e3d .m-hotel-windows { background: repeating-linear-gradient(90deg, #2a3a5a 0 30%, transparent 30% 50%); opacity: 0.8; }
+.mural--e3d .m-pool { background: linear-gradient(120deg, #2a9ab0, #147a90); clip-path: polygon(6% 20%, 100% 0, 94% 100%, 0 80%); }
+.mural--e3d .m-dock { background: #7a6a5a; transform: skewX(-8deg); }
+.mural--e3d .m-boat { background: #cfcfcf; clip-path: polygon(0 55%, 100% 40%, 88% 100%, 12% 100%); }
+.mural--e3d .m-boat-sail { background: #dfe6ee; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e3d .m-fx {
+  background: linear-gradient(180deg, transparent 25%, rgba(200,210,255,0.5) 78%);
+  animation: cel-pulse 6s ease-in-out infinite;
+}
+@keyframes e3d-jitter {
+  0% { transform: translate(0,0) skewX(0); }
+  33% { transform: translate(0.5px,-0.5px) skewX(0.5deg); }
+  66% { transform: translate(-0.5px,0) skewX(-0.4deg); }
+  100% { transform: translate(0,0.5px) skewX(0.2deg); }
+}
+@keyframes e3d-warp { 0%,100% { transform: skewX(0) scaleY(1); } 50% { transform: skewX(-2deg) scaleY(1.03); } }
+
+/* =====================================================================
+   ERA 4 · 2005 FLASH — vector gloss, thick black strokes, radial glow,
+   tween bounce
+   ===================================================================== */
+.mural--eflash { background: linear-gradient(180deg, #ffe9a8 0%, #ffd06a 34%, #43e0d6 40%, #17a8b8 70%, #0c7f96 100%); }
+.mural--eflash .m-sky { background: radial-gradient(circle at 50% 120%, #fff3c8, #ffd06a 60%, #ffbe4a); }
+.mural--eflash .m-hills {
+  background: linear-gradient(180deg, #4ad07a, #2fae5e);
+  border-top: 3px solid #123; border-radius: 40% 50% 0 0 / 100% 100% 0 0;
+  clip-path: none; height: 16%; bottom: 32%;
+}
+.mural--eflash .m-beach { background: linear-gradient(180deg, #ffe08a, #f0c85a); border-top: 3px solid #123; }
+.mural--eflash .m-sea { background: linear-gradient(180deg, #5ef0ea, #14a8b8); }
+.mural--eflash .m-sea-glint { background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%); animation: ef-shine 3.5s ease-in-out infinite; }
+.mural--eflash .m-cel-core { background: radial-gradient(circle at 38% 30%, #fff, #ffe07a 45%, #ffbe3a); border: 3px solid #123; animation: ef-bounce 2s cubic-bezier(0.34,1.7,0.64,1) infinite; }
+.mural--eflash .m-cel-glow { background: radial-gradient(circle, rgba(255,225,120,0.6), transparent 68%); }
+.mural--eflash .m-cel-flare { background: conic-gradient(from 0deg, transparent 0 8%, rgba(255,240,180,0.5) 10% 12%, transparent 14% 25%, rgba(255,240,180,0.5) 27% 29%, transparent 31% 50%, rgba(255,240,180,0.5) 52% 54%, transparent 56% 75%, rgba(255,240,180,0.5) 77% 79%, transparent 81%); inset: -50%; border-radius: 0; animation: cel-spin 18s linear infinite; }
+.mural--eflash .m-cel--moon .m-cel-core { background: radial-gradient(circle at 38% 30%, #fff, #dfe8f4 50%, #b8c8de); }
+.mural--eflash .m-cel--moon .m-cel-flare { display: none; }
+.mural--eflash .m-palm-trunk { background: linear-gradient(90deg, #7a4a22, #5c3616); border: 3px solid #123; border-radius: 3px; }
+.mural--eflash .m-palm-crown { background: #2fae5e; border: 3px solid #123; border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%; animation: ef-bounce 2.6s cubic-bezier(0.34,1.6,0.64,1) infinite 0.2s; }
+.mural--eflash .m-hotel { background: linear-gradient(180deg, #fff, #e8eef4); border: 3px solid #123; border-radius: 4px; }
+.mural--eflash .m-hotel-roof { background: linear-gradient(180deg, #ff7a7a, #ee4a4a); border-bottom: 3px solid #123; }
+.mural--eflash .m-hotel-windows { background: repeating-linear-gradient(90deg, #3aa0e0 0 22%, transparent 22% 33%); }
+.mural--eflash .m-pool { background: radial-gradient(circle at 40% 30%, #7efff8, #16b8c8); border: 3px solid #123; border-radius: 10px; box-shadow: inset 0 6px 10px rgba(255,255,255,0.6); }
+.mural--eflash .m-dock { background: #8a5a2e; border: 3px solid #123; border-radius: 3px; }
+.mural--eflash .m-boat { background: #fff; border: 3px solid #123; border-radius: 0 0 50% 50%; animation: ef-bounce 3s ease-in-out infinite; }
+.mural--eflash .m-boat-sail { background: #ff7a7a; border: 3px solid #123; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--eflash .m-fx { background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 30%); }
+@keyframes ef-bounce { 0%,100% { transform: translateY(0) scale(1); } 40% { transform: translateY(-6px) scale(1.04, 0.96); } 60% { transform: translateY(-2px) scale(0.98, 1.02); } }
+.mural--eflash .m-palm-crown { transform-origin: bottom center; }
+@keyframes ef-shine { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+/* =====================================================================
+   ERA 5 · 2014 HD — Material flat design, long shadows, clean geometry
+   ===================================================================== */
+.mural--ehd { background: linear-gradient(180deg, #fef6ea 0%, #ffe6c4 34%, #7fe3e0 40%, #2bb7c6 70%, #1892a8 100%); }
+.mural--ehd .m-sky { background: linear-gradient(180deg, #fff3e0, #ffe0b8 70%, #ffd0a0); }
+.mural--ehd .m-hills { background: #3cc878; clip-path: none; height: 14%; bottom: 32%; border-radius: 60% 60% 0 0 / 100% 100% 0 0; }
+.mural--ehd .m-beach { background: #f2dca8; }
+.mural--ehd .m-sea { background: linear-gradient(180deg, #57d8d6, #1892a8); }
+.mural--ehd .m-sea-glint { background: linear-gradient(120deg, transparent 42%, rgba(255,255,255,0.3) 50%, transparent 58%); animation: ehd-glint 5s ease-in-out infinite; }
+.mural--ehd .m-cel-core { background: #ffd45e; box-shadow: 0 6px 0 rgba(0,0,0,0.06), 24px 24px 0 rgba(255,180,60,0.14); animation: ehd-float 6s ease-in-out infinite; }
+.mural--ehd .m-cel-glow { background: radial-gradient(circle, rgba(255,212,94,0.4), transparent 70%); }
+.mural--ehd .m-cel-flare { display: none; }
+.mural--ehd .m-cel--moon .m-cel-core { background: #e8eef6; box-shadow: 0 6px 0 rgba(0,0,0,0.08), 22px 22px 0 rgba(200,215,235,0.18); }
+.mural--ehd .m-palm-trunk { background: #a9782e; border-radius: 3px; box-shadow: 6px 8px 0 rgba(0,0,0,0.06); }
+.mural--ehd .m-palm-crown { background: #3cb878; border-radius: 50%; box-shadow: 10px 12px 0 rgba(0,0,0,0.05); }
+.mural--ehd .m-hotel { background: #f7f2ea; border-radius: 4px; box-shadow: 10px 12px 0 rgba(0,0,0,0.06); }
+.mural--ehd .m-hotel-roof { background: #2bb7c6; }
+.mural--ehd .m-hotel-windows { background: repeating-linear-gradient(90deg, #cfe4ee 0 22%, transparent 22% 33%); }
+.mural--ehd .m-pool { background: #34c6d4; border-radius: 10px; box-shadow: 8px 10px 0 rgba(0,0,0,0.05); }
+.mural--ehd .m-dock { background: #c79a5e; border-radius: 3px; }
+.mural--ehd .m-boat { background: #fff; border-radius: 0 0 40% 40%; box-shadow: 6px 8px 0 rgba(0,0,0,0.06); }
+.mural--ehd .m-boat-sail { background: #ff7a5e; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--ehd .m-fx { background: none; }
+@keyframes ehd-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes ehd-glint { 0%,100% { transform: translateX(-15%); opacity: 0.4; } 50% { transform: translateX(15%); opacity: 0.85; } }
+
+/* =====================================================================
+   ERA 6 · NEW GEN — blank sketch plot, dashed outlines, waiting to be
+   painted by the next generation
+   ===================================================================== */
+.mural--blank { background: #fdfbf3; }
+.mural--blank .m-sky { background: linear-gradient(#eee6d2 1px, transparent 1px) 0 0 / 100% 14px, #fdfbf3; }
+.mural--blank .m-hills { background: none; border: 2px dashed #c3b184; border-bottom: none; border-radius: 50% 50% 0 0; height: 14%; bottom: 32%; opacity: 0.8; }
+.mural--blank .m-beach { background: none; border-top: 2px dashed #c3b184; }
+.mural--blank .m-sea { background: none; border-top: 2px dashed #b7c3cc; }
+.mural--blank .m-sea-glint { display: none; }
+.mural--blank .m-cel-core { background: none; border: 2px dashed #c9a94e; border-radius: 50%; animation: cb-pulse 4s ease-in-out infinite; }
+.mural--blank .m-cel-glow { display: none; }
+.mural--blank .m-cel-flare { display: none; }
+.mural--blank .m-palm-trunk { background: none; border: 2px dashed #c3b184; border-radius: 2px; }
+.mural--blank .m-palm-crown { background: none; border: 2px dashed #a8c384; border-radius: 50%; }
+.mural--blank .m-hotel { background: none; border: 2px dashed #c3b184; }
+.mural--blank .m-hotel-roof { border-bottom: 2px dashed #c3b184; }
+.mural--blank .m-hotel-windows { background: none; }
+.mural--blank .m-pool { background: none; border: 2px dashed #a4c0cc; border-radius: 8px; }
+.mural--blank .m-dock { background: none; border: 2px dashed #c3b184; }
+.mural--blank .m-boat { background: none; border: 2px dashed #c3b184; border-radius: 0 0 40% 40%; }
+.mural--blank .m-boat-sail { background: none; border: 2px dashed #c3b184; clip-path: none; }
+.mural--blank .m-fx {
+  background: none;
+}
+.mural--blank .m-fx::after {
+  content: "";
+  position: absolute;
+  right: 12%;
+  top: 30%;
+  width: 4%;
+  height: 22%;
+  background: linear-gradient(180deg, #f4c860 0 70%, #e8a030 70% 86%, #c9a0e8 86% 100%);
+  border: 2px solid #8a7350;
+  border-radius: 2px 2px 1px 1px;
+  transform: rotate(24deg);
+  animation: cb-doodle 3.2s ease-in-out infinite;
+}
+@keyframes cb-pulse { 0%,100% { border-color: #c9a94e; } 50% { border-color: #e6bf58; box-shadow: 0 0 0 3px rgba(230,191,88,0.18); } }
+@keyframes cb-doodle { 0%,100% { transform: rotate(24deg) translate(0,0); } 50% { transform: rotate(12deg) translate(-4px,4px); } }
+
+/* shared celestial animations */
+@keyframes cel-pulse { 0%,100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.12); opacity: 1; } }
+@keyframes cel-spin { to { transform: rotate(360deg); } }
+
+/* the "burning" sun — a live corona that licks and flickers (all eras
+   with a radial sun get a base burn on the glow layer) */
+.mural--e16bit .m-cel--sun .m-cel-glow,
+.mural--e3d .m-cel--sun .m-cel-glow,
+.mural--eflash .m-cel--sun .m-cel-glow,
+.mural--ehd .m-cel--sun .m-cel-glow {
+  animation: sun-burn 1.4s ease-in-out infinite;
+}
+@keyframes sun-burn {
+  0%   { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg) brightness(1); }
+  25%  { transform: scale(1.08) rotate(3deg); filter: hue-rotate(-6deg) brightness(1.12); }
+  50%  { transform: scale(1.03) rotate(-2deg); filter: hue-rotate(4deg) brightness(1.05); }
+  75%  { transform: scale(1.1) rotate(2deg); filter: hue-rotate(-4deg) brightness(1.15); }
+  100% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg) brightness(1); }
+}
+
+/* night: reveal stars over dark-enough eras */
+.cap-opening-root[data-phase="night"] .mural--e16bit .m-sky,
+.cap-opening-root[data-phase="night"] .mural--e3d .m-sky,
+.cap-opening-root[data-phase="night"] .mural--eflash .m-sky,
+.cap-opening-root[data-phase="night"] .mural--ehd .m-sky {
+  filter: brightness(0.4) saturate(0.7) hue-rotate(200deg);
+}
+.cap-opening-root[data-phase="night"] .m-stars {
+  opacity: 0.9;
+  background:
+    radial-gradient(circle, #fff 0.6px, transparent 0.6px) 10% 20% / 60px 60px,
+    radial-gradient(circle, #fff 0.6px, transparent 0.6px) 40% 12% / 90px 90px,
+    radial-gradient(circle, #fff 0.6px, transparent 0.6px) 75% 26% / 70px 70px;
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+.cap-opening-root[data-phase="dusk"] .mural--e16bit .m-sky,
+.cap-opening-root[data-phase="dusk"] .mural--ehd .m-sky,
+.cap-opening-root[data-phase="dawn"] .mural--e16bit .m-sky,
+.cap-opening-root[data-phase="dawn"] .mural--ehd .m-sky {
+  filter: saturate(1.1) hue-rotate(-14deg) brightness(1.02);
+}
+@keyframes star-twinkle { 0%,100% { opacity: 0.5; } 50% { opacity: 0.95; } }
+
+/* =====================================================================
+   Vignette, reveal plate, caption, enter boat
+   ===================================================================== */
+.cap-opening-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 96% 90% at 50% 34%, transparent 54%, rgba(6, 12, 20, 0.4) 100%);
+  z-index: 5;
+}
+
+.cap-opening-reveal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+  padding: 0 1.5rem 1.75rem;
+  z-index: 7;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(6, 12, 20, 0.94) 0%, rgba(6, 12, 20, 0.7) 45%, transparent 100%);
+}
+.cap-opening-reveal__plate {
+  pointer-events: auto;
+  width: min(100%, 580px);
+  background: rgba(10, 18, 28, 0.82);
+  backdrop-filter: blur(6px);
+  border-radius: 1.25rem;
+  padding: 1rem 1.5rem 1.25rem;
+  border: 1px solid rgba(255, 233, 184, 0.15);
+}
+.cap-opening-eyebrow {
+  font-family: var(--font-sans, sans-serif);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.72rem;
+  color: rgba(255, 233, 184, 0.85);
+}
+.cap-opening-title {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+  font-size: clamp(2.2rem, 7vw, 3.75rem);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cap-opening-caption {
+  position: absolute;
+  bottom: 3.25rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 7;
+  font-family: var(--font-sans, sans-serif);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.cap-enter { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 1.25rem; }
+.cap-enter-boat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: 3px solid var(--cap-ink, #16283b);
+  background: var(--cap-gold, #f4a629);
+  color: var(--cap-ink, #16283b);
+  font-family: var(--font-sans, sans-serif);
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28);
+  animation: cap-enter-bob 1.9s ease-in-out infinite;
+  transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease;
+}
+.cap-enter-boat:hover { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0, 0, 0, 0.28); background: #ffb845; }
+.cap-enter-boat:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28); }
+.cap-enter-boat:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.cap-enter-boat__icon { font-size: 1.5rem; display: inline-block; animation: cap-enter-rock 1.6s ease-in-out infinite; }
+@keyframes cap-enter-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes cap-enter-rock { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+.cap-enter-hint {
+  font-family: var(--font-sans, sans-serif);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.72);
+}
+.cap-sail-away {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  font-size: clamp(3rem, 9vw, 5rem);
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.4));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap-isle-wrap,
+  .cap-sea::before,
+  .cap-enter-boat,
+  .cap-enter-boat__icon,
+  .isle-patch.is-assembled,
+  .mural--e8bit .m-cel-core,
+  .mural--e8bit .m-palm-crown,
+  .mural--e8bit .m-fx,
+  .mural--e16bit .m-sea,
+  .mural--e16bit .m-sea-glint,
+  .mural--e16bit .m-palm-crown,
+  .mural--e16bit .m-cel-glow,
+  .mural--e3d,
+  .mural--e3d .m-sea,
+  .mural--e3d .m-sea-glint,
+  .mural--e3d .m-fx,
+  .mural--eflash .m-cel-core,
+  .mural--eflash .m-cel-flare,
+  .mural--eflash .m-palm-crown,
+  .mural--eflash .m-boat,
+  .mural--eflash .m-sea-glint,
+  .mural--ehd .m-cel-core,
+  .mural--ehd .m-sea-glint,
+  .mural--blank .m-cel-core,
+  .mural--blank .m-fx::after,
+  .m-cel--sun .m-cel-glow,
+  .m-stars {
+    animation: none !important;
+  }
+}

@@ -1,5 +1,7 @@
 /** Visual identity presets — each island feels like its own world (Poptropica-style). */
 
+import type { AnimationStyleId } from "../animationStyles";
+
 export type IslandVisualStyle =
   | "seaside-craft"
   | "neon-metropolis"
@@ -25,6 +27,8 @@ export type IslandTheme = {
   id: string;
   name: string;
   visualStyle: IslandVisualStyle;
+  /** Character morph + game-era badge on the voyage map */
+  animationStyle: AnimationStyleId;
   /** CSS class applied to island viewport */
   skinClass: string;
   /** Hub / map background gradient */
@@ -44,6 +48,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "coincraft_cove",
     name: "Coincraft Cove",
     visualStyle: "seaside-craft",
+    animationStyle: "poptropica-sketch",
     skinClass: "island-theme-seaside",
     background: "linear-gradient(180deg, #7dd3fc 0%, #a7f3d0 45%, #fde68a 100%)",
     accent: "#0ea5e9",
@@ -58,6 +63,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "paycheck_peninsula",
     name: "Paycheck Peninsula",
     visualStyle: "suburban-mainstreet",
+    animationStyle: "flash-retro",
     skinClass: "island-theme-mainstreet",
     background: "linear-gradient(180deg, #fcd34d 0%, #fdba74 50%, #86efac 100%)",
     accent: "#ea580c",
@@ -72,6 +78,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "signal_city",
     name: "Signal City",
     visualStyle: "neon-metropolis",
+    animationStyle: "miniclip-arcade",
     skinClass: "island-theme-neon",
     background: "linear-gradient(180deg, #1e1b4b 0%, #312e81 40%, #0f172a 100%)",
     accent: "#22d3ee",
@@ -86,6 +93,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "venture_foundry",
     name: "Venture Foundry",
     visualStyle: "startup-garage",
+    animationStyle: "newgrounds-indie",
     skinClass: "island-theme-garage",
     background: "linear-gradient(180deg, #475569 0%, #78716c 50%, #a8a29e 100%)",
     accent: "#f97316",
@@ -100,6 +108,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "financial_assets",
     name: "Financial Assets Isle",
     visualStyle: "broker-classic",
+    animationStyle: "flash-retro",
     skinClass: "island-theme-broker",
     background: "linear-gradient(180deg, #1e3a5f 0%, #334155 60%, #64748b 100%)",
     accent: "#eab308",
@@ -114,6 +123,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "digital_assets",
     name: "Digital Assets District",
     visualStyle: "crypto-terminal",
+    animationStyle: "miniclip-arcade",
     skinClass: "island-theme-crypto",
     background: "linear-gradient(180deg, #042f2e 0%, #134e4a 50%, #064e3b 100%)",
     accent: "#34d399",
@@ -128,6 +138,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "real_estate",
     name: "Real Estate Row",
     visualStyle: "auction-yard",
+    animationStyle: "poptropica-sketch",
     skinClass: "island-theme-auction",
     background: "linear-gradient(180deg, #78350f 0%, #b45309 45%, #fde68a 100%)",
     accent: "#dc2626",
@@ -142,6 +153,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "intangibles",
     name: "Intangibles Institute",
     visualStyle: "patent-library",
+    animationStyle: "newgrounds-indie",
     skinClass: "island-theme-library",
     background: "linear-gradient(180deg, #4c1d95 0%, #6b21a8 50%, #ddd6fe 100%)",
     accent: "#a855f7",
@@ -156,6 +168,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "business_assets",
     name: "Business Assets Bay",
     visualStyle: "storefront-sim",
+    animationStyle: "miniclip-arcade",
     skinClass: "island-theme-storefront",
     background: "linear-gradient(180deg, #0369a1 0%, #0284c7 50%, #e0f2fe 100%)",
     accent: "#2563eb",
@@ -170,6 +183,7 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     id: "demo",
     name: "Demo Vault",
     visualStyle: "demo-vault",
+    animationStyle: "capital-default",
     skinClass: "island-theme-demo",
     background: "linear-gradient(180deg, #6366f1 0%, #a78bfa 100%)",
     accent: "#8b5cf6",
@@ -180,12 +194,59 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     complexity: "easy",
     genre: "arcade",
   },
+  starter_key_cove: {
+    id: "starter_key_cove",
+    name: "Key Cove",
+    visualStyle: "seaside-craft",
+    animationStyle: "poptropica-sketch",
+    skinClass: "island-theme-seaside",
+    background: "linear-gradient(180deg, #7dd3fc 0%, #a7f3d0 45%, #fde68a 100%)",
+    accent: "#0ea5e9",
+    accentMuted: "#bae6fd",
+    fontFamily: "'Comic Sans MS', 'Chalkboard SE', cursive",
+    mood: "⚓ dock · keys · tutorial",
+    mapPinShape: "round",
+    complexity: "easy",
+    genre: "exploration",
+  },
+  credit_kingdom: {
+    id: "credit_kingdom",
+    name: "Credit Kingdom",
+    visualStyle: "broker-classic",
+    animationStyle: "flash-retro",
+    skinClass: "island-theme-broker",
+    background: "linear-gradient(180deg, #4c1d95 0%, #312e81 50%, #1e1b4b 100%)",
+    accent: "#c084fc",
+    accentMuted: "#e9d5ff",
+    fontFamily: "'Georgia', serif",
+    mood: "🏰 credit · loans · coming soon",
+    mapPinShape: "hex",
+    complexity: "hard",
+    genre: "strategy",
+  },
+  future_shores: {
+    id: "future_shores",
+    name: "Future Shores",
+    visualStyle: "demo-vault",
+    animationStyle: "sketch-future",
+    skinClass: "island-theme-future",
+    background:
+      "repeating-linear-gradient(-45deg, #fef3c7, #fef3c7 12px, #fde68a 12px, #fde68a 24px), linear-gradient(180deg, #fffbeb 0%, #fcd34d 100%)",
+    accent: "#f59e0b",
+    accentMuted: "#fde68a",
+    fontFamily: "'Space Grotesk', system-ui, sans-serif",
+    mood: "🏗️ unfinished · yours to build",
+    mapPinShape: "square",
+    complexity: "easy",
+    genre: "exploration",
+  },
 };
 
 const DEFAULT_THEME: IslandTheme = {
   id: "default",
   name: "Unknown Island",
   visualStyle: "demo-vault",
+  animationStyle: "capital-default",
   skinClass: "island-theme-demo",
   background: "linear-gradient(180deg, #6366f1 0%, #a78bfa 100%)",
   accent: "#8b5cf6",

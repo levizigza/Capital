@@ -105,3 +105,16 @@
   color: #fef9c3;
   font-family: Georgia, serif;
 }
+
+/* Future Shores — deliberately unfinished */
+.island-theme-future .game-panel {
+  border-style: dashed;
+  border-color: #f59e0b;
+  background: repeating-linear-gradient(
+    -45deg,
+    #fffbeb,
+    #fffbeb 8px,
+    #fef3c7 8px,
+    #fef3c7 16px
+  );
+}

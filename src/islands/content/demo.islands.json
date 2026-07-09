@@ -175,6 +175,18 @@
           "icon": "📊",
           "componentId": "BudgetBalancerGame",
           "areaId": "vault"
+        },
+        {
+          "id": "mg_diversify_baskets",
+          "name": "Don't Break the Basket",
+          "description": "Spread coins across assets, then weather a market year. Learn diversification by doing.",
+          "icon": "🧺",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "vault",
+          "genre": "strategy",
+          "complexity": "easy",
+          "visualShell": "flat",
+          "estimatedMinutes": 4
         }
       ]
     }

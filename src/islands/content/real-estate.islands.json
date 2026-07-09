@@ -219,6 +219,21 @@
           "icon": "🔨",
           "componentId": "PropertyAuctionGame",
           "areaId": "re_auction_yard"
+        },
+        {
+          "id": "mg_compound_equity",
+          "name": "Equity Snowball",
+          "description": "Reinvest your rental income and appreciation each year, or cash it out. Feel how compounding builds a property empire.",
+          "icon": "🏠",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "re_auction_yard",
+          "genre": "simulation",
+          "complexity": "easy",
+          "visualShell": "retro",
+          "estimatedMinutes": 3,
+          "modules": [
+            { "id": "CompoundConfig", "config": { "principal": 5000, "ratePct": 9, "years": 12, "label": "your equity" } }
+          ]
         }
       ]
     }
