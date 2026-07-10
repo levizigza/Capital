@@ -9,6 +9,13 @@ import { InputProvider } from '@/input'
 
 import "./main.css"
 
+// Dev/preview: drop any stale service worker so an old Capital build cannot mask updates.
+if (import.meta.env.DEV && "serviceWorker" in navigator) {
+  void navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((reg) => void reg.unregister())
+  })
+}
+
 const isPixelPreview =
   import.meta.env.DEV &&
   new URLSearchParams(window.location.search).get("pixelPreview") === "1";

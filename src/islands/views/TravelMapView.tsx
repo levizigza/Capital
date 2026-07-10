@@ -170,14 +170,14 @@ export function TravelMapView({
       >
         <div className="relative mx-auto h-full min-h-[280px] w-full max-w-[var(--game-content-max)]">
           <div className="text-center shrink-0 mb-3">
-            <div className="cap-eyebrow">Sail the Capital sea</div>
+            <div className="cap-eyebrow">Choose your island</div>
             <h1 className="cap-display text-[var(--cap-ink)]" style={{ fontSize: "var(--game-title-size)" }}>
-              Voyage Map
+              World Map
             </h1>
           </div>
           <p className="text-center text-sm text-[var(--cap-ink-soft)] mb-2 max-w-lg mx-auto">
-            Each island is its own game era — Poptropica sketch, Flash flat, Miniclip arcade. Sail there and
-            your character morphs into that world&apos;s style.
+            Each island has its own party board and minigames. Sail to an island, roll the dice, and play challenges
+            as you loop around the board.
           </p>
           <p className="text-center mb-2">
             <InputPromptHint action="interact" className="justify-center text-[var(--cap-ink-soft)]">

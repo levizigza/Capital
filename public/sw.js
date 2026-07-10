@@ -1,7 +1,7 @@
 // Service Worker for offline functionality
 // v7: continuous mural across puzzle pieces + clock-driven sun/moon.
-const CACHE_NAME = 'capital-v7'
-const RUNTIME_CACHE = 'capital-runtime-v7'
+const CACHE_NAME = 'capital-v8'
+const RUNTIME_CACHE = 'capital-runtime-v8'
 
 // Assets to cache immediately
 const STATIC_ASSETS = [

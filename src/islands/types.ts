@@ -214,4 +214,13 @@ export type IslandSaveV1 = {
   character?: import("./character").CapitalCharacter;
   /** Whether the first-run world onboarding has been completed */
   onboardingComplete?: boolean;
+  /** Mario Party-style board position and stars per island */
+  partyBoard?: Record<
+    IslandId,
+    {
+      position: number;
+      turnsPlayed: number;
+      stars: number;
+    }
+  >;
 };

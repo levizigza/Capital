@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Sparkle } from '@phosphor-icons/react'
 import React from 'react'
 import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
+import { CapitalOpeningIntro } from '@/islands/views/CapitalOpeningIntro'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -21,9 +22,6 @@ const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
 const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
 const DebugPanel = React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
 const IslandsApp = React.lazy(() => import('@/islands/IslandsApp'))
-const CapitalOpeningIntro = React.lazy(() =>
-  import('@/islands/views/CapitalOpeningIntro').then((m) => ({ default: m.CapitalOpeningIntro }))
-)
 const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
 const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
 
@@ -139,6 +137,17 @@ function LoadingFallback() {
   )
 }
 
+function resolveStartupMode(): LearningMode {
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get("mode");
+  if (requested === "creative" || requested === "structured") return requested;
+  if (requested === "select") return null;
+  if (requested === "islands" && ISLANDS_ENABLED) return "islands";
+  if (ISLANDS_DEFAULT) return "islands";
+  return null;
+}
+
 function App() {
   // ?fresh query param wipes saved state for a clean demo
   if (typeof window !== 'undefined' && window.location.search.includes('fresh')) {
@@ -150,18 +159,7 @@ function App() {
 
   const [userProfile, setUserProfile] = useKV<UserProfile>('user-profile', DEFAULT_USER_PROFILE)
   const [gameScores, setGameScores] = useKV<GameScore[]>('game-scores', [])
-  const [currentMode, setCurrentMode] = useState<LearningMode>(() => {
-    if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    const requested = params.get("mode");
-    // Explicit overrides always win (e.g. ?mode=creative, ?mode=select).
-    if (requested === "creative" || requested === "structured") return requested;
-    if (requested === "select") return null;
-    if (requested === "islands" && ISLANDS_ENABLED) return "islands";
-    // Capital now boots straight into the island launcher by default.
-    if (ISLANDS_DEFAULT) return "islands";
-    return null;
-  })
+  const [currentMode, setCurrentMode] = useState<LearningMode>(resolveStartupMode)
   const [isInitialized, setIsInitialized] = useState(false)
   const [showArchetypeQuiz, setShowArchetypeQuiz] = useState(false)
   const [profileError, setProfileError] = useState(false)
@@ -169,17 +167,30 @@ function App() {
   const [showDeckSim, setShowDeckSim] = useState(false)
   const [showCapitalIntro, setShowCapitalIntro] = useState(() => {
     if (typeof window === "undefined") return false
-    // Play the opening title animation on every fresh page load.
-    // Only an explicit ?skipIntro=1 override bypasses it.
     const params = new URLSearchParams(window.location.search)
     if (params.get("skipIntro") === "1") return false
+    if (params.get("replayIntro") === "1") return true
+    // Play the mural title sequence on every fresh visit unless explicitly skipped.
     return true
   })
+
+  // Capital boots into islands — never fall back to the legacy mode picker by accident.
+  useEffect(() => {
+    if (!ISLANDS_ENABLED || !ISLANDS_DEFAULT) return
+    const params = new URLSearchParams(window.location.search)
+    const requested = params.get("mode")
+    if (requested === "creative" || requested === "structured" || requested === "select") return
+    if (currentMode !== "islands") {
+      setCurrentMode("islands")
+      window.history.replaceState({ mode: "islands" }, "", window.location.href)
+    }
+  }, [currentMode])
 
   useEffect(() => {
     if (userProfile) {
       setIsInitialized(true)
-      if (!userProfile.archetype?.completedQuiz && currentMode !== null) {
+      const islandsFirst = currentMode === "islands" && ISLANDS_DEFAULT
+      if (!userProfile.archetype?.completedQuiz && currentMode !== null && !islandsFirst) {
         setShowArchetypeQuiz(true)
       }
     }
@@ -189,6 +200,8 @@ function App() {
     const handlePopState = (event: PopStateEvent) => {
       if (event.state && event.state.mode !== undefined) {
         setCurrentMode(event.state.mode)
+      } else if (ISLANDS_DEFAULT && ISLANDS_ENABLED) {
+        setCurrentMode("islands")
       } else {
         setCurrentMode(null)
       }
@@ -435,18 +448,18 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+        <div className="min-h-screen flex items-center justify-center cap-surface">
           <div className="text-center">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 mb-6 shadow-2xl"
+              className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-[var(--cap-gold)] mb-6 shadow-[var(--cap-shadow-ink)] border-2 border-[var(--cap-ink)]"
             >
-              <Sparkle className="w-10 h-10 text-white" weight="fill" />
+              <Sparkle className="w-10 h-10 text-[var(--cap-ink)]" weight="fill" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Loading Capital</h2>
-            <p className="text-lg text-gray-600">Initializing your financial journey...</p>
+            <h2 className="cap-display text-2xl text-[var(--cap-ink)] mb-2">Capital</h2>
+            <p className="text-lg text-[var(--cap-ink-soft)]">Loading your island adventure…</p>
           </div>
         </div>
       </>
@@ -497,14 +510,16 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <Suspense fallback={<LoadingFallback />}>
-          <CapitalOpeningIntro onComplete={() => setShowCapitalIntro(false)} />
-        </Suspense>
+        <CapitalOpeningIntro onComplete={() => setShowCapitalIntro(false)} />
       </>
     )
   }
 
-  if (showArchetypeQuiz && !userProfile?.archetype?.completedQuiz) {
+  if (
+    showArchetypeQuiz &&
+    !userProfile?.archetype?.completedQuiz &&
+    !(currentMode === "islands" && ISLANDS_DEFAULT)
+  ) {
     return (
       <>
         <Toaster position="top-right" richColors />

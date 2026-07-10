@@ -159,7 +159,7 @@ export function HomeHubView({
         bottom={
           <div className="flex w-full max-w-lg flex-col items-center gap-[var(--game-gap)] px-2">
             <GameButton variant="primary" size="lg" onClick={onOpenTravel} className="w-full max-w-xs shadow-xl" data-testid="hub-travel-map">
-              ⛵ Set Sail
+              🗺️ Island Map
             </GameButton>
             <InputPromptHint action="map" className="text-[var(--cap-ink-soft)]">
               or press
@@ -184,15 +184,15 @@ export function HomeHubView({
       >
         <div className="flex h-full min-h-0 flex-col items-center justify-center gap-[var(--game-gap-lg)] px-2 py-4">
           <div className="text-center shrink-0">
-            <div className="cap-eyebrow mb-1">Your island home base</div>
+            <div className="cap-eyebrow mb-1">Your party home base</div>
             <h1 className="cap-display text-[var(--cap-ink)]" style={{ fontSize: "var(--game-title-size)" }}>
               Capital
               <span className="ml-2 inline-block h-[0.55em] w-[0.55em] -translate-y-[0.1em] rounded-sm bg-[var(--cap-gold)]" />
             </h1>
           </div>
           <p className="text-center text-sm text-[var(--cap-ink-soft)] max-w-md shrink-0">
-            Customize your character, play arcade games, build your own levels, then sail by boat to distinct
-            island worlds — each with its own game-era style.
+            Pick an island on the world map, roll dice on its party board, and launch minigames — Mario Party style.
+            Use the Arcade for free play anytime.
           </p>
           <div className="flex flex-wrap items-end justify-center gap-[var(--game-gap-lg)] max-w-full overflow-x-auto pb-2">
             <HubInteractable icon="🧑" label="Character" accentClass="bg-amber-200" onClick={() => setHubModal("avatar")} />

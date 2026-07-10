@@ -12,6 +12,7 @@
 @import './islands/quiz/livingQuiz.css';
 @import './islands/styles/animation-morphs.css';
 @import './islands/styles/capital-opening.css';
+@import './islands/styles/party-board.css';
 /* Capital design language — imported last so its tokens win. */
 @import './styles/capital-theme.css';
 

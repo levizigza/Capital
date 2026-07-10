@@ -16,7 +16,7 @@ type Props = {
 
 const DOORS = [
   { icon: "🧑", title: "Your Character", copy: "Change your look anytime from the home base." },
-  { icon: "⛵", title: "Voyage Map", copy: "Sail your boat between islands — bigger boats unlock as you earn coins." },
+  { icon: "🗺️", title: "World Map", copy: "Pick an island, then roll dice on its party board to reach minigames." },
   { icon: "🕹️", title: "The Arcade", copy: "Quick money games sorted by type and difficulty." },
   { icon: "✨", title: "VibeCode Studio", copy: "Build and share your own levels — especially on Future Shores." },
   { icon: "🏗️", title: "Future Shores", copy: "An unfinished island for the kids of the future to carve out." },
@@ -153,13 +153,13 @@ export function WelcomeOnboarding({
               >
                 ⛵
               </motion.div>
-              <h2 className="cap-display text-3xl text-[var(--cap-ink)]">Ready to explore</h2>
+              <h2 className="cap-display text-3xl text-[var(--cap-ink)]">Ready to party</h2>
               <p className="mx-auto mt-3 max-w-md text-[var(--cap-ink-soft)]">
-                {islandsCount} island{islandsCount === 1 ? "" : "s"} are waiting on the Travel Map. Start with the
-                first one, then branch out wherever your curiosity takes you. Your progress saves automatically.
+                {islandsCount} island{islandsCount === 1 ? "" : "s"} are on the world map. Sail to one, roll the dice
+                on its board, and play minigames to earn coins and stars. Your progress saves automatically.
               </p>
               <GameButton variant="primary" size="lg" className="mt-6 w-full max-w-xs" onClick={onComplete}>
-                🧭 Set sail
+                🎲 Open world map
               </GameButton>
             </motion.div>
           )}

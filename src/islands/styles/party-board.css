@@ -1,0 +1,169 @@
+:root {
+  --party-start: #86efac;
+  --party-minigame: #f9a8d4;
+  --party-coins: #fde047;
+  --party-star: #c4b5fd;
+  --party-lucky: #6ee7b7;
+  --party-event: #93c5fd;
+  --party-board-bg: color-mix(in oklab, var(--cap-paper) 88%, var(--cap-tide) 12%);
+  --party-board-track: color-mix(in oklab, var(--cap-ink) 12%, transparent);
+}
+
+.party-board-shell {
+  position: relative;
+  width: 100%;
+  max-width: 42rem;
+  margin-inline: auto;
+  aspect-ratio: 1.15;
+  border-radius: 1.75rem;
+  border: 3px solid var(--cap-ink);
+  background: var(--party-board-bg);
+  box-shadow: var(--cap-shadow-ink);
+  overflow: hidden;
+}
+
+.party-board-shell::before {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border-radius: 1.25rem;
+  border: 2px dashed var(--party-board-track);
+  pointer-events: none;
+}
+
+.party-board-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(42%, 11rem);
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  border: 2px solid var(--cap-ink);
+  background: var(--cap-card);
+  box-shadow: var(--cap-shadow-sm);
+}
+
+.party-space {
+  position: absolute;
+  width: clamp(3rem, 11vw, 4.25rem);
+  height: clamp(3rem, 11vw, 4.25rem);
+  transform: translate(-50%, -50%);
+  border-radius: 0.9rem;
+  border: 2px solid var(--cap-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  padding: 0.2rem;
+  text-align: center;
+  box-shadow: var(--cap-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.party-space--active {
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 0 0 3px var(--cap-gold), var(--cap-shadow-ink);
+  z-index: 2;
+}
+
+.party-space--target {
+  animation: party-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes party-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--cap-gold);
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in oklab, var(--cap-gold) 50%, transparent);
+  }
+}
+
+.party-space__icon {
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  line-height: 1;
+}
+
+.party-space__label {
+  font-size: 0.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--cap-ink);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.party-token {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.25));
+}
+
+.party-dice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+  border: 3px solid var(--cap-ink);
+  background: white;
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: var(--cap-shadow-ink);
+}
+
+.party-dice--rolling {
+  animation: party-dice-roll 0.45s ease-in-out infinite;
+}
+
+@keyframes party-dice-roll {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(12deg) scale(1.08);
+  }
+  100% {
+    transform: rotate(-8deg) scale(1);
+  }
+}
+
+.party-reward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.45);
+  padding: 1rem;
+}
+
+.party-reward-card {
+  width: min(24rem, 100%);
+  border-radius: 1.25rem;
+  border: 3px solid var(--cap-ink);
+  background: var(--cap-card);
+  box-shadow: var(--cap-shadow-ink);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.party-reward-card__burst {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}

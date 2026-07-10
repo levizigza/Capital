@@ -10,8 +10,9 @@ import {
 } from "@/game-ui";
 
 import { HomeHubView } from "./views/HomeHubView";
-import { PovVoyageView } from "./views/PovVoyageView";
-import { IslandPlayView } from "./views/IslandPlayView";
+import { TravelMapView } from "./views/TravelMapView";
+import { IslandBoardView } from "./views/IslandBoardView";
+import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
 import { IslandThemeProvider } from "./themes/IslandThemeProvider";
@@ -81,6 +82,8 @@ import {
 } from "./economy";
 import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
+import { computeMinigameReward, getPartyState } from "./partyBoard";
+import type { MinigameBoardReward } from "./partyBoard";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -90,6 +93,7 @@ type IslandsAppProps = {
 };
 
 type View = "home" | "travel" | "island" | "arcade" | "studio";
+type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | null;
 
 function uniq<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
@@ -142,6 +146,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const [hubModal, setHubModal] = useState<"avatar" | "shop" | "settings" | null>(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
+  const [minigameSource, setMinigameSource] = useState<MinigameSource>(null);
+  const [pendingBoardReward, setPendingBoardReward] = useState<MinigameBoardReward | null>(null);
+  const [pendingBoardMinigameName, setPendingBoardMinigameName] = useState<string | null>(null);
   const [showEditor, setShowEditor] = useState(
     () => import.meta.env.DEV && new URLSearchParams(window.location.search).get("islandEditor") === "1"
   );
@@ -267,6 +274,71 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     [content, updateSave]
   );
 
+  const updatePartyState = useCallback(
+    (islandId: string, next: { position: number; turnsPlayed: number; stars: number }) => {
+      updateSave((prev) => ({
+        ...prev,
+        partyBoard: {
+          ...prev.partyBoard,
+          [islandId]: next,
+        },
+      }));
+    },
+    [updateSave]
+  );
+
+  const awardPartyStar = useCallback(
+    (islandId: string) => {
+      updateSave((prev) => {
+        const current = getPartyState(prev, islandId);
+        return {
+          ...prev,
+          partyBoard: {
+            ...prev.partyBoard,
+            [islandId]: { ...current, stars: current.stars + 1 },
+          },
+        };
+      });
+    },
+    [updateSave]
+  );
+
+  const handleBoardSpaceReward = useCallback(
+    (payload: { coins: number; xp?: number; star?: boolean; message: string }) => {
+      if (payload.coins || payload.xp) {
+        setUserProfile((prev) => ({
+          ...prev,
+          totalCoins: prev.totalCoins + (payload.coins || 0),
+          xp: prev.xp + (payload.xp || 0),
+        }));
+      }
+      if (payload.star && activeIslandId) {
+        awardPartyStar(activeIslandId);
+      }
+    },
+    [activeIslandId, awardPartyStar, setUserProfile]
+  );
+
+  const launchBoardMinigame = useCallback(
+    (minigameId: MinigameId) => {
+      if (!activeIsland) return;
+      setMinigameSource("board");
+      setActiveMinigameId(minigameId);
+      setMinigameStartedAt(Date.now());
+      void analytics.track("minigame_started", {
+        islandId: activeIsland.id,
+        minigameId,
+        source: "board",
+      });
+      void trackScreenEnter(`minigame:${minigameId}`, {
+        islandId: activeIsland.id,
+        minigameId,
+        source: "board",
+      });
+    },
+    [activeIsland]
+  );
+
   const enterArea = useCallback(
     async (areaId: AreaId) => {
       if (!activeIsland || !save) return;
@@ -335,6 +407,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       openTravel: () => setView("travel"),
       openHub: () => setView("home"),
       startMinigame: (minigameId) => {
+        setMinigameSource("qa");
         setActiveMinigameId(minigameId as MinigameId);
         setMinigameStartedAt(Date.now());
         void analytics.track("minigame_started", {
@@ -537,7 +610,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             islandId: activeIsland?.id,
             minigameId: effect.minigameId,
             difficulty: diff,
+            source: "dialogue",
           });
+          setMinigameSource("dialogue");
           setMinigameStartedAt(Date.now());
           setActiveMinigameId(effect.minigameId);
           void trackScreenEnter(`minigame:${effect.minigameId}`, {
@@ -630,6 +705,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     });
     setActiveMinigameId(null);
     setMinigameStartedAt(null);
+    setMinigameSource(null);
     void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
       islandId: activeIsland?.id,
     });
@@ -637,8 +713,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const onMinigameComplete = useCallback(
     async (success: boolean, score?: number, timeline?: DecisionTimeline) => {
-      if (!activeMinigameId || !activeIsland) return;
+      if (!activeMinigameId || !activeIsland || !save) return;
 
+      const source = minigameSource;
+      const mgId = activeMinigameId;
+      const firstClear = !save.completedMinigames.includes(mgId);
       const durationMs = minigameStartedAt ? Date.now() - minigameStartedAt : 0;
       const difficulty = getDifficultyForMinigame(activeMinigameId);
       const thresholdObjective = activeIsland.quests
@@ -666,7 +745,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         difficulty,
         attempt: perf.attempts,
         successRate: perf.attempts > 0 ? (perf.successes / perf.attempts).toFixed(2) : "0",
+        source: source ?? undefined,
       });
+
+      const applyBoardReward = (fromSource: MinigameSource) => {
+        if (fromSource !== "board") return;
+        const reward = computeMinigameReward(questSuccess, score, firstClear, false);
+        setUserProfile((prev) => ({
+          ...prev,
+          totalCoins: prev.totalCoins + reward.coins,
+          xp: prev.xp + reward.xp,
+        }));
+        if (reward.starEarned) {
+          awardPartyStar(activeIsland.id);
+        }
+        setPendingBoardReward(reward);
+        setPendingBoardMinigameName(
+          activeIsland.minigames?.find((m) => m.id === mgId)?.name ?? null
+        );
+      };
 
       if (questSuccess) {
         updateSave((prev) => {
@@ -688,8 +785,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           };
         });
         await completeObjective({ type: "completeMinigame", minigameId: activeMinigameId });
+        applyBoardReward(source);
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
+        setMinigameSource(null);
         void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
 
         // Show replay modal if timeline has decision entries
@@ -743,12 +842,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
 
+        applyBoardReward(source);
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
+        setMinigameSource(null);
         void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
       }
     },
-    [activeIsland, activeMinigameId, completeObjective, learningProfile, minigameStartedAt, updateSave]
+    [
+      activeIsland,
+      activeMinigameId,
+      awardPartyStar,
+      completeObjective,
+      learningProfile,
+      minigameSource,
+      minigameStartedAt,
+      save,
+      setUserProfile,
+      updateSave,
+    ]
   );
 
   const activeMinigameDef = useMemo(() => {
@@ -777,6 +889,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       const island = getIslandById(content, islandId);
       if (!island) return;
       setActiveIslandId(islandId);
+      setMinigameSource("arcade");
       await analytics.track("minigame_started", {
         islandId,
         minigameId,
@@ -989,7 +1102,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             updateLearningProfile={updateLearningProfile}
           />
         ) : view === "travel" ? (
-          <PovVoyageView
+          <TravelMapView
             userProfile={userProfile}
             islands={content.islands}
             save={save}
@@ -1011,90 +1124,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           />
         ) : view === "island" && activeIsland ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
-          <>
-          <IslandPlayView
-            island={activeIsland}
-            save={save}
-            totalCoins={userProfile.totalCoins}
-            activeAreaId={save.currentAreaId}
-            learningProfile={learningProfile}
-            objectiveKey={objectiveKey}
-            character={save.character}
-            animationStyle={getIslandTheme(activeIsland.id, activeIsland.themeId).animationStyle}
-            onEnterArea={enterArea}
-            onTalkNpc={openNpcDialogue}
-            onCollectItem={collectItem}
-            onStartQuest={startQuest}
-            onOpenTravel={() => setView("travel")}
-            onOpenHub={() => setView("home")}
-            onOpenStudio={() => setView("studio")}
-            onPlayMinigame={(mgId) => {
-              setActiveMinigameId(mgId as MinigameId);
-              setMinigameStartedAt(Date.now());
-              void analytics.track("minigame_started", {
-                islandId: activeIsland.id,
-                minigameId: mgId,
-                source: "island",
-              });
-              void trackScreenEnter(`minigame:${mgId}`, {
-                islandId: activeIsland.id,
-                minigameId: mgId,
-              });
-            }}
-            devCheats={devCheatsPanel}
-          />
-          <GameModal
-            open={Boolean(dialogueState.open && dialogueGraph && dialogueNode)}
-            onClose={closeDialogue}
-            maxWidth="lg"
-            placement="sheet"
-            zIndex={50}
-          >
-            {dialogueNode ? (
-              <div data-testid="dialogue-modal" className="space-y-3">
-                <div className="flex items-center gap-3">
-                  {isCoincraftIsland(activeIsland?.id) && dialogueState.npcId ? (
-                    <NpcPortrait
-                      npcId={dialogueState.npcId}
-                      size="lg"
-                      fallbackIcon={activeIsland?.npcs.find((n) => n.id === dialogueState.npcId)?.icon}
-                    />
-                  ) : null}
-                  <div className="font-bold">{dialogueNode.speaker}</div>
-                </div>
-                <div>{resolveProfileText(dialogueNode.text, learningProfile)}</div>
-                {dialogueNode.end ? (
-                  <GameButton variant="primary" className="w-full" onClick={closeDialogue}>
-                    Close
-                  </GameButton>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    {(dialogueNode.choices || []).map((c) => {
-                      const missingReq = (c.requiresItems || []).filter((id) => !save.inventory.includes(id));
-                      const locked = missingReq.length > 0;
-                      return (
-                        <GameButton
-                          key={c.id}
-                          variant="choice"
-                          disabled={locked}
-                          data-testid="dialogue-choice"
-                          title={
-                            locked
-                              ? `Requires: ${missingReq.map((id) => activeIsland?.items.find((i) => i.id === id)?.name || id).join(", ")}`
-                              : undefined
-                          }
-                          onClick={() => onDialogueChoice(c.id)}
-                        >
-                          {locked ? "🔒 " : ""}{resolveProfileText(c.text, learningProfile)}
-                        </GameButton>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ) : null}
-          </GameModal>
-          </>
+            <IslandBoardView
+              island={activeIsland}
+              save={save}
+              userProfile={userProfile}
+              character={save.character}
+              onUpdatePartyState={(next) => updatePartyState(activeIsland.id, next)}
+              onLaunchMinigame={launchBoardMinigame}
+              onSpaceReward={handleBoardSpaceReward}
+              onOpenTravel={() => setView("travel")}
+              onOpenHub={() => setView("home")}
+              onOpenArcade={() => setView("arcade")}
+              boardLocked={Boolean(activeMinigameId)}
+            />
           </IslandThemeProvider>
         ) : null}
         </GameScreenStack>
@@ -1130,6 +1172,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onClose={() => setPendingReplayTimeline(null)}
             />
           </Suspense>
+        ) : null}
+
+        {pendingBoardReward ? (
+          <PartyRewardOverlay
+            reward={pendingBoardReward}
+            minigameName={pendingBoardMinigameName ?? undefined}
+            onContinue={() => {
+              setPendingBoardReward(null);
+              setPendingBoardMinigameName(null);
+            }}
+          />
         ) : null}
 
         <GameModal open={showAnalytics} onClose={() => setShowAnalytics(false)} maxWidth="lg">
