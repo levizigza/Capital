@@ -148,6 +148,7 @@ function OpeningWorld({ onLanded }: { onLanded: () => void }) {
 
 export function CarpetOpeningIntro({ onComplete }: Props) {
   const [phase, setPhase] = useState<"fly" | "land">("fly");
+  const [ready, setReady] = useState(false);
   const finishing = useRef(false);
   const reduced =
     typeof window !== "undefined" &&
@@ -185,17 +186,20 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       aria-label="Flying to Harbor Haven"
       data-testid="carpet-opening-intro"
     >
-      <div className="absolute inset-0 flex items-center justify-center bg-[#0c1622] text-sm font-bold text-white/70">
-        Loading carpet flight…
-      </div>
+      {!ready ? (
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c1622] text-sm font-bold text-white/70">
+          Loading carpet flight…
+        </div>
+      ) : null}
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
         camera={{ position: [0, 5, 55], fov: 65, near: 0.08, far: 220 }}
-        className="absolute inset-0"
+        className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor("#7dd3fc", 1);
+          setReady(true);
         }}
       >
         <Suspense fallback={null}>

@@ -134,22 +134,28 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
  */
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center bg-[#0c4a6e] text-sm font-bold text-white/70">
-        Loading 3D archipelago map…
-      </div>
+      {!ready ? (
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c4a6e] text-sm font-bold text-white/70">
+          Loading 3D archipelago map…
+        </div>
+      ) : null}
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
         camera={{ position: [0, 14, 16], fov: 42, near: 0.1, far: 200 }}
-        className="absolute inset-0"
+        className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-        onCreated={({ gl }) => gl.setClearColor("#0c4a6e", 1)}
+        onCreated={({ gl }) => {
+          gl.setClearColor("#0c4a6e", 1);
+          setReady(true);
+        }}
       >
         <Suspense fallback={null}>
           <MapScene

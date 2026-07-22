@@ -235,8 +235,11 @@ export function HomeHubView({
           </div>
         }
       >
-        {/* Quiet stage — only tutorial coach when needed */}
-        <div className="pointer-events-none flex h-full min-h-0 flex-col items-center justify-start pt-1">
+        {/* Pass-through stage — harbor canvas must receive clicks */}
+        <div
+          data-hud-pass
+          className="flex h-full min-h-0 flex-col items-center justify-start pt-1"
+        >
           {highlightOutfitter ? (
             <div className="rounded-full bg-amber-500/90 px-4 py-1.5 text-sm font-bold text-[#16283b] shadow-lg">
               Walk to the Outfitter (front center)

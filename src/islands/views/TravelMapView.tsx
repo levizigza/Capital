@@ -85,8 +85,8 @@ export function TravelMapView({
         </div>
       }
     >
-      {/* Spacer so HUD bands don't collapse; map is the background */}
-      <div className="pointer-events-none h-full min-h-[50vh]" aria-hidden />
+      {/* Pass-through spacer — map lives in background and must receive taps */}
+      <div data-hud-pass className="h-full min-h-[50vh]" aria-hidden />
     </GameHudLayout>
   );
 }

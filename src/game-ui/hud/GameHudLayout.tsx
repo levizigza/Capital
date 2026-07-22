@@ -23,7 +23,7 @@ export function GameHudLayout({
   return (
     <div className={cn("game-hud-layout relative", className)}>
       {background ? (
-        <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-auto">
           {background}
         </div>
       ) : null}
@@ -37,7 +37,9 @@ export function GameHudLayout({
 
       <main className="game-hud-layout__main relative z-10">{children}</main>
 
-      {bottom ? <footer className="game-hud-layout__bottom relative z-10 w-full">{bottom}</footer> : null}
+      {bottom ? (
+        <footer className="game-hud-layout__bottom relative z-10 w-full">{bottom}</footer>
+      ) : null}
     </div>
   );
 }

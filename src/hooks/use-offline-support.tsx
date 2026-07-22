@@ -31,18 +31,17 @@ export function useOfflineSupport() {
         caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
       }
     } else if ('serviceWorker' in navigator) {
+      // main.tsx already registers under BASE_URL; only observe + update here
+      // so GitHub Pages (/Capital/) never hits a root /sw.js 404.
+      const swUrl = `${import.meta.env.BASE_URL}sw.js`
       navigator.serviceWorker.ready.then(() => {
         setIsInstalled(true)
       })
 
-      // Register service worker (production only)
       navigator.serviceWorker
-        .register('/sw.js')
+        .register(swUrl, { scope: import.meta.env.BASE_URL })
         .then((registration) => {
-          console.log('Service Worker registered:', registration)
           setIsInstalled(true)
-
-          // Check for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing
             if (newWorker) {

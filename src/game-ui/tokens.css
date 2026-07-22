@@ -80,6 +80,8 @@
     var(--game-safe-left);
   gap: var(--game-gap);
   overflow: hidden;
+  /* Shell must not steal hits from a full-bleed 3D/canvas background. */
+  pointer-events: none;
 }
 
 .game-hud-layout__top {
@@ -90,6 +92,11 @@
   gap: var(--game-gap);
   flex-shrink: 0;
   z-index: 20;
+  pointer-events: none;
+}
+
+.game-hud-layout__top > * {
+  pointer-events: auto;
 }
 
 .game-hud-layout__main {
@@ -98,6 +105,17 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 10;
+  /* Critical: empty/pass-through main must not cover the canvas. */
+  pointer-events: none;
+}
+
+/* Interactive main content (boards, panels) re-enable hits on direct children. */
+.game-hud-layout__main > *:not([data-hud-pass]) {
+  pointer-events: auto;
+}
+
+.game-hud-layout__main > [data-hud-pass] {
+  pointer-events: none;
 }
 
 .game-hud-layout__bottom {
@@ -108,6 +126,11 @@
   align-items: center;
   gap: var(--game-gap);
   padding-bottom: var(--game-safe-bottom);
+  pointer-events: none;
+}
+
+.game-hud-layout__bottom > * {
+  pointer-events: auto;
 }
 
 .game-viewport[data-ui-scale="compact"] .game-hud-layout__top {

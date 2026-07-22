@@ -552,19 +552,24 @@ export function WalkableHarborView({
     onNearChange?.(near, label);
   }, [near, hotspots, onNearChange]);
 
+  const [ready, setReady] = useState(false);
+
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center bg-[#7dd3fc] text-sm font-bold text-[#16283b]/70">
-        Loading Harbor Haven…
-      </div>
+      {!ready ? (
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#7dd3fc] text-sm font-bold text-[#16283b]/70">
+          Loading Harbor Haven…
+        </div>
+      ) : null}
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
         camera={{ position: [0, 5, 14], fov: 50 }}
-        className="absolute inset-0"
+        className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor("#7dd3fc", 1);
+          setReady(true);
         }}
       >
         <Suspense fallback={null}>
