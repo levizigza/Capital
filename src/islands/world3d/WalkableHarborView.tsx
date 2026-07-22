@@ -131,21 +131,71 @@ function Player({
 function Fountain() {
   return (
     <group>
-      <mesh castShadow receiveShadow position={[0, 0.25, 0]}>
-        <cylinderGeometry args={[1.6, 1.9, 0.5, 16]} />
+      <mesh castShadow receiveShadow position={[0, 0.18, 0]}>
+        <cylinderGeometry args={[2.05, 2.25, 0.28, 20]} />
+        <meshStandardMaterial color="#a8a29e" roughness={0.82} flatShading />
+      </mesh>
+      <mesh castShadow receiveShadow position={[0, 0.42, 0]}>
+        <cylinderGeometry args={[1.55, 1.85, 0.4, 18]} />
         <meshStandardMaterial color="#d6d3d1" roughness={0.75} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 0.85, 0]}>
-        <cylinderGeometry args={[0.35, 0.45, 1.1, 10]} />
+      <mesh castShadow position={[0, 0.95, 0]}>
+        <cylinderGeometry args={[0.32, 0.42, 1.0, 10]} />
         <meshStandardMaterial color="#a8a29e" roughness={0.7} flatShading />
       </mesh>
       <mesh castShadow position={[0, 1.55, 0]}>
-        <sphereGeometry args={[0.45, 12, 10]} />
+        <torusGeometry args={[0.55, 0.12, 8, 20]} />
+        <meshStandardMaterial color="#d6d3d1" roughness={0.65} flatShading />
+      </mesh>
+      <mesh castShadow position={[0, 1.72, 0]}>
+        <sphereGeometry args={[0.4, 14, 12]} />
         <meshStandardMaterial color="#f4a629" roughness={0.35} metalness={0.35} />
       </mesh>
-      <mesh position={[0, 0.52, 0]}>
-        <cylinderGeometry args={[1.35, 1.35, 0.12, 20]} />
-        <meshStandardMaterial color="#38bdf8" roughness={0.2} metalness={0.35} transparent opacity={0.75} />
+      <mesh position={[0, 0.58, 0]}>
+        <cylinderGeometry args={[1.35, 1.35, 0.1, 24]} />
+        <meshStandardMaterial color="#38bdf8" roughness={0.18} metalness={0.4} transparent opacity={0.78} />
+      </mesh>
+      {/* Splash rings */}
+      {[0.7, 1.0].map((rad, i) => (
+        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.64 + i * 0.02, 0]}>
+          <ringGeometry args={[rad, rad + 0.08, 24]} />
+          <meshStandardMaterial color="#e0f2fe" transparent opacity={0.35} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function PlazaLantern({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <cylinderGeometry args={[0.06, 0.08, 1.1, 8]} />
+        <meshStandardMaterial color="#44403c" roughness={0.7} metalness={0.35} />
+      </mesh>
+      <mesh position={[0, 1.2, 0]}>
+        <boxGeometry args={[0.22, 0.28, 0.22]} />
+        <meshStandardMaterial
+          color="#fde68a"
+          emissive="#f59e0b"
+          emissiveIntensity={0.5}
+          roughness={0.35}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function MarketCrate({ position, rot = 0 }: { position: [number, number, number]; rot?: number }) {
+  return (
+    <group position={position} rotation={[0, rot, 0]}>
+      <mesh castShadow receiveShadow position={[0, 0.2, 0]}>
+        <boxGeometry args={[0.55, 0.4, 0.45]} />
+        <meshStandardMaterial color="#a16207" roughness={0.85} flatShading />
+      </mesh>
+      <mesh position={[0, 0.42, 0]}>
+        <boxGeometry args={[0.5, 0.06, 0.4]} />
+        <meshStandardMaterial color="#854d0e" roughness={0.8} flatShading />
       </mesh>
     </group>
   );
@@ -156,9 +206,10 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
     return t.props
-      .slice(0, 28)
+      .filter((p) => p.kind !== "hut")
+      .slice(0, 34)
       .map((p, i) => {
-        const ang = (i / 28) * Math.PI * 2;
+        const ang = (i / 34) * Math.PI * 2;
         const r = 12.2 + (i % 3) * 1.1;
         return {
           ...p,
@@ -180,36 +231,92 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
     { pos: [-3.2, 0, -6.6] as [number, number, number], coat: "#f4a629", pants: "#3f2a1a", skin: "#d9a57a" },
   ];
 
+  const cobbles = useMemo(() => {
+    return Array.from({ length: 36 }, (_, i) => {
+      const ang = (i / 36) * Math.PI * 2 + (i % 5) * 0.07;
+      const rad = 2.2 + (i % 7) * 0.95;
+      return {
+        x: Math.cos(ang) * rad,
+        z: Math.sin(ang) * rad,
+        s: 0.35 + (i % 4) * 0.08,
+      };
+    });
+  }, []);
+
   return (
     <>
       <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={1024} />
       <OceanWater color={LOOK.sea} shading={LOOK.shading} size={400} calm />
 
+      {/* Island land mass + cliff thickness */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-        <circleGeometry args={[18, 56]} />
+        <circleGeometry args={[18, 64]} />
         <meshStandardMaterial color={LOOK.land} roughness={0.92} flatShading />
       </mesh>
+      <mesh position={[0, -0.7, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[17.2, 18.8, 1.3, 48]} />
+        <meshStandardMaterial color="#6b6560" roughness={0.95} flatShading />
+      </mesh>
+      <mesh position={[0, -1.45, 0]} castShadow>
+        <cylinderGeometry args={[18.8, 20.2, 0.4, 48]} />
+        <meshStandardMaterial color="#4b5563" roughness={0.98} flatShading />
+      </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.0, 0]} receiveShadow>
-        <ringGeometry args={[14, 18.5, 56]} />
+        <ringGeometry args={[14, 18.8, 64]} />
         <meshStandardMaterial color={LOOK.shore} roughness={0.9} />
       </mesh>
+      {/* Foam line */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[17.6, 18.6, 64]} />
+        <meshStandardMaterial color="#f8fafc" transparent opacity={0.4} depthWrite={false} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.12, 0]}>
+        <ringGeometry args={[18.5, 20.5, 48]} />
+        <meshStandardMaterial color="#0369a1" transparent opacity={0.3} depthWrite={false} />
+      </mesh>
+
+      {/* Outer hills with rock outcrops */}
       {[
         [12, 0.4, -10],
         [-13, 0.55, -8],
         [10, 0.35, 12],
         [-11, 0.45, 11],
         [0, 0.7, -15],
+        [14, 0.5, 4],
+        [-14.5, 0.45, -2],
       ].map((p, i) => (
-        <mesh key={i} castShadow receiveShadow position={p as [number, number, number]}>
-          <sphereGeometry args={[2.2 + (i % 3) * 0.4, 10, 8]} />
-          <meshStandardMaterial color={LOOK.land} roughness={0.88} flatShading />
-        </mesh>
+        <group key={i} position={p as [number, number, number]}>
+          <mesh castShadow receiveShadow>
+            <sphereGeometry args={[2.0 + (i % 3) * 0.35, 12, 9]} />
+            <meshStandardMaterial color={LOOK.land} roughness={0.88} flatShading />
+          </mesh>
+          <mesh castShadow position={[0.8, 0.3, 0.4]} rotation={[0.3, 0.5, 0.2]} scale={0.55}>
+            <dodecahedronGeometry args={[0.9, 0]} />
+            <meshStandardMaterial color="#78716c" roughness={0.94} flatShading />
+          </mesh>
+        </group>
       ))}
 
+      {/* Stone plaza */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} receiveShadow>
-        <circleGeometry args={[10.5, 48]} />
+        <circleGeometry args={[10.5, 56]} />
         <meshStandardMaterial color="#e7e5e4" roughness={0.88} flatShading />
       </mesh>
+      {cobbles.map((c, i) => (
+        <mesh
+          key={`cobble-${i}`}
+          rotation={[-Math.PI / 2, 0, (i % 5) * 0.3]}
+          position={[c.x, 0.055, c.z]}
+          receiveShadow
+        >
+          <circleGeometry args={[c.s, 6]} />
+          <meshStandardMaterial
+            color={i % 2 ? "#d6d3d1" : "#c4c0bc"}
+            roughness={0.92}
+            flatShading
+          />
+        </mesh>
+      ))}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} receiveShadow>
         <ringGeometry args={[5.5, 8.2, 48]} />
         <meshStandardMaterial color={LOOK.shore} roughness={0.9} />
@@ -238,23 +345,47 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
 
       <WoodenPier position={[0, 0.05, 12.5]} />
 
-      {Array.from({ length: 24 }).map((_, i) => {
-        const ang = (i / 24) * Math.PI * 2;
+      {/* Seawall + lanterns */}
+      {Array.from({ length: 28 }).map((_, i) => {
+        const ang = (i / 28) * Math.PI * 2;
         const r = 14.5;
         return (
-          <mesh
-            key={i}
-            castShadow
-            position={[Math.cos(ang) * r, 0.35, Math.sin(ang) * r]}
-            rotation={[0, -ang, 0]}
-          >
-            <boxGeometry args={[3.6, 0.7, 0.45]} />
-            <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
-          </mesh>
+          <group key={i}>
+            <mesh
+              castShadow
+              position={[Math.cos(ang) * r, 0.35, Math.sin(ang) * r]}
+              rotation={[0, -ang, 0]}
+            >
+              <boxGeometry args={[3.2, 0.75, 0.5]} />
+              <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
+            </mesh>
+            <mesh
+              castShadow
+              position={[Math.cos(ang) * r, 0.78, Math.sin(ang) * r]}
+              rotation={[0, -ang, 0]}
+            >
+              <boxGeometry args={[3.0, 0.12, 0.55]} />
+              <meshStandardMaterial color="#78716c" roughness={0.8} flatShading />
+            </mesh>
+            {i % 4 === 0 ? (
+              <PlazaLantern
+                position={[Math.cos(ang) * (r - 0.55), 0.05, Math.sin(ang) * (r - 0.55)]}
+              />
+            ) : null}
+          </group>
         );
       })}
 
       <NatureProps props={accentProps} look={LOOK} useKenney={KENNEY_ENABLED} />
+
+      {/* Market crates near the pier path */}
+      <MarketCrate position={[1.8, 0.02, 9.2]} rot={0.3} />
+      <MarketCrate position={[2.4, 0.02, 9.6]} rot={-0.5} />
+      <MarketCrate position={[-2.1, 0.02, 8.8]} rot={1.1} />
+      <mesh castShadow position={[-1.5, 0.28, 9.5]}>
+        <cylinderGeometry args={[0.22, 0.24, 0.5, 10]} />
+        <meshStandardMaterial color="#78350f" roughness={0.8} flatShading />
+      </mesh>
 
       {hotspots.map((h, idx) => (
         <group key={h.id} position={h.position}>
@@ -294,6 +425,13 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         seed="horizon-b"
         position={[42, -0.2, -36]}
         scale={2.6}
+        detail="far"
+      />
+      <EraIslandMesh
+        look={getEraLook3D("era-1980s")}
+        seed="horizon-c"
+        position={[8, -0.2, -55]}
+        scale={1.8}
         detail="far"
       />
     </>
