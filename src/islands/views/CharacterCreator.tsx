@@ -33,17 +33,26 @@ function SwatchRow<T extends { id: string; label: string }>({
   selected,
   render,
   onPick,
+  scrollable,
 }: {
   title: string;
   options: T[];
   selected: string;
   render: (o: T) => React.ReactNode;
   onPick: (id: string) => void;
+  /** Cap height so long catalogs don't push actions off-screen */
+  scrollable?: boolean;
 }) {
   return (
     <div className="space-y-1.5">
       <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{title}</div>
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={
+          scrollable
+            ? "flex max-h-[min(28vh,220px)] flex-wrap gap-2 overflow-y-auto overscroll-contain rounded-xl border border-black/10 bg-white/60 p-2"
+            : "flex flex-wrap gap-2"
+        }
+      >
         {options.map((o) => {
           const active = selected === o.id;
           return (
@@ -68,6 +77,10 @@ function SwatchRow<T extends { id: string; label: string }>({
   );
 }
 
+/**
+ * Character / Outfitter form — sticky Cancel + Save so players never get stuck
+ * behind a tall mascot catalog.
+ */
 export function CharacterCreator({
   character,
   defaultName,
@@ -78,46 +91,61 @@ export function CharacterCreator({
   hideCompanion = false,
 }: Props) {
   const [draft, setDraft] = useState<CapitalCharacter>(
-    () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" }
+    () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" },
   );
 
   const set = (patch: Partial<CapitalCharacter>) => setDraft((d) => ({ ...d, ...patch }));
   const isShop = variant === "outfitter";
 
+  const commit = () =>
+    onSave({ ...draft, name: draft.name.trim() || defaultName || "Adventurer" });
+
   return (
-    <div className="space-y-4">
-      <div className="text-center">
+    <div className="flex min-h-0 flex-col gap-3">
+      <div className="shrink-0 text-center">
         <div className="text-xl font-black">{isShop ? "🪞 Fitting mirror" : "🎨 Make your money mascot"}</div>
         <p className="text-sm text-muted-foreground">
           {isShop
-            ? "Pick one of Capital’s 30 Money Mascots — then tint and accessorize your Harbor look."
-            : "You are a Money Mascot of Fortune Archipelago. Pick your body, tint, and flair."}
+            ? "Pick a look, type your name, then tap Next. You can leave anytime."
+            : "Pick your body, tint, and flair — then save."}
         </p>
       </div>
 
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex shrink-0 flex-col items-center gap-2">
         <motion.div
           key={`${draft.base}-${draft.color}-${draft.accessory}-${draft.companion}`}
           initial={{ scale: 0.9, rotate: -3 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 16 }}
         >
-          <CharacterAvatar character={draft} size={120} animationStyle="capital-default" />
+          <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
         </motion.div>
-        <input
-          value={draft.name}
-          onChange={(e) => set({ name: e.target.value.slice(0, 18) })}
-          placeholder="Name your Voyager"
-          className="w-full max-w-xs rounded-xl border-2 border-slate-200 px-3 py-2 text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
-          aria-label="Character name"
-        />
+        <label className="w-full max-w-xs text-center">
+          <span className="sr-only">Your name</span>
+          <input
+            value={draft.name}
+            onChange={(e) => set({ name: e.target.value.slice(0, 18) })}
+            placeholder="Name your Voyager"
+            className="w-full rounded-xl border-2 border-slate-200 px-3 py-2 text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
+            aria-label="Character name"
+            autoComplete="nickname"
+            enterKeyHint="done"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commit();
+              }
+            }}
+          />
+        </label>
       </div>
 
-      <GamePanel padding="default" className="space-y-3">
+      <GamePanel padding="default" className="min-h-0 space-y-3">
         <SwatchRow
           title="Money mascot"
           options={CHARACTER_BASES}
           selected={draft.base}
+          scrollable
           render={(o) => (
             <span className="flex flex-col items-center gap-0.5 leading-none">
               <span>{baseEmoji(o.id)}</span>
@@ -155,17 +183,13 @@ export function CharacterCreator({
         ) : null}
       </GamePanel>
 
-      <div className="flex gap-2">
-        {onCancel && (
+      <div className="sticky bottom-0 z-10 -mx-1 flex gap-2 border-t border-black/10 bg-[color-mix(in_oklab,var(--cap-card,#fffdf6)_94%,transparent)] px-1 pb-1 pt-3">
+        {onCancel ? (
           <GameButton variant="outline" className="flex-1" onClick={onCancel}>
-            Cancel
+            Cancel / Leave
           </GameButton>
-        )}
-        <GameButton
-          variant="primary"
-          className="flex-1"
-          onClick={() => onSave({ ...draft, name: draft.name.trim() || defaultName || "Adventurer" })}
-        >
+        ) : null}
+        <GameButton variant="primary" className="flex-1" onClick={commit} data-testid="character-creator-save">
           {saveLabel}
         </GameButton>
       </div>

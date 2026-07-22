@@ -10,6 +10,8 @@
 
 If a feature cannot answer *which beat it serves* and *how the Voyager returns changed*, it is out of whack — **push back or reframe** before shipping.
 
+**Also see:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) — fantasy, core loop, goals/fail, and the **navigability law** (never soft-lock a screen).
+
 ---
 
 ## One-sentence myth

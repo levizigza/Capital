@@ -410,8 +410,18 @@ export function HomeHubView({
       <GameModal
         open={hubModal !== null}
         onClose={() => setHubModal(null)}
-        maxWidth="md"
-        usePortal={hubModal !== "settings" && hubModal !== "outfitter"}
+        maxWidth={hubModal === "outfitter" || hubModal === "capsule" ? "lg" : "md"}
+        usePortal
+        showCloseButton
+        title={
+          hubModal === "outfitter"
+            ? "The Outfitter"
+            : hubModal === "capsule"
+              ? "Capsule Stall"
+              : hubModal === "settings"
+                ? "Settings"
+                : undefined
+        }
       >
         {hubModal === "outfitter" ? (
           <OutfitterInterior onLeave={() => setHubModal(null)}>
@@ -429,15 +439,15 @@ export function HomeHubView({
                 onCancel={() => setHubModal(null)}
               />
             ) : (
-              <div className="space-y-4 text-center">
-                <div className="mx-auto flex justify-center">
+              <div className="flex min-h-0 flex-col gap-4 text-center">
+                <div className="mx-auto flex shrink-0 justify-center">
                   <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
                 </div>
-                <div>
+                <div className="shrink-0">
                   <div className="text-lg font-black">Companion crates</div>
-                  <p className="text-sm text-muted-foreground">Choose a pet waiting by the Outfitter dock.</p>
+                  <p className="text-sm text-muted-foreground">Choose a pet — or go back to looks.</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2">
+                <div className="flex max-h-[40vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
                   {pets.map((pet) => {
                     const active = draft.companion === pet.id;
                     const price = companionPrice(pet.id);
@@ -462,7 +472,7 @@ export function HomeHubView({
                     );
                   })}
                 </div>
-                <div className="flex gap-2">
+                <div className="sticky bottom-0 flex gap-2 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
                   <GameButton variant="outline" className="flex-1" onClick={() => setOutfitterStage("look")}>
                     ← Looks
                   </GameButton>
@@ -627,22 +637,24 @@ export function HomeHubView({
               )}
             </GamePanel>
 
-            <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
-              Back to plaza
-            </GameButton>
-            {guidedStep?.id === "tiny_spend" ? (
-              <GameButton
-                variant="ghost"
-                className="w-full text-sm"
-                onClick={() => {
-                  onHubGuidedEvent("capsule_visit");
-                  setHubModal(null);
-                  toast.message("Peek complete — coins can buy help later!");
-                }}
-              >
-                I’ve seen enough →
+            <div className="sticky bottom-0 space-y-2 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
+              <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
+                Back to plaza
               </GameButton>
-            ) : null}
+              {guidedStep?.id === "tiny_spend" ? (
+                <GameButton
+                  variant="ghost"
+                  className="w-full text-sm"
+                  onClick={() => {
+                    onHubGuidedEvent("capsule_visit");
+                    setHubModal(null);
+                    toast.message("Peek complete — coins can buy help later!");
+                  }}
+                >
+                  I’ve seen enough →
+                </GameButton>
+              ) : null}
+            </div>
           </div>
         ) : null}
 

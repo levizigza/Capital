@@ -167,6 +167,12 @@ export default function SettingsPanel({
           Always consult a qualified financial professional before making real investment decisions.
         </p>
       </GamePanel>
+
+      <div className="sticky bottom-0 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
+        <GameButton className="w-full" variant="primary" onClick={onClose} motionEnabled={false}>
+          Done — back to Harbor
+        </GameButton>
+      </div>
     </div>
   );
 }

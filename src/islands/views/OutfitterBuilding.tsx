@@ -91,11 +91,16 @@ export function OutfitterInterior({ children, onLeave }: InteriorProps) {
           <div className="cap-eyebrow">Harbor Haven</div>
           <h2 className="cap-display text-2xl text-[var(--cap-ink)]">Inside the Outfitter</h2>
           <p className="text-sm text-[var(--cap-ink-soft)]">
-            Try on looks at the fitting mirror. Pick a companion from the dock crates.
+            Pick a look, enter your name, then Next — or leave to the plaza anytime.
           </p>
         </div>
-        <button type="button" className="outfitter-interior__leave" onClick={onLeave}>
-          ← Plaza
+        <button
+          type="button"
+          className="outfitter-interior__leave"
+          onClick={onLeave}
+          data-testid="outfitter-leave"
+        >
+          ← Leave shop
         </button>
       </header>
       <div className="outfitter-interior__counter">{children}</div>

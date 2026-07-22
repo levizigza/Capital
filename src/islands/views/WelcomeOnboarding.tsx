@@ -150,6 +150,7 @@ export function WelcomeOnboarding({
                     setDraft({ ...c, companion: "none" });
                     setStep("inside-pet");
                   }}
+                  onCancel={() => setStep("plaza")}
                 />
               </OutfitterInterior>
             </motion.div>
@@ -164,15 +165,15 @@ export function WelcomeOnboarding({
               className="w-full max-w-md"
             >
               <OutfitterInterior onLeave={() => setStep("inside-look")}>
-                <div className="space-y-4 text-center">
-                  <div className="mx-auto flex justify-center">
+                <div className="flex min-h-0 flex-col gap-4 text-center">
+                  <div className="mx-auto flex shrink-0 justify-center">
                     <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
                   </div>
-                  <div>
+                  <div className="shrink-0">
                     <div className="text-lg font-black">Companion crates</div>
                     <p className="text-sm text-muted-foreground">Every captain needs a sidekick.</p>
                   </div>
-                  <div className="flex flex-wrap justify-center gap-2">
+                  <div className="flex max-h-[40vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
                     {pets.map((pet) => {
                       const active = draft.companion === pet.id;
                       return (
@@ -192,18 +193,22 @@ export function WelcomeOnboarding({
                       );
                     })}
                   </div>
-                  <GameButton
-                    variant="primary"
-                    size="lg"
-                    className="w-full"
-                    disabled={draft.companion === "none"}
-                    onClick={() => {
-                      onSaveCharacter(draft);
-                      setStep("party");
-                    }}
-                  >
-                    {draft.companion === "none" ? "Pick a pet first" : "Leave the Outfitter →"}
-                  </GameButton>
+                  <div className="sticky bottom-0 flex gap-2 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
+                    <GameButton variant="outline" className="flex-1" onClick={() => setStep("inside-look")}>
+                      ← Looks
+                    </GameButton>
+                    <GameButton
+                      variant="primary"
+                      className="flex-1"
+                      disabled={draft.companion === "none"}
+                      onClick={() => {
+                        onSaveCharacter(draft);
+                        setStep("party");
+                      }}
+                    >
+                      {draft.companion === "none" ? "Pick a pet first" : "Leave Outfitter →"}
+                    </GameButton>
+                  </div>
                 </div>
               </OutfitterInterior>
             </motion.div>
