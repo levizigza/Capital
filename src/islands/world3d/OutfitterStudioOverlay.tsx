@@ -1,0 +1,171 @@
+import { useEffect } from "react";
+import { GameButton } from "@/game-ui";
+import type { CapitalCharacter } from "../character";
+import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
+import { CharacterCreator } from "../views/CharacterCreator";
+import { OutfitterStudio3D } from "./OutfitterStudio3D";
+import { ownsCompanion, companionPrice } from "../harborShop";
+import type { IslandSaveV1 } from "../types";
+
+type Stage = "look" | "pet";
+
+type Props = {
+  draft: CapitalCharacter;
+  setDraft: (c: CapitalCharacter | ((d: CapitalCharacter) => CapitalCharacter)) => void;
+  stage: Stage;
+  setStage: (s: Stage) => void;
+  save: IslandSaveV1;
+  defaultName?: string;
+  onLeave: () => void;
+  onSaveLook: (c: CapitalCharacter) => void;
+  onAdoptPet: () => void;
+  onHarborPurchase: (price: number, companionId: string) => boolean;
+};
+
+/**
+ * Full-bleed 3D Outfitter — Snapchat-style layers over a live mannequin.
+ * Plaza Canvas must be unmounted while this is open.
+ */
+export function OutfitterStudioOverlay({
+  draft,
+  setDraft,
+  stage,
+  setStage,
+  save,
+  defaultName,
+  onLeave,
+  onSaveLook,
+  onAdoptPet,
+  onHarborPurchase,
+}: Props) {
+  const pets = CHARACTER_COMPANIONS.filter((c) => c.id !== "none");
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onLeave();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onLeave]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex flex-col"
+      data-testid="outfitter-studio-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Outfitter fitting room"
+    >
+      <OutfitterStudio3D character={draft} className="absolute inset-0" />
+
+      {/* Soft vignette so UI stays readable */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
+
+      <header className="relative z-[2] flex items-start justify-between gap-3 p-3 sm:p-4">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wide text-amber-200/90">
+            Harbor Haven · 3D Outfitter
+          </div>
+          <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">Become you</h2>
+          <p className="max-w-sm text-xs text-white/80 sm:text-sm">
+            Spin the mannequin with Body · Coat · Gear — like a Snapchat style picker.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onLeave}
+          className="rounded-full border-2 border-white/35 bg-black/45 px-3 py-1.5 text-sm font-bold text-white hover:bg-black/60"
+          data-testid="outfitter-leave"
+        >
+          ✕ Leave
+        </button>
+      </header>
+
+      <div className="relative z-[2] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/50 p-3 shadow-2xl backdrop-blur-md sm:p-4">
+          {stage === "look" ? (
+            <CharacterCreator
+              character={draft}
+              defaultName={defaultName}
+              variant="outfitter"
+              hideCompanion
+              preview="none"
+              saveLabel="Next: pick a pet →"
+              onDraftChange={setDraft}
+              onCancel={onLeave}
+              onSave={(c) => {
+                setDraft({ ...c, companion: draft.companion });
+                onSaveLook(c);
+                setStage("pet");
+              }}
+            />
+          ) : (
+            <div className="flex min-h-0 flex-col gap-3 text-center text-white">
+              <div>
+                <div className="text-lg font-black">Companion crates</div>
+                <p className="text-sm text-white/75">Choose a pet — or go back to looks.</p>
+              </div>
+              <div className="flex max-h-[32vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
+                {pets.map((pet) => {
+                  const active = draft.companion === pet.id;
+                  const price = companionPrice(pet.id);
+                  const owned = ownsCompanion(save, pet.id);
+                  return (
+                    <button
+                      key={pet.id}
+                      type="button"
+                      onClick={() => setDraft((d) => ({ ...d, companion: pet.id }))}
+                      className={`flex min-w-[5.25rem] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 transition ${
+                        active
+                          ? "scale-105 border-amber-300 bg-amber-200/90 text-[#1c1917]"
+                          : "border-white/25 bg-black/40 text-white hover:border-white/55"
+                      }`}
+                    >
+                      <span className="text-3xl">{companionEmoji(pet.id)}</span>
+                      <span className="text-xs font-bold">{pet.label}</span>
+                      <span className="text-[10px] font-semibold opacity-80">
+                        {owned ? "Owned" : `🪙 ${price}`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-2">
+                <GameButton
+                  variant="outline"
+                  className="flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50"
+                  onClick={() => setStage("look")}
+                >
+                  ← Looks
+                </GameButton>
+                <GameButton
+                  variant="primary"
+                  className="flex-1"
+                  disabled={draft.companion === "none"}
+                  onClick={() => {
+                    const price = companionPrice(draft.companion);
+                    const owned = ownsCompanion(save, draft.companion);
+                    if (!owned && price > 0) {
+                      const ok = onHarborPurchase(price, draft.companion);
+                      if (!ok) return;
+                    }
+                    onAdoptPet();
+                  }}
+                >
+                  {draft.companion === "none"
+                    ? "Pick a pet"
+                    : ownsCompanion(save, draft.companion)
+                      ? "Leave shop ✓"
+                      : `Adopt · 🪙 ${companionPrice(draft.companion)}`}
+                </GameButton>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

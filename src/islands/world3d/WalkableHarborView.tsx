@@ -21,6 +21,7 @@ import { HarborBuilding, WoodenPier, NatureProps } from "./NatureProps";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { IslandTitle } from "./IslandTitle";
 import { KENNEY_ENABLED } from "./kenneyFlag";
+import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 
 export type HarborHotspot = {
   id: string;
@@ -38,6 +39,9 @@ type Props = {
   onNearChange?: (id: string | null, label: string | null) => void;
   /** Ambient Money Mascot chat when walking near a local. */
   onNearNpc?: (npc: { id: string; name: string; line: string } | null) => void;
+  /** Castle Grounds guide — Coin Bag hops toward this highlight */
+  guideHighlight?: "outfitter" | "capsule" | "travel" | "practice" | "guide";
+  guideTip?: string;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -547,6 +551,8 @@ export function WalkableHarborView({
   onOpenTravel,
   onNearChange,
   onNearNpc,
+  guideHighlight,
+  guideTip,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const reduced =
@@ -586,6 +592,11 @@ export function WalkableHarborView({
       })),
     [locals],
   );
+
+  const guideTarget = useMemo(() => {
+    if (!guideHighlight) return null;
+    return guideTargetForHighlight(guideHighlight, hotspots);
+  }, [guideHighlight, hotspots]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -633,6 +644,13 @@ export function WalkableHarborView({
             onNear={setNear}
             onNearNpc={(n) => onNearNpc?.(n)}
           />
+          {guideTarget ? (
+            <MoneyBagGuide
+              target={guideTarget}
+              tip={guideTip ?? "This way!"}
+              reducedMotion={reduced}
+            />
+          ) : null}
         </Suspense>
       </Canvas>
     </div>

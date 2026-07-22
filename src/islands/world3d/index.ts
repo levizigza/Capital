@@ -10,3 +10,7 @@ export { OceanWater, OceanPlane } from "./OceanWater";
 export { IslandTitle } from "./IslandTitle";
 export { ArchipelagoMap3D } from "./ArchipelagoMap3D";
 export { DioramaIslandMesh } from "./DioramaIslandMesh";
+export { CharacterPreview3D } from "./CharacterPreview3D";
+export { OutfitterStudio3D } from "./OutfitterStudio3D";
+export { OutfitterStudioOverlay } from "./OutfitterStudioOverlay";
+export { MoneyBagGuide, guideTargetForHighlight, COIN_BAG_GUIDE_ID } from "./MoneyBagGuide";

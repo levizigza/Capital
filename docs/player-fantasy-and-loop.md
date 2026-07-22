@@ -66,5 +66,7 @@ If not, cut content before adding systems.
 3. Every form that collects input has a reachable **Complete** (Save / Next / Buy)  
 4. Backdrop click closes unless a purchase is mid-confirm  
 5. Coach text states the **one next verb**  
+6. **Coin Bag** (hopping money-bag) spatially points the Castle Grounds path — never leave players guessing where to walk  
+7. **Outfitter** is a 3D fitting room with Snapchat-style Body · Coat · Gear layers over a live mannequin (2D emoji picker is legacy/fallback only)
 
 Violations are bugs — same severity as soft-locks.

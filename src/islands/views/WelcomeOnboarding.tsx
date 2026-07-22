@@ -4,6 +4,7 @@ import { GameButton } from "@/game-ui";
 import { CharacterCreator } from "./CharacterCreator";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { OutfitterBuilding, OutfitterInterior } from "./OutfitterBuilding";
+import { CharacterPreview3D } from "../world3d/CharacterPreview3D";
 import {
   type CapitalCharacter,
   BASE_VOYAGER,
@@ -140,12 +141,18 @@ export function WelcomeOnboarding({
               className="w-full max-w-md"
             >
               <OutfitterInterior onLeave={() => setStep("plaza")}>
+                <div className="mb-3 h-44 overflow-hidden rounded-2xl border-2 border-[var(--cap-ink)]/15 bg-gradient-to-b from-sky-200 to-amber-50">
+                  <CharacterPreview3D character={draft} reducedMotion={false} />
+                </div>
                 <CharacterCreator
                   character={draft}
                   defaultName={draft.name || playerName}
                   variant="outfitter"
                   hideCompanion
+                  preview="none"
+                  chrome="light"
                   saveLabel="Next: companion crates →"
+                  onDraftChange={setDraft}
                   onSave={(c) => {
                     setDraft({ ...c, companion: "none" });
                     setStep("inside-pet");

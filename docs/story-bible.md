@@ -58,15 +58,15 @@ If a feature cannot answer *which beat it serves* and *how the Voyager returns c
 Harbor is **not** a menu. It is the yard that teaches **one verb at a time**:
 
 1. Look / wonder (carpet landing)  
-2. Walk  
+2. Walk (follow **Coin Bag** — hopping money-bag pointer)  
 3. Talk to a guide (**Piggy Penny** — Harbor Keeper)  
-4. Become *you* (Outfitter)  
+4. Become *you* (**3D Outfitter** — Snapchat-style Body · Coat · Gear)  
 5. Coins mean something (tiny Capsule spend)  
 6. How challenges feel (optional practice board)  
 7. Cross a threshold (Carpet Dock → map → island)  
 8. Return changed (seal / unlock / new line from guide)
 
-**Push-back:** Free-roam before the guided lap is done is allowed only as soft exploration — the **next good action** must always be obvious (glow, guide line, one HUD sentence).
+**Push-back:** Free-roam before the guided lap is done is allowed only as soft exploration — the **next good action** must always be obvious (Coin Bag hop, glow, guide line, one HUD sentence).
 
 ---
 
@@ -85,11 +85,13 @@ Coincraft Cove is **Island 1 / first painting** — reference implementation.
 
 | Guide | Mascot | Beat ownership |
 |-------|--------|----------------|
-| **Harbor Keeper** | Piggy Penny | Castle Grounds verbs; points to Outfitter, Capsule, Dock |
+| **Path pointer** | **Coin Bag** (Baggy Bucks form) | Hops to the next door — SM64 Lakitu energy, spatial only |
+| **Harbor Keeper** | Piggy Penny | Castle Grounds verbs; talk lines for Outfitter, Capsule, Dock |
 | **Island Ally** | Per-island (Cove: Captain Penny → remap to mascot cast over time) | Search / Find on that island |
 | **Return Witness** | Budget Bot or Vault Vince | Names the Change when you come home |
 
-Guides **point, wait, celebrate**. They never dump the whole myth at once.
+Guides **point, wait, celebrate**. They never dump the whole myth at once.  
+**3D-first Harbor:** Outfitter (and soon Capsule) are walk-in **3D rooms**; 2D islands remain allowed later for animation-style chapters.
 
 ---
 

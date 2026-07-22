@@ -430,7 +430,7 @@ export function varyMascot(mascotId: string, seed: string): MascotCharacterLook 
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   const colors = ["tide", "marigold", "seafoam", "ink", "coral", "ledger"];
-  const accessories = ["none", "cap", "goggles", "bandana", "headset", "lantern"];
+  const accessories = ["none", "cap", "goggles", "bandana", "headset", "lantern", "cape", "scarf", "vest", "sash"];
   return mascotToCharacter(mascot, {
     name: mascot.name,
     color: colors[h % colors.length],
@@ -450,13 +450,13 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
   return list[h % list.length];
 }
 
-/** Harbor plaza sample — readable crowd without spawning all 30. */
+/** Harbor plaza sample — readable crowd without spawning all 30.
+ *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide). */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
   { mascotId: "piggy_penny", pos: [4.8, 0, -4.0], yaw: -0.6 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },
-  { mascotId: "baggy_bucks", pos: [6.2, 0, 1.2], yaw: -1.4 },
   { mascotId: "spendy_sue", pos: [-6.0, 0, -2.2], yaw: 1.1 },
   { mascotId: "vault_vince", pos: [1.5, 0, -7.4], yaw: 0.2 },
   { mascotId: "tip_jar_tom", pos: [-1.8, 0, 7.2], yaw: 3.0 },

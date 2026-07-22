@@ -38,13 +38,27 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "ledger", hex: "#a78bfa", label: "Ledger Violet" },
 ];
 
+/** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */
 export const CHARACTER_ACCESSORIES: CharacterOption[] = [
-  { id: "none", emoji: "", label: "None" },
+  { id: "none", emoji: "", label: "Bare" },
   { id: "cap", emoji: "🎩", label: "Top Hat" },
   { id: "goggles", emoji: "🧐", label: "Gold Monocle" },
   { id: "bandana", emoji: "🎀", label: "Bow Tie" },
   { id: "headset", emoji: "🎧", label: "Signal Phones" },
   { id: "lantern", emoji: "✨", label: "Sparkle Stamp" },
+  { id: "cape", emoji: "🦸", label: "Fortune Cape" },
+  { id: "scarf", emoji: "🧣", label: "Ledger Scarf" },
+  { id: "vest", emoji: "🦺", label: "Market Vest" },
+  { id: "sash", emoji: "🎗️", label: "Seal Sash" },
+];
+
+/** Outfitter category rail — Snapchat-style layers over the live 3D body. */
+export type OutfitCategoryId = "body" | "coat" | "gear";
+
+export const OUTFIT_CATEGORIES: { id: OutfitCategoryId; label: string; hint: string }[] = [
+  { id: "body", label: "Body", hint: "Pick your Money Mascot silhouette" },
+  { id: "coat", label: "Coat", hint: "Tint your look" },
+  { id: "gear", label: "Gear", hint: "Hats, cape, scarf, flair" },
 ];
 
 export const CHARACTER_COMPANIONS: CharacterOption[] = [

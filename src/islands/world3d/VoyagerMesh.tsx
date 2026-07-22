@@ -365,6 +365,41 @@ export function VoyagerMesh({
             <octahedronGeometry args={[0.1, 0]} />
           </mesh>
         ) : null}
+        {accessory === "cape" ? (
+          <mesh
+            castShadow
+            position={[0, isPiggy ? 0.95 : 1.05, -0.28]}
+            rotation={[0.35, 0, 0]}
+            material={materials.ink}
+          >
+            <boxGeometry args={[0.7, 0.85, 0.06]} />
+          </mesh>
+        ) : null}
+        {accessory === "scarf" ? (
+          <group position={[0, isPiggy ? 1.15 : 1.28, 0.12]}>
+            <mesh castShadow material={materials.gold} rotation={[0.2, 0, 0]}>
+              <torusGeometry args={[0.22, 0.05, 6, 16]} />
+            </mesh>
+            <mesh castShadow position={[0.12, -0.22, 0.08]} material={materials.gold}>
+              <boxGeometry args={[0.1, 0.35, 0.06]} />
+            </mesh>
+          </group>
+        ) : null}
+        {accessory === "vest" ? (
+          <mesh castShadow position={[0, isPiggy ? 0.85 : 0.95, 0.08]} material={materials.dark}>
+            <boxGeometry args={[0.55, 0.45, 0.28]} />
+          </mesh>
+        ) : null}
+        {accessory === "sash" ? (
+          <mesh
+            castShadow
+            position={[0.05, isPiggy ? 0.85 : 0.95, 0.18]}
+            rotation={[0, 0, -0.55]}
+            material={materials.gold}
+          >
+            <boxGeometry args={[0.7, 0.1, 0.05]} />
+          </mesh>
+        ) : null}
 
         {companion !== "none" ? (
           <mesh castShadow position={[0.55, 0.25, 0.2]} material={materials.gold}>

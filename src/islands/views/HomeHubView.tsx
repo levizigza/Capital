@@ -18,15 +18,12 @@ import type { AccessibilitySettings } from "../settings";
 import {
   type CapitalCharacter,
   BASE_VOYAGER,
-  CHARACTER_COMPANIONS,
-  companionEmoji,
 } from "../character";
-import { CharacterCreator } from "./CharacterCreator";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { ensureLedger } from "../voyagerLedger";
-import { OutfitterInterior } from "./OutfitterBuilding";
+import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
 import { HUB_ISLAND_ID } from "../worldMapLayout";
 import {
@@ -34,11 +31,9 @@ import {
   PLAZA_PASS_PRICE,
   canBuyCapsule,
   capsuleLabel,
-  companionPrice,
   hubPartyItems,
   isRoomUnlocked,
   nextPurchasableCarpet,
-  ownsCompanion,
 } from "../harborShop";
 import { PARTY_ITEMS } from "../partyItems";
 import type { PartyItemId } from "../partyItems";
@@ -142,8 +137,6 @@ export function HomeHubView({
   const [nearNpc, setNearNpc] = useState<{ id: string; name: string; line: string } | null>(null);
   const plazaRoom = isRoomUnlocked(save, "market") ? "market" : "plaza";
 
-  const pets = useMemo(() => CHARACTER_COMPANIONS.filter((c) => c.id !== "none"), []);
-
   const showOutfitterHighlight =
     highlightOutfitter || guidedStep?.highlight === "outfitter";
 
@@ -238,17 +231,35 @@ export function HomeHubView({
       <GameHudLayout
         background={
           <div className="absolute inset-0">
-            <WalkableHarborView
-              character={voyager}
-              hotspots={harborHotspots}
-              onHotspot={onHarborHotspot}
-              onOpenTravel={() => {
-                onHubGuidedEvent("opened_map");
-                onOpenTravel();
-              }}
-              onNearChange={onNearChange}
-              onNearNpc={onNearNpcHandler}
-            />
+            {hubModal === "outfitter" ? (
+              <div className="h-full w-full bg-[#2a1f18]" aria-hidden />
+            ) : (
+              <WalkableHarborView
+                character={voyager}
+                hotspots={harborHotspots}
+                onHotspot={onHarborHotspot}
+                onOpenTravel={() => {
+                  onHubGuidedEvent("opened_map");
+                  onOpenTravel();
+                }}
+                onNearChange={onNearChange}
+                onNearNpc={onNearNpcHandler}
+                guideHighlight={guidedStep?.highlight}
+                guideTip={
+                  guidedStep?.highlight === "guide"
+                    ? "Talk to Piggy!"
+                    : guidedStep?.highlight === "outfitter"
+                      ? "Outfitter this way!"
+                      : guidedStep?.highlight === "capsule"
+                        ? "Capsule Stall!"
+                        : guidedStep?.highlight === "travel"
+                          ? "Carpet Dock!"
+                          : guidedStep?.highlight === "practice"
+                            ? "Practice (or skip)!"
+                            : undefined
+                }
+              />
+            )}
           </div>
         }
         topLeft={
@@ -351,7 +362,7 @@ export function HomeHubView({
             )}
             <p className="text-[11px] font-semibold tracking-wide text-white/75">
               {castleMode
-                ? `🐷 Piggy Penny guides you · ${guidedStep?.verb}`
+                ? `💰 Coin Bag hops the path · ${guidedStep?.verb}`
                 : nearStore
                   ? "E enter · WASD walk"
                   : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
@@ -407,110 +418,46 @@ export function HomeHubView({
         </div>
       </GameHudLayout>
 
+      {hubModal === "outfitter" ? (
+        <OutfitterStudioOverlay
+          draft={draft}
+          setDraft={setDraft}
+          stage={outfitterStage}
+          setStage={setOutfitterStage}
+          save={save}
+          defaultName={userProfile.name}
+          onLeave={() => setHubModal(null)}
+          onSaveLook={(c) => setDraft({ ...c, companion: draft.companion })}
+          onAdoptPet={() => {
+            onSaveCharacter(draft);
+            setHubModal(null);
+          }}
+          onHarborPurchase={(price, companionId) => {
+            const ok = onHarborPurchase({
+              kind: "companion",
+              companionId,
+              price,
+            });
+            if (!ok) {
+              toast.error(`Need 🪙 ${price} for that pet`);
+              return false;
+            }
+            toast.success(`Adopted! −🪙 ${price}`);
+            return true;
+          }}
+        />
+      ) : null}
+
       <GameModal
-        open={hubModal !== null}
+        open={hubModal === "capsule" || hubModal === "settings"}
         onClose={() => setHubModal(null)}
-        maxWidth={hubModal === "outfitter" || hubModal === "capsule" ? "lg" : "md"}
+        maxWidth={hubModal === "capsule" ? "lg" : "md"}
         usePortal
         showCloseButton
         title={
-          hubModal === "outfitter"
-            ? "The Outfitter"
-            : hubModal === "capsule"
-              ? "Capsule Stall"
-              : hubModal === "settings"
-                ? "Settings"
-                : undefined
+          hubModal === "capsule" ? "Capsule Stall" : hubModal === "settings" ? "Settings" : undefined
         }
       >
-        {hubModal === "outfitter" ? (
-          <OutfitterInterior onLeave={() => setHubModal(null)}>
-            {outfitterStage === "look" ? (
-              <CharacterCreator
-                character={draft}
-                defaultName={userProfile.name}
-                variant="outfitter"
-                hideCompanion
-                saveLabel="Next: pick a pet →"
-                onSave={(c) => {
-                  setDraft({ ...c, companion: draft.companion });
-                  setOutfitterStage("pet");
-                }}
-                onCancel={() => setHubModal(null)}
-              />
-            ) : (
-              <div className="flex min-h-0 flex-col gap-4 text-center">
-                <div className="mx-auto flex shrink-0 justify-center">
-                  <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
-                </div>
-                <div className="shrink-0">
-                  <div className="text-lg font-black">Companion crates</div>
-                  <p className="text-sm text-muted-foreground">Choose a pet — or go back to looks.</p>
-                </div>
-                <div className="flex max-h-[40vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
-                  {pets.map((pet) => {
-                    const active = draft.companion === pet.id;
-                    const price = companionPrice(pet.id);
-                    const owned = ownsCompanion(save, pet.id);
-                    return (
-                      <button
-                        key={pet.id}
-                        type="button"
-                        onClick={() => setDraft((d) => ({ ...d, companion: pet.id }))}
-                        className={`flex min-w-[5.25rem] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 transition ${
-                          active
-                            ? "border-[var(--cap-gold)] bg-[var(--cap-gold)]/20 scale-105"
-                            : "border-[var(--cap-ink)]/15 bg-white hover:border-[var(--cap-tide)]"
-                        }`}
-                      >
-                        <span className="text-3xl">{companionEmoji(pet.id)}</span>
-                        <span className="text-xs font-bold">{pet.label}</span>
-                        <span className="text-[10px] font-semibold text-muted-foreground">
-                          {owned ? "Owned" : `🪙 ${price}`}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="sticky bottom-0 flex gap-2 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
-                  <GameButton variant="outline" className="flex-1" onClick={() => setOutfitterStage("look")}>
-                    ← Looks
-                  </GameButton>
-                  <GameButton
-                    variant="primary"
-                    className="flex-1"
-                    disabled={draft.companion === "none"}
-                    onClick={() => {
-                      const price = companionPrice(draft.companion);
-                      const owned = ownsCompanion(save, draft.companion);
-                      if (!owned && price > 0) {
-                        const ok = onHarborPurchase({
-                          kind: "companion",
-                          companionId: draft.companion,
-                          price,
-                        });
-                        if (!ok) {
-                          toast.error(`Need 🪙 ${price} for that pet`);
-                          return;
-                        }
-                        toast.success(`Adopted! −🪙 ${price}`);
-                      }
-                      onSaveCharacter(draft);
-                      setHubModal(null);
-                    }}
-                  >
-                    {draft.companion === "none"
-                      ? "Pick a pet"
-                      : ownsCompanion(save, draft.companion)
-                        ? "Leave shop ✓"
-                        : `Adopt · 🪙 ${companionPrice(draft.companion)}`}
-                  </GameButton>
-                </div>
-              </div>
-            )}
-          </OutfitterInterior>
-        ) : null}
-
         {hubModal === "capsule" ? (
           <div className="space-y-4">
             <div className="text-center">
