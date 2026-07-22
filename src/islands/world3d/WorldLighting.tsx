@@ -1,4 +1,5 @@
-import { Environment, ContactShadows, Sky, Stars } from "@react-three/drei";
+import { Suspense } from "react";
+import { ContactShadows, Sky, Stars } from "@react-three/drei";
 import type { EraLook3D } from "./eraLooks";
 
 type Props = {
@@ -10,7 +11,8 @@ type Props = {
 };
 
 /**
- * Shared cinematic lighting kit — Environment + sun + fog-friendly sky.
+ * Shared cinematic lighting kit — sun/sky/fog without CDN HDRI waits.
+ * (drei Environment presets can hang Suspense on blocked networks → blank canvas.)
  */
 export function WorldLighting({
   look,
@@ -24,14 +26,12 @@ export function WorldLighting({
     <>
       <color attach="background" args={[look.skyTop]} />
       <fog attach="fog" args={[look.fog, look.fogNear, look.fogFar]} />
-      <ambientLight intensity={look.ambientIntensity} />
-      <hemisphereLight
-        args={[look.skyTop, look.shore, 0.35]}
-      />
+      <ambientLight intensity={Math.max(0.45, look.ambientIntensity)} />
+      <hemisphereLight args={[look.skyTop, look.shore, 0.55]} />
       <directionalLight
         castShadow
         position={[28, 42, 18]}
-        intensity={neon ? 0.95 : 1.25}
+        intensity={neon ? 1.05 : 1.45}
         color={look.sunColor}
         shadow-mapSize-width={shadowMapSize}
         shadow-mapSize-height={shadowMapSize}
@@ -42,9 +42,8 @@ export function WorldLighting({
         shadow-camera-bottom={-40}
         shadow-bias={-0.0002}
       />
-      {!wireEra ? (
-        <Environment preset={look.shading === "cinematic" ? "city" : "sunset"} />
-      ) : null}
+      {/* Fill light so islands never render as a black void */}
+      <directionalLight position={[-20, 18, -12]} intensity={0.35} color="#c4e8ff" />
       {wireEra ? (
         <Stars radius={140} depth={50} count={2800} factor={3} saturation={0} fade speed={0.55} />
       ) : (
@@ -57,14 +56,16 @@ export function WorldLighting({
         />
       )}
       {contactShadows ? (
-        <ContactShadows
-          position={[0, 0.01, 0]}
-          opacity={0.45}
-          scale={48}
-          blur={2.4}
-          far={12}
-          color="#0c1622"
-        />
+        <Suspense fallback={null}>
+          <ContactShadows
+            position={[0, 0.01, 0]}
+            opacity={0.4}
+            scale={48}
+            blur={2.2}
+            far={12}
+            color="#0c1622"
+          />
+        </Suspense>
       ) : null}
     </>
   );

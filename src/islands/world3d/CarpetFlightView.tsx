@@ -266,10 +266,17 @@ export function CarpetFlightView({
   if (phase === "dock") {
     return (
       <div className="relative h-full w-full overflow-hidden bg-[#0c1622]">
-        <Canvas shadows dpr={[1, 1.5]} camera={{ position: [0, 4, 10], fov: 55 }} className="absolute inset-0">
+        <Canvas
+          shadows
+          dpr={[1, 1.5]}
+          camera={{ position: [0, 4, 10], fov: 55 }}
+          className="absolute inset-0"
+          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          onCreated={({ gl }) => gl.setClearColor(homeLook.skyTop, 1)}
+        >
           <Suspense fallback={null}>
-            <WorldLighting look={homeLook} contactShadows shadowMapSize={1024} />
-            <OceanWater color={homeLook.sea} shading={homeLook.shading} size={200} />
+            <WorldLighting look={homeLook} contactShadows={false} shadowMapSize={1024} />
+            <OceanWater color={homeLook.sea} shading={homeLook.shading} size={200} calm />
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 2]} receiveShadow>
               <circleGeometry args={[6, 32]} />
               <meshStandardMaterial color={homeLook.shore} roughness={0.9} />
@@ -318,7 +325,14 @@ export function CarpetFlightView({
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
-      <Canvas shadows dpr={[1, 1.5]} camera={{ position: [0, 6, 12], fov: 60 }} className="absolute inset-0">
+      <Canvas
+        shadows
+        dpr={[1, 1.5]}
+        camera={{ position: [0, 6, 12], fov: 60 }}
+        className="absolute inset-0"
+        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        onCreated={({ gl }) => gl.setClearColor(homeLook.skyTop, 1)}
+      >
         <Suspense fallback={null}>
           <WorldScene
             world={world}

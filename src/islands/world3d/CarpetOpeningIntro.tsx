@@ -185,11 +185,18 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       aria-label="Flying to Harbor Haven"
       data-testid="carpet-opening-intro"
     >
+      <div className="absolute inset-0 flex items-center justify-center bg-[#0c1622] text-sm font-bold text-white/70">
+        Loading carpet flight…
+      </div>
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
         camera={{ position: [0, 5, 55], fov: 68, near: 0.1, far: 220 }}
         className="absolute inset-0"
+        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        onCreated={({ gl }) => {
+          gl.setClearColor("#7dd3fc", 1);
+        }}
       >
         <Suspense fallback={null}>
           <OpeningWorld onLanded={onLanded} />

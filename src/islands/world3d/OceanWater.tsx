@@ -18,7 +18,8 @@ type Props = {
 export function OceanWater({ color, shading, size = 800, calm = false }: Props) {
   const mesh = useRef<THREE.Mesh>(null);
   const wire = shading === "wire" || shading === "vector";
-  const segs = wire ? 24 : 96;
+  // Keep segments modest — high density + per-frame morph can blank weak GPUs.
+  const segs = wire ? 16 : calm ? 32 : 48;
 
   const geom = useMemo(() => {
     const g = new THREE.PlaneGeometry(size, size, segs, segs);
