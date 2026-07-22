@@ -15,6 +15,7 @@ import type {
   IslandMinigame,
   IslandNpc,
 } from "./types";
+import { castMascotForNpc, getMascot } from "./moneyCast";
 
 export type PopHomageNpc = IslandNpc & {
   tagline: string;
@@ -29,27 +30,27 @@ export type MinigameHomage = {
   homage: string;
 };
 
-/** Harbor plaza cameos — talkable flavor, not quest-gated. */
+/** Harbor plaza cameos — talkable flavor, not quest-gated. Money Mascot locals. */
 export const PLAZA_POP_CAMEOS = [
   {
-    id: "plaza_uncle_ledger",
-    name: "Uncle Ledger",
-    icon: "🕯️",
-    tagline: "Reformed coin-counter · public-domain penny-pincher energy",
+    id: "plaza_vault_vince",
+    name: "Vault Vince",
+    icon: "🏦",
+    tagline: "Keeps your wealth safe",
     line: "I used to sleep on a mattress of coins. Then I learned: coins that only sit… never grow. Invest a little. Live a little.",
   },
   {
-    id: "plaza_giveaway_gail",
-    name: "Giveaway Gail",
-    icon: "🎁",
-    tagline: "Studio-audience budget coach",
+    id: "plaza_saver_star",
+    name: "Saver Star",
+    icon: "⭐",
+    tagline: "Reward for saving",
     line: "You get a budget! You get a budget! Everybody gets a budget — and a rainy-day jar before the confetti.",
   },
   {
-    id: "plaza_hot_take_hal",
-    name: "Hot-Take Hal",
-    icon: "📢",
-    tagline: "Cable-finance rant archetype (no network logos)",
+    id: "plaza_market_money",
+    name: "Market Money",
+    icon: "📈",
+    tagline: "Rides market ups and downs",
     line: "BUY! …wait — research first. Screaming doesn't beat a diversified basket.",
   },
 ] as const;
@@ -588,12 +589,31 @@ export function enrichIslandWithPopCulture(island: IslandDefinition): IslandDefi
     }
   }
 
+  // Every island local is a Money Mascot (variation of the world cast).
+  npcs = npcs.map((n) => {
+    if (n.mascotId) {
+      const known = getMascot(n.mascotId);
+      return {
+        ...n,
+        icon: known.emoji,
+        tagline: n.tagline ?? known.tagline,
+      };
+    }
+    const mascot = castMascotForNpc(n.id);
+    return {
+      ...n,
+      mascotId: mascot.id,
+      icon: mascot.emoji,
+      tagline: n.tagline ?? mascot.tagline,
+    };
+  });
+
   const minigames = island.minigames?.map(applyMinigameHomage);
 
   const provenance = island.provenance
     ? {
         ...island.provenance,
-        originality_notes: `${island.provenance.originality_notes} Pop-culture money nods use original characters and generic tropes only — never trademarked casts or show titles as product names.`,
+        originality_notes: `${island.provenance.originality_notes} Pop-culture money nods use original Money Mascot characters and generic tropes only — never trademarked casts or show titles as product names.`,
         forbidden_references: Array.from(
           new Set([...(island.provenance.forbidden_references ?? []), ...EXTRA_FORBIDDEN]),
         ),

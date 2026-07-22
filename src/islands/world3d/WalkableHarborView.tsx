@@ -5,6 +5,8 @@ import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
+import { getMascot, HARBOR_LOCAL_CAST, varyMascot } from "../moneyCast";
+import { colorHex, type MoneyForm } from "../character";
 import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -256,36 +258,18 @@ function PlazaScene({
 
   const buildingColors = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4"];
 
-  const locals = [
-    {
-      pos: [4.8, 0, -4.0] as [number, number, number],
-      coat: "#fb7185",
-      pants: "#1e3a5f",
-      skin: "#fef3c7",
-      form: "piggy" as const,
-    },
-    {
-      pos: [-5.4, 0, 2.8] as [number, number, number],
-      coat: "#38bdf8",
-      pants: "#334155",
-      skin: "#fef9c3",
-      form: "coin" as const,
-    },
-    {
-      pos: [3.8, 0, 6.0] as [number, number, number],
-      coat: "#34d399",
-      pants: "#1e3a5f",
-      skin: "#ecfccb",
-      form: "bill" as const,
-    },
-    {
-      pos: [-3.2, 0, -6.6] as [number, number, number],
-      coat: "#f4a629",
-      pants: "#3f2a1a",
-      skin: "#fde68a",
-      form: "ledger" as const,
-    },
-  ];
+  const locals = HARBOR_LOCAL_CAST.map((slot) => {
+    const mascot = getMascot(slot.mascotId);
+    const look = varyMascot(slot.mascotId, `harbor:${slot.mascotId}`);
+    return {
+      ...slot,
+      mascot,
+      look,
+      coat: colorHex(look.color),
+      form: mascot.form as MoneyForm,
+      glyph: mascot.glyph,
+    };
+  });
 
   const cobbles = useMemo(() => {
     return Array.from({ length: 36 }, (_, i) => {
@@ -484,14 +468,26 @@ function PlazaScene({
         );
       })}
 
-      {locals.map((npc, i) => (
-        <group key={i} position={npc.pos} rotation={[0, (i * Math.PI) / 3, 0]}>
+      {locals.map((npc) => (
+        <group key={npc.mascotId} position={npc.pos} rotation={[0, npc.yaw, 0]}>
           <HarborNpcMesh
             coat={npc.coat}
-            pants={npc.pants}
-            skin={npc.skin}
             form={npc.form}
+            glyph={npc.glyph}
+            character={npc.look}
           />
+          <Billboard position={[0, 2.05, 0]} follow>
+            <Text
+              fontSize={0.22}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.03}
+              outlineColor="#0f172a"
+            >
+              {npc.mascot.name}
+            </Text>
+          </Billboard>
         </group>
       ))}
 

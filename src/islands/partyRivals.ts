@@ -1,11 +1,12 @@
 /**
  * Rival Captains — CPU party opponents for Fortune Archipelago.
  *
- * Each rival is a financial personality (spender, hoarder, gambler, planner)
- * so competition teaches money temperaments without copying Nintendo casts.
+ * Each rival is a Money Mascot temperament (spender, hoarder, gambler, planner)
+ * so competition teaches money personalities without copying Nintendo casts.
  */
 
 import type { PartyItemId } from "./partyItems";
+import { getMascot, RIVAL_MASCOT_IDS } from "./moneyCast";
 
 export type RivalId = "spender_sally" | "hoarder_hank" | "gambler_gus" | "planner_pip";
 
@@ -19,45 +20,59 @@ export type RivalCaptain = {
   accent: string;
   /** Personality bias when choosing items / targets */
   temperament: "spender" | "hoarder" | "gambler" | "planner";
+  /** Money-mascot body id */
+  mascotId: string;
 };
 
+function rivalFromCast(
+  id: RivalId,
+  title: string,
+  blurb: string,
+  temperament: RivalCaptain["temperament"],
+  accent: string,
+): RivalCaptain {
+  const mascot = getMascot(RIVAL_MASCOT_IDS[id]);
+  return {
+    id,
+    name: mascot.name,
+    icon: mascot.emoji,
+    title,
+    blurb,
+    accent,
+    temperament,
+    mascotId: mascot.id,
+  };
+}
+
 export const RIVAL_CAPTAINS: RivalCaptain[] = [
-  {
-    id: "spender_sally",
-    name: "Sally Splash",
-    icon: "🛍️",
-    title: "FOMO Drop Captain",
-    blurb: "Buys every limited drop before the confetti settles. Teaches why budgets beat hype queues.",
-    accent: "#fb7185",
-    temperament: "spender",
-  },
-  {
-    id: "hoarder_hank",
-    name: "Hank Vault",
-    icon: "🏦",
-    title: "Mattress Captain",
-    blurb: "Dickens-adjacent coin counter — never spends until seals force the lesson: opportunity cost.",
-    accent: "#38bdf8",
-    temperament: "hoarder",
-  },
-  {
-    id: "gambler_gus",
-    name: "Gus Gamble",
-    icon: "🎰",
-    title: "All-In Captain",
-    blurb: "Treats every roll like March Madness. Teaches risk sizing without the casino neon.",
-    accent: "#a78bfa",
-    temperament: "gambler",
-  },
-  {
-    id: "planner_pip",
-    name: "Pip Plan",
-    icon: "📋",
-    title: "Spreadsheet Sage",
-    blurb: "The hero every money montage skips — steady rolls, shields, and boring wins.",
-    accent: "#34d399",
-    temperament: "planner",
-  },
+  rivalFromCast(
+    "spender_sally",
+    "FOMO Drop Captain",
+    "Buys every limited drop before the confetti settles. Teaches why budgets beat hype queues.",
+    "spender",
+    "#fb7185",
+  ),
+  rivalFromCast(
+    "hoarder_hank",
+    "Mattress Captain",
+    "Never spends until seals force the lesson: opportunity cost.",
+    "hoarder",
+    "#38bdf8",
+  ),
+  rivalFromCast(
+    "gambler_gus",
+    "All-In Captain",
+    "Treats every roll like a moonshot. Teaches risk sizing without the casino neon.",
+    "gambler",
+    "#a78bfa",
+  ),
+  rivalFromCast(
+    "planner_pip",
+    "Spreadsheet Sage",
+    "Steady rolls, shields, and boring wins — the hero every money montage skips.",
+    "planner",
+    "#34d399",
+  ),
 ];
 
 export type RivalBoardState = {

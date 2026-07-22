@@ -85,6 +85,7 @@ export const IslandNpcSchema = z.object({
   areaId: z.string(),
   dialogueGraphId: z.string(),
   tagline: z.string().optional(),
+  mascotId: z.string().optional(),
 });
 
 export const IslandAreaSchema = z.object({

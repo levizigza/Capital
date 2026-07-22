@@ -93,6 +93,8 @@ export type IslandNpc = {
   dialogueGraphId: string;
   /** Optional money-culture wink shown under the name */
   tagline?: string;
+  /** Money Mascot body id from the world cast */
+  mascotId?: string;
 };
 
 export type QuestObjective =

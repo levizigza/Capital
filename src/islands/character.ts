@@ -4,12 +4,20 @@
  * On Harbor Haven and while sailing, this home look is always shown.
  * Landing on an era island remaps the same Voyager into that decade's art language.
  *
- * Cast is anthropomorphic money — bills, coins, piggies — not humans.
- * Built for a kids financial-literacy game: wacky, readable, original.
+ * Cast is the 30 Money Mascots — bills, coins, vaults, rockets, and friends —
+ * not humans. Built for a kids financial-literacy game: wacky, readable, original.
  */
+
+import {
+  getMascot,
+  moneyCastAsBases,
+  resolveMascotId,
+  type MoneyMascotId,
+} from "./moneyCast";
 
 export type CapitalCharacter = {
   name: string;
+  /** Money-mascot id (or legacy Outfitter base id). */
   base: string;
   color: string;
   accessory: string;
@@ -18,17 +26,8 @@ export type CapitalCharacter = {
 
 export type CharacterOption = { id: string; emoji: string; label: string };
 
-/** Core money-mascot silhouettes — original cast, not borrowed brands */
-export const CHARACTER_BASES: CharacterOption[] = [
-  { id: "voyager", emoji: "💵", label: "Bill Buddy" },
-  { id: "cartographer", emoji: "🪙", label: "Coin Kid" },
-  { id: "ledger_kid", emoji: "📒", label: "Ledger Larry" },
-  { id: "tide_ranger", emoji: "💸", label: "Cash Wave" },
-  { id: "coin_smith", emoji: "🐷", label: "Piggy Bank" },
-  { id: "signal_scout", emoji: "📡", label: "Signal Cent" },
-  { id: "quest_adept", emoji: "📜", label: "Scroll Scholar" },
-  { id: "ruin_walker", emoji: "⚱️", label: "Ancient Coin" },
-];
+/** Outfitter bodies = the full Money Mascot cast. */
+export const CHARACTER_BASES: CharacterOption[] = moneyCastAsBases();
 
 export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "tide", hex: "#0ea5e9", label: "Tide" },
@@ -59,27 +58,28 @@ export const CHARACTER_COMPANIONS: CharacterOption[] = [
 
 export const DEFAULT_CHARACTER: CapitalCharacter = {
   name: "",
-  base: "voyager",
-  color: "tide",
+  base: "dollar_dash",
+  color: "seafoam",
   accessory: "none",
   companion: "none",
 };
 
-/** Starter look before the Harbor shop — plain Bill Buddy, no gear, no pet. */
+/** Starter look before the Harbor shop — Dollar Dash, no gear, no pet. */
 export const BASE_VOYAGER: CapitalCharacter = {
   name: "Voyager",
-  base: "voyager",
-  color: "tide",
+  base: "dollar_dash",
+  color: "seafoam",
   accessory: "none",
   companion: "none",
 };
 
 export function baseEmoji(id: string): string {
-  return CHARACTER_BASES.find((b) => b.id === id)?.emoji ?? "💵";
+  return getMascot(id).emoji;
 }
 
 export function colorHex(id: string): string {
-  return CHARACTER_COLORS.find((c) => c.id === id)?.hex ?? "#0ea5e9";
+  if (id.startsWith("#")) return id;
+  return CHARACTER_COLORS.find((b) => b.id === id)?.hex ?? "#0ea5e9";
 }
 
 export function accessoryEmoji(id: string): string {
@@ -90,7 +90,10 @@ export function companionEmoji(id: string): string {
   return CHARACTER_COMPANIONS.find((c) => c.id === id)?.emoji ?? "";
 }
 
-/** Which procedural money body to build in 3D. */
+/**
+ * Procedural money body families used by VoyagerMesh.
+ * One silhouette family can cover several cast members via glyph/tint.
+ */
 export type MoneyForm =
   | "bill"
   | "coin"
@@ -99,26 +102,41 @@ export type MoneyForm =
   | "piggy"
   | "signal"
   | "scroll"
-  | "ancient";
+  | "ancient"
+  | "currency"
+  | "stack"
+  | "bag"
+  | "vault"
+  | "receipt"
+  | "card"
+  | "wallet"
+  | "coupon"
+  | "ingot"
+  | "calc"
+  | "cloud"
+  | "chest"
+  | "safe"
+  | "chart"
+  | "jar"
+  | "crypto"
+  | "certificate"
+  | "loan"
+  | "rocket"
+  | "star"
+  | "shopbag"
+  | "shield"
+  | "clipboard"
+  | "globe"
+  | "hourglass";
 
 export function moneyFormFromBase(base?: string | null): MoneyForm {
-  switch (base) {
-    case "cartographer":
-      return "coin";
-    case "ledger_kid":
-      return "ledger";
-    case "tide_ranger":
-      return "wave";
-    case "coin_smith":
-      return "piggy";
-    case "signal_scout":
-      return "signal";
-    case "quest_adept":
-      return "scroll";
-    case "ruin_walker":
-      return "ancient";
-    case "voyager":
-    default:
-      return "bill";
-  }
+  return getMascot(base).form;
+}
+
+export function moneyGlyphFromBase(base?: string | null): string | undefined {
+  return getMascot(base).glyph;
+}
+
+export function resolveCharacterMascotId(base?: string | null): MoneyMascotId {
+  return resolveMascotId(base);
 }

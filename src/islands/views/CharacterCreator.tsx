@@ -90,8 +90,8 @@ export function CharacterCreator({
         <div className="text-xl font-black">{isShop ? "🪞 Fitting mirror" : "🎨 Make your money mascot"}</div>
         <p className="text-sm text-muted-foreground">
           {isShop
-            ? "Pick a wacky bill, coin, or piggy look — this is your Harbor identity."
-            : "Be a dollar, a coin, a piggy bank — then set sail across Capital."}
+            ? "Pick one of Capital’s 30 Money Mascots — then tint and accessorize your Harbor look."
+            : "You are a Money Mascot of Fortune Archipelago. Pick your body, tint, and flair."}
         </p>
       </div>
 
@@ -118,7 +118,14 @@ export function CharacterCreator({
           title="Money mascot"
           options={CHARACTER_BASES}
           selected={draft.base}
-          render={(o) => <span>{baseEmoji(o.id)}</span>}
+          render={(o) => (
+            <span className="flex flex-col items-center gap-0.5 leading-none">
+              <span>{baseEmoji(o.id)}</span>
+              <span className="max-w-[3.6rem] truncate text-[7px] font-bold text-slate-600">
+                {o.label.split(" ")[0]}
+              </span>
+            </span>
+          )}
           onPick={(id) => set({ base: id })}
         />
         <SwatchRow
