@@ -36,6 +36,10 @@ exports[`content validation snapshots > all island JSON files pass schema + cros
     "errors": [],
     "warnings": [],
   },
+  "future-shores.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
   "intangibles.islands.json": {
     "errors": [],
     "warnings": [],
