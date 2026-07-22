@@ -217,8 +217,15 @@ export function CharacterCreator({
     return CHARACTER_ACCESSORIES.map((o) => ({
       id: o.id,
       label: o.label,
-      sub: "Gear",
-      node: <span className="text-2xl leading-none">{accessoryEmoji(o.id) || "·"}</span>,
+      sub: o.id === "headset" ? "Wear on head" : o.id === "none" ? "No gear" : "Wearable gear",
+      node: (
+        <span className="flex flex-col items-center gap-0.5 leading-none">
+          <span className="text-2xl">{accessoryEmoji(o.id) || "·"}</span>
+          {o.id === "headset" ? (
+            <span className="text-[8px] font-bold uppercase tracking-wide opacity-70">ears</span>
+          ) : null}
+        </span>
+      ),
     }));
   }, [category]);
 

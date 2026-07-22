@@ -476,23 +476,33 @@ function GearAttach({
     );
   }
   if (accessory === "headset") {
-    // Signal Phones — big earcups + headband (was easy to miss as tiny dark dots)
+    // Over-ear headphones — clear headband + padded cups (Gear, not a body)
     return (
-      <group position={[0, headY - 0.15, 0]}>
-        <mesh castShadow rotation={[0, 0, Math.PI / 2]} material={materials.dark}>
-          <torusGeometry args={[0.38, 0.035, 8, 20, Math.PI]} />
+      <group position={[0, headY - 0.08, 0]}>
+        {/* Headband arch over the top */}
+        <mesh castShadow rotation={[0, 0, Math.PI / 2]} position={[0, 0.12, 0]} material={materials.dark}>
+          <torusGeometry args={[0.36, 0.045, 8, 24, Math.PI]} />
         </mesh>
-        <mesh castShadow position={[-0.42, 0, 0.08]} material={materials.ink}>
-          <cylinderGeometry args={[0.14, 0.14, 0.12, 14]} />
+        {/* Left / right ear cups */}
+        <mesh castShadow position={[-0.4, -0.02, 0.06]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
+          <cylinderGeometry args={[0.16, 0.16, 0.14, 16]} />
         </mesh>
-        <mesh castShadow position={[0.42, 0, 0.08]} material={materials.ink}>
-          <cylinderGeometry args={[0.14, 0.14, 0.12, 14]} />
+        <mesh castShadow position={[0.4, -0.02, 0.06]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
+          <cylinderGeometry args={[0.16, 0.16, 0.14, 16]} />
         </mesh>
-        <mesh position={[-0.42, 0, 0.15]} material={materials.gold}>
-          <circleGeometry args={[0.1, 14]} />
+        {/* Soft pads */}
+        <mesh position={[-0.4, -0.02, 0.14]} material={materials.pink}>
+          <circleGeometry args={[0.12, 16]} />
         </mesh>
-        <mesh position={[0.42, 0, 0.15]} material={materials.gold}>
-          <circleGeometry args={[0.1, 14]} />
+        <mesh position={[0.4, -0.02, 0.14]} material={materials.pink}>
+          <circleGeometry args={[0.12, 16]} />
+        </mesh>
+        {/* Mic boom — reads as a headset, not a body part */}
+        <mesh castShadow position={[0.28, -0.18, 0.18]} rotation={[0.4, 0.6, 0.2]} material={materials.dark}>
+          <capsuleGeometry args={[0.025, 0.22, 4, 8]} />
+        </mesh>
+        <mesh castShadow position={[0.18, -0.28, 0.28]} material={materials.gold}>
+          <sphereGeometry args={[0.05, 10, 8]} />
         </mesh>
       </group>
     );
