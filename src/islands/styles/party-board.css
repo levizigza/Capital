@@ -5,8 +5,148 @@
   --party-star: #c4b5fd;
   --party-lucky: #6ee7b7;
   --party-event: #93c5fd;
+  --party-capsule: #fdba74;
+  --party-raid: #fb7185;
+  --party-collector: #7c3aed;
+  --party-payday: #4ade80;
+  --party-bill: #fca5a5;
+  --party-deal: #67e8f9;
+  --party-liability: #f87171;
   --party-board-bg: color-mix(in oklab, var(--cap-paper) 88%, var(--cap-tide) 12%);
   --party-board-track: color-mix(in oklab, var(--cap-ink) 12%, transparent);
+}
+
+/* Era board skins */
+.era-board-1960s.party-board-shell {
+  --party-board-bg: #0a0a0a;
+  --party-board-track: #ffffff55;
+  border-color: #fff;
+  color: #fff;
+}
+.era-board-1960s .party-space {
+  border-color: #fff;
+  border-radius: 0;
+  background: #111 !important;
+  color: #fff;
+  box-shadow: none;
+}
+.era-board-1960s .party-board-center {
+  background: #000;
+  border-color: #fff;
+  color: #fff;
+}
+
+.era-board-1970s.party-board-shell {
+  --party-board-bg: #001a00;
+  --party-board-track: #33ff6655;
+  border-color: #33ff66;
+  box-shadow: 0 0 24px #33ff6644;
+}
+.era-board-1970s .party-space {
+  border-color: #33ff66;
+  border-radius: 2px;
+  box-shadow: 0 0 8px #33ff6644;
+}
+
+.era-board-1980s.party-board-shell {
+  --party-board-bg: linear-gradient(180deg, #2b0a3d, #0c4a6e);
+  border-color: #f0abfc;
+  box-shadow: 0 0 28px #f472b666;
+}
+.era-board-1980s .party-space {
+  border-color: #22d3ee;
+  box-shadow: 0 0 10px #f0abfc66;
+}
+
+.era-board-1990s.party-board-shell {
+  --party-board-bg: linear-gradient(180deg, #7dd3fc, #86efac);
+  border-width: 4px;
+}
+.era-board-1990s .party-space {
+  border-radius: 0.4rem;
+  box-shadow: 3px 3px 0 #1a1a2e;
+}
+
+.era-board-2000s.party-board-shell {
+  --party-board-bg: linear-gradient(180deg, #bae6fd, #fef3c7);
+}
+.era-board-2000s .party-space {
+  box-shadow: 0 6px 14px rgba(202, 138, 4, 0.25);
+}
+
+.era-board-2010s.party-board-shell {
+  --party-board-bg: linear-gradient(180deg, #292524, #57534e);
+  border-color: #a8a29e;
+  color: #fafaf9;
+}
+.era-board-2010s .party-board-center {
+  background: rgba(28, 25, 23, 0.9);
+  border-color: #a8a29e;
+  color: #fafaf9;
+}
+
+.era-board-2020s.party-board-shell {
+  --party-board-bg: linear-gradient(160deg, #312e81, #7c3aed 50%, #fde68a);
+  border-color: #312e81;
+}
+.era-board-2020s .party-space {
+  border-radius: 1.1rem 0.7rem 1.2rem 0.8rem;
+}
+
+.party-rival-token {
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid var(--cap-ink);
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  z-index: 3;
+  transition: left 0.22s ease, top 0.22s ease;
+  box-shadow: var(--cap-shadow-sm);
+}
+
+.party-item-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.party-item-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 2px solid var(--cap-ink);
+  background: var(--cap-card);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.party-item-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.party-standings {
+  display: grid;
+  gap: 0.35rem;
+}
+.party-standings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.65rem;
+  border: 1.5px solid color-mix(in oklab, var(--cap-ink) 15%, transparent);
+  background: color-mix(in oklab, var(--cap-card) 88%, transparent);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .party-board-shell {

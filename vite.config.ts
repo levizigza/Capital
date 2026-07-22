@@ -74,11 +74,11 @@ export default defineConfig({
   // corrects that in configResolved anyway.
   server: {
     port: 5000,
-    host: "127.0.0.1",
+    host: "0.0.0.0",
     strictPort: true,
     hmr: {
       protocol: "ws",
-      host: "127.0.0.1",
+      // Client connects via whatever host the page was opened on (port forward friendly).
       clientPort: 5000,
       overlay: false,
     },

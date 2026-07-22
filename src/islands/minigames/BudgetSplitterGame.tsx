@@ -124,6 +124,7 @@ export default function BudgetSplitterGame({
       icon={def?.icon ?? "📊"}
       genre="puzzle"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4">

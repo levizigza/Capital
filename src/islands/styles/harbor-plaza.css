@@ -1,0 +1,448 @@
+/* Harbor Haven plaza + Outfitter storefront */
+
+.harbor-plaza {
+  position: relative;
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
+  min-height: min(58vh, 28rem);
+  border-radius: 1.75rem;
+  border: 3px solid var(--cap-ink);
+  overflow: hidden;
+  box-shadow: var(--cap-shadow-ink);
+  background:
+    linear-gradient(180deg, #87c5e8 0%, #b8dff0 38%, #d4e8c4 38%, #d4e8c4 58%, #e8d5a3 58%, #c4a574 100%);
+}
+
+.harbor-plaza__sun {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff7d6, #ffd23f 55%, #f4a629);
+  box-shadow: 0 0 40px 8px rgba(244, 166, 41, 0.45);
+}
+
+.harbor-plaza__sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 28%;
+  height: 12%;
+  background: linear-gradient(180deg, #4ec5d6, #1a8fb5);
+  opacity: 0.85;
+}
+
+.harbor-plaza__dock {
+  position: absolute;
+  left: 6%;
+  bottom: 18%;
+  width: 22%;
+  height: 10%;
+  background: #8b5a2b;
+  border: 2px solid var(--cap-ink);
+  border-radius: 0.35rem;
+  box-shadow: var(--cap-shadow-sm);
+  transform: skewX(-8deg);
+}
+
+.harbor-plaza__boat {
+  position: absolute;
+  left: 8%;
+  bottom: 22%;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 4px 0 rgba(22, 40, 59, 0.2));
+  animation: harbor-boat-bob 2.8s ease-in-out infinite;
+}
+
+@keyframes harbor-boat-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+}
+
+.harbor-plaza__carpet {
+  animation-name: harbor-carpet-float;
+}
+
+@keyframes harbor-carpet-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) rotate(4deg) scale(1.05);
+  }
+}
+
+.harbor-plaza__room-card {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  width: min(78%, 16rem);
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 2px solid var(--cap-ink);
+  background: color-mix(in oklab, var(--cap-paper) 92%, white);
+  box-shadow: var(--cap-shadow-sm);
+  text-align: center;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: center;
+}
+.harbor-plaza__room-card--freedom {
+  border-color: var(--cap-gold);
+  background: color-mix(in oklab, #fef3c7 70%, white);
+}
+
+.harbor-plaza__row {
+  position: absolute;
+  inset: auto 0 8% 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  padding: 0 0.75rem;
+  z-index: 2;
+}
+
+.harbor-plaza__voyager {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+}
+
+.harbor-plaza__voyager-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: var(--cap-card);
+  border: 2px solid var(--cap-ink);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  box-shadow: var(--cap-shadow-sm);
+}
+
+.harbor-plaza__coach {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: min(92%, 22rem);
+  text-align: center;
+  padding: 0.55rem 0.85rem;
+  border-radius: 1rem;
+  border: 2px solid var(--cap-ink);
+  background: color-mix(in oklab, var(--cap-card) 92%, var(--cap-gold));
+  box-shadow: var(--cap-shadow);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cap-ink);
+}
+
+/* ---- Side stalls (smaller buildings) ---- */
+.harbor-stall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  min-width: 4.5rem;
+}
+
+.harbor-stall__body {
+  width: 4.6rem;
+  height: 4.2rem;
+  border: 2.5px solid var(--cap-ink);
+  border-radius: 0.55rem 0.55rem 0.2rem 0.2rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  box-shadow: var(--cap-shadow-sm);
+  transition: transform 0.15s ease;
+}
+
+.harbor-stall:hover .harbor-stall__body {
+  transform: translateY(-3px);
+}
+
+.harbor-stall__label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--cap-ink);
+  background: var(--cap-card);
+  border: 1.5px solid var(--cap-ink);
+  border-radius: 999px;
+  padding: 0.05rem 0.4rem;
+}
+
+.harbor-stall--arcade .harbor-stall__body {
+  background: linear-gradient(180deg, #fda4af, #fb7185);
+}
+.harbor-stall--studio .harbor-stall__body {
+  background: linear-gradient(180deg, #a5f3fc, #22d3ee);
+}
+.harbor-stall--capsule .harbor-stall__body {
+  background: linear-gradient(180deg, #ddd6fe, #a78bfa);
+}
+.harbor-stall--settings .harbor-stall__body {
+  background: linear-gradient(180deg, #e2e8f0, #94a3b8);
+}
+
+/* ---- Outfitter exterior ---- */
+.outfitter-building {
+  position: relative;
+  width: clamp(9.5rem, 28vw, 13rem);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  z-index: 2;
+}
+
+.outfitter-building__roof {
+  height: 1.6rem;
+  margin: 0 0.4rem;
+  background: #7c2d12;
+  border: 2.5px solid var(--cap-ink);
+  border-bottom: none;
+  clip-path: polygon(8% 100%, 50% 0, 92% 100%);
+  position: relative;
+}
+
+.outfitter-building__chimney {
+  position: absolute;
+  right: 22%;
+  bottom: 70%;
+  width: 0.7rem;
+  height: 1.1rem;
+  background: #78716c;
+  border: 2px solid var(--cap-ink);
+}
+
+.outfitter-building__awning {
+  margin: 0 0.55rem;
+  padding: 0.2rem 0.4rem;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--cap-coral) 0 12px,
+    #fffdf6 12px 24px
+  );
+  border: 2.5px solid var(--cap-ink);
+  border-bottom: none;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: var(--cap-ink);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.outfitter-building__facade {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 0.25rem;
+  margin: 0 0.55rem;
+  padding: 0.45rem 0.35rem 0.35rem;
+  background: linear-gradient(180deg, #f0d9a8, #d4a574);
+  border: 2.5px solid var(--cap-ink);
+  border-top: none;
+  min-height: 5.2rem;
+  align-items: end;
+}
+
+.outfitter-building__window {
+  height: 2.6rem;
+  background: linear-gradient(160deg, #bae6fd, #7dd3fc);
+  border: 2px solid var(--cap-ink);
+  border-radius: 0.25rem;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.outfitter-building__mannequin {
+  font-size: 1.1rem;
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.15));
+}
+
+.outfitter-building__door {
+  position: relative;
+  height: 3.4rem;
+  background: linear-gradient(180deg, #92400e, #78350f);
+  border: 2.5px solid var(--cap-ink);
+  border-radius: 0.35rem 0.35rem 0.1rem 0.1rem;
+  display: grid;
+  place-items: center;
+}
+
+.outfitter-building__door-knob {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 50%;
+  background: var(--cap-gold);
+  border: 1.5px solid var(--cap-ink);
+}
+
+.outfitter-building__door-icon {
+  font-size: 1.2rem;
+}
+
+.outfitter-building__visitor {
+  transform: translateY(4px);
+}
+
+.outfitter-building__porch {
+  margin: 0 0.9rem;
+  height: 0.45rem;
+  background: #a16207;
+  border: 2px solid var(--cap-ink);
+  border-top: none;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.outfitter-building__sign {
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  background: var(--cap-card);
+  border: 2px solid var(--cap-ink);
+  border-radius: 0.85rem;
+  box-shadow: var(--cap-shadow-sm);
+}
+
+.outfitter-building__sign-icon {
+  font-size: 1.25rem;
+}
+
+.outfitter-building__sign strong {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--cap-ink);
+  line-height: 1.1;
+}
+
+.outfitter-building__sign em {
+  display: block;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--cap-tide-deep);
+}
+
+.outfitter-building--pulse {
+  animation: outfitter-pulse 1.6s ease-in-out infinite;
+}
+
+.outfitter-building--pulse .outfitter-building__sign {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--cap-gold) 70%, transparent), var(--cap-shadow);
+}
+
+@keyframes outfitter-pulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ---- Outfitter interior ---- */
+.outfitter-interior {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 3px solid var(--cap-ink);
+  background:
+    linear-gradient(180deg, #5c4033 0 12%, transparent 12%),
+    linear-gradient(180deg, #f3e0c0, #e8c992);
+  box-shadow: var(--cap-shadow-ink);
+  overflow: hidden;
+  padding: 1rem 1rem 1.15rem;
+}
+
+.outfitter-interior__beams {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 12%;
+  background: repeating-linear-gradient(
+    90deg,
+    #3f2a1e 0 18px,
+    #5c4033 18px 36px
+  );
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.outfitter-interior__rail {
+  display: flex;
+  justify-content: center;
+  gap: 0.85rem;
+  margin: 0.35rem 0 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 2px dashed color-mix(in oklab, var(--cap-ink) 35%, transparent);
+  background: color-mix(in oklab, #fffdf6 70%, #f4a629);
+  font-size: 1.25rem;
+}
+
+.outfitter-interior__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.outfitter-interior__leave {
+  flex-shrink: 0;
+  border: 2px solid var(--cap-ink);
+  background: var(--cap-card);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--cap-shadow-sm);
+}
+
+.outfitter-interior__counter {
+  background: color-mix(in oklab, var(--cap-card) 88%, transparent);
+  border: 2px solid color-mix(in oklab, var(--cap-ink) 18%, transparent);
+  border-radius: 1rem;
+  padding: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .harbor-plaza__boat,
+  .outfitter-building--pulse {
+    animation: none !important;
+  }
+}

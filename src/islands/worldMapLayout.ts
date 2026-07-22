@@ -1,0 +1,99 @@
+import type { IslandDefinition, IslandSaveV1 } from "./types";
+import { getIslandTheme } from "./themes/islandThemes";
+import { getGalapagosProfile, type GalapagosProfile } from "./galapagosIslands";
+import { isIslandProgressLocked } from "./progressGates";
+
+/** Home island — modeled on Santa Cruz (main Galápagos settlement). */
+export const HUB_ISLAND_ID = "coincraft_cove";
+
+/** World-space radius between hub and outer islands (POV voyage units). */
+export const ARCHIPELAGO_WORLD_RADIUS = 920;
+
+/** Map view: hub center (%). */
+export const MAP_HUB = { x: 50, y: 54 };
+
+/** Map view: outer ring ellipse radii (%). */
+export const MAP_RING_RX = 38;
+export const MAP_RING_RY = 34;
+
+export type ArchipelagoNode = {
+  island: IslandDefinition;
+  isHub: boolean;
+  /** Aerial map position (percent). */
+  mapX: number;
+  mapY: number;
+  /** POV world coordinates (hub at origin). */
+  worldX: number;
+  worldY: number;
+  angle: number;
+  themeAccent: string;
+  galapagos: GalapagosProfile;
+};
+
+export function resolveHubIsland(islands: IslandDefinition[]): IslandDefinition {
+  return islands.find((i) => i.id === HUB_ISLAND_ID) ?? islands[0]!;
+}
+
+export function buildArchipelagoLayout(islands: IslandDefinition[]): {
+  hub: ArchipelagoNode;
+  outer: ArchipelagoNode[];
+  all: ArchipelagoNode[];
+} {
+  const hubIsland = resolveHubIsland(islands);
+  const hubTheme = getIslandTheme(hubIsland.id, hubIsland.themeId);
+
+  const hub: ArchipelagoNode = {
+    island: hubIsland,
+    isHub: true,
+    mapX: MAP_HUB.x,
+    mapY: MAP_HUB.y,
+    worldX: 0,
+    worldY: 0,
+    angle: 0,
+    themeAccent: hubTheme.accent,
+    galapagos: getGalapagosProfile(hubIsland.id),
+  };
+
+  const outerIslands = islands.filter((i) => i.id !== hubIsland.id);
+  const count = Math.max(1, outerIslands.length);
+  const startAngle = -Math.PI / 2;
+
+  const outer: ArchipelagoNode[] = outerIslands.map((island, index) => {
+    const angle = startAngle + (index / count) * Math.PI * 2;
+    const theme = getIslandTheme(island.id, island.themeId);
+    const mapX = MAP_HUB.x + Math.cos(angle) * MAP_RING_RX;
+    const mapY = MAP_HUB.y + Math.sin(angle) * MAP_RING_RY;
+    const worldX = Math.sin(angle) * ARCHIPELAGO_WORLD_RADIUS;
+    const worldY = -Math.cos(angle) * ARCHIPELAGO_WORLD_RADIUS;
+
+    return {
+      island,
+      isHub: false,
+      mapX,
+      mapY,
+      worldX,
+      worldY,
+      angle,
+      themeAccent: theme.accent,
+      galapagos: getGalapagosProfile(island.id),
+    };
+  });
+
+  return { hub, outer, all: [hub, ...outer] };
+}
+
+export function getArchipelagoNode(
+  layout: ReturnType<typeof buildArchipelagoLayout>,
+  islandId: string,
+): ArchipelagoNode | undefined {
+  return layout.all.find((n) => n.island.id === islandId);
+}
+
+export function isIslandLocked(
+  island: IslandDefinition,
+  inventory: string[],
+  save?: IslandSaveV1,
+): boolean {
+  if (save) return isIslandProgressLocked(island, save);
+  return (island.requiredItems || []).some((id) => !inventory.includes(id));
+}

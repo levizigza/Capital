@@ -1,83 +1,294 @@
-/* Character morphs — same avatar, different island art languages */
+.island-theme-enter {
+  animation: island-theme-wash 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes island-theme-wash {
+  from {
+    opacity: 0.55;
+    filter: saturate(0.7) brightness(1.08);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island-theme-enter {
+    animation: none !important;
+  }
+}
+
+/* Character morphs — Voyager remaps to each island's graphic era */
 
 .char-morph-capital span:first-child {
   filter: none;
 }
-
-/* Poptropica: thick ink outline, saturated cartoon */
-.char-morph-poptropica {
-  filter: saturate(1.25) contrast(1.05);
+.char-morph-capital > div:first-child {
+  border-width: 3px !important;
+  box-shadow: 0 8px 22px rgba(14, 165, 233, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.35) !important;
 }
-.char-morph-poptropica > div:first-child {
-  border-width: 5px !important;
-  border-color: #1a1a2e !important;
+
+/* 1960s — abstract vector / oscilloscope */
+.char-morph-1960s {
+  filter: grayscale(1) contrast(1.4);
+}
+.char-morph-1960s > div:first-child {
+  background: #000 !important;
+  border: 2px solid #fff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+.char-morph-1960s > div:first-child::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border: 1px dashed rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: vector-blink 1.6s steps(2) infinite;
+}
+@keyframes vector-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* 1970s — phosphor wireframe */
+.char-morph-1970s {
+  filter: drop-shadow(0 0 6px #33ff66);
+}
+.char-morph-1970s > div:first-child {
+  background: #000 !important;
+  border: 2px solid #33ff66 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 0 12px #33ff6688, inset 0 0 18px #33ff6622 !important;
+  color: #33ff66 !important;
+}
+
+/* 1980s — neon synthwave polygons */
+.char-morph-1980s > div:first-child {
+  border-radius: 12% !important;
+  border: 3px solid #f0abfc !important;
+  background: linear-gradient(145deg, #6b21a8, #22d3ee) !important;
   box-shadow:
-    4px 4px 0 #1a1a2e,
-    inset 0 0 0 2px rgba(255, 255, 255, 0.4) !important;
-  border-radius: 38% 42% 40% 44% / 42% 38% 44% 40% !important;
+    0 0 0 2px #22d3ee,
+    0 0 24px #f472b6aa,
+    inset 0 -6px 16px rgba(0, 0, 0, 0.35) !important;
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+@keyframes neon-pulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
 }
 
-/* Flash: flat bold, slight pixel crispness */
-.char-morph-flash {
+/* 1990s — low-poly / N64-adjacent chunk */
+.char-morph-1990s {
+  filter: saturate(1.35) contrast(1.08);
+}
+.char-morph-1990s > div:first-child {
+  border-radius: 18% 28% 22% 30% / 28% 18% 32% 22% !important;
+  border-width: 4px !important;
+  border-color: #1a1a2e !important;
+  box-shadow: 4px 4px 0 #1a1a2e !important;
   image-rendering: pixelated;
+}
+
+/* 2000s — polished adventure / gem shine */
+.char-morph-2000s > div:first-child {
+  border-width: 3px !important;
+  border-color: #fef08a !important;
+  box-shadow:
+    0 0 0 3px #ca8a04,
+    0 10px 24px rgba(234, 179, 8, 0.4),
+    inset 0 -4px 12px rgba(0, 0, 0, 0.12) !important;
+  background: linear-gradient(160deg, #ffffff55, transparent 55%) !important;
+}
+
+/* 2010s — cinematic realism / muted diegetic */
+.char-morph-2010s {
+  filter: contrast(1.05) saturate(0.85);
+}
+.char-morph-2010s > div:first-child {
+  border-radius: 40% !important;
+  border: 2px solid #57534e !important;
+  box-shadow: 0 12px 28px rgba(28, 25, 23, 0.45) !important;
+  background: linear-gradient(180deg, #a8a29e44, #44403c33) !important;
+}
+
+/* New Gen — painterly / cel-hybrid */
+.char-morph-2020s > div:first-child {
+  border-radius: 42% 38% 45% 40% / 40% 45% 38% 42% !important;
+  border: 3px solid #312e81 !important;
+  box-shadow:
+    6px 6px 0 #7c3aed55,
+    inset 0 0 0 2px #fbbf2488 !important;
+  background: linear-gradient(135deg, #c4b5fd55, #f472b644 50%, #fde68a33) !important;
+  animation: painterly-drift 5s ease-in-out infinite;
+}
+@keyframes painterly-drift {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(12deg);
+  }
+}
+
+/* Smooth morph layer root */
+.char-avatar-root {
+  isolation: isolate;
+}
+.char-avatar-layer {
+  will-change: opacity, transform;
+}
+
+/* Distinct idle motion per era (respect reduced motion below) */
+.char-morph-1960s {
+  animation: morph-vector-jitter 1.8s steps(3) infinite;
+}
+@keyframes morph-vector-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(1px, -1px);
+  }
+  66% {
+    transform: translate(-1px, 1px);
+  }
+}
+.char-morph-1970s {
+  animation: morph-phosphor-hum 2.2s ease-in-out infinite;
+}
+@keyframes morph-phosphor-hum {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px #33ff66);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px #33ff66);
+  }
+}
+.char-morph-1990s > div:first-child {
+  animation: morph-lowpoly-bob 2.4s ease-in-out infinite;
+}
+@keyframes morph-lowpoly-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+.char-morph-2010s {
+  animation: morph-ruin-breathe 3.2s ease-in-out infinite;
+}
+@keyframes morph-ruin-breathe {
+  0%,
+  100% {
+    filter: contrast(1.05) saturate(0.85);
+  }
+  50% {
+    filter: contrast(1.12) saturate(0.78);
+  }
+}
+
+/* Island board enter + era morph banner */
+.island-board-enter {
+  animation: island-board-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes island-board-rise {
+  from {
+    opacity: 0.35;
+    transform: translateY(18px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.island-era-arrive {
+  position: absolute;
+  inset: 8% 10% auto;
+  z-index: 8;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  border: 2px solid color-mix(in oklab, var(--cap-ink) 35%, transparent);
+  background: color-mix(in oklab, var(--cap-paper) 88%, transparent);
+  box-shadow: var(--cap-shadow-md, 0 12px 28px rgba(22, 40, 59, 0.18));
+  text-align: center;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+.island-era-arrive__badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cap-ink-soft);
+}
+.island-era-arrive__title {
+  font-family: var(--cap-display, Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--cap-ink);
+}
+.island-era-arrive__tag {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--cap-ink-soft);
+}
+.island-era-arrive__form {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cap-tide, #0ea5e9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char-morph-1960s,
+  .char-morph-1970s,
+  .char-morph-1990s > div:first-child,
+  .char-morph-2010s,
+  .char-morph-2020s > div:first-child,
+  .island-board-enter {
+    animation: none !important;
+  }
+}
+
+/* Legacy aliases → nearest eras */
+.char-morph-poptropica {
+  filter: saturate(1.35) contrast(1.08);
 }
 .char-morph-flash > div:first-child {
   border-radius: 12% !important;
   border-width: 4px !important;
   border-color: #000 !important;
   box-shadow: 3px 3px 0 #000 !important;
-  background: radial-gradient(circle at 40% 30%, #fff8 0%, transparent 55%) !important;
 }
-
-/* Miniclip: glossy ring, arcade shine */
 .char-morph-miniclip > div:first-child {
   border-width: 3px !important;
   border-color: #fff !important;
-  box-shadow:
-    0 0 0 3px #2563eb,
-    0 8px 20px rgba(37, 99, 235, 0.45),
-    inset 0 -4px 12px rgba(0, 0, 0, 0.15) !important;
-  background: linear-gradient(145deg, #ffffff44, transparent 60%) !important;
+  box-shadow: 0 0 0 3px #2563eb, 0 8px 20px rgba(37, 99, 235, 0.45) !important;
 }
-
-/* Newgrounds: indie tilt, gritty edge */
 .char-morph-newgrounds {
   transform: rotate(-2deg);
 }
-.char-morph-newgrounds > div:first-child {
-  border-radius: 8px !important;
-  border-width: 3px !important;
-  border-color: #7c2d12 !important;
-  box-shadow: 4px 4px 0 #451a03 !important;
-}
-
-/* Future shores: wireframe / under construction */
-.char-morph-future {
-  opacity: 0.92;
-}
 .char-morph-future > div:first-child {
   border-style: dashed !important;
-  border-width: 3px !important;
   border-color: #f59e0b !important;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 6px,
-    rgba(245, 158, 11, 0.12) 6px,
-    rgba(245, 158, 11, 0.12) 12px
-  ) !important;
-  box-shadow: none !important;
-  animation: future-pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes future-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.78;
-  }
 }
 
 /* Voyage map boat wake */
@@ -360,9 +571,17 @@
   filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
   animation: povv-boat-bob 2.6s ease-in-out infinite;
 }
+.povv-magic-carpet {
+  animation-name: povv-carpet-float;
+  filter: drop-shadow(0 16px 18px rgba(244, 166, 41, 0.45));
+}
 @keyframes povv-boat-bob {
   0%, 100% { transform: translateY(0) rotate(-3deg); }
   50% { transform: translateY(-8px) rotate(3deg); }
+}
+@keyframes povv-carpet-float {
+  0%, 100% { transform: translateY(0) rotate(-6deg) scale(1); }
+  50% { transform: translateY(-16px) rotate(6deg) scale(1.06); }
 }
 .povv-dock-arrow {
   font-size: 2rem;
@@ -514,6 +733,50 @@
 .povv-steer:active { background: var(--cap-gold, #f4a629); }
 .povv-steer--l { left: max(1rem, env(safe-area-inset-left)); }
 .povv-steer--r { left: calc(max(1rem, env(safe-area-inset-left)) + 4.75rem); }
+
+.povv-era-tease {
+  position: absolute;
+  left: 50%;
+  bottom: 28%;
+  transform: translateX(-50%);
+  z-index: 6;
+  max-width: min(92vw, 22rem);
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.9rem;
+  background: rgba(12, 22, 34, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: povv-tease-in 0.55s ease both;
+}
+.povv-era-tease__label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.povv-era-tease__era {
+  font-weight: 900;
+  font-size: 0.95rem;
+}
+.povv-era-tease__tag {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+@keyframes povv-tease-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 
 .povv-arrive {
   position: absolute;

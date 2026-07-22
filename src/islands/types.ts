@@ -36,6 +36,8 @@ export type AnalyticsEventName =
   | "islands_exit"
   | "difficulty_changed"
   | "settings_changed"
+  | "character_saved"
+  | "onboarding_completed"
   | "hint_escalated";
 
 export type AnalyticsEvent = {
@@ -79,6 +81,8 @@ export type IslandItem = {
   description: string;
   icon: string;
   location: { areaId: AreaId };
+  tagline?: string;
+  homage?: string;
 };
 
 export type IslandNpc = {
@@ -87,6 +91,8 @@ export type IslandNpc = {
   icon: string;
   areaId: AreaId;
   dialogueGraphId: string;
+  /** Optional money-culture wink shown under the name */
+  tagline?: string;
 };
 
 export type QuestObjective =
@@ -133,6 +139,8 @@ export type IslandMinigame = {
   complexity?: "easy" | "medium" | "hard";
   visualShell?: string;
   estimatedMinutes?: number;
+  /** Short pop-culture wink line (safe homage, not a trademarked title) */
+  homage?: string;
 };
 
 export type ContentProvenance = {
@@ -214,13 +222,27 @@ export type IslandSaveV1 = {
   character?: import("./character").CapitalCharacter;
   /** Whether the first-run world onboarding has been completed */
   onboardingComplete?: boolean;
-  /** Mario Party-style board position and stars per island */
+  /** Voyager Ledger — Cashflow-style income/expenses/holdings */
+  voyagerLedger?: import("./voyagerLedger").VoyagerLedger;
+  /**
+   * Fortune Archipelago party state per island:
+   * position, Ledger Seals, Fortune Capsules, rival captains, session turns.
+   */
   partyBoard?: Record<
     IslandId,
     {
       position: number;
       turnsPlayed: number;
+      /** Ledger Seals earned on this island */
       stars: number;
+      items?: import("./partyItems").PartyItemId[];
+      buffs?: {
+        doubleCoinsNext?: boolean;
+        shielded?: boolean;
+        bailoutReady?: boolean;
+      };
+      rivals?: import("./partyRivals").RivalBoardState[];
+      turnsRemaining?: number;
     }
   >;
 };

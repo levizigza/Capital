@@ -2,7 +2,7 @@ FinanceQuest Pro — Credits
 ================================================
 
 Third-party assets and attributions.
-Generated: 2026-07-10
+Generated: 2026-07-22
 
 Xelu's FREE Controller & Keyboard Prompts
 -----------------------------------------
@@ -11,5 +11,22 @@ Author: Nicolae "Xelu" Berbece (Those Awesome Guys)
 Source: OpenGameArt — https://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
 License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
 Modifications: Synced subset into public/input-prompts/xelu/ via scripts/sync-xelu-prompts.mjs; PlayStation symbol buttons omitted per OpenGameArt distribution notes.
+
+Kenney Nature Kit (subset)
+--------------------------
+Low-poly nature models (tree_palm, rock_largeA) by Kenney, released under CC0 1.0 Universal.
+Author: Kenney (www.kenney.nl)
+Source: OpenGameArt — https://opengameart.org/content/nature-kit
+Also: https://kenney.nl/assets/nature-kit
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Modifications: Copied a lean OBJ/MTL subset into public/assets/3d/kenney/ for Capital's
+3D archipelago (procedural terrain + Kenney trees/rocks). Attribution is appreciated
+but not required by the license.
+
+Poly Haven HDRIs (via @react-three/drei Environment presets)
+-----------------------------------------------------------
+drei Environment presets may load HDRIs associated with Poly Haven / similar free
+environment maps for image-based lighting. Used for cinematic reflections on water
+and island materials. See https://polyhaven.com/ and @react-three/drei docs.
 
 — End of credits —

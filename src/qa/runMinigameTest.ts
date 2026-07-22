@@ -41,12 +41,12 @@ export type EventDeckTestRunResult = {
 export function runEventDeckTestRun(config: EventDeckTestRunConfig): EventDeckTestRunResult {
   const rng = mulberry32(config.seed);
   let deckState: ScenarioDeckState = createDeckState([config.deckId]);
-  let game = {
+  let game: GameState = {
     money: 50,
     score: 0,
     turn: 1,
     maxTurns: 20,
-    difficulty: "normal" as const,
+    difficulty: "normal",
     flags: {},
     counters: {},
     economyPhase: config.economyPhase ?? "normal",

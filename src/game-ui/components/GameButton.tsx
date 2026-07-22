@@ -77,7 +77,7 @@ export const GameButton = forwardRef<HTMLButtonElement, GameButtonProps>(
         onClick={onClick}
         disabled={disabled}
         {...fxProps}
-        {...rest}
+        {...(rest as Record<string, unknown>)}
       >
         {children}
       </motion.button>

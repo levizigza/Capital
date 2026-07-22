@@ -94,10 +94,11 @@ export default function ExplorablePuzzleGame({
       setGrid((g) => revealFog(g, nx, ny));
 
       if (cell.type === "coin" && cell.value) {
-        setCoins((c) => c + cell.value);
-        setScore((s) => s + cell.value);
+        const coinValue = cell.value;
+        setCoins((c) => c + coinValue);
+        setScore((s) => s + coinValue);
         sfx.correct();
-        setMessage(`+${cell.value}¢ — ${cell.label ?? "coin"}`);
+        setMessage(`+${coinValue}¢ — ${cell.label ?? "coin"}`);
         setGrid((g) => {
           const next = g.map((row) => row.map((c) => ({ ...c })));
           next[ny][nx] = { type: "floor" };
@@ -147,6 +148,7 @@ export default function ExplorablePuzzleGame({
       icon={def?.icon ?? "🗺️"}
       genre="exploration"
       complexity="medium"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-3">

@@ -53,6 +53,55 @@
   --game-panel-border: #2563eb;
 }
 
+.island-theme-vector {
+  color-scheme: dark;
+  --game-panel-bg: rgba(0, 0, 0, 0.92);
+  --game-panel-border: #ffffff;
+  color: #e8e8e8;
+  font-family: "Courier New", monospace;
+}
+
+.island-theme-wireframe {
+  color-scheme: dark;
+  --game-panel-bg: rgba(0, 20, 0, 0.92);
+  --game-panel-border: #33ff66;
+  color: #33ff66;
+  font-family: "Courier New", monospace;
+  text-shadow: 0 0 8px #33ff6644;
+}
+
+.island-theme-neon-grid {
+  color-scheme: dark;
+  --game-panel-bg: rgba(43, 10, 61, 0.92);
+  --game-panel-border: #f0abfc;
+  color: #fce7f3;
+  box-shadow: 0 0 24px rgba(244, 114, 182, 0.2);
+}
+
+.island-theme-lowpoly {
+  --game-panel-bg: rgba(255, 255, 255, 0.94);
+  --game-panel-border: #1a1a2e;
+  box-shadow: 4px 4px 0 #1a1a2e;
+}
+
+.island-theme-quest {
+  --game-panel-bg: rgba(254, 243, 199, 0.95);
+  --game-panel-border: #ca8a04;
+}
+
+.island-theme-ruins {
+  color-scheme: dark;
+  --game-panel-bg: rgba(41, 37, 36, 0.94);
+  --game-panel-border: #a8a29e;
+  color: #fafaf9;
+}
+
+.island-theme-painterly {
+  --game-panel-bg: rgba(237, 233, 254, 0.94);
+  --game-panel-border: #7c3aed;
+  border-radius: 1.25rem;
+}
+
 /* Minigame visual shells */
 .mg-shell-arcade {
   background: #0f0f23;

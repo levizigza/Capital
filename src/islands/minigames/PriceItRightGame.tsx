@@ -123,6 +123,7 @@ export default function PriceItRightGame({ minigameId, island, onComplete, onClo
       icon={def?.icon ?? cfg.emoji}
       genre="simulation"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4">

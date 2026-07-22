@@ -1,6 +1,8 @@
 /**
- * Capital character — a lightweight, kid-friendly avatar the player builds
- * on the home island before branching out to the world's islands.
+ * Capital Voyager — the player's identity across Fortune Archipelago.
+ *
+ * On Harbor Haven and while sailing, this home look is always shown.
+ * Landing on an era island remaps the same Voyager into that decade's art language.
  */
 
 export type CapitalCharacter = {
@@ -13,58 +15,68 @@ export type CapitalCharacter = {
 
 export type CharacterOption = { id: string; emoji: string; label: string };
 
+/** Core Voyager silhouettes — original cast, not borrowed mascots */
 export const CHARACTER_BASES: CharacterOption[] = [
-  { id: "explorer", emoji: "🧑", label: "Explorer" },
-  { id: "kid", emoji: "🧒", label: "Kid" },
-  { id: "astro", emoji: "🧑‍🚀", label: "Astronaut" },
-  { id: "hero", emoji: "🦸", label: "Hero" },
-  { id: "artist", emoji: "🧑‍🎤", label: "Star" },
-  { id: "scientist", emoji: "🧑‍🔬", label: "Inventor" },
-  { id: "ranger", emoji: "🧝", label: "Ranger" },
-  { id: "detective", emoji: "🕵️", label: "Detective" },
+  { id: "voyager", emoji: "🧑‍✈️", label: "Voyager" },
+  { id: "cartographer", emoji: "🧭", label: "Cartographer" },
+  { id: "ledger_kid", emoji: "🧒", label: "Ledger Kid" },
+  { id: "tide_ranger", emoji: "🏄", label: "Tide Ranger" },
+  { id: "coin_smith", emoji: "🧑‍🔧", label: "Coin-Smith" },
+  { id: "signal_scout", emoji: "📡", label: "Signal Scout" },
+  { id: "quest_adept", emoji: "🧑‍🎓", label: "Quest Adept" },
+  { id: "ruin_walker", emoji: "🥾", label: "Ruin Walker" },
 ];
 
 export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
-  { id: "sky", hex: "#38bdf8", label: "Sky" },
-  { id: "grape", hex: "#a78bfa", label: "Grape" },
+  { id: "tide", hex: "#0ea5e9", label: "Tide" },
+  { id: "marigold", hex: "#f4a629", label: "Marigold" },
+  { id: "seafoam", hex: "#2dd4bf", label: "Seafoam" },
+  { id: "ink", hex: "#1e3a5f", label: "Deep Ink" },
   { id: "coral", hex: "#fb7185", label: "Coral" },
-  { id: "mint", hex: "#34d399", label: "Mint" },
-  { id: "gold", hex: "#fbbf24", label: "Gold" },
-  { id: "flame", hex: "#f97316", label: "Flame" },
+  { id: "ledger", hex: "#a78bfa", label: "Ledger Violet" },
 ];
 
 export const CHARACTER_ACCESSORIES: CharacterOption[] = [
   { id: "none", emoji: "", label: "None" },
-  { id: "cap", emoji: "🧢", label: "Cap" },
-  { id: "tophat", emoji: "🎩", label: "Top hat" },
-  { id: "crown", emoji: "👑", label: "Crown" },
-  { id: "shades", emoji: "🕶️", label: "Shades" },
-  { id: "headphones", emoji: "🎧", label: "Headphones" },
+  { id: "cap", emoji: "🧢", label: "Dock Cap" },
+  { id: "goggles", emoji: "🥽", label: "Quest Goggles" },
+  { id: "bandana", emoji: "🎀", label: "Tide Bandana" },
+  { id: "headset", emoji: "🎧", label: "Signal Phones" },
+  { id: "lantern", emoji: "🏮", label: "Ruin Lantern" },
 ];
 
 export const CHARACTER_COMPANIONS: CharacterOption[] = [
   { id: "none", emoji: "", label: "Solo" },
-  { id: "dog", emoji: "🐶", label: "Pup" },
-  { id: "cat", emoji: "🐱", label: "Cat" },
-  { id: "parrot", emoji: "🦜", label: "Parrot" },
-  { id: "turtle", emoji: "🐢", label: "Turtle" },
-  { id: "fox", emoji: "🦊", label: "Fox" },
+  { id: "tortoise", emoji: "🐢", label: "Tortoise" },
+  { id: "finch", emoji: "🐦", label: "Finch" },
+  { id: "iguana", emoji: "🦎", label: "Iguana" },
+  { id: "otter", emoji: "🦦", label: "Otter" },
+  { id: "crab", emoji: "🦀", label: "Crab Accountant" },
 ];
 
 export const DEFAULT_CHARACTER: CapitalCharacter = {
   name: "",
-  base: "explorer",
-  color: "sky",
+  base: "voyager",
+  color: "tide",
+  accessory: "none",
+  companion: "none",
+};
+
+/** Starter look before the Harbor shop — plain Voyager, no gear, no pet. */
+export const BASE_VOYAGER: CapitalCharacter = {
+  name: "Voyager",
+  base: "voyager",
+  color: "tide",
   accessory: "none",
   companion: "none",
 };
 
 export function baseEmoji(id: string): string {
-  return CHARACTER_BASES.find((b) => b.id === id)?.emoji ?? "🧑";
+  return CHARACTER_BASES.find((b) => b.id === id)?.emoji ?? "🧑‍✈️";
 }
 
 export function colorHex(id: string): string {
-  return CHARACTER_COLORS.find((c) => c.id === id)?.hex ?? "#38bdf8";
+  return CHARACTER_COLORS.find((c) => c.id === id)?.hex ?? "#0ea5e9";
 }
 
 export function accessoryEmoji(id: string): string {

@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GameButton } from "@/game-ui";
 import { CharacterCreator } from "./CharacterCreator";
 import { CharacterAvatar } from "./CharacterAvatar";
-import { type CapitalCharacter, DEFAULT_CHARACTER } from "../character";
+import { OutfitterBuilding, OutfitterInterior } from "./OutfitterBuilding";
+import {
+  type CapitalCharacter,
+  BASE_VOYAGER,
+  CHARACTER_COMPANIONS,
+  companionEmoji,
+} from "../character";
 
 type Props = {
   playerName?: string;
@@ -14,14 +20,12 @@ type Props = {
   onSkip?: () => void;
 };
 
-const DOORS = [
-  { icon: "🧑", title: "Your Character", copy: "Change your look anytime from the home base." },
-  { icon: "🗺️", title: "World Map", copy: "Pick an island, then roll dice on its party board to reach minigames." },
-  { icon: "🕹️", title: "The Arcade", copy: "Quick money games sorted by type and difficulty." },
-  { icon: "✨", title: "VibeCode Studio", copy: "Build and share your own levels — especially on Future Shores." },
-  { icon: "🏗️", title: "Future Shores", copy: "An unfinished island for the kids of the future to carve out." },
-];
+type Step = "arrive" | "plaza" | "inside-look" | "inside-pet" | "party" | "ready";
 
+/**
+ * Harbor Haven tutorial — wash ashore, walk to the Outfitter building,
+ * go inside for looks + pet, learn Fortune Party, then practice on Cove.
+ */
 export function WelcomeOnboarding({
   playerName,
   character,
@@ -30,136 +34,237 @@ export function WelcomeOnboarding({
   onComplete,
   onSkip,
 }: Props) {
-  const [step, setStep] = useState(0);
-  const [savedChar, setSavedChar] = useState<CapitalCharacter | null>(character ?? null);
+  const starter = useMemo<CapitalCharacter>(
+    () =>
+      character?.name
+        ? character
+        : { ...BASE_VOYAGER, name: playerName?.trim() || "Voyager" },
+    [character, playerName],
+  );
 
-  const next = () => setStep((s) => s + 1);
+  const [step, setStep] = useState<Step>("arrive");
+  const [draft, setDraft] = useState<CapitalCharacter>(starter);
+  const pets = CHARACTER_COMPANIONS.filter((c) => c.id !== "none");
 
   return (
     <div className="fixed inset-0 z-[9995] overflow-y-auto cap-surface">
-      <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-t-[45%] bg-gradient-to-t from-[color-mix(in_oklab,var(--cap-tide)_22%,var(--cap-paper))] to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-200/80 via-[var(--cap-paper)] to-emerald-100/70" />
+      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-t-[45%] bg-gradient-to-t from-[color-mix(in_oklab,var(--cap-tide)_28%,var(--cap-paper))] to-transparent" />
 
       <div className="relative flex min-h-full items-center justify-center p-4">
         <AnimatePresence mode="wait">
-          {/* STEP 0 — Welcome */}
-          {step === 0 && (
+          {step === "arrive" && (
             <motion.div
-              key="welcome"
+              key="arrive"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -24 }}
               className="w-full max-w-lg cap-card p-8 text-center"
             >
-              <motion.div
-                initial={{ scale: 0.5, rotate: -10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 150 }}
-                className="mx-auto mb-3 text-6xl"
-              >
-                🏝️
-              </motion.div>
-              <div className="cap-eyebrow mb-1">Welcome aboard</div>
-              <h1 className="cap-display text-4xl text-[var(--cap-ink)]">Capital</h1>
-              <p className="mx-auto mt-3 max-w-md text-[var(--cap-ink-soft)]">
-                Capital is a world of islands{playerName ? `, ${playerName}` : ""} — each one a different little
-                game world with its own look, stories, and money adventures. This is your{" "}
-                <span className="font-bold text-[var(--cap-tide-deep)]">home base</span>. Let's get you ready to explore.
-              </p>
-              <div className="mt-6 flex flex-col items-center gap-2">
-                <GameButton variant="primary" size="lg" className="w-full max-w-xs" onClick={next}>
-                  Let's go! →
-                </GameButton>
-                {onSkip && (
-                  <button onClick={onSkip} className="text-sm text-[var(--cap-ink-soft)] underline-offset-4 hover:underline">
-                    Skip intro
-                  </button>
-                )}
+              <div className="mx-auto mb-4 flex justify-center">
+                <CharacterAvatar character={draft} size={96} animationStyle="capital-default" />
               </div>
-            </motion.div>
-          )}
-
-          {/* STEP 1 — Character creation */}
-          {step === 1 && (
-            <motion.div
-              key="character"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -24 }}
-              className="w-full max-w-md cap-card p-6"
-            >
-              <CharacterCreator
-                character={savedChar ?? { ...DEFAULT_CHARACTER, name: playerName ?? "" }}
-                defaultName={playerName}
-                saveLabel="That's me! →"
-                onSave={(c) => {
-                  setSavedChar(c);
-                  onSaveCharacter(c);
-                  next();
+              <div className="cap-eyebrow mb-1">Harbor Haven · First island</div>
+              <h1 className="cap-display text-3xl text-[var(--cap-ink)]">You wash ashore</h1>
+              <p className="mx-auto mt-3 max-w-md text-[var(--cap-ink-soft)]">
+                This is your <strong>base Voyager</strong> — plain coat, no gear, no pet yet. Ahead is the harbor
+                plaza. Walk to the <strong>Outfitter</strong> building to get ready.
+              </p>
+              <GameButton
+                variant="primary"
+                size="lg"
+                className="mt-6 w-full max-w-xs"
+                onClick={() => {
+                  onSaveCharacter(draft);
+                  setStep("plaza");
                 }}
-              />
+              >
+                Head to the plaza →
+              </GameButton>
+              {import.meta.env.DEV && onSkip ? (
+                <button
+                  type="button"
+                  onClick={onSkip}
+                  className="mt-3 text-xs text-[var(--cap-ink-soft)] underline-offset-4 hover:underline"
+                >
+                  Dev skip
+                </button>
+              ) : null}
             </motion.div>
           )}
 
-          {/* STEP 2 — Tour of the home base */}
-          {step === 2 && (
+          {step === "plaza" && (
             <motion.div
-              key="tour"
+              key="plaza"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -24 }}
-              className="w-full max-w-lg cap-card p-8 text-center"
+              className="w-full max-w-xl space-y-3"
             >
-              <div className="mb-4 flex items-center justify-center gap-3">
-                {savedChar && <CharacterAvatar character={savedChar} size={64} />}
-                <div className="text-left">
-                  <div className="cap-eyebrow">Home base</div>
-                  <h2 className="cap-display text-2xl text-[var(--cap-ink)]">Here's what you can do</h2>
+              <div className="text-center">
+                <div className="cap-eyebrow mb-1">Harbor plaza</div>
+                <h2 className="cap-display text-2xl text-[var(--cap-ink)]">Walk up to the Outfitter</h2>
+                <p className="text-sm text-[var(--cap-ink-soft)]">Tap the building to go inside.</p>
+              </div>
+              <div className="harbor-plaza" style={{ minHeight: "22rem" }}>
+                <div className="harbor-plaza__sun" aria-hidden />
+                <div className="harbor-plaza__sea" aria-hidden />
+                <div className="harbor-plaza__dock" aria-hidden />
+                <div className="harbor-plaza__boat harbor-plaza__carpet" aria-hidden>
+                  🪄
+                </div>
+                <div className="harbor-plaza__street" aria-hidden />
+                <div className="harbor-plaza__coach">The striped awning — that&apos;s your shop.</div>
+                <div className="harbor-plaza__row" style={{ justifyContent: "center" }}>
+                  <OutfitterBuilding
+                    highlighted
+                    character={draft}
+                    cta="Go inside →"
+                    onEnter={() => setStep("inside-look")}
+                  />
+                </div>
+                <div className="harbor-plaza__voyager">
+                  <CharacterAvatar character={draft} size={48} animationStyle="capital-default" />
+                  <span className="harbor-plaza__voyager-label">{draft.name}</span>
                 </div>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {DOORS.map((d, i) => (
-                  <motion.div
-                    key={d.title}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 + i * 0.08 }}
-                    className="rounded-2xl border-2 border-[var(--cap-ink)]/12 bg-[var(--cap-paper)] p-4 text-left"
+            </motion.div>
+          )}
+
+          {step === "inside-look" && (
+            <motion.div
+              key="inside-look"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -24 }}
+              className="w-full max-w-md"
+            >
+              <OutfitterInterior onLeave={() => setStep("plaza")}>
+                <CharacterCreator
+                  character={draft}
+                  defaultName={draft.name || playerName}
+                  variant="outfitter"
+                  hideCompanion
+                  saveLabel="Next: companion crates →"
+                  onSave={(c) => {
+                    setDraft({ ...c, companion: "none" });
+                    setStep("inside-pet");
+                  }}
+                />
+              </OutfitterInterior>
+            </motion.div>
+          )}
+
+          {step === "inside-pet" && (
+            <motion.div
+              key="inside-pet"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -24 }}
+              className="w-full max-w-md"
+            >
+              <OutfitterInterior onLeave={() => setStep("inside-look")}>
+                <div className="space-y-4 text-center">
+                  <div className="mx-auto flex justify-center">
+                    <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
+                  </div>
+                  <div>
+                    <div className="text-lg font-black">Companion crates</div>
+                    <p className="text-sm text-muted-foreground">Every captain needs a sidekick.</p>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {pets.map((pet) => {
+                      const active = draft.companion === pet.id;
+                      return (
+                        <button
+                          key={pet.id}
+                          type="button"
+                          onClick={() => setDraft((d) => ({ ...d, companion: pet.id }))}
+                          className={`flex min-w-[5.25rem] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 transition ${
+                            active
+                              ? "border-[var(--cap-gold)] bg-[var(--cap-gold)]/20 scale-105"
+                              : "border-[var(--cap-ink)]/15 bg-white hover:border-[var(--cap-tide)]"
+                          }`}
+                        >
+                          <span className="text-3xl">{companionEmoji(pet.id)}</span>
+                          <span className="text-xs font-bold">{pet.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <GameButton
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                    disabled={draft.companion === "none"}
+                    onClick={() => {
+                      onSaveCharacter(draft);
+                      setStep("party");
+                    }}
                   >
-                    <div className="text-3xl">{d.icon}</div>
-                    <div className="mt-1 font-bold text-[var(--cap-ink)]">{d.title}</div>
-                    <div className="text-sm text-[var(--cap-ink-soft)]">{d.copy}</div>
-                  </motion.div>
-                ))}
+                    {draft.companion === "none" ? "Pick a pet first" : "Leave the Outfitter →"}
+                  </GameButton>
+                </div>
+              </OutfitterInterior>
+            </motion.div>
+          )}
+
+          {step === "party" && (
+            <motion.div
+              key="party"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -24 }}
+              className="w-full max-w-lg cap-card p-8 text-center"
+            >
+              <div className="mx-auto mb-3 flex justify-center">
+                <CharacterAvatar character={draft} size={80} animationStyle="capital-default" />
               </div>
-              <GameButton variant="primary" size="lg" className="mt-6 w-full max-w-xs" onClick={next}>
-                Show me the map →
+              <div className="text-5xl mb-2">🎲</div>
+              <div className="cap-eyebrow mb-1">Fortune Party tutorial</div>
+              <h2 className="cap-display text-2xl text-[var(--cap-ink)]">How every island works</h2>
+              <ul className="mx-auto mt-4 max-w-md space-y-2 text-left text-sm text-[var(--cap-ink-soft)]">
+                <li>
+                  <strong className="text-[var(--cap-ink)]">Roll the dice</strong> and move around the island board.
+                </li>
+                <li>
+                  <strong className="text-[var(--cap-ink)]">Minigame spaces</strong> teach money skills in that island&apos;s
+                  art style.
+                </li>
+                <li>
+                  <strong className="text-[var(--cap-ink)]">Ledger Seals</strong> are the prize — race rival captains.
+                </li>
+                <li>
+                  <strong className="text-[var(--cap-ink)]">Fortune Capsules</strong> let you raid, shield, or fog rivals.
+                </li>
+                <li>
+                  <strong className="text-[var(--cap-ink)]">The Collector</strong> is chance — surprise fees teach risk.
+                </li>
+              </ul>
+              <GameButton variant="primary" size="lg" className="mt-6 w-full max-w-xs" onClick={() => setStep("ready")}>
+                Got it — practice on Cove →
               </GameButton>
             </motion.div>
           )}
 
-          {/* STEP 3 — Set sail */}
-          {step === 3 && (
+          {step === "ready" && (
             <motion.div
-              key="sail"
+              key="ready"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -24 }}
               className="w-full max-w-lg cap-card p-8 text-center"
             >
-              <motion.div
-                animate={{ x: [0, 8, 0], rotate: [0, 3, 0] }}
-                transition={{ repeat: Infinity, duration: 2.4 }}
-                className="mx-auto mb-3 text-6xl"
-              >
-                ⛵
-              </motion.div>
-              <h2 className="cap-display text-3xl text-[var(--cap-ink)]">Ready to party</h2>
+              <div className="mx-auto mb-3 flex justify-center">
+                <CharacterAvatar character={draft} size={96} animationStyle="capital-default" />
+              </div>
+              <h2 className="cap-display text-3xl text-[var(--cap-ink)]">Practice on Coincraft Cove</h2>
               <p className="mx-auto mt-3 max-w-md text-[var(--cap-ink-soft)]">
-                {islandsCount} island{islandsCount === 1 ? "" : "s"} are on the world map. Sail to one, roll the dice
-                on its board, and play minigames to earn coins and stars. Your progress saves automatically.
+                Next stop: the tutorial party board. Roll a few turns, try a minigame, then open the map for the other{" "}
+                {Math.max(0, islandsCount - 1)} era islands — revisit the Outfitter anytime from the plaza.
               </p>
               <GameButton variant="primary" size="lg" className="mt-6 w-full max-w-xs" onClick={onComplete}>
-                🎲 Open world map
+                🎲 Start tutorial board
               </GameButton>
             </motion.div>
           )}

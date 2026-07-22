@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "venture_foundry",
-      "name": "Venture Foundry",
-      "description": "An industrial innovation district where aspiring entrepreneurs learn to launch, fund, and scale a business from scratch.",
-      "icon": "🔥",
+      "name": "Gridlock Galleria",
+      "description": "1980s neon grid — synth sunsets and STAGE counters. Race toward retirement goals while dodging debt traps on the infinite floor.",
+      "icon": "🌆",
       "provenance": {
         "learning_objectives": [
           "Understand the steps from business idea to minimum viable product",

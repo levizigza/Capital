@@ -4,8 +4,8 @@
     {
       "id": "coincraft_cove",
       "name": "Coincraft Cove",
-      "description": "A friendly seaside village where young explorers learn to count, save, and spend coins wisely.",
-      "icon": "🏖️",
+      "description": "Harbor Haven — your adventure hub. Learn Fortune Party rules in your true Voyager look, then sail to era islands where your animation morphs.",
+      "icon": "⚓",
       "provenance": {
         "learning_objectives": [
           "Identify coins and bills by value",
@@ -387,6 +387,42 @@
           "modules": [
             { "id": "CompoundConfig", "config": { "principal": 50, "ratePct": 15, "years": 8, "label": "your coins" } }
           ]
+        },
+        {
+          "id": "mg_pasaran_market",
+          "name": "Pasaran Market",
+          "description": "Buy and sell at a lively market stall — make exact change and fair prices.",
+          "icon": "🧺",
+          "componentId": "PasaranMarketGame",
+          "areaId": "cc_craft_market",
+          "genre": "party",
+          "complexity": "easy",
+          "visualShell": "explore",
+          "estimatedMinutes": 3
+        },
+        {
+          "id": "mg_mancala_compound",
+          "name": "Mancala Compound",
+          "description": "Sow seeds into future pits — your store compounds like savings.",
+          "icon": "🟢",
+          "componentId": "MancalaCompoundGame",
+          "areaId": "cc_savings_lighthouse",
+          "genre": "strategy",
+          "complexity": "medium",
+          "visualShell": "retro",
+          "estimatedMinutes": 4
+        },
+        {
+          "id": "mg_life_fork",
+          "name": "Life Fork",
+          "description": "Career, insurance, and windfall choices — watch your cashflow path fork.",
+          "icon": "🔀",
+          "componentId": "LifeForkGame",
+          "areaId": "cc_harbor",
+          "genre": "quiz",
+          "complexity": "medium",
+          "visualShell": "notebook",
+          "estimatedMinutes": 4
         }
       ]
     }

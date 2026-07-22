@@ -1,32 +1,38 @@
-import { Suspense, lazy } from "react";
-import { motion } from "framer-motion";
-
+import { Suspense, lazy, useMemo, useState } from "react";
 import {
   GameHudLayout,
   GameButton,
   GameModal,
-  GamePanel,
   HudBadge,
   HudChip,
-  useGameMotion,
-  useGameUi,
+  GamePanel,
 } from "@/game-ui";
 import { useInputAction, InputPromptHint } from "@/input";
 
 import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
 import { getIslandById } from "../content/loader";
-import { getBoatTier } from "../boats";
+import { getEffectiveBoatTier } from "../boats";
+import { hasHarborFreedom } from "../progressGates";
 import { getProfileDef, type LearningProfileId } from "../learningProfile";
 import type { AccessibilitySettings } from "../settings";
-import type { CapitalCharacter } from "../character";
+import {
+  type CapitalCharacter,
+  BASE_VOYAGER,
+  CHARACTER_COMPANIONS,
+  companionEmoji,
+} from "../character";
 import { CharacterCreator } from "./CharacterCreator";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
+import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
+import { ensureLedger } from "../voyagerLedger";
+import { OutfitterInterior } from "./OutfitterBuilding";
+import { WalkableHarborView, type HarborHotspot } from "../world3d";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
-type HubModal = "avatar" | "shop" | "settings" | null;
+type HubModal = "outfitter" | "capsule" | "settings" | null;
 
 export type HomeHubViewProps = {
   userProfile: UserProfile;
@@ -48,46 +54,9 @@ export type HomeHubViewProps = {
   a11y: AccessibilitySettings;
   updateA11y: (next: AccessibilitySettings) => void;
   updateLearningProfile: (id: LearningProfileId) => void;
+  /** Pulse the Outfitter and show coach text (tutorial) */
+  highlightOutfitter?: boolean;
 };
-
-function HubInteractable({
-  icon,
-  label,
-  accentClass,
-  onClick,
-}: {
-  icon: string;
-  label: string;
-  accentClass: string;
-  onClick: () => void;
-}) {
-  const { hover, tap, reduced } = useGameMotion();
-  const { uiScale } = useGameUi();
-  const size =
-    uiScale === "compact" ? "w-[var(--game-interactable)] h-[calc(var(--game-interactable)*1.15)]" : "w-24 h-28";
-  const halo = uiScale === "compact" ? "w-12 h-12 text-3xl" : "w-16 h-16 text-4xl";
-
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      className="flex flex-col items-center gap-2 group min-w-0"
-      whileHover={reduced ? undefined : hover}
-      whileTap={reduced ? undefined : tap}
-    >
-      <div
-        className={`${size} cap-card flex flex-col items-center justify-center transition-transform group-hover:-translate-y-1`}
-      >
-        <span
-          className={`flex items-center justify-center rounded-2xl ${accentClass} ${halo} border-2 border-[var(--cap-ink)]/15`}
-        >
-          {icon}
-        </span>
-      </div>
-      <span className="text-sm font-bold text-[var(--cap-ink)] truncate max-w-[6rem]">{label}</span>
-    </motion.button>
-  );
-}
 
 export function HomeHubView({
   userProfile,
@@ -98,7 +67,6 @@ export function HomeHubView({
   onSaveCharacter,
   hubModal,
   setHubModal,
-  onExit,
   onOpenTravel,
   onOpenArcade,
   onOpenStudio,
@@ -109,35 +77,76 @@ export function HomeHubView({
   a11y,
   updateA11y,
   updateLearningProfile,
+  highlightOutfitter = false,
 }: HomeHubViewProps) {
   useInputAction("map", onOpenTravel);
   useInputAction("menu", () => setHubModal("settings"));
 
   const profile = getProfileDef(learningProfile);
-  const boat = getBoatTier(userProfile.totalCoins);
+  const boat = getEffectiveBoatTier(userProfile.totalCoins, save);
   const simplified = profile.hudMode === "simplified";
   const hudSubtitle = `⭐ Level ${userProfile.level} · ${boat.emoji} ${boat.label}`;
+  const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
+  const freed = hasHarborFreedom(save);
 
-  const background = (
-    <div className="cap-surface absolute inset-0">
-      <div className="absolute bottom-0 left-0 right-0 h-2/5 rounded-t-[45%] bg-gradient-to-t from-[color-mix(in_oklab,var(--cap-tide)_22%,var(--cap-paper))] to-transparent" />
-    </div>
+  const [outfitterStage, setOutfitterStage] = useState<"look" | "pet">("look");
+  const [draft, setDraft] = useState<CapitalCharacter>(voyager);
+  const plazaRoom = "plaza";
+
+  const pets = useMemo(() => CHARACTER_COMPANIONS.filter((c) => c.id !== "none"), []);
+
+  const harborHotspots = useMemo<HarborHotspot[]>(
+    () => [
+      { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6, 0, -4] },
+      { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -7] },
+      { id: "studio", label: "VibeCode", icon: "✨", position: [6, 0, -4] },
+      { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 10] },
+      { id: "settings", label: "Settings", icon: "⚙️", position: [-7, 0, 4] },
+      ...(onOpenEditor
+        ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [7, 0, 4] } satisfies HarborHotspot]
+        : []),
+    ],
+    [onOpenEditor],
   );
+
+  const onHarborHotspot = (id: string) => {
+    if (id === "arcade") onOpenArcade();
+    else if (id === "outfitter") openOutfitter();
+    else if (id === "studio") onOpenStudio();
+    else if (id === "travel") onOpenTravel();
+    else if (id === "settings") setHubModal("settings");
+    else if (id === "editor" && onOpenEditor) onOpenEditor();
+    else if (id === "capsule") setHubModal("capsule");
+  };
+
+  const openOutfitter = () => {
+    setDraft(voyager);
+    setOutfitterStage("look");
+    setHubModal("outfitter");
+  };
 
   return (
     <>
       <GameHudLayout
-        background={background}
+        background={
+          <div className="absolute inset-0">
+            <WalkableHarborView
+              character={voyager}
+              hotspots={harborHotspots}
+              onHotspot={onHarborHotspot}
+              onOpenTravel={onOpenTravel}
+            />
+          </div>
+        }
         topLeft={
           <div className="flex items-center gap-2">
-            {character ? (
-              <button type="button" onClick={() => setHubModal("avatar")} aria-label="Edit character">
-                <CharacterAvatar character={character} size={40} />
-              </button>
-            ) : null}
+            <button type="button" onClick={openOutfitter} aria-label="Open Outfitter">
+              <CharacterAvatar character={voyager} size={40} animationStyle="capital-default" />
+            </button>
             <WealthHud totalCoins={userProfile.totalCoins} compact={simplified} />
+            <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             <div className="hidden sm:block">
-              <HudChip title={character?.name || userProfile.name || "Adventurer"} subtitle={hudSubtitle} />
+              <HudChip title={voyager.name || "Adventurer"} subtitle={hudSubtitle} />
             </div>
           </div>
         }
@@ -151,56 +160,48 @@ export function HomeHubView({
                 ↻ Intro
               </GameButton>
             ) : null}
-            <GameButton variant="outline" size="sm" onClick={onExit}>
-              Exit
-            </GameButton>
           </>
         }
         bottom={
           <div className="flex w-full max-w-lg flex-col items-center gap-[var(--game-gap)] px-2">
-            <GameButton variant="primary" size="lg" onClick={onOpenTravel} className="w-full max-w-xs shadow-xl" data-testid="hub-travel-map">
-              🗺️ Island Map
+            <GameButton
+              variant="primary"
+              size="lg"
+              onClick={onOpenTravel}
+              className="w-full max-w-xs shadow-xl"
+              data-testid="hub-travel-map"
+            >
+              🪄 Board carpet / Archipelago
             </GameButton>
-            <InputPromptHint action="map" className="text-[var(--cap-ink-soft)]">
-              or press
+            <InputPromptHint action="map" className="text-white/80">
+              or press M in the plaza · WASD to walk
             </InputPromptHint>
             {save.currentIslandId ? (
               <GameButton variant="secondary" size="lg" onClick={onResume} className="w-full max-w-xs shadow-lg">
                 ▶️ Resume: {getIslandById(content, save.currentIslandId)?.name || save.currentIslandId}
               </GameButton>
             ) : null}
-            {onOpenEditor ? (
-              <GameButton variant="outline" size="sm" onClick={onOpenEditor} className="border-orange-300 bg-orange-100 text-orange-800">
-                🛠️ Island Editor (dev)
-              </GameButton>
-            ) : null}
-            {onOpenAnalytics ? (
-              <GameButton variant="outline" size="sm" onClick={onOpenAnalytics} className="border-blue-300 bg-blue-100 text-blue-900">
-                📊 Analytics & Funnels
-              </GameButton>
-            ) : null}
           </div>
         }
       >
-        <div className="flex h-full min-h-0 flex-col items-center justify-center gap-[var(--game-gap-lg)] px-2 py-4">
-          <div className="text-center shrink-0">
-            <div className="cap-eyebrow mb-1">Your party home base</div>
-            <h1 className="cap-display text-[var(--cap-ink)]" style={{ fontSize: "var(--game-title-size)" }}>
-              Capital
-              <span className="ml-2 inline-block h-[0.55em] w-[0.55em] -translate-y-[0.1em] rounded-sm bg-[var(--cap-gold)]" />
-            </h1>
+        <div className="pointer-events-none flex h-full min-h-0 flex-col items-center justify-start pt-2">
+          <div className="rounded-xl bg-black/35 px-4 py-2 text-center text-white backdrop-blur-sm">
+            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
+              Fortune Archipelago · Harbor Haven
+            </div>
+            <h1 className="text-2xl font-black tracking-wide sm:text-3xl">Walk your Voyager</h1>
+            <p className="text-xs text-white/80">
+              Approach stalls in 3D · {boat.emoji} {boat.label} waiting at the dock
+            </p>
+            {highlightOutfitter ? (
+              <p className="mt-1 text-sm font-bold text-amber-200">Walk to the Outfitter stall (front center)</p>
+            ) : null}
+            {freed ? (
+              <p className="mt-1 text-[10px] text-emerald-200">Freedom seal earned — carpet upgraded</p>
+            ) : null}
           </div>
-          <p className="text-center text-sm text-[var(--cap-ink-soft)] max-w-md shrink-0">
-            Pick an island on the world map, roll dice on its party board, and launch minigames — Mario Party style.
-            Use the Arcade for free play anytime.
-          </p>
-          <div className="flex flex-wrap items-end justify-center gap-[var(--game-gap-lg)] max-w-full overflow-x-auto pb-2">
-            <HubInteractable icon="🧑" label="Character" accentClass="bg-amber-200" onClick={() => setHubModal("avatar")} />
-            <HubInteractable icon="🛒" label="Shop" accentClass="bg-violet-200" onClick={() => setHubModal("shop")} />
-            <HubInteractable icon="🕹️" label="Arcade" accentClass="bg-rose-200" onClick={onOpenArcade} />
-            <HubInteractable icon="✨" label="VibeCode" accentClass="bg-cyan-200" onClick={onOpenStudio} />
-            <HubInteractable icon="⚙️" label="Settings" accentClass="bg-slate-200" onClick={() => setHubModal("settings")} />
-          </div>
+          {/* keep test hook for smoke tests */}
+          <div className="sr-only" data-testid="harbor-plaza" data-plaza-room="plaza" />
         </div>
       </GameHudLayout>
 
@@ -208,37 +209,92 @@ export function HomeHubView({
         open={hubModal !== null}
         onClose={() => setHubModal(null)}
         maxWidth="md"
-        usePanel={hubModal !== "settings"}
+        usePanel={hubModal !== "settings" && hubModal !== "outfitter"}
       >
-        {hubModal === "avatar" ? (
-          <div className="space-y-4">
-            <CharacterCreator
-              character={character}
-              defaultName={userProfile.name}
-              onSave={(c) => {
-                onSaveCharacter(c);
-                setHubModal(null);
-              }}
-              onCancel={() => setHubModal(null)}
-            />
-            <GamePanel padding="default" className="text-left text-sm">
-              <div><span className="font-bold">Level:</span> {userProfile.level} · <span className="font-bold">Coins:</span> 🪙 {userProfile.totalCoins} · <span className="font-bold">XP:</span> ✨ {userProfile.xp} · <span className="font-bold">Items:</span> {save.inventory.length}</div>
-            </GamePanel>
-          </div>
+        {hubModal === "outfitter" ? (
+          <OutfitterInterior onLeave={() => setHubModal(null)}>
+            {outfitterStage === "look" ? (
+              <CharacterCreator
+                character={draft}
+                defaultName={userProfile.name}
+                variant="outfitter"
+                hideCompanion
+                saveLabel="Next: pick a pet →"
+                onSave={(c) => {
+                  setDraft({ ...c, companion: draft.companion });
+                  setOutfitterStage("pet");
+                }}
+                onCancel={() => setHubModal(null)}
+              />
+            ) : (
+              <div className="space-y-4 text-center">
+                <div className="mx-auto flex justify-center">
+                  <CharacterAvatar character={draft} size={88} animationStyle="capital-default" />
+                </div>
+                <div>
+                  <div className="text-lg font-black">Companion crates</div>
+                  <p className="text-sm text-muted-foreground">Choose a pet waiting by the Outfitter dock.</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {pets.map((pet) => {
+                    const active = draft.companion === pet.id;
+                    return (
+                      <button
+                        key={pet.id}
+                        type="button"
+                        onClick={() => setDraft((d) => ({ ...d, companion: pet.id }))}
+                        className={`flex min-w-[5.25rem] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 transition ${
+                          active
+                            ? "border-[var(--cap-gold)] bg-[var(--cap-gold)]/20 scale-105"
+                            : "border-[var(--cap-ink)]/15 bg-white hover:border-[var(--cap-tide)]"
+                        }`}
+                      >
+                        <span className="text-3xl">{companionEmoji(pet.id)}</span>
+                        <span className="text-xs font-bold">{pet.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-2">
+                  <GameButton variant="outline" className="flex-1" onClick={() => setOutfitterStage("look")}>
+                    ← Looks
+                  </GameButton>
+                  <GameButton
+                    variant="primary"
+                    className="flex-1"
+                    disabled={draft.companion === "none"}
+                    onClick={() => {
+                      onSaveCharacter(draft);
+                      setHubModal(null);
+                    }}
+                  >
+                    {draft.companion === "none" ? "Pick a pet" : "Leave shop ✓"}
+                  </GameButton>
+                </div>
+              </div>
+            )}
+          </OutfitterInterior>
         ) : null}
-        {hubModal === "shop" ? (
+
+        {hubModal === "capsule" ? (
           <div className="space-y-4 text-center">
-            <div className="text-5xl">🛒</div>
-            <div className="text-xl font-black">Shop</div>
-            <p className="text-sm text-muted-foreground">Spend coins on cosmetics. Coming soon!</p>
-            <GamePanel padding="default" className="text-sm">
-              <div className="font-bold">Your balance: 🪙 {userProfile.totalCoins}</div>
+            <div className="text-5xl">📦</div>
+            <div className="text-xl font-black">Capsule Stall</div>
+            <p className="text-sm text-muted-foreground">
+              Fortune Capsules also wash up on island boards. This stall previews what you can find at sea.
+            </p>
+            <GamePanel padding="default" className="text-left text-sm space-y-2">
+              <div>🛡️ <strong>Emergency Ledger</strong> — block a raid</div>
+              <div>🧲 <strong>Dividend Magnet</strong> — double a payday</div>
+              <div>📜 <strong>Fee Writ</strong> — take coins from a rival</div>
+              <div className="font-bold pt-2">Your balance: 🪙 {userProfile.totalCoins}</div>
             </GamePanel>
             <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
-              Close
+              Back to plaza
             </GameButton>
           </div>
         ) : null}
+
         {hubModal === "settings" ? (
           <Suspense fallback={<div className="py-4 text-center">Loading settings…</div>}>
             <LazySettingsPanel

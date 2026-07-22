@@ -13,6 +13,8 @@
 @import './islands/styles/animation-morphs.css';
 @import './islands/styles/capital-opening.css';
 @import './islands/styles/party-board.css';
+@import './islands/styles/galapagos-map.css';
+@import './islands/styles/harbor-plaza.css';
 /* Capital design language — imported last so its tokens win. */
 @import './styles/capital-theme.css';
 

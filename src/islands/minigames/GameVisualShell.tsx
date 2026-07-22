@@ -18,6 +18,8 @@ export type GameVisualShellProps = {
   icon?: string;
   complexity?: string;
   genre?: string;
+  /** Safe pop-culture wink under the title */
+  homage?: string;
   onClose?: () => void;
   children: ReactNode;
   className?: string;
@@ -29,6 +31,7 @@ export function GameVisualShell({
   icon,
   complexity,
   genre,
+  homage,
   onClose,
   children,
   className,
@@ -47,7 +50,8 @@ export function GameVisualShell({
           {icon ? <span className="text-2xl shrink-0">{icon}</span> : null}
           <div className="min-w-0">
             <div className="font-black truncate">{title}</div>
-            <div className="text-xs opacity-70 flex gap-2">
+            <div className="text-xs opacity-70 flex flex-wrap gap-x-2 gap-y-0.5">
+              {homage ? <span className="italic opacity-90">{homage}</span> : null}
               {genre ? <span>{genre}</span> : null}
               {complexity ? <span>· {complexity}</span> : null}
             </div>

@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "signal_city",
-      "name": "Signal City",
-      "description": "A neon-lit metropolis where teens learn to read market signals, build credit responsibly, and invest for the future.",
-      "icon": "🌃",
+      "name": "Phosphor Reef",
+      "description": "1970s wireframe seas — glowing green markets. Navigate inflation spikes while your FUEL gauge tracks cashflow.",
+      "icon": "🟢",
       "provenance": {
         "learning_objectives": [
           "Understand how credit scores are built and why they matter",

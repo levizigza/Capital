@@ -1,6 +1,6 @@
 import type { IslandSaveV1 } from "@/islands/types";
 
-export type QAView = "home" | "travel" | "island";
+export type QAView = "home" | "travel" | "island" | "voyage" | "arcade" | "studio";
 
 export type QABridge = {
   getView: () => QAView;

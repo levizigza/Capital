@@ -84,6 +84,7 @@ export const IslandNpcSchema = z.object({
   icon: z.string(),
   areaId: z.string(),
   dialogueGraphId: z.string(),
+  tagline: z.string().optional(),
 });
 
 export const IslandAreaSchema = z.object({
@@ -112,6 +113,7 @@ export const IslandMinigameSchema = z.object({
   complexity: z.enum(["easy", "medium", "hard"]).optional(),
   visualShell: z.string().optional(),
   estimatedMinutes: z.number().optional(),
+  homage: z.string().optional(),
 });
 
 export const ContentProvenanceSchema = z.object({

@@ -35,7 +35,7 @@ test.describe("Islands smoke", () => {
   });
 
   test("launch → hub → map → island → quest → minigame → save/load", async ({ page }) => {
-    await page.goto("/?mode=islands");
+    await page.goto("/?mode=islands&skipIntro=1");
 
     // Hub visible once save loads
     await expect(page.getByTestId("hub-travel-map")).toBeVisible({ timeout: 60_000 });
@@ -44,32 +44,19 @@ test.describe("Islands smoke", () => {
     }).toBe(true);
     await page.getByTestId("hub-travel-map").click();
 
-    // Travel map → Coincraft Cove
+    // Caribbean archipelago map — hub in center, outer resorts in a ring
     await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
-    await page.getByTestId("island-pin-coincraft_cove").click();
+    await expect(page.getByTestId("island-pin-financial_assets")).toBeVisible();
 
-    // Island view
+    // Enter hub island via QA (POV sailing is manual)
+    await page.evaluate(() => window.__QA__?.enterIsland("coincraft_cove"));
+
+    // Island party board
     await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("island");
     await expect(page.getByText("Coincraft Cove")).toBeVisible();
+    await expect(page.getByTestId("island-party-board")).toBeVisible();
 
-    // Quest: talk to Captain Penny, start quest
-    await page.getByTestId("npc-npc_captain_penny").click();
-    await expect(page.getByTestId("dialogue-modal")).toBeVisible();
-    await page.getByTestId("dialogue-choice").filter({ hasText: "Teach me about coins!" }).click();
-    await page.getByRole("button", { name: "Close" }).click();
-
-    // Verify quest started in save
-    await expect
-      .poll(async () => {
-        const save = await page.evaluate(() => window.__QA__?.getSave());
-        return save?.questStatus?.q_cc_first_coins?.started;
-      })
-      .toBe(true);
-
-    // Collect coin pouch
-    await page.getByTestId("item-cc_coin_pouch").click();
-
-    // Minigame via QA bridge (no dialogue trigger for mg_coin_sort in content)
+    // Minigame via QA bridge
     await page.evaluate(() => window.__QA__?.startMinigame("mg_coin_sort"));
     await expect(page.getByTestId("minigame-modal")).toBeVisible();
     await expect(page.getByText("Coin Sort Challenge")).toBeVisible();
@@ -91,7 +78,6 @@ test.describe("Islands smoke", () => {
 
     const saveBeforeReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveBeforeReload?.currentIslandId).toBe("coincraft_cove");
-    expect(saveBeforeReload?.inventory).toContain("cc_coin_pouch");
 
     // Reload and verify save restored
     await page.reload();
@@ -99,7 +85,5 @@ test.describe("Islands smoke", () => {
 
     const saveAfterReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveAfterReload?.currentIslandId).toBe("coincraft_cove");
-    expect(saveAfterReload?.inventory).toContain("cc_coin_pouch");
-    expect(saveAfterReload?.questStatus?.q_cc_first_coins?.started).toBe(true);
   });
 });

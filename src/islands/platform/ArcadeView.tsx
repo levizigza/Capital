@@ -35,6 +35,7 @@ const GENRE_LABEL: Record<CatalogGame["genre"], string> = {
   quiz: "❓ Quiz",
   strategy: "♟️ Strategy",
   exploration: "🗺️ Explore",
+  party: "🎲 Party",
 };
 
 const SHELL_BADGE: Record<CatalogGame["visualShell"], string> = {

@@ -1,5 +1,6 @@
 import { IslandsContentSchema } from "../schemas";
 import type { IslandDefinition, IslandsContent } from "../types";
+import { enrichIslandWithPopCulture } from "../moneyPopCulture";
 
 // Auto-discover all *.islands.json files in this directory at build time
 const modules = import.meta.glob("./*.islands.json", { eager: true });
@@ -15,7 +16,7 @@ export function loadIslandsContent(): IslandsContent {
     try {
       const data = (raw as any).default ?? raw;
       const parsed = IslandsContentSchema.parse(data);
-      allIslands.push(...parsed.islands);
+      allIslands.push(...parsed.islands.map(enrichIslandWithPopCulture));
     } catch (err) {
       console.error(`[islands][loader] Failed to validate ${path}:`, err);
     }
