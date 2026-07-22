@@ -1,7 +1,7 @@
 // Service Worker for offline functionality
 // v9: GitHub Pages–safe paths (scope-relative, not site-root).
-const CACHE_NAME = "capital-v9";
-const RUNTIME_CACHE = "capital-runtime-v9";
+const CACHE_NAME = "capital-v10";
+const RUNTIME_CACHE = "capital-runtime-v10";
 
 function scopeUrl(path) {
   // registration.scope ends with /

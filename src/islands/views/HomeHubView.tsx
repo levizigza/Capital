@@ -29,6 +29,7 @@ import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { ensureLedger } from "../voyagerLedger";
 import { OutfitterInterior } from "./OutfitterBuilding";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
+import { HUB_ISLAND_ID } from "../worldMapLayout";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -49,6 +50,8 @@ export type HomeHubViewProps = {
   onOpenStudio: () => void;
   onReplayIntro?: () => void;
   onResume: () => void;
+  /** Open the Harbor Fortune Party board (2D) — optional side activity. */
+  onPlayHarborBoard?: () => void;
   onOpenEditor?: () => void;
   onOpenAnalytics?: () => void;
   a11y: AccessibilitySettings;
@@ -72,6 +75,7 @@ export function HomeHubView({
   onOpenStudio,
   onReplayIntro,
   onResume,
+  onPlayHarborBoard,
   onOpenEditor,
   onOpenAnalytics,
   a11y,
@@ -176,9 +180,19 @@ export function HomeHubView({
             <InputPromptHint action="map" className="text-white/80">
               or press M in the plaza · WASD to walk
             </InputPromptHint>
-            {save.currentIslandId ? (
+            {save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID ? (
               <GameButton variant="secondary" size="lg" onClick={onResume} className="w-full max-w-xs shadow-lg">
-                ▶️ Resume: {getIslandById(content, save.currentIslandId)?.name || save.currentIslandId}
+                ▶️ Resume voyage: {getIslandById(content, save.currentIslandId)?.name || save.currentIslandId}
+              </GameButton>
+            ) : null}
+            {onPlayHarborBoard ? (
+              <GameButton
+                variant="ghost"
+                size="sm"
+                onClick={onPlayHarborBoard}
+                className="w-full max-w-xs text-white/90"
+              >
+                🎲 Fortune Party board (Harbor practice)
               </GameButton>
             ) : null}
           </div>

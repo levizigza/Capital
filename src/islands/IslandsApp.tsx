@@ -301,7 +301,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
         setActiveIslandId(islandId);
         setVoyageTargetId(null);
-        setView("island");
+        // Harbor Haven is the 3D walkable plaza — never dump players on the old 2D party board by default.
+        if (islandId === HUB_ISLAND_ID) {
+          setView("home");
+        } else {
+          setView("island");
+        }
       };
 
       // Dissolve at mid-point so the era theme + morph land together (skip if reduced motion / no FX).
@@ -1288,7 +1293,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onReplayIntro={onReplayIntro}
             onOpenAnalytics={() => setShowAnalytics(true)}
             onResume={() => {
-              setActiveIslandId(save.currentIslandId || null);
+              const id = save.currentIslandId || HUB_ISLAND_ID;
+              setActiveIslandId(id);
+              // Hub resume stays in 3D Harbor plaza.
+              setView(id === HUB_ISLAND_ID ? "home" : "island");
+            }}
+            onPlayHarborBoard={() => {
+              setActiveIslandId(HUB_ISLAND_ID);
               setView("island");
             }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
