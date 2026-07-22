@@ -1,11 +1,13 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Sky, Text } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import { MoneyCarpet } from "./MoneyCarpet";
-import { EraIslandMesh, OceanPlane } from "./EraIslandMesh";
+import { EraIslandMesh } from "./EraIslandMesh";
 import { getEraLook3D } from "./eraLooks";
+import { WorldLighting } from "./WorldLighting";
+import { OceanWater } from "./OceanWater";
 import { BASE_VOYAGER } from "../character";
 import {
   hasSeenCapitalIntro,
@@ -24,7 +26,7 @@ const FLIGHT_SECS = 11;
 
 /**
  * First-person money-carpet opening — you fly toward Harbor Haven (first island).
- * Replaces the 2D title mural as the boot experience.
+ * Plays after the Capital title mural.
  */
 function FlightPov({ onLanded }: { onLanded: () => void }) {
   const carpet = useRef<THREE.Group>(null);
@@ -32,7 +34,6 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
   const done = useRef(false);
   const { camera } = useThree();
 
-  // Path: open ocean → approach Harbor island
   const start = useMemo(() => new THREE.Vector3(0, 4.5, 55), []);
   const end = useMemo(() => new THREE.Vector3(0, 3.2, 8), []);
 
@@ -40,12 +41,10 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
     if (done.current) return;
     progress.current = Math.min(1, progress.current + dt / FLIGHT_SECS);
     const t = progress.current;
-    // ease in-out
     const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
     const pos = new THREE.Vector3().lerpVectors(start, end, e);
     pos.y += Math.sin(t * Math.PI * 4) * 0.35 + Math.sin(performance.now() / 400) * 0.12;
-    // slight bank / weave
     pos.x += Math.sin(t * Math.PI * 2) * 1.8;
 
     const heading = Math.atan2(end.x - start.x, end.z - start.z) + Math.sin(t * 6) * 0.08;
@@ -57,13 +56,12 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
       carpet.current.rotation.x = -0.08 + Math.sin(t * 5) * 0.03;
     }
 
-    // First-person: sit on the carpet looking forward
     const eye = pos.clone();
     eye.y += 1.15;
     eye.add(new THREE.Vector3(Math.sin(heading) * -0.15, 0, Math.cos(heading) * -0.15));
     camera.position.copy(eye);
-    const look = pos.clone().add(new THREE.Vector3(Math.sin(heading) * 12, 0.4, Math.cos(heading) * 12));
-    camera.lookAt(look);
+    const lookAt = pos.clone().add(new THREE.Vector3(Math.sin(heading) * 12, 0.4, Math.cos(heading) * 12));
+    camera.lookAt(lookAt);
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -81,17 +79,20 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
 function OpeningWorld({ onLanded }: { onLanded: () => void }) {
   return (
     <>
-      <color attach="background" args={[LOOK.skyTop]} />
-      <fog attach="fog" args={[LOOK.fog, 18, 90]} />
-      <ambientLight intensity={0.55} />
-      <directionalLight castShadow position={[30, 50, 20]} intensity={1.3} color={LOOK.sunColor} />
-      <Sky sunPosition={[80, 25, 40]} turbidity={5} rayleigh={1.1} />
-      <OceanPlane color={LOOK.sea} shading={LOOK.shading} />
+      <WorldLighting look={{ ...LOOK, fogNear: 18, fogFar: 95 }} shadowMapSize={1024} />
+      <OceanWater color={LOOK.sea} shading={LOOK.shading} />
 
-      {/* First island — Harbor Haven ahead */}
-      <EraIslandMesh look={LOOK} position={[0, 0, -6]} scale={2.4} selected />
+      <EraIslandMesh
+        look={LOOK}
+        seed="harbor-haven"
+        position={[0, 0, -6]}
+        scale={2.6}
+        detail="near"
+        showPier
+        selected
+      />
       <Text
-        position={[0, 5.2, -6]}
+        position={[0, 5.6, -6]}
         fontSize={0.85}
         color="#16283b"
         anchorX="center"
@@ -101,7 +102,7 @@ function OpeningWorld({ onLanded }: { onLanded: () => void }) {
         Harbor Haven
       </Text>
       <Text
-        position={[0, 4.2, -6]}
+        position={[0, 4.55, -6]}
         fontSize={0.35}
         color="#f4a629"
         anchorX="center"
@@ -111,10 +112,34 @@ function OpeningWorld({ onLanded }: { onLanded: () => void }) {
         Your first island
       </Text>
 
-      {/* Distant era islands (flavor on the horizon) */}
-      <EraIslandMesh look={getEraLook3D("era-1980s")} position={[-28, 0, -40]} scale={1.2} />
-      <EraIslandMesh look={getEraLook3D("era-1990s")} position={[32, 0, -48]} scale={1.4} />
-      <EraIslandMesh look={getEraLook3D("era-1960s")} position={[18, 0, -70]} scale={1.1} />
+      <EraIslandMesh
+        look={getEraLook3D("era-1980s")}
+        seed="horizon-80s"
+        position={[-28, 0, -40]}
+        scale={1.4}
+        detail="far"
+      />
+      <EraIslandMesh
+        look={getEraLook3D("era-1990s")}
+        seed="horizon-90s"
+        position={[32, 0, -48]}
+        scale={1.6}
+        detail="far"
+      />
+      <EraIslandMesh
+        look={getEraLook3D("era-1960s")}
+        seed="horizon-60s"
+        position={[18, 0, -70]}
+        scale={1.2}
+        detail="far"
+      />
+      <EraIslandMesh
+        look={getEraLook3D("era-2000s")}
+        seed="horizon-00s"
+        position={[-22, 0, -62]}
+        scale={1.5}
+        detail="far"
+      />
 
       <FlightPov onLanded={onLanded} />
     </>
@@ -124,6 +149,9 @@ function OpeningWorld({ onLanded }: { onLanded: () => void }) {
 export function CarpetOpeningIntro({ onComplete }: Props) {
   const [phase, setPhase] = useState<"fly" | "land">("fly");
   const finishing = useRef(false);
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -159,7 +187,8 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
     >
       <Canvas
         shadows
-        camera={{ position: [0, 5, 55], fov: 68, near: 0.1, far: 200 }}
+        dpr={reduced ? [1, 1] : [1, 1.5]}
+        camera={{ position: [0, 5, 55], fov: 68, near: 0.1, far: 220 }}
         className="absolute inset-0"
       >
         <Suspense fallback={null}>

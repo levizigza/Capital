@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Sky, Stars, Text } from "@react-three/drei";
+import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { UserProfile } from "@/App";
@@ -17,7 +17,9 @@ import {
 import type { CapitalCharacter } from "../character";
 import { getEraLook3D, type EraLook3D } from "./eraLooks";
 import { MoneyCarpet } from "./MoneyCarpet";
-import { EraIslandMesh, OceanPlane } from "./EraIslandMesh";
+import { EraIslandMesh } from "./EraIslandMesh";
+import { WorldLighting } from "./WorldLighting";
+import { OceanWater } from "./OceanWater";
 
 type Props = {
   userProfile: UserProfile;
@@ -169,32 +171,23 @@ function WorldScene({
 }) {
   return (
     <>
-      <color attach="background" args={[look.skyTop]} />
-      <fog attach="fog" args={[look.fog, look.fogNear, look.fogFar]} />
-      <ambientLight intensity={look.ambientIntensity} />
-      <directionalLight
-        castShadow
-        position={[40, 60, 20]}
-        intensity={1.15}
-        color={look.sunColor}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-      />
-      {look.shading === "vector" || look.shading === "wire" ? (
-        <Stars radius={120} depth={40} count={2500} factor={3} saturation={0} fade speed={0.6} />
-      ) : (
-        <Sky sunPosition={[80, 40, 40]} turbidity={6} rayleigh={look.shading === "neon" ? 0.4 : 1.2} />
-      )}
-      <OceanPlane color={look.sea} shading={look.shading} />
-      {world.map((wi) => (
-        <EraIslandMesh
-          key={wi.node.island.id}
-          look={wi.look}
-          position={[wi.pos.x, 0, wi.pos.z]}
-          scale={1.4}
-          selected={targetId === wi.node.island.id}
-        />
-      ))}
+      <WorldLighting look={look} shadowMapSize={1024} />
+      <OceanWater color={look.sea} shading={look.shading} />
+      {world.map((wi) => {
+        const isTarget = targetId === wi.node.island.id;
+        return (
+          <EraIslandMesh
+            key={wi.node.island.id}
+            look={wi.look}
+            seed={wi.node.island.id}
+            position={[wi.pos.x, 0, wi.pos.z]}
+            scale={isTarget ? 1.85 : 1.45}
+            detail={isTarget ? "near" : "far"}
+            showPier={isTarget}
+            selected={isTarget}
+          />
+        );
+      })}
       <FlightRig world={world} targetId={targetId} character={character} onArrive={onArrive} />
       <Text
         position={[0, 8, 0]}
@@ -273,21 +266,25 @@ export function CarpetFlightView({
   if (phase === "dock") {
     return (
       <div className="relative h-full w-full overflow-hidden bg-[#0c1622]">
-        <Canvas shadows camera={{ position: [0, 4, 10], fov: 55 }} className="absolute inset-0">
+        <Canvas shadows dpr={[1, 1.5]} camera={{ position: [0, 4, 10], fov: 55 }} className="absolute inset-0">
           <Suspense fallback={null}>
-            <color attach="background" args={[homeLook.skyTop]} />
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[5, 8, 4]} intensity={1.2} castShadow />
-            <Sky sunPosition={[40, 20, 30]} />
-            <OceanPlane color={homeLook.sea} shading={homeLook.shading} />
+            <WorldLighting look={homeLook} contactShadows shadowMapSize={1024} />
+            <OceanWater color={homeLook.sea} shading={homeLook.shading} size={200} />
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 2]} receiveShadow>
               <circleGeometry args={[6, 32]} />
-              <meshStandardMaterial color={homeLook.shore} />
+              <meshStandardMaterial color={homeLook.shore} roughness={0.9} />
             </mesh>
-            <group position={[0, 0.4, 0]}>
+            <group position={[0, 0.45, 0]}>
               <MoneyCarpet character={character ?? save.character} flying={false} />
             </group>
-            <EraIslandMesh look={homeLook} position={[0, 0, -8]} scale={1.2} />
+            <EraIslandMesh
+              look={homeLook}
+              seed={currentIsland.id}
+              position={[0, 0, -8]}
+              scale={1.5}
+              detail="near"
+              showPier
+            />
           </Suspense>
         </Canvas>
         <button
@@ -321,7 +318,7 @@ export function CarpetFlightView({
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
-      <Canvas shadows camera={{ position: [0, 6, 12], fov: 60 }} className="absolute inset-0">
+      <Canvas shadows dpr={[1, 1.5]} camera={{ position: [0, 6, 12], fov: 60 }} className="absolute inset-0">
         <Suspense fallback={null}>
           <WorldScene
             world={world}

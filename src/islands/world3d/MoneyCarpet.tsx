@@ -12,17 +12,21 @@ type Props = {
   hideRider?: boolean;
 };
 
-/** Money magic carpet — bill-green rug with gold trim + seated Voyager. */
+/** Money magic carpet — thick bill-green rug with gold trim + engraved seal. */
 export function MoneyCarpet({ character, flying = true, hideRider = false }: Props) {
   const group = useRef<THREE.Group>(null);
+
   const fringe = useMemo(() => {
     const g = new THREE.Group();
-    for (let i = 0; i < 8; i++) {
-      const m = new THREE.Mesh(
-        new THREE.BoxGeometry(0.04, 0.02, 0.35),
-        new THREE.MeshStandardMaterial({ color: "#c9a227", roughness: 0.4 }),
-      );
-      m.position.set(-0.7 + i * 0.2, 0.02, 0.55);
+    const mat = new THREE.MeshStandardMaterial({ color: "#c9a227", roughness: 0.4, metalness: 0.35 });
+    for (let i = 0; i < 12; i++) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, 0.42), mat);
+      m.position.set(-0.85 + i * 0.155, 0.03, 0.62);
+      g.add(m);
+    }
+    for (let i = 0; i < 12; i++) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, 0.42), mat);
+      m.position.set(-0.85 + i * 0.155, 0.03, -0.62);
       g.add(m);
     }
     return g;
@@ -38,23 +42,45 @@ export function MoneyCarpet({ character, flying = true, hideRider = false }: Pro
 
   return (
     <group ref={group}>
-      {/* carpet body — dollar aesthetic */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow castShadow>
-        <planeGeometry args={[1.6, 1.1]} />
-        <meshStandardMaterial color="#1a5436" roughness={0.65} metalness={0.15} side={THREE.DoubleSide} />
+      {/* Thick rug body */}
+      <mesh position={[0, 0.04, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.75, 0.08, 1.2]} />
+        <meshStandardMaterial color="#1a5436" roughness={0.7} metalness={0.12} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
-        <planeGeometry args={[1.35, 0.85]} />
-        <meshStandardMaterial color="#2d6a4f" roughness={0.55} side={THREE.DoubleSide} />
+      {/* Inner field */}
+      <mesh position={[0, 0.085, 0]} receiveShadow>
+        <boxGeometry args={[1.45, 0.02, 0.95]} />
+        <meshStandardMaterial color="#2d6a4f" roughness={0.55} metalness={0.08} />
       </mesh>
-      {/* center seal */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <circleGeometry args={[0.22, 24]} />
-        <meshStandardMaterial color="#c9a227" roughness={0.35} metalness={0.4} side={THREE.DoubleSide} />
+      {/* Gold border inlay */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
+        <ringGeometry args={[0.62, 0.7, 32]} />
+        <meshStandardMaterial color="#c9a227" roughness={0.35} metalness={0.45} side={THREE.DoubleSide} />
       </mesh>
+      {/* Engraved center seal */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.105, 0]}>
+        <circleGeometry args={[0.28, 28]} />
+        <meshStandardMaterial color="#c9a227" roughness={0.3} metalness={0.5} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.11, 0]}>
+        <ringGeometry args={[0.16, 0.22, 24]} />
+        <meshStandardMaterial color="#0f3d28" roughness={0.5} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Corner ornaments */}
+      {[
+        [-0.65, 0.4],
+        [0.65, 0.4],
+        [-0.65, -0.4],
+        [0.65, -0.4],
+      ].map(([x, z], i) => (
+        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.1, z]}>
+          <circleGeometry args={[0.08, 12]} />
+          <meshStandardMaterial color="#c9a227" roughness={0.4} metalness={0.4} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
       <primitive object={fringe} />
       {!hideRider ? (
-        <group position={[0, 0.05, 0.05]}>
+        <group position={[0, 0.12, 0.05]}>
           <VoyagerMesh character={character} pose="sit" scale={0.85} />
         </group>
       ) : null}
