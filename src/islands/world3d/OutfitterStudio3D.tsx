@@ -71,7 +71,12 @@ function FittingRoom({ character }: { character: CapitalCharacter }) {
       </mesh>
 
       <group ref={spin} position={[0, 0.02, 0.15]}>
-        <VoyagerMesh character={character} pose="stand" scale={1.25} />
+        <VoyagerMesh
+          key={`${character.base}-${character.color}-${character.accessory}-${character.companion}`}
+          character={character}
+          pose="stand"
+          scale={1.25}
+        />
       </group>
     </>
   );
