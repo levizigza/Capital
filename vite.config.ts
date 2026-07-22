@@ -12,6 +12,16 @@ import { localSparkMockPlugin } from "./vite-local-spark-mock";
 const projectRoot =
   process.env.PROJECT_ROOT || dirname(fileURLToPath(import.meta.url));
 
+/** GitHub Pages project site: https://levizigza.github.io/Capital/ */
+const pagesRepo =
+  process.env.GITHUB_REPOSITORY?.split("/")[1] ||
+  process.env.VITE_PAGES_REPO ||
+  "Capital";
+const pagesBase =
+  process.env.GITHUB_PAGES === "true" || process.env.VITE_PAGES_BASE
+    ? process.env.VITE_PAGES_BASE || `/${pagesRepo}/`
+    : "/";
+
 /**
  * Runs last (enforce: "post") and uses configResolved to forcibly
  * override whatever the Spark plugin wrote into server.hmr / optimizeDeps,
@@ -43,6 +53,8 @@ function localDevOverrides(): Plugin {
 // https://vite.dev/config/
 /// <reference types="vitest/config" />
 export default defineConfig({
+  base: pagesBase,
+
   test: {
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],

@@ -16,6 +16,16 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
   })
 }
 
+// Production (incl. GitHub Pages): register SW under BASE_URL so /Capital/ works.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    const swUrl = `${import.meta.env.BASE_URL}sw.js`
+    void navigator.serviceWorker
+      .register(swUrl, { scope: import.meta.env.BASE_URL })
+      .catch((err) => console.log("SW registration failed:", err))
+  })
+}
+
 const isPixelPreview =
   import.meta.env.DEV &&
   new URLSearchParams(window.location.search).get("pixelPreview") === "1";

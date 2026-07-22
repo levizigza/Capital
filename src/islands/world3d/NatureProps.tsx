@@ -11,7 +11,7 @@ import * as THREE from "three";
 import type { EraLook3D } from "./eraLooks";
 import type { PropInstance } from "./islandTerrain";
 
-const KENNEY_DIR = "/assets/3d/kenney/";
+const KENNEY_DIR = `${import.meta.env.BASE_URL}assets/3d/kenney/`;
 
 function ProceduralPalm({ look, scale }: { look: EraLook3D; scale: number }) {
   const trunk = "#6b4a2a";

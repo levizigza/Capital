@@ -75,14 +75,14 @@ export function CreditsScreen() {
 
         <div className="mb-4 flex flex-wrap gap-2">
           <a
-            href="/CREDITS.txt"
+            href={`${import.meta.env.BASE_URL}CREDITS.txt`}
             download="CREDITS.txt"
             className="inline-flex min-h-9 items-center rounded-xl border border-gray-200 bg-white/90 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50"
           >
             Download CREDITS.txt
           </a>
           <a
-            href="/THIRD_PARTY_LICENSES.txt"
+            href={`${import.meta.env.BASE_URL}THIRD_PARTY_LICENSES.txt`}
             download="THIRD_PARTY_LICENSES.txt"
             className="inline-flex min-h-9 items-center rounded-xl border border-gray-200 bg-white/90 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50"
           >

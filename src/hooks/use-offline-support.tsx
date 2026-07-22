@@ -101,9 +101,8 @@ export function useOfflineSupport() {
         registration.active.postMessage({
           type: 'CACHE_URLS',
           urls: [
-            // Add any additional URLs you want to cache
-            '/',
-            '/index.html'
+            import.meta.env.BASE_URL,
+            `${import.meta.env.BASE_URL}index.html`,
           ]
         })
       }
