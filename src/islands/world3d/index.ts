@@ -8,3 +8,5 @@ export { EraIslandMesh } from "./EraIslandMesh";
 export { WorldLighting } from "./WorldLighting";
 export { OceanWater, OceanPlane } from "./OceanWater";
 export { IslandTitle } from "./IslandTitle";
+export { ArchipelagoMap3D } from "./ArchipelagoMap3D";
+export { DioramaIslandMesh } from "./DioramaIslandMesh";
