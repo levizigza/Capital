@@ -44,7 +44,7 @@ export const CHARACTER_ACCESSORIES: CharacterOption[] = [
   { id: "cap", emoji: "🎩", label: "Top Hat" },
   { id: "goggles", emoji: "🧐", label: "Gold Monocle" },
   { id: "bandana", emoji: "🎀", label: "Bow Tie" },
-  { id: "headset", emoji: "🎧", label: "Headphones" },
+  { id: "headset", emoji: "🎧", label: "Signal Phones" },
   { id: "lantern", emoji: "✨", label: "Sparkle Stamp" },
   { id: "cape", emoji: "🦸", label: "Fortune Cape" },
   { id: "scarf", emoji: "🧣", label: "Ledger Scarf" },
@@ -58,7 +58,7 @@ export type OutfitCategoryId = "body" | "coat" | "gear";
 export const OUTFIT_CATEGORIES: { id: OutfitCategoryId; label: string; hint: string }[] = [
   { id: "body", label: "Body", hint: "Your Money Mascot shape — who you are" },
   { id: "coat", label: "Coat", hint: "Color tint for that body" },
-  { id: "gear", label: "Gear", hint: "Things you wear: hat, headphones, cape, scarf…" },
+  { id: "gear", label: "Gear", hint: "Things you wear: hat, Signal Phones, cape, scarf…" },
 ];
 
 export const CHARACTER_COMPANIONS: CharacterOption[] = [
