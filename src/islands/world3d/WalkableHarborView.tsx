@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Billboard, Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -70,7 +70,7 @@ function Player({
   npcPositions: { id: string; name: string; line: string; position: [number, number, number] }[];
   onNear: (id: string | null) => void;
   onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
-  playerPosOut: React.MutableRefObject<THREE.Vector3>;
+  playerPosOut: MutableRefObject<THREE.Vector3>;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
