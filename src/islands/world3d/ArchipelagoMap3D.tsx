@@ -1,6 +1,5 @@
 import { Suspense, useMemo, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { IslandSaveV1 } from "../types";
@@ -72,17 +71,6 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
       <WorldLighting look={{ ...LOOK, fogNear: 25, fogFar: 55 }} contactShadows={false} shadowMapSize={1024} />
       <OceanWater color="#0e7490" shading="harbor" size={120} calm />
       <MapCamera />
-
-      <Text
-        position={[0, 8.2, -2]}
-        fontSize={0.55}
-        color="#fef3c7"
-        anchorX="center"
-        outlineWidth={0.03}
-        outlineColor="#0c1622"
-      >
-        Fortune Archipelago · 3D Era Map
-      </Text>
 
       {/* Route ribbons hub → outer */}
       {layout.outer.map((node) => {
@@ -176,20 +164,12 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
         </Suspense>
       </Canvas>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/50 to-transparent px-4 pb-12 pt-3 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-emerald-100/90">
-          Fortune Archipelago
-        </div>
-        <h1 className="font-[Fraunces,Georgia,serif] text-2xl font-black text-white drop-shadow sm:text-3xl">
-          Era Isles · 3D Map
-        </h1>
-        <p className="mx-auto mt-1 max-w-md text-xs font-medium text-white/85">
-          Tap a floating island diorama to board your money carpet
-        </p>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/35 to-transparent px-4 pb-8 pt-2 text-center">
+        <p className="text-[11px] font-semibold text-white/80">Tap an island to fly</p>
       </div>
 
       {hint ? (
-        <div className="pointer-events-none absolute bottom-24 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/60 px-4 py-1.5 text-xs font-bold text-white">
+        <div className="pointer-events-none absolute bottom-20 left-1/2 z-20 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1 text-[11px] font-bold text-white">
           Charting course…
         </div>
       ) : null}

@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { Billboard, Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
@@ -32,7 +32,7 @@ type Props = {
 
 const LOOK = getEraLook3D("capital-default");
 const SPEED = 6.5;
-const INTERACT_R = 4.4;
+const INTERACT_R = 2.85;
 const PLAZA_R = 16;
 
 function Player({
@@ -109,37 +109,46 @@ function Player({
     }
     p.y = 0.02;
 
-    // Camera stays behind the character using camYaw (stable on S / ArrowDown).
-    const back = 8;
-    const ideal = new THREE.Vector3(
-      p.x - Math.sin(camYaw.current) * back,
-      4.8,
-      p.z - Math.cos(camYaw.current) * back,
-    );
-    camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
-    camera.lookAt(p.x, 1.25, p.z);
-
-    // Prefer the building's doorfront (toward plaza center) for interact distance.
+    // Camera stays behind the character; pull back slightly when near a stall
+    // so the facade doesn't swallow the frame.
     let near: string | null = null;
     let best = INTERACT_R;
+    let nearDoor: { x: number; z: number } | null = null;
     for (const h of hotspots) {
       const hx = h.position[0];
       const hz = h.position[2];
       const len = Math.hypot(hx, hz) || 1;
-      // Door sits on the plaza-facing side of the stall
-      const doorX = hx - (hx / len) * 1.15;
-      const doorZ = hz - (hz / len) * 1.15;
+      const doorX = hx - (hx / len) * 1.35;
+      const doorZ = hz - (hz / len) * 1.35;
       const d = Math.hypot(doorX - p.x, doorZ - p.z);
       if (d < best) {
         best = d;
         near = h.id;
+        nearDoor = { x: doorX, z: doorZ };
       }
     }
     onNear(near);
+
+    const back = near ? 10.5 : 8.5;
+    const camH = near ? 5.4 : 4.9;
+    const ideal = new THREE.Vector3(
+      p.x - Math.sin(camYaw.current) * back,
+      camH,
+      p.z - Math.cos(camYaw.current) * back,
+    );
+    // Nudge camera off-axis from the door so the building isn't dead-center
+    if (nearDoor) {
+      const side = Math.sin(camYaw.current + Math.PI / 2) * 1.4;
+      const sideZ = Math.cos(camYaw.current + Math.PI / 2) * 1.4;
+      ideal.x += side;
+      ideal.z += sideZ;
+    }
+    camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
+    camera.lookAt(p.x, near ? 1.55 : 1.25, p.z);
   });
 
   return (
-    <group ref={group} position={[0, 0, 7]} rotation={[0, Math.PI, 0]}>
+    <group ref={group} position={[0, 0, 3]} rotation={[0, Math.PI, 0]}>
       <VoyagerMesh character={character} pose={moving.current ? "run" : "stand"} scale={1} />
     </group>
   );
@@ -385,12 +394,12 @@ function PlazaScene({
       {/* High billboard title — clear of canopy */}
       <IslandTitle
         title="Harbor Haven"
-        subtitle="Your first island · Fortune Archipelago"
-        height={10.2}
+        subtitle="Fortune Archipelago"
+        height={9.5}
         accent={LOOK.accent}
       />
 
-      <WoodenPier position={[0, 0.05, 12.5]} />
+      <WoodenPier position={[0, 0.05, 14.2]} />
 
       {/* Seawall + lanterns */}
       {Array.from({ length: 28 }).map((_, i) => {
@@ -438,36 +447,39 @@ function PlazaScene({
         // Face the door toward the plaza center so entrances are readable.
         const yaw = Math.atan2(-h.position[0], -h.position[2]);
         return (
-          <group
-            key={h.id}
-            position={h.position}
-            rotation={[0, yaw, 0]}
-            onClick={(e) => {
-              e.stopPropagation();
-              onHotspot(h.id);
-            }}
-            onPointerOver={() => {
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={() => {
-              document.body.style.cursor = "auto";
-            }}
-          >
-            <HarborBuilding
-              label={h.label}
-              accent={LOOK.accent}
-              body={buildingColors[idx % buildingColors.length]}
-            />
-            <Text
-              position={[0, 3.15, 0]}
-              fontSize={0.3}
-              color="#16283b"
-              anchorX="center"
-              outlineWidth={0.02}
-              outlineColor="#ffffff"
+          <group key={h.id} position={h.position}>
+            <group
+              rotation={[0, yaw, 0]}
+              onClick={(e) => {
+                e.stopPropagation();
+                onHotspot(h.id);
+              }}
+              onPointerOver={() => {
+                document.body.style.cursor = "pointer";
+              }}
+              onPointerOut={() => {
+                document.body.style.cursor = "auto";
+              }}
             >
-              {`${h.icon} ${h.label}`}
-            </Text>
+              <HarborBuilding
+                label={h.label}
+                accent={LOOK.accent}
+                body={buildingColors[idx % buildingColors.length]}
+              />
+            </group>
+            {/* Billboard so labels never read mirrored from behind */}
+            <Billboard follow position={[0, 3.05, 0]}>
+              <Text
+                fontSize={0.28}
+                color="#16283b"
+                anchorX="center"
+                anchorY="middle"
+                outlineWidth={0.018}
+                outlineColor="#ffffff"
+              >
+                {`${h.icon} ${h.label}`}
+              </Text>
+            </Billboard>
           </group>
         );
       })}
@@ -560,17 +572,6 @@ export function WalkableHarborView({
           <Player character={character} hotspots={hotspots} onNear={setNear} />
         </Suspense>
       </Canvas>
-
-      {/* Always-on top title — never obscured by 3D foliage */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col items-center bg-gradient-to-b from-black/55 via-black/20 to-transparent px-4 pb-10 pt-4 text-center">
-        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-100/90">
-          Fortune Archipelago
-        </div>
-        <h1 className="mt-1 font-[Fraunces,Georgia,serif] text-2xl font-black tracking-wide text-white drop-shadow sm:text-3xl">
-          Harbor Haven
-        </h1>
-        <p className="text-xs font-semibold text-white/80">Your first island</p>
-      </div>
     </div>
   );
 }

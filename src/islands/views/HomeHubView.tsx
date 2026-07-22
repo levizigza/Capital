@@ -4,10 +4,9 @@ import {
   GameButton,
   GameModal,
   HudBadge,
-  HudChip,
   GamePanel,
 } from "@/game-ui";
-import { useInputAction, InputPromptHint } from "@/input";
+import { useInputAction } from "@/input";
 
 import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
@@ -89,7 +88,6 @@ export function HomeHubView({
   const profile = getProfileDef(learningProfile);
   const boat = getEffectiveBoatTier(userProfile.totalCoins, save);
   const simplified = profile.hudMode === "simplified";
-  const hudSubtitle = `⭐ Level ${userProfile.level} · ${boat.emoji} ${boat.label}`;
   const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
   const freed = hasHarborFreedom(save);
 
@@ -102,17 +100,23 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
-      { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6, 0, -4] },
-      { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -7] },
-      { id: "studio", label: "VibeCode", icon: "✨", position: [6, 0, -4] },
-      { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 10] },
-      { id: "settings", label: "Settings", icon: "⚙️", position: [-7, 0, 4] },
+      { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6.5, 0, -5] },
+      { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -8] },
+      { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
+      { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
+      { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
       ...(onOpenEditor
-        ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [7, 0, 4] } satisfies HarborHotspot]
+        ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
     [onOpenEditor],
   );
+
+  const openOutfitter = () => {
+    setDraft(voyager);
+    setOutfitterStage("look");
+    setHubModal("outfitter");
+  };
 
   const onHarborHotspot = (id: string) => {
     if (id === "arcade") onOpenArcade();
@@ -124,15 +128,13 @@ export function HomeHubView({
     else if (id === "capsule") setHubModal("capsule");
   };
 
-  const openOutfitter = () => {
-    setDraft(voyager);
-    setOutfitterStage("look");
-    setHubModal("outfitter");
-  };
-
   const onNearChange = useCallback((id: string | null, label: string | null) => {
     setNearStore(id && label ? { id, label } : null);
   }, []);
+
+  const nearTravel = nearStore?.id === "travel";
+  const canResume =
+    !!save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID;
 
   return (
     <>
@@ -150,91 +152,101 @@ export function HomeHubView({
         }
         topLeft={
           <div className="flex items-center gap-2">
-            <button type="button" onClick={openOutfitter} aria-label="Open Outfitter">
-              <CharacterAvatar character={voyager} size={40} animationStyle="capital-default" />
+            <button
+              type="button"
+              onClick={openOutfitter}
+              aria-label="Open Outfitter"
+              className="rounded-full ring-2 ring-white/40"
+            >
+              <CharacterAvatar character={voyager} size={36} animationStyle="capital-default" />
             </button>
-            <WealthHud totalCoins={userProfile.totalCoins} compact={simplified} />
-            <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
-            <div className="hidden sm:block">
-              <HudChip title={voyager.name || "Adventurer"} subtitle={hudSubtitle} />
-            </div>
+            <WealthHud totalCoins={userProfile.totalCoins} compact />
+            {!simplified ? (
+              <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
+            ) : null}
           </div>
         }
         topRight={
-          <>
+          <div className="flex items-center gap-1.5">
             <HudBadge>
               {profile.icon} {profile.label}
             </HudBadge>
             {onReplayIntro ? (
-              <GameButton variant="ghost" size="sm" onClick={onReplayIntro} title="Replay opening animation">
-                ↻ Intro
+              <GameButton
+                variant="ghost"
+                size="sm"
+                onClick={onReplayIntro}
+                title="Replay opening animation"
+                className="text-white/90"
+              >
+                ↻
               </GameButton>
             ) : null}
-          </>
+          </div>
         }
         bottom={
-          <div className="flex w-full max-w-lg flex-col items-center gap-[var(--game-gap)] px-2">
+          <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
+            {/* Single primary action — never stack Enter + Board */}
             {nearStore ? (
               <GameButton
                 variant="primary"
                 size="lg"
                 onClick={() => onHarborHotspot(nearStore.id)}
-                className="w-full max-w-xs shadow-xl border-2 border-amber-200"
+                className="w-full shadow-lg"
                 data-testid="hub-enter-store"
               >
-                🚪 Enter {nearStore.label}
+                {nearTravel ? `🪄 Board carpet` : `Enter ${nearStore.label}`}
               </GameButton>
-            ) : null}
-            <GameButton
-              variant={nearStore ? "secondary" : "primary"}
-              size="lg"
-              onClick={onOpenTravel}
-              className="w-full max-w-xs shadow-xl"
-              data-testid="hub-travel-map"
-            >
-              🪄 Board carpet / Archipelago
-            </GameButton>
-            <InputPromptHint action="map" className="text-white/80">
-              {nearStore
-                ? "Press E / Enter to go inside · A/D turn · W/S walk"
-                : "WASD walk · E enter shop · M map"}
-            </InputPromptHint>
-            {save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID ? (
-              <GameButton variant="secondary" size="lg" onClick={onResume} className="w-full max-w-xs shadow-lg">
-                ▶️ Resume voyage: {getIslandById(content, save.currentIslandId)?.name || save.currentIslandId}
-              </GameButton>
-            ) : null}
-            {onPlayHarborBoard ? (
+            ) : (
               <GameButton
-                variant="ghost"
-                size="sm"
-                onClick={onPlayHarborBoard}
-                className="w-full max-w-xs text-white/90"
+                variant="primary"
+                size="lg"
+                onClick={onOpenTravel}
+                className="w-full shadow-lg"
+                data-testid="hub-travel-map"
               >
-                🎲 Fortune Party board (Harbor practice)
+                🪄 Archipelago map
               </GameButton>
+            )}
+            <p className="text-[11px] font-semibold tracking-wide text-white/75">
+              {nearStore
+                ? "E enter · WASD walk"
+                : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
+            </p>
+            {(canResume || onPlayHarborBoard) && !nearStore ? (
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {canResume ? (
+                  <GameButton variant="ghost" size="sm" onClick={onResume} className="text-white/85">
+                    Resume {getIslandById(content, save.currentIslandId!)?.name ?? "voyage"}
+                  </GameButton>
+                ) : null}
+                {onPlayHarborBoard ? (
+                  <GameButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={onPlayHarborBoard}
+                    className="text-white/70"
+                  >
+                    Practice board
+                  </GameButton>
+                ) : null}
+              </div>
             ) : null}
           </div>
         }
       >
-        <div className="pointer-events-none flex h-full min-h-0 flex-col items-center justify-start pt-2">
-          <div className="rounded-xl bg-black/35 px-4 py-2 text-center text-white backdrop-blur-sm">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
-              Fortune Archipelago · Harbor Haven
+        {/* Quiet stage — only tutorial coach when needed */}
+        <div className="pointer-events-none flex h-full min-h-0 flex-col items-center justify-start pt-1">
+          {highlightOutfitter ? (
+            <div className="rounded-full bg-amber-500/90 px-4 py-1.5 text-sm font-bold text-[#16283b] shadow-lg">
+              Walk to the Outfitter (front center)
             </div>
-            <h1 className="text-2xl font-black tracking-wide sm:text-3xl">Walk your money mascot</h1>
-            <p className="text-xs text-white/80">
-              Walk up to a shop door · press E or tap Enter · {boat.emoji} {boat.label} at the dock
-            </p>
-            {highlightOutfitter ? (
-              <p className="mt-1 text-sm font-bold text-amber-200">Walk to the Outfitter stall (front center)</p>
-            ) : null}
-            {freed ? (
-              <p className="mt-1 text-[10px] text-emerald-200">Freedom seal earned — carpet upgraded</p>
-            ) : null}
-          </div>
-          {/* keep test hook for smoke tests */}
-          <div className="sr-only" data-testid="harbor-plaza" data-plaza-room="plaza" />
+          ) : freed ? (
+            <div className="rounded-full bg-emerald-600/80 px-3 py-1 text-[11px] font-bold text-white">
+              Freedom seal · carpet upgraded
+            </div>
+          ) : null}
+          <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
         </div>
       </GameHudLayout>
 
@@ -242,7 +254,7 @@ export function HomeHubView({
         open={hubModal !== null}
         onClose={() => setHubModal(null)}
         maxWidth="md"
-        usePanel={hubModal !== "settings" && hubModal !== "outfitter"}
+        usePortal={hubModal !== "settings" && hubModal !== "outfitter"}
       >
         {hubModal === "outfitter" ? (
           <OutfitterInterior onLeave={() => setHubModal(null)}>
@@ -316,11 +328,11 @@ export function HomeHubView({
             <p className="text-sm text-muted-foreground">
               Fortune Capsules also wash up on island boards. This stall previews what you can find at sea.
             </p>
-            <GamePanel padding="default" className="text-left text-sm space-y-2">
+            <GamePanel padding="default" className="space-y-2 text-left text-sm">
               <div>🛡️ <strong>Emergency Ledger</strong> — block a raid</div>
               <div>🧲 <strong>Dividend Magnet</strong> — double a payday</div>
               <div>📜 <strong>Fee Writ</strong> — take coins from a rival</div>
-              <div className="font-bold pt-2">Your balance: 🪙 {userProfile.totalCoins}</div>
+              <div className="pt-2 font-bold">Your balance: 🪙 {userProfile.totalCoins}</div>
             </GamePanel>
             <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
               Back to plaza

@@ -203,43 +203,25 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
         </Suspense>
       </Canvas>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/55 to-transparent px-4 pb-16 pt-8 text-center">
-        <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-amber-100/90">
-          Fortune Archipelago
-        </div>
-        <h1
-          className="mx-auto mt-2 inline-block rounded-sm border-2 border-[#1a5436] px-5 py-1 font-[Fraunces,Georgia,serif] text-4xl font-black uppercase tracking-[0.18em] sm:text-5xl"
-          style={{
-            background: "linear-gradient(180deg,#eef5ea,#c9dcc8)",
-            color: "#0f3d28",
-            boxShadow: "inset 0 0 0 3px rgba(238,245,234,0.9), 0 6px 18px rgba(0,0,0,0.35)",
-          }}
-        >
-          Capital
-        </h1>
-        <p className="mt-2 text-sm font-semibold text-white/85">
-          {phase === "fly"
-            ? "Flying in — Harbor Haven ahead · carpet underfoot"
-            : "Landing…"}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/40 to-transparent px-4 pb-10 pt-5 text-center">
+        <p className="text-sm font-semibold text-white/90">
+          {phase === "fly" ? "Harbor Haven ahead" : "Landing…"}
         </p>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/70 to-transparent px-4 pb-8 pt-20 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/70">
-          Hold on — you are soaring to your first island
-        </p>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/55 to-transparent px-4 pb-6 pt-12 text-center">
         <button
           type="button"
-          className="pointer-events-auto mt-3 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/20"
+          className="pointer-events-auto rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/20"
           onClick={finish}
         >
-          Skip to Harbor →
+          Skip →
         </button>
       </div>
 
       {phase === "land" ? (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 text-2xl font-black text-white backdrop-blur-[2px]">
-          Touching down on Harbor Haven…
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 text-xl font-black text-white">
+          Harbor Haven
         </div>
       ) : null}
     </div>

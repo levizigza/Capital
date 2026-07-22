@@ -10,7 +10,6 @@ import { useInputAction, InputPromptHint } from "@/input";
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getEffectiveBoatTier, nextBoatTier } from "../boats";
-import { CharacterAvatar } from "./CharacterAvatar";
 import { HUB_ISLAND_ID } from "../worldMapLayout";
 import { GALAPAGOS_ARCHIPELAGO_NAME } from "../galapagosIslands";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
@@ -74,16 +73,13 @@ export function TravelMapView({
         </GameButton>
       }
       bottom={
-        <div className="flex flex-col items-center gap-1 px-4 pb-2 text-center">
-          {save.character ? (
-            <CharacterAvatar character={save.character} size={44} animationStyle="capital-default" />
-          ) : null}
-          <InputPromptHint action="interact" className="justify-center text-white/85">
-            Tap a diorama island to fly
+        <div className="flex flex-col items-center gap-1 px-4 pb-1 text-center">
+          <InputPromptHint action="interact" className="justify-center text-white/80">
+            Tap an island · Esc back
           </InputPromptHint>
           {nextBoat ? (
-            <p className="text-[10px] font-medium text-white/70">
-              {nextBoat.minCoins - userProfile.totalCoins} more coins for a {nextBoat.label}
+            <p className="text-[10px] font-medium text-white/65">
+              {nextBoat.minCoins - userProfile.totalCoins} coins to unlock {nextBoat.label}
             </p>
           ) : null}
         </div>
