@@ -405,7 +405,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
           >
             <div className="cap-opening-reveal__plate">
               <div className="cap-opening-eyebrow">
-                One resort, every era · 1960s → New Gen · {timeLabel.toLowerCase()}
+                Fortune Archipelago · gamified financial literacy · {timeLabel.toLowerCase()}
               </div>
               <h1 className="cap-opening-title">
                 <span className="cap-opening-title__ornament" aria-hidden />
@@ -413,9 +413,9 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
               <p className="mt-3 max-w-md text-sm text-white/80 md:text-base">
-                One mural of humans and games — painted seven times, once per
-                decade of graphics. The last piece is New Gen, waiting for you
-                to paint what comes next.
+                A gamified financial literacy adventure — learn money skills by
+                sailing era islands, running Fortune Party boards, and making
+                real cashflow choices that stick.
               </p>
               <div className="cap-enter">
                 <button type="button" className="cap-enter-boat" onClick={enter} autoFocus>
