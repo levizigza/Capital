@@ -31,30 +31,12 @@ export function useOfflineSupport() {
         caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)))
       }
     } else if ('serviceWorker' in navigator) {
-      // main.tsx already registers under BASE_URL; only observe + update here
-      // so GitHub Pages (/Capital/) never hits a root /sw.js 404.
-      const swUrl = `${import.meta.env.BASE_URL}sw.js`
-      navigator.serviceWorker.ready.then(() => {
-        setIsInstalled(true)
-      })
-
-      navigator.serviceWorker
-        .register(swUrl, { scope: import.meta.env.BASE_URL })
-        .then((registration) => {
+      // main.tsx owns registration + skipWaiting/reload. Only observe readiness here.
+      navigator.serviceWorker.ready
+        .then(() => {
           setIsInstalled(true)
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing
-            if (newWorker) {
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  toast.info('New version available! Refresh to update.')
-                }
-              })
-            }
-          })
         })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error)
+        .catch(() => {
           setCacheStatus('error')
         })
     }
@@ -97,12 +79,10 @@ export function useOfflineSupport() {
       
       // Send message to service worker to cache additional URLs
       if (registration.active) {
+        // Never ask the SW to cache index.html — it embeds hashed asset URLs.
         registration.active.postMessage({
           type: 'CACHE_URLS',
-          urls: [
-            import.meta.env.BASE_URL,
-            `${import.meta.env.BASE_URL}index.html`,
-          ]
+          urls: [`${import.meta.env.BASE_URL}manifest.json`],
         })
       }
 

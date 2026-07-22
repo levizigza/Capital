@@ -1,7 +1,7 @@
-// Service Worker for offline functionality
-// v10: never cache hashed JS/CSS — stale Vite chunks soft-brick GitHub Pages.
-const CACHE_NAME = "capital-v32";
-const RUNTIME_CACHE = "capital-runtime-v25";
+// Service Worker — Capital on GitHub Pages
+// v11: never pin index.html or hashed Vite bundles. Stale shells soft-brick deploys.
+const CACHE_NAME = "capital-v33";
+const RUNTIME_CACHE = "capital-runtime-v26";
 
 function scopeUrl(path) {
   const base = self.registration?.scope || self.location.href.replace(/[^/]+$/, "");
@@ -13,10 +13,22 @@ function isHashedBundle(url) {
   return /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.(?:js|css|mjs)(?:\?|$)/.test(url.pathname);
 }
 
+function isAppShell(url) {
+  const path = url.pathname.replace(/\/+$/, "");
+  return (
+    path.endsWith("/Capital") ||
+    path.endsWith("/index.html") ||
+    /\/Capital\/?$/.test(url.pathname) ||
+    url.pathname.endsWith("/") ||
+    url.pathname.endsWith("/404.html")
+  );
+}
+
 self.addEventListener("install", (event) => {
+  // Precache only durable, non-hashed shell bits — never index.html (it embeds asset hashes).
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      const assets = [scopeUrl("./"), scopeUrl("./index.html"), scopeUrl("./manifest.json")];
+      const assets = [scopeUrl("./manifest.json")];
       return cache.addAll(assets).catch((err) => {
         console.log("Cache install failed:", err);
       });
@@ -31,10 +43,29 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((cacheNames) =>
         Promise.all(
-          // Drop every old cache — including prior RUNTIME — so stale chunks cannot linger.
+          // Drop every prior cache so old index.html / chunks cannot linger.
           cacheNames
             .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
             .map((name) => caches.delete(name)),
+        ),
+      )
+      .then(() =>
+        // Also purge any HTML documents that may have been stored in the current caches.
+        Promise.all([caches.open(CACHE_NAME), caches.open(RUNTIME_CACHE)]).then(
+          async ([shell, runtime]) => {
+            for (const cache of [shell, runtime]) {
+              const keys = await cache.keys();
+              await Promise.all(
+                keys.map((req) => {
+                  const u = new URL(req.url);
+                  if (isAppShell(u) || isHashedBundle(u) || req.destination === "document") {
+                    return cache.delete(req);
+                  }
+                  return undefined;
+                }),
+              );
+            }
+          },
         ),
       )
       .then(() => self.clients.claim())
@@ -65,41 +96,35 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   if (!url.protocol.startsWith("http")) return;
 
-  // Hashed Vite bundles: network-only. Never fall back to a stale cached chunk.
-  if (isHashedBundle(url) || request.destination === "script" || request.destination === "style") {
-    event.respondWith(
-      fetch(request).catch(
-        () =>
-          new Response("/* capital: bundle unavailable after deploy — hard refresh */", {
-            status: 504,
-            statusText: "Bundle Gone",
-            headers: { "Content-Type": "text/javascript" },
-          }),
-      ),
-    );
-    return;
-  }
-
   const isNavigation = request.mode === "navigate" || request.destination === "document";
 
-  if (isNavigation) {
+  // Navigations + hashed bundles + scripts/styles: always network.
+  // Never fall back to a cached index.html that points at deleted chunks.
+  if (
+    isNavigation ||
+    isAppShell(url) ||
+    isHashedBundle(url) ||
+    request.destination === "script" ||
+    request.destination === "style"
+  ) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (isCacheable(response)) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(scopeUrl("./index.html"), copy.clone());
-              cache.put(request, copy);
-            });
-          }
-          return response;
-        })
-        .catch(() =>
-          caches
-            .match(request)
-            .then((cached) => cached || caches.match(scopeUrl("./index.html"))),
-        ),
+      fetch(request, { cache: "no-store" }).catch(
+        () =>
+          new Response(
+            isNavigation || isAppShell(url)
+              ? "<!doctype html><meta charset=utf-8><title>Capital</title><p>Network required to load Capital. Reconnect and refresh.</p>"
+              : "/* capital: bundle unavailable after deploy — hard refresh */",
+            {
+              status: 504,
+              statusText: "Bundle Gone",
+              headers: {
+                "Content-Type":
+                  isNavigation || isAppShell(url) ? "text/html; charset=utf-8" : "text/javascript",
+                "Cache-Control": "no-store",
+              },
+            },
+          ),
+      ),
     );
     return;
   }
@@ -123,7 +148,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (isCacheable(response) && !isHashedBundle(url)) {
+        if (isCacheable(response) && !isHashedBundle(url) && !isAppShell(url)) {
           const copy = response.clone();
           caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
         }
@@ -149,9 +174,11 @@ self.addEventListener("message", (event) => {
     return;
   }
   if (event.data && event.data.type === "CACHE_URLS") {
+    // Refuse to cache app shell / hashed bundles — offline icons/audio only.
     const urls = (event.data.urls || []).filter((u) => {
       try {
-        return !isHashedBundle(new URL(u, self.location.href));
+        const parsed = new URL(u, self.location.href);
+        return !isHashedBundle(parsed) && !isAppShell(parsed);
       } catch {
         return false;
       }

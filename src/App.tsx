@@ -25,7 +25,15 @@ const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
 const DebugPanel = import.meta.env.DEV
   ? React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
   : null
-const IslandsApp = React.lazy(() => import('@/islands/IslandsApp'))
+const IslandsApp = React.lazy(() =>
+  import('@/islands/IslandsApp').catch((err: unknown) => {
+    const message = err instanceof Error ? err.message : String(err)
+    void import('@/lib/hardRecover').then(({ autoRecoverStaleChunkOnce }) => {
+      autoRecoverStaleChunkOnce(message || 'Failed to fetch dynamically imported module')
+    })
+    throw err instanceof Error ? err : new Error(message)
+  }),
+)
 const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
 const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
 

@@ -6,13 +6,52 @@ import App from './App.tsx'
 import { ErrorFallback } from './components/ErrorFallback'
 import { DevErrorOverlay } from './components/DevErrorOverlay'
 import { InputProvider } from '@/input'
+import {
+  autoRecoverStaleChunkOnce,
+  clearStaleRecoverGuard,
+  isStaleChunkError,
+} from '@/lib/hardRecover'
 
 import "./main.css"
+
+// Successful boot after a ?fresh= recovery — drop the guard so future deploys can recover again.
+try {
+  const bootUrl = new URL(window.location.href)
+  if (bootUrl.searchParams.has("fresh") || bootUrl.searchParams.has("cache_bust")) {
+    clearStaleRecoverGuard()
+    bootUrl.searchParams.delete("fresh")
+    bootUrl.searchParams.delete("cache_bust")
+    window.history.replaceState(window.history.state, "", bootUrl.toString())
+  }
+} catch {
+  /* ignore */
+}
 
 // Dev/preview: drop any stale service worker so an old Capital build cannot mask updates.
 if (import.meta.env.DEV && "serviceWorker" in navigator) {
   void navigator.serviceWorker.getRegistrations().then((regs) => {
     regs.forEach((reg) => void reg.unregister())
+  })
+}
+
+// Catch lazy-import failures before React paints the error card.
+if (import.meta.env.PROD) {
+  window.addEventListener("vite:preloadError", (event) => {
+    const err = (event as Event & { payload?: Error }).payload
+    if (autoRecoverStaleChunkOnce(err?.message ?? "Failed to fetch dynamically imported module")) {
+      event.preventDefault()
+    }
+  })
+  window.addEventListener("unhandledrejection", (event) => {
+    const msg =
+      event.reason instanceof Error
+        ? event.reason.message
+        : typeof event.reason === "string"
+          ? event.reason
+          : ""
+    if (isStaleChunkError(msg) && autoRecoverStaleChunkOnce(msg)) {
+      event.preventDefault()
+    }
   })
 }
 
@@ -34,6 +73,8 @@ if (import.meta.env.PROD && "serviceWorker" in navigator) {
     void navigator.serviceWorker
       .register(swUrl, { scope: import.meta.env.BASE_URL })
       .then((reg) => {
+        // Always check for updates when the app boots / regains focus.
+        void reg.update();
         if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
         reg.addEventListener("updatefound", () => {
           const nw = reg.installing;
@@ -46,6 +87,14 @@ if (import.meta.env.PROD && "serviceWorker" in navigator) {
         });
       })
       .catch((err) => console.log("SW registration failed:", err));
+
+    const onFocus = () => {
+      void navigator.serviceWorker.getRegistration().then((reg) => reg?.update());
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") onFocus();
+    });
   });
 }
 

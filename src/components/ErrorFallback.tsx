@@ -1,35 +1,28 @@
+import { useEffect, useRef } from "react";
 import { Warning, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  autoRecoverStaleChunkOnce,
+  hardRecoverFromStaleBuild,
+  isStaleChunkError,
+} from "@/lib/hardRecover";
 
 interface ErrorFallbackProps {
   error: Error;
   resetErrorBoundary: () => void;
 }
 
-async function hardRecover() {
-  try {
-    if ("serviceWorker" in navigator) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map((r) => r.unregister()));
-    }
-    if (typeof caches !== "undefined") {
-      const keys = await caches.keys();
-      await Promise.all(keys.map((k) => caches.delete(k)));
-    }
-  } catch {
-    /* ignore */
-  }
-  const url = new URL(window.location.href);
-  url.searchParams.set("cache_bust", String(Date.now()));
-  window.location.replace(url.toString());
-}
-
 export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
-  const staleChunk =
-    /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk [\d]+ failed/i.test(
-      error.message,
-    );
+  const staleChunk = isStaleChunkError(error.message);
+  const autoStarted = useRef(false);
+
+  // Don't make players hunt for "Reload fresh" — clear SW/caches and boot current build.
+  useEffect(() => {
+    if (!staleChunk || autoStarted.current) return;
+    autoStarted.current = true;
+    autoRecoverStaleChunkOnce(error.message);
+  }, [staleChunk, error.message]);
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
@@ -39,15 +32,15 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
             <Warning className="h-8 w-8 text-red-600" />
           </div>
           <CardTitle className="text-xl text-slate-800">
-            {staleChunk ? "Update needed" : "Something went wrong"}
+            {staleChunk ? "Updating Capital…" : "Something went wrong"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center text-sm text-slate-600">
             {staleChunk ? (
               <p>
-                An old cached build is stuck. Tap <strong>Reload fresh</strong> to clear it and load
-                the latest Capital.
+                An old build was stuck in the cache. Clearing it and loading the latest version
+                automatically…
               </p>
             ) : (
               <p>An error occurred while running the application.</p>
@@ -56,7 +49,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
           </div>
           <Button
             onClick={() => {
-              if (staleChunk) void hardRecover();
+              if (staleChunk) void hardRecoverFromStaleBuild("manual");
               else resetErrorBoundary();
             }}
             className="w-full"
@@ -67,7 +60,11 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
             {staleChunk ? "Reload fresh" : "Try Again"}
           </Button>
           {!staleChunk ? (
-            <Button onClick={() => void hardRecover()} className="w-full" variant="ghost">
+            <Button
+              onClick={() => void hardRecoverFromStaleBuild("manual")}
+              className="w-full"
+              variant="ghost"
+            >
               Clear cache & reload
             </Button>
           ) : null}
