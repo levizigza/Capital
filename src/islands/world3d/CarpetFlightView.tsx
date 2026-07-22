@@ -1,4 +1,11 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -37,34 +44,74 @@ type WorldIsle = {
   pos: THREE.Vector3;
 };
 
-const ARRIVE = 14;
-const SPEED_N = 22;
-const SPEED_F = 42;
-const TURN = 1.65;
+/** Arrival radius — land when you fly into the island. */
+const ARRIVE = 16;
+/** Cruise / soar / rush speeds (world units per second). */
+const SPEED_N = 48;
+const SPEED_F = 78;
+const SPEED_RUSH = 140;
+const TURN = 1.85;
+/** Compact archipelago scale so destinations feel close on the horizon. */
+const WORLD_SCALE = 0.042;
+const START_Z = 14;
+const AHEAD_BIAS = 22;
+
+type BoostApi = {
+  setBoost: (on: boolean) => void;
+  rushToTarget: () => void;
+};
 
 function FlightRig({
   world,
   targetId,
   character,
+  boostApi,
   onArrive,
 }: {
   world: WorldIsle[];
   targetId?: string | null;
   character?: CapitalCharacter | null;
+  boostApi: MutableRefObject<BoostApi | null>;
   onArrive: (id: string) => void;
 }) {
   const carpet = useRef<THREE.Group>(null);
-  const keys = useRef({ l: false, r: false, up: false, down: false });
+  const keys = useRef({ l: false, r: false, up: false, down: false, boost: false });
+  const rush = useRef(false);
   const state = useRef({
     x: 0,
-    z: 18,
-    y: 3.2,
+    z: START_Z,
+    y: 4.2,
     heading: 0,
     speed: SPEED_N,
     arrived: false,
   });
   const { camera } = useThree();
-  const [hud, setHud] = useState({ knots: 0, hint: "Steer toward an island" });
+  const [hud, setHud] = useState({ knots: 0, hint: "Steer toward an island", rushing: false });
+
+  // Aim initial heading at the voyage target (or nearest island).
+  useEffect(() => {
+    const s = state.current;
+    const preferred =
+      (targetId && world.find((w) => w.node.island.id === targetId)) || world[0];
+    if (preferred) {
+      s.heading = Math.atan2(preferred.pos.x - s.x, preferred.pos.z - s.z);
+    }
+  }, [targetId, world]);
+
+  useEffect(() => {
+    boostApi.current = {
+      setBoost: (on) => {
+        keys.current.boost = on;
+      },
+      rushToTarget: () => {
+        rush.current = true;
+        keys.current.boost = true;
+      },
+    };
+    return () => {
+      boostApi.current = null;
+    };
+  }, [boostApi]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -72,12 +119,19 @@ function FlightRig({
       if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.current.r = true;
       if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") keys.current.up = true;
       if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") keys.current.down = true;
+      if (e.key === "Shift" || e.code === "Space") {
+        e.preventDefault();
+        keys.current.boost = true;
+      }
     };
     const up = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.current.l = false;
       if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.current.r = false;
       if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") keys.current.up = false;
       if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") keys.current.down = false;
+      if (e.key === "Shift" || e.code === "Space") {
+        if (!rush.current) keys.current.boost = false;
+      }
     };
     window.addEventListener("keydown", down);
     window.addEventListener("keyup", up);
@@ -90,30 +144,6 @@ function FlightRig({
   useFrame((_, dt) => {
     const s = state.current;
     if (s.arrived) return;
-    const steer = (keys.current.l ? 1 : 0) + (keys.current.r ? -1 : 0);
-    s.heading += steer * TURN * dt;
-    const max = keys.current.up ? SPEED_F : keys.current.down ? SPEED_N * 0.45 : SPEED_N;
-    s.speed += (max - s.speed) * Math.min(1, dt * 3);
-    s.x += Math.sin(s.heading) * s.speed * dt;
-    s.z += Math.cos(s.heading) * s.speed * dt;
-    s.y = 3.2 + Math.sin(performance.now() / 450) * 0.25 + (keys.current.up ? 0.8 : 0);
-
-    if (carpet.current) {
-      carpet.current.position.set(s.x, s.y, s.z);
-      carpet.current.rotation.order = "YXZ";
-      carpet.current.rotation.y = s.heading;
-      carpet.current.rotation.x = -0.04;
-      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.025;
-      carpet.current.updateMatrixWorld(true);
-
-      // Look mostly at islands ahead; carpet stays a flapping strip underfoot.
-      const eye = new THREE.Vector3(0, 0.82, -0.35).applyMatrix4(carpet.current.matrixWorld);
-      const horizon = new THREE.Vector3(0, 0.55, 16).applyMatrix4(carpet.current.matrixWorld);
-      const carpetHint = new THREE.Vector3(0, 0.06, 2.2).applyMatrix4(carpet.current.matrixWorld);
-      horizon.lerp(carpetHint, 0.18);
-      camera.position.lerp(eye, 1 - Math.pow(0.0008, dt));
-      camera.lookAt(horizon);
-    }
 
     let nearest: WorldIsle | null = null;
     let nearestDist = Infinity;
@@ -124,12 +154,64 @@ function FlightRig({
         nearest = wi;
       }
     }
+    const target =
+      (targetId && world.find((w) => w.node.island.id === targetId)) || nearest;
+
+    // Rush / boost auto-steers toward the destination island.
+    if ((keys.current.boost || rush.current) && target) {
+      const want = Math.atan2(target.pos.x - s.x, target.pos.z - s.z);
+      let delta = want - s.heading;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+      while (delta < -Math.PI) delta += Math.PI * 2;
+      s.heading += delta * Math.min(1, dt * 3.2);
+    } else {
+      const steer = (keys.current.l ? 1 : 0) + (keys.current.r ? -1 : 0);
+      s.heading += steer * TURN * dt;
+    }
+
+    const max = keys.current.boost || rush.current
+      ? SPEED_RUSH
+      : keys.current.up
+        ? SPEED_F
+        : keys.current.down
+          ? SPEED_N * 0.45
+          : SPEED_N;
+    s.speed += (max - s.speed) * Math.min(1, dt * 3.4);
+    s.x += Math.sin(s.heading) * s.speed * dt;
+    s.z += Math.cos(s.heading) * s.speed * dt;
+    s.y =
+      4.2 +
+      Math.sin(performance.now() / 450) * 0.28 +
+      (keys.current.up || keys.current.boost ? 1.1 : 0);
+
+    if (carpet.current) {
+      carpet.current.position.set(s.x, s.y, s.z);
+      carpet.current.rotation.order = "YXZ";
+      carpet.current.rotation.y = s.heading;
+      carpet.current.rotation.x = -0.06;
+      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.03;
+      carpet.current.updateMatrixWorld(true);
+
+      // Wide horizon ride — eye above the rug, gaze far across the sea.
+      const eye = new THREE.Vector3(0, 1.05, -0.55).applyMatrix4(carpet.current.matrixWorld);
+      const horizon = new THREE.Vector3(0, 1.35, 42).applyMatrix4(carpet.current.matrixWorld);
+      const carpetHint = new THREE.Vector3(0, 0.02, 3.4).applyMatrix4(carpet.current.matrixWorld);
+      horizon.lerp(carpetHint, 0.1);
+      camera.position.lerp(eye, 1 - Math.pow(0.0004, dt));
+      camera.lookAt(horizon);
+      camera.fov = 68;
+      camera.updateProjectionMatrix();
+    }
 
     if (nearest) {
       const marked = targetId && nearest.node.island.id === targetId ? "🎯 " : "";
+      const rushing = keys.current.boost || rush.current;
       setHud({
-        knots: Math.round((s.speed / SPEED_F) * 60),
-        hint: `${marked}${nearest.node.island.name} · ${Math.round(nearestDist)}m — fly closer to land`,
+        knots: Math.round((s.speed / SPEED_RUSH) * 90),
+        hint: rushing
+          ? `${marked}${nearest.node.island.name} · rushing in · ${Math.round(nearestDist)}m`
+          : `${marked}${nearest.node.island.name} · ${Math.round(nearestDist)}m — fly closer to land`,
+        rushing,
       });
       if (nearestDist < ARRIVE) {
         s.arrived = true;
@@ -138,12 +220,12 @@ function FlightRig({
     }
   });
 
-  // expose hud via DOM bridge
   useEffect(() => {
     const el = document.getElementById("carpet-flight-hud");
     if (el) {
       el.dataset.knots = String(hud.knots);
       el.dataset.hint = hud.hint;
+      el.dataset.rushing = hud.rushing ? "1" : "0";
       const k = el.querySelector("[data-knots]");
       const h = el.querySelector("[data-hint]");
       if (k) k.textContent = `${hud.knots}`;
@@ -163,18 +245,20 @@ function WorldScene({
   look,
   targetId,
   character,
+  boostApi,
   onArrive,
 }: {
   world: WorldIsle[];
   look: EraLook3D;
   targetId?: string | null;
   character?: CapitalCharacter | null;
+  boostApi: MutableRefObject<BoostApi | null>;
   onArrive: (id: string) => void;
 }) {
   return (
     <>
-      <WorldLighting look={look} shadowMapSize={512} />
-      <OceanWater color={look.sea} shading={look.shading} />
+      <WorldLighting look={{ ...look, fogNear: 24, fogFar: 160 }} shadowMapSize={512} />
+      <OceanWater color={look.sea} shading={look.shading} size={1200} />
       {world.map((wi) => {
         const isTarget = targetId === wi.node.island.id;
         return (
@@ -183,20 +267,26 @@ function WorldScene({
             look={wi.look}
             seed={wi.node.island.id}
             position={[wi.pos.x, 0, wi.pos.z]}
-            scale={isTarget ? 1.85 : 1.45}
+            scale={isTarget ? 2.15 : 1.65}
             detail={isTarget ? "near" : "far"}
             showPier={isTarget}
             selected={isTarget}
           />
         );
       })}
-      <FlightRig world={world} targetId={targetId} character={character} onArrive={onArrive} />
+      <FlightRig
+        world={world}
+        targetId={targetId}
+        character={character}
+        boostApi={boostApi}
+        onArrive={onArrive}
+      />
       <Text
-        position={[0, 8, 0]}
-        fontSize={1.2}
+        position={[0, 10, -8]}
+        fontSize={1.4}
         color={look.accent}
         anchorX="center"
-        outlineWidth={0.04}
+        outlineWidth={0.05}
         outlineColor="#0c1622"
       >
         Fortune Archipelago
@@ -207,6 +297,7 @@ function WorldScene({
 
 /**
  * Full-screen 3D money-carpet voyage — real flight graphics (R3F / Three.js).
+ * Uses fixed viewport fill so the ride never collapses into a top strip.
  */
 export function CarpetFlightView({
   userProfile,
@@ -217,9 +308,10 @@ export function CarpetFlightView({
   onBack,
   onEnterIsland,
 }: Props) {
-  // When a destination is already chosen, skip the dock card and launch in POV.
   const [phase, setPhase] = useState<"dock" | "fly">(() => (voyageTargetId ? "fly" : "dock"));
   const [arriving, setArriving] = useState<string | null>(null);
+  const [boostHeld, setBoostHeld] = useState(false);
+  const boostApi = useRef<BoostApi | null>(null);
   const boatTier = getEffectiveBoatTier(userProfile.totalCoins, save);
   const archipelago = useMemo(() => buildArchipelagoLayout(islands), [islands]);
   const currentIsland = useMemo(
@@ -236,8 +328,8 @@ export function CarpetFlightView({
   }, [currentIsland]);
 
   const world = useMemo<WorldIsle[]>(() => {
-    const cx = currentNode.worldX * 0.08;
-    const cz = currentNode.worldY * 0.08;
+    const cx = currentNode.worldX * WORLD_SCALE;
+    const cz = currentNode.worldY * WORLD_SCALE;
     return archipelago.all
       .filter((n) => n.island.id !== currentIsland.id)
       .filter((n) => !isIslandLocked(n.island, save.inventory, save))
@@ -247,7 +339,11 @@ export function CarpetFlightView({
         return {
           node,
           look,
-          pos: new THREE.Vector3(node.worldX * 0.08 - cx, 0, node.worldY * 0.08 - cz + 40),
+          pos: new THREE.Vector3(
+            node.worldX * WORLD_SCALE - cx,
+            0,
+            node.worldY * WORLD_SCALE - cz + AHEAD_BIAS,
+          ),
         };
       });
   }, [archipelago.all, currentIsland.id, currentNode.worldX, currentNode.worldY, save]);
@@ -260,19 +356,41 @@ export function CarpetFlightView({
     return getAnimationStyle(theme.animationStyle);
   }, [islands, voyageTargetId]);
 
+  const targetName = useMemo(() => {
+    if (!voyageTargetId) return null;
+    return islands.find((i) => i.id === voyageTargetId)?.name ?? null;
+  }, [islands, voyageTargetId]);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   const handleArrive = (id: string) => {
     setArriving(id);
-    window.setTimeout(() => onEnterIsland(id), 900);
+    window.setTimeout(() => onEnterIsland(id), 700);
   };
+
+  const setBoost = (on: boolean) => {
+    setBoostHeld(on);
+    boostApi.current?.setBoost(on);
+  };
+
+  const shellClass =
+    "capital-carpet-stage fixed inset-0 z-[60] overflow-hidden bg-[#0c1622]";
 
   if (phase === "dock") {
     return (
-      <div className="relative h-full w-full overflow-hidden bg-[#0c1622]">
+      <div className={shellClass} data-testid="carpet-flight-dock">
         <Canvas
           shadows
-          dpr={[1, 1.25]}
-          camera={{ position: [0, 4, 10], fov: 55 }}
-          className="absolute inset-0"
+          dpr={[1, 1.5]}
+          camera={{ position: [0, 5, 12], fov: 58, near: 0.08, far: 260 }}
+          className="absolute inset-0 h-full w-full"
+          style={{ width: "100%", height: "100%" }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => gl.setClearColor(homeLook.skyTop, 1)}
         >
@@ -307,7 +425,7 @@ export function CarpetFlightView({
           <div className="text-4xl">{boatTier.emoji}</div>
           <h1 className="text-2xl font-black text-white drop-shadow">Board your money magic carpet</h1>
           <p className="max-w-md px-4 text-sm text-white/80">
-            Real flight across the archipelago — steer with A/D or ←/→, soar with W / ↑.
+            Ride the open horizon — steer with A/D, soar with W, hold Shift to rush.
             {voyageTargetId && targetEra
               ? ` Course set for ${targetEra.decade} · ${targetEra.eraLabel}.`
               : " Pick any glowing island ahead."}
@@ -326,12 +444,13 @@ export function CarpetFlightView({
   }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-black">
+    <div className={shellClass} data-testid="carpet-flight-view">
       <Canvas
         shadows
-        dpr={[1, 1.25]}
-        camera={{ position: [0, 6, 12], fov: 60 }}
-        className="absolute inset-0"
+        dpr={[1, 1.5]}
+        camera={{ position: [0, 5.5, START_Z + 2], fov: 68, near: 0.08, far: 280 }}
+        className="absolute inset-0 h-full w-full"
+        style={{ width: "100%", height: "100%" }}
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => gl.setClearColor(homeLook.skyTop, 1)}
       >
@@ -341,6 +460,7 @@ export function CarpetFlightView({
             look={homeLook}
             targetId={voyageTargetId}
             character={character ?? save.character}
+            boostApi={boostApi}
             onArrive={handleArrive}
           />
         </Suspense>
@@ -354,9 +474,41 @@ export function CarpetFlightView({
         ← Dock
       </button>
 
+      <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
+        <button
+          type="button"
+          className={`rounded-full border-2 px-4 py-2 text-sm font-extrabold shadow-lg transition ${
+            boostHeld
+              ? "border-amber-200 bg-amber-400 text-[#16283b]"
+              : "border-white/35 bg-black/55 text-white hover:bg-black/70"
+          }`}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            setBoost(true);
+          }}
+          onPointerUp={() => setBoost(false)}
+          onPointerLeave={() => setBoost(false)}
+          onPointerCancel={() => setBoost(false)}
+        >
+          {boostHeld ? "Rushing…" : "Hold to speed up"}
+        </button>
+        {voyageTargetId && targetName ? (
+          <button
+            type="button"
+            className="rounded-full border-2 border-[#16283b] bg-[#f4a629] px-4 py-2 text-sm font-extrabold text-[#16283b] shadow-lg"
+            onClick={() => {
+              setBoostHeld(true);
+              boostApi.current?.rushToTarget();
+            }}
+          >
+            Rush to {targetName} →
+          </button>
+        ) : null}
+      </div>
+
       <div
         id="carpet-flight-hud"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 bg-gradient-to-t from-black/75 to-transparent pb-8 pt-16"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 bg-gradient-to-t from-black/70 via-black/25 to-transparent pb-8 pt-20"
       >
         <div className="rounded-2xl border border-white/20 bg-black/55 px-5 py-3 text-center text-white backdrop-blur-sm">
           <div className="text-xs font-bold uppercase tracking-widest text-amber-200">Carpet knots</div>
@@ -367,8 +519,8 @@ export function CarpetFlightView({
             Steer toward an island
           </div>
         </div>
-        <div className="text-[10px] font-bold uppercase tracking-widest text-white/50">
-          A/D turn · W soar · S glide · land by flying into an island
+        <div className="text-[10px] font-bold uppercase tracking-widest text-white/55">
+          A/D turn · W soar · S glide · Shift / hold button to rush · land on an island
         </div>
       </div>
 

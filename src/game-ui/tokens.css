@@ -16,6 +16,19 @@
   --game-interactable: 6rem;
 }
 
+/* Full-bleed carpet rides — defeat global `canvas { height: auto }` collapse. */
+.capital-carpet-stage {
+  width: 100vw;
+  height: 100dvh;
+  height: 100vh;
+}
+.capital-carpet-stage canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+}
+
 .game-viewport[data-ui-scale="compact"] {
   --game-gap: 0.5rem;
   --game-gap-lg: 0.75rem;

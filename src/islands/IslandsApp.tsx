@@ -1340,7 +1340,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       textSizeClass={textSizeClass(a11y.textSize)}
     >
       <GameTooltipProvider>
-        <GameScreenStack screenKey={view} mode="slide" className="min-h-dvh min-h-screen">
+        <GameScreenStack
+          screenKey={view}
+          mode="slide"
+          className={
+            view === "voyage"
+              ? "relative h-dvh min-h-dvh w-full"
+              : "min-h-dvh min-h-screen"
+          }
+        >
         {view === "home" ? (
           <HomeHubView
             userProfile={userProfile}
