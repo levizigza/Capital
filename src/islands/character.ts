@@ -3,6 +3,9 @@
  *
  * On Harbor Haven and while sailing, this home look is always shown.
  * Landing on an era island remaps the same Voyager into that decade's art language.
+ *
+ * Cast is anthropomorphic money — bills, coins, piggies — not humans.
+ * Built for a kids financial-literacy game: wacky, readable, original.
  */
 
 export type CapitalCharacter = {
@@ -15,16 +18,16 @@ export type CapitalCharacter = {
 
 export type CharacterOption = { id: string; emoji: string; label: string };
 
-/** Core Voyager silhouettes — original cast, not borrowed mascots */
+/** Core money-mascot silhouettes — original cast, not borrowed brands */
 export const CHARACTER_BASES: CharacterOption[] = [
-  { id: "voyager", emoji: "🧑‍✈️", label: "Voyager" },
-  { id: "cartographer", emoji: "🧭", label: "Cartographer" },
-  { id: "ledger_kid", emoji: "🧒", label: "Ledger Kid" },
-  { id: "tide_ranger", emoji: "🏄", label: "Tide Ranger" },
-  { id: "coin_smith", emoji: "🧑‍🔧", label: "Coin-Smith" },
-  { id: "signal_scout", emoji: "📡", label: "Signal Scout" },
-  { id: "quest_adept", emoji: "🧑‍🎓", label: "Quest Adept" },
-  { id: "ruin_walker", emoji: "🥾", label: "Ruin Walker" },
+  { id: "voyager", emoji: "💵", label: "Bill Buddy" },
+  { id: "cartographer", emoji: "🪙", label: "Coin Kid" },
+  { id: "ledger_kid", emoji: "📒", label: "Ledger Larry" },
+  { id: "tide_ranger", emoji: "💸", label: "Cash Wave" },
+  { id: "coin_smith", emoji: "🐷", label: "Piggy Bank" },
+  { id: "signal_scout", emoji: "📡", label: "Signal Cent" },
+  { id: "quest_adept", emoji: "📜", label: "Scroll Scholar" },
+  { id: "ruin_walker", emoji: "⚱️", label: "Ancient Coin" },
 ];
 
 export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
@@ -38,19 +41,19 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
 
 export const CHARACTER_ACCESSORIES: CharacterOption[] = [
   { id: "none", emoji: "", label: "None" },
-  { id: "cap", emoji: "🧢", label: "Dock Cap" },
-  { id: "goggles", emoji: "🥽", label: "Quest Goggles" },
-  { id: "bandana", emoji: "🎀", label: "Tide Bandana" },
+  { id: "cap", emoji: "🎩", label: "Top Hat" },
+  { id: "goggles", emoji: "🧐", label: "Gold Monocle" },
+  { id: "bandana", emoji: "🎀", label: "Bow Tie" },
   { id: "headset", emoji: "🎧", label: "Signal Phones" },
-  { id: "lantern", emoji: "🏮", label: "Ruin Lantern" },
+  { id: "lantern", emoji: "✨", label: "Sparkle Stamp" },
 ];
 
 export const CHARACTER_COMPANIONS: CharacterOption[] = [
   { id: "none", emoji: "", label: "Solo" },
-  { id: "tortoise", emoji: "🐢", label: "Tortoise" },
-  { id: "finch", emoji: "🐦", label: "Finch" },
-  { id: "iguana", emoji: "🦎", label: "Iguana" },
-  { id: "otter", emoji: "🦦", label: "Otter" },
+  { id: "tortoise", emoji: "🐢", label: "Slow Coin" },
+  { id: "finch", emoji: "🐦", label: "Penny Finch" },
+  { id: "iguana", emoji: "💎", label: "Gem Buddy" },
+  { id: "otter", emoji: "🦦", label: "Cash Otter" },
   { id: "crab", emoji: "🦀", label: "Crab Accountant" },
 ];
 
@@ -62,7 +65,7 @@ export const DEFAULT_CHARACTER: CapitalCharacter = {
   companion: "none",
 };
 
-/** Starter look before the Harbor shop — plain Voyager, no gear, no pet. */
+/** Starter look before the Harbor shop — plain Bill Buddy, no gear, no pet. */
 export const BASE_VOYAGER: CapitalCharacter = {
   name: "Voyager",
   base: "voyager",
@@ -72,7 +75,7 @@ export const BASE_VOYAGER: CapitalCharacter = {
 };
 
 export function baseEmoji(id: string): string {
-  return CHARACTER_BASES.find((b) => b.id === id)?.emoji ?? "🧑‍✈️";
+  return CHARACTER_BASES.find((b) => b.id === id)?.emoji ?? "💵";
 }
 
 export function colorHex(id: string): string {
@@ -85,4 +88,37 @@ export function accessoryEmoji(id: string): string {
 
 export function companionEmoji(id: string): string {
   return CHARACTER_COMPANIONS.find((c) => c.id === id)?.emoji ?? "";
+}
+
+/** Which procedural money body to build in 3D. */
+export type MoneyForm =
+  | "bill"
+  | "coin"
+  | "ledger"
+  | "wave"
+  | "piggy"
+  | "signal"
+  | "scroll"
+  | "ancient";
+
+export function moneyFormFromBase(base?: string | null): MoneyForm {
+  switch (base) {
+    case "cartographer":
+      return "coin";
+    case "ledger_kid":
+      return "ledger";
+    case "tide_ranger":
+      return "wave";
+    case "coin_smith":
+      return "piggy";
+    case "signal_scout":
+      return "signal";
+    case "quest_adept":
+      return "scroll";
+    case "ruin_walker":
+      return "ancient";
+    case "voyager":
+    default:
+      return "bill";
+  }
 }

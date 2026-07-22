@@ -26,11 +26,13 @@ type Props = {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
   onOpenTravel: () => void;
+  /** Lift near-store state into the HUD so Enter is clickable above the footer. */
+  onNearChange?: (id: string | null, label: string | null) => void;
 };
 
 const LOOK = getEraLook3D("capital-default");
 const SPEED = 6.5;
-const INTERACT_R = 2.6;
+const INTERACT_R = 4.4;
 const PLAZA_R = 16;
 
 function Player({
@@ -44,8 +46,10 @@ function Player({
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
+  /** Stable orbit yaw — does not flip when walking backward. */
+  const camYaw = useRef(Math.PI); // look toward −Z stores from spawn at +Z
+  const facing = useRef(Math.PI);
   const vel = useRef(new THREE.Vector3());
-  const facing = useRef(0);
   const { camera } = useThree();
   const moving = useRef(false);
 
@@ -72,25 +76,30 @@ function Player({
 
   useFrame((_, dt) => {
     if (!group.current) return;
+
+    // Tank-style: A/D turn in place; W/S walk along facing without spinning the camera on reverse.
+    const turn = (keys.current.r ? -1 : 0) + (keys.current.l ? 1 : 0);
+    if (turn !== 0) {
+      camYaw.current += turn * 2.4 * dt;
+      facing.current = camYaw.current;
+    }
+
     const forward = (keys.current.f ? 1 : 0) + (keys.current.b ? -1 : 0);
-    const strafe = (keys.current.r ? 1 : 0) + (keys.current.l ? -1 : 0);
-    moving.current = forward !== 0 || strafe !== 0;
+    moving.current = forward !== 0 || turn !== 0;
 
-    const camDir = new THREE.Vector3();
-    camera.getWorldDirection(camDir);
-    camDir.y = 0;
-    camDir.normalize();
-    const right = new THREE.Vector3().crossVectors(camDir, new THREE.Vector3(0, 1, 0)).normalize();
-
-    vel.current.set(0, 0, 0);
-    vel.current.addScaledVector(camDir, forward);
-    vel.current.addScaledVector(right, strafe);
-    if (vel.current.lengthSq() > 0) {
+    const fx = Math.sin(facing.current);
+    const fz = Math.cos(facing.current);
+    if (forward !== 0) {
+      vel.current.set(fx * forward, 0, fz * forward);
       vel.current.normalize().multiplyScalar(SPEED * dt);
       group.current.position.add(vel.current);
-      facing.current = Math.atan2(vel.current.x, vel.current.z);
-      group.current.rotation.y = facing.current;
+      // Only face the walk direction when moving forward so reverse keeps storefronts in view.
+      if (forward > 0) {
+        facing.current = camYaw.current;
+      }
     }
+
+    group.current.rotation.y = facing.current;
 
     const p = group.current.position;
     const r = Math.hypot(p.x, p.z);
@@ -100,19 +109,27 @@ function Player({
     }
     p.y = 0.02;
 
+    // Camera stays behind the character using camYaw (stable on S / ArrowDown).
     const back = 8;
     const ideal = new THREE.Vector3(
-      p.x - Math.sin(facing.current) * back,
-      4.6,
-      p.z - Math.cos(facing.current) * back,
+      p.x - Math.sin(camYaw.current) * back,
+      4.8,
+      p.z - Math.cos(camYaw.current) * back,
     );
-    camera.position.lerp(ideal, 1 - Math.pow(0.002, dt));
-    camera.lookAt(p.x, 1.35, p.z);
+    camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
+    camera.lookAt(p.x, 1.25, p.z);
 
+    // Prefer the building's doorfront (toward plaza center) for interact distance.
     let near: string | null = null;
     let best = INTERACT_R;
     for (const h of hotspots) {
-      const d = Math.hypot(h.position[0] - p.x, h.position[2] - p.z);
+      const hx = h.position[0];
+      const hz = h.position[2];
+      const len = Math.hypot(hx, hz) || 1;
+      // Door sits on the plaza-facing side of the stall
+      const doorX = hx - (hx / len) * 1.15;
+      const doorZ = hz - (hz / len) * 1.15;
+      const d = Math.hypot(doorX - p.x, doorZ - p.z);
       if (d < best) {
         best = d;
         near = h.id;
@@ -122,7 +139,7 @@ function Player({
   });
 
   return (
-    <group ref={group} position={[0, 0, 7]}>
+    <group ref={group} position={[0, 0, 7]} rotation={[0, Math.PI, 0]}>
       <VoyagerMesh character={character} pose={moving.current ? "run" : "stand"} scale={1} />
     </group>
   );
@@ -201,7 +218,13 @@ function MarketCrate({ position, rot = 0 }: { position: [number, number, number]
   );
 }
 
-function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
+function PlazaScene({
+  hotspots,
+  onHotspot,
+}: {
+  hotspots: HarborHotspot[];
+  onHotspot: (id: string) => void;
+}) {
   // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
@@ -225,10 +248,34 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
   const buildingColors = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4"];
 
   const locals = [
-    { pos: [4.8, 0, -4.0] as [number, number, number], coat: "#fb7185", pants: "#1e3a5f", skin: "#f5d0a9" },
-    { pos: [-5.4, 0, 2.8] as [number, number, number], coat: "#38bdf8", pants: "#334155", skin: "#e8b896" },
-    { pos: [3.8, 0, 6.0] as [number, number, number], coat: "#34d399", pants: "#1e3a5f", skin: "#f0c9a0" },
-    { pos: [-3.2, 0, -6.6] as [number, number, number], coat: "#f4a629", pants: "#3f2a1a", skin: "#d9a57a" },
+    {
+      pos: [4.8, 0, -4.0] as [number, number, number],
+      coat: "#fb7185",
+      pants: "#1e3a5f",
+      skin: "#fef3c7",
+      form: "piggy" as const,
+    },
+    {
+      pos: [-5.4, 0, 2.8] as [number, number, number],
+      coat: "#38bdf8",
+      pants: "#334155",
+      skin: "#fef9c3",
+      form: "coin" as const,
+    },
+    {
+      pos: [3.8, 0, 6.0] as [number, number, number],
+      coat: "#34d399",
+      pants: "#1e3a5f",
+      skin: "#ecfccb",
+      form: "bill" as const,
+    },
+    {
+      pos: [-3.2, 0, -6.6] as [number, number, number],
+      coat: "#f4a629",
+      pants: "#3f2a1a",
+      skin: "#fde68a",
+      form: "ledger" as const,
+    },
   ];
 
   const cobbles = useMemo(() => {
@@ -387,29 +434,52 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         <meshStandardMaterial color="#78350f" roughness={0.8} flatShading />
       </mesh>
 
-      {hotspots.map((h, idx) => (
-        <group key={h.id} position={h.position}>
-          <HarborBuilding
-            label={h.label}
-            accent={LOOK.accent}
-            body={buildingColors[idx % buildingColors.length]}
-          />
-          <Text
-            position={[0, 3.15, 0]}
-            fontSize={0.3}
-            color="#16283b"
-            anchorX="center"
-            outlineWidth={0.02}
-            outlineColor="#ffffff"
+      {hotspots.map((h, idx) => {
+        // Face the door toward the plaza center so entrances are readable.
+        const yaw = Math.atan2(-h.position[0], -h.position[2]);
+        return (
+          <group
+            key={h.id}
+            position={h.position}
+            rotation={[0, yaw, 0]}
+            onClick={(e) => {
+              e.stopPropagation();
+              onHotspot(h.id);
+            }}
+            onPointerOver={() => {
+              document.body.style.cursor = "pointer";
+            }}
+            onPointerOut={() => {
+              document.body.style.cursor = "auto";
+            }}
           >
-            {`${h.icon} ${h.label}`}
-          </Text>
-        </group>
-      ))}
+            <HarborBuilding
+              label={h.label}
+              accent={LOOK.accent}
+              body={buildingColors[idx % buildingColors.length]}
+            />
+            <Text
+              position={[0, 3.15, 0]}
+              fontSize={0.3}
+              color="#16283b"
+              anchorX="center"
+              outlineWidth={0.02}
+              outlineColor="#ffffff"
+            >
+              {`${h.icon} ${h.label}`}
+            </Text>
+          </group>
+        );
+      })}
 
       {locals.map((npc, i) => (
         <group key={i} position={npc.pos} rotation={[0, (i * Math.PI) / 3, 0]}>
-          <HarborNpcMesh coat={npc.coat} pants={npc.pants} skin={npc.skin} />
+          <HarborNpcMesh
+            coat={npc.coat}
+            pants={npc.pants}
+            skin={npc.skin}
+            form={npc.form}
+          />
         </group>
       ))}
 
@@ -439,9 +509,15 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
 }
 
 /**
- * Walkable Harbor plaza — third-person Voyager, approach stalls to interact.
+ * Walkable Harbor plaza — third-person money mascot, approach stalls to enter.
  */
-export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTravel }: Props) {
+export function WalkableHarborView({
+  character,
+  hotspots,
+  onHotspot,
+  onOpenTravel,
+  onNearChange,
+}: Props) {
   const [near, setNear] = useState<string | null>(null);
   const reduced =
     typeof window !== "undefined" &&
@@ -450,6 +526,7 @@ export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTrave
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) {
+        e.preventDefault();
         onHotspot(near);
       }
       if (e.key === "m" || e.key === "M") onOpenTravel();
@@ -458,7 +535,10 @@ export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTrave
     return () => window.removeEventListener("keydown", onKey);
   }, [near, onHotspot, onOpenTravel]);
 
-  const nearLabel = hotspots.find((h) => h.id === near)?.label;
+  useEffect(() => {
+    const label = hotspots.find((h) => h.id === near)?.label ?? null;
+    onNearChange?.(near, label);
+  }, [near, hotspots, onNearChange]);
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -476,7 +556,7 @@ export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTrave
         }}
       >
         <Suspense fallback={null}>
-          <PlazaScene hotspots={hotspots} />
+          <PlazaScene hotspots={hotspots} onHotspot={onHotspot} />
           <Player character={character} hotspots={hotspots} onNear={setNear} />
         </Suspense>
       </Canvas>
@@ -490,25 +570,6 @@ export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTrave
           Harbor Haven
         </h1>
         <p className="text-xs font-semibold text-white/80">Your first island</p>
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 bg-gradient-to-t from-black/70 to-transparent pb-6 pt-16">
-        {near ? (
-          <div className="pointer-events-auto rounded-xl border-2 border-[#f4a629] bg-black/70 px-5 py-3 text-center text-white">
-            <div className="text-sm font-bold">Near {nearLabel}</div>
-            <button
-              type="button"
-              className="mt-2 rounded-full bg-[#f4a629] px-4 py-1.5 text-sm font-extrabold text-[#16283b]"
-              onClick={() => onHotspot(near)}
-            >
-              Press E / Enter to open
-            </button>
-          </div>
-        ) : (
-          <div className="rounded-lg bg-black/50 px-4 py-2 text-center text-xs font-bold uppercase tracking-widest text-white/80">
-            WASD walk · E interact · M archipelago map
-          </div>
-        )}
       </div>
     </div>
   );
