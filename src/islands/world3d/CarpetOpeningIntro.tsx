@@ -52,16 +52,21 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
     if (carpet.current) {
       carpet.current.position.copy(pos);
       carpet.current.rotation.y = heading;
-      carpet.current.rotation.z = Math.sin(t * 8) * 0.06;
-      carpet.current.rotation.x = -0.08 + Math.sin(t * 5) * 0.03;
+      carpet.current.rotation.z = Math.sin(t * 8) * 0.045;
+      carpet.current.rotation.x = -0.05 + Math.sin(t * 5) * 0.02;
     }
 
-    const eye = pos.clone();
-    eye.y += 1.15;
-    eye.add(new THREE.Vector3(Math.sin(heading) * -0.15, 0, Math.cos(heading) * -0.15));
+    // Sit on the rear of the rug, looking down the money nose (+ flight axis).
+    const forward = new THREE.Vector3(Math.sin(heading), 0, Math.cos(heading));
+    const eye = pos.clone().addScaledVector(forward, -0.72);
+    eye.y += 0.58;
     camera.position.copy(eye);
-    const lookAt = pos.clone().add(new THREE.Vector3(Math.sin(heading) * 12, 0.4, Math.cos(heading) * 12));
-    camera.lookAt(lookAt);
+    // Blend carpet tip (reads as riding) with far horizon (reads as flight).
+    const carpetNose = pos.clone().addScaledVector(forward, 2.05);
+    carpetNose.y += 0.06;
+    const horizon = pos.clone().addScaledVector(forward, 18);
+    horizon.y += 0.55;
+    camera.lookAt(carpetNose.lerp(horizon, 0.42));
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -71,7 +76,7 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={BASE_VOYAGER} flying hideRider />
+      <MoneyCarpet character={BASE_VOYAGER} flying hideRider povRide />
     </group>
   );
 }
@@ -178,7 +183,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
-        camera={{ position: [0, 5, 55], fov: 68, near: 0.1, far: 220 }}
+        camera={{ position: [0, 5, 55], fov: 72, near: 0.08, far: 220 }}
         className="absolute inset-0"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
@@ -205,7 +210,9 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
           Capital
         </h1>
         <p className="mt-2 text-sm font-semibold text-white/85">
-          {phase === "fly" ? "First-person · money magic carpet · flying to Harbor Haven" : "Landing…"}
+          {phase === "fly"
+            ? "Riding the money magic carpet · Harbor Haven ahead"
+            : "Landing…"}
         </p>
       </div>
 

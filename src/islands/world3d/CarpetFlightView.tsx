@@ -103,14 +103,20 @@ function FlightRig({
       carpet.current.rotation.y = s.heading;
     }
 
-    // First-person POV on the carpet — looking over the bill rug toward islands
-    const eyeX = s.x + Math.sin(s.heading) * 0.2;
-    const eyeZ = s.z + Math.cos(s.heading) * 0.2;
-    camera.position.lerp(new THREE.Vector3(eyeX, s.y + 1.05, eyeZ), 1 - Math.pow(0.0008, dt));
+    // First-person on the rear of the rug — money nose fills the lower FOV
+    const fx = Math.sin(s.heading);
+    const fz = Math.cos(s.heading);
+    const eyeX = s.x - fx * 0.72;
+    const eyeZ = s.z - fz * 0.72;
+    camera.position.lerp(new THREE.Vector3(eyeX, s.y + 0.58, eyeZ), 1 - Math.pow(0.0008, dt));
+    const noseX = s.x + fx * 2.05;
+    const noseZ = s.z + fz * 2.05;
+    const farX = s.x + fx * 16;
+    const farZ = s.z + fz * 16;
     camera.lookAt(
-      s.x + Math.sin(s.heading) * 14,
-      s.y + 0.35,
-      s.z + Math.cos(s.heading) * 14,
+      noseX * 0.58 + farX * 0.42,
+      s.y + 0.06 * 0.58 + 0.55 * 0.42,
+      noseZ * 0.58 + farZ * 0.42,
     );
 
     let nearest: WorldIsle | null = null;
@@ -151,7 +157,7 @@ function FlightRig({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={character} flying hideRider />
+      <MoneyCarpet character={character} flying hideRider povRide />
     </group>
   );
 }
