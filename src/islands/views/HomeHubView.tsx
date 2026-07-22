@@ -259,7 +259,13 @@ export function HomeHubView({
                 onNearChange={onNearChange}
                 onNearNpc={onNearNpcHandler}
                 guideHighlight={guidedStep?.highlight}
-                guideTip={castleMode ? visualBeats.bagTip : undefined}
+                guideTip={
+                  castleMode
+                    ? visualBeats.bagTip
+                    : nearStore
+                      ? `Enter ${nearStore.label}!`
+                      : "Coin Bag is with you — hop around Harbor!"
+                }
                 keeperEmote={castleMode ? keeperEmote : "idle"}
                 keeperSpeech={keeperSpeech}
                 pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}

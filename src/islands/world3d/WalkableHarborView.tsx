@@ -63,12 +63,14 @@ function Player({
   npcPositions,
   onNear,
   onNearNpc,
+  playerPosOut,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
   npcPositions: { id: string; name: string; line: string; position: [number, number, number] }[];
   onNear: (id: string | null) => void;
   onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
+  playerPosOut: React.MutableRefObject<THREE.Vector3>;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
@@ -122,6 +124,7 @@ function Player({
       p.z += vel.current.z * dt;
     }
     group.current.rotation.y = facing.current;
+    playerPosOut.current.set(p.x, p.y, p.z);
 
     const r = Math.hypot(p.x, p.z);
     if (r > PLAZA_R) {
@@ -698,6 +701,7 @@ export function WalkableHarborView({
   }, [near, hotspots, onNearChange]);
 
   const [ready, setReady] = useState(false);
+  const playerPos = useRef(new THREE.Vector3(0, 0, 3));
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -736,14 +740,14 @@ export function WalkableHarborView({
               setNearNpcId(n?.id ?? null);
               onNearNpc?.(n);
             }}
+            playerPosOut={playerPos}
           />
-          {guideTarget ? (
-            <MoneyBagGuide
-              target={guideTarget}
-              tip={guideTip ?? "This way!"}
-              reducedMotion={reduced}
-            />
-          ) : null}
+          <MoneyBagGuide
+            target={guideTarget}
+            playerPos={playerPos}
+            tip={guideTip ?? (guideTarget ? "This way!" : "Hop with me!")}
+            reducedMotion={reduced}
+          />
         </Suspense>
       </Canvas>
     </div>

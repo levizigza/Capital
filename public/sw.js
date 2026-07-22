@@ -1,7 +1,7 @@
 // Service Worker for offline functionality
 // v10: never cache hashed JS/CSS — stale Vite chunks soft-brick GitHub Pages.
-const CACHE_NAME = "capital-v26";
-const RUNTIME_CACHE = "capital-runtime-v19";
+const CACHE_NAME = "capital-v27";
+const RUNTIME_CACHE = "capital-runtime-v20";
 
 function scopeUrl(path) {
   const base = self.registration?.scope || self.location.href.replace(/[^/]+$/, "");
