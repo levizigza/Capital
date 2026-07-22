@@ -27,12 +27,19 @@ const FLIGHT_SECS = 11;
 /**
  * First-person money-carpet opening — you fly toward Harbor Haven (first island).
  * Plays after the Capital title mural.
+ *
+ * Camera is locked in carpet-local space and pitched down onto the dollar-bill
+ * nose so the flapping rug fills the lower frame (not a horizon-only POV).
  */
 function FlightPov({ onLanded }: { onLanded: () => void }) {
   const carpet = useRef<THREE.Group>(null);
   const progress = useRef(0);
   const done = useRef(false);
   const { camera } = useThree();
+  const localEye = useMemo(() => new THREE.Vector3(0, 0.52, -1.05), []);
+  const localLook = useMemo(() => new THREE.Vector3(0, 0.02, 1.55), []);
+  const worldEye = useMemo(() => new THREE.Vector3(), []);
+  const worldLook = useMemo(() => new THREE.Vector3(), []);
 
   const start = useMemo(() => new THREE.Vector3(0, 4.5, 55), []);
   const end = useMemo(() => new THREE.Vector3(0, 3.2, 8), []);
@@ -51,22 +58,21 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
 
     if (carpet.current) {
       carpet.current.position.copy(pos);
+      carpet.current.rotation.order = "YXZ";
       carpet.current.rotation.y = heading;
-      carpet.current.rotation.z = Math.sin(t * 8) * 0.045;
-      carpet.current.rotation.x = -0.05 + Math.sin(t * 5) * 0.02;
-    }
+      // Keep bank/pitch mild so the bill stays under the lens
+      carpet.current.rotation.z = Math.sin(t * 8) * 0.03;
+      carpet.current.rotation.x = -0.12 + Math.sin(t * 5) * 0.02;
+      carpet.current.updateMatrixWorld(true);
 
-    // First-person on the carpet: look down the flapping dollar-bill nose.
-    const forward = new THREE.Vector3(Math.sin(heading), 0, Math.cos(heading));
-    const eye = pos.clone().addScaledVector(forward, -0.55);
-    eye.y += 0.45;
-    camera.position.copy(eye);
-    // Bias lookAt onto the bill surface so wind flaps read clearly in POV.
-    const carpetNose = pos.clone().addScaledVector(forward, 1.85);
-    carpetNose.y += 0.02 + Math.sin(performance.now() / 140) * 0.04;
-    const horizon = pos.clone().addScaledVector(forward, 14);
-    horizon.y += 0.35;
-    camera.lookAt(carpetNose.lerp(horizon, 0.28));
+      // Eye sits on the rear of the bill; look point is on the flapping nose ahead.
+      worldEye.copy(localEye).applyMatrix4(carpet.current.matrixWorld);
+      worldLook.copy(localLook).applyMatrix4(carpet.current.matrixWorld);
+      // Soft wind bob on the look target so flaps read in POV
+      worldLook.y += Math.sin(performance.now() / 130) * 0.05;
+      camera.position.copy(worldEye);
+      camera.lookAt(worldLook);
+    }
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -183,7 +189,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.5]}
-        camera={{ position: [0, 5, 55], fov: 72, near: 0.08, far: 220 }}
+        camera={{ position: [0, 5, 55], fov: 78, near: 0.05, far: 220 }}
         className="absolute inset-0"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
@@ -211,7 +217,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
         </h1>
         <p className="mt-2 text-sm font-semibold text-white/85">
           {phase === "fly"
-            ? "POV · money magic carpet flapping in the wind"
+            ? "Look down — your money magic carpet is flapping under you"
             : "Landing…"}
         </p>
       </div>

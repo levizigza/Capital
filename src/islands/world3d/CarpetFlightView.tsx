@@ -100,25 +100,19 @@ function FlightRig({
 
     if (carpet.current) {
       carpet.current.position.set(s.x, s.y, s.z);
+      carpet.current.rotation.order = "YXZ";
       carpet.current.rotation.y = s.heading;
-    }
+      carpet.current.rotation.x = -0.12;
+      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.03;
+      carpet.current.updateMatrixWorld(true);
 
-    // First-person POV — flapping bill nose fills the lower frame
-    const fx = Math.sin(s.heading);
-    const fz = Math.cos(s.heading);
-    const eyeX = s.x - fx * 0.55;
-    const eyeZ = s.z - fz * 0.55;
-    camera.position.lerp(new THREE.Vector3(eyeX, s.y + 0.45, eyeZ), 1 - Math.pow(0.0008, dt));
-    const noseX = s.x + fx * 1.85;
-    const noseZ = s.z + fz * 1.85;
-    const farX = s.x + fx * 14;
-    const farZ = s.z + fz * 14;
-    const flapY = 0.02 + Math.sin(performance.now() / 140) * 0.04;
-    camera.lookAt(
-      noseX * 0.72 + farX * 0.28,
-      s.y + flapY * 0.72 + 0.35 * 0.28,
-      noseZ * 0.72 + farZ * 0.28,
-    );
+      // Carpet-local POV: below-and-ahead view of the flapping bill
+      const eye = new THREE.Vector3(0, 0.52, -1.05).applyMatrix4(carpet.current.matrixWorld);
+      const look = new THREE.Vector3(0, 0.02, 1.55).applyMatrix4(carpet.current.matrixWorld);
+      look.y += Math.sin(performance.now() / 130) * 0.05;
+      camera.position.lerp(eye, 1 - Math.pow(0.0008, dt));
+      camera.lookAt(look);
+    }
 
     let nearest: WorldIsle | null = null;
     let nearestDist = Infinity;

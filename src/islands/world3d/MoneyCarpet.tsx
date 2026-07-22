@@ -33,22 +33,22 @@ export function MoneyCarpet({
   const fringeRefs = useRef<THREE.Mesh[]>([]);
   const tipRefs = useRef<THREE.Mesh[]>([]);
 
-  // POV: long bill stretching far ahead of the seat. Third-person: shorter rug.
-  const length = povRide ? 4.2 : 1.6;
-  const width = povRide ? 1.7 : 1.75;
+  // POV: long bright bill stretching far ahead of the seat.
+  const length = povRide ? 4.6 : 1.6;
+  const width = povRide ? 2.05 : 1.75;
   // Seat sits toward the rear; most of the bill is the nose in front (+Z).
-  const seatZ = povRide ? -0.85 : 0;
+  const seatZ = povRide ? -0.95 : 0;
   const noseTipZ = seatZ + length * 0.72;
   const tailZ = seatZ - length * 0.28;
 
   const geometry = useMemo(() => {
-    const segsW = povRide ? 14 : 8;
-    const segsL = povRide ? 28 : 12;
+    const segsW = povRide ? 16 : 8;
+    const segsL = povRide ? 32 : 12;
     const geo = new THREE.PlaneGeometry(width, length, segsW, segsL);
     geo.rotateX(-Math.PI / 2);
     // Shift so seat origin is near the rear of the bill
     geo.translate(0, 0, seatZ + length * 0.22);
-    // Paint bill greens via vertex colors (darker edges, lighter field)
+    // Brighter bill greens so POV reads clearly against sky/sea
     const pos = geo.attributes.position!;
     const colors = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
@@ -56,10 +56,10 @@ export function MoneyCarpet({
       const z = pos.getZ(i);
       const edge = Math.max(Math.abs(x) / (width * 0.5), 0);
       const along = (z - tailZ) / Math.max(0.001, noseTipZ - tailZ);
-      const ink = 0.08 + edge * 0.12;
-      colors[i * 3] = 0.1 + ink;
-      colors[i * 3 + 1] = 0.32 + (1 - edge) * 0.18 + along * 0.05;
-      colors[i * 3 + 2] = 0.2 + ink * 0.5;
+      const ink = 0.06 + edge * 0.1;
+      colors[i * 3] = 0.18 + ink;
+      colors[i * 3 + 1] = 0.48 + (1 - edge) * 0.22 + along * 0.06;
+      colors[i * 3 + 2] = 0.28 + ink * 0.4;
     }
     geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
     geo.computeVertexNormals();
@@ -87,12 +87,13 @@ export function MoneyCarpet({
     const t = clock.elapsedTime;
     if (!flying) return;
 
-    // Whole-carpet wind lean (gentle) — keep POV stable for the camera parent.
-    if (root.current) {
+    // Whole-carpet wind lean — POV keeps the root still so the locked camera
+    // stays aimed at the flapping cloth (motion lives in the vertices / fringe).
+    if (root.current && !povRide) {
       const gust = Math.sin(t * 0.7) * 0.5 + Math.sin(t * 1.9) * 0.5;
-      root.current.position.y = Math.sin(t * 2.4) * (povRide ? 0.03 : 0.1);
-      root.current.rotation.z = gust * (povRide ? 0.025 : 0.05);
-      root.current.rotation.x = -0.04 + Math.sin(t * 1.3) * (povRide ? 0.02 : 0.035);
+      root.current.position.y = Math.sin(t * 2.4) * 0.1;
+      root.current.rotation.z = gust * 0.05;
+      root.current.rotation.x = -0.04 + Math.sin(t * 1.3) * 0.035;
     }
 
     // Cloth ripple — stronger toward the nose and sides (wind-driven flap).
@@ -107,7 +108,7 @@ export function MoneyCarpet({
         // Nose flaps hard; seat area stays firmer under the rider.
         const seatFirm = povRide ? THREE.MathUtils.clamp(Math.abs(bz - seatZ) * 1.1, 0.25, 1) : 1;
         const flapAmp =
-          (0.05 + along * along * 0.38 + side * 0.14) * seatFirm * (povRide ? 1.45 : 0.9);
+          (0.06 + along * along * 0.42 + side * 0.16) * seatFirm * (povRide ? 1.6 : 0.9);
         const wave =
           Math.sin(bz * 3.1 - t * 8.5) * flapAmp +
           Math.sin(bx * 3.8 + t * 5.8) * flapAmp * 0.5 +
@@ -141,12 +142,14 @@ export function MoneyCarpet({
     () =>
       new THREE.MeshStandardMaterial({
         vertexColors: true,
-        roughness: 0.62,
-        metalness: 0.1,
+        roughness: 0.55,
+        metalness: 0.12,
         side: THREE.DoubleSide,
         flatShading: false,
+        emissive: new THREE.Color(povRide ? "#14532d" : "#000000"),
+        emissiveIntensity: povRide ? 0.22 : 0,
       }),
-    [],
+    [povRide],
   );
 
   return (
