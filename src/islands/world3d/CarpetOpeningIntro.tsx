@@ -56,17 +56,17 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
       carpet.current.rotation.x = -0.05 + Math.sin(t * 5) * 0.02;
     }
 
-    // Sit on the rear of the rug, looking down the money nose (+ flight axis).
+    // First-person on the carpet: look down the flapping dollar-bill nose.
     const forward = new THREE.Vector3(Math.sin(heading), 0, Math.cos(heading));
-    const eye = pos.clone().addScaledVector(forward, -0.72);
-    eye.y += 0.58;
+    const eye = pos.clone().addScaledVector(forward, -0.55);
+    eye.y += 0.45;
     camera.position.copy(eye);
-    // Blend carpet tip (reads as riding) with far horizon (reads as flight).
-    const carpetNose = pos.clone().addScaledVector(forward, 2.05);
-    carpetNose.y += 0.06;
-    const horizon = pos.clone().addScaledVector(forward, 18);
-    horizon.y += 0.55;
-    camera.lookAt(carpetNose.lerp(horizon, 0.42));
+    // Bias lookAt onto the bill surface so wind flaps read clearly in POV.
+    const carpetNose = pos.clone().addScaledVector(forward, 1.85);
+    carpetNose.y += 0.02 + Math.sin(performance.now() / 140) * 0.04;
+    const horizon = pos.clone().addScaledVector(forward, 14);
+    horizon.y += 0.35;
+    camera.lookAt(carpetNose.lerp(horizon, 0.28));
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -211,7 +211,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
         </h1>
         <p className="mt-2 text-sm font-semibold text-white/85">
           {phase === "fly"
-            ? "Riding the money magic carpet · Harbor Haven ahead"
+            ? "POV · money magic carpet flapping in the wind"
             : "Landing…"}
         </p>
       </div>

@@ -11,181 +11,268 @@ type Props = {
   /** First-person: carpet only (no seated body blocking the lens). */
   hideRider?: boolean;
   /**
-   * First-person ride layout — longer nose ahead of the camera so the
-   * money rug fills the lower frame and reads as something you're on.
-   * Local +Z is the flight / nose direction.
+   * First-person ride layout — long dollar-bill nose ahead of the camera
+   * so the money rug fills the lower frame. Local +Z = flight / nose.
    */
   povRide?: boolean;
 };
 
-/** Money magic carpet — thick bill-green rug with gold trim + engraved seal. */
+/**
+ * Money magic carpet — a flying dollar bill that ripples in the wind.
+ * POV mode stretches a long nose in front of the camera so you clearly
+ * see you're riding it.
+ */
 export function MoneyCarpet({
   character,
   flying = true,
   hideRider = false,
   povRide = false,
 }: Props) {
-  const group = useRef<THREE.Group>(null);
+  const root = useRef<THREE.Group>(null);
+  const cloth = useRef<THREE.Mesh>(null);
+  const fringeRefs = useRef<THREE.Mesh[]>([]);
+  const tipRefs = useRef<THREE.Mesh[]>([]);
 
-  // Standard rug is short; POV needs a long bill-nose in front of the rider.
-  const length = povRide ? 2.85 : 1.2;
-  const width = povRide ? 1.55 : 1.75;
-  const nose = length * 0.5;
-  // Shift body slightly forward so more carpet sits ahead of the seating origin.
-  const bodyZ = povRide ? 0.55 : 0;
+  // POV: long bill stretching far ahead of the seat. Third-person: shorter rug.
+  const length = povRide ? 4.2 : 1.6;
+  const width = povRide ? 1.7 : 1.75;
+  // Seat sits toward the rear; most of the bill is the nose in front (+Z).
+  const seatZ = povRide ? -0.85 : 0;
+  const noseTipZ = seatZ + length * 0.72;
+  const tailZ = seatZ - length * 0.28;
+
+  const geometry = useMemo(() => {
+    const segsW = povRide ? 14 : 8;
+    const segsL = povRide ? 28 : 12;
+    const geo = new THREE.PlaneGeometry(width, length, segsW, segsL);
+    geo.rotateX(-Math.PI / 2);
+    // Shift so seat origin is near the rear of the bill
+    geo.translate(0, 0, seatZ + length * 0.22);
+    // Paint bill greens via vertex colors (darker edges, lighter field)
+    const pos = geo.attributes.position!;
+    const colors = new Float32Array(pos.count * 3);
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const z = pos.getZ(i);
+      const edge = Math.max(Math.abs(x) / (width * 0.5), 0);
+      const along = (z - tailZ) / Math.max(0.001, noseTipZ - tailZ);
+      const ink = 0.08 + edge * 0.12;
+      colors[i * 3] = 0.1 + ink;
+      colors[i * 3 + 1] = 0.32 + (1 - edge) * 0.18 + along * 0.05;
+      colors[i * 3 + 2] = 0.2 + ink * 0.5;
+    }
+    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    geo.computeVertexNormals();
+    return geo;
+  }, [width, length, seatZ, noseTipZ, tailZ, povRide]);
+
+  const basePositions = useMemo(() => {
+    const pos = geometry.attributes.position!;
+    return Float32Array.from(pos.array as ArrayLike<number>);
+  }, [geometry]);
 
   const fringe = useMemo(() => {
-    const g = new THREE.Group();
-    const mat = new THREE.MeshStandardMaterial({
-      color: "#c9a227",
-      roughness: 0.4,
-      metalness: 0.35,
-    });
-    const count = povRide ? 14 : 12;
-    const halfW = width * 0.48;
-    const step = (halfW * 2) / (count - 1);
-    const fringeLen = povRide ? 0.5 : 0.42;
-    // Nose fringe (flight direction / +Z)
+    const items: { x: number; z: number; nose: boolean }[] = [];
+    const count = povRide ? 16 : 10;
     for (let i = 0; i < count; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, fringeLen), mat);
-      m.position.set(-halfW + i * step, 0.03, bodyZ + nose + fringeLen * 0.35);
-      g.add(m);
+      const t = count === 1 ? 0.5 : i / (count - 1);
+      const x = -width * 0.46 + t * width * 0.92;
+      items.push({ x, z: noseTipZ + 0.08, nose: true });
+      items.push({ x, z: tailZ - 0.08, nose: false });
     }
-    // Tail fringe (−Z)
-    for (let i = 0; i < count; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.025, fringeLen), mat);
-      m.position.set(-halfW + i * step, 0.03, bodyZ - nose - fringeLen * 0.35);
-      g.add(m);
-    }
-    return g;
-  }, [povRide, width, nose, bodyZ]);
-
-  const billBands = useMemo(() => {
-    if (!povRide) return null;
-    const g = new THREE.Group();
-    const ink = new THREE.MeshStandardMaterial({
-      color: "#0f3d28",
-      roughness: 0.55,
-      metalness: 0.05,
-    });
-    const gold = new THREE.MeshStandardMaterial({
-      color: "#c9a227",
-      roughness: 0.35,
-      metalness: 0.45,
-    });
-    // Horizontal bill lines running across the nose so POV reads "money rug"
-    for (let i = 0; i < 5; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(width * 0.72, 0.012, 0.045), ink);
-      m.position.set(0, 0.1, bodyZ + 0.35 + i * 0.28);
-      g.add(m);
-    }
-    // Serial-number style strips near the tip
-    for (let i = 0; i < 3; i++) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.014, 0.06), gold);
-      m.position.set((i - 1) * 0.42, 0.105, bodyZ + nose - 0.35);
-      g.add(m);
-    }
-    return g;
-  }, [povRide, width, bodyZ, nose]);
+    return items;
+  }, [povRide, width, noseTipZ, tailZ]);
 
   useFrame(({ clock }) => {
-    if (!group.current || !flying) return;
     const t = clock.elapsedTime;
-    // Keep POV ride calmer so the camera (world-locked to parent) doesn't lose the rug.
-    const amp = hideRider || povRide ? 0.045 : 0.12;
-    group.current.position.y = Math.sin(t * 2.2) * amp;
-    group.current.rotation.z = Math.sin(t * 1.6) * (povRide ? 0.02 : 0.04);
-    group.current.rotation.x = Math.sin(t * 1.1) * (povRide ? 0.015 : 0.03);
+    if (!flying) return;
+
+    // Whole-carpet wind lean (gentle) — keep POV stable for the camera parent.
+    if (root.current) {
+      const gust = Math.sin(t * 0.7) * 0.5 + Math.sin(t * 1.9) * 0.5;
+      root.current.position.y = Math.sin(t * 2.4) * (povRide ? 0.03 : 0.1);
+      root.current.rotation.z = gust * (povRide ? 0.025 : 0.05);
+      root.current.rotation.x = -0.04 + Math.sin(t * 1.3) * (povRide ? 0.02 : 0.035);
+    }
+
+    // Cloth ripple — stronger toward the nose and sides (wind-driven flap).
+    if (cloth.current) {
+      const pos = cloth.current.geometry.attributes.position!;
+      for (let i = 0; i < pos.count; i++) {
+        const bx = basePositions[i * 3]!;
+        const by = basePositions[i * 3 + 1]!;
+        const bz = basePositions[i * 3 + 2]!;
+        const along = THREE.MathUtils.clamp((bz - tailZ) / Math.max(0.001, noseTipZ - tailZ), 0, 1);
+        const side = Math.abs(bx) / (width * 0.5);
+        // Nose flaps hard; seat area stays firmer under the rider.
+        const seatFirm = povRide ? THREE.MathUtils.clamp(Math.abs(bz - seatZ) * 1.1, 0.25, 1) : 1;
+        const flapAmp =
+          (0.05 + along * along * 0.38 + side * 0.14) * seatFirm * (povRide ? 1.45 : 0.9);
+        const wave =
+          Math.sin(bz * 3.1 - t * 8.5) * flapAmp +
+          Math.sin(bx * 3.8 + t * 5.8) * flapAmp * 0.5 +
+          Math.sin((bz + bx) * 1.8 - t * 3.4) * flapAmp * 0.35 +
+          Math.sin(t * 2.2 + along * 4) * flapAmp * 0.2;
+        pos.setY(i, by + wave);
+      }
+      pos.needsUpdate = true;
+      cloth.current.geometry.computeVertexNormals();
+    }
+
+    // Gold fringe tassels whip in the wind
+    for (let i = 0; i < fringeRefs.current.length; i++) {
+      const m = fringeRefs.current[i];
+      if (!m) continue;
+      const nose = fringe[i]?.nose;
+      const phase = t * (nose ? 11 : 8) + i * 0.55;
+      m.rotation.x = (nose ? 0.55 : 0.35) + Math.sin(phase) * (nose ? 0.55 : 0.3);
+      m.rotation.z = Math.sin(phase * 0.7 + i) * 0.25;
+    }
+
+    // Nose ornaments ride the tip flap
+    for (let i = 0; i < tipRefs.current.length; i++) {
+      const m = tipRefs.current[i];
+      if (!m) continue;
+      m.position.y = 0.1 + Math.sin(t * 7.5 - noseTipZ * 2.8 + i) * (povRide ? 0.14 : 0.06);
+    }
   });
 
-  const innerW = width * 0.83;
-  const innerL = length * 0.8;
+  const mat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.62,
+        metalness: 0.1,
+        side: THREE.DoubleSide,
+        flatShading: false,
+      }),
+    [],
+  );
 
   return (
-    <group ref={group}>
-      {/* Thick rug body */}
-      <mesh position={[0, 0.04, bodyZ]} castShadow receiveShadow>
-        <boxGeometry args={[width, 0.08, length]} />
-        <meshStandardMaterial color="#1a5436" roughness={0.7} metalness={0.12} />
+    <group ref={root}>
+      {/* Flapping dollar-bill cloth */}
+      <mesh ref={cloth} geometry={geometry} material={mat} castShadow receiveShadow />
+
+      {/* Seat pad only — full-length underside would fight the flap */}
+      <mesh position={[0, -0.02, seatZ]} receiveShadow>
+        <boxGeometry args={[width * 0.55, 0.035, povRide ? 0.7 : length * 0.5]} />
+        <meshStandardMaterial color="#0f3d28" roughness={0.85} />
       </mesh>
-      {/* Inner field */}
-      <mesh position={[0, 0.085, bodyZ]} receiveShadow>
-        <boxGeometry args={[innerW, 0.02, innerL]} />
-        <meshStandardMaterial color="#2d6a4f" roughness={0.55} metalness={0.08} />
-      </mesh>
-      {/* Gold border inlay — under / near rider */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, bodyZ - (povRide ? 0.35 : 0)]}>
-        <ringGeometry args={[0.5, 0.58, 32]} />
-        <meshStandardMaterial
-          color="#c9a227"
-          roughness={0.35}
-          metalness={0.45}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-      {/* Engraved center seal — slightly forward of rider so POV sees it */}
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.105, bodyZ + (povRide ? 0.15 : 0)]}
-      >
-        <circleGeometry args={[0.28, 28]} />
-        <meshStandardMaterial
-          color="#c9a227"
-          roughness={0.3}
-          metalness={0.5}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.11, bodyZ + (povRide ? 0.15 : 0)]}
-      >
-        <ringGeometry args={[0.16, 0.22, 24]} />
-        <meshStandardMaterial color="#0f3d28" roughness={0.5} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Nose medallion — sits clearly in front of the camera */}
-      {povRide ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.11, bodyZ + nose - 0.55]}>
-          <circleGeometry args={[0.22, 24]} />
-          <meshStandardMaterial
-            color="#c9a227"
-            roughness={0.28}
-            metalness={0.55}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-      ) : null}
-      {/* Corner ornaments */}
-      {(povRide
-        ? [
-            [-width * 0.38, bodyZ + nose - 0.25],
-            [width * 0.38, bodyZ + nose - 0.25],
-            [-width * 0.38, bodyZ - nose + 0.25],
-            [width * 0.38, bodyZ - nose + 0.25],
-            [-width * 0.28, bodyZ + 0.7],
-            [width * 0.28, bodyZ + 0.7],
-          ]
-        : [
-            [-0.65, 0.4],
-            [0.65, 0.4],
-            [-0.65, -0.4],
-            [0.65, -0.4],
-          ]
-      ).map(([x, z], i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.1, z]}>
-          <circleGeometry args={[0.08, 12]} />
-          <meshStandardMaterial
-            color="#c9a227"
-            roughness={0.4}
-            metalness={0.4}
-            side={THREE.DoubleSide}
-          />
+
+      {/* Gold border rails along the long edges */}
+      {[-1, 1].map((side) => (
+        <mesh
+          key={`rail-${side}`}
+          position={[side * width * 0.48, 0.05, seatZ + length * 0.22]}
+          castShadow
+        >
+          <boxGeometry args={[0.05, 0.03, length * 0.95]} />
+          <meshStandardMaterial color="#c9a227" roughness={0.35} metalness={0.45} />
         </mesh>
       ))}
-      <primitive object={fringe} />
-      {billBands ? <primitive object={billBands} /> : null}
+
+      {/* Big $ seal under / just ahead of the seat — readable in POV */}
+      <mesh
+        ref={(el) => {
+          if (el) tipRefs.current[0] = el;
+        }}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0.1, seatZ + 0.55]}
+      >
+        <circleGeometry args={[povRide ? 0.38 : 0.28, 28]} />
+        <meshStandardMaterial color="#c9a227" roughness={0.3} metalness={0.55} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.11, seatZ + 0.55]}>
+        <ringGeometry args={[0.2, 0.28, 24]} />
+        <meshStandardMaterial color="#0f3d28" roughness={0.5} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Extra nose medallions — sit right in the forward POV */}
+      {povRide ? (
+        <>
+          <mesh
+            ref={(el) => {
+              if (el) tipRefs.current[1] = el;
+            }}
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, 0.1, seatZ + 1.6]}
+          >
+            <circleGeometry args={[0.26, 24]} />
+            <meshStandardMaterial
+              color="#c9a227"
+              roughness={0.28}
+              metalness={0.55}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          <mesh
+            ref={(el) => {
+              if (el) tipRefs.current[2] = el;
+            }}
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, 0.1, seatZ + 2.7]}
+          >
+            <circleGeometry args={[0.2, 20]} />
+            <meshStandardMaterial
+              color="#f4a629"
+              roughness={0.3}
+              metalness={0.5}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          {/* Bill serial stripes marching toward the tip */}
+          {[1.1, 1.55, 2.0, 2.45, 2.95, 3.35].map((z, i) => (
+            <mesh
+              key={`stripe-${i}`}
+              ref={(el) => {
+                if (el) tipRefs.current[3 + i] = el;
+              }}
+              position={[0, 0.09, seatZ + z]}
+            >
+              <boxGeometry args={[width * 0.7, 0.015, 0.05]} />
+              <meshStandardMaterial color={i % 2 ? "#0f3d28" : "#c9a227"} roughness={0.45} />
+            </mesh>
+          ))}
+          {/* Dollar corners near tip */}
+          {[
+            [-0.55, 3.1],
+            [0.55, 3.1],
+            [-0.55, 2.2],
+            [0.55, 2.2],
+          ].map(([x, z], i) => (
+            <mesh
+              key={`corner-${i}`}
+              ref={(el) => {
+                if (el) tipRefs.current[10 + i] = el;
+              }}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[x, 0.1, seatZ + z]}
+            >
+              <circleGeometry args={[0.09, 10]} />
+              <meshStandardMaterial color="#c9a227" roughness={0.4} metalness={0.4} side={THREE.DoubleSide} />
+            </mesh>
+          ))}
+        </>
+      ) : null}
+
+      {/* Wind-whipped fringe */}
+      {fringe.map((f, i) => (
+        <mesh
+          key={`fringe-${i}`}
+          ref={(el) => {
+            if (el) fringeRefs.current[i] = el;
+          }}
+          position={[f.x, 0.02, f.z]}
+          castShadow
+        >
+          <boxGeometry args={[0.04, 0.03, povRide ? 0.55 : 0.38]} />
+          <meshStandardMaterial color="#c9a227" roughness={0.4} metalness={0.35} />
+        </mesh>
+      ))}
+
       {!hideRider ? (
-        <group position={[0, 0.12, povRide ? -0.15 : 0.05]}>
+        <group position={[0, 0.14, seatZ]}>
           <VoyagerMesh character={character} pose="sit" scale={0.85} />
         </group>
       ) : null}
