@@ -45,7 +45,7 @@ export function WorldLighting({
       {/* Fill light so islands never render as a black void */}
       <directionalLight position={[-20, 18, -12]} intensity={0.35} color="#c4e8ff" />
       {wireEra ? (
-        <Stars radius={140} depth={50} count={2800} factor={3} saturation={0} fade speed={0.55} />
+        <Stars radius={140} depth={50} count={900} factor={3} saturation={0} fade speed={0.55} />
       ) : (
         <Sky
           sunPosition={neon ? [40, 8, 20] : [80, 28, 40]}

@@ -68,7 +68,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
 
   return (
     <>
-      <WorldLighting look={{ ...LOOK, fogNear: 25, fogFar: 55 }} contactShadows={false} shadowMapSize={1024} />
+      <WorldLighting look={{ ...LOOK, fogNear: 25, fogFar: 55 }} contactShadows={false} shadowMapSize={512} />
       <OceanWater color="#0e7490" shading="harbor" size={120} calm />
       <MapCamera />
 
@@ -148,7 +148,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
       ) : null}
       <Canvas
         shadows
-        dpr={reduced ? [1, 1] : [1, 1.5]}
+        dpr={reduced ? [1, 1] : [1, 1.25]}
         camera={{ position: [0, 14, 16], fov: 42, near: 0.1, far: 200 }}
         className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}

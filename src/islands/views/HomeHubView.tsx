@@ -29,10 +29,30 @@ import { ensureLedger } from "../voyagerLedger";
 import { OutfitterInterior } from "./OutfitterBuilding";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
 import { HUB_ISLAND_ID } from "../worldMapLayout";
+import {
+  CAPSULE_OFFERS,
+  PLAZA_PASS_PRICE,
+  canBuyCapsule,
+  capsuleLabel,
+  companionPrice,
+  hubPartyItems,
+  isRoomUnlocked,
+  nextPurchasableCarpet,
+  ownsCompanion,
+} from "../harborShop";
+import { PARTY_ITEMS } from "../partyItems";
+import type { PartyItemId } from "../partyItems";
+import { toast } from "sonner";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
 type HubModal = "outfitter" | "capsule" | "settings" | null;
+
+export type HarborPurchase =
+  | { kind: "capsule"; itemId: PartyItemId; price: number }
+  | { kind: "carpet"; tierId: string; price: number }
+  | { kind: "plaza_pass"; room: "market"; price: number }
+  | { kind: "companion"; companionId: string; price: number };
 
 export type HomeHubViewProps = {
   userProfile: UserProfile;
@@ -41,6 +61,8 @@ export type HomeHubViewProps = {
   learningProfile: LearningProfileId;
   character?: CapitalCharacter;
   onSaveCharacter: (c: CapitalCharacter) => void;
+  /** Spend coins + mutate harbor shop / capsules */
+  onHarborPurchase: (purchase: HarborPurchase) => boolean;
   hubModal: HubModal;
   setHubModal: (m: HubModal) => void;
   onExit: () => void;
@@ -67,6 +89,7 @@ export function HomeHubView({
   learningProfile,
   character,
   onSaveCharacter,
+  onHarborPurchase,
   hubModal,
   setHubModal,
   onOpenTravel,
@@ -94,7 +117,8 @@ export function HomeHubView({
   const [outfitterStage, setOutfitterStage] = useState<"look" | "pet">("look");
   const [draft, setDraft] = useState<CapitalCharacter>(voyager);
   const [nearStore, setNearStore] = useState<{ id: string; label: string } | null>(null);
-  const plazaRoom = "plaza";
+  const [nearNpc, setNearNpc] = useState<{ id: string; name: string; line: string } | null>(null);
+  const plazaRoom = isRoomUnlocked(save, "market") ? "market" : "plaza";
 
   const pets = useMemo(() => CHARACTER_COMPANIONS.filter((c) => c.id !== "none"), []);
 
@@ -102,6 +126,7 @@ export function HomeHubView({
     () => [
       { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6.5, 0, -5] },
       { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -8] },
+      { id: "capsule", label: "Capsule Stall", icon: "📦", position: [4.2, 0, -7.2] },
       { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
       { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
       { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
@@ -147,6 +172,7 @@ export function HomeHubView({
               onHotspot={onHarborHotspot}
               onOpenTravel={onOpenTravel}
               onNearChange={onNearChange}
+              onNearNpc={setNearNpc}
             />
           </div>
         }
@@ -240,7 +266,12 @@ export function HomeHubView({
           data-hud-pass
           className="flex h-full min-h-0 flex-col items-center justify-start pt-1"
         >
-          {highlightOutfitter ? (
+          {nearNpc && !nearStore ? (
+            <div className="pointer-events-none max-w-sm rounded-2xl bg-black/70 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
+              <div className="text-[10px] uppercase tracking-wide text-white/70">{nearNpc.name}</div>
+              {nearNpc.line}
+            </div>
+          ) : highlightOutfitter ? (
             <div className="rounded-full bg-amber-500/90 px-4 py-1.5 text-sm font-bold text-[#16283b] shadow-lg">
               Walk to the Outfitter (front center)
             </div>
@@ -286,6 +317,8 @@ export function HomeHubView({
                 <div className="flex flex-wrap justify-center gap-2">
                   {pets.map((pet) => {
                     const active = draft.companion === pet.id;
+                    const price = companionPrice(pet.id);
+                    const owned = ownsCompanion(save, pet.id);
                     return (
                       <button
                         key={pet.id}
@@ -299,6 +332,9 @@ export function HomeHubView({
                       >
                         <span className="text-3xl">{companionEmoji(pet.id)}</span>
                         <span className="text-xs font-bold">{pet.label}</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground">
+                          {owned ? "Owned" : `🪙 ${price}`}
+                        </span>
                       </button>
                     );
                   })}
@@ -312,11 +348,29 @@ export function HomeHubView({
                     className="flex-1"
                     disabled={draft.companion === "none"}
                     onClick={() => {
+                      const price = companionPrice(draft.companion);
+                      const owned = ownsCompanion(save, draft.companion);
+                      if (!owned && price > 0) {
+                        const ok = onHarborPurchase({
+                          kind: "companion",
+                          companionId: draft.companion,
+                          price,
+                        });
+                        if (!ok) {
+                          toast.error(`Need 🪙 ${price} for that pet`);
+                          return;
+                        }
+                        toast.success(`Adopted! −🪙 ${price}`);
+                      }
                       onSaveCharacter(draft);
                       setHubModal(null);
                     }}
                   >
-                    {draft.companion === "none" ? "Pick a pet" : "Leave shop ✓"}
+                    {draft.companion === "none"
+                      ? "Pick a pet"
+                      : ownsCompanion(save, draft.companion)
+                        ? "Leave shop ✓"
+                        : `Adopt · 🪙 ${companionPrice(draft.companion)}`}
                   </GameButton>
                 </div>
               </div>
@@ -325,19 +379,132 @@ export function HomeHubView({
         ) : null}
 
         {hubModal === "capsule" ? (
-          <div className="space-y-4 text-center">
-            <div className="text-5xl">📦</div>
-            <div className="text-xl font-black">Capsule Stall</div>
-            <p className="text-sm text-muted-foreground">
-              Fortune Capsules also wash up on island boards. This stall previews what you can find at sea.
-            </p>
-            <GamePanel padding="default" className="space-y-2 text-left text-sm">
-              <div>🛡️ <strong>Emergency Ledger</strong> — block a raid</div>
-              <div>🧲 <strong>Dividend Magnet</strong> — double a payday</div>
-              <div>📜 <strong>Fee Writ</strong> — take coins from a rival</div>
-              <div className="pt-2 font-bold">Your balance: 🪙 {userProfile.totalCoins}</div>
+          <div className="space-y-4">
+            <div className="text-center">
+              <div className="text-5xl">📦</div>
+              <div className="text-xl font-black">Capsule Stall</div>
+              <p className="text-sm text-muted-foreground">
+                Spend coins on Fortune Capsules, carpet polish, and a Market pass.
+              </p>
+              <div className="mt-1 text-sm font-bold">Balance: 🪙 {userProfile.totalCoins}</div>
+            </div>
+
+            <GamePanel padding="default" className="space-y-2 text-left">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Fortune Capsules
+              </div>
+              {CAPSULE_OFFERS.map((offer) => {
+                const def = PARTY_ITEMS[offer.itemId];
+                const check = canBuyCapsule(save, userProfile.totalCoins, offer.itemId, offer.price);
+                const owned = hubPartyItems(save).includes(offer.itemId);
+                return (
+                  <div
+                    key={offer.itemId}
+                    className="flex items-center justify-between gap-2 rounded-xl border border-black/10 bg-white/70 px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold">
+                        {def.icon} {def.name}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground line-clamp-1">{def.moneyTip}</div>
+                    </div>
+                    <GameButton
+                      size="sm"
+                      variant={owned ? "ghost" : "primary"}
+                      disabled={!check.ok}
+                      onClick={() => {
+                        const ok = onHarborPurchase({
+                          kind: "capsule",
+                          itemId: offer.itemId,
+                          price: offer.price,
+                        });
+                        if (ok) toast.success(`Bought ${capsuleLabel(offer.itemId)}`);
+                        else toast.error(check.reason ?? "Can't buy");
+                      }}
+                    >
+                      {owned ? "Owned" : `🪙 ${offer.price}`}
+                    </GameButton>
+                  </div>
+                );
+              })}
             </GamePanel>
-            <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
+
+            <GamePanel padding="default" className="space-y-2 text-left">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Carpet polish
+              </div>
+              {(() => {
+                const next = nextPurchasableCarpet(userProfile.totalCoins, save);
+                if (!next) {
+                  return <p className="text-sm text-muted-foreground">Your carpet is maxed out.</p>;
+                }
+                const can = userProfile.totalCoins >= next.price;
+                return (
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <div className="text-sm font-bold">
+                        {next.tier.emoji} Unlock {next.tier.label}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">
+                        Early unlock — cheaper than earning every coin for the tier.
+                      </div>
+                    </div>
+                    <GameButton
+                      size="sm"
+                      variant="primary"
+                      disabled={!can}
+                      onClick={() => {
+                        const ok = onHarborPurchase({
+                          kind: "carpet",
+                          tierId: next.tier.id,
+                          price: next.price,
+                        });
+                        if (ok) toast.success(`${next.tier.label} unlocked!`);
+                        else toast.error(`Need 🪙 ${next.price}`);
+                      }}
+                    >
+                      🪙 {next.price}
+                    </GameButton>
+                  </div>
+                );
+              })()}
+            </GamePanel>
+
+            <GamePanel padding="default" className="space-y-2 text-left">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Plaza pass
+              </div>
+              {isRoomUnlocked(save, "market") ? (
+                <p className="text-sm text-muted-foreground">🧺 Pasaran Lane unlocked.</p>
+              ) : (
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <div className="text-sm font-bold">🧺 Pasaran Lane pass</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Open the market wing of Harbor Haven.
+                    </div>
+                  </div>
+                  <GameButton
+                    size="sm"
+                    variant="primary"
+                    disabled={userProfile.totalCoins < PLAZA_PASS_PRICE}
+                    onClick={() => {
+                      const ok = onHarborPurchase({
+                        kind: "plaza_pass",
+                        room: "market",
+                        price: PLAZA_PASS_PRICE,
+                      });
+                      if (ok) toast.success("Pasaran Lane unlocked!");
+                      else toast.error(`Need 🪙 ${PLAZA_PASS_PRICE}`);
+                    }}
+                  >
+                    🪙 {PLAZA_PASS_PRICE}
+                  </GameButton>
+                </div>
+              )}
+            </GamePanel>
+
+            <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
               Back to plaza
             </GameButton>
           </div>

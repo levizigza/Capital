@@ -173,7 +173,7 @@ function WorldScene({
 }) {
   return (
     <>
-      <WorldLighting look={look} shadowMapSize={1024} />
+      <WorldLighting look={look} shadowMapSize={512} />
       <OceanWater color={look.sea} shading={look.shading} />
       {world.map((wi) => {
         const isTarget = targetId === wi.node.island.id;
@@ -270,14 +270,14 @@ export function CarpetFlightView({
       <div className="relative h-full w-full overflow-hidden bg-[#0c1622]">
         <Canvas
           shadows
-          dpr={[1, 1.5]}
+          dpr={[1, 1.25]}
           camera={{ position: [0, 4, 10], fov: 55 }}
           className="absolute inset-0"
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => gl.setClearColor(homeLook.skyTop, 1)}
         >
           <Suspense fallback={null}>
-            <WorldLighting look={homeLook} contactShadows={false} shadowMapSize={1024} />
+            <WorldLighting look={homeLook} contactShadows={false} shadowMapSize={512} />
             <OceanWater color={homeLook.sea} shading={homeLook.shading} size={200} calm />
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 2]} receiveShadow>
               <circleGeometry args={[6, 32]} />
@@ -329,7 +329,7 @@ export function CarpetFlightView({
     <div className="relative h-full w-full overflow-hidden bg-black">
       <Canvas
         shadows
-        dpr={[1, 1.5]}
+        dpr={[1, 1.25]}
         camera={{ position: [0, 6, 12], fov: 60 }}
         className="absolute inset-0"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}

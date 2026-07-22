@@ -92,7 +92,7 @@ function FlightPov({ onLanded }: { onLanded: () => void }) {
 function OpeningWorld({ onLanded }: { onLanded: () => void }) {
   return (
     <>
-      <WorldLighting look={{ ...LOOK, fogNear: 18, fogFar: 95 }} shadowMapSize={1024} />
+      <WorldLighting look={{ ...LOOK, fogNear: 18, fogFar: 95 }} shadowMapSize={512} />
       <OceanWater color={LOOK.sea} shading={LOOK.shading} />
 
       <EraIslandMesh
@@ -193,7 +193,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       ) : null}
       <Canvas
         shadows
-        dpr={reduced ? [1, 1] : [1, 1.5]}
+        dpr={reduced ? [1, 1] : [1, 1.25]}
         camera={{ position: [0, 5, 55], fov: 65, near: 0.08, far: 220 }}
         className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}

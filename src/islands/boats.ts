@@ -37,10 +37,26 @@ export function getBoatTier(totalCoins: number): BoatTier {
 
 /** Carpet tier after applying Harbor freedom unlock (escape reward). */
 export function getEffectiveBoatTier(totalCoins: number, save?: IslandSaveV1 | null): BoatTier {
+  // Defer to harbor shop resolver so purchased polish counts.
+  // Inline to avoid circular import at module load: freedom floor only here;
+  // callers that need polish should use resolveHarborBoatTier from harborShop.
   const base = getBoatTier(totalCoins);
-  if (!save || !hasHarborFreedom(save)) return base;
+  if (!save || !hasHarborFreedom(save)) {
+    const purchasedId = save?.harborShop?.carpetTierId;
+    if (purchasedId) {
+      const purchased = BOAT_TIERS.find((t) => t.id === purchasedId);
+      if (purchased && purchased.minCoins > base.minCoins) return purchased;
+    }
+    return base;
+  }
   const unlocked = BOAT_TIERS.find((t) => t.id === "fortune_flyer")!;
-  return base.minCoins >= unlocked.minCoins ? base : unlocked;
+  let tier = base.minCoins >= unlocked.minCoins ? base : unlocked;
+  const purchasedId = save.harborShop?.carpetTierId;
+  if (purchasedId) {
+    const purchased = BOAT_TIERS.find((t) => t.id === purchasedId);
+    if (purchased && purchased.minCoins > tier.minCoins) tier = purchased;
+  }
+  return tier;
 }
 
 export function nextBoatTier(totalCoins: number): BoatTier | null {

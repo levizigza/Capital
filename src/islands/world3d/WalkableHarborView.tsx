@@ -5,8 +5,14 @@ import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
-import { getMascot, HARBOR_LOCAL_CAST, varyMascot } from "../moneyCast";
+import { getMascot, varyMascot } from "../moneyCast";
 import { colorHex, type MoneyForm } from "../character";
+import {
+  buildHarborNpcLives,
+  currentHarborHour,
+  harborNpcPose,
+  NPC_TALK_RADIUS,
+} from "../harborNpcLives";
 import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -30,6 +36,8 @@ type Props = {
   onOpenTravel: () => void;
   /** Lift near-store state into the HUD so Enter is clickable above the footer. */
   onNearChange?: (id: string | null, label: string | null) => void;
+  /** Ambient Money Mascot chat when walking near a local. */
+  onNearNpc?: (npc: { id: string; name: string; line: string } | null) => void;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -40,20 +48,25 @@ const PLAZA_R = 16;
 function Player({
   character,
   hotspots,
+  npcPositions,
   onNear,
+  onNearNpc,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
+  npcPositions: { id: string; name: string; line: string; position: [number, number, number] }[];
   onNear: (id: string | null) => void;
+  onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
   /** Stable orbit yaw — does not flip when walking backward. */
-  const camYaw = useRef(Math.PI); // look toward −Z stores from spawn at +Z
+  const camYaw = useRef(Math.PI);
   const facing = useRef(Math.PI);
   const vel = useRef(new THREE.Vector3());
   const { camera } = useThree();
   const moving = useRef(false);
+  const nearNpcRef = useRef<string | null>(null);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -78,32 +91,26 @@ function Player({
 
   useFrame((_, dt) => {
     if (!group.current) return;
+    const p = group.current.position;
+    const k = keys.current;
+    const turn = (Number(k.l) - Number(k.r)) * 2.2 * dt;
+    camYaw.current += turn;
 
-    // Tank-style: A/D turn in place; W/S walk along facing without spinning the camera on reverse.
-    const turn = (keys.current.r ? -1 : 0) + (keys.current.l ? 1 : 0);
-    if (turn !== 0) {
-      camYaw.current += turn * 2.4 * dt;
-      facing.current = camYaw.current;
+    const forward = Number(k.f) - Number(k.b);
+    moving.current = Math.abs(forward) > 0.01 || Math.abs(turn) > 0.001;
+    if (Math.abs(forward) > 0.01) {
+      facing.current = forward >= 0 ? camYaw.current : camYaw.current + Math.PI;
+      const spd = SPEED * (k.b && !k.f ? 0.65 : 1);
+      vel.current.set(
+        Math.sin(camYaw.current) * forward * spd,
+        0,
+        Math.cos(camYaw.current) * forward * spd,
+      );
+      p.x += vel.current.x * dt;
+      p.z += vel.current.z * dt;
     }
-
-    const forward = (keys.current.f ? 1 : 0) + (keys.current.b ? -1 : 0);
-    moving.current = forward !== 0 || turn !== 0;
-
-    const fx = Math.sin(facing.current);
-    const fz = Math.cos(facing.current);
-    if (forward !== 0) {
-      vel.current.set(fx * forward, 0, fz * forward);
-      vel.current.normalize().multiplyScalar(SPEED * dt);
-      group.current.position.add(vel.current);
-      // Only face the walk direction when moving forward so reverse keeps storefronts in view.
-      if (forward > 0) {
-        facing.current = camYaw.current;
-      }
-    }
-
     group.current.rotation.y = facing.current;
 
-    const p = group.current.position;
     const r = Math.hypot(p.x, p.z);
     if (r > PLAZA_R) {
       p.x *= PLAZA_R / r;
@@ -111,8 +118,6 @@ function Player({
     }
     p.y = 0.02;
 
-    // Camera stays behind the character; pull back slightly when near a stall
-    // so the facade doesn't swallow the frame.
     let near: string | null = null;
     let best = INTERACT_R;
     let nearDoor: { x: number; z: number } | null = null;
@@ -131,6 +136,23 @@ function Player({
     }
     onNear(near);
 
+    let npcNear: (typeof npcPositions)[number] | null = null;
+    let npcBest = NPC_TALK_RADIUS;
+    if (!near) {
+      for (const n of npcPositions) {
+        const d = Math.hypot(n.position[0] - p.x, n.position[2] - p.z);
+        if (d < npcBest) {
+          npcBest = d;
+          npcNear = n;
+        }
+      }
+    }
+    const npcKey = npcNear?.id ?? null;
+    if (npcKey !== nearNpcRef.current) {
+      nearNpcRef.current = npcKey;
+      onNearNpc(npcNear ? { id: npcNear.id, name: npcNear.name, line: npcNear.line } : null);
+    }
+
     const back = near ? 10.5 : 8.5;
     const camH = near ? 5.4 : 4.9;
     const ideal = new THREE.Vector3(
@@ -138,7 +160,6 @@ function Player({
       camH,
       p.z - Math.cos(camYaw.current) * back,
     );
-    // Nudge camera off-axis from the door so the building isn't dead-center
     if (nearDoor) {
       const side = Math.sin(camYaw.current + Math.PI / 2) * 1.4;
       const sideZ = Math.cos(camYaw.current + Math.PI / 2) * 1.4;
@@ -232,18 +253,31 @@ function MarketCrate({ position, rot = 0 }: { position: [number, number, number]
 function PlazaScene({
   hotspots,
   onHotspot,
+  locals,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
+  locals: {
+    mascotId: string;
+    mascot: { name: string };
+    look: import("../character").CapitalCharacter;
+    coat: string;
+    form: MoneyForm;
+    glyph?: string;
+    pos: [number, number, number];
+    yaw: number;
+    line: string;
+    name: string;
+  }[];
 }) {
   // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
     return t.props
       .filter((p) => p.kind !== "hut")
-      .slice(0, 34)
+      .slice(0, 18)
       .map((p, i) => {
-        const ang = (i / 34) * Math.PI * 2;
+        const ang = (i / 18) * Math.PI * 2;
         const r = 12.2 + (i % 3) * 1.1;
         return {
           ...p,
@@ -258,22 +292,9 @@ function PlazaScene({
 
   const buildingColors = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4"];
 
-  const locals = HARBOR_LOCAL_CAST.map((slot) => {
-    const mascot = getMascot(slot.mascotId);
-    const look = varyMascot(slot.mascotId, `harbor:${slot.mascotId}`);
-    return {
-      ...slot,
-      mascot,
-      look,
-      coat: colorHex(look.color),
-      form: mascot.form as MoneyForm,
-      glyph: mascot.glyph,
-    };
-  });
-
   const cobbles = useMemo(() => {
-    return Array.from({ length: 36 }, (_, i) => {
-      const ang = (i / 36) * Math.PI * 2 + (i % 5) * 0.07;
+    return Array.from({ length: 20 }, (_, i) => {
+      const ang = (i / 20) * Math.PI * 2 + (i % 5) * 0.07;
       const rad = 2.2 + (i % 7) * 0.95;
       return {
         x: Math.cos(ang) * rad,
@@ -285,7 +306,7 @@ function PlazaScene({
 
   return (
     <>
-      <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={1024} />
+      <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={512} />
       <OceanWater color={LOOK.sea} shading={LOOK.shading} size={400} calm />
 
       {/* Island land mass + cliff thickness */}
@@ -525,11 +546,46 @@ export function WalkableHarborView({
   onHotspot,
   onOpenTravel,
   onNearChange,
+  onNearNpc,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const hour = currentHarborHour();
+  const lives = useMemo(() => buildHarborNpcLives(), []);
+  const locals = useMemo(
+    () =>
+      lives.map((life) => {
+        const pose = harborNpcPose(life, hour);
+        const mascot = getMascot(life.mascotId);
+        const look = varyMascot(life.mascotId, `harbor:${life.mascotId}:${hour}`);
+        return {
+          mascotId: life.mascotId,
+          mascot,
+          look,
+          coat: colorHex(look.color),
+          form: mascot.form as MoneyForm,
+          glyph: mascot.glyph,
+          pos: pose.position,
+          yaw: pose.yaw,
+          line: pose.line,
+          name: pose.name,
+        };
+      }),
+    [lives, hour],
+  );
+  const npcPositions = useMemo(
+    () =>
+      locals.map((n) => ({
+        id: n.mascotId,
+        name: n.name,
+        line: n.line,
+        position: n.pos,
+      })),
+    [locals],
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -559,18 +615,24 @@ export function WalkableHarborView({
       ) : null}
       <Canvas
         shadows
-        dpr={reduced ? [1, 1] : [1, 1.5]}
+        dpr={reduced ? [1, 1] : [1, 1.25]}
         camera={{ position: [0, 5, 14], fov: 50 }}
         className="absolute inset-0 z-[2]"
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+        gl={{ antialias: !reduced, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
         }}
       >
         <Suspense fallback={null}>
-          <PlazaScene hotspots={hotspots} onHotspot={onHotspot} />
-          <Player character={character} hotspots={hotspots} onNear={setNear} />
+          <PlazaScene hotspots={hotspots} onHotspot={onHotspot} locals={locals} />
+          <Player
+            character={character}
+            hotspots={hotspots}
+            npcPositions={npcPositions}
+            onNear={setNear}
+            onNearNpc={(n) => onNearNpc?.(n)}
+          />
         </Suspense>
       </Canvas>
     </div>

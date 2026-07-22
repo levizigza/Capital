@@ -226,6 +226,8 @@ export type IslandSaveV1 = {
   onboardingComplete?: boolean;
   /** Voyager Ledger — Cashflow-style income/expenses/holdings */
   voyagerLedger?: import("./voyagerLedger").VoyagerLedger;
+  /** Harbor Haven purchases — carpet polish, plaza passes, owned pets */
+  harborShop?: import("./harborShop").HarborShopState;
   /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.

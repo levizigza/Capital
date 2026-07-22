@@ -91,6 +91,12 @@ import { ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
+import {
+  applyCapsulePurchase,
+  applyCarpetPolish,
+  applyPlazaPass,
+  applyCompanionPurchase,
+} from "./harborShop";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -275,6 +281,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       void analytics.track("character_saved", { base: character.base, color: character.color });
     },
     [updateSave, setUserProfile]
+  );
+
+  const onHarborPurchase = useCallback(
+    (purchase: import("./views/HomeHubView").HarborPurchase): boolean => {
+      let charged = false;
+      setUserProfile((prev) => {
+        if (!prev || prev.totalCoins < purchase.price) return prev;
+        charged = true;
+        return { ...prev, totalCoins: prev.totalCoins - purchase.price };
+      });
+      if (!charged) return false;
+      updateSave((prev) => {
+        if (purchase.kind === "capsule") return applyCapsulePurchase(prev, purchase.itemId);
+        if (purchase.kind === "carpet") return applyCarpetPolish(prev, purchase.tierId);
+        if (purchase.kind === "plaza_pass") return applyPlazaPass(prev, purchase.room);
+        if (purchase.kind === "companion") return applyCompanionPurchase(prev, purchase.companionId);
+        return prev;
+      });
+      void analytics.track("harbor_purchase", { kind: purchase.kind, price: purchase.price });
+      return true;
+    },
+    [setUserProfile, updateSave],
   );
 
   const enterIsland = useCallback(
@@ -1284,6 +1312,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             learningProfile={learningProfile}
             character={save.character}
             onSaveCharacter={saveCharacter}
+            onHarborPurchase={onHarborPurchase}
             hubModal={hubModal}
             setHubModal={setHubModal}
             onExit={handleExit}
