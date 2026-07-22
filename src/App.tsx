@@ -21,7 +21,10 @@ import type { ArchetypeId } from '@/data/archetype-questions'
 const EnhancedGameHub = React.lazy(() => import('@/components/EnhancedGameHub'))
 const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
 const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
-const DebugPanel = React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
+/** Dev-only — never block production Islands boot on a stale DebugPanel chunk. */
+const DebugPanel = import.meta.env.DEV
+  ? React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
+  : null
 const IslandsApp = React.lazy(() => import('@/islands/IslandsApp'))
 const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
 const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
@@ -539,12 +542,14 @@ function App() {
           <MusicPlayer />
         </div>
         <Suspense fallback={<LoadingFallback />}>
-          <DebugPanel
-            userProfile={userProfile}
-            currentMode={currentMode}
-            isInitialized={isInitialized}
-            gameScores={gameScores || []}
-          />
+          {DebugPanel ? (
+            <DebugPanel
+              userProfile={userProfile}
+              currentMode={currentMode}
+              isInitialized={isInitialized}
+              gameScores={gameScores || []}
+            />
+          ) : null}
           {import.meta.env.DEV && (
             <>
               <button
@@ -603,12 +608,14 @@ function App() {
         </div>
         <Suspense fallback={<LoadingFallback />}>
           <AIChatHelper playerName={userProfile.name || "Explorer"} />
-          <DebugPanel
-            userProfile={userProfile}
-            currentMode={currentMode}
-            isInitialized={isInitialized}
-            gameScores={gameScores || []}
-          />
+          {DebugPanel ? (
+            <DebugPanel
+              userProfile={userProfile}
+              currentMode={currentMode}
+              isInitialized={isInitialized}
+              gameScores={gameScores || []}
+            />
+          ) : null}
           <EnhancedGameHub
             userProfile={userProfile}
             setUserProfile={setUserProfile}

@@ -17,13 +17,36 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
 }
 
 // Production (incl. GitHub Pages): register SW under BASE_URL so /Capital/ works.
+// On activate / controller change, reload once so stale Vite chunks never stick.
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  let reloading = false;
+  const reloadOnce = () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  };
+  navigator.serviceWorker.addEventListener("controllerchange", reloadOnce);
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data?.type === "CAPITAL_SW_ACTIVATED") reloadOnce();
+  });
   window.addEventListener("load", () => {
-    const swUrl = `${import.meta.env.BASE_URL}sw.js`
+    const swUrl = `${import.meta.env.BASE_URL}sw.js`;
     void navigator.serviceWorker
       .register(swUrl, { scope: import.meta.env.BASE_URL })
-      .catch((err) => console.log("SW registration failed:", err))
-  })
+      .then((reg) => {
+        if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        reg.addEventListener("updatefound", () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", () => {
+            if (nw.state === "installed" && navigator.serviceWorker.controller) {
+              nw.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        });
+      })
+      .catch((err) => console.log("SW registration failed:", err));
+  });
 }
 
 const isPixelPreview =

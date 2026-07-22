@@ -1,15 +1,18 @@
 // Service Worker for offline functionality
-// v9: GitHub Pages–safe paths (scope-relative, not site-root).
-const CACHE_NAME = "capital-v25";
-const RUNTIME_CACHE = "capital-runtime-v18";
+// v10: never cache hashed JS/CSS — stale Vite chunks soft-brick GitHub Pages.
+const CACHE_NAME = "capital-v26";
+const RUNTIME_CACHE = "capital-runtime-v19";
 
 function scopeUrl(path) {
-  // registration.scope ends with /
   const base = self.registration?.scope || self.location.href.replace(/[^/]+$/, "");
   return new URL(path.replace(/^\//, ""), base).href;
 }
 
-// Install event - cache static assets
+function isHashedBundle(url) {
+  // Vite emits /assets/Name-<hash>.js|.css — caching these across deploys breaks dynamic import().
+  return /\/assets\/[^/]+-[A-Za-z0-9_-]{6,}\.(?:js|css|mjs)(?:\?|$)/.test(url.pathname);
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -22,19 +25,26 @@ self.addEventListener("install", (event) => {
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
       .then((cacheNames) =>
         Promise.all(
+          // Drop every old cache — including prior RUNTIME — so stale chunks cannot linger.
           cacheNames
             .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
             .map((name) => caches.delete(name)),
         ),
       )
-      .then(() => self.clients.claim()),
+      .then(() => self.clients.claim())
+      .then(() =>
+        self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+          for (const client of clients) {
+            client.postMessage({ type: "CAPITAL_SW_ACTIVATED", cache: CACHE_NAME });
+          }
+        }),
+      ),
   );
 });
 
@@ -55,15 +65,33 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   if (!url.protocol.startsWith("http")) return;
 
+  // Hashed Vite bundles: network-only. Never fall back to a stale cached chunk.
+  if (isHashedBundle(url) || request.destination === "script" || request.destination === "style") {
+    event.respondWith(
+      fetch(request).catch(
+        () =>
+          new Response("/* capital: bundle unavailable after deploy — hard refresh */", {
+            status: 504,
+            statusText: "Bundle Gone",
+            headers: { "Content-Type": "text/javascript" },
+          }),
+      ),
+    );
+    return;
+  }
+
   const isNavigation = request.mode === "navigate" || request.destination === "document";
 
-  if (isNavigation || request.destination === "script" || request.destination === "style") {
+  if (isNavigation) {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (isCacheable(response)) {
             const copy = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(scopeUrl("./index.html"), copy.clone());
+              cache.put(request, copy);
+            });
           }
           return response;
         })
@@ -95,7 +123,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (isCacheable(response)) {
+        if (isCacheable(response) && !isHashedBundle(url)) {
           const copy = response.clone();
           caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
         }
@@ -116,8 +144,18 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+    return;
+  }
   if (event.data && event.data.type === "CACHE_URLS") {
-    const urls = event.data.urls || [];
+    const urls = (event.data.urls || []).filter((u) => {
+      try {
+        return !isHashedBundle(new URL(u, self.location.href));
+      } catch {
+        return false;
+      }
+    });
     event.waitUntil(
       caches.open(RUNTIME_CACHE).then((cache) =>
         Promise.all(
