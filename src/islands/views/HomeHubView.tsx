@@ -46,6 +46,8 @@ import {
   type HubGuidedIntroState,
 } from "../story/hubGuidedIntro";
 import { guidedVisualBeats } from "../story/dialogueActionSync";
+import { coinBagHarborTip } from "../story/coinBagBuddy";
+import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -150,6 +152,14 @@ export function HomeHubView({
       : visualBeats.pulseHotspot === "arcade"
         ? "arcade"
         : (visualBeats.pulseHotspot ?? null);
+
+  const buddyTip = coinBagHarborTip(guided, {
+    nearStoreLabel: nearStore?.label,
+    nearNpcName: nearNpc && !nearStore ? nearNpc.name : null,
+    hasFreedom: freed,
+    currentIslandId: save.currentIslandId,
+  });
+  const bagGuideTip = castleMode ? visualBeats.bagTip : buddyTip.tip;
 
   const showOutfitterHighlight =
     highlightOutfitter || guidedStep?.highlight === "outfitter";
@@ -259,13 +269,7 @@ export function HomeHubView({
                 onNearChange={onNearChange}
                 onNearNpc={onNearNpcHandler}
                 guideHighlight={guidedStep?.highlight}
-                guideTip={
-                  castleMode
-                    ? visualBeats.bagTip
-                    : nearStore
-                      ? `Enter ${nearStore.label}!`
-                      : "Coin Bag is with you — hop around Harbor!"
-                }
+                guideTip={bagGuideTip}
                 keeperEmote={castleMode ? keeperEmote : "idle"}
                 keeperSpeech={keeperSpeech}
                 pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}
@@ -373,7 +377,7 @@ export function HomeHubView({
             )}
             <p className="text-[11px] font-semibold tracking-wide text-white/75">
               {castleMode
-                ? `💰 Coin Bag hops the path · ${guidedStep?.verb}`
+                ? `🐰 Coin Bag stays beside you · ${guidedStep?.verb}`
                 : nearStore
                   ? "E enter · WASD walk"
                   : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
@@ -417,6 +421,7 @@ export function HomeHubView({
               <div className="text-sm font-semibold text-white">{guidedStep?.coach}</div>
             </div>
           ) : null}
+          <CoinBagBuddyHud tip={buddyTip.tip} coach={buddyTip.coach} />
           {coachText && (!castleMode || nearNpc) ? (
             <div className="pointer-events-none max-w-sm rounded-2xl bg-black/70 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
               {nearNpc && !nearStore ? (

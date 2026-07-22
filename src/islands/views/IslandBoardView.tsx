@@ -37,6 +37,8 @@ import {
 } from "../partyBoard";
 import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
+import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
+import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { getBoardEconomyMode, tracksHarborEscape, usesCashflowPassStart } from "../boardEconomy";
 import { isHomeLook } from "../animationStyles";
 
@@ -376,6 +378,7 @@ export function IslandBoardView({
 
   const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
   const boardSkin = era.boardSkinClass;
+  const buddy = coinBagIslandTip(save, island.name);
 
   return (
     <GameHudLayout
@@ -419,6 +422,7 @@ export function IslandBoardView({
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-4 pb-4">
+        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
         {minigameCount === 0 ? (
           <GamePanel title="Island under construction" padding="default">
             <p className="text-sm text-gray-700 mb-3">

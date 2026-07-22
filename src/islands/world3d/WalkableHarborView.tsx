@@ -743,9 +743,9 @@ export function WalkableHarborView({
             playerPosOut={playerPos}
           />
           <MoneyBagGuide
-            target={guideTarget}
+            lookAt={guideTarget}
             playerPos={playerPos}
-            tip={guideTip ?? (guideTarget ? "This way!" : "Hop with me!")}
+            tip={guideTip ?? "Stay with me!"}
             reducedMotion={reduced}
           />
         </Suspense>

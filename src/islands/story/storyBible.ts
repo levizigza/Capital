@@ -75,24 +75,25 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "meet_guide",
     storyBeat: "you",
-    coach: "Coin Bag hops to Piggy Penny — she’s waving! Walk over and talk.",
+    coach: "Coin Bag sticks with you — walk together to Piggy (she’s waving!).",
     guideLine:
-      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag hops ahead — follow him!",
+      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag stays by your side — walk with him to me!",
     verb: "Walk · Talk",
     highlight: "guide",
   },
   {
     id: "walk_outfitter",
     storyBeat: "you",
-    coach: "Piggy points the way — follow Coin Bag to the Outfitter.",
-    guideLine: "Piggy Penny: Become YOU first — the Outfitter door is ahead. Coin Bag’s hopping there!",
+    coach: "Coin Bag points at the Outfitter — walk with your buddy.",
+    guideLine:
+      "Piggy Penny: Become YOU first. Coin Bag will point at the Outfitter — walk together!",
     verb: "Walk",
     highlight: "outfitter",
   },
   {
     id: "become_you",
     storyBeat: "you",
-    coach: "Outfitter door is glowing — go inside and style Body · Coat · Gear.",
+    coach: "Outfitter door is glowing — go inside. Coin Bag waits beside you.",
     guideLine: "Piggy Penny: Go inside! Body · Coat · Gear on the live mirror.",
     verb: "Enter · Style",
     highlight: "outfitter",
@@ -100,7 +101,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "tiny_spend",
     storyBeat: "need",
-    coach: "Coin Bag hops to Capsule Stall — Piggy nods when you peek.",
+    coach: "Coin Bag points to Capsule Stall — peek together. Piggy nods.",
     guideLine: "Piggy Penny: Coins aren’t for staring. Peek the Capsule Stall — I’ll nod when you do.",
     verb: "Spend (or peek)",
     highlight: "capsule",
@@ -108,7 +109,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "practice_optional",
     storyBeat: "need",
-    coach: "Optional: practice board, or skip — Coin Bag waits at your choice.",
+    coach: "Optional practice — Coin Bag points, or skip to the dock together.",
     guideLine: "Piggy Penny: Practice board is optional — or skip to the carpet!",
     verb: "Play or Skip",
     highlight: "practice",
@@ -116,7 +117,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "to_dock",
     storyBeat: "go",
-    coach: "Piggy points — follow Coin Bag to the Carpet Dock.",
+    coach: "Coin Bag points to the Carpet Dock — walk with your buddy.",
     guideLine: "Piggy Penny: The Fortune Thread starts at the Carpet Dock!",
     verb: "Walk",
     highlight: "travel",
@@ -124,7 +125,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "first_island",
     storyBeat: "go",
-    coach: "Dock is glowing — open the map for Coincraft Cove!",
+    coach: "Open the map for Coincraft Cove — Coin Bag comes with you.",
     guideLine: "Piggy Penny: Open the map — Coincraft Cove is your first painting!",
     verb: "Go",
     highlight: "travel",
@@ -132,8 +133,8 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "done",
     storyBeat: "change",
-    coach: "Harbor is yours. Piggy waves goodbye for now.",
-    guideLine: "Piggy Penny: Harbor is yours. I’ll wave when you come home.",
+    coach: "Harbor is yours. Coin Bag stays your journey buddy.",
+    guideLine: "Piggy Penny: Harbor is yours. Coin Bag stays your buddy — I’ll wave when you come home.",
     verb: "Explore",
   },
 ];

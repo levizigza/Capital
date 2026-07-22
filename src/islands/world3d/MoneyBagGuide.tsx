@@ -6,35 +6,50 @@ import * as THREE from "three";
 export const COIN_BAG_GUIDE_ID = "coin_bag_guide";
 
 type Props = {
-  /** World position Coin Bag should lead toward (guided). If null, follows the player. */
-  target: [number, number, number] | null;
-  /** Live player position to follow / stay near */
+  /**
+   * Where the next objective is in the world.
+   * Coin Bag stays beside you and POINTS here — never runs away.
+   */
+  lookAt: [number, number, number] | null;
+  /** Live player position */
   playerPos: MutableRefObject<THREE.Vector3>;
-  /** Short tip shown above the bag */
+  /** Buddy tip — who to talk to / where to go */
   tip?: string;
   reducedMotion?: boolean;
 };
 
 /**
- * Distinctive bunny-eared money-bag guide — always readable, always hopping.
- * SM64 Lakitu energy: leads during Castle Grounds, then sticks with the Voyager.
+ * Bunny-eared money-bag buddy — sticks to your side for the whole journey.
+ * Points at the next person/door; never abandons the Voyager to race ahead.
  */
-function BunnyMoneyBagMesh({ hopPhase }: { hopPhase: MutableRefObject<number> }) {
+function BunnyMoneyBagMesh({
+  hopPhase,
+  pointing,
+}: {
+  hopPhase: MutableRefObject<number>;
+  pointing: boolean;
+}) {
   const body = useRef<THREE.Group>(null);
   const ears = useRef<THREE.Group>(null);
+  const arm = useRef<THREE.Group>(null);
 
   useFrame(() => {
     const t = hopPhase.current;
     const bounce = Math.abs(Math.sin(t));
-    const squash = 1 - bounce * 0.18;
-    const stretch = 1 + bounce * 0.22;
+    const squash = 1 - bounce * 0.14;
+    const stretch = 1 + bounce * 0.16;
     if (body.current) {
       body.current.scale.set(squash, stretch, squash);
-      body.current.position.y = bounce * 0.08;
+      body.current.position.y = bounce * 0.05;
     }
     if (ears.current) {
-      ears.current.rotation.z = Math.sin(t * 1.3) * 0.12;
-      ears.current.rotation.x = -0.15 + bounce * 0.08;
+      ears.current.rotation.z = Math.sin(t * 1.3) * 0.1;
+      ears.current.rotation.x = -0.15 + bounce * 0.06;
+    }
+    if (arm.current) {
+      // Pointing arm: hold forward when guiding
+      arm.current.rotation.x = pointing ? -1.15 : -0.25 + Math.sin(t) * 0.08;
+      arm.current.rotation.z = pointing ? 0.35 : 0.1;
     }
   });
 
@@ -76,163 +91,185 @@ function BunnyMoneyBagMesh({ hopPhase }: { hopPhase: MutableRefObject<number> })
 
   return (
     <group>
-      {/* Soft ground shadow */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <circleGeometry args={[0.55, 20]} />
-        <meshStandardMaterial color="#0f172a" transparent opacity={0.22} depthWrite={false} />
+        <circleGeometry args={[0.48, 20]} />
+        <meshStandardMaterial color="#0f172a" transparent opacity={0.2} depthWrite={false} />
       </mesh>
 
       <group ref={body}>
-        {/* Sack body */}
-        <mesh castShadow position={[0, 0.55, 0]} material={sack}>
-          <sphereGeometry args={[0.48, 18, 14]} />
+        <mesh castShadow position={[0, 0.5, 0]} material={sack}>
+          <sphereGeometry args={[0.42, 18, 14]} />
         </mesh>
-        {/* Chubby bottom */}
-        <mesh castShadow position={[0, 0.28, 0]} material={sack} scale={[1.05, 0.7, 1.05]}>
-          <sphereGeometry args={[0.42, 16, 12]} />
+        <mesh castShadow position={[0, 0.26, 0]} material={sack} scale={[1.05, 0.7, 1.05]}>
+          <sphereGeometry args={[0.38, 16, 12]} />
         </mesh>
-        {/* Drawstring neck */}
-        <mesh castShadow position={[0, 0.95, 0]} material={ink}>
-          <cylinderGeometry args={[0.14, 0.22, 0.2, 12]} />
+        <mesh castShadow position={[0, 0.88, 0]} material={ink}>
+          <cylinderGeometry args={[0.12, 0.2, 0.18, 12]} />
         </mesh>
-        <mesh castShadow position={[0, 1.08, 0]} material={gold}>
-          <torusGeometry args={[0.16, 0.045, 8, 16]} />
+        <mesh castShadow position={[0, 1.0, 0]} material={gold}>
+          <torusGeometry args={[0.14, 0.04, 8, 16]} />
         </mesh>
-        {/* $ coin badge */}
-        <mesh castShadow position={[0, 0.55, 0.42]} material={gold}>
-          <cylinderGeometry args={[0.2, 0.2, 0.08, 20]} />
+        <mesh castShadow position={[0, 0.5, 0.38]} material={gold}>
+          <cylinderGeometry args={[0.17, 0.17, 0.07, 20]} />
         </mesh>
-        <Billboard position={[0, 0.55, 0.48]} follow={false}>
-          <Text fontSize={0.22} color="#14532d" anchorX="center" anchorY="middle">
+        <Billboard position={[0, 0.5, 0.44]} follow={false}>
+          <Text fontSize={0.18} color="#14532d" anchorX="center" anchorY="middle">
             $
           </Text>
         </Billboard>
 
-        {/* Eyes */}
-        <mesh position={[-0.14, 0.72, 0.38]} material={white}>
-          <sphereGeometry args={[0.09, 12, 10]} />
+        <mesh position={[-0.12, 0.66, 0.34]} material={white}>
+          <sphereGeometry args={[0.08, 12, 10]} />
         </mesh>
-        <mesh position={[0.14, 0.72, 0.38]} material={white}>
-          <sphereGeometry args={[0.09, 12, 10]} />
+        <mesh position={[0.12, 0.66, 0.34]} material={white}>
+          <sphereGeometry args={[0.08, 12, 10]} />
         </mesh>
-        <mesh position={[-0.14, 0.72, 0.46]} material={eye}>
-          <sphereGeometry args={[0.045, 10, 8]} />
+        <mesh position={[-0.12, 0.66, 0.41]} material={eye}>
+          <sphereGeometry args={[0.04, 10, 8]} />
         </mesh>
-        <mesh position={[0.14, 0.72, 0.46]} material={eye}>
-          <sphereGeometry args={[0.045, 10, 8]} />
+        <mesh position={[0.12, 0.66, 0.41]} material={eye}>
+          <sphereGeometry args={[0.04, 10, 8]} />
         </mesh>
-        {/* Smile */}
-        <mesh position={[0, 0.58, 0.44]} rotation={[0.3, 0, 0]} material={ink}>
-          <torusGeometry args={[0.1, 0.018, 6, 12, Math.PI]} />
+        <mesh position={[0, 0.52, 0.4]} rotation={[0.3, 0, 0]} material={ink}>
+          <torusGeometry args={[0.09, 0.016, 6, 12, Math.PI]} />
         </mesh>
 
-        {/* Bunny ears */}
-        <group ref={ears} position={[0, 1.05, 0]}>
-          <group position={[-0.18, 0.15, 0]} rotation={[0.1, 0, -0.25]}>
+        <group ref={ears} position={[0, 0.98, 0]}>
+          <group position={[-0.16, 0.12, 0]} rotation={[0.1, 0, -0.25]}>
             <mesh castShadow material={earOuter}>
-              <capsuleGeometry args={[0.09, 0.42, 6, 10]} />
+              <capsuleGeometry args={[0.08, 0.38, 6, 10]} />
             </mesh>
-            <mesh position={[0, 0.02, 0.04]} material={earInner} scale={[0.7, 0.85, 0.5]}>
-              <capsuleGeometry args={[0.09, 0.42, 6, 10]} />
+            <mesh position={[0, 0.02, 0.035]} material={earInner} scale={[0.7, 0.85, 0.5]}>
+              <capsuleGeometry args={[0.08, 0.38, 6, 10]} />
             </mesh>
           </group>
-          <group position={[0.18, 0.15, 0]} rotation={[0.1, 0, 0.25]}>
+          <group position={[0.16, 0.12, 0]} rotation={[0.1, 0, 0.25]}>
             <mesh castShadow material={earOuter}>
-              <capsuleGeometry args={[0.09, 0.42, 6, 10]} />
+              <capsuleGeometry args={[0.08, 0.38, 6, 10]} />
             </mesh>
-            <mesh position={[0, 0.02, 0.04]} material={earInner} scale={[0.7, 0.85, 0.5]}>
-              <capsuleGeometry args={[0.09, 0.42, 6, 10]} />
+            <mesh position={[0, 0.02, 0.035]} material={earInner} scale={[0.7, 0.85, 0.5]}>
+              <capsuleGeometry args={[0.08, 0.38, 6, 10]} />
             </mesh>
           </group>
+        </group>
+
+        {/* Pointing “paw” */}
+        <group ref={arm} position={[0.38, 0.55, 0.05]}>
+          <mesh castShadow material={sack}>
+            <capsuleGeometry args={[0.07, 0.28, 4, 8]} />
+          </mesh>
+          <mesh castShadow position={[0, -0.22, 0.02]} material={gold}>
+            <sphereGeometry args={[0.09, 10, 8]} />
+          </mesh>
         </group>
       </group>
     </group>
   );
 }
 
-export function MoneyBagGuide({ target, playerPos, tip, reducedMotion }: Props) {
+/** Floating arrow from buddy toward the objective. */
+function PointArrow({ active }: { active: boolean }) {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    if (!ref.current || !active) return;
+    ref.current.position.z = 0.55 + Math.sin(clock.elapsedTime * 5) * 0.08;
+  });
+  if (!active) return null;
+  return (
+    <group ref={ref} position={[0, 0.85, 0.55]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh castShadow>
+        <coneGeometry args={[0.16, 0.45, 8]} />
+        <meshStandardMaterial
+          color="#fbbf24"
+          emissive="#f59e0b"
+          emissiveIntensity={0.7}
+          roughness={0.35}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+export function MoneyBagGuide({ lookAt, playerPos, tip, reducedMotion }: Props) {
   const group = useRef<THREE.Group>(null);
   const hopPhase = useRef(0);
-  const desired = useMemo(() => new THREE.Vector3(), []);
+  const sideOffset = useRef(new THREE.Vector3());
+  const pointing = !!lookAt;
 
   useFrame((_, dt) => {
     if (!group.current) return;
+    const p = playerPos.current;
 
-    if (target) {
-      desired.set(target[0], 0, target[2]);
-    } else {
-      // Orbit beside the Voyager so the companion is always in view
-      const p = playerPos.current;
-      const ang = hopPhase.current * 0.15;
-      desired.set(p.x + Math.sin(ang) * 1.35, 0, p.z + Math.cos(ang) * 1.35);
+    // Stay on the Voyager's right — buddy distance, not destination race
+    const buddyDist = 1.15;
+    // Prefer a stable world-right relative to movement: use offset from last frame toward goal for facing
+    let faceYaw = group.current.rotation.y;
+    if (lookAt) {
+      faceYaw = Math.atan2(lookAt[0] - p.x, lookAt[2] - p.z);
     }
+
+    // Side slot: to the right of the facing-toward-goal (or previous) direction
+    const rightX = Math.cos(faceYaw) * buddyDist;
+    const rightZ = -Math.sin(faceYaw) * buddyDist;
+    sideOffset.current.set(p.x + rightX, 0, p.z + rightZ);
 
     const pos = group.current.position;
-    const dx = desired.x - pos.x;
-    const dz = desired.z - pos.z;
+    const dx = sideOffset.current.x - pos.x;
+    const dz = sideOffset.current.z - pos.z;
     const dist = Math.hypot(dx, dz);
-    const stop = target ? 1.45 : 0.35;
-
-    if (dist > stop) {
-      const spd = Math.min(target ? 6.2 : 4.8, 2.4 + dist * 0.45);
+    // Snappy follow so we never feel abandoned
+    const spd = Math.min(10, 4 + dist * 3.5);
+    if (dist > 0.05) {
       pos.x += (dx / dist) * spd * dt;
       pos.z += (dz / dist) * spd * dt;
-      group.current.rotation.y = Math.atan2(dx, dz);
-    } else if (target) {
-      group.current.rotation.y = Math.atan2(desired.x - pos.x, desired.z - pos.z);
-    } else {
-      // Face the player when hanging out
-      const p = playerPos.current;
-      group.current.rotation.y = Math.atan2(p.x - pos.x, p.z - pos.z);
     }
 
-    hopPhase.current += dt * (reducedMotion ? 3.2 : 9.5);
-    const bounce = reducedMotion ? 0.1 : 0.42;
-    pos.y = 0.06 + Math.abs(Math.sin(hopPhase.current)) * bounce;
+    if (lookAt) {
+      // Face the next person/door while staying glued to the player
+      group.current.rotation.y = Math.atan2(lookAt[0] - pos.x, lookAt[2] - pos.z);
+    } else {
+      // Face roughly with the player
+      group.current.rotation.y = Math.atan2(p.x - pos.x, p.z - pos.z) + Math.PI;
+    }
+
+    hopPhase.current += dt * (reducedMotion ? 2.8 : 7.5);
+    const bounce = reducedMotion ? 0.08 : 0.28;
+    pos.y = 0.05 + Math.abs(Math.sin(hopPhase.current)) * bounce;
   });
 
   return (
     <group
       ref={group}
-      position={[1.2, 0.06, 4]}
-      scale={1.15}
+      position={[1.15, 0.05, 3.2]}
+      scale={1.05}
       userData={{ guideId: COIN_BAG_GUIDE_ID }}
     >
-      <BunnyMoneyBagMesh hopPhase={hopPhase} />
-      {/* Sparkle above ears */}
-      <mesh position={[0, 1.85, 0]}>
-        <octahedronGeometry args={[0.14, 0]} />
-        <meshStandardMaterial
-          color="#fde68a"
-          emissive="#f59e0b"
-          emissiveIntensity={1}
-          roughness={0.25}
-        />
-      </mesh>
-      <Billboard position={[0, 2.15, 0]} follow>
+      <BunnyMoneyBagMesh hopPhase={hopPhase} pointing={pointing} />
+      <PointArrow active={pointing} />
+      <Billboard position={[0, 1.95, 0]} follow>
         <Text
-          fontSize={0.22}
+          fontSize={0.2}
           color="#ffffff"
           anchorX="center"
           anchorY="middle"
-          outlineWidth={0.03}
+          outlineWidth={0.028}
           outlineColor="#14532d"
         >
           Coin Bag
         </Text>
       </Billboard>
       {tip ? (
-        <Billboard position={[0, 2.45, 0]} follow>
+        <Billboard position={[0, 2.28, 0]} follow>
           <Text
-            fontSize={0.17}
+            fontSize={0.155}
             color="#fef3c7"
             anchorX="center"
             anchorY="middle"
-            outlineWidth={0.024}
+            outlineWidth={0.022}
             outlineColor="#0f172a"
-            maxWidth={3.4}
+            maxWidth={3.6}
           >
-            {tip}
+            {`→ ${tip}`}
           </Text>
         </Billboard>
       ) : null}
@@ -240,7 +277,7 @@ export function MoneyBagGuide({ target, playerPos, tip, reducedMotion }: Props) 
   );
 }
 
-/** Resolve a guided highlight into a plaza world target. */
+/** Resolve a guided highlight into a plaza world look-at point. */
 export function guideTargetForHighlight(
   highlight: "outfitter" | "capsule" | "travel" | "practice" | "guide" | undefined,
   hotspots: { id: string; position: [number, number, number] }[],
