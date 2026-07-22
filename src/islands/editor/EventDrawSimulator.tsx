@@ -17,6 +17,7 @@ import {
   ECONOMY_PHASE_CONFIG,
   type EconomyPhase,
 } from "@/islands/economy";
+import { resolveProfileText } from "@/islands/learningProfile";
 
 type PhaseOption = EconomyPhase | "none";
 
@@ -173,8 +174,12 @@ export default function EventDrawSimulator() {
             <div className="text-sm font-bold">Last draw</div>
             {lastDraw ? (
               <>
-                <div className="font-bold">{lastDraw.icon} {lastDraw.title}</div>
-                <p className="text-sm text-muted-foreground">{lastDraw.prompt}</p>
+                <div className="font-bold">
+                  {lastDraw.icon} {resolveProfileText(lastDraw.title, "apprentice")}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {resolveProfileText(lastDraw.prompt, "apprentice")}
+                </p>
                 <div className="flex flex-wrap gap-1">
                   {lastDraw.tags.map((t) => (
                     <Badge key={t} variant="secondary" className="text-[10px]">

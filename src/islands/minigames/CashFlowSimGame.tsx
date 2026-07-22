@@ -52,6 +52,7 @@ export default function CashFlowSimGame({
       icon={def?.icon ?? "💵"}
       genre="simulation"
       complexity="medium"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-3 font-mono text-yellow-100">

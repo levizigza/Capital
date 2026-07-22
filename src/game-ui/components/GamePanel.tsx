@@ -2,7 +2,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-export type GamePanelProps = HTMLAttributes<HTMLDivElement> & {
+export type GamePanelProps = Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
   title?: ReactNode;
   actions?: ReactNode;
   padding?: "none" | "default";

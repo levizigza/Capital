@@ -27,6 +27,7 @@ export default function BudgetBalancerMinigame({
       icon={def?.icon ?? "📊"}
       genre="puzzle"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <BudgetBalancerGame

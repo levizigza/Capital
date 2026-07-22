@@ -231,6 +231,7 @@ export default function DiversifyBasketsGame({ minigameId, island, onComplete, o
       icon={def?.icon ?? "🧺"}
       genre="strategy"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-3">

@@ -223,6 +223,7 @@ export default function IPScenarioGame({
       icon={def?.icon ?? "⚖️"}
       genre="puzzle"
       complexity="medium"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4 min-h-[320px]">

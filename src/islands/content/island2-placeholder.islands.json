@@ -3,32 +3,150 @@
   "islands": [
     {
       "id": "credit_kingdom",
-      "name": "Credit Kingdom",
-      "description": "Master credit scores, loans, and debt management. Locked until you complete Asset Island.",
-      "icon": "🏰",
+      "name": "Credit Ruins",
+      "description": "2010s cinematic realism — overgrown temples of credit history. Recover score artifacts, dodge The Collector, and rebuild trust with lenders.",
+      "icon": "🗿",
       "requiredItems": ["fa_island_medallion"],
       "provenance": {
         "learning_objectives": [
           "Understand how credit scores are calculated",
           "Learn responsible borrowing and debt management",
-          "Compare loan types: secured vs unsecured, fixed vs variable"
+          "Compare loan types: secured vs unsecured, fixed vs variable",
+          "Practice recovering from credit mistakes"
         ],
-        "mechanics_used": ["resource-management", "debt-elimination", "npc-dialogue-tree", "quiz-challenge"],
-        "originality_notes": "Theme: medieval kingdom metaphor for credit system (not a bank sim). Verb: quest-based debt challenges + NPC mentorship (not spreadsheet tracking). Structure: story-driven progression through credit concepts (not competitive). Combines debt-elimination strategy with dialogue exploration.",
-        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Credit Karma"]
+        "mechanics_used": ["party-board", "resource-management", "event-deck", "quiz-challenge"],
+        "originality_notes": "Theme: ruined jungle temples as metaphors for damaged credit (not a bank sim). Verb: recover artifacts on a Fortune Party board with rival captains. Structure: chance + skill minigames teaching credit repair.",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Credit Karma", "Mario", "Nintendo"]
       },
       "areas": [
         {
           "id": "ck_gate",
-          "name": "Kingdom Gate",
-          "description": "The grand gate to Credit Kingdom. More content coming soon!",
-          "icon": "🚪"
+          "name": "Ruined Gate",
+          "description": "Mossy pillars and a cracked credit obelisk. Your compass points deeper.",
+          "icon": "🚪",
+          "connections": ["ck_score_vault", "ck_debt_canyon"]
+        },
+        {
+          "id": "ck_score_vault",
+          "name": "Score Vault",
+          "description": "Stone tablets etched with payment histories. Touch them carefully.",
+          "icon": "📜",
+          "connections": ["ck_gate"]
+        },
+        {
+          "id": "ck_debt_canyon",
+          "name": "Debt Canyon",
+          "description": "Echoes of interest. The Collector patrols these ledges.",
+          "icon": "🕳️",
+          "connections": ["ck_gate"]
         }
       ],
-      "npcs": [],
-      "items": [],
-      "quests": [],
-      "dialogues": []
+      "npcs": [
+        {
+          "id": "npc_credit_cleo_ruins",
+          "name": "Cleo the Archivist",
+          "icon": "🧭",
+          "areaId": "ck_score_vault",
+          "dialogueGraphId": "dlg_cleo_ruins"
+        }
+      ],
+      "items": [
+        {
+          "id": "ck_credit_shard",
+          "name": "Credit Shard",
+          "description": "A fragment of on-time payment history.",
+          "icon": "💎",
+          "location": { "areaId": "ck_score_vault" }
+        }
+      ],
+      "quests": [
+        {
+          "id": "q_ck_first_recovery",
+          "title": "First Recovery",
+          "description": "Talk to the Archivist and clear a credit minigame on the party board.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_credit_cleo_ruins" },
+            { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" }
+          ],
+          "rewards": { "coins": 40, "xp": 30 }
+        }
+      ],
+      "dialogues": [
+        {
+          "id": "dlg_cleo_ruins",
+          "startNodeId": "c1",
+          "nodes": [
+            {
+              "id": "c1",
+              "speaker": "Cleo the Archivist",
+              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Collector.",
+              "choices": [
+                {
+                  "id": "c1a",
+                  "text": "Teach me credit recovery.",
+                  "nextNodeId": "c2",
+                  "effects": [{ "type": "startQuest", "questId": "q_ck_first_recovery" }]
+                },
+                { "id": "c1b", "text": "I'll explore the board.", "nextNodeId": "c3" }
+              ]
+            },
+            {
+              "id": "c2",
+              "speaker": "Cleo the Archivist",
+              "text": "Roll the Fortune Party board. Minigames here teach scores, APR, and rebuilding trust — painted in cinematic ruin light.",
+              "end": true
+            },
+            {
+              "id": "c3",
+              "speaker": "Cleo the Archivist",
+              "text": "Watch your pouch. Chance spaces cut deeper here.",
+              "end": true
+            }
+          ]
+        }
+      ],
+      "minigames": [
+        {
+          "id": "mg_ck_inbox_credit",
+          "name": "Credit Inbox",
+          "description": "Diegetic messages about loans, APR, and late fees — choose the path that rebuilds score.",
+          "icon": "📨",
+          "componentId": "ModularMinigame",
+          "areaId": "ck_score_vault",
+          "genre": "strategy",
+          "complexity": "hard",
+          "visualShell": "notebook",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "title": "Credit Ruins Dispatches",
+                "deckId": "credit_ruins"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_ck_budget_balancer",
+          "name": "Debt Loadout",
+          "description": "Balance payments across debts before interest compounds in the canyon.",
+          "icon": "⚖️",
+          "componentId": "BudgetBalancerMinigame",
+          "areaId": "ck_debt_canyon",
+          "genre": "strategy",
+          "complexity": "medium"
+        },
+        {
+          "id": "mg_ck_signal",
+          "name": "Score Scanner",
+          "description": "Read credit signals in the ruins — on-time history vs utilization spikes.",
+          "icon": "📡",
+          "componentId": "SignalScannerGame",
+          "areaId": "ck_gate",
+          "genre": "quiz",
+          "complexity": "medium"
+        }
+      ]
     }
   ]
 }

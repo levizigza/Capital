@@ -1,4 +1,5 @@
 import type { IslandSaveV1, SavedEvent } from "./types";
+import { createDefaultVoyagerLedger } from "./voyagerLedger";
 
 const SAVE_KEY = "island_save_v1";
 
@@ -18,6 +19,7 @@ export function createDefaultIslandSave(): IslandSaveV1 {
       areas: [],
       islands: [],
     },
+    voyagerLedger: createDefaultVoyagerLedger(),
   };
 }
 
@@ -32,7 +34,12 @@ export async function loadIslandSave(): Promise<IslandSaveV1> {
             new Promise<null>((resolve) => setTimeout(() => resolve(null), 5_000)),
           ])
         : await kvPromise;
-    if (existing && existing.version === "1") return existing;
+    if (existing && existing.version === "1") {
+      return {
+        ...existing,
+        voyagerLedger: existing.voyagerLedger ?? createDefaultVoyagerLedger(),
+      };
+    }
   } catch {
     // ignore
   }

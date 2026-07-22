@@ -21,6 +21,10 @@ type Props = {
   saveLabel?: string;
   onSave: (character: CapitalCharacter) => void;
   onCancel?: () => void;
+  /** Outfitter copy — fitting room instead of generic creator */
+  variant?: "default" | "outfitter";
+  /** Hide companion row (pet chosen at the dock crates separately) */
+  hideCompanion?: boolean;
 };
 
 function SwatchRow<T extends { id: string; label: string }>({
@@ -64,18 +68,31 @@ function SwatchRow<T extends { id: string; label: string }>({
   );
 }
 
-export function CharacterCreator({ character, defaultName, saveLabel = "Save character", onSave, onCancel }: Props) {
+export function CharacterCreator({
+  character,
+  defaultName,
+  saveLabel = "Save character",
+  onSave,
+  onCancel,
+  variant = "default",
+  hideCompanion = false,
+}: Props) {
   const [draft, setDraft] = useState<CapitalCharacter>(
     () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" }
   );
 
   const set = (patch: Partial<CapitalCharacter>) => setDraft((d) => ({ ...d, ...patch }));
+  const isShop = variant === "outfitter";
 
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <div className="text-xl font-black">🎨 Create Your Character</div>
-        <p className="text-sm text-muted-foreground">Make yourself before you set sail across Capital.</p>
+        <div className="text-xl font-black">{isShop ? "🪞 Fitting mirror" : "🎨 Create Your Character"}</div>
+        <p className="text-sm text-muted-foreground">
+          {isShop
+            ? "Pick a look that feels like you — this is your Harbor identity."
+            : "Make yourself before you set sail across Capital."}
+        </p>
       </div>
 
       <div className="flex flex-col items-center gap-2">
@@ -85,12 +102,12 @@ export function CharacterCreator({ character, defaultName, saveLabel = "Save cha
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 16 }}
         >
-          <CharacterAvatar character={draft} size={120} />
+          <CharacterAvatar character={draft} size={120} animationStyle="capital-default" />
         </motion.div>
         <input
           value={draft.name}
           onChange={(e) => set({ name: e.target.value.slice(0, 18) })}
-          placeholder="Name your character"
+          placeholder="Name your Voyager"
           className="w-full max-w-xs rounded-xl border-2 border-slate-200 px-3 py-2 text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
           aria-label="Character name"
         />
@@ -120,13 +137,15 @@ export function CharacterCreator({ character, defaultName, saveLabel = "Save cha
           render={(o) => <span>{accessoryEmoji(o.id) || "🚫"}</span>}
           onPick={(id) => set({ accessory: id })}
         />
-        <SwatchRow
-          title="Companion"
-          options={CHARACTER_COMPANIONS}
-          selected={draft.companion}
-          render={(o) => <span>{companionEmoji(o.id) || "🚫"}</span>}
-          onPick={(id) => set({ companion: id })}
-        />
+        {!hideCompanion ? (
+          <SwatchRow
+            title="Companion"
+            options={CHARACTER_COMPANIONS}
+            selected={draft.companion}
+            render={(o) => <span>{companionEmoji(o.id) || "🚫"}</span>}
+            onPick={(id) => set({ companion: id })}
+          />
+        ) : null}
       </GamePanel>
 
       <div className="flex gap-2">

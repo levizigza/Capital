@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 import type { IslandDefinition, QuestObjective } from "../types";
+import { resolveProfileText } from "../learningProfile";
 import { createEmptyQuest, islandReferenceIds, validateIslandDefinition } from "./editorUtils";
 
 type Props = {
@@ -103,7 +104,7 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
             className="text-xs"
             onClick={() => setQuestId(q.id)}
           >
-            {q.title}
+            {resolveProfileText(q.title, "apprentice")}
           </Button>
         ))}
       </div>
@@ -136,7 +137,7 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
                 Title
                 <input
                   className="mt-1 w-full rounded border px-2 py-1"
-                  value={quest.title}
+                  value={resolveProfileText(quest.title, "apprentice")}
                   onChange={(e) => updateQuest((q) => ({ ...q, title: e.target.value }))}
                 />
               </label>
@@ -145,7 +146,7 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
                 <textarea
                   className="mt-1 w-full rounded border px-2 py-1 text-sm"
                   rows={2}
-                  value={quest.description}
+                  value={resolveProfileText(quest.description, "apprentice")}
                   onChange={(e) => updateQuest((q) => ({ ...q, description: e.target.value }))}
                 />
               </label>
@@ -154,7 +155,7 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
                 <textarea
                   className="mt-1 w-full rounded border px-2 py-1 text-sm"
                   rows={2}
-                  value={quest.hint ?? ""}
+                  value={resolveProfileText(quest.hint, "apprentice")}
                   onChange={(e) => updateQuest((q) => ({ ...q, hint: e.target.value || undefined }))}
                 />
               </label>

@@ -117,6 +117,7 @@ export default function SignalScannerGame({
       icon={def?.icon ?? "📡"}
       genre="quiz"
       complexity="medium"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4 font-mono text-cyan-100">

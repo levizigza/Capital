@@ -18,6 +18,7 @@ import type {
 import type { GameState, Effect } from "@/mechanics/types";
 import {
   resolveProfileNumber,
+  resolveProfileText,
   resolveScenarioEventCopy,
   scaleEffectAmount,
   type LearningProfileId,
@@ -419,7 +420,13 @@ export function simulateDraws(
   const draws = Object.entries(counts)
     .map(([eventId, count]) => {
       const ev = eligible.find((e) => e.id === eventId);
-      return { eventId, title: ev?.title ?? eventId, count };
+      const title =
+        typeof ev?.title === "string"
+          ? ev.title
+          : ev?.title
+            ? resolveProfileText(ev.title, "apprentice")
+            : eventId;
+      return { eventId, title, count };
     })
     .sort((a, b) => b.count - a.count);
 
@@ -428,7 +435,10 @@ export function simulateDraws(
     totalDraws: n,
     excluded: excluded.map(({ event, reasons }) => ({
       eventId: event.id,
-      title: event.title,
+      title:
+        typeof event.title === "string"
+          ? event.title
+          : resolveProfileText(event.title, "apprentice"),
       reasons,
     })),
   };

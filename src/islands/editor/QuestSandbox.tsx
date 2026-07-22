@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { IslandDefinition, QuestObjective, QuestStatus } from "../types";
+import { resolveProfileText } from "../learningProfile";
 
 // ---------------------------------------------------------------------------
 // QuestSandbox — simulate completing objectives + show state changes
@@ -107,7 +108,7 @@ export default function QuestSandbox({ island }: Props) {
             className="text-xs"
             onClick={() => resetQuest(q.id)}
           >
-            📜 {q.title}
+            📜 {resolveProfileText(q.title, "apprentice")}
           </Button>
         ))}
       </div>
@@ -118,11 +119,15 @@ export default function QuestSandbox({ island }: Props) {
           <Card>
             <CardContent className="p-4 space-y-3">
               <div>
-                <div className="font-bold text-sm">{quest.title}</div>
+                <div className="font-bold text-sm">{resolveProfileText(quest.title, "apprentice")}</div>
                 <div className="text-xs font-mono text-muted-foreground">{quest.id}</div>
-                <div className="text-xs text-muted-foreground mt-1">{quest.description}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {resolveProfileText(quest.description, "apprentice")}
+                </div>
                 {quest.hint && (
-                  <div className="text-xs text-blue-700 italic mt-1">💡 {quest.hint}</div>
+                  <div className="text-xs text-blue-700 italic mt-1">
+                    💡 {resolveProfileText(quest.hint, "apprentice")}
+                  </div>
                 )}
               </div>
 

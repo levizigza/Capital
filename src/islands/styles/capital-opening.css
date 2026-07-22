@@ -7,14 +7,25 @@
    across the whole mural and is re-drawn in each era as it crosses.
    ===================================================================== */
 
+html.capital-intro-active,
+html.capital-intro-active body {
+  background: #0a1119 !important;
+  overflow: hidden !important;
+}
+
 .cap-opening-root {
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: 2147483000;
   overflow: hidden;
+  isolation: isolate;
+  background: #0a1119;
   background: linear-gradient(180deg, #0c1622 0%, #0a1119 100%);
   transition: background 1.2s ease;
+  visibility: visible;
+  pointer-events: auto;
 }
+
 /* Time-of-day ambience for the surrounding sea/sky frame */
 .cap-opening-root[data-phase="dawn"]  { background: linear-gradient(180deg, #2a1e33 0%, #3a2340 100%); }
 .cap-opening-root[data-phase="day"]   { background: linear-gradient(180deg, #0c1622 0%, #0a1119 100%); }
@@ -129,6 +140,7 @@
 .isle-patch--piece-3 { z-index: 4; }
 .isle-patch--piece-4 { z-index: 5; }
 .isle-patch--piece-5 { z-index: 6; }
+.isle-patch--piece-6 { z-index: 7; }
 
 /* The full-width mural, shifted so each window shows its own slice */
 .mural-window {
@@ -159,16 +171,18 @@
 .isle-patch.is-floating.isle-patch--piece-3 { transform: translate(-2px, -24px) rotate(0.9deg); }
 .isle-patch.is-floating.isle-patch--piece-4 { transform: translate(5px, -16px) rotate(-0.8deg); }
 .isle-patch.is-floating.isle-patch--piece-5 { transform: translate(8px, -20px) rotate(1deg); }
+.isle-patch.is-floating.isle-patch--piece-6 { transform: translate(-4px, -18px) rotate(-0.7deg); }
 
 .cap-opening-root--assembled .isle-patch.is-assembled {
   animation: puzzle-snap-in 0.65s cubic-bezier(0.34, 1.45, 0.64, 1) backwards;
 }
 .cap-opening-root--assembled .isle-patch--piece-0.is-assembled { animation-delay: 0ms; }
-.cap-opening-root--assembled .isle-patch--piece-1.is-assembled { animation-delay: 70ms; }
-.cap-opening-root--assembled .isle-patch--piece-2.is-assembled { animation-delay: 140ms; }
-.cap-opening-root--assembled .isle-patch--piece-3.is-assembled { animation-delay: 210ms; }
-.cap-opening-root--assembled .isle-patch--piece-4.is-assembled { animation-delay: 280ms; }
-.cap-opening-root--assembled .isle-patch--piece-5.is-assembled { animation-delay: 350ms; }
+.cap-opening-root--assembled .isle-patch--piece-1.is-assembled { animation-delay: 60ms; }
+.cap-opening-root--assembled .isle-patch--piece-2.is-assembled { animation-delay: 120ms; }
+.cap-opening-root--assembled .isle-patch--piece-3.is-assembled { animation-delay: 180ms; }
+.cap-opening-root--assembled .isle-patch--piece-4.is-assembled { animation-delay: 240ms; }
+.cap-opening-root--assembled .isle-patch--piece-5.is-assembled { animation-delay: 300ms; }
+.cap-opening-root--assembled .isle-patch--piece-6.is-assembled { animation-delay: 360ms; }
 @keyframes puzzle-snap-in {
   0% { transform: translateY(-26px) scale(1.04); }
   55% { transform: translateY(3px) scale(0.99); }
@@ -283,225 +297,411 @@
 .m-boat { position: absolute; bottom: 12%; left: 87%; width: 8%; height: 8%; z-index: 3; }
 .m-boat-sail { position: absolute; bottom: 60%; left: 40%; width: 40%; height: 90%; }
 
+.m-hud {
+  position: absolute;
+  z-index: 7;
+  pointer-events: none;
+  font-family: "Courier New", monospace;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: pre;
+}
+
 /* =====================================================================
-   ERA 1 · 1983 CGA 8-BIT — 4 fixed colors, chunky pixels, scanlines
-   Palette: black #000, cyan #55ffff, magenta #ff55ff, white #fff
+   1960s · ABSTRACT VECTOR — white dots/lines on black, SCORE HUD
    ===================================================================== */
-.mural--e8bit { background: #000; image-rendering: pixelated; }
-.mural--e8bit .m-sky { background: #000; }
-.mural--e8bit .m-hills { background: #ff55ff; bottom: 32%; height: 14%;
-  clip-path: polygon(0 100%, 12% 30%, 24% 100%, 40% 20%, 55% 100%, 72% 40%, 88% 100%, 100% 25%, 100% 100%); }
-.mural--e8bit .m-sea { background: repeating-linear-gradient(0deg, #55ffff 0 4px, #000 4px 8px); height: 30%; }
-.mural--e8bit .m-beach { background: #ff55ff; }
-.mural--e8bit .m-sea-glint { display: none; }
-/* celestial: blocky pixel disc, 2-color */
-.mural--e8bit .m-cel-core { border-radius: 0; background: #ffff55;
-  box-shadow: 8px 0 0 #ffff55, -8px 0 0 #ffff55, 0 8px 0 #ffff55, 0 -8px 0 #ffff55; }
-.mural--e8bit .m-cel-glow { display: none; }
-.mural--e8bit .m-cel-flare { display: none; }
-.mural--e8bit .m-cel--sun .m-cel-core { animation: e8-blink 0.7s step-end infinite; }
-.mural--e8bit .m-cel--moon .m-cel-core { background: #55ffff; box-shadow: 8px 0 0 #55ffff, -8px 0 0 #55ffff, 0 8px 0 #55ffff, 0 -8px 0 #55ffff; }
-/* landmarks as chunky 2-color pixel blocks */
-.mural--e8bit .m-palm-trunk { background: #ff55ff; }
-.mural--e8bit .m-palm-crown { background: #55ffff; border-radius: 0;
-  box-shadow: -10px 6px 0 #55ffff, 10px 6px 0 #55ffff; animation: e8-blink 2.4s step-end infinite; }
-.mural--e8bit .m-hotel-roof { background: #ff55ff; }
-.mural--e8bit .m-hotel-windows { background: repeating-linear-gradient(90deg, #55ffff 0 25%, #000 25% 50%); }
-.mural--e8bit .m-hotel { box-shadow: inset 0 0 0 2px #fff; background: #000; }
-.mural--e8bit .m-pool { background: #55ffff; border-radius: 0; box-shadow: inset 0 0 0 2px #fff; }
-.mural--e8bit .m-dock { background: #ff55ff; }
-.mural--e8bit .m-boat { background: #fff; clip-path: polygon(0 60%, 100% 60%, 85% 100%, 15% 100%); }
-.mural--e8bit .m-boat-sail { background: #55ffff; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.mural--e8bit .m-fx {
+.mural--e1960s { background: #000; }
+.mural--e1960s .m-sky { background: #000; }
+.mural--e1960s .m-stars {
+  opacity: 1 !important;
+  background-image:
+    radial-gradient(circle, #fff 1px, transparent 1.5px),
+    radial-gradient(circle, #fff 1px, transparent 1.5px);
+  background-size: 28px 28px, 47px 47px;
+  background-position: 0 0, 12px 18px;
+}
+.mural--e1960s .m-hills {
+  background: none;
+  border: none;
+  height: 28%;
+  bottom: 28%;
+  background-image:
+    radial-gradient(circle, #fff 1.5px, transparent 2px);
+  background-size: 10px 10px;
+  clip-path: polygon(0 100%, 8% 55%, 18% 80%, 30% 35%, 42% 70%, 55% 25%, 68% 60%, 80% 40%, 92% 65%, 100% 45%, 100% 100%);
+  opacity: 0.95;
+  filter: drop-shadow(0 0 0 #fff);
+  box-shadow: inset 0 0 0 1px transparent;
+}
+.mural--e1960s .m-hills::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0 2px, transparent 2px 4px),
-    radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.5) 100%);
-  animation: e8-scan 5s linear infinite;
+    linear-gradient(transparent 0, transparent 48%, #fff 48%, #fff 49%, transparent 49%),
+    linear-gradient(90deg, transparent 0, transparent 48%, #fff 48%, #fff 49%, transparent 49%);
+  background-size: 18px 18px;
+  opacity: 0.35;
+  clip-path: inherit;
 }
-@keyframes e8-blink { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0.55; } }
-@keyframes e8-scan { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 4px, 0 0; } }
+.mural--e1960s .m-beach { background: none; border-top: 1px dashed rgba(255,255,255,0.55); }
+.mural--e1960s .m-sea { background: none; border-top: 1px solid rgba(255,255,255,0.35); height: 28%; }
+.mural--e1960s .m-sea-glint { display: none; }
+.mural--e1960s .m-cel-core {
+  background: none;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 6px transparent,
+    12px 0 0 -5px #fff, -12px 0 0 -5px #fff,
+    0 12px 0 -5px #fff, 0 -12px 0 -5px #fff,
+    8px 8px 0 -6px #fff, -8px 8px 0 -6px #fff,
+    8px -8px 0 -6px #fff, -8px -8px 0 -6px #fff;
+}
+.mural--e1960s .m-cel-glow, .mural--e1960s .m-cel-flare { display: none; }
+.mural--e1960s .m-palm-trunk { background: none; border-left: 1px solid #fff; }
+.mural--e1960s .m-palm-crown {
+  background: none;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  box-shadow: -8px 4px 0 -3px #fff, 8px 4px 0 -3px #fff;
+}
+.mural--e1960s .m-hotel { background: none; border: 1px solid #fff; }
+.mural--e1960s .m-hotel-roof { background: none; border-bottom: 1px solid #fff; }
+.mural--e1960s .m-hotel-windows {
+  background: repeating-linear-gradient(90deg, #fff 0 2px, transparent 2px 10px);
+  opacity: 0.5;
+}
+.mural--e1960s .m-pool { background: none; border: 1px solid #fff; border-radius: 0; }
+.mural--e1960s .m-dock { background: none; border-top: 1px solid #fff; }
+.mural--e1960s .m-boat { background: none; border: 1px solid #fff; clip-path: polygon(0 55%, 100% 55%, 80% 100%, 20% 100%); }
+.mural--e1960s .m-boat-sail { background: none; border-left: 1px solid #fff; }
+.mural--e1960s .m-hud {
+  left: 6%;
+  bottom: 6%;
+  color: #fff;
+  font-size: clamp(0.55rem, 1.4vw, 0.85rem);
+}
+.mural--e1960s .m-hud::before { content: "SCORE 0170"; }
+.mural--e1960s .m-fx { background: none; }
 
 /* =====================================================================
-   ERA 2 · 1991 SNES 16-BIT — dithered gradient skies, rich palette,
-   Mode-7 style scrolling tide
+   1970s · PHOSPHOR WIREFRAME — green vectors, FUEL bar
    ===================================================================== */
-.mural--e16bit {
+.mural--e1970s { background: #000; }
+.mural--e1970s .m-sky { background: radial-gradient(ellipse at 50% 0%, #001a00 0%, #000 70%); }
+.mural--e1970s .m-hills {
+  background: none;
+  height: 24%;
+  bottom: 30%;
+  border-top: 2px solid #33ff66;
+  clip-path: polygon(0 100%, 14% 35%, 28% 100%, 44% 20%, 58% 100%, 74% 40%, 88% 100%, 100% 30%, 100% 100%);
+  box-shadow: 0 0 12px #33ff6644;
+  filter: drop-shadow(0 -1px 0 #33ff66);
+}
+.mural--e1970s .m-beach { background: none; border-top: 1px solid #33ff6688; }
+.mural--e1970s .m-sea {
   background:
-    radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px) 0 0 / 4px 4px,
-    linear-gradient(180deg, #6fd6ff 0%, #8fe0f0 40%, #ffd98a 46%, #f0c060 52%, #24c4a2 52%);
+    repeating-linear-gradient(90deg, transparent 0 18px, #33ff6622 18px 19px),
+    linear-gradient(180deg, transparent, #33ff6618);
+  height: 30%;
+  border-top: 1px solid #33ff66;
 }
-.mural--e16bit .m-sky {
+.mural--e1970s .m-sea-glint { background: linear-gradient(90deg, transparent, #33ff6644, transparent); animation: e1970-scan 2.4s linear infinite; }
+.mural--e1970s .m-cel-core {
+  background: none;
+  border: 2px solid #33ff66;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  box-shadow: 0 0 14px #33ff66;
+  animation: e1970-blink 1.2s step-end infinite;
+}
+.mural--e1970s .m-cel-glow { background: radial-gradient(circle, #33ff6644, transparent 70%); }
+.mural--e1970s .m-cel-flare { display: none; }
+.mural--e1970s .m-palm-trunk { background: none; border: 1px solid #33ff66; }
+.mural--e1970s .m-palm-crown { background: none; border: 1px solid #33ff66; clip-path: polygon(50% 0, 100% 70%, 0 70%); box-shadow: 0 0 8px #33ff66; }
+.mural--e1970s .m-hotel { background: none; border: 1px solid #33ff66; box-shadow: 0 0 10px #33ff6644; }
+.mural--e1970s .m-hotel-roof { background: none; border-bottom: 1px solid #33ff66; clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+.mural--e1970s .m-hotel-windows { background: repeating-linear-gradient(90deg, #33ff66 0 2px, transparent 2px 12px); opacity: 0.55; }
+.mural--e1970s .m-pool { background: none; border: 1px solid #33ff66; }
+.mural--e1970s .m-dock { background: none; border-top: 2px solid #33ff66; }
+.mural--e1970s .m-boat {
+  background: none;
+  border: 1px solid #33ff66;
+  clip-path: polygon(10% 40%, 90% 40%, 100% 70%, 50% 100%, 0 70%);
+  box-shadow: 0 0 10px #33ff66;
+}
+.mural--e1970s .m-boat-sail { background: none; border-left: 1px solid #33ff66; }
+.mural--e1970s .m-hud { left: 5%; top: 5%; color: #33ff66; font-size: clamp(0.5rem, 1.2vw, 0.75rem); text-shadow: 0 0 6px #33ff66; }
+.mural--e1970s .m-hud::before { content: "SCORE 1250\A FUEL ████████░░"; }
+.mural--e1970s .m-fx { background: radial-gradient(ellipse at center, transparent 40%, #001a0066 100%); }
+@keyframes e1970-scan { 0% { transform: translateY(0); } 100% { transform: translateY(12px); } }
+@keyframes e1970-blink { 0%, 70% { opacity: 1; } 71%, 100% { opacity: 0.45; } }
+
+/* =====================================================================
+   1980s · NEON GRID / SYNTHWAVE — magenta-cyan, STAGE HUD
+   ===================================================================== */
+.mural--e1980s {
   background:
-    radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px) 0 0 / 4px 4px,
-    linear-gradient(180deg, #6fd6ff, #a6e6f2 60%, #ffe6b0 100%);
+    linear-gradient(180deg, #1a0533 0%, #4c1d95 28%, #db2777 55%, #22d3ee 78%, #0ea5e9 100%);
 }
-.mural--e16bit .m-hills {
-  background: linear-gradient(180deg, #3aa06a, #2d8a54);
-  clip-path: polygon(0 100%, 10% 45%, 22% 70%, 38% 30%, 52% 65%, 66% 35%, 80% 60%, 92% 40%, 100% 70%, 100% 100%);
+.mural--e1980s .m-sky {
+  background:
+    radial-gradient(ellipse at 50% 100%, #f472b6 0%, transparent 55%),
+    linear-gradient(180deg, #2e1065, #7c3aed 60%, #ec4899);
 }
-.mural--e16bit .m-beach { background: linear-gradient(180deg, #ecc879, #d8b25c); }
-.mural--e16bit .m-sea {
-  background: repeating-linear-gradient(180deg, #2fd0aa 0 3px, #1fb894 3px 6px);
-  animation: e16-tide 3s linear infinite;
+.mural--e1980s .m-hills {
+  background: linear-gradient(180deg, #a855f7, #6b21a8);
+  clip-path: polygon(0 100%, 20% 40%, 40% 100%, 60% 25%, 80% 100%, 100% 35%, 100% 100%);
+  filter: drop-shadow(0 0 8px #f0abfc);
+  height: 18%;
 }
-.mural--e16bit .m-sea-glint {
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 7px);
-  animation: e16-shear 4s ease-in-out infinite;
+.mural--e1980s .m-beach { background: #22d3ee; box-shadow: 0 0 20px #22d3ee88; }
+.mural--e1980s .m-sea {
+  background:
+    linear-gradient(180deg, transparent 0 8%, #22d3ee33 8%),
+    repeating-linear-gradient(90deg, transparent 0 24px, #f0abfc55 24px 25px),
+    repeating-linear-gradient(0deg, transparent 0 18px, #22d3ee44 18px 19px),
+    linear-gradient(180deg, #7c3aed, #0e7490);
+  animation: e1980-grid 4s linear infinite;
 }
-.mural--e16bit .m-cel-core { background: radial-gradient(circle at 36% 32%, #fff8b0, #ffd23f 55%, #ff9e2c); }
-.mural--e16bit .m-cel-glow { background: radial-gradient(circle, rgba(255,210,63,0.5), transparent 70%); animation: cel-pulse 3s ease-in-out infinite; }
-.mural--e16bit .m-cel-flare { display: none; }
-.mural--e16bit .m-cel--moon .m-cel-core { background: radial-gradient(circle at 38% 34%, #fff, #d6e2f0 60%, #9fb2cc); }
-.mural--e16bit .m-palm-trunk { background: linear-gradient(90deg, #6b4226, #8a5a34); border-radius: 2px; }
-.mural--e16bit .m-palm-crown {
-  background: #3cb868; border-radius: 50% 50% 40% 40%;
-  box-shadow: -12px 4px 0 -2px #2d9a52, 12px 4px 0 -2px #2d9a52, 0 -6px 0 -2px #55d47a;
-  animation: e16-sway 4s ease-in-out infinite;
+.mural--e1980s .m-sea-glint { background: linear-gradient(105deg, transparent 40%, #fff6 50%, transparent 60%); animation: e1980-shine 3s linear infinite; }
+.mural--e1980s .m-cel-core {
+  background: radial-gradient(circle at 40% 35%, #fff, #f0abfc 40%, #c026d3);
+  box-shadow: 0 0 0 3px #22d3ee, 0 0 28px #f472b6;
+  animation: e1980-pulse 2s ease-in-out infinite;
 }
-.mural--e16bit .m-hotel { background: linear-gradient(180deg, #f4e6c8, #e0cfa4); border-radius: 2px; }
-.mural--e16bit .m-hotel-roof { background: linear-gradient(180deg, #e0556a, #c53a52); }
-.mural--e16bit .m-hotel-windows {
-  background: repeating-linear-gradient(90deg, #2a4a6a 0 22%, transparent 22% 33%),
-             repeating-linear-gradient(0deg, #2a4a6a 0 30%, transparent 30% 50%);
+.mural--e1980s .m-cel-glow { background: radial-gradient(circle, #f472b688, transparent 70%); }
+.mural--e1980s .m-cel-flare { display: none; }
+.mural--e1980s .m-palm-trunk { background: linear-gradient(90deg, #c026d3, #7c3aed); box-shadow: 0 0 8px #f0abfc; }
+.mural--e1980s .m-palm-crown { background: #22d3ee; border-radius: 40%; box-shadow: 0 0 16px #22d3ee; }
+.mural--e1980s .m-hotel { background: linear-gradient(145deg, #6b21a8, #22d3ee); border: 2px solid #f0abfc; box-shadow: 0 0 18px #f472b6aa; }
+.mural--e1980s .m-hotel-roof { background: #f0abfc; }
+.mural--e1980s .m-hotel-windows { background: repeating-linear-gradient(90deg, #22d3ee 0 20%, transparent 20% 35%); }
+.mural--e1980s .m-pool { background: radial-gradient(circle, #67e8f9, #a855f7); box-shadow: 0 0 14px #22d3ee; border-radius: 20%; }
+.mural--e1980s .m-dock { background: #f0abfc; box-shadow: 0 0 10px #f0abfc; }
+.mural--e1980s .m-boat {
+  background: linear-gradient(90deg, #22d3ee, #f0abfc);
+  clip-path: polygon(5% 50%, 95% 45%, 85% 100%, 15% 100%);
+  box-shadow: 0 0 12px #22d3ee;
 }
-.mural--e16bit .m-pool { background: linear-gradient(180deg, #5ef0ea, #1ab8c8); border-radius: 6px; box-shadow: inset 0 4px 8px rgba(255,255,255,0.4); }
-.mural--e16bit .m-dock { background: linear-gradient(180deg, #a5723e, #7a5228); }
-.mural--e16bit .m-boat { background: #eee; border-radius: 0 0 40% 40%; }
-.mural--e16bit .m-boat-sail { background: #e0556a; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.mural--e16bit .m-fx { background: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px) 0 0 / 3px 3px; opacity: 0.5; }
-@keyframes e16-tide { 0% { background-position: 0 0; } 100% { background-position: 0 6px; } }
-@keyframes e16-shear { 0%, 100% { transform: skewX(0); } 50% { transform: skewX(-3deg); } }
-@keyframes e16-sway { 0%, 100% { transform: translateX(-50%) rotate(-2deg); } 50% { transform: translateX(-50%) rotate(3deg); } }
+.mural--e1980s .m-boat-sail { background: #f472b6; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e1980s .m-hud { left: 5%; top: 5%; color: #67e8f9; font-family: "Space Grotesk", system-ui, sans-serif; font-size: clamp(0.5rem, 1.2vw, 0.8rem); text-shadow: 0 0 8px #22d3ee; }
+.mural--e1980s .m-hud::before { content: "SCORE 25000\ASTAGE 03"; }
+.mural--e1980s .m-fx { background: linear-gradient(180deg, rgba(244,114,182,0.15), transparent 35%); }
+@keyframes e1980-grid { 0% { background-position: 0 0, 0 0, 0 0, 0 0; } 100% { background-position: 0 0, 25px 0, 0 19px, 0 0; } }
+@keyframes e1980-shine { 0% { transform: translateX(-80%); } 100% { transform: translateX(80%); } }
+@keyframes e1980-pulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.2); } }
 
 /* =====================================================================
-   ERA 3 · 1998 PS1 EARLY-3D — affine texture warp, vertex jitter, fog,
-   flat-shaded low-poly
+   1990s · LOW-POLY / N64 — saturated, chunky, LAP + hearts HUD
    ===================================================================== */
-.mural--e3d {
-  background: linear-gradient(180deg, #c9b9f0 0%, #8a7cc8 34%, #4b6db0 60%, #1a5a7a 100%);
-  animation: e3d-jitter 0.14s steps(3) infinite;
+.mural--e1990s {
+  background: linear-gradient(180deg, #7dd3fc 0%, #4ade80 42%, #fbbf24 70%, #ea580c 100%);
+  image-rendering: pixelated;
 }
-.mural--e3d .m-sky { background: linear-gradient(180deg, #c9b9f0, #9a8cd0 60%, #6a7cc0); }
-.mural--e3d .m-hills {
-  background: linear-gradient(180deg, #5a6a9a, #3d5a7a);
-  clip-path: polygon(0 100%, 16% 20%, 33% 100%, 50% 12%, 67% 100%, 84% 25%, 100% 100%);
-  filter: drop-shadow(0 -2px 0 rgba(255,255,255,0.12));
+.mural--e1990s .m-sky { background: linear-gradient(180deg, #38bdf8, #7dd3fc 55%, #fde68a); }
+.mural--e1990s .m-hills {
+  background: linear-gradient(180deg, #16a34a, #15803d);
+  clip-path: polygon(0 100%, 12% 45%, 24% 100%, 38% 28%, 52% 100%, 66% 38%, 80% 100%, 92% 48%, 100% 100%);
+  filter: contrast(1.1);
 }
-.mural--e3d .m-beach { background: linear-gradient(180deg, #b0a878, #8a7c52); }
-.mural--e3d .m-sea { background: linear-gradient(180deg, #2a7a9a, #0d4a6a); animation: e3d-warp 4s ease-in-out infinite; }
-.mural--e3d .m-sea-glint {
-  background: repeating-linear-gradient(100deg, rgba(255,255,255,0.14) 0 6px, transparent 6px 20px);
-  animation: e3d-warp 3s ease-in-out infinite reverse;
+.mural--e1990s .m-beach { background: #fcd34d; border-top: 3px solid #1a1a2e; }
+.mural--e1990s .m-sea { background: repeating-linear-gradient(180deg, #0ea5e9 0 6px, #0284c7 6px 12px); }
+.mural--e1990s .m-sea-glint { background: repeating-linear-gradient(100deg, rgba(255,255,255,0.25) 0 4px, transparent 4px 14px); }
+.mural--e1990s .m-cel-core {
+  background: radial-gradient(circle at 35% 30%, #fff7ed, #fbbf24 55%, #ea580c);
+  border: 3px solid #1a1a2e;
+  border-radius: 18% 28% 22% 30% / 28% 18% 32% 22%;
+  box-shadow: 4px 4px 0 #1a1a2e;
 }
-.mural--e3d .m-cel-core { background: radial-gradient(circle at 40% 36%, #fff2c0, #ffcf5a 60%, #e89a30); clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); }
-.mural--e3d .m-cel-glow { background: radial-gradient(circle, rgba(255,200,90,0.4), transparent 70%); }
-.mural--e3d .m-cel-flare { display: none; }
-.mural--e3d .m-cel--moon .m-cel-core { background: radial-gradient(circle at 40% 36%, #eef2fa, #b8c6da 60%, #8090aa); }
-.mural--e3d .m-palm-trunk { background: linear-gradient(90deg, #3a5a3a, #2a4a2a); clip-path: polygon(30% 0, 70% 0, 60% 100%, 40% 100%); }
-.mural--e3d .m-palm-crown { background: #2a6a3a; clip-path: polygon(50% 0, 100% 60%, 75% 100%, 25% 100%, 0 60%); filter: brightness(1.1); }
-.mural--e3d .m-hotel { background: linear-gradient(120deg, #8a8a9a, #6a6a7a); }
-.mural--e3d .m-hotel-roof { background: #5a5a6a; clip-path: polygon(0 100%, 50% 0, 100% 100%); }
-.mural--e3d .m-hotel-windows { background: repeating-linear-gradient(90deg, #2a3a5a 0 30%, transparent 30% 50%); opacity: 0.8; }
-.mural--e3d .m-pool { background: linear-gradient(120deg, #2a9ab0, #147a90); clip-path: polygon(6% 20%, 100% 0, 94% 100%, 0 80%); }
-.mural--e3d .m-dock { background: #7a6a5a; transform: skewX(-8deg); }
-.mural--e3d .m-boat { background: #cfcfcf; clip-path: polygon(0 55%, 100% 40%, 88% 100%, 12% 100%); }
-.mural--e3d .m-boat-sail { background: #dfe6ee; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.mural--e3d .m-fx {
-  background: linear-gradient(180deg, transparent 25%, rgba(200,210,255,0.5) 78%);
-  animation: cel-pulse 6s ease-in-out infinite;
+.mural--e1990s .m-cel-glow { display: none; }
+.mural--e1990s .m-cel-flare { display: none; }
+.mural--e1990s .m-palm-trunk { background: #92400e; border: 2px solid #1a1a2e; border-radius: 0; }
+.mural--e1990s .m-palm-crown {
+  background: #22c55e;
+  border: 2px solid #1a1a2e;
+  border-radius: 40% 20% 40% 20%;
+  box-shadow: 3px 3px 0 #1a1a2e;
 }
-@keyframes e3d-jitter {
-  0% { transform: translate(0,0) skewX(0); }
-  33% { transform: translate(0.5px,-0.5px) skewX(0.5deg); }
-  66% { transform: translate(-0.5px,0) skewX(-0.4deg); }
-  100% { transform: translate(0,0.5px) skewX(0.2deg); }
+.mural--e1990s .m-hotel { background: #fdba74; border: 3px solid #1a1a2e; box-shadow: 4px 4px 0 #1a1a2e; border-radius: 8% 18% 10% 14%; }
+.mural--e1990s .m-hotel-roof { background: #dc2626; border-bottom: 2px solid #1a1a2e; }
+.mural--e1990s .m-hotel-windows { background: repeating-linear-gradient(90deg, #1e3a5f 0 24%, transparent 24% 40%); }
+.mural--e1990s .m-pool { background: #38bdf8; border: 3px solid #1a1a2e; border-radius: 20% 30% 25% 35%; box-shadow: 3px 3px 0 #1a1a2e; }
+.mural--e1990s .m-dock { background: #a16207; border: 2px solid #1a1a2e; }
+.mural--e1990s .m-boat { background: #fef3c7; border: 2px solid #1a1a2e; border-radius: 0 0 40% 40%; box-shadow: 3px 3px 0 #1a1a2e; }
+.mural--e1990s .m-boat-sail { background: #ea580c; border: 2px solid #1a1a2e; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e1990s .m-hud {
+  left: 5%;
+  top: 5%;
+  color: #1a1a2e;
+  font-family: "Comic Sans MS", "Chalkboard SE", cursive;
+  font-size: clamp(0.5rem, 1.15vw, 0.75rem);
+  text-shadow: 1px 1px 0 #fff;
 }
-@keyframes e3d-warp { 0%,100% { transform: skewX(0) scaleY(1); } 50% { transform: skewX(-2deg) scaleY(1.03); } }
+.mural--e1990s .m-hud::before { content: "LAP 1/3\ATIME 00:25.76\A♥ ♥ ♥"; }
+.mural--e1990s .m-fx { background: none; }
 
 /* =====================================================================
-   ERA 4 · 2005 FLASH — vector gloss, thick black strokes, radial glow,
-   tween bounce
+   2000s · POLISHED QUEST — vibrant smooth, coin/gem HUD
    ===================================================================== */
-.mural--eflash { background: linear-gradient(180deg, #ffe9a8 0%, #ffd06a 34%, #43e0d6 40%, #17a8b8 70%, #0c7f96 100%); }
-.mural--eflash .m-sky { background: radial-gradient(circle at 50% 120%, #fff3c8, #ffd06a 60%, #ffbe4a); }
-.mural--eflash .m-hills {
-  background: linear-gradient(180deg, #4ad07a, #2fae5e);
-  border-top: 3px solid #123; border-radius: 40% 50% 0 0 / 100% 100% 0 0;
-  clip-path: none; height: 16%; bottom: 32%;
+.mural--e2000s {
+  background: linear-gradient(180deg, #38bdf8 0%, #4ade80 45%, #fef08a 78%, #fde68a 100%);
 }
-.mural--eflash .m-beach { background: linear-gradient(180deg, #ffe08a, #f0c85a); border-top: 3px solid #123; }
-.mural--eflash .m-sea { background: linear-gradient(180deg, #5ef0ea, #14a8b8); }
-.mural--eflash .m-sea-glint { background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%); animation: ef-shine 3.5s ease-in-out infinite; }
-.mural--eflash .m-cel-core { background: radial-gradient(circle at 38% 30%, #fff, #ffe07a 45%, #ffbe3a); border: 3px solid #123; animation: ef-bounce 2s cubic-bezier(0.34,1.7,0.64,1) infinite; }
-.mural--eflash .m-cel-glow { background: radial-gradient(circle, rgba(255,225,120,0.6), transparent 68%); }
-.mural--eflash .m-cel-flare { background: conic-gradient(from 0deg, transparent 0 8%, rgba(255,240,180,0.5) 10% 12%, transparent 14% 25%, rgba(255,240,180,0.5) 27% 29%, transparent 31% 50%, rgba(255,240,180,0.5) 52% 54%, transparent 56% 75%, rgba(255,240,180,0.5) 77% 79%, transparent 81%); inset: -50%; border-radius: 0; animation: cel-spin 18s linear infinite; }
-.mural--eflash .m-cel--moon .m-cel-core { background: radial-gradient(circle at 38% 30%, #fff, #dfe8f4 50%, #b8c8de); }
-.mural--eflash .m-cel--moon .m-cel-flare { display: none; }
-.mural--eflash .m-palm-trunk { background: linear-gradient(90deg, #7a4a22, #5c3616); border: 3px solid #123; border-radius: 3px; }
-.mural--eflash .m-palm-crown { background: #2fae5e; border: 3px solid #123; border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%; animation: ef-bounce 2.6s cubic-bezier(0.34,1.6,0.64,1) infinite 0.2s; }
-.mural--eflash .m-hotel { background: linear-gradient(180deg, #fff, #e8eef4); border: 3px solid #123; border-radius: 4px; }
-.mural--eflash .m-hotel-roof { background: linear-gradient(180deg, #ff7a7a, #ee4a4a); border-bottom: 3px solid #123; }
-.mural--eflash .m-hotel-windows { background: repeating-linear-gradient(90deg, #3aa0e0 0 22%, transparent 22% 33%); }
-.mural--eflash .m-pool { background: radial-gradient(circle at 40% 30%, #7efff8, #16b8c8); border: 3px solid #123; border-radius: 10px; box-shadow: inset 0 6px 10px rgba(255,255,255,0.6); }
-.mural--eflash .m-dock { background: #8a5a2e; border: 3px solid #123; border-radius: 3px; }
-.mural--eflash .m-boat { background: #fff; border: 3px solid #123; border-radius: 0 0 50% 50%; animation: ef-bounce 3s ease-in-out infinite; }
-.mural--eflash .m-boat-sail { background: #ff7a7a; border: 3px solid #123; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.mural--eflash .m-fx { background: linear-gradient(180deg, rgba(255,255,255,0.18), transparent 30%); }
-@keyframes ef-bounce { 0%,100% { transform: translateY(0) scale(1); } 40% { transform: translateY(-6px) scale(1.04, 0.96); } 60% { transform: translateY(-2px) scale(0.98, 1.02); } }
-.mural--eflash .m-palm-crown { transform-origin: bottom center; }
-@keyframes ef-shine { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.mural--e2000s .m-sky { background: linear-gradient(180deg, #7dd3fc, #bae6fd 50%, #fef9c3); }
+.mural--e2000s .m-clouds {
+  opacity: 0.85;
+  background:
+    radial-gradient(ellipse at 20% 40%, #fff 0 35%, transparent 36%),
+    radial-gradient(ellipse at 70% 30%, #fff 0 28%, transparent 29%);
+}
+.mural--e2000s .m-hills {
+  background: linear-gradient(180deg, #22c55e, #15803d);
+  border-radius: 50% 40% 0 0 / 100% 80% 0 0;
+  clip-path: none;
+  height: 16%;
+  box-shadow: 0 -4px 20px rgba(34,197,94,0.35);
+}
+.mural--e2000s .m-beach { background: linear-gradient(180deg, #fde68a, #fbbf24); }
+.mural--e2000s .m-sea { background: linear-gradient(180deg, #67e8f9, #0ea5e9); }
+.mural--e2000s .m-sea-glint { background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%); animation: e2000-shine 4s ease-in-out infinite; }
+.mural--e2000s .m-cel-core {
+  background: radial-gradient(circle at 38% 32%, #fff, #fde047 45%, #f59e0b);
+  border: 3px solid #ca8a04;
+  box-shadow: 0 0 0 3px #fef08a, 0 10px 24px rgba(234,179,8,0.45);
+}
+.mural--e2000s .m-cel-glow { background: radial-gradient(circle, rgba(253,224,71,0.55), transparent 70%); animation: cel-pulse 3s ease-in-out infinite; }
+.mural--e2000s .m-cel-flare { display: none; }
+.mural--e2000s .m-palm-trunk { background: linear-gradient(90deg, #a16207, #854d0e); border-radius: 4px; }
+.mural--e2000s .m-palm-crown {
+  background: radial-gradient(circle at 40% 40%, #4ade80, #16a34a);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: -14px 4px 0 -2px #22c55e, 14px 4px 0 -2px #22c55e;
+  animation: e2000-sway 3.5s ease-in-out infinite;
+}
+.mural--e2000s .m-hotel {
+  background: linear-gradient(160deg, #ffffffaa, #fef3c7);
+  border: 2px solid #fef08a;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(202,138,4,0.25);
+}
+.mural--e2000s .m-hotel-roof { background: linear-gradient(180deg, #facc15, #ca8a04); }
+.mural--e2000s .m-hotel-windows { background: repeating-linear-gradient(90deg, #38bdf8 0 22%, transparent 22% 33%); }
+.mural--e2000s .m-pool { background: radial-gradient(circle at 40% 30%, #a5f3fc, #06b6d4); border-radius: 12px; box-shadow: inset 0 4px 10px rgba(255,255,255,0.5); }
+.mural--e2000s .m-dock { background: linear-gradient(180deg, #d97706, #92400e); border-radius: 3px; }
+.mural--e2000s .m-boat { background: #fff; border-radius: 0 0 45% 45%; box-shadow: 0 6px 12px rgba(0,0,0,0.12); }
+.mural--e2000s .m-boat-sail { background: #f59e0b; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e2000s .m-hud {
+  right: 5%;
+  top: 5%;
+  left: auto;
+  color: #854d0e;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(0.55rem, 1.2vw, 0.8rem);
+  text-align: right;
+}
+.mural--e2000s .m-hud::before { content: "COIN x 128   GEM x 07\A♥ ♥ ♥"; }
+.mural--e2000s .m-fx { background: linear-gradient(180deg, rgba(255,255,255,0.2), transparent 28%); }
+@keyframes e2000-shine { 0%,100% { opacity: 0.4; transform: translateX(-10%); } 50% { opacity: 0.9; transform: translateX(10%); } }
+@keyframes e2000-sway { 0%,100% { transform: translateX(-50%) rotate(-3deg); } 50% { transform: translateX(-50%) rotate(4deg); } }
 
 /* =====================================================================
-   ERA 5 · 2014 HD — Material flat design, long shadows, clean geometry
+   2010s · CINEMATIC REALISM — muted earth, diegetic OBJECTIVE
    ===================================================================== */
-.mural--ehd { background: linear-gradient(180deg, #fef6ea 0%, #ffe6c4 34%, #7fe3e0 40%, #2bb7c6 70%, #1892a8 100%); }
-.mural--ehd .m-sky { background: linear-gradient(180deg, #fff3e0, #ffe0b8 70%, #ffd0a0); }
-.mural--ehd .m-hills { background: #3cc878; clip-path: none; height: 14%; bottom: 32%; border-radius: 60% 60% 0 0 / 100% 100% 0 0; }
-.mural--ehd .m-beach { background: #f2dca8; }
-.mural--ehd .m-sea { background: linear-gradient(180deg, #57d8d6, #1892a8); }
-.mural--ehd .m-sea-glint { background: linear-gradient(120deg, transparent 42%, rgba(255,255,255,0.3) 50%, transparent 58%); animation: ehd-glint 5s ease-in-out infinite; }
-.mural--ehd .m-cel-core { background: #ffd45e; box-shadow: 0 6px 0 rgba(0,0,0,0.06), 24px 24px 0 rgba(255,180,60,0.14); animation: ehd-float 6s ease-in-out infinite; }
-.mural--ehd .m-cel-glow { background: radial-gradient(circle, rgba(255,212,94,0.4), transparent 70%); }
-.mural--ehd .m-cel-flare { display: none; }
-.mural--ehd .m-cel--moon .m-cel-core { background: #e8eef6; box-shadow: 0 6px 0 rgba(0,0,0,0.08), 22px 22px 0 rgba(200,215,235,0.18); }
-.mural--ehd .m-palm-trunk { background: #a9782e; border-radius: 3px; box-shadow: 6px 8px 0 rgba(0,0,0,0.06); }
-.mural--ehd .m-palm-crown { background: #3cb878; border-radius: 50%; box-shadow: 10px 12px 0 rgba(0,0,0,0.05); }
-.mural--ehd .m-hotel { background: #f7f2ea; border-radius: 4px; box-shadow: 10px 12px 0 rgba(0,0,0,0.06); }
-.mural--ehd .m-hotel-roof { background: #2bb7c6; }
-.mural--ehd .m-hotel-windows { background: repeating-linear-gradient(90deg, #cfe4ee 0 22%, transparent 22% 33%); }
-.mural--ehd .m-pool { background: #34c6d4; border-radius: 10px; box-shadow: 8px 10px 0 rgba(0,0,0,0.05); }
-.mural--ehd .m-dock { background: #c79a5e; border-radius: 3px; }
-.mural--ehd .m-boat { background: #fff; border-radius: 0 0 40% 40%; box-shadow: 6px 8px 0 rgba(0,0,0,0.06); }
-.mural--ehd .m-boat-sail { background: #ff7a5e; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.mural--ehd .m-fx { background: none; }
-@keyframes ehd-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-@keyframes ehd-glint { 0%,100% { transform: translateX(-15%); opacity: 0.4; } 50% { transform: translateX(15%); opacity: 0.85; } }
+.mural--e2010s {
+  background: linear-gradient(180deg, #44403c 0%, #78716c 25%, #57534e 50%, #292524 100%);
+}
+.mural--e2010s .m-sky { background: linear-gradient(180deg, #a8a29e, #78716c 40%, #57534e); filter: contrast(1.05) saturate(0.85); }
+.mural--e2010s .m-hills {
+  background: linear-gradient(180deg, #3f6212, #1a2e05 60%, #292524);
+  clip-path: polygon(0 100%, 18% 42%, 32% 70%, 48% 22%, 62% 58%, 78% 30%, 100% 55%, 100% 100%);
+  filter: contrast(1.1) saturate(0.7);
+  box-shadow: 0 12px 28px rgba(28,25,23,0.45);
+}
+.mural--e2010s .m-beach { background: linear-gradient(180deg, #a8a29e, #78716c); }
+.mural--e2010s .m-sea { background: linear-gradient(180deg, #44403c, #1c1917); }
+.mural--e2010s .m-sea-glint { background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%); }
+.mural--e2010s .m-cel-core {
+  background: radial-gradient(circle at 40% 35%, #fef3c7, #a8a29e 55%, #57534e);
+  border-radius: 40%;
+  border: 2px solid #57534e;
+  box-shadow: 0 12px 28px rgba(28,25,23,0.5);
+  filter: saturate(0.8);
+}
+.mural--e2010s .m-cel-glow { background: radial-gradient(circle, rgba(168,162,158,0.35), transparent 70%); }
+.mural--e2010s .m-cel-flare { display: none; }
+.mural--e2010s .m-palm-trunk { background: linear-gradient(90deg, #44403c, #292524); border-radius: 40%; }
+.mural--e2010s .m-palm-crown { background: linear-gradient(160deg, #3f6212, #1a2e05); border-radius: 40%; filter: saturate(0.75); }
+.mural--e2010s .m-hotel {
+  background: linear-gradient(180deg, #a8a29e44, #44403c);
+  border: 2px solid #57534e;
+  border-radius: 40%;
+  box-shadow: 0 12px 28px rgba(28,25,23,0.45);
+}
+.mural--e2010s .m-hotel-roof { background: #292524; }
+.mural--e2010s .m-hotel-windows { background: repeating-linear-gradient(90deg, #1c1917 0 28%, transparent 28% 45%); opacity: 0.7; }
+.mural--e2010s .m-pool { background: linear-gradient(160deg, #57534e, #292524); border-radius: 30%; opacity: 0.85; }
+.mural--e2010s .m-dock { background: #44403c; }
+.mural--e2010s .m-boat { background: #78716c; border-radius: 0 0 40% 40%; filter: saturate(0.7); }
+.mural--e2010s .m-boat-sail { background: #57534e; clip-path: polygon(0 0, 0 100%, 100% 100%); }
+.mural--e2010s .m-hud {
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.85);
+  font-family: system-ui, sans-serif;
+  font-size: clamp(0.45rem, 1.1vw, 0.7rem);
+  letter-spacing: 0.12em;
+  background: rgba(28,25,23,0.45);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(4px);
+}
+.mural--e2010s .m-hud::before { content: "OBJECTIVE: FIND THE LOST TEMPLE"; }
+.mural--e2010s .m-fx { background: linear-gradient(180deg, transparent 40%, rgba(28,25,23,0.55) 100%); }
 
 /* =====================================================================
-   ERA 6 · NEW GEN — blank sketch plot, dashed outlines, waiting to be
-   painted by the next generation
+   NEW GEN — blank plot (dashed outlines) — you paint what comes next
    ===================================================================== */
 .mural--blank { background: #fdfbf3; }
 .mural--blank .m-sky { background: linear-gradient(#eee6d2 1px, transparent 1px) 0 0 / 100% 14px, #fdfbf3; }
-.mural--blank .m-hills { background: none; border: 2px dashed #c3b184; border-bottom: none; border-radius: 50% 50% 0 0; height: 14%; bottom: 32%; opacity: 0.8; }
+.mural--blank .m-clouds { display: none; }
+.mural--blank .m-stars { display: none; }
+.mural--blank .m-hills {
+  background: none;
+  border: 2px dashed #c3b184;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0;
+  height: 14%;
+  bottom: 32%;
+  opacity: 0.8;
+  clip-path: none;
+  box-shadow: none;
+}
 .mural--blank .m-beach { background: none; border-top: 2px dashed #c3b184; }
 .mural--blank .m-sea { background: none; border-top: 2px dashed #b7c3cc; }
 .mural--blank .m-sea-glint { display: none; }
-.mural--blank .m-cel-core { background: none; border: 2px dashed #c9a94e; border-radius: 50%; animation: cb-pulse 4s ease-in-out infinite; }
+.mural--blank .m-cel-core {
+  background: none;
+  border: 2px dashed #c9a94e;
+  border-radius: 50%;
+  box-shadow: none;
+  animation: cb-pulse 4s ease-in-out infinite;
+}
 .mural--blank .m-cel-glow { display: none; }
 .mural--blank .m-cel-flare { display: none; }
 .mural--blank .m-palm-trunk { background: none; border: 2px dashed #c3b184; border-radius: 2px; }
-.mural--blank .m-palm-crown { background: none; border: 2px dashed #a8c384; border-radius: 50%; }
-.mural--blank .m-hotel { background: none; border: 2px dashed #c3b184; }
-.mural--blank .m-hotel-roof { border-bottom: 2px dashed #c3b184; }
+.mural--blank .m-palm-crown { background: none; border: 2px dashed #a8c384; border-radius: 50%; box-shadow: none; }
+.mural--blank .m-hotel { background: none; border: 2px dashed #c3b184; box-shadow: none; border-radius: 0; }
+.mural--blank .m-hotel-roof { background: none; border-bottom: 2px dashed #c3b184; }
 .mural--blank .m-hotel-windows { background: none; }
-.mural--blank .m-pool { background: none; border: 2px dashed #a4c0cc; border-radius: 8px; }
+.mural--blank .m-pool { background: none; border: 2px dashed #a4c0cc; border-radius: 8px; box-shadow: none; }
 .mural--blank .m-dock { background: none; border: 2px dashed #c3b184; }
-.mural--blank .m-boat { background: none; border: 2px dashed #c3b184; border-radius: 0 0 40% 40%; }
+.mural--blank .m-boat { background: none; border: 2px dashed #c3b184; border-radius: 0 0 40% 40%; box-shadow: none; }
 .mural--blank .m-boat-sail { background: none; border: 2px dashed #c3b184; clip-path: none; }
-.mural--blank .m-fx {
-  background: none;
-}
+.mural--blank .m-hud { display: none; }
+.mural--blank .m-fx { background: none; }
 .mural--blank .m-fx::after {
   content: "";
   position: absolute;
@@ -522,12 +722,10 @@
 @keyframes cel-pulse { 0%,100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.12); opacity: 1; } }
 @keyframes cel-spin { to { transform: rotate(360deg); } }
 
-/* the "burning" sun — a live corona that licks and flickers (all eras
-   with a radial sun get a base burn on the glow layer) */
-.mural--e16bit .m-cel--sun .m-cel-glow,
-.mural--e3d .m-cel--sun .m-cel-glow,
-.mural--eflash .m-cel--sun .m-cel-glow,
-.mural--ehd .m-cel--sun .m-cel-glow {
+/* the "burning" sun — a live corona that licks and flickers */
+.mural--e1990s .m-cel--sun .m-cel-glow,
+.mural--e2000s .m-cel--sun .m-cel-glow,
+.mural--e2010s .m-cel--sun .m-cel-glow {
   animation: sun-burn 1.4s ease-in-out infinite;
 }
 @keyframes sun-burn {
@@ -538,12 +736,11 @@
   100% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg) brightness(1); }
 }
 
-/* night: reveal stars over dark-enough eras */
-.cap-opening-root[data-phase="night"] .mural--e16bit .m-sky,
-.cap-opening-root[data-phase="night"] .mural--e3d .m-sky,
-.cap-opening-root[data-phase="night"] .mural--eflash .m-sky,
-.cap-opening-root[data-phase="night"] .mural--ehd .m-sky {
-  filter: brightness(0.4) saturate(0.7) hue-rotate(200deg);
+/* night: soft dusk wash on color eras (vector eras stay black; blank stays blank) */
+.cap-opening-root[data-phase="night"] .mural--e1990s .m-sky,
+.cap-opening-root[data-phase="night"] .mural--e2000s .m-sky,
+.cap-opening-root[data-phase="night"] .mural--e2010s .m-sky {
+  filter: brightness(0.42) saturate(0.75) hue-rotate(200deg);
 }
 .cap-opening-root[data-phase="night"] .m-stars {
   opacity: 0.9;
@@ -553,10 +750,10 @@
     radial-gradient(circle, #fff 0.6px, transparent 0.6px) 75% 26% / 70px 70px;
   animation: star-twinkle 3s ease-in-out infinite;
 }
-.cap-opening-root[data-phase="dusk"] .mural--e16bit .m-sky,
-.cap-opening-root[data-phase="dusk"] .mural--ehd .m-sky,
-.cap-opening-root[data-phase="dawn"] .mural--e16bit .m-sky,
-.cap-opening-root[data-phase="dawn"] .mural--ehd .m-sky {
+.cap-opening-root[data-phase="dusk"] .mural--e1990s .m-sky,
+.cap-opening-root[data-phase="dusk"] .mural--e2000s .m-sky,
+.cap-opening-root[data-phase="dawn"] .mural--e1990s .m-sky,
+.cap-opening-root[data-phase="dawn"] .mural--e2000s .m-sky {
   filter: saturate(1.1) hue-rotate(-14deg) brightness(1.02);
 }
 @keyframes star-twinkle { 0%,100% { opacity: 0.5; } 50% { opacity: 0.95; } }
@@ -605,15 +802,76 @@
   color: rgba(255, 233, 184, 0.85);
 }
 .cap-opening-title {
-  font-family: var(--font-display, Georgia, serif);
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: #fff;
-  font-size: clamp(2.2rem, 7vw, 3.75rem);
-  line-height: 1;
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.55rem;
+  margin: 0.35rem auto 0;
+  padding: 0.55rem 1.15rem 0.5rem;
+  line-height: 1;
+  /* mint treasury paper + faint guilloche */
+  background:
+    radial-gradient(circle at 12% 50%, rgba(26, 84, 54, 0.1) 0 1.5px, transparent 2px) 0 0 / 10px 10px,
+    radial-gradient(circle at 88% 50%, rgba(26, 84, 54, 0.1) 0 1.5px, transparent 2px) 0 0 / 10px 10px,
+    repeating-radial-gradient(circle at 50% 50%, transparent 0 5px, rgba(26, 84, 54, 0.05) 5px 6px),
+    linear-gradient(180deg, #eef5ea 0%, #c9dcc8 48%, #dce8d8 100%);
+  border: 2px solid #1a5436;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px #9fbfa8,
+    inset 0 0 0 5px rgba(238, 245, 234, 0.9),
+    0 6px 18px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.cap-opening-title::before,
+.cap-opening-title::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(26, 84, 54, 0.35);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.cap-opening-title::after {
+  inset: 11px;
+  border-style: double;
+  border-color: rgba(26, 84, 54, 0.22);
+}
+.cap-opening-title__word {
+  position: relative;
+  z-index: 1;
+  font-family: Fraunces, "Times New Roman", Georgia, serif;
+  font-weight: 900;
+  font-optical-sizing: auto;
+  font-size: clamp(2.2rem, 7vw, 3.75rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* engraved intaglio fill */
+  background-image: repeating-linear-gradient(
+    -18deg,
+    #0a2e1c 0 1.5px,
+    #1a5c3a 1.5px 2.5px,
+    #0f3d28 2.5px 4px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 0.6px #062016;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35));
+}
+.cap-opening-title__ornament {
+  position: relative;
+  z-index: 1;
+  width: 0.72rem;
+  height: 0.72rem;
+  flex-shrink: 0;
+  border: 1.5px solid #1a5436;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 35%, #1a5436 36% 42%, transparent 43%),
+    radial-gradient(circle at 50% 50%, #1a5436 0 18%, transparent 19%);
+  opacity: 0.85;
 }
 .cap-opening-caption {
   position: absolute;
@@ -679,24 +937,14 @@
   .cap-enter-boat,
   .cap-enter-boat__icon,
   .isle-patch.is-assembled,
-  .mural--e8bit .m-cel-core,
-  .mural--e8bit .m-palm-crown,
-  .mural--e8bit .m-fx,
-  .mural--e16bit .m-sea,
-  .mural--e16bit .m-sea-glint,
-  .mural--e16bit .m-palm-crown,
-  .mural--e16bit .m-cel-glow,
-  .mural--e3d,
-  .mural--e3d .m-sea,
-  .mural--e3d .m-sea-glint,
-  .mural--e3d .m-fx,
-  .mural--eflash .m-cel-core,
-  .mural--eflash .m-cel-flare,
-  .mural--eflash .m-palm-crown,
-  .mural--eflash .m-boat,
-  .mural--eflash .m-sea-glint,
-  .mural--ehd .m-cel-core,
-  .mural--ehd .m-sea-glint,
+  .mural--e1960s .m-stars,
+  .mural--e1970s .m-sea-glint,
+  .mural--e1980s .m-sea-glint,
+  .mural--e1980s .m-cel-core,
+  .mural--e1990s .m-cel--sun .m-cel-glow,
+  .mural--e2000s .m-sea-glint,
+  .mural--e2000s .m-cel-glow,
+  .mural--e2010s .m-cel--sun .m-cel-glow,
   .mural--blank .m-cel-core,
   .mural--blank .m-fx::after,
   .m-cel--sun .m-cel-glow,

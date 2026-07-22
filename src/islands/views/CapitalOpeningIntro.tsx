@@ -20,19 +20,55 @@ type Patch = {
 };
 
 /**
- * ONE mural of the same resort, painted six times — once per generation of game
- * graphics (1983 CGA → today). Each vertical slice is a window onto the same
+ * ONE mural of the same resort, painted seven times — once per decade of game
+ * graphics (1960s vector → New Gen). Each vertical slice is a window onto the same
  * continuous panorama, so the pieces lock together into a single picture while
  * each renders that picture in its own era's art style. A real, clock-driven
  * sun/moon arcs across the whole mural and is re-drawn in each era as it crosses.
  */
 const PATCHES: Patch[] = [
-  { id: "e8bit", label: "1983 · 8-bit CGA", year: "1983", caption: "4 colors, chunky pixels, checkerboard dither" },
-  { id: "e16bit", label: "1991 · 16-bit", year: "1991", caption: "Dithered skies, 256 colors, Mode-7 tides" },
-  { id: "e3d", label: "1998 · Early 3D", year: "1998", caption: "Warping textures & fog on wobbly polygons" },
-  { id: "eflash", label: "2005 · Flash web", year: "2005", caption: "Vector gloss, thick strokes, tween bounce" },
-  { id: "ehd", label: "2014 · HD flat", year: "2014", caption: "Material flat design & long shadows" },
-  { id: "blank", label: "New Gen", year: "New Gen", caption: "A blank plot — the new gen paints this one" },
+  {
+    id: "e1960s",
+    label: "1960s · Vector Dawn",
+    year: "1960s",
+    caption: "White dots & thin lines on black — oscilloscope skies",
+  },
+  {
+    id: "e1970s",
+    label: "1970s · Wireframe Seas",
+    year: "1970s",
+    caption: "Glowing green skeletons — early arcade perspective",
+  },
+  {
+    id: "e1980s",
+    label: "1980s · Neon Grid",
+    year: "1980s",
+    caption: "Synth sunsets, neon edges, infinite perspective floors",
+  },
+  {
+    id: "e1990s",
+    label: "1990s · Low-Poly Coast",
+    year: "1990s",
+    caption: "Chunky polygons, bright carts, heart meters",
+  },
+  {
+    id: "e2000s",
+    label: "2000s · Quest Keep",
+    year: "2000s",
+    caption: "Polished adventure worlds — gems, gold, companions",
+  },
+  {
+    id: "e2010s",
+    label: "2010s · Ruin Realism",
+    year: "2010s",
+    caption: "Cinematic mud, stone, and scale — diegetic objectives",
+  },
+  {
+    id: "blank",
+    label: "New Gen",
+    year: "New Gen",
+    caption: "Blank plot — dashed outlines waiting for the new generation to paint",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -99,6 +135,7 @@ const PUZZLE_CLIP_IDS = [
   "cap-puzzle-3",
   "cap-puzzle-4",
   "cap-puzzle-5",
+  "cap-puzzle-6",
 ] as const;
 
 function PuzzleClipDefs() {
@@ -121,7 +158,10 @@ function PuzzleClipDefs() {
           <path d="M0,0.02 C0.35,0 0.65,0 1,0.02 L1,0.34 C1.14,0.38 1.14,0.46 1,0.5 L1,0.98 C0.65,1 0.35,1 0,0.98 L0,0.64 C-0.14,0.6 -0.14,0.52 0,0.48 Z" />
         </clipPath>
         <clipPath id="cap-puzzle-5" clipPathUnits="objectBoundingBox">
-          <path d="M0,0.02 C0.35,0 0.65,0 1,0.02 L1,0.98 C0.65,1 0.35,1 0,0.98 L0,0.5 C-0.14,0.46 -0.14,0.38 0,0.34 Z" />
+          <path d="M0,0.02 C0.35,0 0.65,0 1,0.02 L1,0.62 C1.14,0.66 1.14,0.74 1,0.78 L1,0.98 C0.65,1 0.35,1 0,0.98 L0,0.5 C-0.14,0.46 -0.14,0.38 0,0.34 Z" />
+        </clipPath>
+        <clipPath id="cap-puzzle-6" clipPathUnits="objectBoundingBox">
+          <path d="M0,0.02 C0.35,0 0.65,0 1,0.02 L1,0.98 C0.65,1 0.35,1 0,0.98 L0,0.78 C-0.14,0.74 -0.14,0.66 0,0.62 Z" />
         </clipPath>
       </defs>
     </svg>
@@ -171,6 +211,7 @@ function MuralScene({ era, cel }: { era: string; cel: Celestial }) {
         <div className="m-boat-sail" />
       </div>
 
+      <div className="m-hud" aria-hidden />
       <div className="m-fx" />
     </div>
   );
@@ -215,7 +256,7 @@ function IslandPatch({
     >
       <div
         className="mural-window"
-        style={{ width: "600%", left: `${-pieceIndex * 100}%` }}
+        style={{ width: "700%", left: `${-pieceIndex * 100}%` }}
       >
         <MuralScene era={patch.id} cel={cel} />
       </div>
@@ -254,13 +295,19 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
   );
 
   const finish = useCallback(() => {
-    try {
-      sessionStorage.setItem("capital_intro_seen_v1", "1");
-    } catch {
-      /* ignore */
-    }
+    markCapitalIntroSeen();
     onComplete();
   }, [onComplete]);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("capital-intro-active");
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.classList.remove("capital-intro-active");
+    };
+  }, []);
 
   const enter = useCallback(() => {
     if (entering) return;
@@ -342,7 +389,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
             animate={{ bottom: "52%", opacity: 0, scale: 0.35 }}
             transition={{ duration: 0.95, ease: "easeIn" }}
           >
-            ⛵
+            🪄
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -358,28 +405,26 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
           >
             <div className="cap-opening-reveal__plate">
               <div className="cap-opening-eyebrow">
-                One resort, every era · 1983 → now · {timeLabel.toLowerCase()}
+                One resort, every era · 1960s → New Gen · {timeLabel.toLowerCase()}
               </div>
               <h1 className="cap-opening-title">
-                Capital
-                <span
-                  className="ml-2 inline-block h-[0.5em] w-[0.5em] -translate-y-[0.06em] rounded-sm"
-                  style={{ background: "var(--cap-gold, #f4a629)" }}
-                />
+                <span className="cap-opening-title__ornament" aria-hidden />
+                <span className="cap-opening-title__word">Capital</span>
+                <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
               <p className="mt-3 max-w-md text-sm text-white/80 md:text-base">
-                One mural of humans and games — painted six times, once per
-                generation of graphics. The last piece is blank, waiting for the
-                new gen to paint their own.
+                One mural of humans and games — painted seven times, once per
+                decade of graphics. The last piece is New Gen, waiting for you
+                to paint what comes next.
               </p>
               <div className="cap-enter">
                 <button type="button" className="cap-enter-boat" onClick={enter} autoFocus>
                   <span className="cap-enter-boat__icon" aria-hidden>
-                    ⛵
+                    🪄
                   </span>
-                  Set sail to enter
+                  Board the carpet to enter
                 </button>
-                <span className="cap-enter-hint">Click the boat to come ashore</span>
+                <span className="cap-enter-hint">Click the carpet to come ashore</span>
               </div>
             </div>
           </motion.div>
@@ -408,7 +453,27 @@ export function hasSeenCapitalIntro(): boolean {
 export function markCapitalIntroSeen(): void {
   try {
     sessionStorage.setItem("capital_intro_seen_v1", "1");
+    // Tie completion to this document boot so a full reload always replays.
+    sessionStorage.setItem("capital_intro_done_for_boot", String(performance.timeOrigin));
   } catch {
     /* ignore */
+  }
+}
+
+/**
+ * Title mural must play at the start of every full page load.
+ * Only automated QA may skip via ?skipIntro=1& with VITE_QA=1.
+ */
+export function shouldPlayCapitalIntroOnBoot(): boolean {
+  if (typeof window === "undefined") return true;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("replayIntro") === "1") return true;
+  const qaSkip = params.get("skipIntro") === "1" && import.meta.env.VITE_QA === "1";
+  if (qaSkip) return false;
+  try {
+    const doneFor = sessionStorage.getItem("capital_intro_done_for_boot");
+    return doneFor !== String(performance.timeOrigin);
+  } catch {
+    return true;
   }
 }

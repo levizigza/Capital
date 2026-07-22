@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "paycheck_peninsula",
-      "name": "Paycheck Peninsula",
-      "description": "A bustling coastal town where middle schoolers learn to budget their first earnings, track expenses, and plan ahead.",
-      "icon": "💵",
+      "name": "Dotgraph Atoll",
+      "description": "1960s vector dawn — white dots on black skies. Plot savings goals like connect-the-dots constellations while rival captains race for Ledger Seals.",
+      "icon": "⬛",
       "provenance": {
         "learning_objectives": [
           "Create a basic monthly budget from a fixed income",

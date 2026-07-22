@@ -67,6 +67,7 @@ export default function MockExchangeGame({
       icon={def?.icon ?? "🔄"}
       genre="simulation"
       complexity="hard"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-3 font-mono text-emerald-100">

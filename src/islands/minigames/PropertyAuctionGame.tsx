@@ -50,6 +50,7 @@ export default function PropertyAuctionGame({
       icon={def?.icon ?? "🔨"}
       genre="strategy"
       complexity="medium"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4">

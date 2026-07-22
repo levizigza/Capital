@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "financial_assets",
-      "name": "Asset Island",
-      "description": "Learn about stocks, bonds, ETFs, and mutual funds on this bustling financial hub.",
-      "icon": "📈",
+      "name": "Budget Kart Coast",
+      "description": "1990s low-poly coast — chunky polygons and heart meters. Kart your way through budgeting baselines and portfolio baskets.",
+      "icon": "🏎️",
       "provenance": {
         "learning_objectives": [
           "Understand stocks, bonds, ETFs, and mutual funds",

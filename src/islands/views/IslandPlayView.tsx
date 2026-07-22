@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, type ReactNode, type CSSProperties } from "react";
+import { Suspense, lazy, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -264,6 +264,7 @@ export function IslandPlayView({
                       )
                     }
                     title={npc.name}
+                    description={npc.tagline}
                     onClick={() => onTalkNpc(npc.id)}
                   />
                 ))}
@@ -333,7 +334,11 @@ export function IslandPlayView({
   return (
     <GameHudLayout
       className={cn("!min-h-0", !useCoincraftArt && theme.skinClass)}
-      style={!useCoincraftArt ? { background: theme.background } as CSSProperties : undefined}
+      background={
+        !useCoincraftArt ? (
+          <div className="absolute inset-0" style={{ background: theme.background }} />
+        ) : undefined
+      }
       topLeft={
         <div className="min-w-0 max-w-full">
           <h1 className="flex items-center gap-2 text-2xl font-black sm:text-3xl">
@@ -357,14 +362,16 @@ export function IslandPlayView({
               <span className="era-badge text-[9px]">{era.eraLabel}</span>
             </div>
           ) : null}
-          <HudBadge className="bg-indigo-50 text-indigo-900" title={profileDef.description}>
-            {profileDef.icon} {profileDef.label}
-          </HudBadge>
+          <span title={profileDef.description}>
+            <HudBadge className="bg-indigo-50 text-indigo-900">
+              {profileDef.icon} {profileDef.label}
+            </HudBadge>
+          </span>
           <Suspense fallback={null}>
             <LazyEconomyWeather economy={save.economyState ?? createDefaultEconomyState()} />
           </Suspense>
           <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
-            ⛵ Sail
+            🪄 Float
           </GameButton>
           <GameButton variant="primary" size="sm" onClick={onOpenHub}>
             🏠 Hub
@@ -412,6 +419,9 @@ export function IslandPlayView({
                         {cleared ? <span className="text-xs text-emerald-600">✓ cleared</span> : null}
                       </span>
                       <span className="line-clamp-2 text-xs text-gray-600">{mg.description}</span>
+                      {mg.homage ? (
+                        <span className="mt-0.5 block text-[10px] italic text-gray-500">{mg.homage}</span>
+                      ) : null}
                     </span>
                     <span className="shrink-0 text-lg">▶</span>
                   </button>

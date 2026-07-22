@@ -27,6 +27,7 @@ export default function CoinCatcherMinigame({
       icon={def?.icon ?? "🕹️"}
       genre="arcade"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <CoinCatcherGame

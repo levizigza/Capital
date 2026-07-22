@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { IslandDefinition } from "../types";
+import { resolveProfileText } from "../learningProfile";
 
 // ---------------------------------------------------------------------------
 // DialogueSandbox — interactive dialogue branch tester
@@ -72,7 +73,7 @@ export default function DialogueSandbox({ island }: Props) {
           nodeId: "end",
           speaker: "System",
           text: "[Dialogue ended — no next node]",
-          choiceLabel: choice.text,
+          choiceLabel: resolveProfileText(choice.text, "apprentice"),
         },
       ]);
       setCurrentNodeId(null);
@@ -87,7 +88,7 @@ export default function DialogueSandbox({ island }: Props) {
           nodeId: "error",
           speaker: "System",
           text: `[ERROR: node "${nextId}" not found]`,
-          choiceLabel: choice.text,
+          choiceLabel: resolveProfileText(choice.text, "apprentice"),
         },
       ]);
       setCurrentNodeId(null);
@@ -100,7 +101,12 @@ export default function DialogueSandbox({ island }: Props) {
         : JSON.stringify(nextNode.text);
     setHistory((prev) => [
       ...prev,
-      { nodeId: nextNode.id, speaker: nextNode.speaker, text, choiceLabel: choice.text },
+      {
+        nodeId: nextNode.id,
+        speaker: nextNode.speaker,
+        text,
+        choiceLabel: resolveProfileText(choice.text, "apprentice"),
+      },
     ]);
     setCurrentNodeId(nextNode.id);
   };
@@ -212,7 +218,7 @@ export default function DialogueSandbox({ island }: Props) {
                     : "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                 }`}
               >
-                {choice.text}
+                {resolveProfileText(choice.text, "apprentice")}
                 {hasReqs && !meetsReqs && (
                   <span className="text-[10px] text-red-500 ml-2">
                     🔒 Requires: {choice.requiresItems!.join(", ")}

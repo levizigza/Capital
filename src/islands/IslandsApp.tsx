@@ -11,6 +11,7 @@ import {
 
 import { HomeHubView } from "./views/HomeHubView";
 import { TravelMapView } from "./views/TravelMapView";
+import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
 import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
@@ -19,6 +20,8 @@ import { IslandThemeProvider } from "./themes/IslandThemeProvider";
 import { getIslandTheme } from "./themes/islandThemes";
 import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
+import { BASE_VOYAGER } from "./character";
+import { HUB_ISLAND_ID } from "./worldMapLayout";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -84,6 +87,10 @@ import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
+import { ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
+import { MasteryQuiz } from "./views/MasteryQuiz";
+import { withHarborFreedomRewards } from "./progressGates";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -92,8 +99,18 @@ type IslandsAppProps = {
   onReplayIntro?: () => void;
 };
 
-type View = "home" | "travel" | "island" | "arcade" | "studio";
+type View = "home" | "travel" | "voyage" | "island" | "arcade" | "studio";
+type VoyageReturn = "home" | "travel" | "island";
 type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | null;
+
+type PendingMasteryClear = {
+  gate: MasteryGateDef;
+  mgId: MinigameId;
+  score?: number;
+  timeline?: DecisionTimeline;
+  source: MinigameSource;
+  firstClear: boolean;
+};
 
 function uniq<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
@@ -129,6 +146,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const [view, setView] = useState<View>("home");
   const [save, setSave] = useState<IslandSaveV1 | null>(null);
+  /** After carpet POV boot flight — skip 2D welcome cards and land on Harbor. */
+  const [bootLandHub] = useState(() => {
+    try {
+      if (sessionStorage.getItem("capital_boot_land_hub") === "1") {
+        sessionStorage.removeItem("capital_boot_land_hub");
+        return true;
+      }
+    } catch {
+      /* ignore */
+    }
+    return false;
+  });
+  const [bootHubHandled, setBootHubHandled] = useState(false);
 
   const [activeIslandId, setActiveIslandId] = useState<string | null>(null);
   const activeIsland = useMemo(
@@ -143,12 +173,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     npcId?: NpcId;
   }>({ open: false });
 
-  const [hubModal, setHubModal] = useState<"avatar" | "shop" | "settings" | null>(null);
+  const [hubModal, setHubModal] = useState<"outfitter" | "capsule" | "settings" | null>(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
   const [minigameSource, setMinigameSource] = useState<MinigameSource>(null);
   const [pendingBoardReward, setPendingBoardReward] = useState<MinigameBoardReward | null>(null);
   const [pendingBoardMinigameName, setPendingBoardMinigameName] = useState<string | null>(null);
+  const [pendingMastery, setPendingMastery] = useState<PendingMasteryClear | null>(null);
+  const [voyageTargetId, setVoyageTargetId] = useState<string | null>(null);
+  const [voyageReturnView, setVoyageReturnView] = useState<VoyageReturn>("travel");
   const [showEditor, setShowEditor] = useState(
     () => import.meta.env.DEV && new URLSearchParams(window.location.search).get("islandEditor") === "1"
   );
@@ -204,7 +237,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         ? "islands_hub"
         : view === "travel"
           ? "islands_travel"
-          : view === "arcade"
+          : view === "voyage"
+            ? "islands_voyage"
+            : view === "arcade"
             ? "islands_arcade"
             : view === "studio"
               ? "islands_studio"
@@ -242,40 +277,82 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     [updateSave, setUserProfile]
   );
 
-  const completeOnboarding = useCallback(() => {
-    updateSave((prev) => ({ ...prev, onboardingComplete: true }));
-    void analytics.track("onboarding_completed", {});
-  }, [updateSave]);
-
   const enterIsland = useCallback(
     async (islandId: string) => {
       const island = getIslandById(content, islandId);
       if (!island) return;
 
-      await analytics.track("island_entered", { islandId });
+      const applyEnter = async () => {
+        await analytics.track("island_entered", { islandId });
 
-      updateSave((prev) => {
-        const defaultArea = island.areas[0]?.id;
-        return {
-          ...prev,
-          currentIslandId: islandId,
-          currentAreaId: prev.currentIslandId === islandId ? prev.currentAreaId || defaultArea : defaultArea,
-          discovered: {
-            ...prev.discovered,
-            islands: uniq([...prev.discovered.islands, islandId]),
-            areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
-          },
-        };
-      });
+        updateSave((prev) => {
+          const defaultArea = island.areas[0]?.id;
+          return {
+            ...prev,
+            currentIslandId: islandId,
+            currentAreaId: prev.currentIslandId === islandId ? prev.currentAreaId || defaultArea : defaultArea,
+            discovered: {
+              ...prev.discovered,
+              islands: uniq([...prev.discovered.islands, islandId]),
+              areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
+            },
+          };
+        });
 
-      setActiveIslandId(islandId);
-      setView("island");
+        setActiveIslandId(islandId);
+        setVoyageTargetId(null);
+        setView("island");
+      };
+
+      // Dissolve at mid-point so the era theme + morph land together (skip if reduced motion / no FX).
+      if (fx && !a11y.reducedMotion) {
+        await fx.playAreaTransition(applyEnter);
+      } else {
+        await applyEnter();
+      }
     },
-    [content, updateSave]
+    [a11y.reducedMotion, content, fx, updateSave]
   );
 
+  const completeOnboarding = useCallback(() => {
+    updateSave((prev) => ({
+      ...prev,
+      onboardingComplete: true,
+      character: prev.character ?? { ...BASE_VOYAGER },
+    }));
+    void analytics.track("onboarding_completed", {});
+    // Drop onto the tutorial party board (Coincraft Cove / Harbor Haven).
+    void enterIsland(HUB_ISLAND_ID);
+  }, [updateSave, enterIsland]);
+
+  // Carpet opening lands you on Harbor Haven plaza (3D walk) — not the party board yet.
+  useEffect(() => {
+    if (!save || !bootLandHub || bootHubHandled || content.islands.length === 0) return;
+    setBootHubHandled(true);
+    const hub = getIslandById(content, HUB_ISLAND_ID);
+    const defaultArea = hub?.areas[0]?.id;
+    updateSave((prev) => ({
+      ...prev,
+      onboardingComplete: true,
+      character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
+      currentIslandId: HUB_ISLAND_ID,
+      currentAreaId: defaultArea ?? prev.currentAreaId,
+      discovered: {
+        ...prev.discovered,
+        islands: uniq([...prev.discovered.islands, HUB_ISLAND_ID]),
+        areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
+      },
+    }));
+    if (!save.onboardingComplete) {
+      void analytics.track("onboarding_completed", { via: "carpet_boot" });
+    }
+    void analytics.track("island_entered", { islandId: HUB_ISLAND_ID, via: "carpet_boot" });
+    setActiveIslandId(HUB_ISLAND_ID);
+    setView("home");
+  }, [save, bootLandHub, bootHubHandled, content, updateSave, userProfile.name]);
+
   const updatePartyState = useCallback(
-    (islandId: string, next: { position: number; turnsPlayed: number; stars: number }) => {
+    (islandId: string, next: import("./partyBoard").PartyIslandState) => {
       updateSave((prev) => ({
         ...prev,
         partyBoard: {
@@ -304,20 +381,53 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   );
 
   const handleBoardSpaceReward = useCallback(
-    (payload: { coins: number; xp?: number; star?: boolean; message: string }) => {
+    (payload: {
+      coins: number;
+      xp?: number;
+      star?: boolean;
+      message: string;
+      itemTip?: string;
+      ledger?: import("./voyagerLedger").VoyagerLedger;
+    }) => {
       if (payload.coins || payload.xp) {
         setUserProfile((prev) => ({
           ...prev,
-          totalCoins: prev.totalCoins + (payload.coins || 0),
+          totalCoins: Math.max(0, prev.totalCoins + (payload.coins || 0)),
           xp: prev.xp + (payload.xp || 0),
         }));
       }
       if (payload.star && activeIslandId) {
         awardPartyStar(activeIslandId);
       }
+      if (payload.ledger) {
+        updateSave((prev) => {
+          const next = {
+            ...prev,
+            voyagerLedger: payload.ledger,
+          };
+          return withHarborFreedomRewards(next);
+        });
+      }
     },
-    [activeIslandId, awardPartyStar, setUserProfile]
+    [activeIslandId, awardPartyStar, setUserProfile, updateSave]
   );
+
+  const startVoyage = useCallback((targetIslandId: string, returnView: VoyageReturn) => {
+    setVoyageTargetId(targetIslandId);
+    setVoyageReturnView(returnView);
+    setView("voyage");
+  }, []);
+
+  const boardBoat = useCallback((returnView: VoyageReturn) => {
+    setVoyageTargetId(null);
+    setVoyageReturnView(returnView);
+    setView("voyage");
+  }, []);
+
+  const cancelVoyage = useCallback(() => {
+    setVoyageTargetId(null);
+    setView(voyageReturnView);
+  }, [voyageReturnView]);
 
   const launchBoardMinigame = useCallback(
     (minigameId: MinigameId) => {
@@ -748,9 +858,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         source: source ?? undefined,
       });
 
-      const applyBoardReward = (fromSource: MinigameSource) => {
+      const applyBoardReward = (fromSource: MinigameSource, clearFirst: boolean) => {
         if (fromSource !== "board") return;
-        const reward = computeMinigameReward(questSuccess, score, firstClear, false);
+        const reward = computeMinigameReward(questSuccess, score, clearFirst, false);
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: prev.totalCoins + reward.coins,
@@ -765,36 +875,59 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         );
       };
 
-      if (questSuccess) {
+      const finalizeSuccessfulClear = async (
+        clearFirst: boolean,
+        masteryGateId?: string,
+      ) => {
         updateSave((prev) => {
-          // Apply skill stat changes from timeline
           const skillStats = prev.skillStats ?? createDefaultSkillStats();
           const updatedSkillStats = timeline?.skillChanges?.length
             ? applySkillChanges(skillStats, timeline.skillChanges)
             : skillStats;
-
-          // Advance economy phase (each minigame completion = 1 economy turn)
           const economy = prev.economyState ?? createDefaultEconomyState();
           const updatedEconomy = advanceEconomy(economy);
-
+          let ledger = ensureLedger(prev.voyagerLedger);
+          if (masteryGateId) {
+            ledger = markMasteryClear(ledger, masteryGateId);
+          }
           return {
             ...prev,
-            completedMinigames: uniq([...prev.completedMinigames, activeMinigameId!]),
+            completedMinigames: uniq([...prev.completedMinigames, mgId]),
             skillStats: updatedSkillStats,
             economyState: updatedEconomy,
+            voyagerLedger: ledger,
           };
         });
-        await completeObjective({ type: "completeMinigame", minigameId: activeMinigameId });
-        applyBoardReward(source);
+        await completeObjective({ type: "completeMinigame", minigameId: mgId });
+        applyBoardReward(source, clearFirst);
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
         setMinigameSource(null);
+        setPendingMastery(null);
         void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
-
-        // Show replay modal if timeline has decision entries
         if (timeline && timeline.entries.length > 0) {
           setPendingReplayTimeline(timeline);
         }
+      };
+
+      if (questSuccess) {
+        const gate = getMasteryGateForMinigame(mgId);
+        const ledger = ensureLedger(save.voyagerLedger);
+        if (gate && !hasMasteryClear(ledger, gate.id)) {
+          setPendingMastery({
+            gate,
+            mgId,
+            score,
+            timeline,
+            source,
+            firstClear,
+          });
+          setActiveMinigameId(null);
+          setMinigameStartedAt(null);
+          setMinigameSource(null);
+          return;
+        }
+        await finalizeSuccessfulClear(firstClear);
       } else {
         await analytics.track("fail_reason", {
           context: "minigame",
@@ -810,14 +943,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           difficulty,
         });
 
-        // Track retry + quest failed attempt for hint escalation
         await analytics.track("minigame_retry", {
           islandId: activeIsland.id,
           minigameId: activeMinigameId,
           attempt: perf.attempts,
         });
 
-        // Find quests that reference this minigame and record failed attempts
         const relatedQuests = activeIsland.quests.filter((q) =>
           q.objectives.some((o) => o.type === "completeMinigame" && o.minigameId === activeMinigameId)
         );
@@ -832,7 +963,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           }
         }
 
-        // Check if difficulty should change next attempt
         const nextDifficulty = getDifficultyForMinigame(activeMinigameId);
         if (nextDifficulty !== difficulty) {
           await analytics.track("difficulty_changed", {
@@ -842,7 +972,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
 
-        applyBoardReward(source);
+        applyBoardReward(source, firstClear);
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
         setMinigameSource(null);
@@ -862,6 +992,67 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       updateSave,
     ]
   );
+
+  const handleMasteryPassed = useCallback(async () => {
+    if (!pendingMastery || !activeIsland || !save) return;
+    const { gate, mgId, score, timeline, source, firstClear } = pendingMastery;
+
+    updateSave((prev) => {
+      const skillStats = prev.skillStats ?? createDefaultSkillStats();
+      const updatedSkillStats = timeline?.skillChanges?.length
+        ? applySkillChanges(skillStats, timeline.skillChanges)
+        : skillStats;
+      const economy = prev.economyState ?? createDefaultEconomyState();
+      const updatedEconomy = advanceEconomy(economy);
+      return {
+        ...prev,
+        completedMinigames: uniq([...prev.completedMinigames, mgId]),
+        skillStats: updatedSkillStats,
+        economyState: updatedEconomy,
+        voyagerLedger: markMasteryClear(ensureLedger(prev.voyagerLedger), gate.id),
+      };
+    });
+    await completeObjective({ type: "completeMinigame", minigameId: mgId });
+
+    if (source === "board") {
+      const reward = computeMinigameReward(true, score, firstClear, false);
+      setUserProfile((prev) => ({
+        ...prev,
+        totalCoins: prev.totalCoins + reward.coins,
+        xp: prev.xp + reward.xp,
+      }));
+      if (reward.starEarned) {
+        awardPartyStar(activeIsland.id);
+      }
+      setPendingBoardReward(reward);
+      setPendingBoardMinigameName(
+        activeIsland.minigames?.find((m) => m.id === mgId)?.name ?? null
+      );
+    }
+
+    setPendingMastery(null);
+    void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+    if (timeline && timeline.entries.length > 0) {
+      setPendingReplayTimeline(timeline);
+    }
+  }, [
+    activeIsland,
+    awardPartyStar,
+    completeObjective,
+    pendingMastery,
+    save,
+    setUserProfile,
+    updateSave,
+  ]);
+
+  const handleMasteryFailed = useCallback(() => {
+    if (!pendingMastery) return;
+    const { mgId, source } = pendingMastery;
+    setPendingMastery(null);
+    setMinigameSource(source);
+    setActiveMinigameId(mgId);
+    setMinigameStartedAt(Date.now());
+  }, [pendingMastery]);
 
   const activeMinigameDef = useMemo(() => {
     if (!activeIsland || !activeMinigameId) return undefined;
@@ -923,9 +1114,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     );
   }
 
-  // First-run world onboarding: the home island where players build a
-  // character and learn what they can do before branching to other islands.
-  if (!save.onboardingComplete && content.islands.length > 0 && import.meta.env.VITE_QA !== "1") {
+  // First-run world onboarding (skipped when carpet POV boot already lands you on Harbor).
+  if (
+    !save.onboardingComplete &&
+    !bootLandHub &&
+    content.islands.length > 0 &&
+    import.meta.env.VITE_QA !== "1"
+  ) {
     return (
       <WelcomeOnboarding
         playerName={userProfile.name}
@@ -1011,7 +1206,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   return (
                     <span key={q.id} className="inline-flex gap-1">
                       <GameButton size="sm" variant="outline" disabled={!!qs?.started} onClick={() => startQuest(q.id)}>
-                        Start: {q.title}
+                        Start: {resolveProfileText(q.title, learningProfile)}
                       </GameButton>
                       <GameButton
                         size="sm"
@@ -1107,6 +1302,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             islands={content.islands}
             save={save}
             onBack={() => setView("home")}
+            onStartVoyage={(islandId) => startVoyage(islandId, "travel")}
+          />
+        ) : view === "voyage" ? (
+          <PovVoyageView
+            userProfile={userProfile}
+            islands={content.islands}
+            save={save}
+            character={save.character}
+            voyageTargetId={voyageTargetId}
+            onBack={cancelVoyage}
             onEnterIsland={enterIsland}
           />
         ) : view === "arcade" ? (
@@ -1132,10 +1337,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onUpdatePartyState={(next) => updatePartyState(activeIsland.id, next)}
               onLaunchMinigame={launchBoardMinigame}
               onSpaceReward={handleBoardSpaceReward}
-              onOpenTravel={() => setView("travel")}
+              onBoardBoat={() => boardBoat("island")}
+              onOpenArchipelago={() => setView("travel")}
               onOpenHub={() => setView("home")}
               onOpenArcade={() => setView("arcade")}
-              boardLocked={Boolean(activeMinigameId)}
+              boardLocked={Boolean(activeMinigameId) || Boolean(pendingMastery)}
             />
           </IslandThemeProvider>
         ) : null}
@@ -1162,6 +1368,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 />
               </Suspense>
             </div>
+          </GameModal>
+        ) : null}
+
+        {pendingMastery ? (
+          <GameModal
+            open
+            onClose={handleMasteryFailed}
+            maxWidth="md"
+            usePanel={false}
+            zIndex={55}
+          >
+            <MasteryQuiz
+              key={pendingMastery.gate.id}
+              gate={pendingMastery.gate}
+              onPassed={() => void handleMasteryPassed()}
+              onFailed={handleMasteryFailed}
+            />
           </GameModal>
         ) : null}
 

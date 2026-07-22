@@ -5,7 +5,8 @@ import { motion } from 'framer-motion'
 import { Sparkle } from '@phosphor-icons/react'
 import React from 'react'
 import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
-import { CapitalOpeningIntro } from '@/islands/views/CapitalOpeningIntro'
+import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/views/CapitalOpeningIntro'
+import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -138,13 +139,15 @@ function LoadingFallback() {
 }
 
 function resolveStartupMode(): LearningMode {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") return "islands";
+  // Islands-only product for now. Legacy modes only via ?legacy=1&mode=creative|structured|select
   const params = new URLSearchParams(window.location.search);
+  const legacy = params.get("legacy") === "1";
   const requested = params.get("mode");
-  if (requested === "creative" || requested === "structured") return requested;
-  if (requested === "select") return null;
-  if (requested === "islands" && ISLANDS_ENABLED) return "islands";
-  if (ISLANDS_DEFAULT) return "islands";
+  if (legacy && (requested === "creative" || requested === "structured" || requested === "select")) {
+    return requested === "select" ? null : requested;
+  }
+  if (ISLANDS_ENABLED) return "islands";
   return null;
 }
 
@@ -153,6 +156,13 @@ function App() {
   if (typeof window !== 'undefined' && window.location.search.includes('fresh')) {
     localStorage.removeItem('kv_user-profile')
     localStorage.removeItem('kv_game-scores')
+    localStorage.removeItem('kv_island_save_v1')
+    try {
+      sessionStorage.removeItem('capital_intro_seen_v1')
+      sessionStorage.removeItem('capital_intro_done_for_boot')
+    } catch {
+      /* ignore */
+    }
     window.history.replaceState(null, '', window.location.pathname)
     window.location.reload()
   }
@@ -165,14 +175,18 @@ function App() {
   const [profileError, setProfileError] = useState(false)
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
-  const [showCapitalIntro, setShowCapitalIntro] = useState(() => {
-    if (typeof window === "undefined") return false
-    const params = new URLSearchParams(window.location.search)
-    if (params.get("skipIntro") === "1") return false
-    if (params.get("replayIntro") === "1") return true
-    // Play the mural title sequence on every fresh visit unless explicitly skipped.
-    return true
-  })
+  const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
+  /** Title mural first, then carpet POV flight into Harbor. */
+  const [bootPhase, setBootPhase] = useState<"title" | "carpet">("title")
+
+  // Every full page load: title mural → carpet flight (QA may opt out with skipIntro).
+  useEffect(() => {
+    if (shouldPlayCapitalIntroOnBoot()) {
+      setShowCapitalIntro(true)
+      setBootPhase("title")
+      setCurrentMode("islands")
+    }
+  }, [])
 
   // Capital boots into islands — never fall back to the legacy mode picker by accident.
   useEffect(() => {
@@ -296,10 +310,11 @@ function App() {
   }
 
   const handleModeSwitch = useCallback(() => {
-    setCurrentMode(null)
-    const newState: NavigationState = { mode: null }
-    window.history.pushState(newState, '', window.location.href)
-  }, [])
+    // Islands-only: "Exit" returns to Harbor hub, not the legacy mode picker.
+    setCurrentMode("islands");
+    const newState: NavigationState = { mode: "islands" };
+    window.history.pushState(newState, "", window.location.href);
+  }, []);
 
   const completeGame = useCallback((gameId: string, score: number, timeSpent: number, additionalData?: Record<string, unknown>): void => {
     const newScore: GameScore = {
@@ -433,6 +448,30 @@ function App() {
     }
   }
 
+  // Boot: Capital title mural → carpet POV flight to Harbor Haven.
+  if (showCapitalIntro && ISLANDS_ENABLED) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        {bootPhase === "title" ? (
+          <CapitalOpeningIntro
+            key="capital-opening-boot"
+            onComplete={() => setBootPhase("carpet")}
+          />
+        ) : (
+          <CarpetOpeningIntro
+            key="capital-carpet-boot"
+            onComplete={() => {
+              setShowCapitalIntro(false)
+              setBootPhase("title")
+              setCurrentMode("islands")
+            }}
+          />
+        )}
+      </>
+    )
+  }
+
   if (profileError) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-red-50">
@@ -467,6 +506,18 @@ function App() {
   }
 
   if (!currentMode) {
+    // Legacy mode picker only when explicitly requested (?legacy=1&mode=select).
+    // Otherwise stay islands-only.
+    if (ISLANDS_ENABLED) {
+      return (
+        <>
+          <Toaster position="top-right" richColors />
+          <div className="min-h-screen flex items-center justify-center cap-surface">
+            <p className="text-[var(--cap-ink-soft)]">Launching Harbor Haven…</p>
+          </div>
+        </>
+      )
+    }
     return (
       <>
         <Toaster position="top-right" richColors />
@@ -474,66 +525,12 @@ function App() {
           <MusicPlayer />
         </div>
         <ThreeJSModeSelection onSelectMode={handleModeSelect} />
-        {import.meta.env.DEV && (
-          <>
-            <button
-              onClick={() => setShowIPLint(true)}
-              className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
-              title="IP Lint Scanner"
-            >
-              IP
-            </button>
-            {showIPLint && (
-              <Suspense fallback={null}>
-                <IPLintScreen onClose={() => setShowIPLint(false)} />
-              </Suspense>
-            )}
-            <button
-              onClick={() => setShowDeckSim(true)}
-              className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
-              title="Scenario Deck Simulator"
-            >
-              🎲
-            </button>
-            {showDeckSim && (
-              <Suspense fallback={null}>
-                <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
-              </Suspense>
-            )}
-          </>
-        )}
       </>
     )
   }
 
-  if (showCapitalIntro && currentMode === 'islands' && ISLANDS_ENABLED) {
-    return (
-      <>
-        <Toaster position="top-right" richColors />
-        <CapitalOpeningIntro onComplete={() => setShowCapitalIntro(false)} />
-      </>
-    )
-  }
-
-  if (
-    showArchetypeQuiz &&
-    !userProfile?.archetype?.completedQuiz &&
-    !(currentMode === "islands" && ISLANDS_DEFAULT)
-  ) {
-    return (
-      <>
-        <Toaster position="top-right" richColors />
-        <Suspense fallback={<LoadingFallback />}>
-          <ArchetypeQuiz
-            onComplete={handleArchetypeComplete}
-            onSkip={handleSkipArchetype}
-          />
-        </Suspense>
-      </>
-    )
-  }
-
-  if (currentMode === 'creative') {
+  // Islands is the product.
+  if (currentMode === "islands" && ISLANDS_ENABLED) {
     return (
       <>
         <Toaster position="top-right" richColors />
@@ -542,10 +539,6 @@ function App() {
           <MusicPlayer />
         </div>
         <Suspense fallback={<LoadingFallback />}>
-          {/* AI Chat Helper - always available */}
-          <AIChatHelper 
-            playerName={userProfile.name || 'Explorer'}
-          />
           <DebugPanel
             userProfile={userProfile}
             currentMode={currentMode}
@@ -561,7 +554,11 @@ function App() {
               >
                 IP
               </button>
-              {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
+              {showIPLint && (
+                <Suspense fallback={null}>
+                  <IPLintScreen onClose={() => setShowIPLint(false)} />
+                </Suspense>
+              )}
               <button
                 onClick={() => setShowDeckSim(true)}
                 className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
@@ -576,7 +573,42 @@ function App() {
               )}
             </>
           )}
-          {/* Enhanced Game Hub with 3D world, story mode, and more */}
+          <IslandsApp
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            onExit={handleModeSwitch}
+            onReplayIntro={() => {
+              try {
+                sessionStorage.removeItem("capital_intro_done_for_boot")
+                sessionStorage.removeItem("capital_intro_seen_v1")
+              } catch {
+                /* ignore */
+              }
+              setBootPhase("title")
+              setShowCapitalIntro(true)
+            }}
+          />
+        </Suspense>
+      </>
+    )
+  }
+
+  if (currentMode === "creative") {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <OfflineIndicator />
+        <div className="fixed top-4 right-4 z-50">
+          <MusicPlayer />
+        </div>
+        <Suspense fallback={<LoadingFallback />}>
+          <AIChatHelper playerName={userProfile.name || "Explorer"} />
+          <DebugPanel
+            userProfile={userProfile}
+            currentMode={currentMode}
+            isInitialized={isInitialized}
+            gameScores={gameScores || []}
+          />
           <EnhancedGameHub
             userProfile={userProfile}
             setUserProfile={setUserProfile}
@@ -589,104 +621,43 @@ function App() {
     )
   }
 
-   if (currentMode === 'islands' && ISLANDS_ENABLED) {
-     return (
-       <>
-         <Toaster position="top-right" richColors />
-         <OfflineIndicator />
-         <div className="fixed top-4 right-4 z-50">
-           <MusicPlayer />
-         </div>
-         <Suspense fallback={<LoadingFallback />}>
-           <DebugPanel
-             userProfile={userProfile}
-             currentMode={currentMode}
-             isInitialized={isInitialized}
-             gameScores={gameScores || []}
-           />
-           {import.meta.env.DEV && (
-             <>
-               <button
-                 onClick={() => setShowIPLint(true)}
-                 className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
-                 title="IP Lint Scanner"
-               >
-                 IP
-               </button>
-               {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
-               <button
-                 onClick={() => setShowDeckSim(true)}
-                 className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
-                 title="Scenario Deck Simulator"
-               >
-                 🎲
-               </button>
-               {showDeckSim && (
-                 <Suspense fallback={null}>
-                   <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
-                 </Suspense>
-               )}
-             </>
-           )}
-          <IslandsApp
+  if (currentMode === "structured") {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <OfflineIndicator />
+        <div className="fixed top-4 right-4 z-50">
+          <MusicPlayer />
+        </div>
+        <Suspense fallback={<LoadingFallback />}>
+          <StructuredModeHub
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            onExit={handleModeSwitch}
-            onReplayIntro={() => setShowCapitalIntro(true)}
+            gameScores={gameScores || []}
+            onGameComplete={completeGame}
+            onModeSwitch={handleModeSwitch}
+            onQuestComplete={handleQuestComplete}
+            onAllocateLineXP={handleAllocateLineXP}
           />
-         </Suspense>
-       </>
-     )
-   }
+        </Suspense>
+      </>
+    )
+  }
 
+  // Fallback: stay in islands if somehow mode is unknown
   return (
     <>
       <Toaster position="top-right" richColors />
-      <OfflineIndicator />
-      <div className="fixed top-4 right-4 z-50">
-        <MusicPlayer />
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 cap-surface">
+        <p className="text-[var(--cap-ink-soft)]">Returning to Harbor Haven…</p>
+        <button
+          type="button"
+          className="rounded-xl border-2 border-[var(--cap-ink)] bg-[var(--cap-gold)] px-5 py-2 font-bold"
+          onClick={() => setCurrentMode("islands")}
+        >
+          Enter islands
+        </button>
       </div>
-      <Suspense fallback={<LoadingFallback />}>
-        <DebugPanel
-          userProfile={userProfile}
-          currentMode={currentMode}
-          isInitialized={isInitialized}
-          gameScores={gameScores || []}
-        />
-        {import.meta.env.DEV && (
-          <>
-            <button
-              onClick={() => setShowIPLint(true)}
-              className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
-              title="IP Lint Scanner"
-            >
-              IP
-            </button>
-            {showIPLint && <IPLintScreen onClose={() => setShowIPLint(false)} />}
-            <button
-              onClick={() => setShowDeckSim(true)}
-              className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
-              title="Scenario Deck Simulator"
-            >
-              🎲
-            </button>
-            {showDeckSim && (
-              <Suspense fallback={null}>
-                <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
-              </Suspense>
-            )}
-          </>
-        )}
-      </Suspense>
-      <StructuredModeHub
-        userProfile={userProfile}
-        setUserProfile={setUserProfile}
-        gameScores={gameScores || []}
-        onGameComplete={completeGame}
-        onModeSwitch={handleModeSwitch}
-        onQuestComplete={handleQuestComplete}
-        onAllocateLineXP={handleAllocateLineXP}
-      />
     </>
   )
 }

@@ -3,19 +3,19 @@
   "islands": [
     {
       "id": "future_shores",
-      "name": "Future Shores",
-      "description": "An unfinished island at the edge of Capital — for the kids of the future to carve out their piece and build the games of their era.",
-      "icon": "🏗️",
+      "name": "Portfolio Skies",
+      "description": "New Gen painterly skies — floating isles and market weather. Balance a modern portfolio while rival captains chase Ledger Seals under aurora light.",
+      "icon": "🎨",
       "themeId": "future_shores",
       "provenance": {
         "learning_objectives": [
-          "Understand that game worlds are built by people — including you",
-          "Experiment with level design and sharing creations",
-          "See how financial literacy can be taught through any game style"
+          "Understand portfolio diversification across asset weather",
+          "Experiment with long-horizon goals and risk balance",
+          "See how financial literacy can be taught through stylized modern art games"
         ],
-        "mechanics_used": ["community-creation", "vibe-code-studio", "exploration"],
-        "originality_notes": "Homage to unfinished zones in classic island games — scaffolding left on purpose so the next generation finishes it.",
-        "forbidden_references": []
+        "mechanics_used": ["party-board", "community-creation", "vibe-code-studio", "diversification"],
+        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors — not unfinished scaffolding alone.",
+        "forbidden_references": ["Mario", "Nintendo", "Monopoly"]
       },
       "areas": [
         {
@@ -124,7 +124,42 @@
           ]
         }
       ],
-      "minigames": []
+      "minigames": [
+        {
+          "id": "mg_fs_diversify",
+          "name": "Weather Baskets",
+          "description": "Market weather shifts — rebalance baskets of assets like floating islands in the wind.",
+          "icon": "🧺",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "fs_blank_canvas",
+          "genre": "strategy",
+          "complexity": "hard",
+          "visualShell": "neon"
+        },
+        {
+          "id": "mg_fs_compound",
+          "name": "Horizon Snowball",
+          "description": "Watch long-horizon compounding under painterly aurora — patience is the weather pattern.",
+          "icon": "❄️",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "fs_scaffold",
+          "genre": "simulation",
+          "complexity": "medium",
+          "modules": [
+            { "id": "CompoundConfig", "config": { "principal": 500, "ratePct": 8, "years": 20, "label": "your portfolio" } }
+          ]
+        },
+        {
+          "id": "mg_fs_budget",
+          "name": "Sky Budget",
+          "description": "Allocate coins across floating districts before the storm front arrives.",
+          "icon": "📊",
+          "componentId": "BudgetSplitterGame",
+          "areaId": "fs_community_dock",
+          "genre": "strategy",
+          "complexity": "medium"
+        }
+      ]
     }
   ]
 }

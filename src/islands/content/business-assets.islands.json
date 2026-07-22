@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "business_assets",
-      "name": "Business Bay",
-      "description": "Run a small business: manage inventory, track cash flow, and understand depreciation.",
-      "icon": "🏭",
+      "name": "Diversify Keep",
+      "description": "2000s quest keep — gold coins and colored gems as asset classes. Diversify the fortress through adventure-style party boards.",
+      "icon": "🏰",
       "requiredItems": ["da_island_medallion"],
       "provenance": {
         "learning_objectives": [

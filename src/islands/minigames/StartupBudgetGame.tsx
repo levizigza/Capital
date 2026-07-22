@@ -50,6 +50,7 @@ export default function StartupBudgetGame({
       icon={def?.icon ?? "💰"}
       genre="simulation"
       complexity="hard"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4">

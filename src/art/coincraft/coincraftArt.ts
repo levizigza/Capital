@@ -35,7 +35,7 @@ export function getCoincraftSkinClass(islandId: string | null | undefined): stri
 
 /** When on hub/travel, use Cove skin if save points at Coincraft or no island yet (first-run). */
 export function shouldUseCoincraftSkin(
-  view: "home" | "travel" | "island",
+  view: "home" | "travel" | "island" | "voyage" | "arcade" | "studio" | string,
   activeIslandId: string | null,
   savedIslandId: string | null | undefined
 ): boolean {

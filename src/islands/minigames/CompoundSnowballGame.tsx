@@ -151,6 +151,7 @@ export default function CompoundSnowballGame({
       icon={def?.icon ?? "⛄"}
       genre="simulation"
       complexity="easy"
+      homage={def?.homage}
       onClose={onClose}
     >
       <div className="space-y-4 text-slate-100">

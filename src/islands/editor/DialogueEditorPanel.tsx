@@ -10,6 +10,7 @@ import type {
   DialogueNode,
   IslandDefinition,
 } from "../types";
+import { resolveProfileText } from "../learningProfile";
 import {
   createBranchNode,
   islandReferenceIds,
@@ -325,7 +326,7 @@ function ChoiceEditor({
       <div className="flex gap-2">
         <input
           className="flex-1 rounded border px-2 py-1 text-xs"
-          value={choice.text}
+          value={resolveProfileText(choice.text, "apprentice")}
           onChange={(e) => onChange({ ...choice, text: e.target.value })}
           placeholder="Choice label"
         />

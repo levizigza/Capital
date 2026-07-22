@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { getIslandTheme, themeCssVars, type IslandTheme } from "./islandThemes";
 
@@ -18,9 +18,11 @@ export function IslandThemeProvider({
   const theme = getIslandTheme(islandId, themeId);
   return (
     <div
-      className={cn(theme.skinClass, className)}
-      style={themeCssVars(theme) as React.CSSProperties}
+      key={islandId}
+      className={cn(theme.skinClass, "island-theme-enter", className)}
+      style={themeCssVars(theme) as CSSProperties}
       data-island-theme={theme.id}
+      data-animation-style={theme.animationStyle}
     >
       {children}
     </div>
