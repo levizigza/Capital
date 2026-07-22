@@ -33,22 +33,22 @@ export function MoneyCarpet({
   const fringeRefs = useRef<THREE.Mesh[]>([]);
   const tipRefs = useRef<THREE.Mesh[]>([]);
 
-  // POV: long bright bill stretching far ahead of the seat.
-  const length = povRide ? 4.6 : 1.6;
-  const width = povRide ? 2.05 : 1.75;
-  // Seat sits toward the rear; most of the bill is the nose in front (+Z).
-  const seatZ = povRide ? -0.95 : 0;
-  const noseTipZ = seatZ + length * 0.72;
-  const tailZ = seatZ - length * 0.28;
+  // POV: bill underfoot with a modest nose ahead — island view stays clear.
+  const length = povRide ? 2.9 : 1.6;
+  const width = povRide ? 1.65 : 1.75;
+  // Seat sits toward the rear; some bill extends forward (+Z).
+  const seatZ = povRide ? -0.55 : 0;
+  const noseTipZ = seatZ + length * 0.65;
+  const tailZ = seatZ - length * 0.35;
 
   const geometry = useMemo(() => {
-    const segsW = povRide ? 16 : 8;
-    const segsL = povRide ? 32 : 12;
+    const segsW = povRide ? 12 : 8;
+    const segsL = povRide ? 22 : 12;
     const geo = new THREE.PlaneGeometry(width, length, segsW, segsL);
     geo.rotateX(-Math.PI / 2);
     // Shift so seat origin is near the rear of the bill
-    geo.translate(0, 0, seatZ + length * 0.22);
-    // Brighter bill greens so POV reads clearly against sky/sea
+    geo.translate(0, 0, seatZ + length * 0.15);
+    // Bill greens — readable underfoot without glowing over the island
     const pos = geo.attributes.position!;
     const colors = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
@@ -57,9 +57,9 @@ export function MoneyCarpet({
       const edge = Math.max(Math.abs(x) / (width * 0.5), 0);
       const along = (z - tailZ) / Math.max(0.001, noseTipZ - tailZ);
       const ink = 0.06 + edge * 0.1;
-      colors[i * 3] = 0.18 + ink;
-      colors[i * 3 + 1] = 0.48 + (1 - edge) * 0.22 + along * 0.06;
-      colors[i * 3 + 2] = 0.28 + ink * 0.4;
+      colors[i * 3] = 0.14 + ink;
+      colors[i * 3 + 1] = 0.4 + (1 - edge) * 0.18 + along * 0.04;
+      colors[i * 3 + 2] = 0.24 + ink * 0.4;
     }
     geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
     geo.computeVertexNormals();
@@ -108,7 +108,7 @@ export function MoneyCarpet({
         // Nose flaps hard; seat area stays firmer under the rider.
         const seatFirm = povRide ? THREE.MathUtils.clamp(Math.abs(bz - seatZ) * 1.1, 0.25, 1) : 1;
         const flapAmp =
-          (0.06 + along * along * 0.42 + side * 0.16) * seatFirm * (povRide ? 1.6 : 0.9);
+          (0.05 + along * along * 0.28 + side * 0.12) * seatFirm * (povRide ? 1.25 : 0.9);
         const wave =
           Math.sin(bz * 3.1 - t * 8.5) * flapAmp +
           Math.sin(bx * 3.8 + t * 5.8) * flapAmp * 0.5 +
@@ -142,12 +142,12 @@ export function MoneyCarpet({
     () =>
       new THREE.MeshStandardMaterial({
         vertexColors: true,
-        roughness: 0.55,
-        metalness: 0.12,
+        roughness: 0.58,
+        metalness: 0.1,
         side: THREE.DoubleSide,
         flatShading: false,
-        emissive: new THREE.Color(povRide ? "#14532d" : "#000000"),
-        emissiveIntensity: povRide ? 0.22 : 0,
+        emissive: new THREE.Color(povRide ? "#0f3d28" : "#000000"),
+        emissiveIntensity: povRide ? 0.08 : 0,
       }),
     [povRide],
   );
@@ -181,17 +181,20 @@ export function MoneyCarpet({
           if (el) tipRefs.current[0] = el;
         }}
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.1, seatZ + 0.55]}
+        position={[0, 0.1, seatZ + (povRide ? 0.35 : 0.55)]}
       >
-        <circleGeometry args={[povRide ? 0.38 : 0.28, 28]} />
+        <circleGeometry args={[povRide ? 0.3 : 0.28, 28]} />
         <meshStandardMaterial color="#c9a227" roughness={0.3} metalness={0.55} side={THREE.DoubleSide} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.11, seatZ + 0.55]}>
-        <ringGeometry args={[0.2, 0.28, 24]} />
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, 0.11, seatZ + (povRide ? 0.35 : 0.55)]}
+      >
+        <ringGeometry args={[0.16, 0.24, 24]} />
         <meshStandardMaterial color="#0f3d28" roughness={0.5} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Extra nose medallions — sit right in the forward POV */}
+      {/* Light nose detail — enough to read as a bill without blocking the island */}
       {povRide ? (
         <>
           <mesh
@@ -199,61 +202,26 @@ export function MoneyCarpet({
               if (el) tipRefs.current[1] = el;
             }}
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, 0.1, seatZ + 1.6]}
+            position={[0, 0.1, seatZ + 1.35]}
           >
-            <circleGeometry args={[0.26, 24]} />
+            <circleGeometry args={[0.16, 20]} />
             <meshStandardMaterial
               color="#c9a227"
-              roughness={0.28}
-              metalness={0.55}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
-          <mesh
-            ref={(el) => {
-              if (el) tipRefs.current[2] = el;
-            }}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, 0.1, seatZ + 2.7]}
-          >
-            <circleGeometry args={[0.2, 20]} />
-            <meshStandardMaterial
-              color="#f4a629"
               roughness={0.3}
               metalness={0.5}
               side={THREE.DoubleSide}
             />
           </mesh>
-          {/* Bill serial stripes marching toward the tip */}
-          {[1.1, 1.55, 2.0, 2.45, 2.95, 3.35].map((z, i) => (
+          {[0.85, 1.55].map((z, i) => (
             <mesh
               key={`stripe-${i}`}
               ref={(el) => {
-                if (el) tipRefs.current[3 + i] = el;
+                if (el) tipRefs.current[2 + i] = el;
               }}
               position={[0, 0.09, seatZ + z]}
             >
-              <boxGeometry args={[width * 0.7, 0.015, 0.05]} />
+              <boxGeometry args={[width * 0.62, 0.012, 0.04]} />
               <meshStandardMaterial color={i % 2 ? "#0f3d28" : "#c9a227"} roughness={0.45} />
-            </mesh>
-          ))}
-          {/* Dollar corners near tip */}
-          {[
-            [-0.55, 3.1],
-            [0.55, 3.1],
-            [-0.55, 2.2],
-            [0.55, 2.2],
-          ].map(([x, z], i) => (
-            <mesh
-              key={`corner-${i}`}
-              ref={(el) => {
-                if (el) tipRefs.current[10 + i] = el;
-              }}
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[x, 0.1, seatZ + z]}
-            >
-              <circleGeometry args={[0.09, 10]} />
-              <meshStandardMaterial color="#c9a227" roughness={0.4} metalness={0.4} side={THREE.DoubleSide} />
             </mesh>
           ))}
         </>

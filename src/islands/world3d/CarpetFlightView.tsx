@@ -102,16 +102,17 @@ function FlightRig({
       carpet.current.position.set(s.x, s.y, s.z);
       carpet.current.rotation.order = "YXZ";
       carpet.current.rotation.y = s.heading;
-      carpet.current.rotation.x = -0.12;
-      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.03;
+      carpet.current.rotation.x = -0.04;
+      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.025;
       carpet.current.updateMatrixWorld(true);
 
-      // Carpet-local POV: below-and-ahead view of the flapping bill
-      const eye = new THREE.Vector3(0, 0.52, -1.05).applyMatrix4(carpet.current.matrixWorld);
-      const look = new THREE.Vector3(0, 0.02, 1.55).applyMatrix4(carpet.current.matrixWorld);
-      look.y += Math.sin(performance.now() / 130) * 0.05;
+      // Look mostly at islands ahead; carpet stays a flapping strip underfoot.
+      const eye = new THREE.Vector3(0, 0.82, -0.35).applyMatrix4(carpet.current.matrixWorld);
+      const horizon = new THREE.Vector3(0, 0.55, 16).applyMatrix4(carpet.current.matrixWorld);
+      const carpetHint = new THREE.Vector3(0, 0.06, 2.2).applyMatrix4(carpet.current.matrixWorld);
+      horizon.lerp(carpetHint, 0.18);
       camera.position.lerp(eye, 1 - Math.pow(0.0008, dt));
-      camera.lookAt(look);
+      camera.lookAt(horizon);
     }
 
     let nearest: WorldIsle | null = null;
