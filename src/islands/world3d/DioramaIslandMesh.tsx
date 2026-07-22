@@ -26,6 +26,8 @@ function hash(s: string): number {
   return (h >>> 0) / 4294967296;
 }
 
+const HOUSE_BODIES = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4", "#fce7f3"];
+
 /**
  * Floating isometric diorama block — geological strata base, rocky peaks,
  * moss, tiny buildings, winding path, and pin markers. Label sits on top.
@@ -48,29 +50,42 @@ export function DioramaIslandMesh({
   const rock = look.shading === "neon" ? look.accent : "#8a8580";
   const moss = look.land;
   const sand = look.shore;
-  const strata = ["#5c4030", "#8b6914", "#c4a574", "#e8d5b5"];
+  const strata = ["#4a3728", "#6b4f2a", "#8b6914", "#c4a574", "#e8d5b5"];
 
   const peaks = useMemo(() => {
-    const n = 4 + Math.floor(hash(seed) * 3);
+    const n = 5 + Math.floor(hash(seed) * 3);
     return Array.from({ length: n }, (_, i) => {
       const a = hash(`${seed}-p${i}`) * Math.PI * 2;
-      const r = 0.35 + hash(`${seed}-r${i}`) * 1.1;
+      const r = 0.3 + hash(`${seed}-r${i}`) * 1.15;
       return {
         x: Math.cos(a) * r,
         z: Math.sin(a) * r * 0.85,
-        h: 0.55 + hash(`${seed}-h${i}`) * 1.1,
-        w: 0.45 + hash(`${seed}-w${i}`) * 0.55,
+        h: 0.5 + hash(`${seed}-h${i}`) * 1.2,
+        w: 0.4 + hash(`${seed}-w${i}`) * 0.55,
       };
     });
   }, [seed]);
 
   const houses = useMemo(() => {
-    return Array.from({ length: 5 }, (_, i) => ({
-      x: -0.9 + hash(`${seed}-hx${i}`) * 1.8,
-      z: -0.5 + hash(`${seed}-hz${i}`) * 1.2,
+    return Array.from({ length: 7 }, (_, i) => ({
+      x: -1.05 + hash(`${seed}-hx${i}`) * 2.1,
+      z: -0.55 + hash(`${seed}-hz${i}`) * 1.35,
       rot: hash(`${seed}-hr${i}`) * Math.PI,
-      s: 0.12 + hash(`${seed}-hs${i}`) * 0.08,
+      s: 0.11 + hash(`${seed}-hs${i}`) * 0.09,
+      body: HOUSE_BODIES[Math.floor(hash(`${seed}-hb${i}`) * HOUSE_BODIES.length)]!,
     }));
+  }, [seed]);
+
+  const palms = useMemo(() => {
+    return Array.from({ length: 5 }, (_, i) => {
+      const a = hash(`${seed}-pa${i}`) * Math.PI * 2;
+      const r = 1.15 + hash(`${seed}-pr${i}`) * 0.45;
+      return {
+        x: Math.cos(a) * r,
+        z: Math.sin(a) * r * 0.8,
+        s: 0.35 + hash(`${seed}-ps${i}`) * 0.25,
+      };
+    });
   }, [seed]);
 
   const pins = useMemo(() => {
@@ -79,6 +94,18 @@ export function DioramaIslandMesh({
       return {
         x: -1.1 + t * 2.2 + (hash(`${seed}-px${i}`) - 0.5) * 0.25,
         z: -0.3 + Math.sin(t * Math.PI) * 0.7 + (hash(`${seed}-pz${i}`) - 0.5) * 0.2,
+      };
+    });
+  }, [seed]);
+
+  const cliffs = useMemo(() => {
+    return Array.from({ length: 8 }, (_, i) => {
+      const a = (i / 8) * Math.PI * 2 + hash(`${seed}-ca${i}`) * 0.3;
+      return {
+        x: Math.cos(a) * 1.7,
+        z: Math.sin(a) * 1.2,
+        h: 0.35 + hash(`${seed}-ch${i}`) * 0.45,
+        rot: -a,
       };
     });
   }, [seed]);
@@ -111,15 +138,15 @@ export function DioramaIslandMesh({
       }}
     >
       {/* Soft drop shadow under floating block */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]}>
-        <circleGeometry args={[2.4, 24]} />
-        <meshBasicMaterial color="#0c1622" transparent opacity={0.18} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.15, 0]}>
+        <circleGeometry args={[2.55, 24]} />
+        <meshBasicMaterial color="#0c1622" transparent opacity={0.2} />
       </mesh>
 
       {/* Geological strata base (cross-section look) */}
       {strata.map((c, i) => (
-        <mesh key={c} castShadow receiveShadow position={[0, -0.75 + i * 0.18, 0]}>
-          <boxGeometry args={[3.6 - i * 0.05, 0.2, 2.7 - i * 0.04]} />
+        <mesh key={c} castShadow receiveShadow position={[0, -0.9 + i * 0.16, 0]}>
+          <boxGeometry args={[3.7 - i * 0.06, 0.18, 2.8 - i * 0.05]} />
           <meshStandardMaterial
             color={c}
             roughness={0.9}
@@ -131,15 +158,56 @@ export function DioramaIslandMesh({
         </mesh>
       ))}
 
+      {/* Cliff edge chunks */}
+      {!wire &&
+        cliffs.map((c, i) => (
+          <mesh
+            key={`cliff-${i}`}
+            castShadow
+            position={[c.x, -0.15, c.z]}
+            rotation={[0.2, c.rot, 0.1]}
+          >
+            <boxGeometry args={[0.45, c.h, 0.35]} />
+            <meshStandardMaterial
+              color={rock}
+              roughness={0.94}
+              flatShading
+              transparent={locked}
+              opacity={dim}
+            />
+          </mesh>
+        ))}
+
       {/* Top plateau / soil */}
       <mesh castShadow receiveShadow position={[0, -0.02, 0]}>
         <boxGeometry args={[3.55, 0.16, 2.65]} />
-        <meshStandardMaterial color={sand} roughness={0.85} flatShading wireframe={wire} transparent={locked} opacity={dim} />
+        <meshStandardMaterial
+          color={sand}
+          roughness={0.85}
+          flatShading
+          wireframe={wire}
+          transparent={locked}
+          opacity={dim}
+        />
       </mesh>
       <mesh castShadow receiveShadow position={[0, 0.08, 0]}>
-        <boxGeometry args={[3.4, 0.1, 2.5]} />
-        <meshStandardMaterial color={moss} roughness={0.8} flatShading wireframe={wire} transparent={locked} opacity={dim} />
+        <boxGeometry args={[3.35, 0.1, 2.45]} />
+        <meshStandardMaterial
+          color={moss}
+          roughness={0.8}
+          flatShading
+          wireframe={wire}
+          transparent={locked}
+          opacity={dim}
+        />
       </mesh>
+      {/* Shore crescent */}
+      {!wire && (
+        <mesh rotation={[-Math.PI / 2, 0, 0.2]} position={[0.2, 0.12, 1.05]} receiveShadow>
+          <planeGeometry args={[2.4, 0.55]} />
+          <meshStandardMaterial color={sand} roughness={0.92} transparent={locked} opacity={dim} />
+        </mesh>
+      )}
 
       {/* Rocky peaks */}
       {peaks.map((p, i) => (
@@ -155,15 +223,66 @@ export function DioramaIslandMesh({
               opacity={dim}
             />
           </mesh>
-          {/* moss cap */}
           {!wire && (
             <mesh castShadow position={[0, p.h * 0.75, 0]}>
               <sphereGeometry args={[p.w * 0.45, 8, 6]} />
-              <meshStandardMaterial color={moss} roughness={0.75} flatShading transparent={locked} opacity={dim} />
+              <meshStandardMaterial
+                color={moss}
+                roughness={0.75}
+                flatShading
+                transparent={locked}
+                opacity={dim}
+              />
             </mesh>
           )}
         </group>
       ))}
+
+      {/* Tiny palms along the shore */}
+      {!wire &&
+        palms.map((p, i) => (
+          <group key={`palm-${i}`} position={[p.x, 0.12, p.z]} scale={p.s}>
+            <mesh castShadow position={[0, 0.35, 0]}>
+              <cylinderGeometry args={[0.04, 0.07, 0.7, 5]} />
+              <meshStandardMaterial color="#6b4a2a" roughness={0.9} flatShading transparent={locked} opacity={dim} />
+            </mesh>
+            {[0, 1, 2, 3].map((j) => (
+              <mesh
+                key={j}
+                castShadow
+                position={[
+                  Math.cos((j / 4) * Math.PI * 2) * 0.22,
+                  0.72,
+                  Math.sin((j / 4) * Math.PI * 2) * 0.22,
+                ]}
+                rotation={[0.7, (j / 4) * Math.PI * 2, 0]}
+              >
+                <coneGeometry args={[0.14, 0.4, 4]} />
+                <meshStandardMaterial color={moss} roughness={0.75} flatShading transparent={locked} opacity={dim} />
+              </mesh>
+            ))}
+          </group>
+        ))}
+
+      {/* Mini pier */}
+      {!wire && (
+        <group position={[0.15, 0.12, 1.25]} rotation={[0, 0.15, 0]}>
+          {[-0.12, 0.12].map((x) => (
+            <mesh key={x} castShadow receiveShadow position={[x, 0.04, 0.25]}>
+              <boxGeometry args={[0.1, 0.05, 0.7]} />
+              <meshStandardMaterial color="#8b5a2b" roughness={0.88} flatShading transparent={locked} opacity={dim} />
+            </mesh>
+          ))}
+          {[-0.18, 0.18].map((x) =>
+            [0.05, 0.45].map((z) => (
+              <mesh key={`${x}-${z}`} position={[x, -0.08, z]}>
+                <cylinderGeometry args={[0.03, 0.035, 0.25, 5]} />
+                <meshStandardMaterial color="#5c3a1e" roughness={0.9} flatShading transparent={locked} opacity={dim} />
+              </mesh>
+            )),
+          )}
+        </group>
+      )}
 
       {/* Winding path */}
       {!wire &&
@@ -182,23 +301,37 @@ export function DioramaIslandMesh({
               position={[mx, 0.14, mz]}
               receiveShadow
             >
-              <planeGeometry args={[0.12, len]} />
+              <planeGeometry args={[0.14, len]} />
               <meshStandardMaterial color="#9ca3af" roughness={0.95} transparent={locked} opacity={dim} />
             </mesh>
           );
         })}
 
-      {/* Tiny houses */}
+      {/* Tiny houses with windows */}
       {!wire &&
         houses.map((h, i) => (
           <group key={i} position={[h.x, 0.18, h.z]} rotation={[0, h.rot, 0]} scale={h.s * 8}>
             <mesh castShadow position={[0, 0.12, 0]}>
-              <boxGeometry args={[0.22, 0.2, 0.18]} />
-              <meshStandardMaterial color="#f8fafc" roughness={0.7} flatShading transparent={locked} opacity={dim} />
+              <boxGeometry args={[0.24, 0.22, 0.2]} />
+              <meshStandardMaterial color={h.body} roughness={0.7} flatShading transparent={locked} opacity={dim} />
             </mesh>
-            <mesh castShadow position={[0, 0.28, 0]} rotation={[0, Math.PI / 4, 0]}>
-              <coneGeometry args={[0.18, 0.16, 4]} />
-              <meshStandardMaterial color="#334155" roughness={0.65} flatShading transparent={locked} opacity={dim} />
+            <mesh castShadow position={[0, 0.3, 0]} rotation={[0, Math.PI / 4, 0]}>
+              <coneGeometry args={[0.2, 0.18, 4]} />
+              <meshStandardMaterial
+                color={look.accent}
+                roughness={0.65}
+                flatShading
+                transparent={locked}
+                opacity={dim}
+              />
+            </mesh>
+            <mesh position={[0, 0.12, 0.11]}>
+              <boxGeometry args={[0.06, 0.1, 0.02]} />
+              <meshStandardMaterial color="#5c3a1e" roughness={0.8} transparent={locked} opacity={dim} />
+            </mesh>
+            <mesh position={[-0.07, 0.14, 0.11]}>
+              <boxGeometry args={[0.05, 0.05, 0.015]} />
+              <meshStandardMaterial color="#7dd3fc" roughness={0.3} transparent={locked} opacity={dim} />
             </mesh>
           </group>
         ))}
@@ -230,6 +363,7 @@ export function DioramaIslandMesh({
           [-1.2, 1.4, -0.4],
           [1.0, 1.6, 0.3],
           [0.2, 1.85, -0.8],
+          [-0.4, 1.55, 0.6],
         ].map((c, i) => (
           <mesh key={`cloud-${i}`} position={c as [number, number, number]}>
             <sphereGeometry args={[0.22 + (i % 2) * 0.08, 8, 6]} />
@@ -239,8 +373,8 @@ export function DioramaIslandMesh({
 
       {/* Selection ring */}
       {(selected || hovered || current) && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.95, 0]}>
-          <ringGeometry args={[2.35, 2.55, 32]} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]}>
+          <ringGeometry args={[2.4, 2.6, 32]} />
           <meshBasicMaterial
             color={current ? look.accent : selected || hovered ? "#fef08a" : "#fff"}
             transparent
@@ -251,7 +385,7 @@ export function DioramaIslandMesh({
       )}
 
       {/* Label ON TOP of the diorama */}
-      <Billboard position={[0, 2.55, 0]} follow>
+      <Billboard position={[0, 2.65, 0]} follow>
         <mesh position={[0, 0, -0.02]}>
           <planeGeometry args={[2.8, locked || subtitle ? 0.85 : 0.55]} />
           <meshBasicMaterial color="#fef3c7" transparent opacity={0.92} depthWrite={false} />

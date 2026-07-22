@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState } from "react";
+import { Suspense, lazy, useMemo, useState, useCallback } from "react";
 import {
   GameHudLayout,
   GameButton,
@@ -95,6 +95,7 @@ export function HomeHubView({
 
   const [outfitterStage, setOutfitterStage] = useState<"look" | "pet">("look");
   const [draft, setDraft] = useState<CapitalCharacter>(voyager);
+  const [nearStore, setNearStore] = useState<{ id: string; label: string } | null>(null);
   const plazaRoom = "plaza";
 
   const pets = useMemo(() => CHARACTER_COMPANIONS.filter((c) => c.id !== "none"), []);
@@ -129,6 +130,10 @@ export function HomeHubView({
     setHubModal("outfitter");
   };
 
+  const onNearChange = useCallback((id: string | null, label: string | null) => {
+    setNearStore(id && label ? { id, label } : null);
+  }, []);
+
   return (
     <>
       <GameHudLayout
@@ -139,6 +144,7 @@ export function HomeHubView({
               hotspots={harborHotspots}
               onHotspot={onHarborHotspot}
               onOpenTravel={onOpenTravel}
+              onNearChange={onNearChange}
             />
           </div>
         }
@@ -168,8 +174,19 @@ export function HomeHubView({
         }
         bottom={
           <div className="flex w-full max-w-lg flex-col items-center gap-[var(--game-gap)] px-2">
+            {nearStore ? (
+              <GameButton
+                variant="primary"
+                size="lg"
+                onClick={() => onHarborHotspot(nearStore.id)}
+                className="w-full max-w-xs shadow-xl border-2 border-amber-200"
+                data-testid="hub-enter-store"
+              >
+                🚪 Enter {nearStore.label}
+              </GameButton>
+            ) : null}
             <GameButton
-              variant="primary"
+              variant={nearStore ? "secondary" : "primary"}
               size="lg"
               onClick={onOpenTravel}
               className="w-full max-w-xs shadow-xl"
@@ -178,7 +195,9 @@ export function HomeHubView({
               🪄 Board carpet / Archipelago
             </GameButton>
             <InputPromptHint action="map" className="text-white/80">
-              or press M in the plaza · WASD to walk
+              {nearStore
+                ? "Press E / Enter to go inside · A/D turn · W/S walk"
+                : "WASD walk · E enter shop · M map"}
             </InputPromptHint>
             {save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID ? (
               <GameButton variant="secondary" size="lg" onClick={onResume} className="w-full max-w-xs shadow-lg">
@@ -203,9 +222,9 @@ export function HomeHubView({
             <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-100">
               Fortune Archipelago · Harbor Haven
             </div>
-            <h1 className="text-2xl font-black tracking-wide sm:text-3xl">Walk your Voyager</h1>
+            <h1 className="text-2xl font-black tracking-wide sm:text-3xl">Walk your money mascot</h1>
             <p className="text-xs text-white/80">
-              Approach stalls in 3D · {boat.emoji} {boat.label} waiting at the dock
+              Walk up to a shop door · press E or tap Enter · {boat.emoji} {boat.label} at the dock
             </p>
             {highlightOutfitter ? (
               <p className="mt-1 text-sm font-bold text-amber-200">Walk to the Outfitter stall (front center)</p>

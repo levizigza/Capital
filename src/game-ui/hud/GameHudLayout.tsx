@@ -23,7 +23,7 @@ export function GameHudLayout({
   return (
     <div className={cn("game-hud-layout relative", className)}>
       {background ? (
-        <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden>
+        <div className="absolute inset-0 z-0 overflow-hidden">
           {background}
         </div>
       ) : null}

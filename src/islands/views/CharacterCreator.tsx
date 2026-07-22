@@ -87,11 +87,11 @@ export function CharacterCreator({
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <div className="text-xl font-black">{isShop ? "🪞 Fitting mirror" : "🎨 Create Your Character"}</div>
+        <div className="text-xl font-black">{isShop ? "🪞 Fitting mirror" : "🎨 Make your money mascot"}</div>
         <p className="text-sm text-muted-foreground">
           {isShop
-            ? "Pick a look that feels like you — this is your Harbor identity."
-            : "Make yourself before you set sail across Capital."}
+            ? "Pick a wacky bill, coin, or piggy look — this is your Harbor identity."
+            : "Be a dollar, a coin, a piggy bank — then set sail across Capital."}
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export function CharacterCreator({
 
       <GamePanel padding="default" className="space-y-3">
         <SwatchRow
-          title="Character"
+          title="Money mascot"
           options={CHARACTER_BASES}
           selected={draft.base}
           render={(o) => <span>{baseEmoji(o.id)}</span>}

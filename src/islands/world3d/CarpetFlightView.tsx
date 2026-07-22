@@ -100,18 +100,19 @@ function FlightRig({
 
     if (carpet.current) {
       carpet.current.position.set(s.x, s.y, s.z);
+      carpet.current.rotation.order = "YXZ";
       carpet.current.rotation.y = s.heading;
-    }
+      carpet.current.rotation.x = -0.12;
+      carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.03;
+      carpet.current.updateMatrixWorld(true);
 
-    // First-person POV on the carpet — looking over the bill rug toward islands
-    const eyeX = s.x + Math.sin(s.heading) * 0.2;
-    const eyeZ = s.z + Math.cos(s.heading) * 0.2;
-    camera.position.lerp(new THREE.Vector3(eyeX, s.y + 1.05, eyeZ), 1 - Math.pow(0.0008, dt));
-    camera.lookAt(
-      s.x + Math.sin(s.heading) * 14,
-      s.y + 0.35,
-      s.z + Math.cos(s.heading) * 14,
-    );
+      // Carpet-local POV: below-and-ahead view of the flapping bill
+      const eye = new THREE.Vector3(0, 0.52, -1.05).applyMatrix4(carpet.current.matrixWorld);
+      const look = new THREE.Vector3(0, 0.02, 1.55).applyMatrix4(carpet.current.matrixWorld);
+      look.y += Math.sin(performance.now() / 130) * 0.05;
+      camera.position.lerp(eye, 1 - Math.pow(0.0008, dt));
+      camera.lookAt(look);
+    }
 
     let nearest: WorldIsle | null = null;
     let nearestDist = Infinity;
@@ -151,7 +152,7 @@ function FlightRig({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={character} flying hideRider />
+      <MoneyCarpet character={character} flying hideRider povRide />
     </group>
   );
 }

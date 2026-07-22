@@ -9,7 +9,7 @@ import type { EraLook3D } from "./eraLooks";
 export type IslandDetail = "far" | "near";
 
 export type PropInstance = {
-  kind: "palm" | "tree" | "rock" | "grass" | "bush";
+  kind: "palm" | "tree" | "rock" | "grass" | "bush" | "hut";
   position: [number, number, number];
   scale: number;
   rotationY: number;
@@ -75,11 +75,23 @@ function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
   const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
   const n = parseInt(full.slice(0, 6), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => v / 255) as [number, number, number];
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => v / 255) as [
+    number,
+    number,
+    number,
+  ];
 }
 
-function lerpColor(a: [number, number, number], b: [number, number, number], t: number): [number, number, number] {
+function lerpColor(
+  a: [number, number, number],
+  b: [number, number, number],
+  t: number,
+): [number, number, number] {
   return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+}
+
+function darken(c: [number, number, number], amt: number): [number, number, number] {
+  return [c[0] * (1 - amt), c[1] * (1 - amt), c[2] * (1 - amt)];
 }
 
 export type IslandTerrainResult = {
@@ -104,22 +116,23 @@ export function buildIslandTerrain(
   const oz = (hashSeed(seed + "z") % 1000) / 19;
   const salt = seedNum;
 
-  const segments = detail === "near" ? 64 : 28;
-  const radius = 3.4 + rng() * 0.9;
-  const heightScale = 1.35 + rng() * 0.55;
+  const segments = detail === "near" ? 88 : 40;
+  const radius = 3.45 + rng() * 0.95;
+  const heightScale = 1.45 + rng() * 0.65;
 
   const positions: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
 
   const shore = hexToRgb(look.shore);
+  const wetSand = darken(lerpColor(shore, hexToRgb("#d6b87a"), 0.35), 0.08);
   const land = hexToRgb(look.land);
-  const rock = hexToRgb(look.shading === "neon" ? look.accent : "#6b7280");
-  // Darken rock toward ink for cliff bands
+  const deepGrass = darken(land, 0.22);
+  const rock = hexToRgb(look.shading === "neon" ? look.accent : "#7c746c");
   const cliff: [number, number, number] = [
-    rock[0] * 0.55 + 0.1,
-    rock[1] * 0.55 + 0.1,
-    rock[2] * 0.55 + 0.12,
+    rock[0] * 0.5 + 0.08,
+    rock[1] * 0.5 + 0.08,
+    rock[2] * 0.5 + 0.1,
   ];
 
   const heights: number[][] = [];
@@ -134,21 +147,27 @@ export function buildIslandTerrain(
       const z = (v - 0.5) * 2 * radius;
       const dist = Math.hypot(x, z) / radius;
 
-      // Soft irregular coastline
-      const coastNoise = fbm(x * 0.55 + ox, z * 0.55 + oz, 3, salt);
-      const edge = 0.72 + coastNoise * 0.22;
-      const falloff = Math.max(0, 1 - Math.pow(Math.min(1, dist / edge), 2.4));
+      // Soft irregular coastline with bay / headland variation
+      const coastNoise = fbm(x * 0.55 + ox, z * 0.55 + oz, 4, salt);
+      const bay = fbm(x * 0.25 + ox, z * 0.25 + oz, 2, salt + 3);
+      const edge = 0.7 + coastNoise * 0.2 + bay * 0.08;
+      const falloff = Math.max(0, 1 - Math.pow(Math.min(1, dist / edge), 2.55));
 
-      const hills = fbm(x * 0.9 + ox, z * 0.9 + oz, 4, salt + 7);
-      const ridge = fbm(x * 1.8 + ox * 2, z * 1.8 + oz * 2, 2, salt + 13);
-      let h = falloff * (0.15 + hills * heightScale + ridge * 0.35);
+      const hills = fbm(x * 0.85 + ox, z * 0.85 + oz, 5, salt + 7);
+      const ridge = fbm(x * 1.9 + ox * 2, z * 1.9 + oz * 2, 3, salt + 13);
+      const terrace = Math.floor(hills * 4) / 4; // soft stepped plateaus
+      let h =
+        falloff *
+        (0.12 + hills * heightScale * 0.72 + terrace * heightScale * 0.28 + ridge * 0.42);
 
-      // Central plateau bump
-      const center = Math.max(0, 1 - dist * 1.6);
-      h += center * center * 0.55 * falloff;
+      // Central plateau bump + secondary ridge
+      const center = Math.max(0, 1 - dist * 1.55);
+      h += center * center * 0.62 * falloff;
+      const spur = Math.max(0, 1 - Math.abs(dist - 0.42) * 4.5);
+      h += spur * ridge * 0.28 * falloff;
 
-      if (dist > edge * 0.98) h *= 0.15;
-      if (dist > 1.05) h = -0.08;
+      if (dist > edge * 0.97) h *= 0.18;
+      if (dist > 1.04) h = -0.1;
 
       heights[iz]![ix] = h;
       if (h > peakY) peakY = h;
@@ -165,18 +184,24 @@ export function buildIslandTerrain(
       positions.push(x, y, z);
 
       const dist = Math.hypot(x, z) / radius;
+      const mottled = fbm(x * 1.4 + ox, z * 1.4 + oz, 3, salt + 21);
       let col: [number, number, number];
-      if (y < 0.08 || dist > 0.78) {
-        col = shore;
-      } else if (y > peakY * 0.62 && dist < 0.45) {
-        col = lerpColor(land, cliff, 0.35);
-      } else if (y > 0.55 && dist > 0.5) {
-        col = lerpColor(land, cliff, 0.55);
+
+      if (y < 0.02 || dist > 0.92) {
+        col = wetSand;
+      } else if (y < 0.12 || dist > 0.78) {
+        col = lerpColor(shore, wetSand, mottled * 0.35);
+      } else if (y > peakY * 0.68 || (y > 0.7 && dist > 0.48)) {
+        col = lerpColor(cliff, rock, mottled * 0.4);
+      } else if (y > 0.45 && dist > 0.55) {
+        col = lerpColor(deepGrass, cliff, 0.45 + mottled * 0.2);
+      } else if (dist < 0.28) {
+        col = lerpColor(land, deepGrass, 0.25 + mottled * 0.2);
       } else {
-        const tint = fbm(x + ox, z + oz, 2, salt + 21);
-        col = lerpColor(land, shore, tint * 0.12);
+        col = lerpColor(land, shore, mottled * 0.1);
+        col = lerpColor(col, deepGrass, mottled * 0.22);
       }
-      // Era neon / wire punch
+
       if (look.shading === "neon") {
         col = lerpColor(col, hexToRgb(look.accent), 0.25);
       }
@@ -203,30 +228,68 @@ export function buildIslandTerrain(
 
   const props: PropInstance[] = [];
   if (detail === "near") {
-    const attempts = 48;
-    for (let i = 0; i < attempts; i++) {
-      const ang = rng() * Math.PI * 2;
-      const r = (0.25 + rng() * 0.55) * radius;
-      const px = Math.cos(ang) * r;
-      const pz = Math.sin(ang) * r;
-      // Sample height from nearest grid
+    const sampleH = (px: number, pz: number) => {
       const u = (px / (2 * radius) + 0.5) * segments;
       const v = (pz / (2 * radius) + 0.5) * segments;
       const ix = Math.max(0, Math.min(segments, Math.round(u)));
       const iz = Math.max(0, Math.min(segments, Math.round(v)));
-      const py = heights[iz]![ix]!;
-      if (py < 0.18) continue;
+      return heights[iz]![ix]!;
+    };
+
+    const attempts = 78;
+    for (let i = 0; i < attempts; i++) {
+      const ang = rng() * Math.PI * 2;
+      const r = (0.22 + rng() * 0.62) * radius;
+      const px = Math.cos(ang) * r;
+      const pz = Math.sin(ang) * r;
+      const py = sampleH(px, pz);
+      if (py < 0.14) continue;
+      const dist = Math.hypot(px, pz) / radius;
       const roll = rng();
       let kind: PropInstance["kind"];
-      if (roll < 0.28) kind = "palm";
-      else if (roll < 0.48) kind = "tree";
-      else if (roll < 0.68) kind = "rock";
-      else if (roll < 0.85) kind = "bush";
-      else kind = "grass";
+      // Biome bias: palms near shore, trees inland, rocks on ridges
+      if (dist > 0.62) {
+        if (roll < 0.45) kind = "palm";
+        else if (roll < 0.65) kind = "rock";
+        else if (roll < 0.82) kind = "bush";
+        else kind = "grass";
+      } else if (py > peakY * 0.55) {
+        if (roll < 0.55) kind = "rock";
+        else if (roll < 0.75) kind = "bush";
+        else kind = "grass";
+      } else if (dist < 0.35) {
+        if (roll < 0.4) kind = "tree";
+        else if (roll < 0.6) kind = "bush";
+        else if (roll < 0.78) kind = "grass";
+        else kind = "rock";
+      } else {
+        if (roll < 0.22) kind = "palm";
+        else if (roll < 0.45) kind = "tree";
+        else if (roll < 0.62) kind = "bush";
+        else if (roll < 0.78) kind = "rock";
+        else kind = "grass";
+      }
       props.push({
         kind,
         position: [px, py, pz],
-        scale: 0.65 + rng() * 0.7,
+        scale: 0.6 + rng() * 0.75,
+        rotationY: rng() * Math.PI * 2,
+      });
+    }
+
+    // Village cottages on the inland plateau
+    const hutCount = 3 + Math.floor(rng() * 3);
+    for (let i = 0; i < hutCount; i++) {
+      const ang = rng() * Math.PI * 2;
+      const r = (0.12 + rng() * 0.28) * radius;
+      const px = Math.cos(ang) * r;
+      const pz = Math.sin(ang) * r;
+      const py = sampleH(px, pz);
+      if (py < 0.22) continue;
+      props.push({
+        kind: "hut",
+        position: [px, py, pz],
+        scale: 0.85 + rng() * 0.35,
         rotationY: rng() * Math.PI * 2,
       });
     }

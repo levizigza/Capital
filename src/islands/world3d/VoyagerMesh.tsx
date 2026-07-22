@@ -1,23 +1,29 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { colorHex, type CapitalCharacter } from "../character";
+import {
+  colorHex,
+  moneyFormFromBase,
+  type CapitalCharacter,
+  type MoneyForm,
+} from "../character";
 
 type Props = {
   character?: CapitalCharacter | null;
   /** seated on carpet vs walking */
   pose?: "stand" | "sit" | "run";
   scale?: number;
-  /** Override coat / accent for NPCs */
+  /** Override primary / accent for NPCs */
   coatColor?: string;
   pantColor?: string;
   skinColor?: string;
+  /** Force a money form (NPCs). */
+  form?: MoneyForm;
 };
 
 /**
- * Stylized Voyager humanoid — proportions informed by figure-drawing
- * practice (≈7–7.5 heads, clear shoulder/hip blocks), original Capital look.
- * Not a franchise clone; procedural so it stays light for the web build.
+ * Anthropomorphic money mascot — bill / coin / piggy / ledger / etc.
+ * Wacky kids-game cast for Fortune Archipelago. Procedural, no human faces.
  */
 export function VoyagerMesh({
   character,
@@ -25,7 +31,8 @@ export function VoyagerMesh({
   scale = 1,
   coatColor,
   pantColor = "#1e3a5f",
-  skinColor = "#f5d0a9",
+  skinColor = "#fef3c7",
+  form,
 }: Props) {
   const group = useRef<THREE.Group>(null);
   const hip = useRef<THREE.Group>(null);
@@ -33,21 +40,28 @@ export function VoyagerMesh({
   const legR = useRef<THREE.Group>(null);
   const armL = useRef<THREE.Group>(null);
   const armR = useRef<THREE.Group>(null);
+
   const hex = coatColor ?? colorHex(character?.color ?? "tide");
   const accessory = character?.accessory ?? "none";
   const companion = character?.companion ?? "none";
+  const bodyForm = form ?? moneyFormFromBase(character?.base);
 
   const materials = useMemo(
     () => ({
-      coat: new THREE.MeshStandardMaterial({ color: hex, roughness: 0.5, metalness: 0.08 }),
-      pants: new THREE.MeshStandardMaterial({ color: pantColor, roughness: 0.75 }),
-      skin: new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.6 }),
-      boot: new THREE.MeshStandardMaterial({ color: "#3f2a1a", roughness: 0.85 }),
-      accent: new THREE.MeshStandardMaterial({ color: "#f4a629", roughness: 0.4, metalness: 0.25 }),
-      hair: new THREE.MeshStandardMaterial({ color: "#2c1810", roughness: 0.9 }),
-      eye: new THREE.MeshStandardMaterial({ color: "#16283b", roughness: 0.4 }),
+      body: new THREE.MeshStandardMaterial({
+        color: hex,
+        roughness: bodyForm === "coin" || bodyForm === "ancient" ? 0.35 : 0.55,
+        metalness: bodyForm === "coin" || bodyForm === "ancient" ? 0.55 : 0.08,
+      }),
+      ink: new THREE.MeshStandardMaterial({ color: pantColor, roughness: 0.7 }),
+      paper: new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.75 }),
+      gold: new THREE.MeshStandardMaterial({ color: "#f4a629", roughness: 0.35, metalness: 0.45 }),
+      dark: new THREE.MeshStandardMaterial({ color: "#16283b", roughness: 0.55 }),
+      eye: new THREE.MeshStandardMaterial({ color: "#16283b", roughness: 0.35 }),
+      blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6 }),
+      pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55 }),
     }),
-    [hex, pantColor, skinColor],
+    [hex, pantColor, skinColor, bodyForm],
   );
 
   useFrame(({ clock }) => {
@@ -62,8 +76,8 @@ export function VoyagerMesh({
       if (group.current) group.current.position.y = Math.abs(Math.sin(t * 10)) * 0.03;
     } else if (pose === "sit") {
       if (legL.current && legR.current) {
-        legL.current.rotation.x = -1.25;
-        legR.current.rotation.x = -1.25;
+        legL.current.rotation.x = -1.15;
+        legR.current.rotation.x = -1.15;
       }
       if (armL.current && armR.current) {
         armL.current.rotation.x = -0.35;
@@ -76,143 +90,282 @@ export function VoyagerMesh({
         legR.current.rotation.x = 0;
       }
       if (armL.current && armR.current) {
-        armL.current.rotation.x = Math.sin(t * 1.4) * 0.04;
-        armR.current.rotation.x = -Math.sin(t * 1.4) * 0.04;
+        armL.current.rotation.x = Math.sin(t * 1.4) * 0.05;
+        armR.current.rotation.x = -Math.sin(t * 1.4) * 0.05;
       }
-      if (group.current) group.current.position.y = Math.sin(t * 2) * 0.015;
+      if (group.current) group.current.position.y = Math.sin(t * 2) * 0.02;
       if (hip.current) hip.current.position.y = 0;
     }
   });
 
-  // Unit height ≈ 1.7 — head at ~1.55 when standing
   const stand = pose !== "sit";
+  const isPiggy = bodyForm === "piggy";
+  const isCoin = bodyForm === "coin" || bodyForm === "signal" || bodyForm === "ancient";
+  const isBill = bodyForm === "bill" || bodyForm === "wave";
+  const isBook = bodyForm === "ledger" || bodyForm === "scroll";
 
   return (
     <group ref={group} scale={scale}>
-      <group ref={hip} position={[0, stand ? 0 : 0.2, 0]}>
-        {/* Boots + lower legs */}
-        <group ref={legL} position={[-0.14, 0.55, 0]}>
-          <mesh castShadow position={[0, -0.28, 0]} material={materials.pants}>
-            <capsuleGeometry args={[0.075, 0.38, 4, 8]} />
+      <group ref={hip} position={[0, stand ? 0 : 0.18, 0]}>
+        {/* Legs — stubby money feet */}
+        <group ref={legL} position={[-0.16, 0.42, 0]}>
+          <mesh castShadow position={[0, -0.18, 0]} material={materials.ink}>
+            <capsuleGeometry args={[0.07, 0.22, 4, 8]} />
           </mesh>
-          <mesh castShadow position={[0, -0.55, 0.04]} material={materials.boot}>
-            <boxGeometry args={[0.16, 0.12, 0.26]} />
+          <mesh castShadow position={[0, -0.38, 0.04]} material={materials.gold}>
+            <boxGeometry args={[0.16, 0.1, 0.22]} />
           </mesh>
         </group>
-        <group ref={legR} position={[0.14, 0.55, 0]}>
-          <mesh castShadow position={[0, -0.28, 0]} material={materials.pants}>
-            <capsuleGeometry args={[0.075, 0.38, 4, 8]} />
+        <group ref={legR} position={[0.16, 0.42, 0]}>
+          <mesh castShadow position={[0, -0.18, 0]} material={materials.ink}>
+            <capsuleGeometry args={[0.07, 0.22, 4, 8]} />
           </mesh>
-          <mesh castShadow position={[0, -0.55, 0.04]} material={materials.boot}>
-            <boxGeometry args={[0.16, 0.12, 0.26]} />
+          <mesh castShadow position={[0, -0.38, 0.04]} material={materials.gold}>
+            <boxGeometry args={[0.16, 0.1, 0.22]} />
           </mesh>
         </group>
 
-        {/* Hips / torso */}
-        <mesh castShadow position={[0, 0.72, 0]} material={materials.pants}>
-          <boxGeometry args={[0.38, 0.22, 0.22]} />
-        </mesh>
-        <mesh castShadow position={[0, 1.05, 0]} material={materials.coat}>
-          <capsuleGeometry args={[0.2, 0.42, 5, 10]} />
-        </mesh>
-        {/* Collar / lapel */}
-        <mesh castShadow position={[0, 1.28, 0.12]} material={materials.accent}>
-          <boxGeometry args={[0.28, 0.08, 0.06]} />
-        </mesh>
-        {/* Shoulders */}
-        <mesh castShadow position={[-0.28, 1.28, 0]} material={materials.coat}>
-          <sphereGeometry args={[0.1, 10, 8]} />
-        </mesh>
-        <mesh castShadow position={[0.28, 1.28, 0]} material={materials.coat}>
-          <sphereGeometry args={[0.1, 10, 8]} />
-        </mesh>
+        {/* —— Body by form —— */}
+        {isBill ? (
+          <group position={[0, 0.95, 0]}>
+            <mesh castShadow material={materials.body}>
+              <boxGeometry args={[0.85, 0.95, 0.14]} />
+            </mesh>
+            {/* Inner lighter field */}
+            <mesh position={[0, 0.02, 0.075]} material={materials.paper}>
+              <boxGeometry args={[0.68, 0.72, 0.02]} />
+            </mesh>
+            {/* Dollar seal */}
+            <mesh position={[0, 0.05, 0.09]} material={materials.gold}>
+              <circleGeometry args={[0.18, 20]} />
+            </mesh>
+            <mesh position={[0, 0.05, 0.1]} material={materials.dark}>
+              <ringGeometry args={[0.1, 0.14, 16]} />
+            </mesh>
+            {/* Serial bars */}
+            <mesh position={[-0.28, 0.32, 0.09]} material={materials.ink}>
+              <boxGeometry args={[0.18, 0.04, 0.01]} />
+            </mesh>
+            <mesh position={[0.28, -0.28, 0.09]} material={materials.ink}>
+              <boxGeometry args={[0.18, 0.04, 0.01]} />
+            </mesh>
+            {bodyForm === "wave" ? (
+              <mesh position={[0, -0.35, 0.1]} rotation={[0, 0, 0.1]} material={materials.gold}>
+                <torusGeometry args={[0.22, 0.04, 6, 14, Math.PI]} />
+              </mesh>
+            ) : null}
+            {/* Cute eyes on the bill */}
+            <mesh position={[-0.14, 0.28, 0.1]} material={materials.eye}>
+              <sphereGeometry args={[0.055, 10, 8]} />
+            </mesh>
+            <mesh position={[0.14, 0.28, 0.1]} material={materials.eye}>
+              <sphereGeometry args={[0.055, 10, 8]} />
+            </mesh>
+            <mesh position={[-0.14, 0.29, 0.14]} material={materials.paper}>
+              <sphereGeometry args={[0.02, 6, 6]} />
+            </mesh>
+            <mesh position={[0.14, 0.29, 0.14]} material={materials.paper}>
+              <sphereGeometry args={[0.02, 6, 6]} />
+            </mesh>
+            <mesh position={[0, 0.12, 0.1]} material={materials.blush}>
+              <boxGeometry args={[0.12, 0.03, 0.01]} />
+            </mesh>
+            {/* Folded corners */}
+            <mesh position={[-0.38, 0.42, 0.02]} rotation={[0, 0, 0.4]} material={materials.body}>
+              <boxGeometry args={[0.16, 0.16, 0.04]} />
+            </mesh>
+            <mesh position={[0.38, 0.42, 0.02]} rotation={[0, 0, -0.4]} material={materials.body}>
+              <boxGeometry args={[0.16, 0.16, 0.04]} />
+            </mesh>
+          </group>
+        ) : null}
+
+        {isCoin ? (
+          <group position={[0, 0.95, 0]}>
+            <mesh castShadow rotation={[0, 0, 0]} material={materials.body}>
+              <cylinderGeometry args={[0.48, 0.48, 0.16, 28]} />
+            </mesh>
+            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.09]} material={materials.gold}>
+              <ringGeometry args={[0.34, 0.44, 28]} />
+            </mesh>
+            <mesh position={[0, 0, 0.09]} material={materials.gold}>
+              <circleGeometry args={[0.22, 24]} />
+            </mesh>
+            {bodyForm === "signal" ? (
+              <>
+                <mesh position={[0, 0.55, 0]} material={materials.ink}>
+                  <cylinderGeometry args={[0.03, 0.04, 0.35, 6]} />
+                </mesh>
+                <mesh position={[0, 0.75, 0]} material={materials.gold}>
+                  <sphereGeometry args={[0.08, 8, 6]} />
+                </mesh>
+              </>
+            ) : null}
+            {bodyForm === "ancient" ? (
+              <mesh position={[0, 0, 0.1]} material={materials.ink}>
+                <ringGeometry args={[0.12, 0.2, 3]} />
+              </mesh>
+            ) : null}
+            <mesh position={[-0.14, 0.1, 0.1]} material={materials.eye}>
+              <sphereGeometry args={[0.06, 10, 8]} />
+            </mesh>
+            <mesh position={[0.14, 0.1, 0.1]} material={materials.eye}>
+              <sphereGeometry args={[0.06, 10, 8]} />
+            </mesh>
+            <mesh position={[0, -0.08, 0.1]} material={materials.blush}>
+              <boxGeometry args={[0.12, 0.035, 0.01]} />
+            </mesh>
+          </group>
+        ) : null}
+
+        {isPiggy ? (
+          <group position={[0, 0.85, 0]}>
+            <mesh castShadow material={materials.pink}>
+              <sphereGeometry args={[0.48, 18, 14]} />
+            </mesh>
+            {/* Snout */}
+            <mesh castShadow position={[0, -0.05, 0.42]} material={materials.body}>
+              <cylinderGeometry args={[0.14, 0.16, 0.18, 12]} />
+            </mesh>
+            <mesh position={[-0.05, -0.05, 0.52]} material={materials.dark}>
+              <sphereGeometry args={[0.03, 6, 6]} />
+            </mesh>
+            <mesh position={[0.05, -0.05, 0.52]} material={materials.dark}>
+              <sphereGeometry args={[0.03, 6, 6]} />
+            </mesh>
+            {/* Coin slot */}
+            <mesh position={[0, 0.42, 0]} material={materials.dark}>
+              <boxGeometry args={[0.28, 0.04, 0.08]} />
+            </mesh>
+            {/* Ears */}
+            <mesh castShadow position={[-0.32, 0.32, 0.05]} rotation={[0, 0, 0.4]} material={materials.pink}>
+              <coneGeometry args={[0.1, 0.18, 5]} />
+            </mesh>
+            <mesh castShadow position={[0.32, 0.32, 0.05]} rotation={[0, 0, -0.4]} material={materials.pink}>
+              <coneGeometry args={[0.1, 0.18, 5]} />
+            </mesh>
+            <mesh position={[-0.14, 0.12, 0.38]} material={materials.eye}>
+              <sphereGeometry args={[0.055, 10, 8]} />
+            </mesh>
+            <mesh position={[0.14, 0.12, 0.38]} material={materials.eye}>
+              <sphereGeometry args={[0.055, 10, 8]} />
+            </mesh>
+            {/* Tail curl */}
+            <mesh position={[0, -0.1, -0.48]} rotation={[Math.PI / 2, 0, 0]} material={materials.body}>
+              <torusGeometry args={[0.1, 0.03, 6, 12]} />
+            </mesh>
+          </group>
+        ) : null}
+
+        {isBook ? (
+          <group position={[0, 0.95, 0]}>
+            <mesh castShadow material={materials.body}>
+              <boxGeometry args={[0.7, 0.9, 0.28]} />
+            </mesh>
+            <mesh position={[0.02, 0, 0.02]} material={materials.paper}>
+              <boxGeometry args={[0.62, 0.82, 0.22]} />
+            </mesh>
+            {/* Spine */}
+            <mesh position={[-0.36, 0, 0]} material={materials.gold}>
+              <boxGeometry args={[0.06, 0.92, 0.3]} />
+            </mesh>
+            {bodyForm === "scroll" ? (
+              <>
+                <mesh castShadow position={[0, 0.52, 0]} rotation={[0, 0, Math.PI / 2]} material={materials.paper}>
+                  <cylinderGeometry args={[0.12, 0.12, 0.75, 12]} />
+                </mesh>
+                <mesh castShadow position={[0, -0.52, 0]} rotation={[0, 0, Math.PI / 2]} material={materials.paper}>
+                  <cylinderGeometry args={[0.12, 0.12, 0.75, 12]} />
+                </mesh>
+              </>
+            ) : (
+              <>
+                <mesh position={[0.05, 0.2, 0.15]} material={materials.ink}>
+                  <boxGeometry args={[0.4, 0.04, 0.01]} />
+                </mesh>
+                <mesh position={[0.05, 0.08, 0.15]} material={materials.ink}>
+                  <boxGeometry args={[0.35, 0.04, 0.01]} />
+                </mesh>
+                <mesh position={[0.05, -0.04, 0.15]} material={materials.ink}>
+                  <boxGeometry args={[0.3, 0.04, 0.01]} />
+                </mesh>
+              </>
+            )}
+            <mesh position={[-0.12, 0.28, 0.16]} material={materials.eye}>
+              <sphereGeometry args={[0.05, 10, 8]} />
+            </mesh>
+            <mesh position={[0.16, 0.28, 0.16]} material={materials.eye}>
+              <sphereGeometry args={[0.05, 10, 8]} />
+            </mesh>
+            <mesh position={[0.02, 0.12, 0.16]} material={materials.blush}>
+              <boxGeometry args={[0.1, 0.025, 0.01]} />
+            </mesh>
+          </group>
+        ) : null}
 
         {/* Arms */}
-        <group ref={armL} position={[-0.34, 1.22, 0]}>
-          <mesh castShadow position={[0, -0.22, 0]} material={materials.coat}>
-            <capsuleGeometry args={[0.06, 0.32, 4, 8]} />
+        <group ref={armL} position={[-0.48, isPiggy ? 0.95 : 1.15, 0]}>
+          <mesh castShadow position={[0, -0.18, 0]} material={materials.body}>
+            <capsuleGeometry args={[0.065, 0.28, 4, 8]} />
           </mesh>
-          <mesh castShadow position={[0, -0.42, 0]} material={materials.skin}>
-            <sphereGeometry args={[0.07, 10, 8]} />
-          </mesh>
-        </group>
-        <group ref={armR} position={[0.34, 1.22, 0]}>
-          <mesh castShadow position={[0, -0.22, 0]} material={materials.coat}>
-            <capsuleGeometry args={[0.06, 0.32, 4, 8]} />
-          </mesh>
-          <mesh castShadow position={[0, -0.42, 0]} material={materials.skin}>
-            <sphereGeometry args={[0.07, 10, 8]} />
+          <mesh castShadow position={[0, -0.38, 0]} material={materials.gold}>
+            <sphereGeometry args={[0.08, 10, 8]} />
           </mesh>
         </group>
+        <group ref={armR} position={[0.48, isPiggy ? 0.95 : 1.15, 0]}>
+          <mesh castShadow position={[0, -0.18, 0]} material={materials.body}>
+            <capsuleGeometry args={[0.065, 0.28, 4, 8]} />
+          </mesh>
+          <mesh castShadow position={[0, -0.38, 0]} material={materials.gold}>
+            <sphereGeometry args={[0.08, 10, 8]} />
+          </mesh>
+        </group>
 
-        {/* Neck + head */}
-        <mesh castShadow position={[0, 1.42, 0]} material={materials.skin}>
-          <cylinderGeometry args={[0.07, 0.08, 0.12, 8]} />
-        </mesh>
-        <mesh castShadow position={[0, 1.62, 0]} material={materials.skin}>
-          <sphereGeometry args={[0.17, 16, 14]} />
-        </mesh>
-        {/* Hair cap */}
-        <mesh castShadow position={[0, 1.72, -0.02]} material={materials.hair}>
-          <sphereGeometry args={[0.165, 12, 10, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-        </mesh>
-        {/* Eyes */}
-        <mesh position={[-0.06, 1.64, 0.14]} material={materials.eye}>
-          <sphereGeometry args={[0.025, 8, 6]} />
-        </mesh>
-        <mesh position={[0.06, 1.64, 0.14]} material={materials.eye}>
-          <sphereGeometry args={[0.025, 8, 6]} />
-        </mesh>
-
-        {/* Ledger satchel */}
-        <mesh castShadow position={[0.22, 0.95, 0.12]} material={materials.accent}>
-          <boxGeometry args={[0.14, 0.18, 0.08]} />
-        </mesh>
-        <mesh castShadow position={[0.22, 1.08, 0.12]} material={materials.boot}>
-          <boxGeometry args={[0.04, 0.06, 0.04]} />
-        </mesh>
-
-        {/* Accessories */}
+        {/* Accessories perch on top of the mascot */}
         {accessory === "cap" ? (
-          <group position={[0, 1.78, 0]}>
-            <mesh castShadow material={materials.accent}>
-              <cylinderGeometry args={[0.18, 0.19, 0.1, 12]} />
+          <group position={[0, isCoin ? 1.45 : isPiggy ? 1.4 : 1.55, 0]}>
+            <mesh castShadow material={materials.dark}>
+              <cylinderGeometry args={[0.16, 0.18, 0.14, 12]} />
             </mesh>
-            <mesh castShadow position={[0, -0.02, 0.14]} material={materials.accent}>
-              <boxGeometry args={[0.22, 0.03, 0.12]} />
+            <mesh castShadow position={[0, 0.1, 0]} material={materials.dark}>
+              <cylinderGeometry args={[0.22, 0.22, 0.04, 12]} />
             </mesh>
           </group>
         ) : null}
         {accessory === "goggles" ? (
-          <mesh castShadow position={[0, 1.66, 0.16]} material={materials.accent}>
-            <torusGeometry args={[0.12, 0.025, 6, 16]} />
+          <mesh
+            castShadow
+            position={[0.18, isPiggy ? 1.0 : 1.25, isBill || isBook ? 0.12 : 0.2]}
+            material={materials.gold}
+          >
+            <torusGeometry args={[0.09, 0.025, 6, 14]} />
           </mesh>
         ) : null}
         {accessory === "bandana" ? (
-          <mesh castShadow position={[0, 1.52, 0]} material={materials.accent}>
-            <torusGeometry args={[0.14, 0.03, 6, 16]} />
+          <mesh castShadow position={[0, isPiggy ? 0.7 : 0.55, 0.2]} material={materials.gold}>
+            <boxGeometry args={[0.22, 0.1, 0.08]} />
           </mesh>
         ) : null}
         {accessory === "headset" ? (
           <>
-            <mesh castShadow position={[-0.18, 1.62, 0]} material={materials.boot}>
-              <sphereGeometry args={[0.07, 10, 8]} />
+            <mesh castShadow position={[-0.42, 1.15, 0]} material={materials.ink}>
+              <sphereGeometry args={[0.09, 10, 8]} />
             </mesh>
-            <mesh castShadow position={[0.18, 1.62, 0]} material={materials.boot}>
-              <sphereGeometry args={[0.07, 10, 8]} />
+            <mesh castShadow position={[0.42, 1.15, 0]} material={materials.ink}>
+              <sphereGeometry args={[0.09, 10, 8]} />
             </mesh>
           </>
         ) : null}
         {accessory === "lantern" ? (
-          <mesh castShadow position={[0.42, 0.85, 0.1]} material={materials.accent}>
-            <boxGeometry args={[0.1, 0.16, 0.1]} />
+          <mesh castShadow position={[0.35, 1.35, 0.15]} material={materials.gold}>
+            <octahedronGeometry args={[0.1, 0]} />
           </mesh>
         ) : null}
 
         {/* Tiny companion */}
         {companion !== "none" ? (
-          <mesh castShadow position={[0.45, 0.2, 0.15]} material={materials.accent}>
-            <sphereGeometry args={[0.12, 10, 8]} />
+          <mesh castShadow position={[0.55, 0.25, 0.2]} material={materials.gold}>
+            <sphereGeometry args={[0.13, 10, 8]} />
           </mesh>
         ) : null}
       </group>
@@ -220,17 +373,19 @@ export function VoyagerMesh({
   );
 }
 
-/** Harbor local — same humanoid language, varied palette. */
+/** Harbor local — money mascot with a fixed form + palette. */
 export function HarborNpcMesh({
   coat,
   pants,
   skin,
   pose = "stand",
+  form = "coin",
 }: {
   coat: string;
   pants?: string;
   skin?: string;
   pose?: "stand" | "run";
+  form?: MoneyForm;
 }) {
   return (
     <VoyagerMesh
@@ -240,6 +395,7 @@ export function HarborNpcMesh({
       pose={pose}
       scale={0.95}
       character={null}
+      form={form}
     />
   );
 }
