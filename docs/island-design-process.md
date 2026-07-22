@@ -2,7 +2,7 @@
 
 **Product:** FinanceQuest Pro · Islands mode  
 **Goal:** Every island ships with the same repeatable pipeline — players always know where to go, and learning lands on beat.  
-**Related:** [game-pillars.md](./game-pillars.md) · [ip-safe-design.md](./ip-safe-design.md) · [art-direction-bible.md](./art-direction-bible.md) · [islands-ui-style-guide.md](./islands-ui-style-guide.md)
+**Related:** [story-bible.md](./story-bible.md) · [game-pillars.md](./game-pillars.md) · [ip-safe-design.md](./ip-safe-design.md) · [art-direction-bible.md](./art-direction-bible.md) · [islands-ui-style-guide.md](./islands-ui-style-guide.md)
 
 ---
 
@@ -12,13 +12,16 @@ Before an island merges to `main` or ships in a content pack:
 
 | Deliverable | Path | Done when |
 |-------------|------|-----------|
+| **Story Circle** | `docs/islands/<island-id>/story-circle.md` | All 8 Harmon beats filled; Story Bible completeness gate checked |
 | **Layout map** | `docs/islands/<island-id>/layout-map.md` | Areas, gates, landmarks, wayfinding signposts, and topology signed off |
 | **Quest pacing chart** | `docs/islands/<island-id>/quest-pacing-chart.md` | Teach beats, objectives, minigames, gates, and session timing signed off |
 | **Content JSON** | `src/islands/content/<island-id>.islands.json` | Matches layout map IDs; `provenance` filled per IP-safe workflow |
 
 Copy templates from [`docs/islands/_template/`](./islands/_template/).
 
-**Reference implementation:** [Coincraft Cove](./islands/coincraft-cove/layout-map.md)
+**Push-back law:** If content cannot name its Story Bible beat and Return/Change, do not ship — reframe or cut. See [story-bible.md](./story-bible.md).
+
+**Reference implementation:** [Coincraft Cove](./islands/coincraft-cove/layout-map.md) · [story-circle](./islands/coincraft-cove/story-circle.md)
 
 ---
 

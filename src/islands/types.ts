@@ -229,6 +229,11 @@ export type IslandSaveV1 = {
   /** Harbor Haven purchases — carpet polish, plaza passes, owned pets */
   harborShop?: import("./harborShop").HarborShopState;
   /**
+   * Castle Grounds guided first hour (Story Bible).
+   * Soft coach after carpet boot — one verb at a time.
+   */
+  hubGuidedIntro?: import("./story/storyBible").HubGuidedIntroState;
+  /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.
    */

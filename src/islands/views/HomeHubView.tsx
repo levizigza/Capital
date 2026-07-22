@@ -43,6 +43,13 @@ import {
 import { PARTY_ITEMS } from "../partyItems";
 import type { PartyItemId } from "../partyItems";
 import { toast } from "sonner";
+import {
+  HARBOR_KEEPER_MASCOT_ID,
+  getHubGuidedStep,
+  isHubGuidedComplete,
+  type HubGuidedEvent,
+  type HubGuidedIntroState,
+} from "../story/hubGuidedIntro";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -63,6 +70,8 @@ export type HomeHubViewProps = {
   onSaveCharacter: (c: CapitalCharacter) => void;
   /** Spend coins + mutate harbor shop / capsules */
   onHarborPurchase: (purchase: HarborPurchase) => boolean;
+  /** Castle Grounds Story Bible guided events */
+  onHubGuidedEvent: (event: HubGuidedEvent) => void;
   hubModal: HubModal;
   setHubModal: (m: HubModal) => void;
   onExit: () => void;
@@ -82,6 +91,12 @@ export type HomeHubViewProps = {
   highlightOutfitter?: boolean;
 };
 
+function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
+  if (!save.hubGuidedIntro) return null;
+  if (isHubGuidedComplete(save.hubGuidedIntro)) return null;
+  return save.hubGuidedIntro;
+}
+
 export function HomeHubView({
   userProfile,
   save,
@@ -90,6 +105,7 @@ export function HomeHubView({
   character,
   onSaveCharacter,
   onHarborPurchase,
+  onHubGuidedEvent,
   hubModal,
   setHubModal,
   onOpenTravel,
@@ -105,7 +121,10 @@ export function HomeHubView({
   updateLearningProfile,
   highlightOutfitter = false,
 }: HomeHubViewProps) {
-  useInputAction("map", onOpenTravel);
+  useInputAction("map", () => {
+    onHubGuidedEvent("opened_map");
+    onOpenTravel();
+  });
   useInputAction("menu", () => setHubModal("settings"));
 
   const profile = getProfileDef(learningProfile);
@@ -113,6 +132,9 @@ export function HomeHubView({
   const simplified = profile.hudMode === "simplified";
   const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
   const freed = hasHarborFreedom(save);
+  const guided = guidedFromSave(save);
+  const guidedStep = guided ? getHubGuidedStep(guided) : null;
+  const castleMode = !!guidedStep;
 
   const [outfitterStage, setOutfitterStage] = useState<"look" | "pet">("look");
   const [draft, setDraft] = useState<CapitalCharacter>(voyager);
@@ -121,6 +143,9 @@ export function HomeHubView({
   const plazaRoom = isRoomUnlocked(save, "market") ? "market" : "plaza";
 
   const pets = useMemo(() => CHARACTER_COMPANIONS.filter((c) => c.id !== "none"), []);
+
+  const showOutfitterHighlight =
+    highlightOutfitter || guidedStep?.highlight === "outfitter";
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
@@ -145,21 +170,68 @@ export function HomeHubView({
 
   const onHarborHotspot = (id: string) => {
     if (id === "arcade") onOpenArcade();
-    else if (id === "outfitter") openOutfitter();
-    else if (id === "studio") onOpenStudio();
-    else if (id === "travel") onOpenTravel();
-    else if (id === "settings") setHubModal("settings");
+    else if (id === "outfitter") {
+      if (guidedStep?.id === "walk_outfitter" || guidedStep?.id === "become_you") {
+        onHubGuidedEvent("near_outfitter");
+      }
+      openOutfitter();
+    } else if (id === "studio") onOpenStudio();
+    else if (id === "travel") {
+      onHubGuidedEvent("near_dock");
+      onHubGuidedEvent("opened_map");
+      onOpenTravel();
+    } else if (id === "settings") setHubModal("settings");
     else if (id === "editor" && onOpenEditor) onOpenEditor();
-    else if (id === "capsule") setHubModal("capsule");
+    else if (id === "capsule") {
+      onHubGuidedEvent("capsule_visit");
+      setHubModal("capsule");
+    }
   };
 
-  const onNearChange = useCallback((id: string | null, label: string | null) => {
-    setNearStore(id && label ? { id, label } : null);
-  }, []);
+  const onNearChange = useCallback(
+    (id: string | null, label: string | null) => {
+      setNearStore(id && label ? { id, label } : null);
+      if (id === "outfitter") onHubGuidedEvent("near_outfitter");
+      if (id === "travel") onHubGuidedEvent("near_dock");
+      if (id === "capsule") onHubGuidedEvent("capsule_visit");
+    },
+    [onHubGuidedEvent],
+  );
+
+  const onNearNpcHandler = useCallback(
+    (npc: { id: string; name: string; line: string } | null) => {
+      if (!npc) {
+        setNearNpc(null);
+        return;
+      }
+      const isKeeper = npc.id === HARBOR_KEEPER_MASCOT_ID;
+      if (isKeeper && castleMode) {
+        onHubGuidedEvent("talked_guide");
+        setNearNpc({
+          id: npc.id,
+          name: npc.name,
+          line: guidedStep?.guideLine ?? npc.line,
+        });
+        return;
+      }
+      setNearNpc(npc);
+    },
+    [castleMode, guidedStep?.guideLine, onHubGuidedEvent],
+  );
 
   const nearTravel = nearStore?.id === "travel";
   const canResume =
     !!save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID;
+
+  const coachText =
+    nearNpc && !nearStore
+      ? nearNpc.line
+      : guidedStep?.coach ??
+        (showOutfitterHighlight
+          ? "Walk to the Outfitter (front center)"
+          : freed
+            ? "Freedom seal · carpet upgraded"
+            : null);
 
   return (
     <>
@@ -170,9 +242,12 @@ export function HomeHubView({
               character={voyager}
               hotspots={harborHotspots}
               onHotspot={onHarborHotspot}
-              onOpenTravel={onOpenTravel}
+              onOpenTravel={() => {
+                onHubGuidedEvent("opened_map");
+                onOpenTravel();
+              }}
               onNearChange={onNearChange}
-              onNearNpc={setNearNpc}
+              onNearNpc={onNearNpcHandler}
             />
           </div>
         }
@@ -223,11 +298,51 @@ export function HomeHubView({
               >
                 {nearTravel ? `🪄 Board carpet` : `Enter ${nearStore.label}`}
               </GameButton>
+            ) : guidedStep?.id === "practice_optional" ? (
+              <div className="flex w-full flex-col gap-2">
+                {onPlayHarborBoard ? (
+                  <GameButton
+                    variant="primary"
+                    size="lg"
+                    onClick={() => {
+                      onHubGuidedEvent("practice_opened");
+                      onPlayHarborBoard();
+                    }}
+                    className="w-full shadow-lg"
+                  >
+                    Practice board
+                  </GameButton>
+                ) : null}
+                <GameButton
+                  variant="outline"
+                  size="lg"
+                  onClick={() => onHubGuidedEvent("skip_practice")}
+                  className="w-full bg-white/90"
+                >
+                  Skip to Carpet Dock →
+                </GameButton>
+              </div>
+            ) : guidedStep?.highlight === "travel" ? (
+              <GameButton
+                variant="primary"
+                size="lg"
+                onClick={() => {
+                  onHubGuidedEvent("opened_map");
+                  onOpenTravel();
+                }}
+                className="w-full shadow-lg"
+                data-testid="hub-travel-map"
+              >
+                🪄 Archipelago map
+              </GameButton>
             ) : (
               <GameButton
                 variant="primary"
                 size="lg"
-                onClick={onOpenTravel}
+                onClick={() => {
+                  onHubGuidedEvent("opened_map");
+                  onOpenTravel();
+                }}
                 className="w-full shadow-lg"
                 data-testid="hub-travel-map"
               >
@@ -235,11 +350,13 @@ export function HomeHubView({
               </GameButton>
             )}
             <p className="text-[11px] font-semibold tracking-wide text-white/75">
-              {nearStore
-                ? "E enter · WASD walk"
-                : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
+              {castleMode
+                ? `🐷 Piggy Penny guides you · ${guidedStep?.verb}`
+                : nearStore
+                  ? "E enter · WASD walk"
+                  : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
             </p>
-            {(canResume || onPlayHarborBoard) && !nearStore ? (
+            {(canResume || onPlayHarborBoard) && !nearStore && !castleMode ? (
               <div className="flex flex-wrap items-center justify-center gap-2">
                 {canResume ? (
                   <GameButton variant="ghost" size="sm" onClick={onResume} className="text-white/85">
@@ -264,20 +381,26 @@ export function HomeHubView({
         {/* Pass-through stage — harbor canvas must receive clicks */}
         <div
           data-hud-pass
-          className="flex h-full min-h-0 flex-col items-center justify-start pt-1"
+          className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1"
         >
-          {nearNpc && !nearStore ? (
+          {castleMode ? (
+            <div
+              className="pointer-events-none max-w-md rounded-2xl bg-[#0c4a6e]/90 px-4 py-2 text-center shadow-lg"
+              data-testid="castle-grounds-coach"
+              data-guided-step={guidedStep?.id}
+            >
+              <div className="text-[10px] font-bold uppercase tracking-wide text-sky-200/90">
+                Harbor Haven · {guidedStep?.verb}
+              </div>
+              <div className="text-sm font-semibold text-white">{guidedStep?.coach}</div>
+            </div>
+          ) : null}
+          {coachText && (!castleMode || nearNpc) ? (
             <div className="pointer-events-none max-w-sm rounded-2xl bg-black/70 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
-              <div className="text-[10px] uppercase tracking-wide text-white/70">{nearNpc.name}</div>
-              {nearNpc.line}
-            </div>
-          ) : highlightOutfitter ? (
-            <div className="rounded-full bg-amber-500/90 px-4 py-1.5 text-sm font-bold text-[#16283b] shadow-lg">
-              Walk to the Outfitter (front center)
-            </div>
-          ) : freed ? (
-            <div className="rounded-full bg-emerald-600/80 px-3 py-1 text-[11px] font-bold text-white">
-              Freedom seal · carpet upgraded
+              {nearNpc && !nearStore ? (
+                <div className="text-[10px] uppercase tracking-wide text-white/70">{nearNpc.name}</div>
+              ) : null}
+              {nearNpc && !nearStore ? nearNpc.line : coachText}
             </div>
           ) : null}
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
@@ -507,6 +630,19 @@ export function HomeHubView({
             <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
               Back to plaza
             </GameButton>
+            {guidedStep?.id === "tiny_spend" ? (
+              <GameButton
+                variant="ghost"
+                className="w-full text-sm"
+                onClick={() => {
+                  onHubGuidedEvent("capsule_visit");
+                  setHubModal(null);
+                  toast.message("Peek complete — coins can buy help later!");
+                }}
+              >
+                I’ve seen enough →
+              </GameButton>
+            ) : null}
           </div>
         ) : null}
 

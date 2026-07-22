@@ -97,6 +97,11 @@ import {
   applyPlazaPass,
   applyCompanionPurchase,
 } from "./harborShop";
+import {
+  advanceHubGuided,
+  createDefaultHubGuidedIntro,
+  isHubGuidedComplete,
+} from "./story/hubGuidedIntro";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -274,7 +279,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const saveCharacter = useCallback(
     (character: CapitalCharacter) => {
-      updateSave((prev) => ({ ...prev, character }));
+      updateSave((prev) => {
+        const guided = prev.hubGuidedIntro ?? createDefaultHubGuidedIntro();
+        return {
+          ...prev,
+          character,
+          hubGuidedIntro: advanceHubGuided(guided, "saved_outfitter"),
+        };
+      });
       if (character.name) {
         setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev));
       }
@@ -293,16 +305,35 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       });
       if (!charged) return false;
       updateSave((prev) => {
-        if (purchase.kind === "capsule") return applyCapsulePurchase(prev, purchase.itemId);
-        if (purchase.kind === "carpet") return applyCarpetPolish(prev, purchase.tierId);
-        if (purchase.kind === "plaza_pass") return applyPlazaPass(prev, purchase.room);
-        if (purchase.kind === "companion") return applyCompanionPurchase(prev, purchase.companionId);
-        return prev;
+        let next = prev;
+        if (purchase.kind === "capsule") next = applyCapsulePurchase(prev, purchase.itemId);
+        else if (purchase.kind === "carpet") next = applyCarpetPolish(prev, purchase.tierId);
+        else if (purchase.kind === "plaza_pass") next = applyPlazaPass(prev, purchase.room);
+        else if (purchase.kind === "companion") next = applyCompanionPurchase(prev, purchase.companionId);
+        const guided = next.hubGuidedIntro ?? createDefaultHubGuidedIntro();
+        return {
+          ...next,
+          hubGuidedIntro:
+            purchase.kind === "capsule"
+              ? advanceHubGuided(guided, "capsule_bought")
+              : guided,
+        };
       });
       void analytics.track("harbor_purchase", { kind: purchase.kind, price: purchase.price });
       return true;
     },
     [setUserProfile, updateSave],
+  );
+
+  const onHubGuidedEvent = useCallback(
+    (event: Parameters<typeof advanceHubGuided>[1]) => {
+      updateSave((prev) => {
+        if (isHubGuidedComplete(prev.hubGuidedIntro)) return prev;
+        const guided = prev.hubGuidedIntro ?? createDefaultHubGuidedIntro();
+        return { ...prev, hubGuidedIntro: advanceHubGuided(guided, event) };
+      });
+    },
+    [updateSave],
   );
 
   const enterIsland = useCallback(
@@ -352,11 +383,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ...prev,
       onboardingComplete: true,
       character: prev.character ?? { ...BASE_VOYAGER },
+      hubGuidedIntro: prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
     }));
     void analytics.track("onboarding_completed", {});
-    // Drop onto the tutorial party board (Coincraft Cove / Harbor Haven).
-    void enterIsland(HUB_ISLAND_ID);
-  }, [updateSave, enterIsland]);
+    // After card onboarding, still run Castle Grounds verbs in 3D Harbor — not straight to board.
+    setActiveIslandId(HUB_ISLAND_ID);
+    setView("home");
+  }, [updateSave]);
 
   // Carpet opening lands you on Harbor Haven plaza (3D walk) — not the party board yet.
   useEffect(() => {
@@ -370,6 +403,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
       currentIslandId: HUB_ISLAND_ID,
       currentAreaId: defaultArea ?? prev.currentAreaId,
+      // Castle Grounds guided lap — carpet magic stays; teaching starts here.
+      hubGuidedIntro: prev.hubGuidedIntro?.step
+        ? prev.hubGuidedIntro
+        : createDefaultHubGuidedIntro(),
       discovered: {
         ...prev.discovered,
         islands: uniq([...prev.discovered.islands, HUB_ISLAND_ID]),
@@ -1313,6 +1350,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             character={save.character}
             onSaveCharacter={saveCharacter}
             onHarborPurchase={onHarborPurchase}
+            onHubGuidedEvent={onHubGuidedEvent}
             hubModal={hubModal}
             setHubModal={setHubModal}
             onExit={handleExit}

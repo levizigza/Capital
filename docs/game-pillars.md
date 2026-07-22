@@ -3,6 +3,8 @@
 **Product:** Adventure-first financial literacy game (Islands mode) inside FinanceQuest Pro.  
 **North star:** Players feel like explorers first and students second — money skills stick because choices matter in a world they care about.
 
+**Mythology:** The whole journey *is* the story — see [story-bible.md](./story-bible.md) (Harmon Story Circle + Hero’s Journey). Harbor Haven = Castle Grounds; every island is a full circle chapter. Expand inside that cosmos; do not invent a second one.
+
 ---
 
 ## Target customers
