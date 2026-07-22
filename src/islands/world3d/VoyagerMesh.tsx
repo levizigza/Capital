@@ -12,8 +12,8 @@ import { EXTENDED_MASCOT_FORMS, MascotBody } from "./MascotBody";
 
 type Props = {
   character?: CapitalCharacter | null;
-  /** seated on carpet vs walking */
-  pose?: "stand" | "sit" | "run";
+  /** seated on carpet vs walking / emotes */
+  pose?: "stand" | "sit" | "run" | "wave" | "talk" | "nod" | "cheer" | "point";
   scale?: number;
   /** Override primary / accent for NPCs */
   coatColor?: string;
@@ -86,7 +86,11 @@ export function VoyagerMesh({
       armL.current.rotation.x = -swing * 0.75;
       armR.current.rotation.x = swing * 0.75;
       if (hip.current) hip.current.position.y = Math.abs(Math.sin(t * 10)) * 0.04;
-      if (group.current) group.current.position.y = Math.abs(Math.sin(t * 10)) * 0.03;
+      if (group.current) {
+        group.current.position.y = Math.abs(Math.sin(t * 10)) * 0.03;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
     } else if (pose === "sit") {
       if (legL.current && legR.current) {
         legL.current.rotation.x = -1.15;
@@ -96,7 +100,66 @@ export function VoyagerMesh({
         armL.current.rotation.x = -0.35;
         armR.current.rotation.x = -0.35;
       }
-      if (group.current) group.current.position.y = 0.12;
+      if (group.current) {
+        group.current.position.y = 0.12;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
+    } else if (pose === "wave" && armR.current && armL.current) {
+      // Big hello — right arm up, oscillating (what coach text may claim)
+      armR.current.rotation.x = -2.2;
+      armR.current.rotation.z = Math.sin(t * 8) * 0.55;
+      armL.current.rotation.x = 0.15;
+      armL.current.rotation.z = 0;
+      if (legL.current && legR.current) {
+        legL.current.rotation.x = 0;
+        legR.current.rotation.x = 0;
+      }
+      if (group.current) {
+        group.current.position.y = Math.abs(Math.sin(t * 4)) * 0.04;
+        group.current.rotation.z = Math.sin(t * 4) * 0.04;
+        group.current.rotation.x = 0;
+      }
+    } else if (pose === "talk" && armR.current && armL.current) {
+      armR.current.rotation.x = -0.55 + Math.sin(t * 6) * 0.25;
+      armL.current.rotation.x = -0.35 + Math.sin(t * 6 + 1) * 0.15;
+      armR.current.rotation.z = 0.15;
+      armL.current.rotation.z = -0.1;
+      if (group.current) {
+        group.current.position.y = Math.sin(t * 3) * 0.02;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
+    } else if (pose === "nod" && group.current) {
+      if (armL.current && armR.current) {
+        armL.current.rotation.x = 0.1;
+        armR.current.rotation.x = 0.1;
+        armL.current.rotation.z = 0;
+        armR.current.rotation.z = 0;
+      }
+      group.current.rotation.x = Math.sin(t * 3.2) * 0.22;
+      group.current.rotation.z = 0;
+      group.current.position.y = 0.02;
+    } else if (pose === "cheer" && armL.current && armR.current) {
+      armL.current.rotation.x = -2.4;
+      armR.current.rotation.x = -2.4;
+      armL.current.rotation.z = -0.35 + Math.sin(t * 7) * 0.1;
+      armR.current.rotation.z = 0.35 + Math.sin(t * 7 + 0.5) * 0.1;
+      if (group.current) {
+        group.current.position.y = Math.abs(Math.sin(t * 6)) * 0.08;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
+    } else if (pose === "point" && armR.current && armL.current) {
+      armR.current.rotation.x = -1.35;
+      armR.current.rotation.z = 0.45;
+      armL.current.rotation.x = 0.2;
+      armL.current.rotation.z = 0;
+      if (group.current) {
+        group.current.position.y = Math.sin(t * 2) * 0.02;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
     } else {
       if (legL.current && legR.current) {
         legL.current.rotation.x = 0;
@@ -105,8 +168,14 @@ export function VoyagerMesh({
       if (armL.current && armR.current) {
         armL.current.rotation.x = Math.sin(t * 1.4) * 0.05;
         armR.current.rotation.x = -Math.sin(t * 1.4) * 0.05;
+        armL.current.rotation.z = 0;
+        armR.current.rotation.z = 0;
       }
-      if (group.current) group.current.position.y = Math.sin(t * 2) * 0.02;
+      if (group.current) {
+        group.current.position.y = Math.sin(t * 2) * 0.02;
+        group.current.rotation.x = 0;
+        group.current.rotation.z = 0;
+      }
       if (hip.current) hip.current.position.y = 0;
     }
   });
@@ -424,7 +493,7 @@ export function HarborNpcMesh({
   coat?: string;
   pants?: string;
   skin?: string;
-  pose?: "stand" | "run";
+  pose?: "stand" | "run" | "wave" | "talk" | "nod" | "cheer" | "point";
   form?: MoneyForm;
   character?: CapitalCharacter | null;
   glyph?: string;

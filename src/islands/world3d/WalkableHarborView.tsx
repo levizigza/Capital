@@ -22,6 +22,8 @@ import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { IslandTitle } from "./IslandTitle";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
+import type { NpcEmote } from "../story/dialogueActionSync";
+import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 
 export type HarborHotspot = {
   id: string;
@@ -42,6 +44,12 @@ type Props = {
   /** Castle Grounds guide — Coin Bag hops toward this highlight */
   guideHighlight?: "outfitter" | "capsule" | "travel" | "practice" | "guide";
   guideTip?: string;
+  /** Piggy body language — must match coach/dialogue claims */
+  keeperEmote?: NpcEmote;
+  /** Speech bubble over Piggy (3D) — same words as HUD when near */
+  keeperSpeech?: string | null;
+  /** Hotspot that pulses so "go here" is visible */
+  pulseHotspotId?: string | null;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -181,6 +189,29 @@ function Player({
   );
 }
 
+function HotspotPulse({ active }: { active: boolean }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (!ref.current || !active) return;
+    const s = 1.15 + Math.sin(clock.elapsedTime * 4) * 0.12;
+    ref.current.scale.set(s, 1, s);
+    const mat = ref.current.material as THREE.MeshStandardMaterial;
+    mat.opacity = 0.35 + Math.sin(clock.elapsedTime * 4) * 0.15;
+  });
+  if (!active) return null;
+  return (
+    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 1.1]}>
+      <ringGeometry args={[0.85, 1.25, 28]} />
+      <meshStandardMaterial color="#fbbf24" transparent opacity={0.45} depthWrite={false} />
+    </mesh>
+  );
+}
+
+function emoteToPose(emote: NpcEmote): "stand" | "wave" | "talk" | "nod" | "cheer" | "point" {
+  if (emote === "idle") return "stand";
+  return emote;
+}
+
 function Fountain() {
   return (
     <group>
@@ -258,6 +289,10 @@ function PlazaScene({
   hotspots,
   onHotspot,
   locals,
+  keeperEmote = "idle",
+  keeperSpeech,
+  pulseHotspotId,
+  nearNpcId,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -273,6 +308,10 @@ function PlazaScene({
     line: string;
     name: string;
   }[];
+  keeperEmote?: NpcEmote;
+  keeperSpeech?: string | null;
+  pulseHotspotId?: string | null;
+  nearNpcId?: string | null;
 }) {
   // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
@@ -455,8 +494,10 @@ function PlazaScene({
       {hotspots.map((h, idx) => {
         // Face the door toward the plaza center so entrances are readable.
         const yaw = Math.atan2(-h.position[0], -h.position[2]);
+        const pulsing = pulseHotspotId === h.id;
         return (
           <group key={h.id} position={h.position}>
+            <HotspotPulse active={pulsing} />
             <group
               rotation={[0, yaw, 0]}
               onClick={(e) => {
@@ -472,7 +513,7 @@ function PlazaScene({
             >
               <HarborBuilding
                 label={h.label}
-                accent={LOOK.accent}
+                accent={pulsing ? "#fbbf24" : LOOK.accent}
                 body={buildingColors[idx % buildingColors.length]}
               />
             </group>
@@ -480,41 +521,78 @@ function PlazaScene({
             <Billboard follow position={[0, 3.05, 0]}>
               <Text
                 fontSize={0.28}
-                color="#16283b"
+                color={pulsing ? "#92400e" : "#16283b"}
                 anchorX="center"
                 anchorY="middle"
                 outlineWidth={0.018}
                 outlineColor="#ffffff"
               >
-                {`${h.icon} ${h.label}`}
+                {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
               </Text>
             </Billboard>
           </group>
         );
       })}
 
-      {locals.map((npc) => (
-        <group key={npc.mascotId} position={npc.pos} rotation={[0, npc.yaw, 0]}>
-          <HarborNpcMesh
-            coat={npc.coat}
-            form={npc.form}
-            glyph={npc.glyph}
-            character={npc.look}
-          />
-          <Billboard position={[0, 2.05, 0]} follow>
-            <Text
-              fontSize={0.22}
-              color="#ffffff"
-              anchorX="center"
-              anchorY="middle"
-              outlineWidth={0.03}
-              outlineColor="#0f172a"
-            >
-              {npc.mascot.name}
-            </Text>
-          </Billboard>
-        </group>
-      ))}
+      {locals.map((npc) => {
+        const isKeeper = npc.mascotId === HARBOR_KEEPER_MASCOT_ID;
+        const pose = isKeeper ? emoteToPose(keeperEmote) : "stand";
+        const bubble = !isKeeper
+          ? null
+          : nearNpcId === npc.mascotId && keeperSpeech
+            ? keeperSpeech
+            : keeperEmote === "wave"
+              ? "👋 Hi! Come talk!"
+              : keeperEmote === "cheer"
+                ? "🎉 You got this!"
+                : keeperEmote === "nod"
+                  ? "🙂 *nod nod*"
+                  : keeperEmote === "point"
+                    ? "👉 That way!"
+                    : keeperEmote === "talk" && keeperSpeech
+                      ? keeperSpeech
+                      : null;
+        return (
+          <group key={npc.mascotId} position={npc.pos} rotation={[0, npc.yaw, 0]}>
+            {isKeeper && pulseHotspotId === "guide" ? <HotspotPulse active /> : null}
+            <HarborNpcMesh
+              coat={npc.coat}
+              form={npc.form}
+              glyph={npc.glyph}
+              character={npc.look}
+              pose={pose}
+            />
+            <Billboard position={[0, 2.05, 0]} follow>
+              <Text
+                fontSize={0.22}
+                color="#ffffff"
+                anchorX="center"
+                anchorY="middle"
+                outlineWidth={0.03}
+                outlineColor="#0f172a"
+              >
+                {npc.mascot.name}
+              </Text>
+            </Billboard>
+            {bubble ? (
+              <Billboard position={[0, 2.55, 0]} follow>
+                <Text
+                  fontSize={0.16}
+                  color="#fef3c7"
+                  anchorX="center"
+                  anchorY="bottom"
+                  outlineWidth={0.022}
+                  outlineColor="#0f172a"
+                  maxWidth={3.4}
+                  textAlign="center"
+                >
+                  {bubble}
+                </Text>
+              </Billboard>
+            ) : null}
+          </group>
+        );
+      })}
 
       <EraIslandMesh
         look={getEraLook3D("era-1990s")}
@@ -553,8 +631,12 @@ export function WalkableHarborView({
   onNearNpc,
   guideHighlight,
   guideTip,
+  keeperEmote = "idle",
+  keeperSpeech = null,
+  pulseHotspotId = null,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
+  const [nearNpcId, setNearNpcId] = useState<string | null>(null);
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -636,13 +718,24 @@ export function WalkableHarborView({
         }}
       >
         <Suspense fallback={null}>
-          <PlazaScene hotspots={hotspots} onHotspot={onHotspot} locals={locals} />
+          <PlazaScene
+            hotspots={hotspots}
+            onHotspot={onHotspot}
+            locals={locals}
+            keeperEmote={keeperEmote}
+            keeperSpeech={keeperSpeech}
+            pulseHotspotId={pulseHotspotId}
+            nearNpcId={nearNpcId}
+          />
           <Player
             character={character}
             hotspots={hotspots}
             npcPositions={npcPositions}
             onNear={setNear}
-            onNearNpc={(n) => onNearNpc?.(n)}
+            onNearNpc={(n) => {
+              setNearNpcId(n?.id ?? null);
+              onNearNpc?.(n);
+            }}
           />
           {guideTarget ? (
             <MoneyBagGuide

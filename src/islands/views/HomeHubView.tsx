@@ -45,6 +45,7 @@ import {
   type HubGuidedEvent,
   type HubGuidedIntroState,
 } from "../story/hubGuidedIntro";
+import { guidedVisualBeats } from "../story/dialogueActionSync";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -137,6 +138,19 @@ export function HomeHubView({
   const [nearNpc, setNearNpc] = useState<{ id: string; name: string; line: string } | null>(null);
   const plazaRoom = isRoomUnlocked(save, "market") ? "market" : "plaza";
 
+  const visualBeats = guidedVisualBeats(guidedStep?.id);
+  const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
+  /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
+  const keeperEmote =
+    nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
+  const keeperSpeech = castleMode ? visualBeats.keeperBubbleWhenNear : null;
+  const pulseHotspotId =
+    visualBeats.pulseHotspot === "guide"
+      ? null
+      : visualBeats.pulseHotspot === "arcade"
+        ? "arcade"
+        : (visualBeats.pulseHotspot ?? null);
+
   const showOutfitterHighlight =
     highlightOutfitter || guidedStep?.highlight === "outfitter";
 
@@ -203,13 +217,13 @@ export function HomeHubView({
         setNearNpc({
           id: npc.id,
           name: npc.name,
-          line: guidedStep?.guideLine ?? npc.line,
+          line: visualBeats.keeperBubbleWhenNear || guidedStep?.guideLine || npc.line,
         });
         return;
       }
       setNearNpc(npc);
     },
-    [castleMode, guidedStep?.guideLine, onHubGuidedEvent],
+    [castleMode, guidedStep?.guideLine, onHubGuidedEvent, visualBeats.keeperBubbleWhenNear],
   );
 
   const nearTravel = nearStore?.id === "travel";
@@ -245,19 +259,10 @@ export function HomeHubView({
                 onNearChange={onNearChange}
                 onNearNpc={onNearNpcHandler}
                 guideHighlight={guidedStep?.highlight}
-                guideTip={
-                  guidedStep?.highlight === "guide"
-                    ? "Talk to Piggy!"
-                    : guidedStep?.highlight === "outfitter"
-                      ? "Outfitter this way!"
-                      : guidedStep?.highlight === "capsule"
-                        ? "Capsule Stall!"
-                        : guidedStep?.highlight === "travel"
-                          ? "Carpet Dock!"
-                          : guidedStep?.highlight === "practice"
-                            ? "Practice (or skip)!"
-                            : undefined
-                }
+                guideTip={castleMode ? visualBeats.bagTip : undefined}
+                keeperEmote={castleMode ? keeperEmote : "idle"}
+                keeperSpeech={keeperSpeech}
+                pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}
               />
             )}
           </div>
