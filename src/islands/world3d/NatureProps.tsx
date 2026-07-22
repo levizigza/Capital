@@ -208,7 +208,7 @@ export function NatureProps({ props, look, useKenney = false }: Props) {
   );
 }
 
-/** Wooden pier stub for Harbor / near islands. */
+/** Wooden pier — dock hardware language (cleats, bolts, metal rails). */
 export function WoodenPier({
   position = [0, 0, 3.2],
   rotationY = 0,
@@ -218,31 +218,59 @@ export function WoodenPier({
 }) {
   const plank = "#8b5a2b";
   const dark = "#5c3a1e";
+  const steel = "#6b7280";
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
-      <mesh castShadow receiveShadow position={[0, 0.12, 1.2]}>
-        <boxGeometry args={[1.8, 0.12, 3.2]} />
-        <meshStandardMaterial color={plank} roughness={0.85} flatShading />
-      </mesh>
-      {[-0.7, 0.7].map((x) =>
-        [0.2, 1.2, 2.2].map((z) => (
-          <mesh key={`${x}-${z}`} castShadow position={[x, -0.25, z]}>
-            <cylinderGeometry args={[0.08, 0.1, 0.7, 6]} />
-            <meshStandardMaterial color={dark} roughness={0.9} flatShading />
-          </mesh>
+      {/* Deck planks */}
+      {[-0.6, -0.2, 0.2, 0.6].map((x, i) => (
+        <mesh key={`plank-${i}`} castShadow receiveShadow position={[x, 0.12, 1.4]}>
+          <boxGeometry args={[0.35, 0.1, 3.6]} />
+          <meshStandardMaterial color={i % 2 ? plank : "#7a4e24"} roughness={0.88} flatShading />
+        </mesh>
+      ))}
+      {/* Pilings */}
+      {[-0.75, 0.75].map((x) =>
+        [0.15, 1.25, 2.45].map((z) => (
+          <group key={`${x}-${z}`}>
+            <mesh castShadow position={[x, -0.3, z]}>
+              <cylinderGeometry args={[0.09, 0.11, 0.85, 8]} />
+              <meshStandardMaterial color={dark} roughness={0.92} flatShading />
+            </mesh>
+            {/* Bolt collar */}
+            <mesh position={[x, 0.12, z]}>
+              <cylinderGeometry args={[0.12, 0.12, 0.05, 8]} />
+              <meshStandardMaterial color={steel} roughness={0.35} metalness={0.7} />
+            </mesh>
+          </group>
         )),
       )}
-      {[-0.85, 0.85].map((x) => (
-        <mesh key={`rail-${x}`} position={[x, 0.45, 1.2]}>
-          <boxGeometry args={[0.06, 0.08, 3.0]} />
-          <meshStandardMaterial color={dark} roughness={0.85} />
+      {/* Metal handrails */}
+      {[-0.95, 0.95].map((x) => (
+        <group key={`rail-${x}`}>
+          <mesh position={[x, 0.55, 1.4]}>
+            <cylinderGeometry args={[0.035, 0.035, 3.2, 8]} />
+            <meshStandardMaterial color={steel} roughness={0.3} metalness={0.75} />
+          </mesh>
+          {[0.3, 1.4, 2.5].map((z) => (
+            <mesh key={z} position={[x, 0.35, z]}>
+              <cylinderGeometry args={[0.03, 0.03, 0.45, 6]} />
+              <meshStandardMaterial color={steel} roughness={0.35} metalness={0.7} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+      {/* Dock cleats */}
+      {[-0.45, 0.45].map((x) => (
+        <mesh key={`cleat-${x}`} castShadow position={[x, 0.22, 2.9]}>
+          <boxGeometry args={[0.28, 0.1, 0.12]} />
+          <meshStandardMaterial color={steel} roughness={0.4} metalness={0.65} />
         </mesh>
       ))}
     </group>
   );
 }
 
-/** Stylized shop / stall building — original Capital architecture. */
+/** Stylized shop / stall — Capital architecture with hardware accents. */
 export function HarborBuilding({
   label: _label,
   accent = "#f4a629",
@@ -252,31 +280,75 @@ export function HarborBuilding({
   accent?: string;
   body?: string;
 }) {
+  const steel = "#6b7280";
   return (
     <group>
-      <mesh castShadow receiveShadow position={[0, 0.7, 0]}>
-        <boxGeometry args={[2.2, 1.4, 1.8]} />
-        <meshStandardMaterial color={body} roughness={0.7} flatShading />
+      {/* Foundation plinth */}
+      <mesh castShadow receiveShadow position={[0, 0.08, 0]}>
+        <boxGeometry args={[2.4, 0.16, 2.0]} />
+        <meshStandardMaterial color="#a8a29e" roughness={0.9} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 1.55, 0.55]} rotation={[-0.35, 0, 0]}>
-        <boxGeometry args={[2.4, 0.08, 1.0]} />
-        <meshStandardMaterial color={accent} roughness={0.55} />
+      <mesh castShadow receiveShadow position={[0, 0.85, 0]}>
+        <boxGeometry args={[2.2, 1.5, 1.8]} />
+        <meshStandardMaterial color={body} roughness={0.68} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 1.85, 0]} rotation={[0, Math.PI / 4, 0]}>
-        <coneGeometry args={[1.7, 0.9, 4]} />
-        <meshStandardMaterial color={accent} roughness={0.6} flatShading />
+      {/* Corner brackets */}
+      {[
+        [-1.05, 0.9],
+        [1.05, 0.9],
+        [-1.05, -0.85],
+        [1.05, -0.85],
+      ].map(([x, z], i) => (
+        <mesh key={i} position={[x, 0.35, z]}>
+          <boxGeometry args={[0.08, 0.35, 0.08]} />
+          <meshStandardMaterial color={steel} roughness={0.4} metalness={0.6} />
+        </mesh>
+      ))}
+      {/* Awning */}
+      <mesh castShadow position={[0, 1.7, 0.55]} rotation={[-0.35, 0, 0]}>
+        <boxGeometry args={[2.45, 0.07, 1.05]} />
+        <meshStandardMaterial color={accent} roughness={0.5} />
       </mesh>
-      <mesh position={[0, 0.45, 0.92]}>
-        <boxGeometry args={[0.55, 0.9, 0.08]} />
+      {/* Roof */}
+      <mesh castShadow position={[0, 2.05, 0]} rotation={[0, Math.PI / 4, 0]}>
+        <coneGeometry args={[1.75, 0.95, 4]} />
+        <meshStandardMaterial color={accent} roughness={0.55} flatShading />
+      </mesh>
+      {/* Chimney vent */}
+      <mesh castShadow position={[0.55, 2.35, -0.2]}>
+        <cylinderGeometry args={[0.1, 0.12, 0.45, 8]} />
+        <meshStandardMaterial color={steel} roughness={0.45} metalness={0.55} />
+      </mesh>
+      {/* Door + hardware */}
+      <mesh position={[0, 0.55, 0.92]}>
+        <boxGeometry args={[0.55, 0.95, 0.08]} />
         <meshStandardMaterial color="#5c3a1e" roughness={0.8} />
       </mesh>
-      <mesh position={[-0.7, 0.85, 0.92]}>
-        <boxGeometry args={[0.4, 0.35, 0.06]} />
-        <meshStandardMaterial color="#7dd3fc" roughness={0.3} metalness={0.2} />
+      <mesh position={[0.18, 0.55, 0.98]}>
+        <sphereGeometry args={[0.04, 8, 6]} />
+        <meshStandardMaterial color={accent} roughness={0.3} metalness={0.5} />
       </mesh>
-      <mesh position={[0, 1.25, 1.05]}>
-        <boxGeometry args={[1.2, 0.28, 0.05]} />
+      {/* Window with frame */}
+      <mesh position={[-0.7, 1.0, 0.92]}>
+        <boxGeometry args={[0.48, 0.42, 0.06]} />
+        <meshStandardMaterial color="#16283b" roughness={0.6} />
+      </mesh>
+      <mesh position={[-0.7, 1.0, 0.95]}>
+        <boxGeometry args={[0.38, 0.32, 0.04]} />
+        <meshStandardMaterial color="#7dd3fc" roughness={0.25} metalness={0.25} />
+      </mesh>
+      {/* Sign board */}
+      <mesh position={[0, 1.45, 1.08]}>
+        <boxGeometry args={[1.35, 0.32, 0.06]} />
         <meshStandardMaterial color="#16283b" />
+      </mesh>
+      <mesh position={[-0.55, 1.45, 1.12]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.08, 6]} />
+        <meshStandardMaterial color={steel} metalness={0.7} roughness={0.35} />
+      </mesh>
+      <mesh position={[0.55, 1.45, 1.12]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.08, 6]} />
+        <meshStandardMaterial color={steel} metalness={0.7} roughness={0.35} />
       </mesh>
     </group>
   );

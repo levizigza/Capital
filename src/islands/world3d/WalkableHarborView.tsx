@@ -4,13 +4,14 @@ import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
-import { VoyagerMesh } from "./VoyagerMesh";
+import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
 import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { HarborBuilding, WoodenPier, NatureProps } from "./NatureProps";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
+import { IslandTitle } from "./IslandTitle";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 
 export type HarborHotspot = {
@@ -142,7 +143,6 @@ function Fountain() {
         <sphereGeometry args={[0.45, 12, 10]} />
         <meshStandardMaterial color="#f4a629" roughness={0.35} metalness={0.35} />
       </mesh>
-      {/* water bowl */}
       <mesh position={[0, 0.52, 0]}>
         <cylinderGeometry args={[1.35, 1.35, 0.12, 20]} />
         <meshStandardMaterial color="#38bdf8" roughness={0.2} metalness={0.35} transparent opacity={0.75} />
@@ -152,28 +152,39 @@ function Fountain() {
 }
 
 function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
+  // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
-    // Reposition a subset around the plaza ring
-    return t.props.slice(0, 22).map((p, i) => {
-      const ang = (i / 22) * Math.PI * 2;
-      const r = 11 + (i % 3) * 1.4;
-      return {
-        ...p,
-        position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number],
-        scale: p.scale * 1.15,
-      };
-    });
+    return t.props
+      .slice(0, 28)
+      .map((p, i) => {
+        const ang = (i / 28) * Math.PI * 2;
+        const r = 12.2 + (i % 3) * 1.1;
+        return {
+          ...p,
+          // Prefer shorter bushes/grass near the inner edge
+          kind: r < 12.6 && (p.kind === "palm" || p.kind === "tree") ? ("bush" as const) : p.kind,
+          position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number],
+          scale: (p.kind === "palm" || p.kind === "tree" ? 0.85 : 1) * p.scale,
+        };
+      })
+      .filter((p) => Math.hypot(p.position[0], p.position[2]) >= 11.5);
   }, []);
 
   const buildingColors = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4"];
+
+  const locals = [
+    { pos: [4.8, 0, -4.0] as [number, number, number], coat: "#fb7185", pants: "#1e3a5f", skin: "#f5d0a9" },
+    { pos: [-5.4, 0, 2.8] as [number, number, number], coat: "#38bdf8", pants: "#334155", skin: "#e8b896" },
+    { pos: [3.8, 0, 6.0] as [number, number, number], coat: "#34d399", pants: "#1e3a5f", skin: "#f0c9a0" },
+    { pos: [-3.2, 0, -6.6] as [number, number, number], coat: "#f4a629", pants: "#3f2a1a", skin: "#d9a57a" },
+  ];
 
   return (
     <>
       <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={1024} />
       <OceanWater color={LOOK.sea} shading={LOOK.shading} size={400} calm />
 
-      {/* Irregular grassy land shelf */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
         <circleGeometry args={[18, 56]} />
         <meshStandardMaterial color={LOOK.land} roughness={0.92} flatShading />
@@ -182,7 +193,6 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         <ringGeometry args={[14, 18.5, 56]} />
         <meshStandardMaterial color={LOOK.shore} roughness={0.9} />
       </mesh>
-      {/* Soft hills at the rim (not under walkable plaza) */}
       {[
         [12, 0.4, -10],
         [-13, 0.55, -8],
@@ -196,7 +206,6 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         </mesh>
       ))}
 
-      {/* Stone plaza disc (walkable) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} receiveShadow>
         <circleGeometry args={[10.5, 48]} />
         <meshStandardMaterial color="#e7e5e4" roughness={0.88} flatShading />
@@ -205,7 +214,6 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         <ringGeometry args={[5.5, 8.2, 48]} />
         <meshStandardMaterial color={LOOK.shore} roughness={0.9} />
       </mesh>
-      {/* cobble spokes */}
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <mesh
           key={i}
@@ -219,20 +227,17 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
       ))}
 
       <Fountain />
-      <Text
-        position={[0, 2.55, 0]}
-        fontSize={0.5}
-        color="#16283b"
-        anchorX="center"
-        outlineWidth={0.03}
-        outlineColor="#fef3c7"
-      >
-        Harbor Haven
-      </Text>
+
+      {/* High billboard title — clear of canopy */}
+      <IslandTitle
+        title="Harbor Haven"
+        subtitle="Your first island · Fortune Archipelago"
+        height={10.2}
+        accent={LOOK.accent}
+      />
 
       <WoodenPier position={[0, 0.05, 12.5]} />
 
-      {/* Low seawall */}
       {Array.from({ length: 24 }).map((_, i) => {
         const ang = (i / 24) * Math.PI * 2;
         const r = 14.5;
@@ -259,8 +264,8 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
             body={buildingColors[idx % buildingColors.length]}
           />
           <Text
-            position={[0, 2.85, 0]}
-            fontSize={0.32}
+            position={[0, 3.15, 0]}
+            fontSize={0.3}
             color="#16283b"
             anchorX="center"
             outlineWidth={0.02}
@@ -271,29 +276,12 @@ function PlazaScene({ hotspots }: { hotspots: HarborHotspot[] }) {
         </group>
       ))}
 
-      {/* Locals */}
-      {[
-        [4.2, 0, -3.2],
-        [-5.1, 0, 2.4],
-        [3.4, 0, 5.5],
-        [-2.8, 0, -6.2],
-      ].map((pos, i) => (
-        <group key={i} position={pos as [number, number, number]}>
-          <mesh castShadow position={[0, 0.55, 0]}>
-            <capsuleGeometry args={[0.22, 0.45, 4, 8]} />
-            <meshStandardMaterial
-              color={i % 2 === 0 ? "#fb7185" : i === 1 ? "#38bdf8" : "#34d399"}
-              roughness={0.55}
-            />
-          </mesh>
-          <mesh castShadow position={[0, 1.05, 0]}>
-            <sphereGeometry args={[0.18, 12, 10]} />
-            <meshStandardMaterial color="#fde68a" />
-          </mesh>
+      {locals.map((npc, i) => (
+        <group key={i} position={npc.pos} rotation={[0, (i * Math.PI) / 3, 0]}>
+          <HarborNpcMesh coat={npc.coat} pants={npc.pants} skin={npc.skin} />
         </group>
       ))}
 
-      {/* Distant flavor islands */}
       <EraIslandMesh
         look={getEraLook3D("era-1990s")}
         seed="horizon-a"
@@ -354,6 +342,17 @@ export function WalkableHarborView({ character, hotspots, onHotspot, onOpenTrave
           <Player character={character} hotspots={hotspots} onNear={setNear} />
         </Suspense>
       </Canvas>
+
+      {/* Always-on top title — never obscured by 3D foliage */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col items-center bg-gradient-to-b from-black/55 via-black/20 to-transparent px-4 pb-10 pt-4 text-center">
+        <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-100/90">
+          Fortune Archipelago
+        </div>
+        <h1 className="mt-1 font-[Fraunces,Georgia,serif] text-2xl font-black tracking-wide text-white drop-shadow sm:text-3xl">
+          Harbor Haven
+        </h1>
+        <p className="text-xs font-semibold text-white/80">Your first island</p>
+      </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 bg-gradient-to-t from-black/70 to-transparent pb-6 pt-16">
         {near ? (

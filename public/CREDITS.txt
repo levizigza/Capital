@@ -23,10 +23,15 @@ Modifications: Copied a lean OBJ/MTL subset into public/assets/3d/kenney/ for Ca
 3D archipelago (procedural terrain + Kenney trees/rocks). Attribution is appreciated
 but not required by the license.
 
-Poly Haven HDRIs (via @react-three/drei Environment presets)
------------------------------------------------------------
-drei Environment presets may load HDRIs associated with Poly Haven / similar free
-environment maps for image-based lighting. Used for cinematic reflections on water
-and island materials. See https://polyhaven.com/ and @react-three/drei docs.
+Figure & industrial reference (non-asset)
+-----------------------------------------
+Humanoid proportions for Capital Voyager / Harbor locals were refined using
+figure-drawing practice conventions (e.g. tools like Figurosity.com for pose and
+head-count ratios). Dock hardware language (cleats, bolt collars, metal rails)
+is original geometry inspired by industrial fastener catalogs such as McMaster-Carr
+— no third-party CAD files were imported.
+Free 3D marketplaces (e.g. free3d.io / Poly Pizza CC0 packs) informed the
+stylized low-poly direction; Capital ships original procedural meshes plus the
+Kenney Nature Kit subset above.
 
 — End of credits —

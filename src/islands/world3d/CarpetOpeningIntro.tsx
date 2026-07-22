@@ -1,6 +1,5 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import { MoneyCarpet } from "./MoneyCarpet";
@@ -8,6 +7,7 @@ import { EraIslandMesh } from "./EraIslandMesh";
 import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
+import { IslandTitle } from "./IslandTitle";
 import { BASE_VOYAGER } from "../character";
 import {
   hasSeenCapitalIntro,
@@ -91,26 +91,13 @@ function OpeningWorld({ onLanded }: { onLanded: () => void }) {
         showPier
         selected
       />
-      <Text
-        position={[0, 5.6, -6]}
-        fontSize={0.85}
-        color="#16283b"
-        anchorX="center"
-        outlineWidth={0.05}
-        outlineColor="#fef3c7"
-      >
-        Harbor Haven
-      </Text>
-      <Text
-        position={[0, 4.55, -6]}
-        fontSize={0.35}
-        color="#f4a629"
-        anchorX="center"
-        outlineWidth={0.02}
-        outlineColor="#16283b"
-      >
-        Your first island
-      </Text>
+      <IslandTitle
+        title="Harbor Haven"
+        subtitle="Your first island"
+        height={9.8}
+        position={[0, 0, -6]}
+        accent={LOOK.accent}
+      />
 
       <EraIslandMesh
         look={getEraLook3D("era-1980s")}
