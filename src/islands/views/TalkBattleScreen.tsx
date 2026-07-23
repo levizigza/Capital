@@ -11,6 +11,7 @@ import type { CapitalCharacter } from "../character";
 import type { DialogueChoice, DialogueNode } from "../types";
 import type { LearningProfileId } from "../learningProfile";
 import { resolveProfileText } from "../learningProfile";
+import { nextTalkPhase } from "./talkBattleRules";
 
 export type TalkBattleProps = {
   open: boolean;
@@ -64,12 +65,13 @@ export function TalkBattleScreen({
   }, [open]);
 
   const advanceFromListen = useCallback(() => {
-    if (choices.length > 0) {
+    const next = nextTalkPhase(node, "listen");
+    if (next === "choose") {
       setPhase("choose");
       return;
     }
     onContinue();
-  }, [choices.length, onContinue]);
+  }, [node, onContinue]);
 
   useInputAction("cancel", onSkip);
   useInputAction("confirm", () => {

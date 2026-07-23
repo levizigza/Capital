@@ -44,6 +44,8 @@ type Props = {
   /** Soft wayfinder arrows (edge cue + bag point). Off = free roam. */
   guideArrows?: boolean;
   onGuideProject?: (p: import("../views/GuideWayfinder").GuideProjection | null) => void;
+  /** Freeze WASD / Enter while Talk Battle owns the screen */
+  inputFrozen?: boolean;
 };
 
 const SPEED = 8.4;
@@ -57,12 +59,14 @@ function Player({
   hotspots,
   onNear,
   playerPosOut,
+  inputFrozen = false,
 }: {
   character?: CapitalCharacter | null;
   animationStyle?: string;
   hotspots: ShoreHotspot[];
   onNear: (id: string | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
+  inputFrozen?: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
@@ -71,9 +75,12 @@ function Player({
   const vel = useRef(new THREE.Vector3());
   const { camera } = useThree();
   const moving = useRef(false);
+  const frozenRef = useRef(inputFrozen);
+  frozenRef.current = inputFrozen;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (frozenRef.current) return;
       if (e.key === "w" || e.key === "ArrowUp") keys.current.f = true;
       if (e.key === "s" || e.key === "ArrowDown") keys.current.b = true;
       if (e.key === "a" || e.key === "ArrowLeft") keys.current.l = true;
@@ -93,9 +100,29 @@ function Player({
     };
   }, []);
 
+  useEffect(() => {
+    if (inputFrozen) {
+      keys.current = { f: false, b: false, l: false, r: false };
+      moving.current = false;
+    }
+  }, [inputFrozen]);
+
   useFrame((_, dt) => {
     if (!group.current) return;
     const p = group.current.position;
+    if (frozenRef.current) {
+      playerPosOut.current.set(p.x, p.y, p.z);
+      const back = shoreScale(8.2);
+      const camH = shoreScale(4.7);
+      const ideal = new THREE.Vector3(
+        p.x - Math.sin(camYaw.current) * back,
+        camH,
+        p.z - Math.cos(camYaw.current) * back,
+      );
+      camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
+      camera.lookAt(p.x, 1.2, p.z);
+      return;
+    }
     const k = keys.current;
     const turn = (Number(k.l) - Number(k.r)) * 2.2 * dt;
     camYaw.current += turn;
@@ -632,6 +659,7 @@ function ShoreScene({
   playerPosOut,
   guideLookAt,
   guideArrows,
+  inputFrozen = false,
 }: {
   island: IslandDefinition;
   look: EraLook3D;
@@ -645,6 +673,7 @@ function ShoreScene({
   playerPosOut: MutableRefObject<THREE.Vector3>;
   guideLookAt?: [number, number, number] | null;
   guideArrows?: boolean;
+  inputFrozen?: boolean;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const culture = useMemo(() => getIslandCulture(island), [island]);
@@ -810,6 +839,7 @@ function ShoreScene({
         )}
         onNear={onNear}
         playerPosOut={playerPosOut}
+        inputFrozen={inputFrozen}
       />
     </>
   );
@@ -830,6 +860,7 @@ export function WalkableIslandExplore({
   guideLookAt = null,
   guideArrows = true,
   onGuideProject,
+  inputFrozen = false,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
@@ -858,6 +889,7 @@ export function WalkableIslandExplore({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (inputFrozen) return;
       if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) {
         e.preventDefault();
         onHotspot(near);
@@ -865,7 +897,7 @@ export function WalkableIslandExplore({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [near, onHotspot]);
+  }, [near, onHotspot, inputFrozen]);
 
   useEffect(() => {
     const label = hotspots.find((h) => h.id === near)?.label ?? null;
@@ -914,6 +946,7 @@ export function WalkableIslandExplore({
             playerPosOut={playerPos}
             guideLookAt={guideLookAt}
             guideArrows={guideArrows}
+            inputFrozen={inputFrozen}
           />
           <MoneyBagGuide
             lookAt={guideLookAt}

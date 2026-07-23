@@ -60,6 +60,8 @@ type Props = {
   /** Soft wayfinder — Coin Bag point + off-screen edge cue (mute for free roam) */
   guideArrows?: boolean;
   onGuideProject?: (p: GuideProjection | null) => void;
+  /** Freeze WASD / Enter / M while Talk Battle owns the screen */
+  inputFrozen?: boolean;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -74,6 +76,7 @@ function Player({
   onNear,
   onNearNpc,
   playerPosOut,
+  inputFrozen = false,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
@@ -82,6 +85,7 @@ function Player({
   onNear: (id: string | null) => void;
   onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
+  inputFrozen?: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
@@ -92,9 +96,12 @@ function Player({
   const { camera } = useThree();
   const moving = useRef(false);
   const nearNpcRef = useRef<string | null>(null);
+  const frozenRef = useRef(inputFrozen);
+  frozenRef.current = inputFrozen;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (frozenRef.current) return;
       if (e.key === "w" || e.key === "ArrowUp") keys.current.f = true;
       if (e.key === "s" || e.key === "ArrowDown") keys.current.b = true;
       if (e.key === "a" || e.key === "ArrowLeft") keys.current.l = true;
@@ -114,9 +121,30 @@ function Player({
     };
   }, []);
 
+  useEffect(() => {
+    if (inputFrozen) {
+      keys.current = { f: false, b: false, l: false, r: false };
+      moving.current = false;
+    }
+  }, [inputFrozen]);
+
   useFrame((_, dt) => {
     if (!group.current) return;
     const p = group.current.position;
+    if (frozenRef.current) {
+      playerPosOut.current.set(p.x, p.y, p.z);
+      // Keep camera framing while frozen
+      const back = 8.5;
+      const camH = 4.9;
+      const ideal = new THREE.Vector3(
+        p.x - Math.sin(camYaw.current) * back,
+        camH,
+        p.z - Math.cos(camYaw.current) * back,
+      );
+      camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
+      camera.lookAt(p.x, 1.25, p.z);
+      return;
+    }
     const k = keys.current;
     const turn = (Number(k.l) - Number(k.r)) * 2.2 * dt;
     camYaw.current += turn;
@@ -617,6 +645,7 @@ export function WalkableHarborView({
   pulseHotspotId = null,
   guideArrows = true,
   onGuideProject,
+  inputFrozen = false,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -656,6 +685,7 @@ export function WalkableHarborView({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (inputFrozen) return;
       if ((e.key === "e" || e.key === "E" || e.key === "Enter") && near) {
         e.preventDefault();
         onHotspot(near);
@@ -664,7 +694,7 @@ export function WalkableHarborView({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [near, onHotspot, onOpenTravel]);
+  }, [near, onHotspot, onOpenTravel, inputFrozen]);
 
   useEffect(() => {
     const label = hotspots.find((h) => h.id === near)?.label ?? null;
@@ -730,6 +760,7 @@ export function WalkableHarborView({
               onNearNpc?.(n);
             }}
             playerPosOut={playerPos}
+            inputFrozen={inputFrozen}
           />
           <MoneyBagGuide
             lookAt={guideTarget}

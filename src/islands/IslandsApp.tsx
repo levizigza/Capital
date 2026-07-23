@@ -996,8 +996,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }, [activeIsland?.npcs, dialogueState.npcId]);
 
   const finishTalk = useCallback(() => {
-    if (dialogueState.npcId) {
-      talkCooldownRef.current = { npcId: dialogueState.npcId, until: Date.now() + 2800 };
+    const npcId = dialogueState.npcId;
+    if (npcId) {
+      talkCooldownRef.current = { npcId, until: Date.now() + 2800 };
+    }
+    // Advance Castle Grounds only after Piggy Talk Battle ends (incl. Skip)
+    if (
+      npcId === "piggy_penny" &&
+      save?.hubGuidedIntro &&
+      !isHubGuidedComplete(save.hubGuidedIntro)
+    ) {
+      onHubGuidedEvent("talked_guide");
     }
     setDialogueState({ open: false });
     void trackScreenEnter(
@@ -1006,7 +1015,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         : `islands_play:${activeIsland?.id ?? "unknown"}`,
       { islandId: activeIsland?.id ?? HUB_ISLAND_ID },
     );
-  }, [activeIsland?.id, dialogueState.npcId, view]);
+  }, [
+    activeIsland?.id,
+    dialogueState.npcId,
+    onHubGuidedEvent,
+    save?.hubGuidedIntro,
+    view,
+  ]);
 
   const onDialogueChoice = useCallback(
     async (choiceId: string) => {
@@ -1636,6 +1651,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onOpenHub={() => setView("home")}
               onEnterArea={(areaId) => void enterArea(areaId)}
               onStartQuest={(questId) => void startQuest(questId)}
+              talkOpen={dialogueState.open}
             />
           </IslandThemeProvider>
         ) : view === "explore" && activeIsland ? (

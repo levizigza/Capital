@@ -14,6 +14,7 @@ import { HUB_ISLAND_ID, isIslandLocked } from "../worldMapLayout";
 import { GALAPAGOS_ARCHIPELAGO_NAME } from "../galapagosIslands";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
+import { islandLockHint } from "../progressGates";
 
 export type TravelMapViewProps = {
   userProfile: UserProfile;
@@ -84,12 +85,14 @@ export function TravelMapView({
               const locked = isIslandLocked(island, save.inventory, save);
               const here = island.id === currentId;
               const theme = getIslandTheme(island.id, island.themeId);
+              const lockWhy = locked ? islandLockHint(island, save) : null;
               return (
                 <button
                   key={island.id}
                   type="button"
                   data-testid={`island-pin-${island.id}`}
                   data-locked={locked ? "1" : "0"}
+                  title={lockWhy ?? (here ? "You are here" : `Fly to ${island.name}`)}
                   disabled={locked || here}
                   onClick={() => beginVoyage(island.id)}
                   className={`shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
@@ -101,9 +104,14 @@ export function TravelMapView({
                   }`}
                   style={{ borderLeft: `4px solid ${theme.accent}` }}
                 >
-                  <span className="mr-1">{locked ? "🔒" : island.icon}</span>
-                  {island.name}
-                  {here ? " · here" : ""}
+                  <div>
+                    <span className="mr-1">{locked ? "🔒" : island.icon}</span>
+                    {island.name}
+                    {here ? " · here" : ""}
+                  </div>
+                  {lockWhy ? (
+                    <div className="mt-0.5 text-[10px] font-semibold opacity-80">{lockWhy}</div>
+                  ) : null}
                 </button>
               );
             })}

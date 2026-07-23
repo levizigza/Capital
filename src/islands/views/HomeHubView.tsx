@@ -125,16 +125,18 @@ export function HomeHubView({
   talkOpen = false,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
-    if (hubModal) return;
+    if (hubModal || talkOpen) return;
     onHubGuidedEvent("opened_map");
     onOpenTravel();
   });
   useInputAction("menu", () => {
     // O opens settings — never while a store owns the screen
-    if (hubModal) return;
+    if (hubModal || talkOpen) return;
     setHubModal("settings");
   });
   useInputAction("cancel", () => {
+    // Talk Battle owns Esc while open
+    if (talkOpen) return;
     // Outfitter / Capsule / Market own Esc (save-or-leave). Don't discard drafts here.
     if (hubModal === "outfitter" || hubModal === "capsule" || hubModal === "market") return;
     if (hubModal) setHubModal(null);
@@ -310,7 +312,6 @@ export function HomeHubView({
       }
       const isKeeper = npc.id === HARBOR_KEEPER_MASCOT_ID;
       if (isKeeper && castleMode) {
-        onHubGuidedEvent("talked_guide");
         setNearNpc({
           id: npc.id,
           name: npc.name,
@@ -319,16 +320,15 @@ export function HomeHubView({
       } else {
         setNearNpc(npc);
       }
-      // Auto-start Talk Battle when you walk up to someone
-      if (!talkOpen && !hubModal && onTalkNpc) {
-        onTalkNpc(npc.id);
-      }
+      if (talkOpen || hubModal || !onTalkNpc) return;
+      // Castle Grounds: only auto-Talk Piggy so locals don't ambush the tutorial
+      if (castleMode && !isKeeper) return;
+      onTalkNpc(npc.id);
     },
     [
       castleMode,
       guidedStep?.guideLine,
       hubModal,
-      onHubGuidedEvent,
       onTalkNpc,
       talkOpen,
       visualBeats.keeperBubbleWhenNear,
@@ -392,6 +392,7 @@ export function HomeHubView({
                   pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
+                  inputFrozen={talkOpen}
                 />
                 <GuideEdgeCue
                   projection={guideProjection}

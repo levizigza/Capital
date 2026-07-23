@@ -5,7 +5,9 @@ import {
   piggyGuidedGraph,
   resolveHarborDialogue,
   findHarborNpc,
+  harborTipPreview,
 } from "./harborTalks";
+import { resolveProfileText } from "../learningProfile";
 
 describe("harborTalks", () => {
   it("covers every Harbor local with a dialogue graph", () => {
@@ -24,5 +26,15 @@ describe("harborTalks", () => {
     expect(g.nodes[0]?.speaker).toMatch(/Piggy/i);
     expect(resolveHarborDialogue("piggy_penny", "to_dock")?.id).toContain("guided");
     expect(findHarborNpc("piggy_penny")?.name).toMatch(/Piggy/);
+  });
+
+  it("gives distinct tip beats per mascot role", () => {
+    const piggy = resolveProfileText(harborTipPreview("piggy_penny"), "apprentice");
+    const spendy = resolveProfileText(harborTipPreview("spendy_sue"), "apprentice");
+    const vault = resolveProfileText(harborTipPreview("vault_vince"), "apprentice");
+    expect(piggy).not.toEqual(spendy);
+    expect(spendy).not.toEqual(vault);
+    expect(piggy.toLowerCase()).toMatch(/save|pay yourself/);
+    expect(spendy.toLowerCase()).toMatch(/impulse|wait|24/);
   });
 });

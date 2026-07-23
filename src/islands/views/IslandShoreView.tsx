@@ -52,6 +52,8 @@ export type IslandShoreViewProps = {
   onOpenHub: () => void;
   onEnterArea: (areaId: string) => void;
   onStartQuest: (questId: string) => void;
+  /** True while Talk Battle is open — freeze world + don't re-trigger auto-talk */
+  talkOpen?: boolean;
 };
 
 /**
@@ -75,6 +77,7 @@ export function IslandShoreView({
   onOpenHub,
   onEnterArea,
   onStartQuest,
+  talkOpen = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
@@ -120,9 +123,16 @@ export function IslandShoreView({
     onA11yChange({ ...a11y, guideArrows: !guideArrows });
   }, [a11y, onA11yChange, guideArrows]);
 
-  useInputAction("map", onOpenTravel);
-  useInputAction("menu", onOpenHub);
+  useInputAction("map", () => {
+    if (talkOpen) return;
+    onOpenTravel();
+  });
+  useInputAction("menu", () => {
+    if (talkOpen) return;
+    onOpenHub();
+  });
   useInputAction("cancel", () => {
+    if (talkOpen) return;
     if (journalOpen) setJournalOpen(false);
     else onOpenHub();
   });
@@ -133,13 +143,13 @@ export function IslandShoreView({
 
   // Auto-start Talk Battle when you walk up to an NPC pad
   useEffect(() => {
-    if (!near) return;
+    if (!near || talkOpen) return;
     const h = hotspots.find((x) => x.id === near.id);
     if (h?.kind === "npc" && h.refId) {
       const t = window.setTimeout(() => onTalkNpc(h.refId as NpcId), 350);
       return () => window.clearTimeout(t);
     }
-  }, [near, hotspots, onTalkNpc]);
+  }, [near, hotspots, onTalkNpc, talkOpen]);
 
   const activate = useCallback(
     (hotspotId: string) => {
@@ -189,6 +199,7 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
+              inputFrozen={talkOpen}
             />
             <GuideEdgeCue
               projection={guideProjection}

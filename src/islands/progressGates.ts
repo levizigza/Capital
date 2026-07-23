@@ -103,6 +103,22 @@ export function isIslandProgressLocked(island: IslandDefinition, save: IslandSav
   return false;
 }
 
+/** Short player-facing reason an island chip is locked */
+export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): string | null {
+  if (!isIslandProgressLocked(island, save)) return null;
+  if ((island.requiredItems || []).some((id) => !save.inventory.includes(id))) {
+    return "Need a key item";
+  }
+  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
+    return "Finish Coincraft Change first";
+  }
+  if (island.id === BOSS_ISLAND_ID) {
+    const prog = bossUnlockProgress(save);
+    return `Need freedom + ${prog.needed} mastery clears (${prog.mastery}/${prog.needed})`;
+  }
+  return "Locked";
+}
+
 /** Grant freedom rewards once when escape first triggers */
 export function withHarborFreedomRewards(save: IslandSaveV1): IslandSaveV1 {
   if (!ensureLedger(save.voyagerLedger).harborEscaped) return save;

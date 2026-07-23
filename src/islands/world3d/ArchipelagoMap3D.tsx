@@ -156,7 +156,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const [ready, setReady] = useState(false);
   const reduced =
     typeof window !== "undefined" &&
-    window.matchMedia?.("prefers-reduced-motion: reduce").matches;
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   return (
     <div className="relative h-full w-full overflow-hidden" data-testid="archipelago-map-3d">
@@ -182,6 +182,9 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
             save={save}
             currentId={currentId}
             onSelect={(id) => {
+              if (id === currentId) return;
+              const node = islands.find((i) => i.id === id);
+              if (node && isIslandLocked(node, save.inventory, save)) return;
               setHint(id);
               onSelect(id);
             }}
