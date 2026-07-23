@@ -45,48 +45,48 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     id: "era-1960s",
     decade: "1960s",
     skyTop: "#000000",
-    skyBottom: "#111111",
+    skyBottom: "#0a0a0a",
     fog: "#000000",
-    fogNear: 30,
-    fogFar: 160,
-    sea: "#1a1a1a",
-    land: "#ffffff",
+    fogNear: 18,
+    fogFar: 110,
+    sea: "#050505",
+    land: "#f5f5f5",
     accent: "#ffffff",
-    shore: "#cccccc",
+    shore: "#aaaaaa",
     sunColor: "#ffffff",
-    ambientIntensity: 0.2,
+    ambientIntensity: 0.15,
     shading: "vector",
   },
   "era-1970s": {
     id: "era-1970s",
     decade: "1970s",
-    skyTop: "#001100",
+    skyTop: "#000800",
     skyBottom: "#000000",
-    fog: "#002200",
-    fogNear: 25,
-    fogFar: 150,
-    sea: "#003300",
+    fog: "#001a00",
+    fogNear: 20,
+    fogFar: 130,
+    sea: "#001a00",
     land: "#33ff66",
     accent: "#66ff99",
     shore: "#22aa44",
     sunColor: "#33ff66",
-    ambientIntensity: 0.35,
+    ambientIntensity: 0.3,
     shading: "wire",
   },
   "era-1980s": {
     id: "era-1980s",
     decade: "1980s",
-    skyTop: "#4c1d95",
-    skyBottom: "#f472b6",
-    fog: "#7c3aed",
-    fogNear: 35,
-    fogFar: 180,
-    sea: "#22d3ee",
-    land: "#a855f7",
+    skyTop: "#2e1065",
+    skyBottom: "#db2777",
+    fog: "#6d28d9",
+    fogNear: 30,
+    fogFar: 170,
+    sea: "#0891b2",
+    land: "#9333ea",
     accent: "#f0abfc",
-    shore: "#67e8f9",
+    shore: "#22d3ee",
     sunColor: "#f472b6",
-    ambientIntensity: 0.45,
+    ambientIntensity: 0.42,
     shading: "neon",
   },
   "era-1990s": {
@@ -118,23 +118,23 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     accent: "#f59e0b",
     shore: "#fde68a",
     sunColor: "#fde047",
-    ambientIntensity: 0.7,
+    ambientIntensity: 0.72,
     shading: "glossy",
   },
   "era-2010s": {
     id: "era-2010s",
     decade: "2010s",
-    skyTop: "#a8a29e",
-    skyBottom: "#57534e",
-    fog: "#78716c",
-    fogNear: 50,
-    fogFar: 240,
-    sea: "#44403c",
+    skyTop: "#78716c",
+    skyBottom: "#44403c",
+    fog: "#57534e",
+    fogNear: 48,
+    fogFar: 230,
+    sea: "#292524",
     land: "#3f6212",
     accent: "#a8a29e",
     shore: "#a8a29e",
     sunColor: "#e7e5e4",
-    ambientIntensity: 0.4,
+    ambientIntensity: 0.38,
     shading: "cinematic",
   },
   "era-2020s": {
@@ -158,4 +158,50 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
 export function getEraLook3D(styleId?: AnimationStyleId | string): EraLook3D {
   const style = getAnimationStyle(styleId);
   return LOOKS[style.id] ?? LOOKS["capital-default"]!;
+}
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  const full = h.length === 3 ? h.split("").map((c) => c + c).join("") : h;
+  const n = parseInt(full, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  const clamp = (v: number) => Math.max(0, Math.min(255, Math.round(v)));
+  return `#${[clamp(r), clamp(g), clamp(b)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function lerpHex(a: string, b: string, t: number): string {
+  const [ar, ag, ab] = hexToRgb(a);
+  const [br, bg, bb] = hexToRgb(b);
+  return rgbToHex(ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t);
+}
+
+function lerpNum(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+/**
+ * Blend two era looks for carpet approach morph.
+ * Shading snaps to destination after halfway so vector/wire read clearly near land.
+ */
+export function lerpEraLook3D(from: EraLook3D, to: EraLook3D, t: number): EraLook3D {
+  const u = Math.max(0, Math.min(1, t));
+  return {
+    id: u < 0.5 ? from.id : to.id,
+    decade: u < 0.55 ? from.decade : to.decade,
+    skyTop: lerpHex(from.skyTop, to.skyTop, u),
+    skyBottom: lerpHex(from.skyBottom, to.skyBottom, u),
+    fog: lerpHex(from.fog, to.fog, u),
+    fogNear: lerpNum(from.fogNear, to.fogNear, u),
+    fogFar: lerpNum(from.fogFar, to.fogFar, u),
+    sea: lerpHex(from.sea, to.sea, u),
+    land: lerpHex(from.land, to.land, u),
+    accent: lerpHex(from.accent, to.accent, u),
+    shore: lerpHex(from.shore, to.shore, u),
+    sunColor: lerpHex(from.sunColor, to.sunColor, u),
+    ambientIntensity: lerpNum(from.ambientIntensity, to.ambientIntensity, u),
+    shading: u < 0.5 ? from.shading : to.shading,
+  };
 }

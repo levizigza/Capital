@@ -1,9 +1,11 @@
 import {
   Suspense,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type MutableRefObject,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -13,7 +15,7 @@ import * as THREE from "three";
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getAnimationStyle } from "../animationStyles";
+import { getAnimationStyle, type AnimationStyleId } from "../animationStyles";
 import { getEffectiveBoatTier } from "../boats";
 import {
   buildArchipelagoLayout,
@@ -22,7 +24,8 @@ import {
   type ArchipelagoNode,
 } from "../worldMapLayout";
 import type { CapitalCharacter } from "../character";
-import { getEraLook3D, type EraLook3D } from "./eraLooks";
+import { getEraLook3D, lerpEraLook3D, type EraLook3D } from "./eraLooks";
+import { approachBlend, eraDimension } from "../eraMorph";
 import { MoneyCarpet } from "./MoneyCarpet";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { WorldLighting } from "./WorldLighting";
@@ -42,6 +45,7 @@ type Props = {
 type WorldIsle = {
   node: ArchipelagoNode;
   look: EraLook3D;
+  styleId: AnimationStyleId | string;
   pos: THREE.Vector3;
 };
 
@@ -62,18 +66,32 @@ type BoostApi = {
   rushToTarget: () => void;
 };
 
+type MorphSnapshot = {
+  look: EraLook3D;
+  blend: number;
+  styleId: AnimationStyleId | string;
+  decadeLabel: string;
+  islandName: string;
+};
+
 function FlightRig({
   world,
+  homeLook,
+  homeStyleId,
   targetId,
   character,
   boostApi,
   onArrive,
+  onMorph,
 }: {
   world: WorldIsle[];
+  homeLook: EraLook3D;
+  homeStyleId: AnimationStyleId | string;
   targetId?: string | null;
   character?: CapitalCharacter | null;
   boostApi: MutableRefObject<BoostApi | null>;
   onArrive: (id: string) => void;
+  onMorph: (snap: MorphSnapshot) => void;
 }) {
   const carpet = useRef<THREE.Group>(null);
   const keys = useRef({ l: false, r: false, up: false, down: false, boost: false });
@@ -86,8 +104,10 @@ function FlightRig({
     speed: SPEED_N,
     arrived: false,
   });
+  const lastMorph = useRef({ blend: -1, styleId: "" });
   const { camera } = useThree();
   const [hud, setHud] = useState({ knots: 0, hint: "Steer toward an island", rushing: false });
+  const [riderStyle, setRiderStyle] = useState<AnimationStyleId | string>(homeStyleId);
 
   // Aim initial heading at the voyage target (or nearest island).
   useEffect(() => {
@@ -157,6 +177,34 @@ function FlightRig({
     }
     const target =
       (targetId && world.find((w) => w.node.island.id === targetId)) || nearest;
+
+    // Approach morph targets the voyage destination when set, else nearest land.
+    const morphIsle = target ?? nearest;
+    if (morphIsle) {
+      const morphDist =
+        target && targetId
+          ? Math.hypot(target.pos.x - s.x, target.pos.z - s.z)
+          : nearestDist;
+      const blend = approachBlend(morphDist);
+      const blended = lerpEraLook3D(homeLook, morphIsle.look, blend);
+      // Character / UI style snaps toward destination after halfway.
+      const styleId = blend >= 0.5 ? morphIsle.styleId : homeStyleId;
+      const eraMeta = getAnimationStyle(morphIsle.styleId);
+      if (
+        Math.abs(blend - lastMorph.current.blend) > 0.04 ||
+        styleId !== lastMorph.current.styleId
+      ) {
+        lastMorph.current = { blend, styleId: String(styleId) };
+        onMorph({
+          look: blended,
+          blend,
+          styleId,
+          decadeLabel: eraMeta.eraLabel,
+          islandName: morphIsle.node.island.name,
+        });
+        setRiderStyle(styleId);
+      }
+    }
 
     // Rush / boost auto-steers toward the destination island.
     if ((keys.current.boost || rush.current) && target) {
@@ -236,7 +284,13 @@ function FlightRig({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={character} flying hideRider povRide />
+      <MoneyCarpet
+        character={character}
+        flying
+        hideRider
+        povRide
+        animationStyle={riderStyle}
+      />
     </group>
   );
 }
@@ -244,21 +298,27 @@ function FlightRig({
 function WorldScene({
   world,
   look,
+  homeLook,
+  homeStyleId,
   targetId,
   character,
   boostApi,
   onArrive,
+  onMorph,
 }: {
   world: WorldIsle[];
   look: EraLook3D;
+  homeLook: EraLook3D;
+  homeStyleId: AnimationStyleId | string;
   targetId?: string | null;
   character?: CapitalCharacter | null;
   boostApi: MutableRefObject<BoostApi | null>;
   onArrive: (id: string) => void;
+  onMorph: (snap: MorphSnapshot) => void;
 }) {
   return (
     <>
-      <WorldLighting look={{ ...look, fogNear: 24, fogFar: 160 }} shadowMapSize={512} />
+      <WorldLighting look={{ ...look, fogNear: Math.min(look.fogNear, 24), fogFar: Math.min(look.fogFar, 160) }} shadowMapSize={512} />
       <OceanWater color={look.sea} shading={look.shading} size={1200} />
       {world.map((wi) => {
         const isTarget = targetId === wi.node.island.id;
@@ -277,10 +337,13 @@ function WorldScene({
       })}
       <FlightRig
         world={world}
+        homeLook={homeLook}
+        homeStyleId={homeStyleId}
         targetId={targetId}
         character={character}
         boostApi={boostApi}
         onArrive={onArrive}
+        onMorph={onMorph}
       />
       <Text
         position={[0, 10, -8]}
@@ -298,7 +361,7 @@ function WorldScene({
 
 /**
  * Full-screen 3D money-carpet voyage — real flight graphics (R3F / Three.js).
- * Uses fixed viewport fill so the ride never collapses into a top strip.
+ * As you near an island, sky/sea/fog and the decade lens morph into that era.
  */
 export function CarpetFlightView({
   userProfile,
@@ -323,10 +386,32 @@ export function CarpetFlightView({
     () => getArchipelagoNode(archipelago, currentIsland.id) ?? archipelago.hub,
     [archipelago, currentIsland.id],
   );
-  const homeLook = useMemo(() => {
-    const theme = getIslandTheme(currentIsland.id, currentIsland.themeId);
-    return getEraLook3D(theme.animationStyle);
-  }, [currentIsland]);
+  const homeTheme = useMemo(
+    () => getIslandTheme(currentIsland.id, currentIsland.themeId),
+    [currentIsland],
+  );
+  const homeLook = useMemo(() => getEraLook3D(homeTheme.animationStyle), [homeTheme.animationStyle]);
+  const homeStyleId = homeTheme.animationStyle;
+
+  const [voyageLook, setVoyageLook] = useState(homeLook);
+  const [morphHud, setMorphHud] = useState<{
+    blend: number;
+    decadeLabel: string;
+    islandName: string;
+  }>({ blend: 0, decadeLabel: "", islandName: "" });
+
+  useEffect(() => {
+    setVoyageLook(homeLook);
+  }, [homeLook]);
+
+  const onMorph = useCallback((snap: MorphSnapshot) => {
+    setVoyageLook(snap.look);
+    setMorphHud({
+      blend: snap.blend,
+      decadeLabel: snap.decadeLabel,
+      islandName: snap.islandName,
+    });
+  }, []);
 
   const world = useMemo<WorldIsle[]>(() => {
     const cx = currentNode.worldX * WORLD_SCALE;
@@ -340,6 +425,7 @@ export function CarpetFlightView({
         return {
           node,
           look,
+          styleId: theme.animationStyle,
           pos: new THREE.Vector3(
             node.worldX * WORLD_SCALE - cx,
             0,
@@ -382,6 +468,8 @@ export function CarpetFlightView({
     boostApi.current?.setBoost(on);
   };
 
+  const dim = eraDimension(voyageLook.id);
+  const screen2d = dim === "screen2d" && morphHud.blend > 0.35;
   const shellClass =
     "capital-carpet-stage fixed inset-0 z-[60] overflow-hidden bg-[#0c1622]";
 
@@ -405,7 +493,11 @@ export function CarpetFlightView({
               <meshStandardMaterial color={homeLook.shore} roughness={0.9} />
             </mesh>
             <group position={[0, 0.45, 0]}>
-              <MoneyCarpet character={character ?? save.character} flying={false} />
+              <MoneyCarpet
+                character={character ?? save.character}
+                flying={false}
+                animationStyle={homeStyleId}
+              />
             </group>
             <EraIslandMesh
               look={homeLook}
@@ -430,8 +522,8 @@ export function CarpetFlightView({
           <p className="max-w-md px-4 text-sm text-white/80">
             Ride the open horizon — steer with A/D, soar with W, hold Shift to rush.
             {voyageTargetId && targetEra
-              ? ` Course set for ${targetEra.decade} · ${targetEra.eraLabel}.`
-              : " Pick any glowing island ahead."}
+              ? ` Course set for ${targetEra.decade} · ${targetEra.eraLabel} — the world will morph as you approach.`
+              : " Islands ahead each wear a different decade of play."}
           </p>
           <button
             type="button"
@@ -447,7 +539,21 @@ export function CarpetFlightView({
   }
 
   return (
-    <div className={shellClass} data-testid="carpet-flight-view">
+    <div
+      className={shellClass}
+      data-testid="carpet-flight-view"
+      data-era-blend={morphHud.blend.toFixed(2)}
+      data-era-dimension={dim}
+      data-era-shading={voyageLook.shading}
+      style={
+        {
+          "--era-sky-top": voyageLook.skyTop,
+          "--era-sky-bottom": voyageLook.skyBottom,
+          "--era-accent": voyageLook.accent,
+          "--era-sea": voyageLook.sea,
+        } as CSSProperties
+      }
+    >
       <Canvas
         shadows
         dpr={[1, 1.5]}
@@ -460,14 +566,28 @@ export function CarpetFlightView({
         <Suspense fallback={null}>
           <WorldScene
             world={world}
-            look={homeLook}
+            look={voyageLook}
+            homeLook={homeLook}
+            homeStyleId={homeStyleId}
             targetId={voyageTargetId}
             character={character ?? save.character}
             boostApi={boostApi}
             onArrive={handleArrive}
+            onMorph={onMorph}
           />
         </Suspense>
       </Canvas>
+
+      {/* 2D screen lens fades in for vector / wire decades as you approach */}
+      <div
+        className={`era-screen2d-overlay era-screen2d-overlay--${voyageLook.shading}`}
+        data-testid="era-screen2d-overlay"
+        style={{
+          opacity: screen2d ? Math.min(1, (morphHud.blend - 0.35) / 0.65) * 0.55 : 0,
+          pointerEvents: "none",
+        }}
+        aria-hidden
+      />
 
       <button
         type="button"
@@ -508,6 +628,21 @@ export function CarpetFlightView({
           </button>
         ) : null}
       </div>
+
+      {morphHud.blend > 0.12 && morphHud.decadeLabel ? (
+        <div
+          className="pointer-events-none absolute left-1/2 top-16 z-20 -translate-x-1/2 rounded-2xl border border-white/25 bg-black/55 px-4 py-2 text-center text-white backdrop-blur-sm"
+          data-testid="era-approach-badge"
+          style={{ opacity: Math.min(1, morphHud.blend * 1.2) }}
+        >
+          <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
+            Era morph · {Math.round(morphHud.blend * 100)}%
+          </div>
+          <div className="text-sm font-black">
+            {morphHud.islandName} · {morphHud.decadeLabel}
+          </div>
+        </div>
+      ) : null}
 
       <div
         id="carpet-flight-hud"

@@ -811,3 +811,89 @@
     animation: none !important;
   }
 }
+
+/* ─── Carpet approach + docked era lens (2D ↔ 3D interchange) ─── */
+
+.era-screen2d-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  transition: opacity 0.35s ease;
+  mix-blend-mode: screen;
+  background:
+    radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.03) 3px
+    );
+}
+
+.era-screen2d-overlay--vector {
+  background-color: rgba(0, 0, 0, 0.25);
+  mix-blend-mode: multiply;
+  box-shadow: inset 0 0 80px rgba(255, 255, 255, 0.08);
+}
+
+.era-screen2d-overlay--wire {
+  background-color: rgba(0, 40, 0, 0.2);
+  mix-blend-mode: screen;
+  box-shadow: inset 0 0 60px rgba(51, 255, 102, 0.15);
+  filter: contrast(1.15) saturate(1.25);
+}
+
+[data-era-dimension="screen2d"] .island-theme-enter,
+[data-era-dimension="screen2d"].island-theme-enter {
+  image-rendering: pixelated;
+}
+
+[data-era-dimension="screen2d"] .party-board-shell,
+[data-era-shading="vector"] .party-board-shell,
+[data-era-shading="wire"] .party-board-shell {
+  transition: filter 0.45s ease, background-color 0.45s ease;
+}
+
+.mg-era-lens[data-era-shading="vector"] {
+  background: #000 !important;
+  color: #fff;
+  border-color: #fff !important;
+  font-family: "Courier New", monospace;
+  image-rendering: pixelated;
+}
+
+.mg-era-lens[data-era-shading="wire"] {
+  background: #001400 !important;
+  color: #33ff66;
+  border-color: #33ff66 !important;
+  font-family: "Courier New", monospace;
+  text-shadow: 0 0 6px #33ff6644;
+}
+
+.mg-era-lens[data-era-shading="neon"] {
+  box-shadow: 0 0 28px rgba(240, 171, 252, 0.35);
+}
+
+.mg-era-lens[data-era-shading="lowpoly"] {
+  box-shadow: 4px 4px 0 #1a1a2e;
+  border-radius: 0 !important;
+}
+
+.mg-era-lens[data-era-shading="cinematic"] {
+  filter: contrast(1.05) saturate(0.85);
+}
+
+.mg-era-lens[data-era-shading="painterly"] {
+  border-radius: 1.25rem !important;
+}
+
+.island-theme-enter {
+  transition: background-color 0.5s ease, color 0.4s ease, filter 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .era-screen2d-overlay,
+  .island-theme-enter {
+    transition: none !important;
+  }
+}

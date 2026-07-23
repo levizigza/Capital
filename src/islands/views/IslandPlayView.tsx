@@ -39,7 +39,7 @@ import { createDefaultEconomyState } from "../economy";
 import { createDefaultSkillStats } from "../skillStats";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getAnimationStyle, type AnimationStyleId } from "../animationStyles";
+import { getAnimationStyle, isHomeLook, type AnimationStyleId } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import type { CapitalCharacter } from "../character";
@@ -364,7 +364,12 @@ export function IslandPlayView({
           {typeof totalCoins === "number" ? <WealthHud totalCoins={totalCoins} compact /> : null}
           {character ? (
             <div className="flex flex-col items-center gap-0.5">
-              <CharacterAvatar character={character} size={44} animationStyle={animationStyle} />
+              <CharacterAvatar
+                character={character}
+                size={44}
+                animationStyle={animationStyle}
+                morphFromHome={!isHomeLook(animationStyle ?? "capital-default")}
+              />
               <span className="era-badge text-[9px]">{era.eraLabel}</span>
             </div>
           ) : null}

@@ -1,6 +1,10 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { MinigameVisualShell } from "../platform/gameCatalog";
+import { useEraAwareShell, useEraLens } from "../EraLensContext";
+import { eraCssVars, eraDimension } from "../eraMorph";
+import { getEraLook3D } from "../world3d/eraLooks";
+import { getAnimationStyle } from "../animationStyles";
 
 const SHELL_CLASS: Record<MinigameVisualShell, string> = {
   arcade: "mg-shell-arcade",
@@ -36,12 +40,26 @@ export function GameVisualShell({
   children,
   className,
 }: GameVisualShellProps) {
+  const resolvedShell = useEraAwareShell(shell);
+  const eraId = useEraLens();
+  const look = getEraLook3D(eraId);
+  const era = getAnimationStyle(eraId);
+  const dimension = eraDimension(eraId);
   return (
-    <div className={cn("rounded-xl overflow-hidden", SHELL_CLASS[shell], className)}>
+    <div
+      className={cn("rounded-xl overflow-hidden", SHELL_CLASS[resolvedShell], "mg-era-lens", className)}
+      style={eraCssVars(look) as CSSProperties}
+      data-era={era.id}
+      data-era-dimension={dimension}
+      data-era-shading={look.shading}
+    >
       <div
         className={cn(
           "flex items-center justify-between gap-2 px-4 py-3 border-b",
-          shell === "neon" || shell === "explore" || shell === "arcade" || shell === "retro"
+          resolvedShell === "neon" ||
+            resolvedShell === "explore" ||
+            resolvedShell === "arcade" ||
+            resolvedShell === "retro"
             ? "border-white/20 bg-black/30"
             : "border-black/10 bg-black/5",
         )}
@@ -51,6 +69,9 @@ export function GameVisualShell({
           <div className="min-w-0">
             <div className="font-black truncate">{title}</div>
             <div className="text-xs opacity-70 flex flex-wrap gap-x-2 gap-y-0.5">
+              {eraId && era.id !== "capital-default" ? (
+                <span className="era-badge font-bold not-italic opacity-95">{era.eraLabel}</span>
+              ) : null}
               {homage ? <span className="italic opacity-90">{homage}</span> : null}
               {genre ? <span>{genre}</span> : null}
               {complexity ? <span>· {complexity}</span> : null}

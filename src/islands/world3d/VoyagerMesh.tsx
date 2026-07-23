@@ -9,6 +9,8 @@ import {
   type MoneyForm,
 } from "../character";
 import { EXTENDED_MASCOT_FORMS, MascotBody } from "./MascotBody";
+import { getEraLook3D } from "./eraLooks";
+import type { AnimationStyleId } from "../animationStyles";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -23,11 +25,43 @@ type Props = {
   form?: MoneyForm;
   /** Currency / crypto face mark */
   glyph?: string;
+  /** Island decade lens — remaps materials without changing identity */
+  animationStyle?: AnimationStyleId | string;
 };
+
+function eraMaterialProps(styleId?: AnimationStyleId | string): {
+  roughness: number;
+  metalness: number;
+  flatShading: boolean;
+  wireframe: boolean;
+  emissive?: string;
+  emissiveIntensity?: number;
+} {
+  const look = getEraLook3D(styleId);
+  switch (look.shading) {
+    case "vector":
+      return { roughness: 1, metalness: 0, flatShading: true, wireframe: false, emissive: "#ffffff", emissiveIntensity: 0.35 };
+    case "wire":
+      return { roughness: 0.4, metalness: 0.2, flatShading: true, wireframe: true, emissive: look.accent, emissiveIntensity: 0.55 };
+    case "neon":
+      return { roughness: 0.25, metalness: 0.45, flatShading: true, wireframe: false, emissive: look.accent, emissiveIntensity: 0.4 };
+    case "lowpoly":
+      return { roughness: 0.7, metalness: 0.05, flatShading: true, wireframe: false };
+    case "glossy":
+      return { roughness: 0.28, metalness: 0.35, flatShading: false, wireframe: false };
+    case "cinematic":
+      return { roughness: 0.62, metalness: 0.12, flatShading: false, wireframe: false };
+    case "painterly":
+      return { roughness: 0.55, metalness: 0.08, flatShading: false, wireframe: false };
+    default:
+      return { roughness: 0.55, metalness: 0.08, flatShading: false, wireframe: false };
+  }
+}
 
 /**
  * Anthropomorphic money mascot — the People of Capital.
  * Wacky kids-game cast for Fortune Archipelago. Procedural, no human faces.
+ * Optional animationStyle remaps materials into the island's decade lens.
  */
 export function VoyagerMesh({
   character,
@@ -38,6 +72,7 @@ export function VoyagerMesh({
   skinColor = "#fef3c7",
   form,
   glyph,
+  animationStyle,
 }: Props) {
   const group = useRef<THREE.Group>(null);
   const hip = useRef<THREE.Group>(null);
@@ -53,29 +88,68 @@ export function VoyagerMesh({
   const faceGlyph = glyph ?? moneyGlyphFromBase(character?.base);
   const useExtended = (EXTENDED_MASCOT_FORMS as string[]).includes(bodyForm);
 
-  const materials = useMemo(
-    () => ({
+  const materials = useMemo(() => {
+    const eraMat = eraMaterialProps(animationStyle);
+    const look = getEraLook3D(animationStyle);
+    const bodyColor =
+      look.shading === "vector"
+        ? "#ffffff"
+        : look.shading === "wire"
+          ? look.accent
+          : hex;
+    return {
       body: new THREE.MeshStandardMaterial({
-        color: hex,
+        color: bodyColor,
         roughness:
-          bodyForm === "coin" || bodyForm === "ancient" || bodyForm === "crypto" || bodyForm === "ingot"
+          eraMat.roughness ??
+          (bodyForm === "coin" || bodyForm === "ancient" || bodyForm === "crypto" || bodyForm === "ingot"
             ? 0.35
-            : 0.55,
+            : 0.55),
         metalness:
-          bodyForm === "coin" || bodyForm === "ancient" || bodyForm === "crypto" || bodyForm === "ingot"
+          eraMat.metalness ??
+          (bodyForm === "coin" || bodyForm === "ancient" || bodyForm === "crypto" || bodyForm === "ingot"
             ? 0.55
-            : 0.08,
+            : 0.08),
+        flatShading: eraMat.flatShading,
+        wireframe: eraMat.wireframe,
+        emissive: eraMat.emissive ?? "#000000",
+        emissiveIntensity: eraMat.emissiveIntensity ?? 0,
       }),
-      ink: new THREE.MeshStandardMaterial({ color: pantColor, roughness: 0.7 }),
-      paper: new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.75 }),
-      gold: new THREE.MeshStandardMaterial({ color: "#f4a629", roughness: 0.35, metalness: 0.45 }),
-      dark: new THREE.MeshStandardMaterial({ color: "#16283b", roughness: 0.55 }),
-      eye: new THREE.MeshStandardMaterial({ color: "#16283b", roughness: 0.35 }),
-      blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6 }),
-      pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55 }),
-    }),
-    [hex, pantColor, skinColor, bodyForm],
-  );
+      ink: new THREE.MeshStandardMaterial({
+        color: look.shading === "vector" ? "#ffffff" : look.shading === "wire" ? look.accent : pantColor,
+        roughness: 0.7,
+        wireframe: eraMat.wireframe,
+        flatShading: eraMat.flatShading,
+      }),
+      paper: new THREE.MeshStandardMaterial({
+        color: look.shading === "vector" || look.shading === "wire" ? look.shore : skinColor,
+        roughness: 0.75,
+        wireframe: eraMat.wireframe,
+        flatShading: eraMat.flatShading,
+      }),
+      gold: new THREE.MeshStandardMaterial({
+        color: look.accent,
+        roughness: 0.35,
+        metalness: 0.45,
+        wireframe: eraMat.wireframe,
+        flatShading: eraMat.flatShading,
+        emissive: eraMat.emissive ?? "#000000",
+        emissiveIntensity: (eraMat.emissiveIntensity ?? 0) * 0.5,
+      }),
+      dark: new THREE.MeshStandardMaterial({
+        color: look.shading === "vector" ? "#888888" : "#16283b",
+        roughness: 0.55,
+        wireframe: eraMat.wireframe,
+      }),
+      eye: new THREE.MeshStandardMaterial({
+        color: look.shading === "vector" ? "#ffffff" : "#16283b",
+        roughness: 0.35,
+        wireframe: eraMat.wireframe,
+      }),
+      blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6, wireframe: eraMat.wireframe }),
+      pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55, wireframe: eraMat.wireframe }),
+    };
+  }, [hex, pantColor, skinColor, bodyForm, animationStyle]);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;

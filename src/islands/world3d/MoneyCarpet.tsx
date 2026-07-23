@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { VoyagerMesh } from "./VoyagerMesh";
 import type { CapitalCharacter } from "../character";
+import type { AnimationStyleId } from "../animationStyles";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -15,6 +16,8 @@ type Props = {
    * so the money rug fills the lower frame. Local +Z = flight / nose.
    */
   povRide?: boolean;
+  /** Decade lens for the seated Voyager (approach morph / dock era). */
+  animationStyle?: AnimationStyleId | string;
 };
 
 /**
@@ -27,6 +30,7 @@ export function MoneyCarpet({
   flying = true,
   hideRider = false,
   povRide = false,
+  animationStyle,
 }: Props) {
   const root = useRef<THREE.Group>(null);
   const cloth = useRef<THREE.Mesh>(null);
@@ -244,7 +248,7 @@ export function MoneyCarpet({
 
       {!hideRider ? (
         <group position={[0, 0.14, seatZ]}>
-          <VoyagerMesh character={character} pose="sit" scale={0.85} />
+          <VoyagerMesh character={character} pose="sit" scale={0.85} animationStyle={animationStyle} />
         </group>
       ) : null}
     </group>

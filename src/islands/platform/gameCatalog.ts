@@ -1,6 +1,7 @@
 import type { GameComplexity, GameGenre } from "../themes/islandThemes";
 import type { IslandDefinition, IslandsContent } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
+import { shellForEra } from "../eraMorph";
 
 export type MinigameVisualShell =
   | "arcade"
@@ -54,24 +55,19 @@ const COMPONENT_META: Record<
   PriceItRightGame: { genre: "simulation", complexity: "easy", visualShell: "notebook", estimatedMinutes: 3 },
 };
 
-const ISLAND_SHELL_OVERRIDES: Partial<Record<string, MinigameVisualShell>> = {
-  coincraft_cove: "retro",
-  signal_city: "neon",
-  paycheck_peninsula: "notebook",
-};
-
 export function buildGameCatalog(content: IslandsContent): CatalogGame[] {
   const games: CatalogGame[] = [];
 
   for (const island of content.islands) {
     const theme = getIslandTheme(island.id, island.themeId);
-    const islandShell = ISLAND_SHELL_OVERRIDES[island.id];
+    /** Decade lens wins — every minigame on an island shares that era chrome. */
+    const islandShell = shellForEra(theme.animationStyle);
 
     for (const mg of island.minigames ?? []) {
       const meta = COMPONENT_META[mg.componentId] ?? {
         genre: theme.genre,
         complexity: theme.complexity,
-        visualShell: (islandShell ?? "flat") as MinigameVisualShell,
+        visualShell: islandShell,
         estimatedMinutes: 5,
       };
 
@@ -86,7 +82,8 @@ export function buildGameCatalog(content: IslandsContent): CatalogGame[] {
         componentId: mg.componentId,
         genre: (mg.genre as GameGenre) ?? meta.genre,
         complexity: (mg.complexity as GameComplexity) ?? meta.complexity,
-        visualShell: (mg.visualShell as MinigameVisualShell) ?? meta.visualShell,
+        // Prefer explicit JSON shell only when it matches the island lens; else decade shell.
+        visualShell: islandShell ?? (mg.visualShell as MinigameVisualShell) ?? meta.visualShell,
         estimatedMinutes: mg.estimatedMinutes ?? meta.estimatedMinutes,
       });
     }

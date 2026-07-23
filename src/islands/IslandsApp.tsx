@@ -1562,19 +1562,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             usePanel={false}
             zIndex={50}
           >
-            <div data-testid="minigame-modal">
-              <Suspense fallback={<div className="py-8 text-center">Loading minigame…</div>}>
-                <MinigameComponent
-                  minigameId={activeMinigameId}
-                  island={activeIsland}
-                  save={save}
-                  difficulty={activeDifficulty}
-                  learningProfile={learningProfile}
-                  onComplete={onMinigameComplete}
-                  onClose={() => void handleMinigameAbandon()}
-                />
-              </Suspense>
-            </div>
+            <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
+              <div data-testid="minigame-modal">
+                <Suspense fallback={<div className="py-8 text-center">Loading minigame…</div>}>
+                  <MinigameComponent
+                    minigameId={activeMinigameId}
+                    island={activeIsland}
+                    save={save}
+                    difficulty={activeDifficulty}
+                    learningProfile={learningProfile}
+                    onComplete={onMinigameComplete}
+                    onClose={() => void handleMinigameAbandon()}
+                  />
+                </Suspense>
+              </div>
+            </IslandThemeProvider>
           </GameModal>
         ) : null}
 
