@@ -23,7 +23,7 @@ const MINIGAME_COMPONENTS: Record<string, () => Promise<{ default: ComponentType
   PriceItRightGame: () => import("./PriceItRightGame"),
   PasaranMarketGame: () => import("./PasaranMarketGame"),
   MancalaCompoundGame: () => import("./MancalaCompoundGame"),
-  LifeForkGame: () => import("./LifeForkGame"),
+  PartyDashMinigame: () => import("./PartyDashMinigame"),
 };
 
 export function getMinigameComponent(componentId: string): ComponentType<MinigameProps> | null {

@@ -379,8 +379,54 @@ export const MASTERY_GATES: MasteryGateDef[] = [
   },
 ];
 
+/** Shared mastery quiz after any island Party Dash (kinesthetic → quiz). */
+export const PARTY_DASH_MASTERY_GATE: MasteryGateDef = {
+  id: "gate_party_dash",
+  minigameId: "mg_party_dash",
+  title: "Party Pad Mastery Quiz",
+  bossLabel: "Play-Pad Boss",
+  requirementCopy:
+    "You cleared the kinesthetic Party Dash. Ace every question to prove the lesson stuck — Mario Party style.",
+  questions: [
+    {
+      id: "pd1",
+      prompt: "Why do play pads come before quizzes in Fortune Archipelago?",
+      choices: [
+        "Quizzes are more fun than moving",
+        "You learn by doing first, then prove you understood",
+        "Movement games don’t teach anything",
+        "So you can skip financial literacy",
+      ],
+      correctIndex: 1,
+      explainCorrect: "Kinesthetic play builds the feel; the quiz locks in the literacy.",
+    },
+    {
+      id: "pd2",
+      prompt: "Catching value and dodging impulse spends is most like…",
+      choices: [
+        "Spending every coin the second you earn it",
+        "Separating earning from impulsive buying",
+        "Ignoring your budget forever",
+        "Only saving what glows on screen",
+      ],
+      correctIndex: 1,
+      explainCorrect: "Earn first, then choose — needs before shiny wants.",
+    },
+    {
+      id: "pd3",
+      prompt: "If expenses keep beating income, your cashflow is…",
+      choices: ["Positive", "Balanced", "Negative", "A type of investment"],
+      correctIndex: 2,
+      explainCorrect: "Negative cashflow means you’re losing ground each month.",
+    },
+  ],
+};
+
 export function getMasteryGateForMinigame(minigameId: string): MasteryGateDef | undefined {
-  return MASTERY_GATES.find((g) => g.minigameId === minigameId);
+  const exact = MASTERY_GATES.find((g) => g.minigameId === minigameId);
+  if (exact) return exact;
+  if (minigameId.startsWith("mg_party_dash_")) return PARTY_DASH_MASTERY_GATE;
+  return undefined;
 }
 
 export function gradeMasteryQuiz(

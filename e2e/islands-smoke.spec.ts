@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
  * Islands smoke test — full navigation path + save/load persistence.
  * Requires VITE_ISLANDS=1 and VITE_QA=1 (set in playwright.config.ts webServer.env).
  *
- * Post-v34: Harbor Haven is the hub; Coincraft Cove is Island 1 (chapter view).
+ * Post-v37: Harbor Haven is the hub; islands dock into walkable shore explore.
  */
 test.describe("Islands smoke", () => {
   test.setTimeout(120_000);
@@ -36,7 +36,7 @@ test.describe("Islands smoke", () => {
     });
   });
 
-  test("launch → hub → map → Cove chapter → minigame → save/load", async ({ page }) => {
+  test("launch → hub → map → Cove shore explore → journal → save/load", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
 
     // Harbor Haven visible once save loads
@@ -52,10 +52,11 @@ test.describe("Islands smoke", () => {
     await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
     await expect(page.getByTestId("island-pin-financial_assets")).toBeVisible();
 
-    // Enter Cove chapter via QA (POV sailing is manual)
+    // Enter Cove via QA — docks onto walkable shore (not chapter menu)
     await page.evaluate(() => window.__QA__?.enterIsland("coincraft_cove"));
 
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("chapter");
+    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("explore");
+    await expect(page.getByTestId("island-shore-view")).toBeVisible();
     await expect(page.getByText("Coincraft Cove")).toBeVisible();
     await expect(page.getByTestId("coin-bag-buddy-hud")).toBeVisible();
 
@@ -71,7 +72,7 @@ test.describe("Islands smoke", () => {
 
     await page.getByTestId("minigame-close").click();
 
-    // Persist save with Cove chapter progress
+    // Persist save with Cove shore progress
     await page.evaluate(async () => {
       const qa = window.__QA__;
       if (!qa) throw new Error("QA bridge missing");
@@ -81,11 +82,12 @@ test.describe("Islands smoke", () => {
     const saveBeforeReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveBeforeReload?.currentIslandId).toBe("coincraft_cove");
 
-    // Reload and verify Cove chapter session survives migrate
+    // Reload and verify Cove shore session survives migrate
     await page.reload();
     await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false)).toBe(true);
 
     const saveAfterReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveAfterReload?.currentIslandId).toBe("coincraft_cove");
+    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("explore");
   });
 });

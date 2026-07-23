@@ -22,6 +22,7 @@ import {
   getProfileDef,
   type LearningProfileId,
 } from "../learningProfile";
+import { isKinestheticComponent, partyPlayKind } from "../partyPlayStyle";
 import type {
   AreaId,
   IslandDefinition,
@@ -414,13 +415,27 @@ export function IslandPlayView({
         ) : null}
 
         {onPlayMinigame && (island.minigames?.length ?? 0) > 0 ? (
-          <GamePanel title="Learn-by-doing games" padding="default">
+          <GamePanel title="Party play pads & challenges" padding="default">
             <p className="mb-3 text-sm text-gray-600">
-              Hands-on challenges on {island.name}. Play to learn by doing — no quizzes.
+              Movement games first (Mario Party style). Quizzes prove mastery after you clear a play
+              pad — prefer the walkable shore pads when you can.
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {island.minigames!.map((mg) => {
+              {[...island.minigames!]
+                .sort((a, b) => {
+                  const ka = isKinestheticComponent(a.componentId) ? 0 : 1;
+                  const kb = isKinestheticComponent(b.componentId) ? 0 : 1;
+                  return ka - kb;
+                })
+                .map((mg) => {
                 const cleared = save.completedMinigames?.includes(mg.id);
+                const kind = partyPlayKind(mg.componentId);
+                const kindLabel =
+                  kind === "kinesthetic"
+                    ? "🏃 Play pad"
+                    : kind === "quiz"
+                      ? "📝 After play"
+                      : "🎯 Strategy";
                 return (
                   <button
                     key={mg.id}
@@ -431,8 +446,11 @@ export function IslandPlayView({
                   >
                     <span className="text-2xl shrink-0">{mg.icon}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-2 font-bold">
+                      <span className="flex flex-wrap items-center gap-2 font-bold">
                         {mg.name}
+                        <span className="text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                          {kindLabel}
+                        </span>
                         {cleared ? <span className="text-xs text-emerald-600">✓ cleared</span> : null}
                       </span>
                       <span className="line-clamp-2 text-xs text-gray-600">{mg.description}</span>

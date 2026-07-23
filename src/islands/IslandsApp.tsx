@@ -14,6 +14,7 @@ import { TravelMapView } from "./views/TravelMapView";
 import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
 import { IslandPlayView } from "./views/IslandPlayView";
+import { IslandShoreView } from "./views/IslandShoreView";
 import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
@@ -25,6 +26,8 @@ import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
 import { islandHasChapterContent } from "./chapterLoop";
 import { COVE_CHANGE_QUEST_ID } from "./islandIds";
+import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
+import { toast } from "sonner";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -113,8 +116,8 @@ type IslandsAppProps = {
   onReplayIntro?: () => void;
 };
 
-type View = "home" | "travel" | "voyage" | "island" | "chapter" | "arcade" | "studio";
-type VoyageReturn = "home" | "travel" | "island" | "chapter";
+type View = "home" | "travel" | "voyage" | "explore" | "island" | "chapter" | "arcade" | "studio";
+type VoyageReturn = "home" | "travel" | "island" | "chapter" | "explore";
 type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | null;
 
 type PendingMasteryClear = {
@@ -251,7 +254,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return;
     }
     setActiveIslandId(id);
-    setView(islandHasChapterContent(isl) ? "chapter" : "island");
+    // Always resume on the walkable shore — never dump into board/quiz menus.
+    setView(islandHasChapterContent(isl) || (isl.minigames?.length ?? 0) > 0 || isl.areas.length > 0 ? "explore" : "island");
   }, [save, bootLandHub, content]);
 
   useEffect(() => {
@@ -386,12 +390,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setActiveIslandId(islandId);
         setVoyageTargetId(null);
         // Harbor Haven is the 3D walkable plaza — never dump players on the party board by default.
+        // Every other island docks onto a walkable shore (explore) — immerse before board/quiz.
         if (isHubIslandId(islandId)) {
           setView("home");
-        } else if (islandHasChapterContent(island)) {
-          setView("chapter");
         } else {
-          setView("island");
+          setView("explore");
         }
       };
 
@@ -827,19 +830,33 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           await collectItem(effect.itemId);
         }
         if (effect.type === "startMinigame") {
-          const diff = getDifficultyForMinigame(effect.minigameId);
+          let playId = effect.minigameId as string;
+          if (activeIsland) {
+            const games = activeIsland.minigames ?? [];
+            const requested = games.find((g) => g.id === playId);
+            // Dialogue quizzes/sims → kinesthetic play pad first (Mario Party pairing).
+            if (requested && !isKinestheticComponent(requested.componentId)) {
+              const lead = games.find((g) => isKinestheticComponent(g.componentId));
+              playId = lead?.id ?? partyDashIdForIsland(activeIsland.id);
+              toast.message("Movement game first", {
+                description:
+                  "Clear the play pad — then the mastery quiz. That’s the Party style pairing.",
+              });
+            }
+          }
+          const diff = getDifficultyForMinigame(playId);
           await analytics.track("minigame_started", {
             islandId: activeIsland?.id,
-            minigameId: effect.minigameId,
+            minigameId: playId,
             difficulty: diff,
             source: "dialogue",
           });
           setMinigameSource("dialogue");
           setMinigameStartedAt(Date.now());
-          setActiveMinigameId(effect.minigameId);
-          void trackScreenEnter(`minigame:${effect.minigameId}`, {
+          setActiveMinigameId(playId as MinigameId);
+          void trackScreenEnter(`minigame:${playId}`, {
             islandId: activeIsland?.id,
-            minigameId: effect.minigameId,
+            minigameId: playId,
           });
         }
         if (effect.type === "completeQuest") {
@@ -863,7 +880,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
       }
     },
-    [activeIsland?.id, analytics, collectItem, startQuest, updateSave]
+    [activeIsland, analytics, collectItem, startQuest, updateSave]
   );
 
   const dialogueGraph = useMemo(() => {
@@ -1168,7 +1185,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const activeMinigameDef = useMemo(() => {
     if (!activeIsland || !activeMinigameId) return undefined;
-    return activeIsland.minigames?.find((m) => m.id === activeMinigameId);
+    const found = activeIsland.minigames?.find((m) => m.id === activeMinigameId);
+    if (found) return found;
+    // Runtime Party Dash opener for islands that lack a kinesthetic lead-in.
+    if (activeMinigameId === partyDashIdForIsland(activeIsland.id)) {
+      return {
+        id: activeMinigameId,
+        name: `${activeIsland.name} Party Dash`,
+        icon: "🏃",
+        description: "Kinesthetic warm-up — movement first, mastery quiz after.",
+        componentId: "PartyDashMinigame",
+      };
+    }
+    return undefined;
   }, [activeIsland, activeMinigameId]);
 
   const MinigameComponent = useMemo(() => {
@@ -1415,8 +1444,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               if (isHubIslandId(id)) {
                 setView("home");
               } else {
-                const isl = getIslandById(content, id);
-                setView(isl && islandHasChapterContent(isl) ? "chapter" : "island");
+                setView("explore");
               }
             }}
             onPlayHarborBoard={() => {
@@ -1469,6 +1497,29 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             authorName={userProfile.name || "Creator"}
             onClose={() => setView("home")}
           />
+        ) : view === "explore" && activeIsland ? (
+          <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
+            <IslandShoreView
+              island={activeIsland}
+              save={save}
+              userProfile={userProfile}
+              learningProfile={learningProfile}
+              character={save.character}
+              objectiveKey={objectiveKey}
+              onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
+              onCollectItem={(itemId) => void collectItem(itemId)}
+              onPlayMinigame={(minigameId) => {
+                setMinigameSource("dialogue");
+                setActiveMinigameId(minigameId as MinigameId);
+                setMinigameStartedAt(Date.now());
+              }}
+              onOpenBoard={() => setView("island")}
+              onOpenTravel={() => setView("travel")}
+              onOpenHub={() => setView("home")}
+              onEnterArea={(areaId) => void enterArea(areaId)}
+              onStartQuest={(questId) => void startQuest(questId)}
+            />
+          </IslandThemeProvider>
         ) : view === "chapter" && activeIsland ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
             <IslandPlayView
@@ -1507,7 +1558,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onSpaceReward={handleBoardSpaceReward}
               onBoardBoat={() => boardBoat("island")}
               onOpenArchipelago={() => setView("travel")}
-              onOpenHub={() => setView("home")}
+              onOpenHub={() => setView(isHubIslandId(activeIsland.id) ? "home" : "explore")}
               onOpenArcade={() => setView("arcade")}
               boardLocked={Boolean(activeMinigameId) || Boolean(pendingMastery)}
             />
