@@ -84,6 +84,10 @@ export type HomeHubViewProps = {
   highlightOutfitter?: boolean;
   /** Clear Harbor Return/Change celebration */
   onClearHomecoming?: () => void;
+  /** Auto / manual talk with a Harbor local (opens Talk Battle) */
+  onTalkNpc?: (npcId: string) => void;
+  /** True while Talk Battle is open — don't re-trigger auto-talk */
+  talkOpen?: boolean;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -117,6 +121,8 @@ export function HomeHubView({
   highlightOutfitter = false,
   onClearHomecoming,
   onExit,
+  onTalkNpc,
+  talkOpen = false,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal) return;
@@ -310,11 +316,23 @@ export function HomeHubView({
           name: npc.name,
           line: visualBeats.keeperBubbleWhenNear || guidedStep?.guideLine || npc.line,
         });
-        return;
+      } else {
+        setNearNpc(npc);
       }
-      setNearNpc(npc);
+      // Auto-start Talk Battle when you walk up to someone
+      if (!talkOpen && !hubModal && onTalkNpc) {
+        onTalkNpc(npc.id);
+      }
     },
-    [castleMode, guidedStep?.guideLine, onHubGuidedEvent, visualBeats.keeperBubbleWhenNear],
+    [
+      castleMode,
+      guidedStep?.guideLine,
+      hubModal,
+      onHubGuidedEvent,
+      onTalkNpc,
+      talkOpen,
+      visualBeats.keeperBubbleWhenNear,
+    ],
   );
 
   const nearTravel = nearStore?.id === "travel";
@@ -441,6 +459,16 @@ export function HomeHubView({
               >
                 {nearTravel ? `🪄 Board carpet` : `Enter ${nearStore.label}`}
               </GameButton>
+            ) : nearNpc && onTalkNpc ? (
+              <GameButton
+                variant="primary"
+                size="lg"
+                onClick={() => onTalkNpc(nearNpc.id)}
+                className="w-full shadow-lg"
+                data-testid="hub-talk-npc"
+              >
+                Talk to {nearNpc.name}
+              </GameButton>
             ) : guidedStep?.id === "practice_optional" ? (
               <div className="flex w-full flex-col gap-2">
                 {onPlayHarborBoard ? (
@@ -459,10 +487,15 @@ export function HomeHubView({
                 <GameButton
                   variant="outline"
                   size="lg"
-                  onClick={() => onHubGuidedEvent("skip_practice")}
+                  onClick={() => {
+                    onHubGuidedEvent("skip_practice");
+                    onHubGuidedEvent("opened_map");
+                    onOpenTravel();
+                  }}
                   className="w-full bg-white/90"
+                  data-testid="hub-travel-map"
                 >
-                  Skip to Carpet Dock →
+                  🪄 Skip → Archipelago map
                 </GameButton>
               </div>
             ) : guidedStep?.highlight === "travel" ? (

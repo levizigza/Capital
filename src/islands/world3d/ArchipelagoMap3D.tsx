@@ -25,10 +25,9 @@ type Props = {
 };
 
 const LOOK = getEraLook3D("capital-default");
-const SPACING = 7.2;
+const SPACING = 6.4;
 
 function mapToScene(node: ArchipelagoNode): [number, number, number] {
-  // Convert % map coords to a gentle isometric grid
   const x = ((node.mapX - 50) / 38) * SPACING * 1.35;
   const z = ((node.mapY - 54) / 34) * SPACING * 1.15;
   return [x, 0, z];
@@ -58,10 +57,20 @@ function RouteRibbon({
 function MapCamera() {
   const { camera } = useThree();
   useFrame(() => {
-    camera.position.lerp(new THREE.Vector3(0, 13.5, 15.5), 0.08);
+    // Pull back so spaced dioramas stay in frame after Ledgerlight scale experiments
+    camera.position.lerp(new THREE.Vector3(0, 16.5, 18.5), 0.08);
     camera.lookAt(0, 0.2, 0);
   });
   return null;
+}
+
+function MapFallbackPlate() {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
+      <circleGeometry args={[18, 48]} />
+      <meshStandardMaterial color="#0e7490" roughness={0.95} />
+    </mesh>
+  );
 }
 
 function MapScene({ islands, save, currentId, onSelect }: Props) {
@@ -70,11 +79,15 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
 
   return (
     <>
-      <WorldLighting look={{ ...LOOK, fogNear: 25, fogFar: 55 }} contactShadows={false} shadowMapSize={512} />
+      <WorldLighting
+        look={{ ...LOOK, fogNear: 18, fogFar: 90, skyMode: "day" }}
+        contactShadows={false}
+        shadowMapSize={512}
+        compactScene
+      />
       <OceanWater color="#0e7490" shading="harbor" size={120} calm />
       <MapCamera />
 
-      {/* Route ribbons hub → outer */}
       {layout.outer.map((node) => {
         const to = mapToScene(node);
         const from: [number, number, number] = [hubPos[0], 0.2, hubPos[2]];
@@ -82,7 +95,6 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         return <RouteRibbon key={`route-${node.island.id}`} from={from} to={dest} />;
       })}
 
-      {/* Hub diorama */}
       <DioramaIslandMesh
         look={LOOK}
         title={layout.hub.island.name}
@@ -94,6 +106,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         current={layout.hub.island.id === currentId}
         selected={layout.hub.island.id === currentId}
         locked={isIslandLocked(layout.hub.island, save.inventory, save)}
+        hideLabels
         onSelect={() => onSelect(layout.hub.island.id)}
       />
 
@@ -116,12 +129,12 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
             scale={1}
             current={node.island.id === currentId}
             locked={locked}
+            hideLabels
             onSelect={() => onSelect(node.island.id)}
           />
         );
       })}
 
-      {/* Tiny plane accent (toy diorama vibe) */}
       <mesh position={[6.5, 3.2, -2]} rotation={[0, -0.6, 0.15]}>
         <boxGeometry args={[0.55, 0.12, 0.18]} />
         <meshStandardMaterial color="#f8fafc" roughness={0.4} metalness={0.2} />
@@ -136,16 +149,17 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
 
 /**
  * Full-screen 3D isometric archipelago map — floating diorama islands.
+ * Labels live in TravelMapView HUD (HTML) so font Suspense can't blank WebGL.
  */
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const reduced =
     typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    window.matchMedia?.("prefers-reduced-motion: reduce").matches;
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden" data-testid="archipelago-map-3d">
       {!ready ? (
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c4a6e] text-sm font-bold text-white/70">
           Loading 3D archipelago map…
@@ -154,7 +168,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.25]}
-        camera={{ position: [0, 14, 16], fov: 42, near: 0.1, far: 200 }}
+        camera={{ position: [0, 16.5, 18.5], fov: 42, near: 0.1, far: 200 }}
         className="absolute inset-0 z-[2]"
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
@@ -162,7 +176,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
           setReady(true);
         }}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<MapFallbackPlate />}>
           <MapScene
             islands={islands}
             save={save}

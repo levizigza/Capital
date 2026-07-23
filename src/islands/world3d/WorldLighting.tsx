@@ -11,6 +11,11 @@ type Props = {
   contactShadows?: boolean;
   /** Cap shadow map for perf. */
   shadowMapSize?: number;
+  /**
+   * Compact scenes (archipelago map, carpet toy view) — do NOT multiply
+   * fog/shadows/stars by SHORE_WORLD_SCALE or the map washes out / blanks.
+   */
+  compactScene?: boolean;
 };
 
 function resolveSkyMode(look: EraLook3D): SkyMode {
@@ -38,6 +43,7 @@ export function WorldLighting({
   look,
   contactShadows = false,
   shadowMapSize = 1024,
+  compactScene = false,
 }: Props) {
   // Re-read intent each render — director updates between frames when tips refresh
   const skyMode = useMemo(() => resolveSkyMode(look), [look]);
@@ -45,6 +51,7 @@ export function WorldLighting({
   const voidNight = skyMode === "void";
   const starry = skyMode === "stars" || skyMode === "night" || voidNight;
   const sunset = skyMode === "sunset";
+  const worldMul = compactScene ? 1 : SHORE_WORLD_SCALE;
 
   // Honest ambient — dark eras stay dark so emissive characters read as people
   const ambient = voidNight
@@ -66,12 +73,14 @@ export function WorldLighting({
 
   const fillColor = sunset ? "#ffb070" : voidNight ? "#6d28d9" : starry ? "#93c5fd" : "#c4e8ff";
   const fillIntensity = voidNight ? 0.22 : sunset ? 0.45 : 0.35;
-  const shadowExtent = 40 * SHORE_WORLD_SCALE;
+  const shadowExtent = 40 * worldMul;
+  const fogNear = look.fogNear * (starry ? 0.85 : 1);
+  const fogFar = look.fogFar * (compactScene ? 1 : SHORE_WORLD_SCALE * 0.75);
 
   return (
     <>
       <color attach="background" args={[look.skyTop]} />
-      <fog attach="fog" args={[look.fog, look.fogNear * (starry ? 0.85 : 1), look.fogFar * SHORE_WORLD_SCALE * 0.75]} />
+      <fog attach="fog" args={[look.fog, fogNear, fogFar]} />
       <ambientLight intensity={ambient} />
       <hemisphereLight
         args={[look.skyTop, look.shore, voidNight ? 0.25 : sunset ? 0.65 : 0.55]}
@@ -83,7 +92,7 @@ export function WorldLighting({
         color={look.sunColor}
         shadow-mapSize-width={shadowMapSize}
         shadow-mapSize-height={shadowMapSize}
-        shadow-camera-far={160 * SHORE_WORLD_SCALE}
+        shadow-camera-far={160 * worldMul}
         shadow-camera-left={-shadowExtent}
         shadow-camera-right={shadowExtent}
         shadow-camera-top={shadowExtent}
@@ -97,9 +106,9 @@ export function WorldLighting({
 
       {starry ? (
         <Stars
-          radius={160 * SHORE_WORLD_SCALE}
+          radius={160 * worldMul}
           depth={voidNight ? 80 : 55}
-          count={voidNight ? 2200 : skyMode === "night" ? 1400 : 1000}
+          count={voidNight ? 2200 : skyMode === "night" ? 1400 : compactScene ? 600 : 1000}
           factor={voidNight ? 4.2 : 3.2}
           saturation={voidNight ? 0.35 : 0}
           fade
@@ -120,9 +129,9 @@ export function WorldLighting({
           <ContactShadows
             position={[0, 0.01, 0]}
             opacity={0.4}
-            scale={48 * SHORE_WORLD_SCALE}
+            scale={48 * worldMul}
             blur={2.2}
-            far={12 * SHORE_WORLD_SCALE}
+            far={12 * worldMul}
             color="#0c1622"
           />
         </Suspense>

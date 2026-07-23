@@ -29,7 +29,14 @@ import { COVE_CHANGE_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
+import { TalkBattleScreen } from "./views/TalkBattleScreen";
 import { toast } from "sonner";
+import {
+  findHarborNpc,
+  resolveHarborDialogue,
+  HARBOR_DIALOGUES,
+} from "./story/harborTalks";
+import { getMascot } from "./moneyCast";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -108,6 +115,7 @@ import {
 import {
   advanceHubGuided,
   createDefaultHubGuidedIntro,
+  getHubGuidedStep,
   isHubGuidedComplete,
 } from "./story/hubGuidedIntro";
 
@@ -191,6 +199,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     nodeId?: string;
     npcId?: NpcId;
   }>({ open: false });
+  /** After closing Talk Battle, ignore the same NPC briefly so auto-talk doesn't loop */
+  const talkCooldownRef = useRef<{ npcId: string; until: number } | null>(null);
 
   const [hubModal, setHubModal] = useState<
     "outfitter" | "capsule" | "settings" | "pavilion" | "market" | null
@@ -821,27 +831,63 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const openNpcDialogue = useCallback(
     async (npcId: NpcId) => {
-      if (!activeIsland) return;
-      const npc = activeIsland.npcs.find((n) => n.id === npcId);
+      if (dialogueState.open) return;
+      const cool = talkCooldownRef.current;
+      if (cool && cool.npcId === npcId && Date.now() < cool.until) return;
+
+      const island =
+        activeIsland ??
+        (view === "home" ? getIslandById(content, HUB_ISLAND_ID) : undefined);
+      const harborNpc = findHarborNpc(npcId);
+      const npc = island?.npcs.find((n) => n.id === npcId) ?? harborNpc;
       if (!npc) return;
 
-      await analytics.track("dialogue_started", { islandId: activeIsland.id, npcId });
+      if (view === "home" || isHubIslandId(island?.id)) {
+        setActiveIslandId(HUB_ISLAND_ID);
+      }
 
-      updateSave((prev) => ({
-        ...prev,
-        discovered: {
-          ...prev.discovered,
-          npcs: uniq([...prev.discovered.npcs, npcId]),
-        },
-      }));
+      await analytics.track("dialogue_started", {
+        islandId: island?.id ?? HUB_ISLAND_ID,
+        npcId,
+      });
 
-      setDialogueState({ open: true, graphId: npc.dialogueGraphId, nodeId: undefined, npcId });
+      if (island) {
+        updateSave((prev) => ({
+          ...prev,
+          discovered: {
+            ...prev.discovered,
+            npcs: uniq([...prev.discovered.npcs, npcId]),
+          },
+        }));
+      }
 
-      void trackScreenEnter(`dialogue:${npcId}`, { islandId: activeIsland.id, npcId });
+      const guided =
+        save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
+          ? getHubGuidedStep(save.hubGuidedIntro)?.id
+          : null;
+      const harborGraph = resolveHarborDialogue(npcId, guided);
+      const graphId = harborGraph?.id ?? npc.dialogueGraphId;
 
-      await completeObjective({ type: "talkToNpc", npcId });
+      setDialogueState({ open: true, graphId, nodeId: undefined, npcId });
+
+      void trackScreenEnter(`dialogue:${npcId}`, {
+        islandId: island?.id ?? HUB_ISLAND_ID,
+        npcId,
+      });
+
+      if (island && !isHubIslandId(island.id)) {
+        await completeObjective({ type: "talkToNpc", npcId });
+      }
     },
-    [activeIsland, completeObjective, updateSave]
+    [
+      activeIsland,
+      completeObjective,
+      content,
+      dialogueState.open,
+      save?.hubGuidedIntro,
+      updateSave,
+      view,
+    ],
   );
 
   const applyDialogueEffects = useCallback(
@@ -909,15 +955,58 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   );
 
   const dialogueGraph = useMemo(() => {
-    if (!activeIsland || !dialogueState.graphId) return undefined;
-    return findDialogue(activeIsland.dialogues, dialogueState.graphId);
-  }, [activeIsland, dialogueState.graphId]);
+    if (!dialogueState.graphId) return undefined;
+    const fromIsland = activeIsland
+      ? findDialogue(activeIsland.dialogues, dialogueState.graphId)
+      : undefined;
+    if (fromIsland) return fromIsland;
+    const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
+    if (fromHarbor) return fromHarbor;
+    // Guided Piggy graphs are minted per-step and may not be in the static list
+    if (dialogueState.npcId) {
+      const guided =
+        save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
+          ? getHubGuidedStep(save.hubGuidedIntro)?.id
+          : null;
+      return resolveHarborDialogue(dialogueState.npcId, guided);
+    }
+    return undefined;
+  }, [activeIsland, dialogueState.graphId, dialogueState.npcId, save?.hubGuidedIntro]);
 
   const dialogueNode = useMemo(() => {
     if (!dialogueGraph) return undefined;
     const nodeId = (dialogueState.nodeId || dialogueGraph.startNodeId) as DialogueNodeId;
     return findNode(dialogueGraph, nodeId);
   }, [dialogueGraph, dialogueState.nodeId]);
+
+  const talkNpcMeta = useMemo(() => {
+    if (!dialogueState.npcId) return { name: "Local", icon: "💬", tagline: undefined as string | undefined };
+    const harbor = findHarborNpc(dialogueState.npcId);
+    if (harbor) return { name: harbor.name, icon: harbor.icon, tagline: harbor.tagline };
+    const islandNpc = activeIsland?.npcs.find((n) => n.id === dialogueState.npcId);
+    if (islandNpc) {
+      const mascot = islandNpc.mascotId ? getMascot(islandNpc.mascotId as any) : null;
+      return {
+        name: islandNpc.name,
+        icon: islandNpc.icon || mascot?.emoji || "💬",
+        tagline: islandNpc.tagline ?? mascot?.tagline,
+      };
+    }
+    return { name: "Local", icon: "💬", tagline: undefined };
+  }, [activeIsland?.npcs, dialogueState.npcId]);
+
+  const finishTalk = useCallback(() => {
+    if (dialogueState.npcId) {
+      talkCooldownRef.current = { npcId: dialogueState.npcId, until: Date.now() + 2800 };
+    }
+    setDialogueState({ open: false });
+    void trackScreenEnter(
+      view === "home"
+        ? "harbor_haven"
+        : `islands_play:${activeIsland?.id ?? "unknown"}`,
+      { islandId: activeIsland?.id ?? HUB_ISLAND_ID },
+    );
+  }, [activeIsland?.id, dialogueState.npcId, view]);
 
   const onDialogueChoice = useCallback(
     async (choiceId: string) => {
@@ -926,7 +1015,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!choice) return;
 
       await analytics.track("dialogue_choice", {
-        islandId: activeIsland?.id,
+        islandId: activeIsland?.id ?? HUB_ISLAND_ID,
         graphId: dialogueGraph.id,
         nodeId: dialogueNode.id,
         choiceId,
@@ -937,22 +1026,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (choice.nextNodeId) {
         setDialogueState((s) => ({ ...s, nodeId: choice.nextNodeId }));
       } else {
-        setDialogueState({ open: false });
-        void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
-          islandId: activeIsland?.id,
-        });
+        finishTalk();
       }
     },
-    [activeIsland?.id, analytics, applyDialogueEffects, dialogueGraph, dialogueNode]
+    [activeIsland?.id, analytics, applyDialogueEffects, dialogueGraph, dialogueNode, finishTalk],
   );
 
   const closeDialogue = useCallback(() => {
-    setDialogueState({ open: false });
-    void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
-      islandId: activeIsland?.id,
-    });
-  }, [activeIsland?.id]);
+    finishTalk();
+  }, [finishTalk]);
 
+  const onDialogueContinue = useCallback(() => {
+    // No choices left on this node — end the Talk Battle
+    if (dialogueNode?.end || !(dialogueNode?.choices && dialogueNode.choices.length > 0)) {
+      finishTalk();
+    }
+  }, [dialogueNode, finishTalk]);
   const handleMinigameAbandon = useCallback(async () => {
     if (!activeMinigameId) {
       setActiveMinigameId(null);
@@ -1487,6 +1576,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               }));
             }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
+            onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
+            talkOpen={dialogueState.open}
             a11y={a11y}
             updateA11y={updateA11y}
             updateLearningProfile={updateLearningProfile}
@@ -1597,42 +1688,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         </GameScreenStack>
 
         {dialogueState.open && dialogueNode ? (
-          <GameModal
+          <TalkBattleScreen
             open
-            onClose={closeDialogue}
-            maxWidth="md"
-            usePortal
-            showCloseButton
-            title={
-              dialogueState.npcId
-                ? activeIsland?.npcs.find((n) => n.id === dialogueState.npcId)?.name ?? "Conversation"
-                : "Conversation"
+            npcName={talkNpcMeta.name}
+            npcIcon={talkNpcMeta.icon}
+            npcTagline={talkNpcMeta.tagline}
+            player={
+              save.character ?? {
+                ...BASE_VOYAGER,
+                name: userProfile.name || "Voyager",
+              }
             }
-            zIndex={45}
-          >
-            <div className="space-y-4" data-testid="dialogue-modal">
-              <p className="text-base font-medium leading-relaxed">
-                {resolveProfileText(dialogueNode.text, learningProfile)}
-              </p>
-              <div className="flex flex-col gap-2">
-                {(dialogueNode.choices ?? []).map((choice) => (
-                  <GameButton
-                    key={choice.id}
-                    variant="outline"
-                    className="w-full justify-start text-left"
-                    onClick={() => void onDialogueChoice(choice.id)}
-                  >
-                    {resolveProfileText(choice.text, learningProfile)}
-                  </GameButton>
-                ))}
-                {!(dialogueNode.choices && dialogueNode.choices.length > 0) ? (
-                  <GameButton variant="primary" className="w-full" onClick={closeDialogue}>
-                    Continue
-                  </GameButton>
-                ) : null}
-              </div>
-            </div>
-          </GameModal>
+            node={dialogueNode}
+            learningProfile={learningProfile}
+            onChoice={(id) => void onDialogueChoice(id)}
+            onContinue={onDialogueContinue}
+            onSkip={closeDialogue}
+          />
         ) : null}
 
         {activeMinigameId && activeIsland && activeMinigameDef && usesCourseWorld(activeMinigameDef.componentId) ? (

@@ -131,6 +131,16 @@ export function IslandShoreView({
     setNear(id && label ? { id, label } : null);
   }, []);
 
+  // Auto-start Talk Battle when you walk up to an NPC pad
+  useEffect(() => {
+    if (!near) return;
+    const h = hotspots.find((x) => x.id === near.id);
+    if (h?.kind === "npc" && h.refId) {
+      const t = window.setTimeout(() => onTalkNpc(h.refId as NpcId), 350);
+      return () => window.clearTimeout(t);
+    }
+  }, [near, hotspots, onTalkNpc]);
+
   const activate = useCallback(
     (hotspotId: string) => {
       const h = hotspots.find((x) => x.id === hotspotId);

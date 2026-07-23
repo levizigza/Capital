@@ -18,6 +18,8 @@ type Props = {
   /** Island id drives architecture + ecology kit */
   islandId?: string;
   onSelect?: () => void;
+  /** Skip drei Text labels (avoids font Suspense blanking the map) */
+  hideLabels?: boolean;
 };
 
 function hash(s: string): number {
@@ -349,6 +351,7 @@ export function DioramaIslandMesh({
   seed = "diorama",
   islandId,
   onSelect,
+  hideLabels = false,
 }: Props) {
   const group = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -600,36 +603,38 @@ export function DioramaIslandMesh({
         </mesh>
       )}
 
-      <Billboard position={[0, 2.65, 0]} follow>
-        <mesh position={[0, 0, -0.02]}>
-          <planeGeometry args={[2.8, locked || subtitle ? 0.85 : 0.55]} />
-          <meshBasicMaterial color="#fef3c7" transparent opacity={0.92} depthWrite={false} />
-        </mesh>
-        <Text
-          fontSize={0.28}
-          color="#16283b"
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.015}
-          outlineColor="#ffffff"
-          position={[0, subtitle || locked ? 0.12 : 0, 0]}
-        >
-          {locked ? `🔒 ${title}` : title}
-        </Text>
-        {(subtitle || current) && (
+      {!hideLabels ? (
+        <Billboard position={[0, 2.65, 0]} follow>
+          <mesh position={[0, 0, -0.02]}>
+            <planeGeometry args={[2.8, locked || subtitle ? 0.85 : 0.55]} />
+            <meshBasicMaterial color="#fef3c7" transparent opacity={0.92} depthWrite={false} />
+          </mesh>
           <Text
-            fontSize={0.16}
-            color={look.accent}
+            fontSize={0.28}
+            color="#16283b"
             anchorX="center"
             anchorY="middle"
-            position={[0, -0.18, 0]}
-            outlineWidth={0.01}
-            outlineColor="#16283b"
+            outlineWidth={0.015}
+            outlineColor="#ffffff"
+            position={[0, subtitle || locked ? 0.12 : 0, 0]}
           >
-            {current ? "You are here" : subtitle || ""}
+            {locked ? `🔒 ${title}` : title}
           </Text>
-        )}
-      </Billboard>
+          {(subtitle || current) && (
+            <Text
+              fontSize={0.16}
+              color={look.accent}
+              anchorX="center"
+              anchorY="middle"
+              position={[0, -0.18, 0]}
+              outlineWidth={0.01}
+              outlineColor="#16283b"
+            >
+              {current ? "You are here" : subtitle || ""}
+            </Text>
+          )}
+        </Billboard>
+      ) : null}
     </group>
   );
 }
