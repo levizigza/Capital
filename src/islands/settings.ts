@@ -19,6 +19,10 @@ export type AccessibilitySettings = {
    * Off = free roam / side quests without guide clutter.
    */
   guideArrows: boolean;
+  /** Fortune Archipelago soundtrack (CC0 cues) */
+  musicEnabled?: boolean;
+  /** Master music volume 0–1 */
+  musicVolume?: number;
 };
 
 const DEFAULT_A11Y: AccessibilitySettings = {
@@ -26,6 +30,8 @@ const DEFAULT_A11Y: AccessibilitySettings = {
   reducedMotion: false,
   highContrast: false,
   guideArrows: true,
+  musicEnabled: true,
+  musicVolume: 0.42,
 };
 
 export function loadAccessibilitySettings(): AccessibilitySettings {

@@ -2,7 +2,7 @@ FinanceQuest Pro — Credits
 ================================================
 
 Third-party assets and attributions.
-Generated: 2026-07-22
+Generated: 2026-07-23
 
 Xelu's FREE Controller & Keyboard Prompts
 -----------------------------------------
@@ -22,6 +22,27 @@ License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
 Modifications: Copied a lean OBJ/MTL subset into public/assets/3d/kenney/ for Capital's
 3D archipelago (procedural terrain + Kenney trees/rocks). Attribution is appreciated
 but not required by the license.
+
+Capital Fortune Archipelago Soundtrack (CC0)
+--------------------------------------------
+Bundled under public/audio/soundtrack/ — Capital cue titles are original;
+source tracks are Public Domain / CC0. No Nintendo or other franchise audio.
+Full provenance: public/audio/soundtrack/MANIFEST.json
+Re-encoded to lean OGG Vorbis for GitHub Pages.
+
+- Harbor Courtyard ← “peacefull ville” by Bobjt
+  https://opengameart.org/content/peacefull-ville (CC0)
+- Fortune Thread Map ← “Town Theme RPG” by cynicmusic (pixelsphere.org)
+  https://opengameart.org/content/town-theme-rpg (CC0)
+- Carpet / Solarpunk / Orbital / Ruins / Talk Soft / Scrap Coast ←
+  “Soundworlds Histories: Chasing the Leviathan” by jomusic (John Oestmann)
+  https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album (CC0)
+- Wage-Neon Night ← “PYNCHON” by cinameng (James Gargette)
+  https://opengameart.org/content/pynchon (CC0)
+- Terminal Undercurrent ← “Scifi City - Ambient Loop” by TinyWorlds
+  https://opengameart.org/content/scifi-city-ambient-loop (CC0)
+- Mindcliff Nocturne ← “Corrupt Data Stream” by Tsorthan Grove
+  https://opengameart.org/content/corrupt-data-stream (CC0)
 
 Figure & industrial reference (non-asset)
 -----------------------------------------

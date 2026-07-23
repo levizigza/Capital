@@ -159,6 +159,51 @@ export default function SettingsPanel({
         </div>
       </GamePanel>
 
+      <GamePanel title="Soundtrack">
+        <div className="space-y-4">
+          <label className="flex min-h-11 cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={settings.musicEnabled !== false}
+              onChange={() =>
+                onChange({
+                  ...settings,
+                  musicEnabled: settings.musicEnabled === false ? true : false,
+                })
+              }
+              className="h-5 w-5 rounded accent-blue-600"
+              aria-label="Fortune soundtrack"
+            />
+            <div>
+              <div className="text-sm font-medium">Fortune soundtrack</div>
+              <div className="text-xs text-gray-600">
+                Distinct CC0 themes for Harbor, map, and each genre shore
+              </div>
+            </div>
+          </label>
+          <div className="space-y-1">
+            <label className="text-sm font-medium" htmlFor="music-volume">
+              Music volume
+            </label>
+            <input
+              id="music-volume"
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round((settings.musicVolume ?? 0.42) * 100)}
+              disabled={settings.musicEnabled === false}
+              onChange={(e) =>
+                onChange({
+                  ...settings,
+                  musicVolume: Number(e.target.value) / 100,
+                })
+              }
+              className="w-full accent-teal-600"
+            />
+          </div>
+        </div>
+      </GamePanel>
+
       <ControlsSettingsPanel />
 
       {onOpenAnalytics ? (

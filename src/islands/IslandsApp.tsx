@@ -37,6 +37,8 @@ import {
   HARBOR_DIALOGUES,
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
+import { capitalMusic } from "./audio";
+import { getGenreWorld } from "./genreWorlds";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -233,6 +235,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const updateA11y = useCallback((next: AccessibilitySettings) => {
     setA11y(next);
     persistAccessibilitySettings(next);
+    capitalMusic.setEnabled(next.musicEnabled !== false);
+    capitalMusic.setVolume(next.musicVolume ?? 0.42);
     analytics.track("settings_changed", { ...next });
   }, []);
 
@@ -269,6 +273,43 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     // Always resume on the walkable shore — never dump into board/quiz menus.
     setView(islandHasChapterContent(isl) || (isl.minigames?.length ?? 0) > 0 || isl.areas.length > 0 ? "explore" : "island");
   }, [save, bootLandHub, content]);
+
+  useEffect(() => {
+    // Sync prefs on mount (Settings may have been changed in a prior session)
+    capitalMusic.setEnabled(a11y.musicEnabled !== false);
+    capitalMusic.setVolume(a11y.musicVolume ?? 0.42);
+  }, []);
+
+  useEffect(() => {
+    if (dialogueState.open) {
+      capitalMusic.playPlace({ kind: "talk" });
+      return;
+    }
+    if (view === "home") {
+      capitalMusic.playPlace({ kind: "harbor" });
+      return;
+    }
+    if (view === "travel") {
+      capitalMusic.playPlace({ kind: "map" });
+      return;
+    }
+    if (view === "voyage") {
+      capitalMusic.playPlace({ kind: "voyage" });
+      return;
+    }
+    if (activeIslandId && (view === "explore" || view === "island" || view === "chapter")) {
+      const genre = getGenreWorld(activeIslandId);
+      capitalMusic.playPlace({
+        kind: "shore",
+        islandId: activeIslandId,
+        genreId: genre?.id ?? null,
+      });
+      return;
+    }
+    if (view === "arcade" || view === "studio") {
+      capitalMusic.playPlace({ kind: "harbor" });
+    }
+  }, [view, activeIslandId, dialogueState.open]);
 
   useEffect(() => {
     if (!save || analyticsSessionReady) return;

@@ -1,0 +1,95 @@
+{
+  "name": "Capital Fortune Archipelago Soundtrack",
+  "license": "All bundled audio files are CC0 / Public Domain. See CREDITS.txt.",
+  "cues": [
+    {
+      "cue": "harbor_haven",
+      "file": "harbor_haven.ogg",
+      "sourceTitle": "peacefull ville (2023)",
+      "author": "Bobjt",
+      "url": "https://opengameart.org/content/peacefull-ville",
+      "license": "CC0"
+    },
+    {
+      "cue": "archipelago_map",
+      "file": "archipelago_map.ogg",
+      "sourceTitle": "Town Theme RPG",
+      "author": "cynicmusic (pixelsphere.org)",
+      "url": "https://opengameart.org/content/town-theme-rpg",
+      "license": "CC0"
+    },
+    {
+      "cue": "voyage_carpet",
+      "file": "voyage_carpet.ogg",
+      "sourceTitle": "Lake Aria — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "solarpunk_cove",
+      "file": "solarpunk_cove.ogg",
+      "sourceTitle": "Sun Cave Village — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "orbital_keep",
+      "file": "orbital_keep.ogg",
+      "sourceTitle": "Skypole Gorge — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "credit_ruins",
+      "file": "credit_ruins.ogg",
+      "sourceTitle": "Forgotten Shrine in the Forest — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "talk_soft",
+      "file": "talk_soft.ogg",
+      "sourceTitle": "Rachel's Weave — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "scrap_coast",
+      "file": "scrap_coast.ogg",
+      "sourceTitle": "Orion's Geology Workshop — Chasing the Leviathan",
+      "author": "jomusic (John Oestmann)",
+      "url": "https://opengameart.org/content/chasing-the-leviathan-adventure-world-music-album",
+      "license": "CC0"
+    },
+    {
+      "cue": "neon_sprawl",
+      "file": "neon_sprawl.ogg",
+      "sourceTitle": "PYNCHON",
+      "author": "cinameng (James Gargette)",
+      "url": "https://opengameart.org/content/pynchon",
+      "license": "CC0"
+    },
+    {
+      "cue": "ai_undercity",
+      "file": "ai_undercity.ogg",
+      "sourceTitle": "Scifi City - Ambient Loop (busy_cyberworld)",
+      "author": "TinyWorlds",
+      "url": "https://opengameart.org/content/scifi-city-ambient-loop",
+      "license": "CC0"
+    },
+    {
+      "cue": "nocturne_void",
+      "file": "nocturne_void.ogg",
+      "sourceTitle": "Corrupt Data Stream",
+      "author": "Tsorthan Grove",
+      "url": "https://opengameart.org/content/corrupt-data-stream",
+      "license": "CC0"
+    }
+  ],
+  "notes": "Re-encoded to smaller OGG Vorbis for GitHub Pages. Capital titles are original; source titles credited for provenance only. No Nintendo or other franchise audio."
+}
