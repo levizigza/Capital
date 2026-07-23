@@ -30,7 +30,7 @@ const DEFAULT_PROFILE: GalapagosProfile = {
 };
 
 export const GALAPAGOS_PROFILES: Record<string, GalapagosProfile> = {
-  coincraft_cove: {
+  harbor_haven: {
     galapagosName: "Santa Cruz",
     endemicIcon: "🐢",
     endemicName: "Giant tortoise",
@@ -40,6 +40,17 @@ export const GALAPAGOS_PROFILES: Record<string, GalapagosProfile> = {
     shore: "#e7e5e4",
     tagline: "Highland forests & the main settlement",
     ecology: "The archipelago hub — tortoises, research, and calm lagoons.",
+  },
+  coincraft_cove: {
+    galapagosName: "Santa Cruz",
+    endemicIcon: "🐢",
+    endemicName: "Giant tortoise",
+    terrain: "lush-highlands",
+    lava: "#52525b",
+    vegetation: "#65a30d",
+    shore: "#e7e5e4",
+    tagline: "Craft coves off the main settlement",
+    ecology: "First painting — earn, choose, return changed.",
   },
   financial_assets: {
     galapagosName: "Isabela",

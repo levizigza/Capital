@@ -35,10 +35,11 @@ export function getCoincraftSkinClass(islandId: string | null | undefined): stri
 
 /** When on hub/travel, use Cove skin if save points at Coincraft or no island yet (first-run). */
 export function shouldUseCoincraftSkin(
-  view: "home" | "travel" | "island" | "voyage" | "arcade" | "studio" | string,
+  view: "home" | "travel" | "island" | "voyage" | "arcade" | "studio" | "chapter" | string,
   activeIslandId: string | null,
   savedIslandId: string | null | undefined
 ): boolean {
-  if (view === "island") return isCoincraftIsland(activeIslandId);
-  return isCoincraftIsland(savedIslandId) || savedIslandId == null;
+  if (view === "island" || view === "chapter") return isCoincraftIsland(activeIslandId);
+  // Harbor Haven is its own hub — don't force Cove art on the plaza.
+  return false;
 }

@@ -4,7 +4,6 @@ import {
   GameButton,
   GameModal,
   HudBadge,
-  GamePanel,
 } from "@/game-ui";
 import { useInputAction } from "@/input";
 
@@ -24,18 +23,10 @@ import { WealthHud } from "./WealthHud";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { ensureLedger } from "../voyagerLedger";
 import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
+import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
-import { HUB_ISLAND_ID } from "../worldMapLayout";
-import {
-  CAPSULE_OFFERS,
-  PLAZA_PASS_PRICE,
-  canBuyCapsule,
-  capsuleLabel,
-  hubPartyItems,
-  isRoomUnlocked,
-  nextPurchasableCarpet,
-} from "../harborShop";
-import { PARTY_ITEMS } from "../partyItems";
+import { HUB_ISLAND_ID, isHubIslandId } from "../worldMapLayout";
+import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
 import { toast } from "sonner";
 import {
@@ -46,12 +37,12 @@ import {
   type HubGuidedIntroState,
 } from "../story/hubGuidedIntro";
 import { guidedVisualBeats } from "../story/dialogueActionSync";
-import { coinBagHarborTip } from "../story/coinBagBuddy";
+import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
-type HubModal = "outfitter" | "capsule" | "settings" | null;
+type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | null;
 
 export type HarborPurchase =
   | { kind: "capsule"; itemId: PartyItemId; price: number }
@@ -87,6 +78,8 @@ export type HomeHubViewProps = {
   updateLearningProfile: (id: LearningProfileId) => void;
   /** Pulse the Outfitter and show coach text (tutorial) */
   highlightOutfitter?: boolean;
+  /** Clear Harbor Return/Change celebration */
+  onClearHomecoming?: () => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -118,6 +111,7 @@ export function HomeHubView({
   updateA11y,
   updateLearningProfile,
   highlightOutfitter = false,
+  onClearHomecoming,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     onHubGuidedEvent("opened_map");
@@ -158,11 +152,16 @@ export function HomeHubView({
     nearNpcName: nearNpc && !nearStore ? nearNpc.name : null,
     hasFreedom: freed,
     currentIslandId: save.currentIslandId,
+    homecomingPending: Boolean(save.harborHomecoming?.pending),
+    homecomingMessage: save.harborHomecoming?.message,
+    pavilionUnlocked: coinBagShouldPointPavilion(save),
   });
   const bagGuideTip = castleMode ? visualBeats.bagTip : buddyTip.tip;
 
   const showOutfitterHighlight =
     highlightOutfitter || guidedStep?.highlight === "outfitter";
+
+  const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
@@ -172,11 +171,21 @@ export function HomeHubView({
       { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
       { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
       { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
+      ...(pavilionOpen
+        ? [
+            {
+              id: "pavilion",
+              label: "Freedom Pavilion",
+              icon: "🏆",
+              position: [-4.5, 0, -9.5],
+            } satisfies HarborHotspot,
+          ]
+        : []),
       ...(onOpenEditor
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
-    [onOpenEditor],
+    [onOpenEditor, pavilionOpen],
   );
 
   const openOutfitter = () => {
@@ -202,6 +211,8 @@ export function HomeHubView({
     else if (id === "capsule") {
       onHubGuidedEvent("capsule_visit");
       setHubModal("capsule");
+    } else if (id === "pavilion") {
+      setHubModal("pavilion");
     }
   };
 
@@ -238,25 +249,41 @@ export function HomeHubView({
 
   const nearTravel = nearStore?.id === "travel";
   const canResume =
-    !!save.currentIslandId && save.currentIslandId !== HUB_ISLAND_ID;
+    !!save.currentIslandId && !isHubIslandId(save.currentIslandId);
+
+  const homecoming = save.harborHomecoming?.pending
+    ? save.harborHomecoming
+    : null;
 
   const coachText =
-    nearNpc && !nearStore
+    homecoming?.message ||
+    (nearNpc && !nearStore
       ? nearNpc.line
       : guidedStep?.coach ??
         (showOutfitterHighlight
           ? "Walk to the Outfitter (front center)"
           : freed
-            ? "Freedom seal · carpet upgraded"
-            : null);
+            ? pavilionOpen
+              ? "Freedom Pavilion unlocked — walk left of the Outfitter"
+              : "Freedom seal · carpet upgraded"
+            : null));
 
   return (
     <>
       <GameHudLayout
         background={
           <div className="absolute inset-0">
-            {hubModal === "outfitter" ? (
-              <div className="h-full w-full bg-[#2a1f18]" aria-hidden />
+            {hubModal === "outfitter" || hubModal === "capsule" || hubModal === "pavilion" ? (
+              <div
+                className={`h-full w-full ${
+                  hubModal === "capsule"
+                    ? "bg-[#0f172a]"
+                    : hubModal === "pavilion"
+                      ? "bg-[#1a1625]"
+                      : "bg-[#2a1f18]"
+                }`}
+                aria-hidden
+              />
             ) : (
               <WalkableHarborView
                 character={voyager}
@@ -464,175 +491,101 @@ export function HomeHubView({
         />
       ) : null}
 
+      {hubModal === "capsule" ? (
+        <CapsuleStudioOverlay
+          save={save}
+          userProfile={userProfile}
+          onLeave={() => setHubModal(null)}
+          onHarborPurchase={(purchase) => onHarborPurchase(purchase)}
+          showPeekDone={guidedStep?.id === "tiny_spend"}
+          onPeekDone={() => onHubGuidedEvent("capsule_visit")}
+        />
+      ) : null}
+
       <GameModal
-        open={hubModal === "capsule" || hubModal === "settings"}
+        open={hubModal === "pavilion"}
         onClose={() => setHubModal(null)}
-        maxWidth={hubModal === "capsule" ? "lg" : "md"}
+        maxWidth="md"
         usePortal
         showCloseButton
-        title={
-          hubModal === "capsule" ? "Capsule Stall" : hubModal === "settings" ? "Settings" : undefined
-        }
+        title="Freedom Pavilion"
       >
-        {hubModal === "capsule" ? (
-          <div className="space-y-4">
-            <div className="text-center">
-              <div className="text-5xl">📦</div>
-              <div className="text-xl font-black">Capsule Stall</div>
-              <p className="text-sm text-muted-foreground">
-                Spend coins on Fortune Capsules, carpet polish, and a Market pass.
-              </p>
-              <div className="mt-1 text-sm font-bold">Balance: 🪙 {userProfile.totalCoins}</div>
-            </div>
-
-            <GamePanel padding="default" className="space-y-2 text-left">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Fortune Capsules
-              </div>
-              {CAPSULE_OFFERS.map((offer) => {
-                const def = PARTY_ITEMS[offer.itemId];
-                const check = canBuyCapsule(save, userProfile.totalCoins, offer.itemId, offer.price);
-                const owned = hubPartyItems(save).includes(offer.itemId);
-                return (
-                  <div
-                    key={offer.itemId}
-                    className="flex items-center justify-between gap-2 rounded-xl border border-black/10 bg-white/70 px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <div className="text-sm font-bold">
-                        {def.icon} {def.name}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground line-clamp-1">{def.moneyTip}</div>
-                    </div>
-                    <GameButton
-                      size="sm"
-                      variant={owned ? "ghost" : "primary"}
-                      disabled={!check.ok}
-                      onClick={() => {
-                        const ok = onHarborPurchase({
-                          kind: "capsule",
-                          itemId: offer.itemId,
-                          price: offer.price,
-                        });
-                        if (ok) toast.success(`Bought ${capsuleLabel(offer.itemId)}`);
-                        else toast.error(check.reason ?? "Can't buy");
-                      }}
-                    >
-                      {owned ? "Owned" : `🪙 ${offer.price}`}
-                    </GameButton>
-                  </div>
-                );
-              })}
-            </GamePanel>
-
-            <GamePanel padding="default" className="space-y-2 text-left">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Carpet polish
-              </div>
-              {(() => {
-                const next = nextPurchasableCarpet(userProfile.totalCoins, save);
-                if (!next) {
-                  return <p className="text-sm text-muted-foreground">Your carpet is maxed out.</p>;
-                }
-                const can = userProfile.totalCoins >= next.price;
-                return (
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="text-sm font-bold">
-                        {next.tier.emoji} Unlock {next.tier.label}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        Early unlock — cheaper than earning every coin for the tier.
-                      </div>
-                    </div>
-                    <GameButton
-                      size="sm"
-                      variant="primary"
-                      disabled={!can}
-                      onClick={() => {
-                        const ok = onHarborPurchase({
-                          kind: "carpet",
-                          tierId: next.tier.id,
-                          price: next.price,
-                        });
-                        if (ok) toast.success(`${next.tier.label} unlocked!`);
-                        else toast.error(`Need 🪙 ${next.price}`);
-                      }}
-                    >
-                      🪙 {next.price}
-                    </GameButton>
-                  </div>
-                );
-              })()}
-            </GamePanel>
-
-            <GamePanel padding="default" className="space-y-2 text-left">
-              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-                Plaza pass
-              </div>
-              {isRoomUnlocked(save, "market") ? (
-                <p className="text-sm text-muted-foreground">🧺 Pasaran Lane unlocked.</p>
-              ) : (
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <div className="text-sm font-bold">🧺 Pasaran Lane pass</div>
-                    <div className="text-[11px] text-muted-foreground">
-                      Open the market wing of Harbor Haven.
-                    </div>
-                  </div>
-                  <GameButton
-                    size="sm"
-                    variant="primary"
-                    disabled={userProfile.totalCoins < PLAZA_PASS_PRICE}
-                    onClick={() => {
-                      const ok = onHarborPurchase({
-                        kind: "plaza_pass",
-                        room: "market",
-                        price: PLAZA_PASS_PRICE,
-                      });
-                      if (ok) toast.success("Pasaran Lane unlocked!");
-                      else toast.error(`Need 🪙 ${PLAZA_PASS_PRICE}`);
-                    }}
-                  >
-                    🪙 {PLAZA_PASS_PRICE}
-                  </GameButton>
-                </div>
-              )}
-            </GamePanel>
-
-            <div className="sticky bottom-0 space-y-2 border-t border-black/10 bg-[color-mix(in_oklab,#fffdf6_94%,transparent)] pt-3">
-              <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
-                Back to plaza
-              </GameButton>
-              {guidedStep?.id === "tiny_spend" ? (
-                <GameButton
-                  variant="ghost"
-                  className="w-full text-sm"
-                  onClick={() => {
-                    onHubGuidedEvent("capsule_visit");
-                    setHubModal(null);
-                    toast.message("Peek complete — coins can buy help later!");
-                  }}
-                >
-                  I’ve seen enough →
-                </GameButton>
-              ) : null}
-            </div>
+        <div className="space-y-4 text-center">
+          <div className="text-5xl">🏆</div>
+          <h2 className="text-xl font-black">You escaped paycheck-to-paycheck</h2>
+          <p className="text-sm text-muted-foreground">
+            This wing opens when your Harbor ledger proves Freedom. Your carpet already got a boost —
+            polish it further at the Capsule Stall anytime.
+          </p>
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950">
+            {boat.emoji} Current carpet: {boat.label}
           </div>
-        ) : null}
+          <GameButton
+            variant="primary"
+            className="w-full"
+            onClick={() => setHubModal("capsule")}
+          >
+            Polish carpet at Capsules →
+          </GameButton>
+          <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
+            Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
 
-        {hubModal === "settings" ? (
-          <Suspense fallback={<div className="py-4 text-center">Loading settings…</div>}>
-            <LazySettingsPanel
-              settings={a11y}
-              onChange={updateA11y}
-              onClose={() => setHubModal(null)}
-              learningProfile={learningProfile}
-              onProfileChange={updateLearningProfile}
-              onOpenAnalytics={onOpenAnalytics}
-            />
-          </Suspense>
-        ) : null}
+      <GameModal
+        open={Boolean(homecoming)}
+        onClose={() => onClearHomecoming?.()}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Welcome home"
+      >
+        <div className="space-y-4 text-center">
+          <div className="text-5xl">🐷</div>
+          <h2 className="text-xl font-black">Piggy Penny noticed</h2>
+          <p className="text-sm text-muted-foreground">
+            {homecoming?.message ||
+              "You earned, you chose, and you came back different. That’s the Change beat."}
+          </p>
+          {pavilionOpen ? (
+            <p className="text-sm font-semibold text-emerald-800">
+              Freedom Pavilion is open on the plaza — Coin Bag will point the way.
+            </p>
+          ) : (
+            <p className="text-sm font-semibold text-sky-900">
+              Keep practicing Harbor cashflow for a Freedom Seal — or float to your next painting.
+            </p>
+          )}
+          <GameButton
+            variant="primary"
+            className="w-full"
+            onClick={() => onClearHomecoming?.()}
+            autoFocus
+          >
+            Thanks, Piggy →
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "settings"}
+        onClose={() => setHubModal(null)}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Settings"
+      >
+        <Suspense fallback={<div className="py-4 text-center">Loading settings…</div>}>
+          <LazySettingsPanel
+            settings={a11y}
+            onChange={updateA11y}
+            onClose={() => setHubModal(null)}
+            learningProfile={learningProfile}
+            onProfileChange={updateLearningProfile}
+            onOpenAnalytics={onOpenAnalytics}
+          />
+        </Suspense>
       </GameModal>
     </>
   );

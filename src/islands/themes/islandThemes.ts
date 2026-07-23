@@ -54,7 +54,24 @@ export type IslandTheme = {
 };
 
 export const ISLAND_THEMES: Record<string, IslandTheme> = {
-  /** Harbor Haven — adventure hub / tutorial (always capital-default look) */
+  /** Harbor Haven — Castle Grounds hub (always capital-default look) */
+  harbor_haven: {
+    id: "harbor_haven",
+    name: "Harbor Haven",
+    visualStyle: "seaside-craft",
+    animationStyle: "capital-default",
+    skinClass: "island-theme-seaside",
+    background: "linear-gradient(180deg, #7dd3fc 0%, #a7f3d0 45%, #fde68a 100%)",
+    accent: "#0ea5e9",
+    accentMuted: "#bae6fd",
+    fontFamily: "'Fraunces', 'Georgia', serif",
+    mood: "🏝️ castle grounds · home",
+    mapPinShape: "round",
+    complexity: "easy",
+    genre: "exploration",
+    fortuneBlurb: "Walk with Coin Bag, talk to Piggy, then float to your first painting.",
+  },
+  /** Island 1 — Coincraft Cove chapter */
   coincraft_cove: {
     id: "coincraft_cove",
     name: "Coincraft Cove",
@@ -65,11 +82,11 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     accent: "#0ea5e9",
     accentMuted: "#bae6fd",
     fontFamily: "'Fraunces', 'Georgia', serif",
-    mood: "⚓ harbor · tutorial · home look",
+    mood: "⚓ first painting · earn · choose",
     mapPinShape: "round",
     complexity: "easy",
     genre: "exploration",
-    fortuneBlurb: "Learn the Fortune Archipelago rules, meet rival captains, then float on your carpet.",
+    fortuneBlurb: "Earn coins, then choose save or spend — Captain Penny’s cove.",
   },
   /** 1960s Vector Dawn — savings graphs */
   paycheck_peninsula: {

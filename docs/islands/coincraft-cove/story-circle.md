@@ -41,4 +41,5 @@ Piggy Penny’s job ends at the threshold; Captain Penny owns Need→Find on the
 - [ ] Return Change still thin — strengthen Harbor welcome-back line when `q_cc_save_or_spend` completes (runtime guided beat)  
 - [x] Fits Story Bible (no second myth)
 
-**Next polish:** Wire `q_cc_save_or_spend` completion → Harbor Keeper celebration + optional Freedom progress hint.
+**Next polish:** Wire `q_cc_save_or_spend` completion → Harbor Keeper celebration + optional Freedom progress hint.  
+**Runtime (v34):** Cove is a separate chapter island from Harbor Haven; completing `q_cc_save_or_spend` sets `harborHomecoming` and unlocks Paycheck Peninsula.

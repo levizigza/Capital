@@ -13,6 +13,7 @@ import { HomeHubView } from "./views/HomeHubView";
 import { TravelMapView } from "./views/TravelMapView";
 import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
+import { IslandPlayView } from "./views/IslandPlayView";
 import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
@@ -21,7 +22,9 @@ import { getIslandTheme } from "./themes/islandThemes";
 import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
-import { HUB_ISLAND_ID } from "./worldMapLayout";
+import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
+import { islandHasChapterContent } from "./chapterLoop";
+import { COVE_CHANGE_QUEST_ID } from "./islandIds";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -110,8 +113,8 @@ type IslandsAppProps = {
   onReplayIntro?: () => void;
 };
 
-type View = "home" | "travel" | "voyage" | "island" | "arcade" | "studio";
-type VoyageReturn = "home" | "travel" | "island";
+type View = "home" | "travel" | "voyage" | "island" | "chapter" | "arcade" | "studio";
+type VoyageReturn = "home" | "travel" | "island" | "chapter";
 type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | null;
 
 type PendingMasteryClear = {
@@ -184,7 +187,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     npcId?: NpcId;
   }>({ open: false });
 
-  const [hubModal, setHubModal] = useState<"outfitter" | "capsule" | "settings" | null>(null);
+  const [hubModal, setHubModal] = useState<
+    "outfitter" | "capsule" | "settings" | "pavilion" | null
+  >(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
   const [minigameSource, setMinigameSource] = useState<MinigameSource>(null);
@@ -360,9 +365,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
         setActiveIslandId(islandId);
         setVoyageTargetId(null);
-        // Harbor Haven is the 3D walkable plaza — never dump players on the old 2D party board by default.
-        if (islandId === HUB_ISLAND_ID) {
+        // Harbor Haven is the 3D walkable plaza — never dump players on the party board by default.
+        if (isHubIslandId(islandId)) {
           setView("home");
+        } else if (islandHasChapterContent(island)) {
+          setView("chapter");
         } else {
           setView("island");
         }
@@ -689,6 +696,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           const stats = prev.skillStats ?? createDefaultSkillStats();
           return { ...prev, skillStats: applySkillChanges(stats, questSkillBonuses) };
         });
+      }
+
+      // Cove Change beat → Harbor homecoming celebration + unlock Island 2.
+      if (questId === COVE_CHANGE_QUEST_ID) {
+        updateSave((prev) => ({
+          ...prev,
+          harborHomecoming: {
+            pending: true,
+            celebrated: false,
+            chapterIslandId: activeIsland.id,
+            questId,
+            message:
+              "Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.",
+          },
+        }));
       }
     },
     [activeIsland, learningProfile, setUserProfile, updateSave, save?.questStatus]
@@ -1370,12 +1392,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onResume={() => {
               const id = save.currentIslandId || HUB_ISLAND_ID;
               setActiveIslandId(id);
-              // Hub resume stays in 3D Harbor plaza.
-              setView(id === HUB_ISLAND_ID ? "home" : "island");
+              if (isHubIslandId(id)) {
+                setView("home");
+              } else {
+                const isl = getIslandById(content, id);
+                setView(isl && islandHasChapterContent(isl) ? "chapter" : "island");
+              }
             }}
             onPlayHarborBoard={() => {
               setActiveIslandId(HUB_ISLAND_ID);
               setView("island");
+            }}
+            onClearHomecoming={() => {
+              updateSave((prev) => ({
+                ...prev,
+                harborHomecoming: {
+                  ...(prev.harborHomecoming ?? {}),
+                  pending: false,
+                  celebrated: true,
+                },
+              }));
             }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             a11y={a11y}
@@ -1413,6 +1449,32 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             authorName={userProfile.name || "Creator"}
             onClose={() => setView("home")}
           />
+        ) : view === "chapter" && activeIsland ? (
+          <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
+            <IslandPlayView
+              island={activeIsland}
+              save={save}
+              totalCoins={userProfile.totalCoins}
+              activeAreaId={save.currentAreaId}
+              learningProfile={learningProfile}
+              objectiveKey={objectiveKey}
+              character={save.character}
+              animationStyle={getIslandTheme(activeIsland.id, activeIsland.themeId).animationStyle}
+              onEnterArea={(areaId) => void enterArea(areaId)}
+              onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
+              onCollectItem={(itemId) => void collectItem(itemId)}
+              onStartQuest={(questId) => void startQuest(questId)}
+              onOpenTravel={() => setView("travel")}
+              onOpenHub={() => setView("home")}
+              onOpenStudio={() => setView("studio")}
+              onPlayMinigame={(minigameId) => {
+                setMinigameSource("dialogue");
+                setActiveMinigameId(minigameId as MinigameId);
+                setMinigameStartedAt(Date.now());
+              }}
+              onOpenBoard={() => setView("island")}
+            />
+          </IslandThemeProvider>
         ) : view === "island" && activeIsland ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
             <IslandBoardView
@@ -1432,6 +1494,45 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           </IslandThemeProvider>
         ) : null}
         </GameScreenStack>
+
+        {dialogueState.open && dialogueNode ? (
+          <GameModal
+            open
+            onClose={closeDialogue}
+            maxWidth="md"
+            usePortal
+            showCloseButton
+            title={
+              dialogueState.npcId
+                ? activeIsland?.npcs.find((n) => n.id === dialogueState.npcId)?.name ?? "Conversation"
+                : "Conversation"
+            }
+            zIndex={45}
+          >
+            <div className="space-y-4" data-testid="dialogue-modal">
+              <p className="text-base font-medium leading-relaxed">
+                {resolveProfileText(dialogueNode.text, learningProfile)}
+              </p>
+              <div className="flex flex-col gap-2">
+                {(dialogueNode.choices ?? []).map((choice) => (
+                  <GameButton
+                    key={choice.id}
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                    onClick={() => void onDialogueChoice(choice.id)}
+                  >
+                    {resolveProfileText(choice.text, learningProfile)}
+                  </GameButton>
+                ))}
+                {!(dialogueNode.choices && dialogueNode.choices.length > 0) ? (
+                  <GameButton variant="primary" className="w-full" onClick={closeDialogue}>
+                    Continue
+                  </GameButton>
+                ) : null}
+              </div>
+            </div>
+          </GameModal>
+        ) : null}
 
         {activeMinigameId && MinigameComponent && activeIsland ? (
           <GameModal

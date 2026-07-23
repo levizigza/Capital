@@ -43,6 +43,8 @@ import { getAnimationStyle, type AnimationStyleId } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import type { CapitalCharacter } from "../character";
+import { coinBagIslandTip } from "../story/coinBagBuddy";
+import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 
 type IslandSection = "explore" | "quests" | "bag";
 
@@ -63,6 +65,8 @@ export type IslandPlayViewProps = {
   onOpenHub: () => void;
   onOpenStudio?: () => void;
   onPlayMinigame?: (minigameId: string) => void;
+  /** Optional Fortune Party board for this island */
+  onOpenBoard?: () => void;
   devCheats?: ReactNode;
 };
 
@@ -190,6 +194,7 @@ export function IslandPlayView({
   onOpenHub,
   onOpenStudio,
   onPlayMinigame,
+  onOpenBoard,
   devCheats,
 }: IslandPlayViewProps) {
   const { uiScale } = useGameUi();
@@ -197,6 +202,7 @@ export function IslandPlayView({
   const era = getAnimationStyle(animationStyle);
   const [section, setSection] = useState<IslandSection>("explore");
   const profileDef = getProfileDef(learningProfile);
+  const buddy = coinBagIslandTip(save, island);
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);
@@ -373,6 +379,11 @@ export function IslandPlayView({
           <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
             🪄 Float
           </GameButton>
+          {onOpenBoard ? (
+            <GameButton variant="outline" size="sm" onClick={onOpenBoard}>
+              🎲 Party board
+            </GameButton>
+          ) : null}
           <GameButton variant="primary" size="sm" onClick={onOpenHub}>
             🏠 Hub
           </GameButton>
@@ -380,6 +391,7 @@ export function IslandPlayView({
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-[var(--game-gap)] pb-4">
+        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
         {island.id === "future_shores" && onOpenStudio ? (
           <GamePanel padding="default" className="border-dashed border-amber-400 bg-amber-50/80">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

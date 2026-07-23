@@ -378,7 +378,7 @@ export function IslandBoardView({
 
   const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
   const boardSkin = era.boardSkinClass;
-  const buddy = coinBagIslandTip(save, island.name);
+  const buddy = coinBagIslandTip(save, island);
 
   return (
     <GameHudLayout

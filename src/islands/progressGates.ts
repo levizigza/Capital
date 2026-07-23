@@ -5,7 +5,12 @@
 
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { ensureLedger } from "./voyagerLedger";
-import { HUB_ISLAND_ID } from "./worldMapLayout";
+import { hasCompletedCoveChange } from "./chapterLoop";
+import {
+  HUB_ISLAND_ID,
+  isHubIslandId,
+  PAYCHECK_PENINSULA_ID,
+} from "./islandIds";
 
 /** Inventory flag granted on Harbor escape — also used for carpet/plaza rewards */
 export const HARBOR_FREEDOM_ITEM = "harbor_freedom_seal";
@@ -77,14 +82,19 @@ export function bossUnlockProgress(save: IslandSaveV1): {
 }
 
 /**
- * Island lock check — inventory keys + boss progression.
+ * Island lock check — inventory keys + boss progression + Island 2 after Cove Change.
  * Hub is never locked.
  */
 export function isIslandProgressLocked(island: IslandDefinition, save: IslandSaveV1): boolean {
-  if (island.id === HUB_ISLAND_ID) return false;
+  if (isHubIslandId(island.id) || island.id === HUB_ISLAND_ID) return false;
 
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;
+
+  // Island 2 opens after Cove “save or spend” Change beat.
+  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
+    return true;
+  }
 
   if (island.id === BOSS_ISLAND_ID) {
     return !bossUnlockProgress(save).unlocked;
@@ -100,5 +110,12 @@ export function withHarborFreedomRewards(save: IslandSaveV1): IslandSaveV1 {
   return {
     ...save,
     inventory: [...save.inventory, HARBOR_FREEDOM_ITEM],
+    harborHomecoming: {
+      ...(save.harborHomecoming ?? {}),
+      pending: true,
+      chapterIslandId: HUB_ISLAND_ID,
+      questId: "harbor_freedom",
+      message: "Freedom seal earned — visit the Freedom Pavilion!",
+    },
   };
 }

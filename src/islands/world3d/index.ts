@@ -13,4 +13,6 @@ export { DioramaIslandMesh } from "./DioramaIslandMesh";
 export { CharacterPreview3D } from "./CharacterPreview3D";
 export { OutfitterStudio3D } from "./OutfitterStudio3D";
 export { OutfitterStudioOverlay } from "./OutfitterStudioOverlay";
+export { CapsuleStudio3D } from "./CapsuleStudio3D";
+export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
 export { MoneyBagGuide, guideTargetForHighlight, COIN_BAG_GUIDE_ID } from "./MoneyBagGuide";

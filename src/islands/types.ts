@@ -234,6 +234,16 @@ export type IslandSaveV1 = {
    */
   hubGuidedIntro?: import("./story/storyBible").HubGuidedIntroState;
   /**
+   * Harbor Return/Change — set when a chapter quest completes; celebrated on hub.
+   */
+  harborHomecoming?: {
+    pending?: boolean;
+    celebrated?: boolean;
+    chapterIslandId?: string;
+    questId?: string;
+    message?: string;
+  };
+  /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.
    */

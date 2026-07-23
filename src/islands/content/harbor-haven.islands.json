@@ -1,0 +1,42 @@
+{
+  "version": "1",
+  "islands": [
+    {
+      "id": "harbor_haven",
+      "name": "Harbor Haven",
+      "description": "Castle Grounds — walk with Coin Bag, talk to Piggy Penny, style at the Outfitter, peek Capsules, then board your carpet for the first painting.",
+      "icon": "🏝️",
+      "provenance": {
+        "learning_objectives": [
+          "Orient to Harbor as home base",
+          "Meet the Harbor Keeper and Coin Bag",
+          "Practice a tiny spend before voyaging"
+        ],
+        "mechanics_used": ["hub-exploration", "npc-dialogue-tree", "shop-spend"],
+        "originality_notes": "SM64-style Castle Grounds hub. Not a chapter island — chapters live on outer paintings (Coincraft Cove first).",
+        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday"]
+      },
+      "areas": [
+        {
+          "id": "hh_plaza",
+          "name": "Main Plaza",
+          "description": "Outfitter, Capsules, Arcade, and Piggy Penny’s welcome mat.",
+          "icon": "🏛️",
+          "connections": ["hh_dock"]
+        },
+        {
+          "id": "hh_dock",
+          "name": "Carpet Dock",
+          "description": "Your money magic carpet waits to float to the Fortune Archipelago.",
+          "icon": "🪄",
+          "connections": ["hh_plaza"]
+        }
+      ],
+      "npcs": [],
+      "items": [],
+      "quests": [],
+      "dialogues": [],
+      "minigames": []
+    }
+  ]
+}

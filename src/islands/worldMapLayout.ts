@@ -2,9 +2,22 @@ import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { getIslandTheme } from "./themes/islandThemes";
 import { getGalapagosProfile, type GalapagosProfile } from "./galapagosIslands";
 import { isIslandProgressLocked } from "./progressGates";
+import {
+  HARBOR_HAVEN_ID,
+  HUB_ISLAND_ID,
+  isHubIslandId,
+  LEGACY_HUB_ISLAND_ID,
+} from "./islandIds";
 
-/** Home island — modeled on Santa Cruz (main Galápagos settlement). */
-export const HUB_ISLAND_ID = "coincraft_cove";
+export {
+  HARBOR_HAVEN_ID,
+  HUB_ISLAND_ID,
+  isHubIslandId,
+  LEGACY_HUB_ISLAND_ID,
+  COVE_ISLAND_ID,
+  PAYCHECK_PENINSULA_ID,
+  COVE_CHANGE_QUEST_ID,
+} from "./islandIds";
 
 /** World-space radius between hub and outer islands (POV voyage units). */
 export const ARCHIPELAGO_WORLD_RADIUS = 920;
@@ -31,7 +44,11 @@ export type ArchipelagoNode = {
 };
 
 export function resolveHubIsland(islands: IslandDefinition[]): IslandDefinition {
-  return islands.find((i) => i.id === HUB_ISLAND_ID) ?? islands[0]!;
+  return (
+    islands.find((i) => i.id === HUB_ISLAND_ID) ||
+    islands.find((i) => i.id === LEGACY_HUB_ISLAND_ID) ||
+    islands[0]!
+  );
 }
 
 export function buildArchipelagoLayout(islands: IslandDefinition[]): {
@@ -54,7 +71,17 @@ export function buildArchipelagoLayout(islands: IslandDefinition[]): {
     galapagos: getGalapagosProfile(hubIsland.id),
   };
 
-  const outerIslands = islands.filter((i) => i.id !== hubIsland.id);
+  // Prefer Coincraft Cove as the first outer pin (first painting).
+  const outerIslands = islands
+    .filter((i) => !isHubIslandId(i.id) && i.id !== hubIsland.id)
+    .slice()
+    .sort((a, b) => {
+      if (a.id === "coincraft_cove") return -1;
+      if (b.id === "coincraft_cove") return 1;
+      if (a.id === "paycheck_peninsula") return -1;
+      if (b.id === "paycheck_peninsula") return 1;
+      return a.name.localeCompare(b.name);
+    });
   const count = Math.max(1, outerIslands.length);
   const startAngle = -Math.PI / 2;
 
