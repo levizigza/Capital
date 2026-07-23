@@ -1,9 +1,10 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type MutableRefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { VoyagerMesh } from "./VoyagerMesh";
 import type { CapitalCharacter } from "../character";
 import type { AnimationStyleId } from "../animationStyles";
+import { CarpetCoinBagBuddy } from "./CarpetCoinBagBuddy";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -18,6 +19,10 @@ type Props = {
   povRide?: boolean;
   /** Decade lens for the seated Voyager (approach morph / dock era). */
   animationStyle?: AnimationStyleId | string;
+  /** Coin Bag rides shotgun with cycling emotes (default on for POV). */
+  showBuddy?: boolean;
+  /** Live rush flag so buddy gets wilder faces mid-boost */
+  rushingRef?: MutableRefObject<boolean>;
 };
 
 /**
@@ -31,11 +36,17 @@ export function MoneyCarpet({
   hideRider = false,
   povRide = false,
   animationStyle,
+  showBuddy,
+  rushingRef,
 }: Props) {
   const root = useRef<THREE.Group>(null);
   const cloth = useRef<THREE.Mesh>(null);
   const fringeRefs = useRef<THREE.Mesh[]>([]);
   const tipRefs = useRef<THREE.Mesh[]>([]);
+  const buddyOn = showBuddy ?? povRide;
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
   // POV: bill underfoot with a modest nose ahead — island view stays clear.
   const length = povRide ? 2.9 : 1.6;
@@ -250,6 +261,15 @@ export function MoneyCarpet({
         <group position={[0, 0.14, seatZ]}>
           <VoyagerMesh character={character} pose="sit" scale={0.85} animationStyle={animationStyle} />
         </group>
+      ) : null}
+
+      {buddyOn ? (
+        <CarpetCoinBagBuddy
+          position={povRide ? [0.78, 0.1, seatZ + 0.15] : [0.85, 0.12, 0.1]}
+          scale={povRide ? 0.52 : 0.62}
+          rushingRef={rushingRef}
+          reducedMotion={reduced}
+        />
       ) : null}
     </group>
   );

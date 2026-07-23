@@ -96,6 +96,7 @@ function FlightRig({
   const carpet = useRef<THREE.Group>(null);
   const keys = useRef({ l: false, r: false, up: false, down: false, boost: false });
   const rush = useRef(false);
+  const rushingRef = useRef(false);
   const state = useRef({
     x: 0,
     z: START_Z,
@@ -252,9 +253,11 @@ function FlightRig({
       camera.updateProjectionMatrix();
     }
 
+    const rushing = keys.current.boost || rush.current;
+    rushingRef.current = rushing;
+
     if (nearest) {
       const marked = targetId && nearest.node.island.id === targetId ? "🎯 " : "";
-      const rushing = keys.current.boost || rush.current;
       setHud({
         knots: Math.round((s.speed / SPEED_RUSH) * 90),
         hint: rushing
@@ -290,6 +293,8 @@ function FlightRig({
         hideRider
         povRide
         animationStyle={riderStyle}
+        showBuddy
+        rushingRef={rushingRef}
       />
     </group>
   );

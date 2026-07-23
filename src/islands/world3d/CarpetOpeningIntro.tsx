@@ -100,7 +100,7 @@ function FlightPov({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={BASE_VOYAGER} flying hideRider povRide />
+      <MoneyCarpet character={BASE_VOYAGER} flying hideRider povRide showBuddy />
     </group>
   );
 }

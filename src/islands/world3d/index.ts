@@ -6,6 +6,13 @@ export { PartyArenaWorld } from "./PartyArenaWorld";
 export { getEraLook3D, lerpEraLook3D } from "./eraLooks";
 export { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
 export { MoneyCarpet } from "./MoneyCarpet";
+export { CarpetCoinBagBuddy } from "./CarpetCoinBagBuddy";
+export {
+  CARPET_EMOTE_PLAYLIST,
+  captionForEmote,
+  pickCarpetEmoteBeat,
+  type CoinBagEmote,
+} from "./coinBagEmotes";
 export { EraIslandMesh } from "./EraIslandMesh";
 export { WorldLighting } from "./WorldLighting";
 export { OceanWater, OceanPlane } from "./OceanWater";
