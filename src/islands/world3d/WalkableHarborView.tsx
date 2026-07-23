@@ -42,7 +42,9 @@ type Props = {
   /** Ambient Money Mascot chat when walking near a local. */
   onNearNpc?: (npc: { id: string; name: string; line: string } | null) => void;
   /** Castle Grounds guide — Coin Bag hops toward this highlight */
-  guideHighlight?: "outfitter" | "capsule" | "travel" | "practice" | "guide";
+  guideHighlight?: "outfitter" | "capsule" | "travel" | "practice" | "guide" | "pavilion" | string;
+  /** Direct world look-at (wins over highlight when set) — keeps buddy pointing after tutorial */
+  guideLookAt?: [number, number, number] | null;
   guideTip?: string;
   /** Piggy body language — must match coach/dialogue claims */
   keeperEmote?: NpcEmote;
@@ -634,6 +636,7 @@ export function WalkableHarborView({
   onNearChange,
   onNearNpc,
   guideHighlight,
+  guideLookAt = null,
   guideTip,
   keeperEmote = "idle",
   keeperSpeech = null,
@@ -680,9 +683,10 @@ export function WalkableHarborView({
   );
 
   const guideTarget = useMemo(() => {
+    if (guideLookAt) return guideLookAt;
     if (!guideHighlight) return null;
     return guideTargetForHighlight(guideHighlight, hotspots);
-  }, [guideHighlight, hotspots]);
+  }, [guideLookAt, guideHighlight, hotspots]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

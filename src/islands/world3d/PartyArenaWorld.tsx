@@ -10,6 +10,8 @@ import { getEraLook3D, type EraLook3D } from "./eraLooks";
 import { VoyagerMesh } from "./VoyagerMesh";
 import { WorldLighting } from "./WorldLighting";
 import { getAnimationStyle } from "../animationStyles";
+import { MoneyBagGuide } from "./MoneyBagGuide";
+import { CoinBagBuddyHud } from "../views/CoinBagBuddyHud";
 
 type Props = {
   island: IslandDefinition;
@@ -47,6 +49,7 @@ function ArenaPlayer({
   onGrab,
   onHitImpulse,
   groundedOut,
+  playerPosOut,
 }: {
   character?: CapitalCharacter | null;
   animationStyle?: string;
@@ -54,6 +57,7 @@ function ArenaPlayer({
   onGrab: (id: number, kind: "value" | "impulse") => void;
   onHitImpulse: () => void;
   groundedOut: React.MutableRefObject<boolean>;
+  playerPosOut: React.MutableRefObject<THREE.Vector3>;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false, jump: false, act: false });
@@ -137,6 +141,7 @@ function ArenaPlayer({
     }
 
     group.current.rotation.y = yaw.current;
+    playerPosOut.current.set(p.x, p.y, p.z);
 
     // Action grab / impulse contact
     for (const pk of pickups.current) {
@@ -256,6 +261,45 @@ function RivalBot({
   );
 }
 
+function ArenaGuide({
+  playerPos,
+  pickups,
+  tip,
+}: {
+  playerPos: React.MutableRefObject<THREE.Vector3>;
+  pickups: React.MutableRefObject<Pickup[]>;
+  tip: string;
+}) {
+  const lookAtRef = useRef<[number, number, number] | null>([0, 0.5, -2]);
+  useFrame(() => {
+    let best: Pickup | null = null;
+    let bestD = Infinity;
+    const p = playerPos.current;
+    for (const pk of pickups.current) {
+      if (pk.taken || pk.kind !== "value") continue;
+      const d = Math.hypot(pk.pos.x - p.x, pk.pos.z - p.z);
+      if (d < bestD) {
+        bestD = d;
+        best = pk;
+      }
+    }
+    lookAtRef.current = best
+      ? [best.pos.x, best.pos.y + 0.4, best.pos.z]
+      : null;
+  });
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  return (
+    <MoneyBagGuide
+      lookAtRef={lookAtRef}
+      playerPos={playerPos}
+      tip={tip}
+      reducedMotion={reduced}
+    />
+  );
+}
+
 function ArenaScene({
   island,
   look,
@@ -264,6 +308,7 @@ function ArenaScene({
   pickups,
   onGrab,
   onHitImpulse,
+  guideTip,
 }: {
   island: IslandDefinition;
   look: EraLook3D;
@@ -272,8 +317,10 @@ function ArenaScene({
   pickups: React.MutableRefObject<Pickup[]>;
   onGrab: (id: number, kind: "value" | "impulse") => void;
   onHitImpulse: () => void;
+  guideTip: string;
 }) {
   const grounded = useRef(true);
+  const playerPos = useRef(new THREE.Vector3(0, 0.02, 3));
   const wire = look.shading === "vector" || look.shading === "wire";
 
   const platforms = useMemo(
@@ -334,7 +381,9 @@ function ArenaScene({
         onGrab={onGrab}
         onHitImpulse={onHitImpulse}
         groundedOut={grounded}
+        playerPosOut={playerPos}
       />
+      <ArenaGuide playerPos={playerPos} pickups={pickups} tip={guideTip} />
     </>
   );
 }
@@ -446,6 +495,7 @@ export function PartyArenaWorld({
               pickups={pickups}
               onGrab={onGrab}
               onHitImpulse={onHitImpulse}
+              guideTip="Grab the gold value coins — dodge red impulse spends!"
             />
           ) : null}
         </Suspense>
@@ -482,6 +532,14 @@ export function PartyArenaWorld({
             <div className="text-xl font-black">{"❤️".repeat(lives)}</div>
           </div>
         </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-20 z-20 flex justify-center px-4">
+        <CoinBagBuddyHud
+          tip="Grab gold value coins — I’m pointing the nearest one!"
+          coach="Stay with me in the painting. Dodge red impulse spends."
+          track="main"
+        />
       </div>
 
       <div className="absolute bottom-4 left-4 z-20">

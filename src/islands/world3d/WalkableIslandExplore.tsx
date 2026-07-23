@@ -22,6 +22,7 @@ import {
   type AmbientResident,
 } from "../islandCulture";
 import { getMascot, varyMascot } from "../moneyCast";
+import { MoneyBagGuide } from "./MoneyBagGuide";
 
 type Props = {
   island: IslandDefinition;
@@ -30,6 +31,10 @@ type Props = {
   onHotspot: (id: string) => void;
   onNearChange?: (id: string | null, label: string | null) => void;
   collectedItemIds?: string[];
+  /** Coin Bag tip — who/where next */
+  guideTip?: string;
+  /** World point Coin Bag points at (stays beside player) */
+  guideLookAt?: [number, number, number] | null;
 };
 
 const SPEED = 6.8;
@@ -557,6 +562,8 @@ export function WalkableIslandExplore({
   onHotspot,
   onNearChange,
   collectedItemIds = [],
+  guideTip,
+  guideLookAt = null,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
   const look = useMemo(() => getEraLook3D(theme.animationStyle), [theme.animationStyle]);
@@ -615,6 +622,12 @@ export function WalkableIslandExplore({
             animationStyle={theme.animationStyle}
             onNear={setNear}
             playerPosOut={playerPos}
+          />
+          <MoneyBagGuide
+            lookAt={guideLookAt}
+            playerPos={playerPos}
+            tip={guideTip ?? "Stay with me — I’ll point the next step!"}
+            reducedMotion={reduced}
           />
         </Suspense>
       </Canvas>

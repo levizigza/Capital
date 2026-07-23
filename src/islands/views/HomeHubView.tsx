@@ -39,6 +39,7 @@ import {
 import { guidedVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
+import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -193,6 +194,26 @@ export function HomeHubView({
     [onOpenEditor, pavilionOpen],
   );
 
+  const harborGuideLookAt = useMemo(
+    () =>
+      resolveHarborGuideLookAt({
+        highlight: guidedStep?.highlight ?? (showOutfitterHighlight ? "outfitter" : null),
+        hotspots: harborHotspots,
+        homecomingPending: Boolean(save.harborHomecoming?.pending),
+        nearStoreId: nearStore?.id ?? null,
+        pointPavilion: coinBagShouldPointPavilion(save),
+        defaultId: "travel",
+      }),
+    [
+      guidedStep?.highlight,
+      showOutfitterHighlight,
+      harborHotspots,
+      save.harborHomecoming?.pending,
+      nearStore?.id,
+      save,
+    ],
+  );
+
   const openOutfitter = () => {
     setDraft(voyager);
     setOutfitterStage("look");
@@ -301,6 +322,7 @@ export function HomeHubView({
                 onNearChange={onNearChange}
                 onNearNpc={onNearNpcHandler}
                 guideHighlight={guidedStep?.highlight}
+                guideLookAt={harborGuideLookAt}
                 guideTip={bagGuideTip}
                 keeperEmote={castleMode ? keeperEmote : "idle"}
                 keeperSpeech={keeperSpeech}

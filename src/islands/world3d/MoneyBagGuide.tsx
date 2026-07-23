@@ -10,7 +10,9 @@ type Props = {
    * Where the next objective is in the world.
    * Coin Bag stays beside you and POINTS here — never runs away.
    */
-  lookAt: [number, number, number] | null;
+  lookAt?: [number, number, number] | null;
+  /** Live look-at (preferred in arenas) — read every frame, no React churn */
+  lookAtRef?: MutableRefObject<[number, number, number] | null>;
   /** Live player position */
   playerPos: MutableRefObject<THREE.Vector3>;
   /** Buddy tip — who to talk to / where to go */
@@ -24,10 +26,10 @@ type Props = {
  */
 function BunnyMoneyBagMesh({
   hopPhase,
-  pointing,
+  pointingRef,
 }: {
   hopPhase: MutableRefObject<number>;
-  pointing: boolean;
+  pointingRef: MutableRefObject<boolean>;
 }) {
   const body = useRef<THREE.Group>(null);
   const ears = useRef<THREE.Group>(null);
@@ -47,6 +49,7 @@ function BunnyMoneyBagMesh({
       ears.current.rotation.x = -0.15 + bounce * 0.06;
     }
     if (arm.current) {
+      const pointing = pointingRef.current;
       // Pointing arm: hold forward when guiding
       arm.current.rotation.x = pointing ? -1.15 : -0.25 + Math.sin(t) * 0.08;
       arm.current.rotation.z = pointing ? 0.35 : 0.1;
@@ -168,13 +171,15 @@ function BunnyMoneyBagMesh({
 }
 
 /** Floating arrow from buddy toward the objective. */
-function PointArrow({ active }: { active: boolean }) {
+function PointArrow({ activeRef }: { activeRef: MutableRefObject<boolean> }) {
   const ref = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
-    if (!ref.current || !active) return;
+    if (!ref.current) return;
+    const active = activeRef.current;
+    ref.current.visible = active;
+    if (!active) return;
     ref.current.position.z = 0.55 + Math.sin(clock.elapsedTime * 5) * 0.08;
   });
-  if (!active) return null;
   return (
     <group ref={ref} position={[0, 0.85, 0.55]} rotation={[Math.PI / 2, 0, 0]}>
       <mesh castShadow>
@@ -190,22 +195,23 @@ function PointArrow({ active }: { active: boolean }) {
   );
 }
 
-export function MoneyBagGuide({ lookAt, playerPos, tip, reducedMotion }: Props) {
+export function MoneyBagGuide({ lookAt = null, lookAtRef, playerPos, tip, reducedMotion }: Props) {
   const group = useRef<THREE.Group>(null);
   const hopPhase = useRef(0);
   const sideOffset = useRef(new THREE.Vector3());
-  const pointing = !!lookAt;
+  const pointingFlag = useRef(!!lookAt);
 
   useFrame((_, dt) => {
     if (!group.current) return;
     const p = playerPos.current;
+    const goal = lookAtRef?.current ?? lookAt;
+    pointingFlag.current = !!goal;
 
     // Stay on the Voyager's right — buddy distance, not destination race
     const buddyDist = 1.15;
-    // Prefer a stable world-right relative to movement: use offset from last frame toward goal for facing
     let faceYaw = group.current.rotation.y;
-    if (lookAt) {
-      faceYaw = Math.atan2(lookAt[0] - p.x, lookAt[2] - p.z);
+    if (goal) {
+      faceYaw = Math.atan2(goal[0] - p.x, goal[2] - p.z);
     }
 
     // Side slot: to the right of the facing-toward-goal (or previous) direction
@@ -224,9 +230,9 @@ export function MoneyBagGuide({ lookAt, playerPos, tip, reducedMotion }: Props) 
       pos.z += (dz / dist) * spd * dt;
     }
 
-    if (lookAt) {
+    if (goal) {
       // Face the next person/door while staying glued to the player
-      group.current.rotation.y = Math.atan2(lookAt[0] - pos.x, lookAt[2] - pos.z);
+      group.current.rotation.y = Math.atan2(goal[0] - pos.x, goal[2] - pos.z);
     } else {
       // Face roughly with the player
       group.current.rotation.y = Math.atan2(p.x - pos.x, p.z - pos.z) + Math.PI;
@@ -241,11 +247,11 @@ export function MoneyBagGuide({ lookAt, playerPos, tip, reducedMotion }: Props) 
     <group
       ref={group}
       position={[1.15, 0.05, 3.2]}
-      scale={1.05}
+      scale={1.2}
       userData={{ guideId: COIN_BAG_GUIDE_ID }}
     >
-      <BunnyMoneyBagMesh hopPhase={hopPhase} pointing={pointing} />
-      <PointArrow active={pointing} />
+      <BunnyMoneyBagMesh hopPhase={hopPhase} pointingRef={pointingFlag} />
+      <PointArrow activeRef={pointingFlag} />
       <Billboard position={[0, 1.95, 0]} follow>
         <Text
           fontSize={0.2}
@@ -279,7 +285,7 @@ export function MoneyBagGuide({ lookAt, playerPos, tip, reducedMotion }: Props) 
 
 /** Resolve a guided highlight into a plaza world look-at point. */
 export function guideTargetForHighlight(
-  highlight: "outfitter" | "capsule" | "travel" | "practice" | "guide" | undefined,
+  highlight: "outfitter" | "capsule" | "travel" | "practice" | "guide" | "pavilion" | string | undefined,
   hotspots: { id: string; position: [number, number, number] }[],
   piggyPos: [number, number, number] = [4.8, 0, -4],
 ): [number, number, number] | null {

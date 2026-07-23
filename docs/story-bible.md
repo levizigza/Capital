@@ -109,7 +109,7 @@ Coincraft Cove is **Island 1 / first painting** — reference implementation.
 
 | Guide | Mascot | Beat ownership |
 |-------|--------|----------------|
-| **Path buddy** | **Coin Bag** (bunny-eared money bag) | Stays beside the Voyager; points at next person/door — whole journey |
+| **Path buddy** | **Coin Bag** (bunny-eared money bag) | Stays beside the Voyager on Harbor **and** island shores; points at next person/door/painting — whole journey |
 | **Harbor Keeper** | Piggy Penny | Castle Grounds verbs; talk lines for Outfitter, Capsule, Dock |
 | **Island Ally** | Per-island (Cove: Captain Penny → remap to mascot cast over time) | Search / Find on that island |
 | **Return Witness** | Budget Bot or Vault Vince | Names the Change when you come home |

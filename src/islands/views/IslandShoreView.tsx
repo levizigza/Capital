@@ -25,6 +25,7 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { buildShoreHotspots } from "../islandShoreLayout";
+import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
@@ -72,6 +73,10 @@ export function IslandShoreView({
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const buddy = coinBagIslandTip(save, island);
+  const guideLookAt = useMemo(
+    () => resolveShoreGuideLookAt(island, save, hotspots),
+    [island, save, hotspots],
+  );
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const courseProg = useMemo(() => mainCourseProgress(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
@@ -131,6 +136,8 @@ export function IslandShoreView({
               onHotspot={activate}
               onNearChange={onNearChange}
               collectedItemIds={save.inventory}
+              guideTip={buddy.tip}
+              guideLookAt={guideLookAt}
             />
           </div>
         }
