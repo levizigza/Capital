@@ -18,6 +18,8 @@ type Props = {
   /** Buddy tip — who to talk to / where to go */
   tip?: string;
   reducedMotion?: boolean;
+  /** When false, hide the gold point arrow (free roam / Ignore guide) */
+  pointingEnabled?: boolean;
 };
 
 /**
@@ -195,16 +197,23 @@ function PointArrow({ activeRef }: { activeRef: MutableRefObject<boolean> }) {
   );
 }
 
-export function MoneyBagGuide({ lookAt = null, lookAtRef, playerPos, tip, reducedMotion }: Props) {
+export function MoneyBagGuide({
+  lookAt = null,
+  lookAtRef,
+  playerPos,
+  tip,
+  reducedMotion,
+  pointingEnabled = true,
+}: Props) {
   const group = useRef<THREE.Group>(null);
   const hopPhase = useRef(0);
   const sideOffset = useRef(new THREE.Vector3());
-  const pointingFlag = useRef(!!lookAt);
+  const pointingFlag = useRef(!!lookAt && pointingEnabled);
 
   useFrame((_, dt) => {
     if (!group.current) return;
     const p = playerPos.current;
-    const goal = lookAtRef?.current ?? lookAt;
+    const goal = pointingEnabled ? lookAtRef?.current ?? lookAt : null;
     pointingFlag.current = !!goal;
 
     // Stay on the Voyager's right — buddy distance, not destination race

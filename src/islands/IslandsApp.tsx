@@ -1508,6 +1508,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               learningProfile={learningProfile}
               character={save.character}
               objectiveKey={objectiveKey}
+              a11y={a11y}
+              onA11yChange={updateA11y}
               onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
               onCollectItem={(itemId) => void collectItem(itemId)}
               onPlayMinigame={(minigameId) => {

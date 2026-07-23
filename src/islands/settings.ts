@@ -14,12 +14,18 @@ export type AccessibilitySettings = {
   textSize: TextSize;
   reducedMotion: boolean;
   highContrast: boolean;
+  /**
+   * Soft wayfinder: Coin Bag point arrow + off-screen edge chevron.
+   * Off = free roam / side quests without guide clutter.
+   */
+  guideArrows: boolean;
 };
 
 const DEFAULT_A11Y: AccessibilitySettings = {
   textSize: "normal",
   reducedMotion: false,
   highContrast: false,
+  guideArrows: true,
 };
 
 export function loadAccessibilitySettings(): AccessibilitySettings {

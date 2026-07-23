@@ -22,6 +22,7 @@ import { getAnimationStyle } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
+import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { buildShoreHotspots } from "../islandShoreLayout";
@@ -30,6 +31,7 @@ import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
+import type { AccessibilitySettings } from "../settings";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -38,6 +40,8 @@ export type IslandShoreViewProps = {
   learningProfile: LearningProfileId;
   character?: CapitalCharacter | null;
   objectiveKey: (obj: QuestObjective) => string;
+  a11y?: AccessibilitySettings;
+  onA11yChange?: (next: AccessibilitySettings) => void;
   onTalkNpc: (npcId: NpcId) => void;
   onCollectItem: (itemId: ItemId) => void;
   onPlayMinigame: (minigameId: string) => void;
@@ -59,6 +63,8 @@ export function IslandShoreView({
   learningProfile,
   character,
   objectiveKey,
+  a11y,
+  onA11yChange,
   onTalkNpc,
   onCollectItem,
   onPlayMinigame,
@@ -73,15 +79,22 @@ export function IslandShoreView({
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
+  const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const buddy = coinBagIslandTip(save, island);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
     [island, save, hotspots],
   );
+  const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const courseProg = useMemo(() => mainCourseProgress(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
+
+  const toggleGuide = useCallback(() => {
+    if (!a11y || !onA11yChange) return;
+    onA11yChange({ ...a11y, guideArrows: !guideArrows });
+  }, [a11y, onA11yChange, guideArrows]);
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);
@@ -140,6 +153,13 @@ export function IslandShoreView({
               collectedItemIds={save.inventory}
               guideTip={buddy.tip}
               guideLookAt={guideLookAt}
+              guideArrows={guideArrows}
+              onGuideProject={setGuideProjection}
+            />
+            <GuideEdgeCue
+              projection={guideProjection}
+              enabled={guideArrows}
+              label={buddy.tip}
             />
           </div>
         }
@@ -206,7 +226,13 @@ export function IslandShoreView({
         }
       >
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
-          <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
+          <CoinBagBuddyHud
+            tip={buddy.tip}
+            coach={buddy.coach}
+            track={buddy.track}
+            guideArrows={guideArrows}
+            onToggleGuide={onA11yChange ? toggleGuide : undefined}
+          />
           <div className="pointer-events-none max-w-sm rounded-2xl bg-black/65 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
             Dive a painting for a real 3D action world — quizzes prove mastery after you clear it.
           </div>

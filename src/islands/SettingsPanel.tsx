@@ -44,7 +44,7 @@ export default function SettingsPanel({
     onProfileChange?.(id);
   };
 
-  const toggle = (key: "reducedMotion" | "highContrast") =>
+  const toggle = (key: "reducedMotion" | "highContrast" | "guideArrows") =>
     onChange({ ...settings, [key]: !settings[key] });
 
   return (
@@ -124,6 +124,22 @@ export default function SettingsPanel({
             <div>
               <div className="text-sm font-medium">Reduced Motion</div>
               <div className="text-xs text-gray-600">Disable animations and transitions</div>
+            </div>
+          </label>
+
+          <label className="flex min-h-11 cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={settings.guideArrows !== false}
+              onChange={() => toggle("guideArrows")}
+              className="h-5 w-5 rounded accent-blue-600"
+              aria-label="Guide arrows"
+            />
+            <div>
+              <div className="text-sm font-medium">Guide arrows</div>
+              <div className="text-xs text-gray-600">
+                Soft edge cue + Coin Bag point — turn off for free roam / side quests
+              </div>
             </div>
           </label>
 

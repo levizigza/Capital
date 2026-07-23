@@ -24,6 +24,7 @@ import {
 } from "../islandCulture";
 import { getMascot, varyMascot } from "../moneyCast";
 import { MoneyBagGuide } from "./MoneyBagGuide";
+import { GuideProjector } from "../views/GuideWayfinder";
 
 type Props = {
   island: IslandDefinition;
@@ -36,6 +37,9 @@ type Props = {
   guideTip?: string;
   /** World point Coin Bag points at (stays beside player) */
   guideLookAt?: [number, number, number] | null;
+  /** Soft wayfinder arrows (edge cue + bag point). Off = free roam. */
+  guideArrows?: boolean;
+  onGuideProject?: (p: import("../views/GuideWayfinder").GuideProjection | null) => void;
 };
 
 const SPEED = 6.8;
@@ -247,16 +251,20 @@ function PadMarker({
   hotspot,
   look,
   active,
+  guided,
   collected,
   animationStyle,
 }: {
   hotspot: ShoreHotspot;
   look: EraLook3D;
   active: boolean;
+  /** Soft pulse when Coin Bag is pointing here */
+  guided?: boolean;
   collected?: boolean;
   animationStyle: string;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
+  const lit = active || !!guided;
   const color =
     hotspot.kind === "play_pad"
       ? look.accent
@@ -275,17 +283,30 @@ function PadMarker({
   return (
     <group position={hotspot.position}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
-        <circleGeometry args={[active ? 1.35 : 1.05, 24]} />
+        <circleGeometry args={[lit ? 1.35 : 1.05, 24]} />
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={active ? 0.45 : 0.18}
+          emissiveIntensity={active ? 0.45 : guided ? 0.32 : 0.18}
           roughness={0.45}
           wireframe={wire}
           transparent
           opacity={wire ? 0.85 : 0.92}
         />
       </mesh>
+      {guided && !active ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0]}>
+          <ringGeometry args={[1.15, 1.45, 28]} />
+          <meshStandardMaterial
+            color="#fbbf24"
+            emissive="#f59e0b"
+            emissiveIntensity={0.55}
+            transparent
+            opacity={0.55}
+            depthWrite={false}
+          />
+        </mesh>
+      ) : null}
       {hotspot.kind === "play_pad" ? (
         <group>
           <mesh position={[0, 1.35, 0]} castShadow>
@@ -550,6 +571,8 @@ function ShoreScene({
   animationStyle,
   onNear,
   playerPosOut,
+  guideLookAt,
+  guideArrows,
 }: {
   island: IslandDefinition;
   look: EraLook3D;
@@ -561,11 +584,26 @@ function ShoreScene({
   animationStyle: string;
   onNear: (id: string | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
+  guideLookAt?: [number, number, number] | null;
+  guideArrows?: boolean;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const anchors = useMemo(() => shoreAnchorsForCulture(culture), [culture]);
   const ambients = useMemo(() => buildAmbientEcosystem(island), [island]);
+  const guidedHotspotId = useMemo(() => {
+    if (!guideArrows || !guideLookAt) return null;
+    let best: string | null = null;
+    let bestD = 2.8;
+    for (const h of hotspots) {
+      const d = Math.hypot(h.position[0] - guideLookAt[0], h.position[2] - guideLookAt[2]);
+      if (d < bestD) {
+        bestD = d;
+        best = h.id;
+      }
+    }
+    return best;
+  }, [guideArrows, guideLookAt, hotspots]);
 
   const props = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId(`${island.id}-shore`), look, "near", biome);
@@ -657,6 +695,7 @@ function ShoreScene({
           hotspot={h}
           look={look}
           active={nearId === h.id}
+          guided={guideArrows && guidedHotspotId === h.id}
           collected={h.kind === "item" && h.refId ? collectedItemIds.includes(h.refId) : false}
           animationStyle={animationStyle}
         />
@@ -688,6 +727,8 @@ export function WalkableIslandExplore({
   collectedItemIds = [],
   guideTip,
   guideLookAt = null,
+  guideArrows = true,
+  onGuideProject,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
@@ -748,12 +789,20 @@ export function WalkableIslandExplore({
             animationStyle={theme.animationStyle}
             onNear={setNear}
             playerPosOut={playerPos}
+            guideLookAt={guideLookAt}
+            guideArrows={guideArrows}
           />
           <MoneyBagGuide
             lookAt={guideLookAt}
             playerPos={playerPos}
             tip={guideTip ?? "Stay with me — I’ll point the next step!"}
             reducedMotion={reduced}
+            pointingEnabled={guideArrows}
+          />
+          <GuideProjector
+            lookAt={guideLookAt}
+            enabled={guideArrows}
+            onProject={onGuideProject ?? (() => {})}
           />
         </Suspense>
       </Canvas>

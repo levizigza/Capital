@@ -22,6 +22,8 @@ import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { IslandTitle } from "./IslandTitle";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
+import { GuideProjector } from "../views/GuideWayfinder";
+import type { GuideProjection } from "../views/GuideWayfinder";
 import type { NpcEmote } from "../story/dialogueActionSync";
 import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 
@@ -52,6 +54,9 @@ type Props = {
   keeperSpeech?: string | null;
   /** Hotspot that pulses so "go here" is visible */
   pulseHotspotId?: string | null;
+  /** Soft wayfinder — Coin Bag point + off-screen edge cue (mute for free roam) */
+  guideArrows?: boolean;
+  onGuideProject?: (p: GuideProjection | null) => void;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -641,6 +646,8 @@ export function WalkableHarborView({
   keeperEmote = "idle",
   keeperSpeech = null,
   pulseHotspotId = null,
+  guideArrows = true,
+  onGuideProject,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -752,6 +759,12 @@ export function WalkableHarborView({
             playerPos={playerPos}
             tip={guideTip ?? "Stay with me!"}
             reducedMotion={reduced}
+            pointingEnabled={guideArrows}
+          />
+          <GuideProjector
+            lookAt={guideTarget}
+            enabled={guideArrows}
+            onProject={onGuideProject ?? (() => {})}
           />
         </Suspense>
       </Canvas>

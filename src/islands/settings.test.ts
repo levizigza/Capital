@@ -34,11 +34,21 @@ beforeEach(() => {
 describe("Accessibility settings", () => {
   it("returns defaults when localStorage is empty", () => {
     const s = loadAccessibilitySettings();
-    expect(s).toEqual({ textSize: "normal", reducedMotion: false, highContrast: false });
+    expect(s).toEqual({
+      textSize: "normal",
+      reducedMotion: false,
+      highContrast: false,
+      guideArrows: true,
+    });
   });
 
   it("round-trips through persist → load", () => {
-    const custom: AccessibilitySettings = { textSize: "xl", reducedMotion: true, highContrast: true };
+    const custom: AccessibilitySettings = {
+      textSize: "xl",
+      reducedMotion: true,
+      highContrast: true,
+      guideArrows: false,
+    };
     persistAccessibilitySettings(custom);
     expect(loadAccessibilitySettings()).toEqual(custom);
   });
@@ -49,12 +59,22 @@ describe("Accessibility settings", () => {
     expect(s.textSize).toBe("large");
     expect(s.reducedMotion).toBe(false);
     expect(s.highContrast).toBe(false);
+    expect(s.guideArrows).toBe(true);
   });
 
   it("returns defaults when stored JSON is corrupted", () => {
     store["island_settings_v1"] = "NOT_JSON";
     const s = loadAccessibilitySettings();
-    expect(s).toEqual({ textSize: "normal", reducedMotion: false, highContrast: false });
+    expect(s).toEqual({
+      textSize: "normal",
+      reducedMotion: false,
+      highContrast: false,
+      guideArrows: true,
+    });
+  });
+
+  it("defaults guideArrows on for soft wayfinding", () => {
+    expect(loadAccessibilitySettings().guideArrows).toBe(true);
   });
 });
 

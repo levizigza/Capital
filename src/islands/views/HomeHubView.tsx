@@ -1,4 +1,5 @@
 import { Suspense, lazy, useMemo, useState, useCallback } from "react";
+import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import {
   GameHudLayout,
   GameButton,
@@ -138,7 +139,12 @@ export function HomeHubView({
   const [draft, setDraft] = useState<CapitalCharacter>(voyager);
   const [nearStore, setNearStore] = useState<{ id: string; label: string } | null>(null);
   const [nearNpc, setNearNpc] = useState<{ id: string; name: string; line: string } | null>(null);
+  const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const plazaRoom = isRoomUnlocked(save, "market") ? "market" : "plaza";
+  const guideArrows = a11y.guideArrows !== false;
+  const toggleGuide = useCallback(() => {
+    updateA11y({ ...a11y, guideArrows: !guideArrows });
+  }, [a11y, updateA11y, guideArrows]);
 
   const visualBeats = guidedVisualBeats(guidedStep?.id);
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
@@ -311,23 +317,32 @@ export function HomeHubView({
                 aria-hidden
               />
             ) : (
-              <WalkableHarborView
-                character={voyager}
-                hotspots={harborHotspots}
-                onHotspot={onHarborHotspot}
-                onOpenTravel={() => {
-                  onHubGuidedEvent("opened_map");
-                  onOpenTravel();
-                }}
-                onNearChange={onNearChange}
-                onNearNpc={onNearNpcHandler}
-                guideHighlight={guidedStep?.highlight}
-                guideLookAt={harborGuideLookAt}
-                guideTip={bagGuideTip}
-                keeperEmote={castleMode ? keeperEmote : "idle"}
-                keeperSpeech={keeperSpeech}
-                pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}
-              />
+              <>
+                <WalkableHarborView
+                  character={voyager}
+                  hotspots={harborHotspots}
+                  onHotspot={onHarborHotspot}
+                  onOpenTravel={() => {
+                    onHubGuidedEvent("opened_map");
+                    onOpenTravel();
+                  }}
+                  onNearChange={onNearChange}
+                  onNearNpc={onNearNpcHandler}
+                  guideHighlight={guidedStep?.highlight}
+                  guideLookAt={harborGuideLookAt}
+                  guideTip={bagGuideTip}
+                  keeperEmote={castleMode ? keeperEmote : "idle"}
+                  keeperSpeech={keeperSpeech}
+                  pulseHotspotId={castleMode ? pulseHotspotId : showOutfitterHighlight ? "outfitter" : null}
+                  guideArrows={guideArrows}
+                  onGuideProject={setGuideProjection}
+                />
+                <GuideEdgeCue
+                  projection={guideProjection}
+                  enabled={guideArrows}
+                  label={bagGuideTip}
+                />
+              </>
             )}
           </div>
         }
@@ -485,7 +500,12 @@ export function HomeHubView({
               <div className="text-sm font-semibold text-white">{guidedStep?.coach}</div>
             </div>
           ) : null}
-          <CoinBagBuddyHud tip={buddyTip.tip} coach={buddyTip.coach} />
+          <CoinBagBuddyHud
+            tip={buddyTip.tip}
+            coach={buddyTip.coach}
+            guideArrows={guideArrows}
+            onToggleGuide={toggleGuide}
+          />
           {coachText && (!castleMode || nearNpc) ? (
             <div className="pointer-events-none max-w-sm rounded-2xl bg-black/70 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
               {nearNpc && !nearStore ? (

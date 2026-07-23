@@ -68,7 +68,7 @@ If not, cut content before adding systems.
 3. Every form that collects input has a reachable **Complete** (Save / Next / Buy)  
 4. Backdrop click closes unless a purchase is mid-confirm  
 5. Coach text states the **one next verb**  
-6. **Coin Bag** — lifelong bunny-eared buddy who **stays beside you** in Harbor plazas, island shores, and painting worlds, and **points** at who to talk to / where to go (never races ahead alone). 3D mesh + HUD tip stay in sync.  
+6. **Coin Bag** — lifelong bunny-eared buddy who **stays beside you** in Harbor plazas, island shores, and painting worlds, and **points** at who to talk to / where to go (never races ahead alone). 3D mesh + HUD tip stay in sync. Soft off-screen **edge cue** only when needed; **Ignore arrow** mutes pointing for free roam / sidequests.  
 7. **Outfitter** is a 3D fitting room with Snapchat-style Body · Coat · Gear layers over a live mannequin (2D emoji picker is legacy/fallback only)
 8. **Dialogue ↔ action sync** — if copy says Piggy is waving / nodding / pointing, the 3D mesh must play that emote the same frame. Source of truth: `src/islands/story/dialogueActionSync.ts`
 
