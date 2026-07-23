@@ -25,7 +25,7 @@ type Props = {
 };
 
 const LOOK = getEraLook3D("capital-default");
-const SPACING = 5.8;
+const SPACING = 7.2;
 
 function mapToScene(node: ArchipelagoNode): [number, number, number] {
   // Convert % map coords to a gentle isometric grid

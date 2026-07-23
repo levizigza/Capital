@@ -1,7 +1,7 @@
 // Service Worker — Capital on GitHub Pages
 // v11: never pin index.html or hashed Vite bundles. Stale shells soft-brick deploys.
-const CACHE_NAME = "capital-v49";
-const RUNTIME_CACHE = "capital-runtime-v33";
+const CACHE_NAME = "capital-v50";
+const RUNTIME_CACHE = "capital-runtime-v34";
 
 function scopeUrl(path) {
   const base = self.registration?.scope || self.location.href.replace(/[^/]+$/, "");

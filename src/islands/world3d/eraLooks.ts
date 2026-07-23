@@ -1,10 +1,13 @@
 /**
  * Era look recipes for 3D islands — mirrors animationStyles decades
  * without cloning any franchise art.
+ *
+ * Ledgerlight rule: decade lenses set mood; Money People must still read as people.
  */
 
 import type { AnimationStyleId } from "../animationStyles";
 import { getAnimationStyle } from "../animationStyles";
+import type { SkyMode } from "./ledgerlight";
 
 export type EraLook3D = {
   id: AnimationStyleId;
@@ -22,6 +25,8 @@ export type EraLook3D = {
   ambientIntensity: number;
   /** wireframe / flat / standard shading hint */
   shading: "vector" | "wire" | "neon" | "lowpoly" | "glossy" | "cinematic" | "painterly" | "harbor";
+  /** Living sky — day / sunset / night / stars / perpetual void */
+  skyMode?: SkyMode;
 };
 
 const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
@@ -40,22 +45,25 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     sunColor: "#fef08a",
     ambientIntensity: 0.55,
     shading: "harbor",
+    skyMode: "day",
   },
   "era-1960s": {
     id: "era-1960s",
     decade: "1960s",
-    skyTop: "#000000",
-    skyBottom: "#0a0a0a",
-    fog: "#000000",
-    fogNear: 18,
-    fogFar: 110,
-    sea: "#050505",
-    land: "#f5f5f5",
-    accent: "#ffffff",
-    shore: "#aaaaaa",
-    sunColor: "#ffffff",
-    ambientIntensity: 0.15,
+    // Dark chalk ground so cream/gold money people pop (clarity over noise)
+    skyTop: "#050508",
+    skyBottom: "#0c0c12",
+    fog: "#0a0a10",
+    fogNear: 22,
+    fogFar: 140,
+    sea: "#08080c",
+    land: "#1c1c22",
+    accent: "#f8fafc",
+    shore: "#3f3f46",
+    sunColor: "#e2e8f0",
+    ambientIntensity: 0.2,
     shading: "vector",
+    skyMode: "stars",
   },
   "era-1970s": {
     id: "era-1970s",
@@ -63,31 +71,34 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     skyTop: "#000800",
     skyBottom: "#000000",
     fog: "#001a00",
-    fogNear: 20,
-    fogFar: 130,
-    sea: "#001a00",
-    land: "#33ff66",
+    fogNear: 24,
+    fogFar: 150,
+    sea: "#001408",
+    // Darker phosphor land so green wire people / gold coins separate
+    land: "#062410",
     accent: "#66ff99",
-    shore: "#22aa44",
+    shore: "#0a3d1c",
     sunColor: "#33ff66",
-    ambientIntensity: 0.3,
+    ambientIntensity: 0.28,
     shading: "wire",
+    skyMode: "stars",
   },
   "era-1980s": {
     id: "era-1980s",
     decade: "1980s",
-    skyTop: "#2e1065",
-    skyBottom: "#db2777",
-    fog: "#6d28d9",
+    skyTop: "#1a0533",
+    skyBottom: "#4c0519",
+    fog: "#4c1d95",
     fogNear: 30,
     fogFar: 170,
-    sea: "#0891b2",
-    land: "#9333ea",
+    sea: "#0e7490",
+    land: "#4c1d95",
     accent: "#f0abfc",
     shore: "#22d3ee",
     sunColor: "#f472b6",
-    ambientIntensity: 0.42,
+    ambientIntensity: 0.4,
     shading: "neon",
+    skyMode: "night",
   },
   "era-1990s": {
     id: "era-1990s",
@@ -104,6 +115,7 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     sunColor: "#facc15",
     ambientIntensity: 0.6,
     shading: "lowpoly",
+    skyMode: "day",
   },
   "era-2000s": {
     id: "era-2000s",
@@ -120,28 +132,30 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     sunColor: "#fde047",
     ambientIntensity: 0.68,
     shading: "glossy",
+    skyMode: "sunset",
   },
   "era-2010s": {
     id: "era-2010s",
     decade: "2010s",
-    skyTop: "#78716c",
+    skyTop: "#1c1917",
     skyBottom: "#44403c",
-    fog: "#57534e",
+    fog: "#292524",
     fogNear: 48,
     fogFar: 230,
-    sea: "#292524",
+    sea: "#0c0a09",
     land: "#3f6212",
     accent: "#a8a29e",
-    shore: "#a8a29e",
+    shore: "#78716c",
     sunColor: "#e7e5e4",
-    ambientIntensity: 0.38,
+    ambientIntensity: 0.32,
     shading: "cinematic",
+    skyMode: "night",
   },
   "era-2020s": {
     id: "era-2020s",
     decade: "New Gen",
     skyTop: "#6eb6df",
-    skyBottom: "#c5e8c0",
+    skyBottom: "#fbbf24",
     fog: "#a8d8ef",
     fogNear: 55,
     fogFar: 260,
@@ -152,6 +166,7 @@ const LOOKS: Partial<Record<AnimationStyleId, EraLook3D>> = {
     sunColor: "#ffe08a",
     ambientIntensity: 0.65,
     shading: "painterly",
+    skyMode: "sunset",
   },
 };
 
@@ -203,5 +218,6 @@ export function lerpEraLook3D(from: EraLook3D, to: EraLook3D, t: number): EraLoo
     sunColor: lerpHex(from.sunColor, to.sunColor, u),
     ambientIntensity: lerpNum(from.ambientIntensity, to.ambientIntensity, u),
     shading: u < 0.5 ? from.shading : to.shading,
+    skyMode: u < 0.5 ? from.skyMode : to.skyMode,
   };
 }

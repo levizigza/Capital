@@ -36,6 +36,14 @@ describe("islandBiomes", () => {
     expect(new Set([tundra.land, desert.land, jungle.land]).size).toBe(3);
   });
 
+  it("ships a perpetual-night alien biome on intangibles", () => {
+    const rift = getIslandBiome("intangibles");
+    expect(rift.id).toBe("nocturne_rift");
+    expect(rift.skyMode).toBe("void");
+    const look = getIslandLook3D("intangibles");
+    expect(look.skyMode).toBe("void");
+  });
+
   it("preserves era shading while swapping biome geography", () => {
     const era = getEraLook3D("era-1970s");
     const look = getIslandLook3D("signal_city", "era-1970s");

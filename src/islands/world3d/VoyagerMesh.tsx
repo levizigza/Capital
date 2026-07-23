@@ -40,11 +40,27 @@ function eraMaterialProps(styleId?: AnimationStyleId | string): {
   const look = getEraLook3D(styleId);
   switch (look.shading) {
     case "vector":
-      return { roughness: 1, metalness: 0, flatShading: true, wireframe: false, emissive: "#ffffff", emissiveIntensity: 0.35 };
+      // Soft chalk glow — not pure white wash that dissolves into the sky
+      return {
+        roughness: 0.92,
+        metalness: 0,
+        flatShading: true,
+        wireframe: false,
+        emissive: "#fef3c7",
+        emissiveIntensity: 0.12,
+      };
     case "wire":
-      return { roughness: 0.4, metalness: 0.2, flatShading: true, wireframe: true, emissive: look.accent, emissiveIntensity: 0.55 };
+      // Keep silhouette solid; light wire accent only via outline, not full wire body
+      return {
+        roughness: 0.45,
+        metalness: 0.15,
+        flatShading: true,
+        wireframe: false,
+        emissive: look.accent,
+        emissiveIntensity: 0.22,
+      };
     case "neon":
-      return { roughness: 0.25, metalness: 0.45, flatShading: true, wireframe: false, emissive: look.accent, emissiveIntensity: 0.4 };
+      return { roughness: 0.25, metalness: 0.45, flatShading: true, wireframe: false, emissive: look.accent, emissiveIntensity: 0.35 };
     case "lowpoly":
       return { roughness: 0.7, metalness: 0.05, flatShading: true, wireframe: false };
     case "glossy":
@@ -91,12 +107,13 @@ export function VoyagerMesh({
   const materials = useMemo(() => {
     const eraMat = eraMaterialProps(animationStyle);
     const look = getEraLook3D(animationStyle);
-    const bodyColor =
-      look.shading === "vector"
-        ? "#ffffff"
-        : look.shading === "wire"
-          ? look.accent
-          : hex;
+    // Ledgerlight: coat color always wins — people must not dissolve into the decade land
+    const bodyColor = hex;
+    const inkColor =
+      look.shading === "vector" ? "#0f172a" : look.shading === "wire" ? "#052e16" : pantColor;
+    const paperColor =
+      look.shading === "vector" || look.shading === "wire" ? "#fef3c7" : skinColor;
+    const eyeColor = look.shading === "vector" || look.shading === "wire" ? "#0c1622" : "#16283b";
     return {
       body: new THREE.MeshStandardMaterial({
         color: bodyColor,
@@ -116,38 +133,38 @@ export function VoyagerMesh({
         emissiveIntensity: eraMat.emissiveIntensity ?? 0,
       }),
       ink: new THREE.MeshStandardMaterial({
-        color: look.shading === "vector" ? "#ffffff" : look.shading === "wire" ? look.accent : pantColor,
+        color: inkColor,
         roughness: 0.7,
-        wireframe: eraMat.wireframe,
+        wireframe: false,
         flatShading: eraMat.flatShading,
       }),
       paper: new THREE.MeshStandardMaterial({
-        color: look.shading === "vector" || look.shading === "wire" ? look.shore : skinColor,
+        color: paperColor,
         roughness: 0.75,
-        wireframe: eraMat.wireframe,
+        wireframe: false,
         flatShading: eraMat.flatShading,
       }),
       gold: new THREE.MeshStandardMaterial({
-        color: look.accent,
+        color: "#f4a629",
         roughness: 0.35,
         metalness: 0.45,
-        wireframe: eraMat.wireframe,
+        wireframe: false,
         flatShading: eraMat.flatShading,
-        emissive: eraMat.emissive ?? "#000000",
-        emissiveIntensity: (eraMat.emissiveIntensity ?? 0) * 0.5,
+        emissive: look.shading === "wire" || look.shading === "vector" ? "#fbbf24" : "#000000",
+        emissiveIntensity: look.shading === "wire" || look.shading === "vector" ? 0.2 : 0,
       }),
       dark: new THREE.MeshStandardMaterial({
-        color: look.shading === "vector" ? "#888888" : "#16283b",
+        color: "#0c1622",
         roughness: 0.55,
-        wireframe: eraMat.wireframe,
+        wireframe: false,
       }),
       eye: new THREE.MeshStandardMaterial({
-        color: look.shading === "vector" ? "#ffffff" : "#16283b",
+        color: eyeColor,
         roughness: 0.35,
-        wireframe: eraMat.wireframe,
+        wireframe: false,
       }),
-      blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6, wireframe: eraMat.wireframe }),
-      pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55, wireframe: eraMat.wireframe }),
+      blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6, wireframe: false }),
+      pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55, wireframe: false }),
     };
   }, [hex, pantColor, skinColor, bodyForm, animationStyle]);
 
@@ -260,9 +277,23 @@ export function VoyagerMesh({
   const isBill = bodyForm === "bill" || bodyForm === "wave";
   const isBook = bodyForm === "ledger" || bodyForm === "scroll";
   const classic = isBill || isCoin || isPiggy || isBook;
+  const look = getEraLook3D(animationStyle);
+  const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
   return (
     <group ref={group} scale={scale}>
+      {/* Soft contact disc — separates Money People from decade/void ground */}
+      {needsPop ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow>
+          <circleGeometry args={[0.55, 20]} />
+          <meshStandardMaterial
+            color="#0c1622"
+            transparent
+            opacity={0.45}
+            depthWrite={false}
+          />
+        </mesh>
+      ) : null}
       <group ref={hip} position={[0, stand ? 0 : 0.18, 0]}>
         <group ref={legL} position={[-0.16, 0.42, 0]}>
           <mesh castShadow position={[0, -0.18, 0]} material={materials.ink}>

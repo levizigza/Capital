@@ -10,6 +10,7 @@ import type { MoneyMascot, MoneyMascotId } from "./moneyCast";
 import { getMascot } from "./moneyCast";
 import { getGenreWorld } from "./genreWorlds";
 import { castPersonaMascot, type NpcPersona } from "./npcPersonas";
+import { SHORE_WORLD_SCALE, shoreXZ } from "./world3d/ledgerlight";
 
 export type ShoreLayoutShape =
   | "crescent" // seaside cove
@@ -70,7 +71,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "crescent",
     roles: ["cash", "save", "spend", "trade"],
     landmarks: ["stall", "hut", "garden"],
-    ecosystem: { families: 2, pairs: 1, loners: 1, animals: 3, machines: 0 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 2, machines: 0 },
     fauna: "gulls",
   },
   "vector-dawn": {
@@ -79,7 +80,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "radar",
     roles: ["plan", "save", "cash"],
     landmarks: ["antenna", "statue", "terminal"],
-    ecosystem: { families: 0, pairs: 2, loners: 2, animals: 2, machines: 4 },
+    ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "service_drones",
   },
   "wireframe-seas": {
@@ -88,7 +89,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "radar",
     roles: ["invest", "credit", "trade", "plan"],
     landmarks: ["terminal", "antenna", "tower"],
-    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 2, machines: 4 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
   },
   "neon-grid": {
@@ -97,7 +98,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "strip",
     roles: ["spend", "invest", "plan", "cash"],
     landmarks: ["terminal", "stall", "tower"],
-    ecosystem: { families: 1, pairs: 1, loners: 3, animals: 1, machines: 5 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "neon_androids",
   },
   "lowpoly-coast": {
@@ -106,7 +107,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "cluster",
     roles: ["cash", "save", "spend", "protect"],
     landmarks: ["hut", "garden", "statue"],
-    ecosystem: { families: 3, pairs: 1, loners: 1, animals: 2, machines: 4 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "scrap_bots",
   },
   "quest-keep": {
@@ -115,7 +116,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "keep",
     roles: ["protect", "plan", "save", "trade"],
     landmarks: ["statue", "tower", "garden"],
-    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 1, machines: 4 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
   },
   "ruin-realism": {
@@ -124,7 +125,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "ruins",
     roles: ["credit", "protect", "plan"],
     landmarks: ["statue", "tower"],
-    ecosystem: { families: 0, pairs: 2, loners: 4, animals: 1, machines: 4 },
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "scrap_bots",
   },
   "painterly-skies": {
@@ -133,7 +134,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "floating",
     roles: ["invest", "save", "plan", "protect"],
     landmarks: ["garden", "tower", "hut"],
-    ecosystem: { families: 2, pairs: 1, loners: 2, animals: 1, machines: 4 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
   },
   "neon-metropolis": {
@@ -142,7 +143,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "strip",
     roles: ["invest", "credit", "trade", "spend"],
     landmarks: ["terminal", "stall", "antenna"],
-    ecosystem: { families: 2, pairs: 2, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "neon_cats",
   },
   "broker-classic": {
@@ -151,7 +152,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     layout: "plaza",
     roles: ["invest", "trade", "plan"],
     landmarks: ["terminal", "statue"],
-    ecosystem: { families: 0, pairs: 3, loners: 2, animals: 2, machines: 1 },
+    ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 1 },
     fauna: "quest_birds",
   },
 };
@@ -162,7 +163,7 @@ const DEFAULT_CULTURE: Omit<IslandCulture, "id"> = {
   layout: "plaza",
   roles: ["cash", "save", "spend", "trade"],
   landmarks: ["stall", "garden"],
-  ecosystem: { families: 1, pairs: 1, loners: 2, animals: 2, machines: 1 },
+  ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 1 },
   fauna: "harbor_dogs",
 };
 
@@ -174,7 +175,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "crescent",
     roles: ["cash", "save", "spend", "trade"],
     landmarks: ["stall", "hut", "garden"],
-    ecosystem: { families: 2, pairs: 1, loners: 1, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
   },
   starter_key_cove: {
@@ -183,7 +184,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "crescent",
     roles: ["cash", "save", "plan"],
     landmarks: ["hut", "garden"],
-    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
   },
   future_shores: {
@@ -192,7 +193,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "floating",
     roles: ["invest", "save", "plan", "protect"],
     landmarks: ["garden", "tower", "hut"],
-    ecosystem: { families: 2, pairs: 1, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
   },
   paycheck_peninsula: {
@@ -201,7 +202,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "radar",
     roles: ["plan", "save", "cash"],
     landmarks: ["antenna", "terminal", "statue"],
-    ecosystem: { families: 0, pairs: 2, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "service_drones",
   },
   digital_assets: {
@@ -210,7 +211,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "strip",
     roles: ["trade", "invest", "plan"],
     landmarks: ["terminal", "antenna", "tower"],
-    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "service_drones",
   },
   signal_city: {
@@ -219,7 +220,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "radar",
     roles: ["invest", "credit", "trade", "plan"],
     landmarks: ["terminal", "antenna", "tower"],
-    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
   },
   venture_foundry: {
@@ -228,7 +229,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "strip",
     roles: ["spend", "invest", "credit", "cash"],
     landmarks: ["terminal", "stall", "tower"],
-    ecosystem: { families: 1, pairs: 1, loners: 3, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "neon_androids",
   },
   financial_assets: {
@@ -237,7 +238,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "cluster",
     roles: ["cash", "save", "spend", "protect"],
     landmarks: ["hut", "statue", "garden"],
-    ecosystem: { families: 3, pairs: 1, loners: 1, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "scrap_bots",
   },
   credit_kingdom: {
@@ -246,7 +247,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "ruins",
     roles: ["credit", "protect", "plan"],
     landmarks: ["statue", "tower"],
-    ecosystem: { families: 0, pairs: 2, loners: 4, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "scrap_bots",
   },
   business_assets: {
@@ -255,7 +256,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "keep",
     roles: ["protect", "plan", "save", "trade"],
     landmarks: ["statue", "tower", "garden"],
-    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
   },
   real_estate: {
@@ -264,7 +265,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "keep",
     roles: ["trade", "spend", "plan"],
     landmarks: ["statue", "terminal", "tower"],
-    ecosystem: { families: 1, pairs: 2, loners: 1, animals: 2, machines: 3 },
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
   },
   intangibles: {
@@ -273,7 +274,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "floating",
     roles: ["plan", "protect", "invest"],
     landmarks: ["tower", "statue", "garden"],
-    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "mind_wisps",
   },
   demo: {
@@ -282,7 +283,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     layout: "plaza",
     roles: ["plan", "cash", "save"],
     landmarks: ["terminal", "garden"],
-    ecosystem: { families: 0, pairs: 0, loners: 2, animals: 2, machines: 3 },
+    ecosystem: { families: 0, pairs: 0, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
   },
 };
@@ -315,9 +316,21 @@ export type ShoreAnchors = {
 };
 
 export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
+  const S = SHORE_WORLD_SCALE;
+  const scale = (a: ShoreAnchors): ShoreAnchors => ({
+    pier: shoreXZ(a.pier[0], a.pier[2], a.pier[1]),
+    party: shoreXZ(a.party[0], a.party[2], a.party[1]),
+    journal: shoreXZ(a.journal[0], a.journal[2], a.journal[1]),
+    padRadius: a.padRadius * S,
+    npcRadius: a.npcRadius * S,
+    itemRadius: a.itemRadius * S,
+    npcAngle0: a.npcAngle0,
+    npcCluster: a.npcCluster,
+  });
+
   switch (culture.layout) {
     case "crescent":
-      return {
+      return scale({
         pier: [0, 0, 12.2],
         party: [-9.2, 0, 1.5],
         journal: [9.2, 0, 1.5],
@@ -326,9 +339,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 3.8,
         npcAngle0: -0.4,
         npcCluster: true,
-      };
+      });
     case "radar":
-      return {
+      return scale({
         pier: [0, 0, 12.5],
         party: [-7.2, 0, -5.5],
         journal: [7.2, 0, -5.5],
@@ -337,9 +350,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 3.2,
         npcAngle0: Math.PI / 6,
         npcCluster: false,
-      };
+      });
     case "strip":
-      return {
+      return scale({
         pier: [0, 0, 11.8],
         party: [-10.5, 0, -1],
         journal: [10.5, 0, -1],
@@ -348,9 +361,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 2.4,
         npcAngle0: 0,
         npcCluster: false,
-      };
+      });
     case "cluster":
-      return {
+      return scale({
         pier: [2, 0, 11.5],
         party: [-8, 0, -4],
         journal: [8.5, 0, -3.5],
@@ -359,9 +372,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 4.5,
         npcAngle0: 0.8,
         npcCluster: true,
-      };
+      });
     case "keep":
-      return {
+      return scale({
         pier: [0, 0, 12],
         party: [-6, 0, 6],
         journal: [6, 0, 6],
@@ -370,9 +383,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 3.5,
         npcAngle0: Math.PI,
         npcCluster: false,
-      };
+      });
     case "ruins":
-      return {
+      return scale({
         pier: [-1.5, 0, 12.4],
         party: [-9.5, 0, -3],
         journal: [5.5, 0, -7],
@@ -381,9 +394,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 4.0,
         npcAngle0: 1.2,
         npcCluster: true,
-      };
+      });
     case "floating":
-      return {
+      return scale({
         pier: [0, 0, 11],
         party: [-7.5, 0, 3],
         journal: [7.5, 0, 3],
@@ -392,9 +405,9 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 3.6,
         npcAngle0: -1,
         npcCluster: true,
-      };
+      });
     default:
-      return {
+      return scale({
         pier: [0, 0, 11.5],
         party: [-8.5, 0, -2],
         journal: [8.5, 0, -2],
@@ -403,7 +416,7 @@ export function shoreAnchorsForCulture(culture: IslandCulture): ShoreAnchors {
         itemRadius: 4.4,
         npcAngle0: -Math.PI / 2,
         npcCluster: false,
-      };
+      });
   }
 }
 

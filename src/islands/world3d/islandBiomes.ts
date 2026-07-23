@@ -7,6 +7,7 @@
 import type { AnimationStyleId } from "../animationStyles";
 import { getIslandTheme } from "../themes/islandThemes";
 import { getEraLook3D, type EraLook3D } from "./eraLooks";
+import type { SkyMode } from "./ledgerlight";
 
 export type BiomeId =
   | "harbor_meadow"
@@ -22,7 +23,8 @@ export type BiomeId =
   | "auction_mesa"
   | "iron_jungle"
   | "aurora_isles"
-  | "mist_cliffs";
+  | "mist_cliffs"
+  | "nocturne_rift";
 
 export type BiomePropKind =
   | "palm"
@@ -85,6 +87,8 @@ export type IslandBiome = {
   };
   groundShape: GroundShape;
   pierStyle: "wood" | "ice" | "neon" | "stone" | "rope";
+  /** Living sky override — sunsets, star nights, perpetual void */
+  skyMode?: SkyMode;
 };
 
 const BIOMES: Record<BiomeId, IslandBiome> = {
@@ -121,6 +125,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.15, elongateZ: 0.9, heightScale: 0.85, bayAmp: 0.22, peakBias: 0.25 },
     groundShape: "crescent_fill",
     pierStyle: "rope",
+    skyMode: "sunset",
   },
   scrub_cay: {
     id: "scrub_cay",
@@ -175,6 +180,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.4, elongateZ: 0.85, heightScale: 1.35, bayAmp: 0.08, peakBias: 0.7 },
     groundShape: "floe",
     pierStyle: "ice",
+    skyMode: "night",
   },
   phosphor_mangrove: {
     id: "phosphor_mangrove",
@@ -194,6 +200,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.05, elongateZ: 1.2, heightScale: 0.9, bayAmp: 0.28, peakBias: 0.35 },
     groundShape: "ring",
     pierStyle: "neon",
+    skyMode: "night",
   },
   synthwave_desert: {
     id: "synthwave_desert",
@@ -211,6 +218,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.5, elongateZ: 0.75, heightScale: 0.95, bayAmp: 0.04, peakBias: 0.2 },
     groundShape: "elongated",
     pierStyle: "neon",
+    skyMode: "night",
   },
   obsidian_lava: {
     id: "obsidian_lava",
@@ -228,6 +236,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 0.95, elongateZ: 1.1, heightScale: 1.4, bayAmp: 0.15, peakBias: 0.85 },
     groundShape: "mesa",
     pierStyle: "stone",
+    skyMode: "night",
   },
   kart_savanna: {
     id: "kart_savanna",
@@ -281,6 +290,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.2, elongateZ: 0.8, heightScale: 1.6, bayAmp: 0.06, peakBias: 0.9 },
     groundShape: "mesa",
     pierStyle: "stone",
+    skyMode: "sunset",
   },
   iron_jungle: {
     id: "iron_jungle",
@@ -288,9 +298,9 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     land: "#3f6212",
     shore: "#9a3412",
     sea: "#1c1917",
-    skyTop: "#44403c",
-    skyBottom: "#292524",
-    fog: "#57534e",
+    skyTop: "#1c1917",
+    skyBottom: "#44403c",
+    fog: "#292524",
     cliff: "#7f1d1d",
     plaza: "#44403c",
     rock: "#a8a29e",
@@ -300,6 +310,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 1.05, elongateZ: 1.05, heightScale: 1.25, bayAmp: 0.18, peakBias: 0.55 },
     groundShape: "disc",
     pierStyle: "rope",
+    skyMode: "night",
   },
   aurora_isles: {
     id: "aurora_isles",
@@ -307,9 +318,9 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     land: "#4ade80",
     shore: "#f5e6b8",
     sea: "#1a6b8a",
-    skyTop: "#312e81",
+    skyTop: "#1e1b4b",
     skyBottom: "#f472b6",
-    fog: "#c4b5fd",
+    fog: "#312e81",
     cliff: "#5b21b6",
     plaza: "#ede9fe",
     rock: "#e8c86a",
@@ -319,6 +330,7 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 0.85, elongateZ: 0.85, heightScale: 0.75, bayAmp: 0.2, peakBias: 0.5 },
     groundShape: "floating",
     pierStyle: "neon",
+    skyMode: "night",
   },
   mist_cliffs: {
     id: "mist_cliffs",
@@ -339,6 +351,36 @@ const BIOMES: Record<BiomeId, IslandBiome> = {
     coast: { elongateX: 0.7, elongateZ: 1.45, heightScale: 1.7, bayAmp: 0.12, peakBias: 0.95 },
     groundShape: "elongated",
     pierStyle: "stone",
+    skyMode: "sunset",
+  },
+  /** Perpetual-night alien ledger — biolum ecology, no sun */
+  nocturne_rift: {
+    id: "nocturne_rift",
+    label: "Nocturne rift · alien night",
+    land: "#0f172a",
+    shore: "#312e81",
+    sea: "#020617",
+    skyTop: "#020617",
+    skyBottom: "#1e1b4b",
+    fog: "#0f172a",
+    cliff: "#4c1d95",
+    plaza: "#1e1b4b",
+    rock: "#a78bfa",
+    fogNear: 18,
+    fogFar: 95,
+    ambientBoost: -0.25,
+    propWeights: {
+      crystal: 0.3,
+      upload_spire: 0.2,
+      orbital_dish: 0.15,
+      ice_spire: 0.15,
+      gene_pod: 0.1,
+      antenna: 0.1,
+    },
+    coast: { elongateX: 0.9, elongateZ: 1.15, heightScale: 1.35, bayAmp: 0.22, peakBias: 0.7 },
+    groundShape: "ring",
+    pierStyle: "neon",
+    skyMode: "void",
   },
 };
 
@@ -357,7 +399,7 @@ export const BIOME_BY_ISLAND: Record<string, BiomeId> = {
   real_estate: "auction_mesa",
   credit_kingdom: "iron_jungle",
   future_shores: "aurora_isles",
-  intangibles: "mist_cliffs",
+  intangibles: "nocturne_rift",
 };
 
 export function getIslandBiome(islandId: string): IslandBiome {
@@ -366,7 +408,7 @@ export function getIslandBiome(islandId: string): IslandBiome {
 }
 
 export function applyBiomeToLook(era: EraLook3D, biome: IslandBiome): EraLook3D {
-  // Era shading stays; geography + palette come from biome so islands diverge hard.
+  // Era shading stays; geography + palette + sky drama come from biome.
   return {
     ...era,
     skyTop: biome.skyTop,
@@ -378,9 +420,10 @@ export function applyBiomeToLook(era: EraLook3D, biome: IslandBiome): EraLook3D 
     land: biome.land,
     shore: biome.shore,
     ambientIntensity: Math.max(
-      0.12,
+      0.08,
       Math.min(0.95, era.ambientIntensity + (biome.ambientBoost ?? 0)),
     ),
+    skyMode: biome.skyMode ?? era.skyMode,
   };
 }
 

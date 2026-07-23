@@ -661,8 +661,10 @@ export function WoodenPier({
   const plank = "#8b5a2b";
   const dark = "#5c3a1e";
   const steel = "#6b7280";
+  // Match Ledgerlight shore scale so docks don't look like toys on huge islands
+  const pierScale = 1.55;
   return (
-    <group position={position} rotation={[0, rotationY, 0]}>
+    <group position={position} rotation={[0, rotationY, 0]} scale={pierScale}>
       {/* Deck planks */}
       {[-0.7, -0.35, 0, 0.35, 0.7].map((x, i) => (
         <mesh key={`plank-${i}`} castShadow receiveShadow position={[x, 0.12, 1.5]}>
