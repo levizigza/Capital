@@ -140,10 +140,69 @@ const DEFAULT_CULTURE: Omit<IslandCulture, "id"> = {
   fauna: "harbor_dogs",
 };
 
+/** Island-id overrides — keep chapter identity even when visualStyle is shared. */
+const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
+  coincraft_cove: {
+    cultureName: "Craft Harbor Guild",
+    vibe: "Earn · choose · save-or-spend · lagoon market",
+    layout: "crescent",
+    roles: ["cash", "save", "spend", "teach"],
+    landmarks: ["market", "lighthouse", "hut"],
+    ecosystem: { families: 2, pairs: 1, loners: 1, animals: 2 },
+    fauna: "harbor_dogs",
+  },
+  starter_key_cove: {
+    cultureName: "Key Cay Scrubbers",
+    vibe: "Sparse dunes · starter keys · quiet practice",
+    layout: "crescent",
+    roles: ["teach", "cash"],
+    landmarks: ["dock"],
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1 },
+    fauna: "harbor_dogs",
+  },
+  digital_assets: {
+    cultureName: "Terminal Nomads",
+    vibe: "Obsidian vents · token traders · volatility",
+    layout: "strip",
+    roles: ["trade", "risk", "tech"],
+    landmarks: ["terminal", "antenna"],
+    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 1 },
+    fauna: "neon_cats",
+  },
+  real_estate: {
+    cultureName: "Deed Auctioneers",
+    vibe: "Adobe lots · bids · renovation dust",
+    layout: "keep",
+    roles: ["trade", "spend", "build"],
+    landmarks: ["auction", "deed"],
+    ecosystem: { families: 1, pairs: 2, loners: 1, animals: 1 },
+    fauna: "poly_foxes",
+  },
+  intangibles: {
+    cultureName: "Patent Librarians",
+    vibe: "Mist cliffs · ideas you can’t touch",
+    layout: "floating",
+    roles: ["teach", "create", "law"],
+    landmarks: ["library", "column"],
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 2 },
+    fauna: "sky_whales",
+  },
+  demo: {
+    cultureName: "Sandbox Testers",
+    vibe: "Chalk reef · lab buoys · try anything",
+    layout: "plaza",
+    roles: ["teach", "cash"],
+    landmarks: ["lab"],
+    ecosystem: { families: 0, pairs: 0, loners: 2, animals: 1 },
+    fauna: "harbor_dogs",
+  },
+};
+
 export function getIslandCulture(island: IslandDefinition): IslandCulture {
   const theme = getIslandTheme(island.id, island.themeId);
   const base = CULTURE_BY_STYLE[theme.visualStyle] ?? DEFAULT_CULTURE;
-  return { id: island.id, ...base };
+  const override = CULTURE_BY_ISLAND[island.id] ?? {};
+  return { id: island.id, ...base, ...override };
 }
 
 /** Anchor positions for pier / board / journal / plaza center by layout. */

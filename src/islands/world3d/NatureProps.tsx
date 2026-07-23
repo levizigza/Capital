@@ -16,7 +16,7 @@ const KENNEY_DIR = `${import.meta.env.BASE_URL}assets/3d/kenney/`;
 function ProceduralPalm({ look, scale }: { look: EraLook3D; scale: number }) {
   const trunk = "#6b4a2a";
   const leaf = look.land;
-  const leafDark = "#166534";
+  const leafDark = look.shore;
   return (
     <group scale={scale}>
       <mesh castShadow position={[0.04, 0.55, 0]} rotation={[0.12, 0.2, 0.08]}>
@@ -72,11 +72,11 @@ function ProceduralTree({ look, scale }: { look: EraLook3D; scale: number }) {
       </mesh>
       <mesh castShadow position={[-0.22, 1.55, 0.18]}>
         <icosahedronGeometry args={[0.32, 0]} />
-        <meshStandardMaterial color="#15803d" roughness={0.78} flatShading />
+        <meshStandardMaterial color={look.shore} roughness={0.78} flatShading />
       </mesh>
       <mesh castShadow position={[0.05, 1.85, 0.05]}>
         <icosahedronGeometry args={[0.28, 0]} />
-        <meshStandardMaterial color="#166534" roughness={0.78} flatShading />
+        <meshStandardMaterial color={look.land} roughness={0.78} flatShading />
       </mesh>
     </group>
   );
@@ -112,11 +112,183 @@ function ProceduralBush({ look, scale }: { look: EraLook3D; scale: number }) {
       </mesh>
       <mesh castShadow position={[0.18, 0.18, 0.1]}>
         <sphereGeometry args={[0.22, 6, 5]} />
-        <meshStandardMaterial color="#15803d" roughness={0.8} flatShading />
+        <meshStandardMaterial color={look.shore} roughness={0.8} flatShading />
       </mesh>
       <mesh castShadow position={[-0.14, 0.16, -0.08]}>
         <sphereGeometry args={[0.18, 6, 5]} />
         <meshStandardMaterial color={look.land} roughness={0.82} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralCactus({ look, scale }: { look: EraLook3D; scale: number }) {
+  const green = look.land;
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <cylinderGeometry args={[0.12, 0.14, 1.1, 8]} />
+        <meshStandardMaterial color={green} roughness={0.7} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.28, 0.7, 0]} rotation={[0, 0, 0.9]}>
+        <cylinderGeometry args={[0.07, 0.08, 0.45, 6]} />
+        <meshStandardMaterial color={green} roughness={0.7} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.24, 0.55, 0]} rotation={[0, 0, -1.0]}>
+        <cylinderGeometry args={[0.06, 0.07, 0.35, 6]} />
+        <meshStandardMaterial color={green} roughness={0.7} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralPine({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.4, 0]}>
+        <cylinderGeometry args={[0.07, 0.1, 0.8, 6]} />
+        <meshStandardMaterial color="#4a3728" roughness={0.9} flatShading />
+      </mesh>
+      {[0.9, 1.25, 1.55].map((y, i) => (
+        <mesh key={y} castShadow position={[0, y, 0]}>
+          <coneGeometry args={[0.55 - i * 0.12, 0.55, 7]} />
+          <meshStandardMaterial color={i % 2 ? look.land : "#14532d"} roughness={0.75} flatShading />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ProceduralIceSpire({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.7, 0]} rotation={[0.1, 0.3, 0.05]}>
+        <coneGeometry args={[0.28, 1.5, 5]} />
+        <meshStandardMaterial
+          color={look.shore}
+          roughness={0.25}
+          metalness={0.35}
+          flatShading
+          emissive={look.accent}
+          emissiveIntensity={0.12}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralMangrove({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      {[0, 1, 2, 3].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[Math.cos((i / 4) * Math.PI * 2) * 0.2, 0.35, Math.sin((i / 4) * Math.PI * 2) * 0.2]}
+          rotation={[0.4, (i / 4) * Math.PI * 2, 0]}
+        >
+          <cylinderGeometry args={[0.03, 0.05, 0.9, 5]} />
+          <meshStandardMaterial color={look.land} roughness={0.85} flatShading wireframe={look.shading === "wire"} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, 0.95, 0]}>
+        <sphereGeometry args={[0.35, 7, 6]} />
+        <meshStandardMaterial
+          color={look.accent}
+          roughness={0.6}
+          flatShading
+          emissive={look.accent}
+          emissiveIntensity={look.shading === "wire" ? 0.4 : 0.1}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralFern({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[0, 0.15, 0]}
+          rotation={[0.9, (i / 5) * Math.PI * 2, 0]}
+        >
+          <boxGeometry args={[0.08, 0.55, 0.02]} />
+          <meshStandardMaterial color={look.land} roughness={0.7} flatShading />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ProceduralCrystal({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.45, 0]} rotation={[0.2, 0.4, 0.1]}>
+        <octahedronGeometry args={[0.35, 0]} />
+        <meshStandardMaterial
+          color={look.accent}
+          roughness={0.2}
+          metalness={0.55}
+          emissive={look.accent}
+          emissiveIntensity={0.35}
+          flatShading
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralDuneGrass({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[(i % 3) * 0.08 - 0.08, 0.2, Math.floor(i / 3) * 0.08]}
+          rotation={[0.15, i * 0.4, 0.1]}
+        >
+          <boxGeometry args={[0.03, 0.45 + (i % 3) * 0.08, 0.02]} />
+          <meshStandardMaterial color={look.shore} roughness={0.85} flatShading />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function ProceduralColumn({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <cylinderGeometry args={[0.16, 0.18, 1.1, 8]} />
+        <meshStandardMaterial color={look.shore} roughness={0.8} flatShading />
+      </mesh>
+      <mesh castShadow position={[0, 1.15, 0]}>
+        <cylinderGeometry args={[0.22, 0.22, 0.12, 8]} />
+        <meshStandardMaterial color={look.accent} roughness={0.7} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralAntenna({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.7, 0]}>
+        <cylinderGeometry args={[0.04, 0.06, 1.4, 6]} />
+        <meshStandardMaterial color="#334155" roughness={0.5} metalness={0.4} />
+      </mesh>
+      <mesh castShadow position={[0, 1.45, 0]}>
+        <sphereGeometry args={[0.12, 8, 6]} />
+        <meshStandardMaterial
+          color={look.accent}
+          emissive={look.accent}
+          emissiveIntensity={0.7}
+          roughness={0.3}
+        />
       </mesh>
     </group>
   );
@@ -266,6 +438,24 @@ function PropMesh({
         return <ProceduralRock look={look} scale={1} />;
       case "bush":
         return <ProceduralBush look={look} scale={1} />;
+      case "cactus":
+        return <ProceduralCactus look={look} scale={1} />;
+      case "pine":
+        return <ProceduralPine look={look} scale={1} />;
+      case "ice_spire":
+        return <ProceduralIceSpire look={look} scale={1} />;
+      case "mangrove":
+        return <ProceduralMangrove look={look} scale={1} />;
+      case "fern":
+        return <ProceduralFern look={look} scale={1} />;
+      case "crystal":
+        return <ProceduralCrystal look={look} scale={1} />;
+      case "dune_grass":
+        return <ProceduralDuneGrass look={look} scale={1} />;
+      case "column":
+        return <ProceduralColumn look={look} scale={1} />;
+      case "antenna":
+        return <ProceduralAntenna look={look} scale={1} />;
       case "hut":
         return (
           <IslandHut

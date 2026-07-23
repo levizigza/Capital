@@ -6,7 +6,8 @@ import * as THREE from "three";
 import type { CapitalCharacter } from "../character";
 import type { IslandDefinition } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getEraLook3D, type EraLook3D } from "./eraLooks";
+import { type EraLook3D } from "./eraLooks";
+import { getIslandLook3D } from "./islandBiomes";
 import { VoyagerMesh } from "./VoyagerMesh";
 import { WorldLighting } from "./WorldLighting";
 import { getAnimationStyle } from "../animationStyles";
@@ -398,7 +399,7 @@ export function PartyArenaWorld({
   onExit,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
-  const look = useMemo(() => getEraLook3D(theme.animationStyle), [theme.animationStyle]);
+  const look = useMemo(() => getIslandLook3D(island.id, theme.animationStyle), [island.id, theme.animationStyle]);
   const era = getAnimationStyle(theme.animationStyle);
   const [ready, setReady] = useState(false);
   const [phase, setPhase] = useState<"ready" | "play" | "won" | "lost">("ready");

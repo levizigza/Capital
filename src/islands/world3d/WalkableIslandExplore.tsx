@@ -6,7 +6,8 @@ import * as THREE from "three";
 import type { CapitalCharacter } from "../character";
 import type { IslandDefinition } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getEraLook3D, type EraLook3D } from "./eraLooks";
+import { type EraLook3D } from "./eraLooks";
+import { getIslandLook3D, getIslandBiome, type IslandBiome, type GroundShape } from "./islandBiomes";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -400,9 +401,148 @@ function WireNature({ look, count = 12 }: { look: EraLook3D; count?: number }) {
   );
 }
 
+
+function BiomeGround({
+  look,
+  biome,
+  wire,
+  plazaRadius,
+}: {
+  look: EraLook3D;
+  biome: IslandBiome;
+  wire: boolean;
+  plazaRadius: number;
+}) {
+  const shape: GroundShape = biome.groundShape;
+  const cliffSegs = shape === "hex" ? 6 : shape === "floe" ? 10 : 40;
+  const cliffTop = shape === "mesa" ? 13.5 : shape === "hex" ? 14.8 : 15.5;
+  const cliffBot = shape === "mesa" ? 16.8 : shape === "floe" ? 17.5 : 17;
+  const cliffH = shape === "mesa" ? 1.8 : 1.2;
+
+  return (
+    <>
+      {shape === "hex" ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+          <circleGeometry args={[16.2, 6]} />
+          <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
+        </mesh>
+      ) : shape === "elongated" ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} scale={[1.25, 1, 0.82]} receiveShadow>
+          <circleGeometry args={[15.5, 48]} />
+          <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
+        </mesh>
+      ) : shape === "crescent_fill" ? (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+            <circleGeometry args={[16.5, 48]} />
+            <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[6.5, 0.03, 2]} receiveShadow>
+            <circleGeometry args={[7.5, 32]} />
+            <meshStandardMaterial color={look.sea} roughness={0.35} transparent opacity={0.55} wireframe={wire} />
+          </mesh>
+        </>
+      ) : shape === "mesa" ? (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+            <circleGeometry args={[16.8, 40]} />
+            <meshStandardMaterial color={biome.cliff} roughness={0.95} flatShading wireframe={wire} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.35, 0]} receiveShadow>
+            <circleGeometry args={[11.5, 32]} />
+            <meshStandardMaterial color={look.land} roughness={0.88} flatShading={!wire} wireframe={wire} />
+          </mesh>
+        </>
+      ) : shape === "floe" ? (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+            <circleGeometry args={[17, 8]} />
+            <meshStandardMaterial color={look.land} roughness={0.45} metalness={0.15} flatShading wireframe={wire} />
+          </mesh>
+          {[-5, 4, 7].map((x, i) => (
+            <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[x, 0.04, -3 + i * 2]} receiveShadow>
+              <circleGeometry args={[2.2 + i * 0.4, 6]} />
+              <meshStandardMaterial color={look.shore} roughness={0.35} metalness={0.2} wireframe={wire} />
+            </mesh>
+          ))}
+        </>
+      ) : shape === "ring" ? (
+        <>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+            <ringGeometry args={[5.5, 16.5, 48]} />
+            <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
+            <circleGeometry args={[5.2, 32]} />
+            <meshStandardMaterial color={look.sea} roughness={0.4} wireframe={wire} />
+          </mesh>
+        </>
+      ) : shape === "floating" ? (
+        <>
+          {[
+            [0, 0, 0, 10],
+            [-7, 0.4, -4, 4.5],
+            [6.5, 0.55, 3, 4],
+            [2, 0.7, -7, 3.2],
+          ].map(([x, y, z, r], i) => (
+            <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[x as number, y as number, z as number]} receiveShadow>
+              <circleGeometry args={[r as number, 28]} />
+              <meshStandardMaterial
+                color={i === 0 ? look.land : look.shore}
+                roughness={0.7}
+                flatShading={!wire}
+                wireframe={wire}
+                emissive={look.accent}
+                emissiveIntensity={0.08}
+              />
+            </mesh>
+          ))}
+        </>
+      ) : (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
+          <circleGeometry args={[16.5, 48]} />
+          <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
+        </mesh>
+      )}
+
+      {shape !== "floating" && shape !== "ring" ? (
+        <mesh position={[0, shape === "mesa" ? -0.4 : -0.65, 0]} castShadow receiveShadow>
+          <cylinderGeometry args={[cliffTop, cliffBot, cliffH, cliffSegs]} />
+          <meshStandardMaterial color={biome.cliff} roughness={0.95} flatShading wireframe={wire} />
+        </mesh>
+      ) : null}
+
+      {shape !== "floating" && shape !== "mesa" ? (
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.01, 0]}
+          scale={shape === "elongated" ? [1.2, 1, 0.85] : [1, 1, 1]}
+          receiveShadow
+        >
+          <ringGeometry args={[12.2, 16.8, shape === "floe" ? 10 : 48]} />
+          <meshStandardMaterial color={look.shore} roughness={0.88} wireframe={wire} />
+        </mesh>
+      ) : null}
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, shape === "mesa" ? 0.38 : 0.04, 0]} receiveShadow>
+        <circleGeometry args={[plazaRadius, shape === "hex" ? 6 : 40]} />
+        <meshStandardMaterial
+          color={biome.plaza}
+          roughness={0.82}
+          flatShading={!wire}
+          wireframe={wire}
+          emissive={look.shading === "neon" || look.shading === "wire" ? look.accent : "#000000"}
+          emissiveIntensity={look.shading === "neon" || look.shading === "wire" ? 0.08 : 0}
+        />
+      </mesh>
+    </>
+  );
+}
+
 function ShoreScene({
   island,
   look,
+  biome,
   hotspots,
   nearId,
   collectedItemIds,
@@ -413,6 +553,7 @@ function ShoreScene({
 }: {
   island: IslandDefinition;
   look: EraLook3D;
+  biome: IslandBiome;
   hotspots: ShoreHotspot[];
   nearId: string | null;
   collectedItemIds: string[];
@@ -427,11 +568,11 @@ function ShoreScene({
   const ambients = useMemo(() => buildAmbientEcosystem(island), [island]);
 
   const props = useMemo(() => {
-    const t = buildIslandTerrain(islandSeedFromId(`${island.id}-shore`), look, "near");
-    const keepHuts = culture.landmarks.includes("hut");
+    const t = buildIslandTerrain(islandSeedFromId(`${island.id}-shore`), look, "near", biome);
+    const keepHuts = (biome.propWeights.hut ?? 0) > 0.04 || culture.landmarks.includes("hut");
     return t.props
       .filter((p) => keepHuts || p.kind !== "hut")
-      .slice(0, culture.layout === "strip" ? 10 : 16)
+      .slice(0, culture.layout === "strip" ? 12 : 18)
       .map((p, i) => {
         if (culture.layout === "crescent") {
           const ang = Math.PI * 0.15 + (i / 16) * Math.PI * 0.7;
@@ -452,67 +593,50 @@ function ShoreScene({
         const r = 11.5 + (i % 3) * 0.9;
         return { ...p, position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number] };
       });
-  }, [island.id, look, culture]);
+  }, [island.id, look, culture, biome]);
 
   const plazaRadius = culture.layout === "radar" ? 10.5 : culture.layout === "keep" ? 7.5 : 9.2;
 
   return (
     <>
       <WorldLighting look={look} contactShadows={false} shadowMapSize={512} />
-      <OceanWater color={look.sea} shading={look.shading} size={420} calm />
+      <OceanWater
+        color={look.sea}
+        shading={look.shading}
+        size={420}
+        calm={biome.id === "oscilloscope_tundra" || biome.id === "mist_cliffs"}
+      />
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-        <circleGeometry args={[16.5, culture.layout === "radar" ? 32 : 48]} />
-        <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
-      </mesh>
-      <mesh position={[0, -0.65, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[15.5, 17, 1.2, culture.layout === "radar" ? 24 : 40]} />
-        <meshStandardMaterial color="#57534e" roughness={0.95} flatShading wireframe={wire} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
-        <ringGeometry args={[12.5, 16.8, 48]} />
-        <meshStandardMaterial color={look.shore} roughness={0.88} wireframe={wire} />
-      </mesh>
+      <BiomeGround look={look} biome={biome} wire={wire} plazaRadius={plazaRadius} />
 
-      {/* Culture floor — radar rings / strip road / keep courtyard */}
       {culture.layout === "radar" ? (
         <>
           {[3, 5.5, 8, 10.5].map((rad) => (
-            <mesh key={rad} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+            <mesh key={rad} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]}>
               <ringGeometry args={[rad - 0.06, rad + 0.06, 48]} />
               <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.35} wireframe={wire} />
             </mesh>
           ))}
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-            <mesh key={`spoke-${i}`} rotation={[-Math.PI / 2, 0, (i / 8) * Math.PI]} position={[0, 0.055, 0]}>
+            <mesh key={`spoke-${i}`} rotation={[-Math.PI / 2, 0, (i / 8) * Math.PI]} position={[0, 0.065, 0]}>
               <planeGeometry args={[0.08, 21]} />
               <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.25} wireframe={wire} />
             </mesh>
           ))}
         </>
       ) : culture.layout === "strip" ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} receiveShadow>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.06, 0]} receiveShadow>
           <planeGeometry args={[6.5, 22]} />
           <meshStandardMaterial color={look.shore} roughness={0.7} emissive={look.accent} emissiveIntensity={0.12} wireframe={wire} />
         </mesh>
-      ) : (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} receiveShadow>
-          <circleGeometry args={[plazaRadius, 40]} />
-          <meshStandardMaterial
-            color={wire ? look.accent : "#e7e5e4"}
-            roughness={0.85}
-            flatShading
-            wireframe={wire}
-          />
-        </mesh>
-      )}
+      ) : null}
 
       <WoodenPier position={anchors.pier} />
       {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
 
       <IslandTitle
         title={island.name}
-        subtitle={`${culture.cultureName} · ${culture.vibe.split("·")[0]?.trim()}`}
+        subtitle={`${biome.label} · ${culture.cultureName}`}
         height={8.2}
         accent={look.accent}
       />
@@ -566,7 +690,8 @@ export function WalkableIslandExplore({
   guideLookAt = null,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
-  const look = useMemo(() => getEraLook3D(theme.animationStyle), [theme.animationStyle]);
+  const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
+  const look = useMemo(() => getIslandLook3D(island.id, theme.animationStyle), [island.id, theme.animationStyle]);
   const [near, setNear] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const playerPos = useRef(new THREE.Vector3(0, 0, 4.5));
@@ -615,6 +740,7 @@ export function WalkableIslandExplore({
           <ShoreScene
             island={island}
             look={look}
+            biome={biome}
             hotspots={hotspots}
             nearId={near}
             collectedItemIds={collectedItemIds}

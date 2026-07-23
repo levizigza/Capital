@@ -87,10 +87,12 @@ Courses themselves follow Bob-omb Battlefield wisdom: a readable main path with 
 
 Each island is its **own culture**, not a clone plaza with the same cash-guy:
 
+- Distinct **biomes** (tropical lagoon, scrub cay, tundra, mangrove reef, salt desert, lava terminal, savanna, highland forest, adobe mesa, iron jungle, aurora isles, mist cliffs) — Harbor meadow is hub-only
 - Distinct **layout shapes** (crescent cove, phosphor radar, neon strip, village clusters, keep courtyard, ruins path, floating isles)
 - **Cast variety** from the Money Mascot roster — brokers, piggies, vaults, rockets — tinted to the culture’s roles
 - Ambient life: **families**, **pairs**, **loners**, and **animals** (gulls, phosphor fish, neon cats, poly foxes…)
 - **Era continuity** — on Wireframe Seas, locals and nature read as wire/phosphor too; no solid strangers in a vector world
+- Terrain props match the biome (cactus, pine, ice spires, mangroves, crystals…) — not universal palms
 
 ---
 

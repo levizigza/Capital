@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import type { EraLook3D } from "./eraLooks";
 import { buildIslandTerrain, islandSeedFromId, type IslandDetail } from "./islandTerrain";
+import { getIslandBiome } from "./islandBiomes";
 import { NatureProps, WoodenPier } from "./NatureProps";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 
@@ -29,12 +30,13 @@ export function EraIslandMesh({
 }: Props) {
   const wire = look.shading === "wire" || look.shading === "vector";
   const flat = look.shading === "lowpoly" || look.shading === "vector" || look.shading === "harbor";
+  const biome = useMemo(() => getIslandBiome(seed), [seed]);
 
   const terrain = useMemo(
-    () => buildIslandTerrain(islandSeedFromId(seed), look, detail),
+    () => buildIslandTerrain(islandSeedFromId(seed), look, detail, seed === "harbor_haven" ? null : biome),
     // look.id + palette drive silhouette/colors; avoid rebuilding on new object identity
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [seed, look.id, look.land, look.shore, look.accent, look.shading, detail],
+    [seed, look.id, look.land, look.shore, look.accent, look.shading, detail, biome.id],
   );
 
   const landMat = useMemo(() => {
@@ -55,7 +57,7 @@ export function EraIslandMesh({
     });
   }, [look, wire, flat]);
 
-  const rockColor = look.shading === "neon" ? look.accent : "#6b6560";
+  const rockColor = biome.rock ?? (look.shading === "neon" ? look.accent : "#6b6560");
   const r = terrain.radius;
 
   // Dirt path toward the pier (near islands)

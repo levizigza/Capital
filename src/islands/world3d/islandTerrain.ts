@@ -5,11 +5,12 @@
 
 import * as THREE from "three";
 import type { EraLook3D } from "./eraLooks";
+import type { BiomePropKind, IslandBiome } from "./islandBiomes";
 
 export type IslandDetail = "far" | "near";
 
 export type PropInstance = {
-  kind: "palm" | "tree" | "rock" | "grass" | "bush" | "hut";
+  kind: BiomePropKind;
   position: [number, number, number];
   scale: number;
   rotationY: number;
@@ -104,11 +105,13 @@ export type IslandTerrainResult = {
 
 /**
  * Build a disc-ish island mesh with vertex colors (shore / land / rock).
+ * Optional biome reshapes coast elongation, height, and prop species.
  */
 export function buildIslandTerrain(
   seed: string,
   look: EraLook3D,
   detail: IslandDetail = "near",
+  biome?: IslandBiome | null,
 ): IslandTerrainResult {
   const seedNum = hashSeed(seed);
   const rng = mulberry32(seedNum);
@@ -118,22 +121,22 @@ export function buildIslandTerrain(
 
   const segments = detail === "near" ? 88 : 40;
   const radius = 3.45 + rng() * 0.95;
-  const heightScale = 1.45 + rng() * 0.65;
+  const heightScale = (1.45 + rng() * 0.65) * (biome?.coast.heightScale ?? 1);
+  const elongateX = biome?.coast.elongateX ?? 1;
+  const elongateZ = biome?.coast.elongateZ ?? 1;
+  const bayAmp = biome?.coast.bayAmp ?? 0.08;
+  const peakBias = biome?.coast.peakBias ?? 0.4;
 
   const positions: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
 
   const shore = hexToRgb(look.shore);
-  const wetSand = darken(lerpColor(shore, hexToRgb("#d6b87a"), 0.35), 0.08);
+  const wetSand = darken(lerpColor(shore, hexToRgb(biome?.rock ?? "#d6b87a"), 0.35), 0.08);
   const land = hexToRgb(look.land);
   const deepGrass = darken(land, 0.22);
-  const rock = hexToRgb(look.shading === "neon" ? look.accent : "#7c746c");
-  const cliff: [number, number, number] = [
-    rock[0] * 0.5 + 0.08,
-    rock[1] * 0.5 + 0.08,
-    rock[2] * 0.5 + 0.1,
-  ];
+  const rock = hexToRgb(biome?.rock ?? (look.shading === "neon" ? look.accent : "#7c746c"));
+  const cliff = hexToRgb(biome?.cliff ?? "#57534e");
 
   const heights: number[][] = [];
   let peakY = 0;
@@ -143,14 +146,14 @@ export function buildIslandTerrain(
     for (let ix = 0; ix <= segments; ix++) {
       const u = ix / segments;
       const v = iz / segments;
-      const x = (u - 0.5) * 2 * radius;
-      const z = (v - 0.5) * 2 * radius;
-      const dist = Math.hypot(x, z) / radius;
+      const x = (u - 0.5) * 2 * radius * elongateX;
+      const z = (v - 0.5) * 2 * radius * elongateZ;
+      const dist = Math.hypot(x / elongateX, z / elongateZ) / radius;
 
       // Soft irregular coastline with bay / headland variation
       const coastNoise = fbm(x * 0.55 + ox, z * 0.55 + oz, 4, salt);
       const bay = fbm(x * 0.25 + ox, z * 0.25 + oz, 2, salt + 3);
-      const edge = 0.7 + coastNoise * 0.2 + bay * 0.08;
+      const edge = 0.7 + coastNoise * 0.2 + bay * bayAmp;
       const falloff = Math.max(0, 1 - Math.pow(Math.min(1, dist / edge), 2.55));
 
       const hills = fbm(x * 0.85 + ox, z * 0.85 + oz, 5, salt + 7);
@@ -162,7 +165,7 @@ export function buildIslandTerrain(
 
       // Central plateau bump + secondary ridge
       const center = Math.max(0, 1 - dist * 1.55);
-      h += center * center * 0.62 * falloff;
+      h += center * center * (0.4 + peakBias * 0.55) * falloff;
       const spur = Math.max(0, 1 - Math.abs(dist - 0.42) * 4.5);
       h += spur * ridge * 0.28 * falloff;
 
@@ -178,12 +181,12 @@ export function buildIslandTerrain(
     for (let ix = 0; ix <= segments; ix++) {
       const u = ix / segments;
       const v = iz / segments;
-      const x = (u - 0.5) * 2 * radius;
-      const z = (v - 0.5) * 2 * radius;
+      const x = (u - 0.5) * 2 * radius * elongateX;
+      const z = (v - 0.5) * 2 * radius * elongateZ;
       const y = heights[iz]![ix]!;
       positions.push(x, y, z);
 
-      const dist = Math.hypot(x, z) / radius;
+      const dist = Math.hypot(x / elongateX, z / elongateZ) / radius;
       const mottled = fbm(x * 1.4 + ox, z * 1.4 + oz, 3, salt + 21);
       let col: [number, number, number];
 
@@ -229,46 +232,62 @@ export function buildIslandTerrain(
   const props: PropInstance[] = [];
   if (detail === "near") {
     const sampleH = (px: number, pz: number) => {
-      const u = (px / (2 * radius) + 0.5) * segments;
-      const v = (pz / (2 * radius) + 0.5) * segments;
+      const u = (px / (2 * radius * elongateX) + 0.5) * segments;
+      const v = (pz / (2 * radius * elongateZ) + 0.5) * segments;
       const ix = Math.max(0, Math.min(segments, Math.round(u)));
       const iz = Math.max(0, Math.min(segments, Math.round(v)));
       return heights[iz]![ix]!;
+    };
+
+    const weights = biome?.propWeights;
+    const pickKind = (roll: number, dist: number, py: number): BiomePropKind => {
+      if (weights) {
+        const entries = Object.entries(weights) as [BiomePropKind, number][];
+        const total = entries.reduce((s, [, w]) => s + w, 0) || 1;
+        let acc = 0;
+        const r = roll * total;
+        for (const [k, w] of entries) {
+          acc += w;
+          if (r <= acc) return k;
+        }
+        return entries[0]?.[0] ?? "rock";
+      }
+      // Legacy tropical bias
+      if (dist > 0.62) {
+        if (roll < 0.45) return "palm";
+        if (roll < 0.65) return "rock";
+        if (roll < 0.82) return "bush";
+        return "grass";
+      }
+      if (py > peakY * 0.55) {
+        if (roll < 0.55) return "rock";
+        if (roll < 0.75) return "bush";
+        return "grass";
+      }
+      if (dist < 0.35) {
+        if (roll < 0.4) return "tree";
+        if (roll < 0.6) return "bush";
+        if (roll < 0.78) return "grass";
+        return "rock";
+      }
+      if (roll < 0.22) return "palm";
+      if (roll < 0.45) return "tree";
+      if (roll < 0.62) return "bush";
+      if (roll < 0.78) return "rock";
+      return "grass";
     };
 
     const attempts = 78;
     for (let i = 0; i < attempts; i++) {
       const ang = rng() * Math.PI * 2;
       const r = (0.22 + rng() * 0.62) * radius;
-      const px = Math.cos(ang) * r;
-      const pz = Math.sin(ang) * r;
+      const px = Math.cos(ang) * r * elongateX;
+      const pz = Math.sin(ang) * r * elongateZ;
       const py = sampleH(px, pz);
       if (py < 0.14) continue;
-      const dist = Math.hypot(px, pz) / radius;
-      const roll = rng();
-      let kind: PropInstance["kind"];
-      // Biome bias: palms near shore, trees inland, rocks on ridges
-      if (dist > 0.62) {
-        if (roll < 0.45) kind = "palm";
-        else if (roll < 0.65) kind = "rock";
-        else if (roll < 0.82) kind = "bush";
-        else kind = "grass";
-      } else if (py > peakY * 0.55) {
-        if (roll < 0.55) kind = "rock";
-        else if (roll < 0.75) kind = "bush";
-        else kind = "grass";
-      } else if (dist < 0.35) {
-        if (roll < 0.4) kind = "tree";
-        else if (roll < 0.6) kind = "bush";
-        else if (roll < 0.78) kind = "grass";
-        else kind = "rock";
-      } else {
-        if (roll < 0.22) kind = "palm";
-        else if (roll < 0.45) kind = "tree";
-        else if (roll < 0.62) kind = "bush";
-        else if (roll < 0.78) kind = "rock";
-        else kind = "grass";
-      }
+      const dist = Math.hypot(px / elongateX, pz / elongateZ) / radius;
+      const kind = pickKind(rng(), dist, py);
+      if (kind === "hut") continue;
       props.push({
         kind,
         position: [px, py, pz],
@@ -277,21 +296,24 @@ export function buildIslandTerrain(
       });
     }
 
-    // Village cottages on the inland plateau
-    const hutCount = 3 + Math.floor(rng() * 3);
-    for (let i = 0; i < hutCount; i++) {
-      const ang = rng() * Math.PI * 2;
-      const r = (0.12 + rng() * 0.28) * radius;
-      const px = Math.cos(ang) * r;
-      const pz = Math.sin(ang) * r;
-      const py = sampleH(px, pz);
-      if (py < 0.22) continue;
-      props.push({
-        kind: "hut",
-        position: [px, py, pz],
-        scale: 0.85 + rng() * 0.35,
-        rotationY: rng() * Math.PI * 2,
-      });
+    // Village cottages on the inland plateau (only if biome allows huts)
+    const hutWeight = weights?.hut ?? 0.08;
+    if (hutWeight > 0.02) {
+      const hutCount = 2 + Math.floor(rng() * 3);
+      for (let i = 0; i < hutCount; i++) {
+        const ang = rng() * Math.PI * 2;
+        const r = (0.12 + rng() * 0.28) * radius;
+        const px = Math.cos(ang) * r * elongateX;
+        const pz = Math.sin(ang) * r * elongateZ;
+        const py = sampleH(px, pz);
+        if (py < 0.22) continue;
+        props.push({
+          kind: "hut",
+          position: [px, py, pz],
+          scale: 0.85 + rng() * 0.35,
+          rotationY: rng() * Math.PI * 2,
+        });
+      }
     }
   }
 

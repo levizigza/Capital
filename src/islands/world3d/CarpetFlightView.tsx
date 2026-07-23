@@ -25,6 +25,7 @@ import {
 } from "../worldMapLayout";
 import type { CapitalCharacter } from "../character";
 import { getEraLook3D, lerpEraLook3D, type EraLook3D } from "./eraLooks";
+import { getIslandLook3D } from "./islandBiomes";
 import { approachBlend, eraDimension } from "../eraMorph";
 import { MoneyCarpet } from "./MoneyCarpet";
 import { EraIslandMesh } from "./EraIslandMesh";
@@ -426,7 +427,7 @@ export function CarpetFlightView({
       .filter((n) => !isIslandLocked(n.island, save.inventory, save))
       .map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
-        const look = getEraLook3D(theme.animationStyle);
+        const look = getIslandLook3D(node.island.id, theme.animationStyle);
         return {
           node,
           look,

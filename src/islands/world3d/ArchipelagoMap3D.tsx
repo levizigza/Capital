@@ -11,6 +11,7 @@ import {
   type ArchipelagoNode,
 } from "../worldMapLayout";
 import { getEraLook3D } from "./eraLooks";
+import { getIslandLook3D } from "./islandBiomes";
 import { DioramaIslandMesh } from "./DioramaIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -97,7 +98,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
       {layout.outer.map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
         const era = getAnimationStyle(theme.animationStyle);
-        const look = getEraLook3D(theme.animationStyle);
+        const look = getIslandLook3D(node.island.id, theme.animationStyle);
         const locked = isIslandLocked(node.island, save.inventory, save);
         const pos = mapToScene(node);
         return (

@@ -29,6 +29,7 @@ import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
+import { getIslandBiome } from "../world3d/islandBiomes";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -80,6 +81,7 @@ export function IslandShoreView({
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const courseProg = useMemo(() => mainCourseProgress(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
+  const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);
@@ -149,7 +151,7 @@ export function IslandShoreView({
               <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
             <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {culture.cultureName} — {culture.vibe}
+              {biome.label} — {culture.cultureName} · {culture.vibe}
             </p>
             {nextStep ? (
               <div className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100">
