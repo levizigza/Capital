@@ -177,16 +177,40 @@ function PadMarker({
         />
       </mesh>
       {hotspot.kind === "play_pad" ? (
-        <mesh position={[0, 0.45, 0]} castShadow>
-          <boxGeometry args={[0.9, 0.55, 0.9]} />
-          <meshStandardMaterial
-            color={look.land}
-            emissive={look.accent}
-            emissiveIntensity={0.25}
-            flatShading
-            wireframe={wire}
-          />
-        </mesh>
+        <group>
+          {/* SM64-style painting frame portal */}
+          <mesh position={[0, 1.35, 0]} castShadow>
+            <boxGeometry args={[1.6, 1.9, 0.18]} />
+            <meshStandardMaterial
+              color="#78350f"
+              roughness={0.55}
+              metalness={0.15}
+              wireframe={wire}
+            />
+          </mesh>
+          <mesh position={[0, 1.35, 0.12]} castShadow>
+            <planeGeometry args={[1.25, 1.5]} />
+            <meshStandardMaterial
+              color={look.accent}
+              emissive={look.accent}
+              emissiveIntensity={active ? 0.65 : 0.35}
+              roughness={0.4}
+              side={THREE.DoubleSide}
+              wireframe={wire}
+            />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.7]}>
+            <ringGeometry args={[0.55, 0.85, 24]} />
+            <meshStandardMaterial
+              color={look.accent}
+              emissive={look.accent}
+              emissiveIntensity={active ? 0.5 : 0.2}
+              transparent
+              opacity={0.7}
+              depthWrite={false}
+            />
+          </mesh>
+        </group>
       ) : hotspot.kind === "party_board" ? (
         <mesh position={[0, 0.35, 0]} castShadow>
           <cylinderGeometry args={[0.55, 0.65, 0.5, 8]} />

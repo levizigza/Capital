@@ -26,6 +26,7 @@ import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { buildShoreHotspots } from "../islandShoreLayout";
 import { IslandPlayView } from "./IslandPlayView";
+import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -70,6 +71,8 @@ export function IslandShoreView({
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const buddy = coinBagIslandTip(save, island);
+  const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
+  const courseProg = useMemo(() => mainCourseProgress(save), [save]);
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);
@@ -137,8 +140,18 @@ export function IslandShoreView({
               <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
             <p className="max-w-md text-xs text-white/85 drop-shadow">
-              Explore first — walk, talk, then play pads. Quizzes come after movement games.
+              Castle Grounds pattern: walk the shore, dive glowing paintings into 3D worlds. Party Plaza
+              is optional tomfoolery — never required.
             </p>
+            {nextStep ? (
+              <div className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100">
+                <span className="font-bold uppercase tracking-wide text-amber-200">Main course</span>
+                {" · "}
+                {nextStep.title} ({courseProg.done}/{courseProg.total})
+              </div>
+            ) : (
+              <div className="mt-1 text-[11px] font-bold text-emerald-200">Main course clear — explore freely</div>
+            )}
           </div>
         }
         topRight={
@@ -177,7 +190,7 @@ export function IslandShoreView({
               <HudBadge className="bg-black/55 text-white">WASD walk · find play pads · E interact</HudBadge>
             )}
             <p className="text-[11px] font-semibold tracking-wide text-white/75">
-              Party Plaza = optional board · Quest Journal = chapter notes · Pier = carpet
+              Paintings = main/side 3D worlds · Party Plaza = {SIDE_TOMFOOLERY[0]?.title} · Pier = carpet
             </p>
           </div>
         }
@@ -185,7 +198,7 @@ export function IslandShoreView({
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
           <div className="pointer-events-none max-w-sm rounded-2xl bg-black/65 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
-            Immersion first — no quiz until you clear a play pad.
+            Dive a painting for a real 3D action world — quizzes prove mastery after you clear it.
           </div>
         </div>
       </GameHudLayout>

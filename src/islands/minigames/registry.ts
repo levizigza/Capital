@@ -24,6 +24,7 @@ const MINIGAME_COMPONENTS: Record<string, () => Promise<{ default: ComponentType
   PasaranMarketGame: () => import("./PasaranMarketGame"),
   MancalaCompoundGame: () => import("./MancalaCompoundGame"),
   PartyDashMinigame: () => import("./PartyDashMinigame"),
+  PartyArenaMinigame: () => import("./PartyArenaMinigame"),
 };
 
 export function getMinigameComponent(componentId: string): ComponentType<MinigameProps> | null {

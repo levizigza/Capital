@@ -27,6 +27,8 @@ import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
 import { islandHasChapterContent } from "./chapterLoop";
 import { COVE_CHANGE_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
+import { usesCourseWorld } from "./mainCourse";
+import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
 import { toast } from "sonner";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
@@ -1191,10 +1193,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     if (activeMinigameId === partyDashIdForIsland(activeIsland.id)) {
       return {
         id: activeMinigameId,
-        name: `${activeIsland.name} Party Dash`,
-        icon: "🏃",
-        description: "Kinesthetic warm-up — movement first, mastery quiz after.",
-        componentId: "PartyDashMinigame",
+        name: `${activeIsland.name} Painting Arena`,
+        icon: "🖼️",
+        description: "Dive the painting — 3D Mario Party action world. Quiz after clear.",
+        componentId: "PartyArenaMinigame",
       };
     }
     return undefined;
@@ -1497,7 +1499,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             authorName={userProfile.name || "Creator"}
             onClose={() => setView("home")}
           />
-        ) : view === "explore" && activeIsland ? (
+        ) : view === "explore" && activeIsland && !(activeMinigameId && activeMinigameDef && usesCourseWorld(activeMinigameDef.componentId)) ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
             <IslandShoreView
               island={activeIsland}
@@ -1520,6 +1522,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onStartQuest={(questId) => void startQuest(questId)}
             />
           </IslandThemeProvider>
+        ) : view === "explore" && activeIsland ? (
+          /* Shore unmounted while inside a painting course world (single Canvas). */
+          <div className="sr-only" data-testid="shore-suspended-for-course" />
         ) : view === "chapter" && activeIsland ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
             <IslandPlayView
@@ -1605,12 +1610,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           </GameModal>
         ) : null}
 
-        {activeMinigameId && MinigameComponent && activeIsland ? (
+        {activeMinigameId && activeIsland && activeMinigameDef && usesCourseWorld(activeMinigameDef.componentId) ? (
+          <CourseWorldOverlay
+            island={activeIsland}
+            character={save?.character}
+            minigameId={activeMinigameId}
+            title={activeMinigameDef.name}
+            onComplete={(ok, score) => void onMinigameComplete(ok, score)}
+            onExit={() => void handleMinigameAbandon()}
+          />
+        ) : activeMinigameId && MinigameComponent && activeIsland ? (
           <GameModal
             open
             onClose={() => void handleMinigameAbandon()}
             maxWidth="lg"
-            usePanel={false}
+            usePortal={false}
             zIndex={50}
           >
             <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>

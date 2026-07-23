@@ -74,10 +74,10 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     ? [
         {
           id: partyDashIdForIsland(island.id),
-          name: `${island.name} Party Dash`,
-          icon: "🏃",
-          componentId: "PartyDashMinigame",
-          description: "Kinesthetic warm-up — move, catch, dodge. Quiz comes after.",
+          name: `${island.name} Painting Arena`,
+          icon: "🖼️",
+          componentId: "PartyArenaMinigame",
+          description: "Dive the painting — 3D Mario Party action world. Quiz after clear.",
         },
         ...kinesthetic,
       ]
@@ -94,11 +94,11 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
       id: `play_${g.id}`,
       kind: "play_pad",
       label: g.name,
-      icon: g.icon || "🕹️",
+      icon: g.icon || "🖼️",
       position: [x, 0, z],
       refId: g.id,
       minigameId: g.id,
-      subtitle: "Play first — mastery quiz after you clear it",
+      subtitle: "Painting portal — dive into a 3D game world",
     });
   });
 

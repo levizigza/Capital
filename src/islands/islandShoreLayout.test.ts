@@ -49,6 +49,7 @@ describe("island shore + party play", () => {
     expect(spots.some((s) => s.kind === "npc")).toBe(true);
     const pad = spots.find((s) => s.kind === "play_pad");
     expect(pad?.minigameId).toBe(partyDashIdForIsland("paycheck_peninsula"));
+    expect(pad?.label).toMatch(/Painting Arena|Party/);
   });
 
   it("prefers real kinesthetic games over injected dash", () => {

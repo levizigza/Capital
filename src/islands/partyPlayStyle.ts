@@ -11,6 +11,7 @@ const KINESTHETIC = new Set([
   "PasaranMarketGame",
   "MancalaCompoundGame",
   "PartyDashMinigame",
+  "PartyArenaMinigame",
 ]);
 
 const QUIZ = new Set([

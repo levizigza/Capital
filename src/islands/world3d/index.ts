@@ -2,6 +2,7 @@ export { CarpetFlightView } from "./CarpetFlightView";
 export { CarpetOpeningIntro } from "./CarpetOpeningIntro";
 export { WalkableHarborView, type HarborHotspot } from "./WalkableHarborView";
 export { WalkableIslandExplore } from "./WalkableIslandExplore";
+export { PartyArenaWorld } from "./PartyArenaWorld";
 export { getEraLook3D, lerpEraLook3D } from "./eraLooks";
 export { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
 export { MoneyCarpet } from "./MoneyCarpet";
