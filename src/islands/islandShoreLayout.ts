@@ -1,10 +1,14 @@
 /**
- * Shore layout — Mario 64–style plaza pads derived from island content.
- * Dock lands here: walk, talk, play pads, optional party board — never an instant quiz.
+ * Shore layout — culture-shaped plaza pads (SM64 painting rooms with local flavor).
  */
 
 import type { IslandDefinition } from "./types";
-import { isKinestheticComponent, partyDashIdForIsland, partyPlayKind } from "./partyPlayStyle";
+import { isKinestheticComponent, partyDashIdForIsland } from "./partyPlayStyle";
+import {
+  getIslandCulture,
+  shoreAnchorsForCulture,
+  castForIslandNpc,
+} from "./islandCulture";
 
 export type ShoreHotspotKind =
   | "pier"
@@ -20,23 +24,44 @@ export type ShoreHotspot = {
   label: string;
   icon: string;
   position: [number, number, number];
-  /** For npc / play_pad / item */
   refId?: string;
-  /** Kinesthetic lead for this pad */
   minigameId?: string;
   subtitle?: string;
+  /** Resolved mascot for NPC pads */
+  mascotId?: string;
 };
 
-function ringPos(index: number, total: number, radius: number, y = 0): [number, number, number] {
-  const ang = -Math.PI / 2 + (index / Math.max(1, total)) * Math.PI * 2;
+function ringPos(
+  index: number,
+  total: number,
+  radius: number,
+  angle0: number,
+  y = 0,
+): [number, number, number] {
+  const ang = angle0 + (index / Math.max(1, total)) * Math.PI * 2;
   return [Math.cos(ang) * radius, y, Math.sin(ang) * radius];
 }
 
+function clusterPos(
+  index: number,
+  total: number,
+  radius: number,
+  angle0: number,
+): [number, number, number] {
+  const groups = Math.max(2, Math.ceil(total / 2));
+  const g = index % groups;
+  const inG = Math.floor(index / groups);
+  const ang = angle0 + (g / groups) * Math.PI * 2;
+  const r = radius - inG * 1.1;
+  return [Math.cos(ang) * r, 0, Math.sin(ang) * r];
+}
+
 /**
- * Build walkable shore hotspots for any chapter island.
- * Always includes pier + journal + party board; play pads prefer kinesthetic games.
+ * Build walkable shore hotspots shaped by island culture.
  */
 export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
+  const culture = getIslandCulture(island);
+  const a = shoreAnchorsForCulture(culture);
   const spots: ShoreHotspot[] = [];
 
   spots.push({
@@ -44,7 +69,7 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     kind: "pier",
     label: "Money Carpet Pier",
     icon: "🪄",
-    position: [0, 0, 11.5],
+    position: a.pier,
     subtitle: "Float home or voyage onward",
   });
 
@@ -53,8 +78,8 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     kind: "party_board",
     label: "Fortune Party Plaza",
     icon: "🎲",
-    position: [-8.5, 0, -2],
-    subtitle: "Optional Mario Party–style board",
+    position: a.party,
+    subtitle: "Optional tomfoolery — never required",
   });
 
   spots.push({
@@ -62,7 +87,7 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     kind: "journal",
     label: "Quest Journal",
     icon: "📜",
-    position: [8.5, 0, -2],
+    position: a.journal,
     subtitle: "Quests, bag, and chapter notes",
   });
 
@@ -77,56 +102,56 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
           name: `${island.name} Painting Arena`,
           icon: "🖼️",
           componentId: "PartyArenaMinigame",
-          description: "Dive the painting — 3D Mario Party action world. Quiz after clear.",
+          description: "Dive the painting — 3D action world.",
         },
         ...kinesthetic,
       ]
     : kinesthetic;
 
-  // Cap play pads so the plaza stays readable (Mario Party boards aren’t crowded).
   const pads = padGames.slice(0, 4);
   pads.forEach((g, i) => {
-    const pos = ringPos(i, Math.max(pads.length, 3), 6.2);
-    // Keep pads on the north half so pier stays clear
-    const x = pos[0]!;
-    const z = Math.min(pos[2]!, -1.5);
+    const pos = a.npcCluster
+      ? clusterPos(i, Math.max(pads.length, 3), a.padRadius, a.npcAngle0)
+      : ringPos(i, Math.max(pads.length, 3), a.padRadius, a.npcAngle0);
     spots.push({
       id: `play_${g.id}`,
       kind: "play_pad",
       label: g.name,
       icon: g.icon || "🖼️",
-      position: [x, 0, z],
+      position: [pos[0]!, 0, Math.min(pos[2]!, a.pier[2]! - 3)],
       refId: g.id,
       minigameId: g.id,
       subtitle: "Painting portal — dive into a 3D game world",
     });
   });
 
-  // NPCs around the outer ring (talk first, immerse)
   const npcs = island.npcs.slice(0, 6);
   npcs.forEach((npc, i) => {
-    const pos = ringPos(i, Math.max(npcs.length, 4), 9.2);
+    const pos = a.npcCluster
+      ? clusterPos(i, Math.max(npcs.length, 4), a.npcRadius, a.npcAngle0 + 0.35)
+      : ringPos(i, Math.max(npcs.length, 4), a.npcRadius, a.npcAngle0 + 0.35);
+    const mascot = castForIslandNpc(island, npc.id, npc.mascotId);
     spots.push({
       id: `npc_${npc.id}`,
       kind: "npc",
       label: npc.name,
-      icon: npc.icon || "💬",
-      position: [pos[0]!, 0, pos[2]!],
+      icon: npc.icon || mascot.emoji || "💬",
+      position: pos,
       refId: npc.id,
-      subtitle: "Talk",
+      mascotId: mascot.id,
+      subtitle: `${culture.cultureName} · Talk`,
     });
   });
 
-  // A few ground items as collect pads
   const items = (island.items ?? []).filter((it) => it.location?.areaId).slice(0, 3);
   items.forEach((item, i) => {
-    const pos = ringPos(i + 0.5, 4, 4.4);
+    const pos = ringPos(i + 0.5, 4, a.itemRadius, a.npcAngle0);
     spots.push({
       id: `item_${item.id}`,
       kind: "item",
       label: item.name,
       icon: item.icon || "📦",
-      position: [pos[0]! * 0.7, 0, Math.max(pos[2]!, 2.5)],
+      position: [pos[0]! * 0.85, 0, Math.max(pos[2]!, 2.2)],
       refId: item.id,
       subtitle: "Pick up",
     });
@@ -135,15 +160,12 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
   return spots;
 }
 
-/** True when this island should inject a runtime Party Dash minigame def. */
 export function islandNeedsPartyDash(island: IslandDefinition): boolean {
   const games = island.minigames ?? [];
   return !games.some((g) => isKinestheticComponent(g.componentId));
 }
 
 export function describeShoreGame(componentId: string): string {
-  const kind = partyPlayKind(componentId);
-  if (kind === "kinesthetic") return "Movement game";
-  if (kind === "quiz") return "Mastery quiz (after play)";
-  return "Strategy challenge";
+  void componentId;
+  return "Movement game";
 }

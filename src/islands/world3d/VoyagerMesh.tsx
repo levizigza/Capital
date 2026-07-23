@@ -645,6 +645,8 @@ export function HarborNpcMesh({
   form = "coin",
   character,
   glyph,
+  animationStyle,
+  scale = 0.95,
 }: {
   coat?: string;
   pants?: string;
@@ -653,6 +655,9 @@ export function HarborNpcMesh({
   form?: MoneyForm;
   character?: CapitalCharacter | null;
   glyph?: string;
+  /** Island decade lens — must match the world (wire/vector/etc). */
+  animationStyle?: AnimationStyleId | string;
+  scale?: number;
 }) {
   return (
     <VoyagerMesh
@@ -660,10 +665,11 @@ export function HarborNpcMesh({
       pantColor={pants}
       skinColor={skin}
       pose={pose}
-      scale={0.95}
+      scale={scale}
       character={character ?? null}
       form={form}
       glyph={glyph}
+      animationStyle={animationStyle}
     />
   );
 }

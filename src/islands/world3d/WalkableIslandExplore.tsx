@@ -13,8 +13,15 @@ import { OceanWater } from "./OceanWater";
 import { IslandTitle } from "./IslandTitle";
 import { WoodenPier, NatureProps } from "./NatureProps";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
-import { colorHex, moneyFormFromBase } from "../character";
+import { colorHex, type MoneyForm } from "../character";
 import type { ShoreHotspot } from "../islandShoreLayout";
+import {
+  buildAmbientEcosystem,
+  getIslandCulture,
+  shoreAnchorsForCulture,
+  type AmbientResident,
+} from "../islandCulture";
+import { getMascot, varyMascot } from "../moneyCast";
 
 type Props = {
   island: IslandDefinition;
@@ -135,16 +142,113 @@ function Player({
   );
 }
 
+function NpcFromMascot({
+  mascotId,
+  seed,
+  animationStyle,
+  pose,
+  scale = 0.95,
+}: {
+  mascotId: string;
+  seed: string;
+  animationStyle: string;
+  pose?: "stand" | "wave" | "talk";
+  scale?: number;
+}) {
+  const mascot = getMascot(mascotId);
+  const lookChar = varyMascot(mascotId, seed);
+  return (
+    <HarborNpcMesh
+      coat={colorHex(lookChar.color as "tide")}
+      form={(mascot.form as MoneyForm) || "coin"}
+      glyph={mascot.glyph}
+      character={{
+        name: lookChar.name,
+        base: lookChar.base as CapitalCharacter["base"],
+        color: lookChar.color as CapitalCharacter["color"],
+        accessory: lookChar.accessory as CapitalCharacter["accessory"],
+        companion: lookChar.companion as CapitalCharacter["companion"],
+      }}
+      pose={pose ?? "stand"}
+      animationStyle={animationStyle}
+      scale={scale}
+    />
+  );
+}
+
+function AmbientCritter({
+  resident,
+  look,
+  animationStyle,
+  fauna,
+}: {
+  resident: AmbientResident;
+  look: EraLook3D;
+  animationStyle: string;
+  fauna: string;
+}) {
+  const wire = look.shading === "vector" || look.shading === "wire";
+  if (resident.social === "animal") {
+    // Era-continuous critters — simple silhouettes matching the decade lens
+    const color = look.accent;
+    return (
+      <group position={resident.position} rotation={[0, resident.yaw, 0]} scale={resident.scale}>
+        {fauna.includes("fish") || fauna.includes("whale") ? (
+          <mesh castShadow position={[0, 0.35, 0]} rotation={[0, 0, 0.2]}>
+            <capsuleGeometry args={[0.18, 0.45, 4, 8]} />
+            <meshStandardMaterial
+              color={color}
+              emissive={color}
+              emissiveIntensity={wire ? 0.45 : 0.15}
+              wireframe={wire}
+              flatShading
+            />
+          </mesh>
+        ) : fauna.includes("fox") || fauna.includes("cat") || fauna.includes("dog") || fauna.includes("lizard") ? (
+          <group>
+            <mesh castShadow position={[0, 0.28, 0]}>
+              <sphereGeometry args={[0.28, 10, 8]} />
+              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={wire ? 0.4 : 0.1} wireframe={wire} flatShading />
+            </mesh>
+            <mesh castShadow position={[0.22, 0.42, -0.05]}>
+              <coneGeometry args={[0.08, 0.22, 5]} />
+              <meshStandardMaterial color={look.shore} wireframe={wire} flatShading />
+            </mesh>
+          </group>
+        ) : (
+          <mesh castShadow position={[0, 0.55, 0]}>
+            <sphereGeometry args={[0.16, 8, 6]} />
+            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} wireframe={wire} />
+          </mesh>
+        )}
+      </group>
+    );
+  }
+  return (
+    <group position={resident.position} rotation={[0, resident.yaw, 0]}>
+      <NpcFromMascot
+        mascotId={resident.mascotId}
+        seed={resident.id}
+        animationStyle={animationStyle}
+        pose="stand"
+        scale={resident.scale}
+      />
+    </group>
+  );
+}
+
 function PadMarker({
   hotspot,
   look,
   active,
   collected,
+  animationStyle,
 }: {
   hotspot: ShoreHotspot;
   look: EraLook3D;
   active: boolean;
   collected?: boolean;
+  animationStyle: string;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const color =
@@ -178,14 +282,15 @@ function PadMarker({
       </mesh>
       {hotspot.kind === "play_pad" ? (
         <group>
-          {/* SM64-style painting frame portal */}
           <mesh position={[0, 1.35, 0]} castShadow>
             <boxGeometry args={[1.6, 1.9, 0.18]} />
             <meshStandardMaterial
-              color="#78350f"
+              color={wire ? look.accent : "#78350f"}
               roughness={0.55}
               metalness={0.15}
               wireframe={wire}
+              emissive={wire ? look.accent : "#000000"}
+              emissiveIntensity={wire ? 0.2 : 0}
             />
           </mesh>
           <mesh position={[0, 1.35, 0.12]} castShadow>
@@ -227,13 +332,12 @@ function PadMarker({
           <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.35} wireframe={wire} />
         </mesh>
       ) : (
-        <group position={[0, 0, 0]}>
-          <HarborNpcMesh
-            coat={colorHex("tide")}
-            form={moneyFormFromBase("coin")}
-            pose={active ? "wave" : "stand"}
-          />
-        </group>
+        <NpcFromMascot
+          mascotId={hotspot.mascotId ?? "coiny"}
+          seed={hotspot.refId ?? hotspot.id}
+          animationStyle={animationStyle}
+          pose={active ? "wave" : "stand"}
+        />
       )}
       <Billboard position={[0, hotspot.kind === "npc" ? 2.15 : 1.55, 0]} follow>
         <Text
@@ -248,6 +352,45 @@ function PadMarker({
           {`${hotspot.icon} ${hotspot.label}`}
         </Text>
       </Billboard>
+    </group>
+  );
+}
+
+function WireNature({ look, count = 12 }: { look: EraLook3D; count?: number }) {
+  const items = useMemo(
+    () =>
+      Array.from({ length: count }, (_, i) => {
+        const ang = (i / count) * Math.PI * 2;
+        const r = 11.2 + (i % 4) * 0.85;
+        return {
+          pos: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number],
+          kind: i % 3,
+        };
+      }),
+    [count],
+  );
+  return (
+    <group>
+      {items.map((it, i) => (
+        <group key={i} position={it.pos}>
+          {it.kind === 0 ? (
+            <mesh>
+              <coneGeometry args={[0.55, 1.6, 5]} />
+              <meshStandardMaterial color={look.land} emissive={look.accent} emissiveIntensity={0.35} wireframe />
+            </mesh>
+          ) : it.kind === 1 ? (
+            <mesh position={[0, 0.35, 0]}>
+              <sphereGeometry args={[0.45, 8, 6]} />
+              <meshStandardMaterial color={look.shore} emissive={look.accent} emissiveIntensity={0.3} wireframe />
+            </mesh>
+          ) : (
+            <mesh position={[0, 0.5, 0]}>
+              <octahedronGeometry args={[0.5, 0]} />
+              <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.4} wireframe />
+            </mesh>
+          )}
+        </group>
+      ))}
     </group>
   );
 }
@@ -274,20 +417,39 @@ function ShoreScene({
   playerPosOut: MutableRefObject<THREE.Vector3>;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
+  const culture = useMemo(() => getIslandCulture(island), [island]);
+  const anchors = useMemo(() => shoreAnchorsForCulture(culture), [culture]);
+  const ambients = useMemo(() => buildAmbientEcosystem(island), [island]);
+
   const props = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId(`${island.id}-shore`), look, "near");
+    const keepHuts = culture.landmarks.includes("hut");
     return t.props
-      .filter((p) => p.kind !== "hut")
-      .slice(0, 14)
+      .filter((p) => keepHuts || p.kind !== "hut")
+      .slice(0, culture.layout === "strip" ? 10 : 16)
       .map((p, i) => {
+        if (culture.layout === "crescent") {
+          const ang = Math.PI * 0.15 + (i / 16) * Math.PI * 0.7;
+          const r = 11.8 + (i % 3) * 0.7;
+          return { ...p, position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number] };
+        }
+        if (culture.layout === "strip") {
+          const side = i % 2 === 0 ? -1 : 1;
+          return { ...p, position: [side * (9.5 + (i % 3)), 0.02, -6 + i * 1.1] as [number, number, number] };
+        }
+        if (culture.layout === "cluster") {
+          const g = i % 3;
+          const ang = (g / 3) * Math.PI * 2 + i * 0.2;
+          const r = 8.5 + g * 2.2;
+          return { ...p, position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number] };
+        }
         const ang = (i / 14) * Math.PI * 2;
         const r = 11.5 + (i % 3) * 0.9;
-        return {
-          ...p,
-          position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number],
-        };
+        return { ...p, position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number] };
       });
-  }, [island.id, look]);
+  }, [island.id, look, culture]);
+
+  const plazaRadius = culture.layout === "radar" ? 10.5 : culture.layout === "keep" ? 7.5 : 9.2;
 
   return (
     <>
@@ -295,31 +457,70 @@ function ShoreScene({
       <OceanWater color={look.sea} shading={look.shading} size={420} calm />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
-        <circleGeometry args={[16.5, 48]} />
+        <circleGeometry args={[16.5, culture.layout === "radar" ? 32 : 48]} />
         <meshStandardMaterial color={look.land} roughness={0.9} flatShading={!wire} wireframe={wire} />
       </mesh>
       <mesh position={[0, -0.65, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[15.5, 17, 1.2, 40]} />
+        <cylinderGeometry args={[15.5, 17, 1.2, culture.layout === "radar" ? 24 : 40]} />
         <meshStandardMaterial color="#57534e" roughness={0.95} flatShading wireframe={wire} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
         <ringGeometry args={[12.5, 16.8, 48]} />
         <meshStandardMaterial color={look.shore} roughness={0.88} wireframe={wire} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} receiveShadow>
-        <circleGeometry args={[9.2, 40]} />
-        <meshStandardMaterial
-          color={wire ? look.accent : "#e7e5e4"}
-          roughness={0.85}
-          flatShading
-          wireframe={wire}
+
+      {/* Culture floor — radar rings / strip road / keep courtyard */}
+      {culture.layout === "radar" ? (
+        <>
+          {[3, 5.5, 8, 10.5].map((rad) => (
+            <mesh key={rad} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+              <ringGeometry args={[rad - 0.06, rad + 0.06, 48]} />
+              <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.35} wireframe={wire} />
+            </mesh>
+          ))}
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <mesh key={`spoke-${i}`} rotation={[-Math.PI / 2, 0, (i / 8) * Math.PI]} position={[0, 0.055, 0]}>
+              <planeGeometry args={[0.08, 21]} />
+              <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.25} wireframe={wire} />
+            </mesh>
+          ))}
+        </>
+      ) : culture.layout === "strip" ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} receiveShadow>
+          <planeGeometry args={[6.5, 22]} />
+          <meshStandardMaterial color={look.shore} roughness={0.7} emissive={look.accent} emissiveIntensity={0.12} wireframe={wire} />
+        </mesh>
+      ) : (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} receiveShadow>
+          <circleGeometry args={[plazaRadius, 40]} />
+          <meshStandardMaterial
+            color={wire ? look.accent : "#e7e5e4"}
+            roughness={0.85}
+            flatShading
+            wireframe={wire}
+          />
+        </mesh>
+      )}
+
+      <WoodenPier position={anchors.pier} />
+      {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
+
+      <IslandTitle
+        title={island.name}
+        subtitle={`${culture.cultureName} · ${culture.vibe.split("·")[0]?.trim()}`}
+        height={8.2}
+        accent={look.accent}
+      />
+
+      {ambients.map((res) => (
+        <AmbientCritter
+          key={res.id}
+          resident={res}
+          look={look}
+          animationStyle={animationStyle}
+          fauna={culture.fauna}
         />
-      </mesh>
-
-      <WoodenPier position={[0, 0.05, 13.2]} />
-      <NatureProps props={props} look={look} />
-
-      <IslandTitle title={island.name} subtitle="Walk · Talk · Play pads" height={8.2} accent={look.accent} />
+      ))}
 
       {hotspots.map((h) => (
         <PadMarker
@@ -328,6 +529,7 @@ function ShoreScene({
           look={look}
           active={nearId === h.id}
           collected={h.kind === "item" && h.refId ? collectedItemIds.includes(h.refId) : false}
+          animationStyle={animationStyle}
         />
       ))}
 

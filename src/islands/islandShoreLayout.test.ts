@@ -17,6 +17,13 @@ function fakeIsland(partial: Partial<IslandDefinition> & Pick<IslandDefinition, 
         areaId: "a1",
         dialogueGraphId: "dlg_1",
       },
+      {
+        id: "npc_2",
+        name: "Broker",
+        icon: "📈",
+        areaId: "a1",
+        dialogueGraphId: "dlg_2",
+      },
     ],
     items: [],
     quests: [],
@@ -49,7 +56,13 @@ describe("island shore + party play", () => {
     expect(spots.some((s) => s.kind === "npc")).toBe(true);
     const pad = spots.find((s) => s.kind === "play_pad");
     expect(pad?.minigameId).toBe(partyDashIdForIsland("paycheck_peninsula"));
-    expect(pad?.label).toMatch(/Painting Arena|Party/);
+  });
+
+  it("assigns distinct mascots to NPCs", () => {
+    const island = fakeIsland({ id: "signal_city", name: "Phosphor Reef" });
+    const npcs = buildShoreHotspots(island).filter((s) => s.kind === "npc");
+    expect(npcs.length).toBeGreaterThan(1);
+    expect(npcs.every((n) => !!n.mascotId)).toBe(true);
   });
 
   it("prefers real kinesthetic games over injected dash", () => {
@@ -75,10 +88,9 @@ describe("island shore + party play", () => {
     });
     expect(islandNeedsPartyDash(island)).toBe(false);
     const pads = buildShoreHotspots(island).filter((s) => s.kind === "play_pad");
-    expect(pads.every((p) => p.minigameId === "mg_coin_catcher" || isKinestheticComponent("CoinCatcherMinigame"))).toBe(
-      true,
-    );
+    expect(pads.some((p) => p.minigameId === "mg_coin_catcher")).toBe(true);
     expect(pads.some((p) => p.minigameId === "mg_life_fork")).toBe(false);
+    expect(isKinestheticComponent("CoinCatcherMinigame")).toBe(true);
   });
 
   it("attaches mastery quiz after party dash", () => {

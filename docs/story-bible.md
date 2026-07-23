@@ -79,6 +79,15 @@ Island shores are **painting rooms**. Glowing frames are portals into **self-con
 
 Courses themselves follow Bob-omb Battlefield wisdom: a readable main path with room for distraction — but the **next main-course beat** stays visible on the HUD.
 
+### Island cultures (human ecosystems)
+
+Each island is its **own culture**, not a clone plaza with the same cash-guy:
+
+- Distinct **layout shapes** (crescent cove, phosphor radar, neon strip, village clusters, keep courtyard, ruins path, floating isles)
+- **Cast variety** from the Money Mascot roster — brokers, piggies, vaults, rockets — tinted to the culture’s roles
+- Ambient life: **families**, **pairs**, **loners**, and **animals** (gulls, phosphor fish, neon cats, poly foxes…)
+- **Era continuity** — on Wireframe Seas, locals and nature read as wire/phosphor too; no solid strangers in a vector world
+
 ---
 
 ## Every island = a full Story Circle

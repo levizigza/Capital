@@ -27,6 +27,7 @@ import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { buildShoreHotspots } from "../islandShoreLayout";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
+import { getIslandCulture } from "../islandCulture";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -73,6 +74,7 @@ export function IslandShoreView({
   const buddy = coinBagIslandTip(save, island);
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const courseProg = useMemo(() => mainCourseProgress(save), [save]);
+  const culture = useMemo(() => getIslandCulture(island), [island]);
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);
@@ -140,8 +142,7 @@ export function IslandShoreView({
               <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
             <p className="max-w-md text-xs text-white/85 drop-shadow">
-              Castle Grounds pattern: walk the shore, dive glowing paintings into 3D worlds. Party Plaza
-              is optional tomfoolery — never required.
+              {culture.cultureName} — {culture.vibe}
             </p>
             {nextStep ? (
               <div className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100">

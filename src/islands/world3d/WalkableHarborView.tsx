@@ -564,6 +564,7 @@ function PlazaScene({
               glyph={npc.glyph}
               character={npc.look}
               pose={pose}
+              animationStyle="capital-default"
             />
             <Billboard position={[0, 2.05, 0]} follow>
               <Text

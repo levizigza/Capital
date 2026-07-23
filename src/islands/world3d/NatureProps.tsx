@@ -222,6 +222,16 @@ function KenneyObj({
   return <primitive object={clone} scale={scale * (name === "tree" ? 0.85 : 0.7)} />;
 }
 
+
+function eraMeshProps(look: EraLook3D) {
+  const wire = look.shading === "wire" || look.shading === "vector";
+  return {
+    wireframe: wire,
+    flatShading: !wire && (look.shading === "lowpoly" || look.shading === "neon" || look.shading === "harbor"),
+    emissive: wire ? look.accent : "#000000",
+    emissiveIntensity: wire ? 0.25 : 0,
+  };
+}
 function PropMesh({
   prop,
   look,
