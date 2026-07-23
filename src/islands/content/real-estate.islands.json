@@ -104,6 +104,7 @@
       "quests": [
         {
           "id": "q_auction_flip",
+          "track": "main",
           "title": "Auction & Flip",
           "description": "Buy a property at auction, renovate it, and sell for a profit. Learn the buy/rent/flip loop.",
           "hint": "Talk to Auctioneer Al to learn about bidding, then visit Flipper Fiona for renovation tips.",
@@ -116,6 +117,7 @@
         },
         {
           "id": "q_passive_income",
+          "track": "main",
           "title": "Passive Income Pipeline",
           "description": "Understand rental yield, REIT dividends, and how location affects property value.",
           "hint": "Manage rentals with Landlord Larry, then compare REITs with Rachel at the tower.",

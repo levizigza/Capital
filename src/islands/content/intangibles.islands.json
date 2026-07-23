@@ -104,6 +104,7 @@
       "quests": [
         {
           "id": "q_ip_creator",
+          "track": "main",
           "title": "IP Creator",
           "description": "File a mock patent, learn about trademarks and copyrights, and see how IP drives company value.",
           "hint": "Talk to Inventor Iris at the Patent Office and consult Lawyer Leon about protection strategies.",
@@ -116,6 +117,7 @@
         },
         {
           "id": "q_brand_and_goodwill",
+          "track": "main",
           "title": "Brand Power & Goodwill",
           "description": "Discover why companies pay billions for a brand name and what 'goodwill' means on a balance sheet.",
           "hint": "Visit Branding Ben on Brand Boulevard, then find Merger Maya in Goodwill Garden.",

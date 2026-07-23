@@ -46,6 +46,8 @@ import { WealthHud } from "./WealthHud";
 import type { CapitalCharacter } from "../character";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
+import { partitionIslandQuests, questTrack, trackLabel } from "../questTracks";
+import { mainCourseProgress, nextMainCourseStep, worldSideQuests } from "../mainCourse";
 
 type IslandSection = "explore" | "quests" | "bag";
 
@@ -71,6 +73,119 @@ export type IslandPlayViewProps = {
   devCheats?: ReactNode;
 };
 
+function QuestCard({
+  island,
+  q,
+  save,
+  learningProfile,
+  objectiveKey,
+  onStartQuest,
+}: {
+  island: IslandDefinition;
+  q: IslandDefinition["quests"][number];
+  save: IslandSaveV1;
+  learningProfile: LearningProfileId;
+  objectiveKey: (obj: QuestObjective) => string;
+  onStartQuest: (questId: QuestId) => void;
+}) {
+  const status = save.questStatus[q.id];
+  const started = !!status?.started;
+  const completed = !!status?.completed;
+  const required = q.objectives.map(objectiveKey);
+  const have = status?.completedObjectives || [];
+  const doneCount = required.filter((k) => have.includes(k)).length;
+  const progress = required.length === 0 ? 0 : Math.round((doneCount / required.length) * 100);
+  const track = questTrack(q);
+
+  const resolveLabel = (obj: QuestObjective): string => {
+    if (obj.type === "talkToNpc") {
+      const npc = island.npcs.find((n) => n.id === obj.npcId);
+      return `Talk to ${npc?.name || obj.npcId}`;
+    }
+    if (obj.type === "collectItem") {
+      const item = island.items.find((i) => i.id === obj.itemId);
+      return `Collect ${item?.name || obj.itemId}`;
+    }
+    if (obj.type === "completeMinigame") {
+      const mg = island.minigames?.find((m) => m.id === obj.minigameId);
+      const base = `Complete ${mg?.name || obj.minigameId}`;
+      if (obj.scoreThreshold !== undefined) {
+        return `${base} (score ≥ ${formatScoreThreshold(obj.scoreThreshold, learningProfile)})`;
+      }
+      return base;
+    }
+    return "Unknown objective";
+  };
+
+  const nextObjective =
+    started && !completed
+      ? q.objectives.find((obj) => !have.includes(objectiveKey(obj)))
+      : undefined;
+
+  const statusBadge = completed ? (
+    <HudBadge className="bg-green-100 text-green-800">Done</HudBadge>
+  ) : started ? (
+    <HudBadge>In progress</HudBadge>
+  ) : (
+    <HudBadge className="bg-gray-50">Not started</HudBadge>
+  );
+
+  return (
+    <div
+      className="rounded-lg border border-gray-200 bg-white/60 p-3"
+      data-quest-track={track}
+      data-testid={`quest-card-${q.id}`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-800/80">
+            {trackLabel(track)}
+          </div>
+          <div className="font-bold">{resolveProfileText(q.title, learningProfile)}</div>
+          <div className="text-sm text-gray-600">{resolveProfileText(q.description, learningProfile)}</div>
+        </div>
+        {statusBadge}
+      </div>
+      <div className="mt-2 space-y-1">
+        {q.objectives.map((obj, idx) => {
+          const k = objectiveKey(obj);
+          const done = have.includes(k);
+          return (
+            <div key={idx} className="text-sm">
+              {done ? "✅" : "⬜"} {resolveLabel(obj)}
+            </div>
+          );
+        })}
+      </div>
+      {started && !completed && nextObjective ? (
+        <div className="mt-2 rounded bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">
+          ➡️ Next: {resolveLabel(nextObjective)}
+        </div>
+      ) : null}
+      {(() => {
+        if (!started || completed || !q.hint) return null;
+        const fails = getQuestFailedAttempts(q.id);
+        if (!shouldShowQuestHint(fails, learningProfile, started)) return null;
+        const hintText = resolveProfileText(q.hint, learningProfile);
+        return (
+          <div className="mt-1 space-y-1 rounded bg-amber-50 px-2 py-1 text-xs italic text-amber-800">
+            <div>💡 {hintText}</div>
+            {shouldShowStrongHint(fails, learningProfile) && nextObjective ? (
+              <div className="font-semibold">🔑 Try: {resolveLabel(nextObjective)}</div>
+            ) : null}
+          </div>
+        );
+      })()}
+      <div className="mt-2 text-xs text-gray-500">Progress: {progress}%</div>
+      {!started && !completed ? (
+        <GameButton size="sm" variant="primary" className="mt-2" onClick={() => onStartQuest(q.id)}>
+          Start
+        </GameButton>
+      ) : null}
+    </div>
+  );
+}
+
 function QuestLogPanel({
   island,
   save,
@@ -78,101 +193,100 @@ function QuestLogPanel({
   objectiveKey,
   onStartQuest,
 }: Pick<IslandPlayViewProps, "island" | "save" | "learningProfile" | "objectiveKey" | "onStartQuest">) {
+  const { main, side } = partitionIslandQuests(island.quests);
+  const courseProg = mainCourseProgress(save);
+  const nextStep = nextMainCourseStep(save);
+  const worldSides = worldSideQuests();
+
   return (
-    <GamePanel title="Quest Log" className="h-full">
-      <div className="space-y-3">
-        {island.quests.map((q) => {
-          const status = save.questStatus[q.id];
-          const started = !!status?.started;
-          const completed = !!status?.completed;
-          const required = q.objectives.map(objectiveKey);
-          const have = status?.completedObjectives || [];
-          const doneCount = required.filter((k) => have.includes(k)).length;
-          const progress = required.length === 0 ? 0 : Math.round((doneCount / required.length) * 100);
+    <GamePanel title="Financial Quest Journal" className="h-full" data-testid="quest-log-panel">
+      <div className="space-y-4">
+        <div
+          className="rounded-lg border border-amber-200/80 bg-amber-50/70 p-3"
+          data-testid="campaign-spine"
+        >
+          <div className="text-[10px] font-bold uppercase tracking-wide text-amber-900">
+            Campaign · Story Circle
+          </div>
+          <div className="mt-0.5 text-sm font-semibold text-amber-950">
+            {nextStep ? (
+              <>
+                Next Main Quest: {nextStep.title}{" "}
+                <span className="font-normal text-amber-800/90">
+                  ({courseProg.done}/{courseProg.total})
+                </span>
+              </>
+            ) : (
+              <>Main course clear — explore freely ({courseProg.done}/{courseProg.total})</>
+            )}
+          </div>
+          {nextStep ? (
+            <p className="mt-1 text-xs text-amber-900/80">{nextStep.blurb}</p>
+          ) : null}
+        </div>
 
-          const resolveLabel = (obj: QuestObjective): string => {
-            if (obj.type === "talkToNpc") {
-              const npc = island.npcs.find((n) => n.id === obj.npcId);
-              return `Talk to ${npc?.name || obj.npcId}`;
-            }
-            if (obj.type === "collectItem") {
-              const item = island.items.find((i) => i.id === obj.itemId);
-              return `Collect ${item?.name || obj.itemId}`;
-            }
-            if (obj.type === "completeMinigame") {
-              const mg = island.minigames?.find((m) => m.id === obj.minigameId);
-              const base = `Complete ${mg?.name || obj.minigameId}`;
-              if (obj.scoreThreshold !== undefined) {
-                return `${base} (score ≥ ${formatScoreThreshold(obj.scoreThreshold, learningProfile)})`;
-              }
-              return base;
-            }
-            return "Unknown objective";
-          };
+        <section data-testid="main-quest-section">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-700">
+            Main Quest · this island
+          </h3>
+          <div className="space-y-3">
+            {main.length === 0 ? (
+              <p className="text-sm text-gray-500">No main quests on this shore yet.</p>
+            ) : (
+              main.map((q) => (
+                <QuestCard
+                  key={q.id}
+                  island={island}
+                  q={q}
+                  save={save}
+                  learningProfile={learningProfile}
+                  objectiveKey={objectiveKey}
+                  onStartQuest={onStartQuest}
+                />
+              ))
+            )}
+          </div>
+        </section>
 
-          const nextObjective =
-            started && !completed
-              ? q.objectives.find((obj) => !have.includes(objectiveKey(obj)))
-              : undefined;
-
-          const statusBadge = completed ? (
-            <HudBadge className="bg-green-100 text-green-800">Done</HudBadge>
-          ) : started ? (
-            <HudBadge>In progress</HudBadge>
-          ) : (
-            <HudBadge className="bg-gray-50">Not started</HudBadge>
-          );
-
-          return (
-            <div key={q.id} className="rounded-lg border border-gray-200 bg-white/60 p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="font-bold">{resolveProfileText(q.title, learningProfile)}</div>
-                  <div className="text-sm text-gray-600">{resolveProfileText(q.description, learningProfile)}</div>
+        <section data-testid="side-quest-section">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-700">
+            Side Quests · optional
+          </h3>
+          <p className="mb-2 text-xs text-gray-500">
+            Open-world tomfoolery — never required to finish the Story Circle.
+          </p>
+          <div className="space-y-3">
+            {side.length === 0 && worldSides.length === 0 ? (
+              <p className="text-sm text-gray-500">No side quests here — check Party Plaza for fun.</p>
+            ) : null}
+            {side.map((q) => (
+              <QuestCard
+                key={q.id}
+                island={island}
+                q={q}
+                save={save}
+                learningProfile={learningProfile}
+                objectiveKey={objectiveKey}
+                onStartQuest={onStartQuest}
+              />
+            ))}
+            {worldSides.map((step) => (
+              <div
+                key={step.id}
+                className="rounded-lg border border-dashed border-violet-200 bg-violet-50/50 p-3"
+                data-quest-track="side"
+                data-testid={`world-side-${step.id}`}
+              >
+                <div className="mb-0.5 text-[10px] font-bold uppercase tracking-wide text-violet-800/80">
+                  Side Quest · world
                 </div>
-                {statusBadge}
+                <div className="font-bold text-violet-950">{step.title}</div>
+                <div className="text-sm text-violet-900/80">{step.blurb}</div>
+                <HudBadge className="mt-2 bg-violet-100 text-violet-800">Optional forever</HudBadge>
               </div>
-              <div className="mt-2 space-y-1">
-                {q.objectives.map((obj, idx) => {
-                  const k = objectiveKey(obj);
-                  const done = have.includes(k);
-                  return (
-                    <div key={idx} className="text-sm">
-                      {done ? "✅" : "⬜"} {resolveLabel(obj)}
-                    </div>
-                  );
-                })}
-              </div>
-              {started && !completed && nextObjective ? (
-                <div className="mt-2 rounded bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800">
-                  ➡️ Next: {resolveLabel(nextObjective)}
-                </div>
-              ) : null}
-              {(() => {
-                if (!started || completed || !q.hint) return null;
-                const fails = getQuestFailedAttempts(q.id);
-                if (!shouldShowQuestHint(fails, learningProfile, started)) return null;
-                const hintText = resolveProfileText(q.hint, learningProfile);
-                return (
-                  <div className="mt-1 space-y-1 rounded bg-amber-50 px-2 py-1 text-xs italic text-amber-800">
-                    <div>💡 {hintText}</div>
-                    {shouldShowStrongHint(fails, learningProfile) && nextObjective ? (
-                      <div className="font-semibold">
-                        🔑 Try: {resolveLabel(nextObjective)}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })()}
-              <div className="mt-2 text-xs text-gray-500">Progress: {progress}%</div>
-              {!started && !completed ? (
-                <GameButton size="sm" variant="primary" className="mt-2" onClick={() => onStartQuest(q.id)}>
-                  Start
-                </GameButton>
-              ) : null}
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        </section>
       </div>
     </GamePanel>
   );
@@ -397,7 +511,7 @@ export function IslandPlayView({
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-[var(--game-gap)] pb-4">
-        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
+        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
         {island.id === "future_shores" && onOpenStudio ? (
           <GamePanel padding="default" className="border-dashed border-amber-400 bg-amber-50/80">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

@@ -422,7 +422,7 @@ export function IslandBoardView({
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-4 pb-4">
-        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
+        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
         {minigameCount === 0 ? (
           <GamePanel title="Island under construction" padding="default">
             <p className="text-sm text-gray-700 mb-3">

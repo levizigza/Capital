@@ -104,6 +104,7 @@
       "quests": [
         {
           "id": "q_vf_idea_to_plan",
+          "track": "main",
           "title": "Idea to Plan",
           "description": "Meet Founder Fern in the Workshop to brainstorm a business idea, then work with Mentor Malik to turn it into a one-page business plan.",
           "hint": "Start at The Workshop. Talk to Fern for inspiration, then Malik for structure.",
@@ -117,6 +118,7 @@
         },
         {
           "id": "q_vf_pitch_and_grow",
+          "track": "main",
           "title": "Pitch and Grow",
           "description": "Take your business plan to the Pitch Stage and convince Investor Ike to fund you. Then enter the Growth Lab to learn about scaling.",
           "hint": "You need a Business Plan before pitching. Head to Pitch Stage, then Growth Lab.",

@@ -20,4 +20,9 @@ describe("mainCourse", () => {
     expect(usesCourseWorld("CoinCatcherMinigame")).toBe(true);
     expect(usesCourseWorld("BudgetSplitterGame")).toBe(false);
   });
+
+  it("exposes world side quests for the journal", async () => {
+    const { worldSideQuests } = await import("./mainCourse");
+    expect(worldSideQuests().some((s) => s.id === "party_plaza")).toBe(true);
+  });
 });

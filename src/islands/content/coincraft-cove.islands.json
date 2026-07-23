@@ -97,6 +97,7 @@
       "quests": [
         {
           "id": "q_cc_first_coins",
+          "track": "main",
           "title": {
             "explorer": "First Coins",
             "apprentice": "First Coins",
@@ -125,6 +126,7 @@
         },
         {
           "id": "q_cc_save_or_spend",
+          "track": "main",
           "title": "Save or Spend?",
           "description": "Help Artisan Alma sort her supplies into needs and wants, then visit Keeper Kira to start saving.",
           "hint": "Visit the Craft Market and talk to Alma, then head to the Savings Lighthouse.",

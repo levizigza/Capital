@@ -6,8 +6,9 @@
 
 import type { HubGuidedStepId } from "./storyBible";
 import { isHubGuidedComplete, type HubGuidedIntroState } from "./storyBible";
-import type { IslandDefinition, IslandSaveV1 } from "../types";
-import { nextIncompleteObjective } from "../chapterLoop";
+import type { IslandDefinition, IslandSaveV1, QuestTrack } from "../types";
+import { islandMainQuestsComplete, nextIncompleteObjective } from "../chapterLoop";
+import { questTrack, trackCoachPrefix } from "../questTracks";
 import { hasHarborFreedom } from "../progressGates";
 import { isRoomUnlocked } from "../harborShop";
 import { HUB_ISLAND_ID, isHubIslandId } from "../islandIds";
@@ -17,6 +18,8 @@ export type CoinBagBuddyTip = {
   tip: string;
   /** Slightly longer coach line (optional HUD) */
   coach?: string;
+  /** Main vs side when tip comes from a quest */
+  track?: QuestTrack;
 };
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
@@ -114,7 +117,7 @@ export function coinBagHarborTip(
   };
 }
 
-/** Quest-aware tip while playing an island chapter / board. */
+/** Quest-aware tip while playing an island chapter / board. Prefers Main Quest. */
 export function coinBagIslandTip(
   save: IslandSaveV1,
   island?: IslandDefinition | string | null,
@@ -127,17 +130,33 @@ export function coinBagIslandTip(
         : "this island";
 
   if (island && typeof island === "object") {
-    const next = nextIncompleteObjective(island, save);
+    const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
     if (next) {
+      const title =
+        typeof next.questTitle === "string"
+          ? next.questTitle
+          : next.questTitle.apprentice || next.questTitle.explorer || "quest";
       return {
         tip: next.label,
-        coach: `Quest “${next.questTitle}” — I’m pointing the next step.`,
+        coach: `${trackCoachPrefix(next.track)} “${title}” — I’m pointing the next step.`,
+        track: next.track,
       };
     }
-    if (island.quests.some((q) => save.questStatus[q.id]?.completed)) {
+    if (islandMainQuestsComplete(island, save)) {
+      const sideLeft = island.quests.some(
+        (q) => questTrack(q) === "side" && !save.questStatus[q.id]?.completed,
+      );
+      if (sideLeft) {
+        return {
+          tip: `Main clear on ${name} — try a side quest, or fly home`,
+          coach: "Story Circle beat done. Side quests are optional tomfoolery — or Harbor will notice.",
+          track: "side",
+        };
+      }
       return {
         tip: `Chapter clear on ${name} — fly home`,
         coach: "Harbor will notice. Carpet Dock / Hub when you’re ready.",
+        track: "main",
       };
     }
   }
@@ -146,11 +165,13 @@ export function coinBagIslandTip(
     return {
       tip: `Learn the ropes on ${name}`,
       coach: "Talk, earn, choose — then we go home changed.",
+      track: "main",
     };
   }
   return {
     tip: `Keep going on ${name}`,
-    coach: "I’m beside you. Finish the chapter, then Harbor will notice.",
+    coach: "I’m beside you. Finish the Main Quest, then Harbor will notice.",
+    track: "main",
   };
 }
 

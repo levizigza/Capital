@@ -68,12 +68,16 @@ Harbor is **not** a menu. It is the yard that teaches **one verb at a time**:
 
 **Push-back:** Free-roam before the guided lap is done is allowed only as soft exploration — the **next good action** must always be obvious (Coin Bag hop, glow, guide line, one HUD sentence).
 
-### Main course vs side tomfoolery (SM64 structure)
+### Main course vs side tomfoolery (financial quest)
+
+Capital is a **financial D&D campaign**: one Hero’s Journey / Story Circle spine, plus open-world side digressions.
 
 | Track | What it is | Examples |
 |-------|------------|----------|
-| **Main course** | Required Story Circle spine — seals / stars that open the next Big Door | Cove Change → Peninsula → Freedom Seal → Credit Kingdom |
-| **Side tomfoolery** | Optional forever — never gates the ending | Fortune Party Plaza board, Harbor Arcade, practice board |
+| **Main Quest** | Required Story Circle spine — seals / stars that open the next Big Door | Cove Change → Peninsula → Freedom Seal → Credit Kingdom; island quests with `track: "main"` |
+| **Side Quest** | Optional forever — never gates the ending | Inbox Storm, Fortune Party Plaza, Harbor Arcade, practice board; island quests with `track: "side"` |
+
+**Journal** groups Main Quest vs Side Quests. **Coin Bag** always prefers the next Main Quest tip, then side.
 
 Island shores are **painting rooms**. Glowing frames are portals into **self-contained 3D game worlds** (Mario Party action arenas: move + jump + grab). Clear the world, then ace the mastery quiz. The quiz is never the first verb.
 

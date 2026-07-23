@@ -96,7 +96,7 @@ Base uses fluid tokens from `main.css` (`--font-size-*`). Islands root applies `
 |------|---------|---------------|--------|-------------|-----------|
 | **Display** | Hub / map titles | `text-4xl` (clamp via `--font-size-2xl` on sm+) | `font-black` | 1.1 | — |
 | **H1** | Island name | `text-3xl` | `font-black` | 1.2 | — |
-| **H2** | Section (Explore, Quest Log) | `text-lg` | `font-bold` | 1.3 | — |
+| **H2** | Section (Explore, Financial Quest Journal) | `text-lg` | `font-bold` | 1.3 | — |
 | **H3** | Card title / NPC name | `text-base` | `font-bold` | 1.4 | — |
 | **Body** | Descriptions, dialogue | `text-base` | `font-normal` | 1.5 | `max-w-prose` (dialogue) |
 | **Caption** | Hints, progress %, meta | `text-xs`–`text-sm` | `font-medium` / `italic` for hints | 1.4 | — |
@@ -123,7 +123,7 @@ Use CSS variables where possible; Tailwind mapping for Islands:
 | **xl** | `--space-xl` | `mt-10` `px-6` | Hub vertical rhythm |
 
 **Layout grids**
-- Island play: `grid-cols-1 lg:grid-cols-3` — Explore **2/3**, Quest Log **1/3**.
+- Island play: `grid-cols-1 lg:grid-cols-3` — Explore **2/3**, Financial Quest Journal **1/3**.
 - Inventory: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`.
 - Minigame modules: `grid gap-4 md:grid-cols-2`.
 - Touch targets: **min 44×44px** (`min-h-11` on primary buttons).
@@ -223,13 +223,13 @@ Implemented via `AccessibilitySettings` + root classes on `IslandsApp`.
 
 ---
 
-### 5.3 Quest Log / Roadmap
+### 5.3 Financial Quest Journal / Roadmap
 
 **Reference comps:** [Quest](https://interfaceingame.com/elements/quest/), [Progress](https://interfaceingame.com/elements/progress/). Hades-style “next step” highlight.
 
 | Part | Spec |
 |------|------|
-| **Container** | Right column `Card`; section title “Quest Log” |
+| **Container** | Right column `Card`; section title “Financial Quest Journal” with Main Quest / Side Quests |
 | **Quest card** | `border rounded-lg p-3 bg-white/60` per quest |
 | **Header** | Title `font-bold` + description `text-sm muted` + status `Badge` (Done / In progress / Not started) |
 | **Objectives** | List with ✅ / ⬜; labels human-readable (NPC/item/minigame names) |

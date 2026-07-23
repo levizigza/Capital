@@ -62,6 +62,7 @@ export function createEmptyQuest(island: IslandDefinition, title = "New Quest"):
     title,
     description: "Describe what the player must do.",
     hint: island.areas[0] ? `Start at ${island.areas[0].name}.` : undefined,
+    track: "main",
     objectives: [{ type: "talkToNpc", npcId }],
     rewards: { coins: 10, xp: 20 },
   };

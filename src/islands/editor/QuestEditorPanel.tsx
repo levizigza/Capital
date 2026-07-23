@@ -105,6 +105,7 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
             onClick={() => setQuestId(q.id)}
           >
             {resolveProfileText(q.title, "apprentice")}
+            {(q.track ?? "main") === "side" ? " · side" : ""}
           </Button>
         ))}
       </div>
@@ -140,6 +141,22 @@ export default function QuestEditorPanel({ island, onApply }: Props) {
                   value={resolveProfileText(quest.title, "apprentice")}
                   onChange={(e) => updateQuest((q) => ({ ...q, title: e.target.value }))}
                 />
+              </label>
+              <label className="block text-xs">
+                Track
+                <select
+                  className="mt-1 w-full rounded border px-2 py-1"
+                  value={quest.track ?? "main"}
+                  onChange={(e) =>
+                    updateQuest((q) => ({
+                      ...q,
+                      track: e.target.value === "side" ? "side" : "main",
+                    }))
+                  }
+                >
+                  <option value="main">Main Quest (Story Circle)</option>
+                  <option value="side">Side Quest (optional)</option>
+                </select>
               </label>
               <label className="block text-xs">
                 Description

@@ -103,6 +103,7 @@
       "quests": [
         {
           "id": "q_pp_budget_basics",
+          "track": "main",
           "title": "Budget Basics",
           "description": "Collect your first paycheck from Pat, then visit Planner Priya to learn how to split it into categories.",
           "hint": "Start on Main Street, talk to Payroll Pat, then head to the Budget Bureau.",
@@ -116,6 +117,7 @@
         },
         {
           "id": "q_pp_rainy_day",
+          "track": "main",
           "title": "Expect the Unexpected",
           "description": "Coach Carlos has a surprise expense challenge. Learn why an emergency fund matters.",
           "hint": "Head to Rainy Day Park after completing Budget Basics.",
@@ -128,6 +130,7 @@
         },
         {
           "id": "q_pp_inbox_storm",
+          "track": "side",
           "title": "Inbox Storm",
           "description": "Your inbox is overflowing with real-life money decisions. Open each message, weigh the options, and make smart choices before time runs out!",
           "hint": "Head to Main Street and check your inbox. Think before you click!",

@@ -62,6 +62,7 @@
       "quests": [
         {
           "id": "q_ck_first_recovery",
+          "track": "main",
           "title": "First Recovery",
           "description": "Talk to the Archivist and clear a credit minigame on the party board.",
           "objectives": [

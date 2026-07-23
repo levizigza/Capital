@@ -60,6 +60,8 @@ export const IslandQuestSchema = z.object({
   title: ProfileTextSchema,
   description: ProfileTextSchema,
   hint: ProfileTextSchema.optional(),
+  /** main = Story Circle spine; side = optional open-world. Omit = main. */
+  track: z.enum(["main", "side"]).optional(),
   objectives: z.array(QuestObjectiveSchema),
   rewards: z
     .object({

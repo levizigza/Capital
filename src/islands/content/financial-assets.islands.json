@@ -125,6 +125,7 @@
       "quests": [
         {
           "id": "q_portfolio_starter",
+          "track": "main",
           "title": "Portfolio Starter",
           "description": "Learn diversification by building a starter portfolio with virtual money.",
           "hint": "Talk to Penny on Market Street to get your Trading License, then visit Marcus in Broker Hall.",
@@ -138,6 +139,7 @@
         },
         {
           "id": "q_bonds_vs_stocks",
+          "track": "main",
           "title": "Bonds vs Stocks",
           "description": "Understand volatility, yield, and how news events move markets.",
           "hint": "Head to the News Stand and talk to Nina the Analyst.",
@@ -149,6 +151,7 @@
         },
         {
           "id": "q_etf_detective",
+          "track": "main",
           "title": "ETF Detective",
           "description": "Compare ETFs on fees, holdings, and sector exposure. Pick the best match for each goal.",
           "hint": "Enter the ETF Research Lab (requires Bond Certificate) and talk to Dr. Fund.",

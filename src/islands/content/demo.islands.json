@@ -75,6 +75,7 @@
       "quests": [
         {
           "id": "q_start_here",
+          "track": "main",
           "title": "First Steps",
           "description": "Talk to Guide Gus, then pick up the Cove Token.",
           "hint": "Head to the Dock and talk to Guide Gus first.",
@@ -86,6 +87,7 @@
         },
         {
           "id": "q_vault_visit",
+          "track": "main",
           "title": "Unlock the Vault",
           "description": "Use the Cove Token to enter the Savings Vault and meet Banker Beth.",
           "hint": "Collect the Cove Token from the Market, then enter the Vault from the Dock.",

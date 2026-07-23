@@ -13,7 +13,7 @@
  * - Short timed arenas with clear verbs, then mastery quiz
  */
 
-import type { IslandSaveV1 } from "./types";
+import type { IslandSaveV1, QuestTrack } from "./types";
 import { hasCompletedCoveChange } from "./chapterLoop";
 import { hasHarborFreedom, BOSS_ISLAND_ID, BOSS_MASTERY_REQUIRED } from "./progressGates";
 import { ensureLedger } from "./voyagerLedger";
@@ -23,7 +23,8 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 
-export type CourseTrack = "main" | "side";
+/** Same taxonomy as island quests — campaign painting spine vs optional digressions. */
+export type CourseTrack = QuestTrack;
 
 export type MainCourseStep = {
   id: string;
@@ -138,4 +139,9 @@ export const COURSE_WORLD_COMPONENTS = new Set([
 
 export function usesCourseWorld(componentId: string): boolean {
   return COURSE_WORLD_COMPONENTS.has(componentId);
+}
+
+/** World-level optional digressions for the Financial Quest Journal. */
+export function worldSideQuests(): MainCourseStep[] {
+  return SIDE_TOMFOOLERY;
 }

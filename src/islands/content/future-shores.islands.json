@@ -61,6 +61,7 @@
       "quests": [
         {
           "id": "q_fs_claim_plot",
+          "track": "main",
           "title": "Claim Your Plot",
           "description": "The kids of the future get to finish what we started. Explore Future Shores and pick up builder's chalk.",
           "objectives": [

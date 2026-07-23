@@ -104,6 +104,7 @@
       "quests": [
         {
           "id": "q_inventory_hustle",
+          "track": "main",
           "title": "Inventory Hustle",
           "description": "Stock your store, price items for profit, and manage inventory turnover without running out or overstocking.",
           "hint": "Talk to Shop Owner Sam to learn pricing, then negotiate with Supplier Steve for bulk deals.",
@@ -116,6 +117,7 @@
         },
         {
           "id": "q_depreciation_101",
+          "track": "main",
           "title": "Depreciation & Write-offs",
           "description": "Understand how business assets lose value over time and how that affects taxes and cash flow.",
           "hint": "Visit Accountant Amy to learn about cash flow, then see Tax Advisor Tina for depreciation rules.",

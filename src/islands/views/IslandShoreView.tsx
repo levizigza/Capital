@@ -197,7 +197,7 @@ export function IslandShoreView({
         }
       >
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
-          <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} />
+          <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
           <div className="pointer-events-none max-w-sm rounded-2xl bg-black/65 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
             Dive a painting for a real 3D action world — quizzes prove mastery after you clear it.
           </div>
@@ -210,7 +210,7 @@ export function IslandShoreView({
         maxWidth="xl"
         usePortal={false}
         zIndex={40}
-        title={`${island.name} · Quest Journal`}
+        title={`${island.name} · Financial Quest Journal`}
         showCloseButton
       >
         <IslandPlayView

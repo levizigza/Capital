@@ -97,6 +97,7 @@
       "quests": [
         {
           "id": "q_sc_credit_101",
+          "track": "main",
           "title": "Credit 101",
           "description": "Meet Mentor Max to learn what credit is, then visit Credit Cleo to see how scores work and earn your Market Pass.",
           "hint": "Start at Signal Plaza, then head to Credit Lane.",
@@ -110,6 +111,7 @@
         },
         {
           "id": "q_sc_first_portfolio",
+          "track": "main",
           "title": "First Portfolio",
           "description": "Use your Market Pass to enter Investor Tower. Meet Analyst Ari and Broker Blake to build a practice portfolio.",
           "hint": "You need the Market Pass from Credit Lane before entering Investor Tower.",

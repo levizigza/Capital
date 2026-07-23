@@ -102,11 +102,16 @@ export type QuestObjective =
   | { type: "collectItem"; itemId: ItemId }
   | { type: "completeMinigame"; minigameId: MinigameId; scoreThreshold?: ProfileNumber };
 
+/** Main = Story Circle / campaign spine. Side = optional open-world digression. */
+export type QuestTrack = "main" | "side";
+
 export type IslandQuest = {
   id: QuestId;
   title: ProfileText;
   description: ProfileText;
   hint?: ProfileText;
+  /** Defaults to "main" when omitted (chapter Story Circle). */
+  track?: QuestTrack;
   objectives: QuestObjective[];
   rewards?: { coins?: number; xp?: number; items?: ItemId[] };
 };

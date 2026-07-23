@@ -23,6 +23,8 @@ Harbor (home) → Guide points → Act (outfit / spend / talk)
 
 Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder islands → repeat.
 
+**Financial quest taxonomy:** Main Quest = Story Circle campaign spine (`MAIN_COURSE` + island `track: "main"`). Side Quests = optional open-world digressions (`SIDE_TOMFOOLERY` + island `track: "side"`). Coin Bag tips prefer Main Quest.
+
 ## 3. Goals, rules, failure
 
 | Question | Capital answer |

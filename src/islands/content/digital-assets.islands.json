@@ -104,6 +104,7 @@
       "quests": [
         {
           "id": "q_wallet_setup",
+          "track": "main",
           "title": "Wallet & First Transaction",
           "description": "Set up a simulated crypto wallet, send and receive mock transactions, and understand gas fees.",
           "hint": "Talk to Satoshi at Wallet Wharf to create your wallet, then visit Exchange Emma to make your first trade.",
@@ -117,6 +118,7 @@
         },
         {
           "id": "q_volatility_lesson",
+          "track": "main",
           "title": "Riding the Rollercoaster",
           "description": "Experience a simulated crypto crash. Learn why timing the market fails and how emotions drive bad decisions.",
           "hint": "Visit Volatility Valley. Talk to FOMO Fred and HODL Hannah for opposing viewpoints.",

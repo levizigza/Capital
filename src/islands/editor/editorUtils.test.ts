@@ -34,5 +34,6 @@ describe("createEmptyQuest", () => {
     if (q.objectives[0].type === "talkToNpc") {
       expect(island.npcs.map((n) => n.id)).toContain(q.objectives[0].npcId);
     }
+    expect(q.track ?? "main").toBe("main");
   });
 });
