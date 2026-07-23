@@ -130,6 +130,38 @@ export function buildShoreAmbientGraph(rng: () => number): BehaviorNode {
   );
 }
 
+/**
+ * Static harbor / shore — hold post, greet when near, no wander.
+ * Used for tableau keepers so mixed ecosystems feel authored.
+ */
+export function buildStaticKeeperGraph(rng: () => number): BehaviorNode {
+  const greetBranch = new Sequence("StaticGreet", [
+    new ConditionalGuard((bb) => bb.getOr(BB.playerNear, false)),
+    new FacePlayer(),
+    new GreetPlayer(),
+    new WaitSeconds(1.4),
+  ]);
+
+  const stay = new Sequence("HoldPost", [
+    new IdleStand(),
+    new WaitRange(3.5, 7, rng),
+  ]);
+
+  const guided = new Sequence("GuidedOverride", [
+    new ApplyGuidedPose(),
+    new FacePlayer(),
+    new WaitSeconds(0.4),
+  ]);
+
+  return new RepeatForever(
+    "StaticKeeper",
+    new Sequence("StaticTick", [
+      new SensePlayer(),
+      new TryInOrder("StaticPriority", [guided, greetBranch, stay]),
+    ]),
+  );
+}
+
 export function createHarborAgent(
   life: HarborNpcLife,
   opts?: { guidedPose?: NpcPoseId | null; talkRadius?: number },
@@ -145,12 +177,14 @@ export function createHarborAgent(
   bb.set(BB.pose, "stand" as NpcPoseId);
   bb.set(BB.line, pose.line);
   bb.set(BB.name, pose.name);
-  bb.set(BB.walkRadius, 2.6);
-  bb.set(BB.speed, 1.55);
+  bb.set(BB.walkRadius, life.motion === "static" ? 0.15 : 2.6);
+  bb.set(BB.speed, life.motion === "static" ? 0.4 : 1.55);
   bb.set(BB.talkRadius, opts?.talkRadius ?? 2.4);
   bb.set(BB.guidedPose, opts?.guidedPose ?? null);
   bb.set(BB.seed, life.mascotId);
-  return new BehaviorGraphAgent(buildHarborNpcGraph(rng), bb);
+  const root =
+    life.motion === "static" ? buildStaticKeeperGraph(rng) : buildHarborNpcGraph(rng);
+  return new BehaviorGraphAgent(root, bb);
 }
 
 export function createShoreAmbientAgent(
@@ -171,5 +205,9 @@ export function createShoreAmbientAgent(
   bb.set(BB.talkRadius, opts?.talkRadius ?? 2.2);
   bb.set(BB.guidedPose, null);
   bb.set(BB.seed, resident.id);
-  return new BehaviorGraphAgent(buildShoreAmbientGraph(rng), bb);
+  const root =
+    resident.motion === "static"
+      ? buildStaticKeeperGraph(rng)
+      : buildShoreAmbientGraph(rng);
+  return new BehaviorGraphAgent(root, bb);
 }

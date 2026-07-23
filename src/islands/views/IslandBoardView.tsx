@@ -39,6 +39,8 @@ import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
+import { resolveAdaptiveBuddyTip } from "../gameSystems";
+import { getIslandCulture } from "../islandCulture";
 import { getBoardEconomyMode, tracksHarborEscape, usesCashflowPassStart } from "../boardEconomy";
 import { isHomeLook } from "../animationStyles";
 
@@ -378,7 +380,12 @@ export function IslandBoardView({
 
   const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
   const boardSkin = era.boardSkinClass;
-  const buddy = coinBagIslandTip(save, island);
+  const culture = getIslandCulture(island);
+  const buddy = resolveAdaptiveBuddyTip({
+    save,
+    ecosystemMotion: culture.ecosystemMotion,
+    structuralTip: coinBagIslandTip(save, island),
+  });
 
   return (
     <GameHudLayout

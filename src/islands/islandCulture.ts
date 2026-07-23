@@ -42,6 +42,16 @@ export type FaunaKind =
   | "orbital_probes"
   | "mind_wisps";
 
+/**
+ * How ambient life moves on this shore — uniqueness of each world.
+ * - static: tableau / still-life residents (ruins, archives)
+ * - dynamic: everyone wanders (neon sprawl, pulse reefs)
+ * - mixed: settled folk + roaming critters/machines (most harbors & guilds)
+ */
+export type EcosystemMotionMode = "static" | "mixed" | "dynamic";
+
+export type ResidentMotion = "static" | "dynamic";
+
 export type IslandCulture = {
   id: string;
   /** Player-facing culture line */
@@ -62,6 +72,8 @@ export type IslandCulture = {
   };
   /** Signature animal / machine vibe (visual only) */
   fauna: FaunaKind;
+  /** Still vs living ecosystem — per-world signature */
+  ecosystemMotion: EcosystemMotionMode;
 };
 
 const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "id">>> = {
@@ -73,6 +85,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["stall", "hut", "garden"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 2, machines: 0 },
     fauna: "gulls",
+    ecosystemMotion: "mixed",
   },
   "vector-dawn": {
     cultureName: "Cognisphere Plotters",
@@ -82,6 +95,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["antenna", "statue", "terminal"],
     ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "service_drones",
+    ecosystemMotion: "mixed",
   },
   "wireframe-seas": {
     cultureName: "Gene Reef Brokers",
@@ -91,6 +105,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["terminal", "antenna", "tower"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
+    ecosystemMotion: "dynamic",
   },
   "neon-grid": {
     cultureName: "Corp Sprawl Night Crew",
@@ -100,6 +115,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["terminal", "stall", "tower"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "neon_androids",
+    ecosystemMotion: "dynamic",
   },
   "lowpoly-coast": {
     cultureName: "Scrap Coast Caravans",
@@ -109,6 +125,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["hut", "garden", "statue"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "scrap_bots",
+    ecosystemMotion: "mixed",
   },
   "quest-keep": {
     cultureName: "Orbital Ledger Keep",
@@ -118,6 +135,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["statue", "tower", "garden"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
+    ecosystemMotion: "mixed",
   },
   "ruin-realism": {
     cultureName: "Credit Ruin Clans",
@@ -127,6 +145,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["statue", "tower"],
     ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "scrap_bots",
+    ecosystemMotion: "static",
   },
   "painterly-skies": {
     cultureName: "Sky Garden Commons",
@@ -136,6 +155,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["garden", "tower", "hut"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
+    ecosystemMotion: "mixed",
   },
   "neon-metropolis": {
     cultureName: "Signal Block Neighbors",
@@ -145,6 +165,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["terminal", "stall", "antenna"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "neon_cats",
+    ecosystemMotion: "dynamic",
   },
   "broker-classic": {
     cultureName: "Exchange Floor Guild",
@@ -154,6 +175,7 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     landmarks: ["terminal", "statue"],
     ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 1 },
     fauna: "quest_birds",
+    ecosystemMotion: "mixed",
   },
 };
 
@@ -165,6 +187,7 @@ const DEFAULT_CULTURE: Omit<IslandCulture, "id"> = {
   landmarks: ["stall", "garden"],
   ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 1 },
   fauna: "harbor_dogs",
+  ecosystemMotion: "mixed",
 };
 
 /** Island-id overrides — genre-city identity even when visualStyle is shared. */
@@ -177,6 +200,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["stall", "hut", "garden"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
+    ecosystemMotion: "mixed",
   },
   starter_key_cove: {
     cultureName: "Starter Cay Co-op",
@@ -186,6 +210,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["hut", "garden"],
     ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
+    ecosystemMotion: "static",
   },
   future_shores: {
     cultureName: "Aurora Commons",
@@ -195,6 +220,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["garden", "tower", "hut"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "canopy_bots",
+    ecosystemMotion: "mixed",
   },
   paycheck_peninsula: {
     cultureName: "Dotgraph Cognisphere",
@@ -204,6 +230,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["antenna", "terminal", "statue"],
     ecosystem: { families: 0, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "service_drones",
+    ecosystemMotion: "mixed",
   },
   digital_assets: {
     cultureName: "Terminal Mind Nomads",
@@ -213,6 +240,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["terminal", "antenna", "tower"],
     ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "service_drones",
+    ecosystemMotion: "dynamic",
   },
   signal_city: {
     cultureName: "Phosphor Gene Reef",
@@ -222,6 +250,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["terminal", "antenna", "tower"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
+    ecosystemMotion: "dynamic",
   },
   venture_foundry: {
     cultureName: "Gridlock Corp Sprawl",
@@ -231,6 +260,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["terminal", "stall", "tower"],
     ecosystem: { families: 1, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "neon_androids",
+    ecosystemMotion: "dynamic",
   },
   financial_assets: {
     cultureName: "Budget Scrap Racers",
@@ -240,6 +270,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["hut", "statue", "garden"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "scrap_bots",
+    ecosystemMotion: "mixed",
   },
   credit_kingdom: {
     cultureName: "Temple Credit Ruinfolk",
@@ -249,6 +280,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["statue", "tower"],
     ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "scrap_bots",
+    ecosystemMotion: "static",
   },
   business_assets: {
     cultureName: "Diversify Orbital Keep",
@@ -258,6 +290,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["statue", "tower", "garden"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
+    ecosystemMotion: "mixed",
   },
   real_estate: {
     cultureName: "Colony Deed Auctioneers",
@@ -267,6 +300,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["statue", "terminal", "tower"],
     ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 2 },
     fauna: "orbital_probes",
+    ecosystemMotion: "mixed",
   },
   intangibles: {
     cultureName: "Mindcliff Archivists",
@@ -276,6 +310,7 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["tower", "statue", "garden"],
     ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1, machines: 2 },
     fauna: "mind_wisps",
+    ecosystemMotion: "static",
   },
   demo: {
     cultureName: "Sandbox Gene Testers",
@@ -285,6 +320,18 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     landmarks: ["terminal", "garden"],
     ecosystem: { families: 0, pairs: 0, loners: 1, animals: 1, machines: 2 },
     fauna: "gene_critters",
+    ecosystemMotion: "mixed",
+  },
+  /** Harbor Haven — Ordinary World plaza: settled keepers + roaming locals */
+  harbor_haven: {
+    cultureName: "Harbor Haven Locals",
+    vibe: "Ordinary World plaza · stall keepers · wandering mentors",
+    layout: "plaza",
+    roles: ["cash", "save", "spend", "trade"],
+    landmarks: ["stall", "garden", "hut"],
+    ecosystem: { families: 1, pairs: 1, loners: 1, animals: 1, machines: 0 },
+    fauna: "harbor_dogs",
+    ecosystemMotion: "mixed",
   },
 };
 
@@ -431,12 +478,34 @@ export type AmbientResident = {
   yaw: number;
   /** Folk / business / artist / model / … within the 30 */
   persona?: NpcPersona;
+  /** Walk & greet vs frozen tableau — per culture mix */
+  motion: ResidentMotion;
 };
 
 function hashStr(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   return h;
+}
+
+/**
+ * Decide static vs dynamic for one resident.
+ * Mixed worlds: settled folk (families/pairs) lean static; loners/animals/machines roam.
+ */
+export function assignResidentMotion(
+  mode: EcosystemMotionMode,
+  social: SocialKind,
+  seed: string,
+): ResidentMotion {
+  if (mode === "static") return "static";
+  if (mode === "dynamic") return "dynamic";
+  // mixed — role bias + stable hash so worlds feel authored, not random flicker
+  const h = hashStr(seed) % 100;
+  if (social === "family") return h < 78 ? "static" : "dynamic";
+  if (social === "pair") return h < 55 ? "static" : "dynamic";
+  if (social === "loner") return h < 35 ? "static" : "dynamic";
+  if (social === "animal" || social === "machine") return h < 22 ? "static" : "dynamic";
+  return h < 50 ? "static" : "dynamic";
 }
 
 /**
@@ -474,6 +543,7 @@ export function buildAmbientEcosystem(island: IslandDefinition): AmbientResident
       household,
       yaw: ang + Math.PI,
       persona: cast.persona,
+      motion: assignResidentMotion(culture.ecosystemMotion, social, seed),
     });
   };
 

@@ -1,12 +1,16 @@
 /**
  * Harbor ambient NPC schedules — light GTA-style lives for Money Mascots.
  * Time-of-day slots + one-liners when the Voyager walks near.
+ * Motion mix: some locals hold a stall/post (static), others roam (dynamic).
  */
 
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "./moneyCast";
 import { PLAZA_POP_CAMEOS } from "./moneyPopCulture";
 
 export type HarborHour = "morning" | "midday" | "afternoon" | "evening";
+
+/** Static = tableau keeper; dynamic = Unity Behavior wander + schedule */
+export type HarborMotion = "static" | "dynamic";
 
 export type HarborNpcLife = {
   mascotId: MoneyMascotId;
@@ -16,6 +20,8 @@ export type HarborNpcLife = {
   /** Where they drift during each slice of the day */
   schedule: Record<HarborHour, [number, number, number]>;
   lines: Record<HarborHour, string>;
+  /** Still vs roaming — Harbor is a mixed Ordinary World */
+  motion: HarborMotion;
 };
 
 const CAMEO_LINES: Record<string, string> = Object.fromEntries(
@@ -33,6 +39,15 @@ function hourFromClock(ms = Date.now()): HarborHour {
 /** Export for tests / HUD */
 export function currentHarborHour(): HarborHour {
   return hourFromClock();
+}
+
+/**
+ * Harbor motion mix — Piggy & even-index locals lean static (readable anchors);
+ * odd-index cast wanders so the plaza still feels alive.
+ */
+function harborMotionForIndex(i: number, mascotId: MoneyMascotId): HarborMotion {
+  if (mascotId === "piggy_penny") return "static";
+  return i % 2 === 0 ? "static" : "dynamic";
 }
 
 /**
@@ -56,17 +71,20 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
       afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
       evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
     };
+    const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,
       home: slot.pos,
       yaw: slot.yaw,
       schedule: {
-        morning: drift[0]!,
-        midday: drift[1]!,
-        afternoon: drift[2]!,
-        evening: drift[3]!,
+        // Static keepers stay home all day — schedule still defined for greet lines
+        morning: motion === "static" ? slot.pos : drift[0]!,
+        midday: motion === "static" ? slot.pos : drift[1]!,
+        afternoon: motion === "static" ? slot.pos : drift[2]!,
+        evening: motion === "static" ? slot.pos : drift[3]!,
       },
       lines: defaultLines,
+      motion,
     };
   });
 }
@@ -78,7 +96,7 @@ export function harborNpcPose(
   const mascot = getMascot(life.mascotId);
   return {
     position: life.schedule[hour],
-    yaw: life.yaw + (hour === "evening" ? 0.4 : 0),
+    yaw: life.yaw + (hour === "evening" && life.motion === "dynamic" ? 0.4 : 0),
     line: life.lines[hour],
     name: mascot.name,
   };

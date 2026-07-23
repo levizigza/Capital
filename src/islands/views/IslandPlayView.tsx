@@ -46,6 +46,8 @@ import { WealthHud } from "./WealthHud";
 import type { CapitalCharacter } from "../character";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
+import { resolveAdaptiveBuddyTip } from "../gameSystems";
+import { getIslandCulture } from "../islandCulture";
 import { partitionIslandQuests, questTrack, trackLabel } from "../questTracks";
 import { mainCourseProgress, nextMainCourseStep, worldSideQuests } from "../mainCourse";
 
@@ -317,7 +319,13 @@ export function IslandPlayView({
   const era = getAnimationStyle(animationStyle);
   const [section, setSection] = useState<IslandSection>("explore");
   const profileDef = getProfileDef(learningProfile);
-  const buddy = coinBagIslandTip(save, island);
+  const culture = getIslandCulture(island);
+  const buddy = resolveAdaptiveBuddyTip({
+    save,
+    profileId: learningProfile,
+    ecosystemMotion: culture.ecosystemMotion,
+    structuralTip: coinBagIslandTip(save, island),
+  });
 
   useInputAction("map", onOpenTravel);
   useInputAction("menu", onOpenHub);

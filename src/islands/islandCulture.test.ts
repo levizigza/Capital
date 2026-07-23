@@ -51,6 +51,25 @@ describe("islandCulture", () => {
     expect(ids.size).toBeGreaterThan(1);
   });
 
+  it("tags ecosystem motion per world — static ruins, dynamic neon, mixed guilds", () => {
+    expect(getIslandCulture(fakeIsland("credit_kingdom")).ecosystemMotion).toBe("static");
+    expect(getIslandCulture(fakeIsland("intangibles")).ecosystemMotion).toBe("static");
+    expect(getIslandCulture(fakeIsland("venture_foundry")).ecosystemMotion).toBe("dynamic");
+    expect(getIslandCulture(fakeIsland("signal_city")).ecosystemMotion).toBe("dynamic");
+    expect(getIslandCulture(fakeIsland("coincraft_cove")).ecosystemMotion).toBe("mixed");
+    expect(getIslandCulture(fakeIsland("harbor_haven")).ecosystemMotion).toBe("mixed");
+  });
+
+  it("assigns static/dynamic resident motion from culture mode", () => {
+    const ruins = buildAmbientEcosystem(fakeIsland("credit_kingdom"));
+    expect(ruins.every((r) => r.motion === "static")).toBe(true);
+    const neon = buildAmbientEcosystem(fakeIsland("venture_foundry"));
+    expect(neon.every((r) => r.motion === "dynamic")).toBe(true);
+    const mixed = buildAmbientEcosystem(fakeIsland("coincraft_cove"));
+    expect(mixed.some((r) => r.motion === "static")).toBe(true);
+    expect(mixed.some((r) => r.motion === "dynamic")).toBe(true);
+  });
+
   it("uses different anchors per layout", () => {
     const radar = shoreAnchorsForCulture(getIslandCulture(fakeIsland("signal_city")));
     const crescent = shoreAnchorsForCulture(getIslandCulture(fakeIsland("coincraft_cove")));

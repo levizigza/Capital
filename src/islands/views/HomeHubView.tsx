@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState, useCallback } from "react";
+import { Suspense, lazy, useMemo, useState, useCallback, useEffect } from "react";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import {
   GameHudLayout,
@@ -42,6 +42,7 @@ import { guidedVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
+import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -163,7 +164,12 @@ export function HomeHubView({
   const pulseHotspotId =
     visualBeats.pulseHotspot === "guide" ? null : (visualBeats.pulseHotspot ?? null);
 
-  const buddyTip = coinBagHarborTip(guided, {
+  useEffect(() => {
+    syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
+    gameEvents.emit("world.entered", { place: "harbor", ecosystemMotion: "mixed" });
+  }, []);
+
+  const structuralBuddy = coinBagHarborTip(guided, {
     nearStoreLabel: nearStore?.label,
     nearNpcName: nearNpc && !nearStore ? nearNpc.name : null,
     hasFreedom: freed,
@@ -171,6 +177,13 @@ export function HomeHubView({
     homecomingPending: Boolean(save.harborHomecoming?.pending),
     homecomingMessage: save.harborHomecoming?.message,
     pavilionUnlocked: coinBagShouldPointPavilion(save),
+  });
+  const buddyTip = resolveAdaptiveBuddyTip({
+    save,
+    profileId: learningProfile,
+    guidedActive: Boolean(guided && !isHubGuidedComplete(guided)),
+    ecosystemMotion: "mixed",
+    structuralTip: structuralBuddy,
   });
   const bagGuideTip = castleMode ? visualBeats.bagTip : buddyTip.tip;
 

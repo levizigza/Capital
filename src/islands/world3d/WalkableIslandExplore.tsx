@@ -251,29 +251,45 @@ function AmbientCritter({
         />
       </mesh>
     );
+    const critter = <group scale={resident.scale}>{mesh}</group>;
+    if (resident.motion === "static") {
+      return (
+        <group position={resident.position} rotation={[0, resident.yaw, 0]}>
+          {critter}
+        </group>
+      );
+    }
     return (
       <ShoreBehaviorDriver
         resident={resident}
         playerPos={playerPos}
-        render={() => <group scale={resident.scale}>{mesh}</group>}
+        render={() => critter}
       />
+    );
+  }
+  const folk = (pose: "stand" | "run" | "wave") => (
+    <NpcFromMascot
+      mascotId={resident.mascotId}
+      seed={resident.id}
+      islandId={islandId}
+      persona={resident.persona}
+      animationStyle={animationStyle}
+      pose={pose === "run" ? "run" : pose === "wave" ? "wave" : "stand"}
+      scale={resident.scale}
+    />
+  );
+  if (resident.motion === "static") {
+    return (
+      <group position={resident.position} rotation={[0, resident.yaw, 0]}>
+        {folk("stand")}
+      </group>
     );
   }
   return (
     <ShoreBehaviorDriver
       resident={resident}
       playerPos={playerPos}
-      render={(pose) => (
-        <NpcFromMascot
-          mascotId={resident.mascotId}
-          seed={resident.id}
-          islandId={islandId}
-          persona={resident.persona}
-          animationStyle={animationStyle}
-          pose={pose === "run" ? "run" : pose === "wave" ? "wave" : "stand"}
-          scale={resident.scale}
-        />
-      )}
+      render={(pose) => folk(pose === "run" ? "run" : pose === "wave" ? "wave" : "stand")}
     />
   );
 }

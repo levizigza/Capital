@@ -39,6 +39,7 @@ export { BehaviorGraphAgent } from "./agent";
 export {
   buildHarborNpcGraph,
   buildShoreAmbientGraph,
+  buildStaticKeeperGraph,
   createHarborAgent,
   createShoreAmbientAgent,
 } from "./graphs";

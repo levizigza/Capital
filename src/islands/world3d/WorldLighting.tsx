@@ -1,8 +1,9 @@
-import { Suspense } from "react";
+import { Suspense, useMemo } from "react";
 import { ContactShadows, Sky, Stars } from "@react-three/drei";
 import type { EraLook3D } from "./eraLooks";
 import type { SkyMode } from "./ledgerlight";
 import { SHORE_WORLD_SCALE } from "./ledgerlight";
+import { getSkyIntent } from "../gameSystems/worldBlackboard";
 
 type Props = {
   look: EraLook3D;
@@ -13,6 +14,15 @@ type Props = {
 };
 
 function resolveSkyMode(look: EraLook3D): SkyMode {
+  // Authored void / stars eras stay sacred — director never overrides them
+  if (look.skyMode === "void" || look.skyMode === "stars") return look.skyMode;
+  const intent = getSkyIntent();
+  // Soft director override only for day/sunset/night when world allows it
+  if (intent === "day" || intent === "sunset") {
+    if (!look.skyMode || look.skyMode === "day" || look.skyMode === "sunset" || look.skyMode === "night") {
+      return intent;
+    }
+  }
   if (look.skyMode) return look.skyMode;
   if (look.shading === "vector" || look.shading === "wire") return "stars";
   if (look.shading === "neon") return "night";
@@ -21,6 +31,7 @@ function resolveSkyMode(look: EraLook3D): SkyMode {
 
 /**
  * Ledgerlight lighting kit — sunsets, starfields, and void nights.
+ * WorldDirector may gently nudge day/sunset for readability / calm (not void/stars).
  * No CDN HDRI (can hang Suspense on blocked networks).
  */
 export function WorldLighting({
@@ -28,7 +39,8 @@ export function WorldLighting({
   contactShadows = false,
   shadowMapSize = 1024,
 }: Props) {
-  const skyMode = resolveSkyMode(look);
+  // Re-read intent each render — director updates between frames when tips refresh
+  const skyMode = useMemo(() => resolveSkyMode(look), [look]);
   const neon = look.shading === "neon";
   const voidNight = skyMode === "void";
   const starry = skyMode === "stars" || skyMode === "night" || voidNight;

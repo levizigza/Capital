@@ -18,6 +18,7 @@ describe("ledgerlight shore scale", () => {
       landmarks: [] as Array<"stall" | "antenna" | "statue" | "garden" | "terminal" | "hut" | "tower">,
       ecosystem: { families: 0, pairs: 0, loners: 0, animals: 0, machines: 0 },
       fauna: "gulls" as const,
+      ecosystemMotion: "mixed" as const,
     };
     const a = shoreAnchorsForCulture(culture);
     expect(a.pier[2]).toBeCloseTo(11.5 * SHORE_WORLD_SCALE, 5);

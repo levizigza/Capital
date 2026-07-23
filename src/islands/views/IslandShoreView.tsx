@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import {
   GameHudLayout,
   GameButton,
@@ -24,6 +24,7 @@ import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
+import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { buildShoreHotspots } from "../islandShoreLayout";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -81,7 +82,6 @@ export function IslandShoreView({
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
-  const buddy = coinBagIslandTip(save, island);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
     [island, save, hotspots],
@@ -94,6 +94,26 @@ export function IslandShoreView({
   const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
   const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
   const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
+
+  useEffect(() => {
+    syncWorldPlace({
+      place: "shore",
+      islandId: island.id,
+      ecosystemMotion: culture.ecosystemMotion,
+    });
+    gameEvents.emit("world.entered", {
+      place: "shore",
+      ecosystemMotion: culture.ecosystemMotion,
+    });
+  }, [island.id, culture.ecosystemMotion]);
+
+  const structuralBuddy = coinBagIslandTip(save, island);
+  const buddy = resolveAdaptiveBuddyTip({
+    save,
+    profileId: learningProfile,
+    ecosystemMotion: culture.ecosystemMotion,
+    structuralTip: structuralBuddy,
+  });
 
   const toggleGuide = useCallback(() => {
     if (!a11y || !onA11yChange) return;
