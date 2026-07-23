@@ -33,12 +33,16 @@ export const CAPSULE_OFFERS: CapsuleOffer[] = [
 ];
 
 export const COMPANION_PRICES: Record<string, number> = {
-  tortoise: 25,
+  /** Starter pet — always free so Outfitter pets make sense */
+  tortoise: 0,
   finch: 30,
   iguana: 45,
   otter: 40,
   crab: 35,
 };
+
+/** Free Slow Coin pet — granted on first Outfitter leave / adopt. */
+export const STARTER_COMPANION_ID = "tortoise";
 
 export const PLAZA_PASS_PRICE = 80;
 export const CARPET_POLISH_MARKUP = 0.35;
@@ -138,6 +142,7 @@ export function companionPrice(id: string): number {
 
 export function ownsCompanion(save: IslandSaveV1, companionId: string): boolean {
   if (companionId === "none") return true;
+  if (companionId === STARTER_COMPANION_ID) return true;
   return (save.harborShop?.ownedCompanions ?? []).includes(companionId);
 }
 
@@ -146,7 +151,14 @@ export function applyCompanionPurchase(save: IslandSaveV1, companionId: string):
   const shop = ensureHarborShop(save);
   const owned = new Set(shop.ownedCompanions ?? []);
   owned.add(companionId);
+  // Always keep the free starter marked owned once any companion is adopted
+  owned.add(STARTER_COMPANION_ID);
   return withHarborShop(save, { ...shop, ownedCompanions: Array.from(owned) });
+}
+
+/** Ensure starter pet is owned without charging. */
+export function grantStarterCompanion(save: IslandSaveV1): IslandSaveV1 {
+  return applyCompanionPurchase(save, STARTER_COMPANION_ID);
 }
 
 export function capsuleLabel(itemId: PartyItemId): string {

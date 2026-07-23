@@ -531,7 +531,7 @@ export function IslandPlayView({
         {onPlayMinigame && (island.minigames?.length ?? 0) > 0 ? (
           <GamePanel title="Party play pads & challenges" padding="default">
             <p className="mb-3 text-sm text-gray-600">
-              Movement games first (Mario Party style). Quizzes prove mastery after you clear a play
+              Movement games first (Fortune Party style). Quizzes prove mastery after you clear a play
               pad — prefer the walkable shore pads when you can.
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

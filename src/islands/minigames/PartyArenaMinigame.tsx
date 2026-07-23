@@ -2,7 +2,7 @@ import type { MinigameProps } from "../types";
 import { PartyArenaWorld } from "../world3d/PartyArenaWorld";
 
 /**
- * Full-screen 3D Mario Party action world — used when you dive a painting portal.
+ * Full-screen 3D Fortune Party action world — used when you dive a painting portal.
  * Move + jump + grab. Mastery quiz still gates literacy after clear.
  */
 export default function PartyArenaMinigame({

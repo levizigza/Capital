@@ -469,15 +469,9 @@ export function VoyagerMesh({
           </mesh>
         </group>
 
-        {/* Gear — oversized & form-aware so Outfitter picks always read clearly */}
+        {/* Gear — form-aware landmarks so monocle / bow / headphones sit correctly */}
         {accessory !== "none" ? (
-          <GearAttach
-            accessory={accessory}
-            headY={isPiggy ? 1.38 : isCoin ? 1.42 : useExtended || isBill || isBook ? 1.48 : 1.52}
-            chestY={isPiggy ? 0.88 : 0.98}
-            faceZ={isBill || isBook || bodyForm === "currency" || bodyForm === "receipt" ? 0.16 : 0.24}
-            materials={materials}
-          />
+          <GearAttach accessory={accessory} form={bodyForm} materials={materials} />
         ) : null}
 
         {companion !== "none" ? (
@@ -490,18 +484,58 @@ export function VoyagerMesh({
   );
 }
 
+/** Per-body landmarks for Outfitter gear (eye / neck / crown / ear span). */
+function gearLandmarks(form: MoneyForm): {
+  crownY: number;
+  eyeY: number;
+  eyeX: number;
+  eyeZ: number;
+  neckY: number;
+  neckZ: number;
+  earX: number;
+  headR: number;
+} {
+  switch (form) {
+    case "piggy":
+      return { crownY: 1.28, eyeY: 1.02, eyeX: 0.2, eyeZ: 0.4, neckY: 0.92, neckZ: 0.28, earX: 0.4, headR: 0.4 };
+    case "coin":
+    case "signal":
+    case "ancient":
+      return { crownY: 1.32, eyeY: 1.1, eyeX: 0.16, eyeZ: 0.12, neckY: 0.88, neckZ: 0.1, earX: 0.36, headR: 0.36 };
+    case "bill":
+    case "wave":
+      return { crownY: 1.42, eyeY: 1.18, eyeX: 0.22, eyeZ: 0.1, neckY: 0.72, neckZ: 0.09, earX: 0.42, headR: 0.34 };
+    case "ledger":
+    case "scroll":
+      return { crownY: 1.4, eyeY: 1.15, eyeX: 0.18, eyeZ: 0.14, neckY: 0.78, neckZ: 0.12, earX: 0.38, headR: 0.34 };
+    case "bag":
+      return { crownY: 1.35, eyeY: 1.08, eyeX: 0.18, eyeZ: 0.32, neckY: 0.9, neckZ: 0.22, earX: 0.4, headR: 0.4 };
+    case "vault":
+    case "chest":
+    case "safe":
+      return { crownY: 1.15, eyeY: 0.95, eyeX: 0.2, eyeZ: 0.28, neckY: 0.72, neckZ: 0.22, earX: 0.36, headR: 0.34 };
+    case "card":
+    case "wallet":
+      return { crownY: 1.2, eyeY: 1.0, eyeX: 0.16, eyeZ: 0.14, neckY: 0.75, neckZ: 0.12, earX: 0.32, headR: 0.3 };
+    case "currency":
+    case "receipt":
+      return { crownY: 1.38, eyeY: 1.12, eyeX: 0.18, eyeZ: 0.14, neckY: 0.85, neckZ: 0.12, earX: 0.36, headR: 0.34 };
+    case "cloud":
+    case "globe":
+      return { crownY: 1.4, eyeY: 1.12, eyeX: 0.2, eyeZ: 0.36, neckY: 0.88, neckZ: 0.26, earX: 0.42, headR: 0.42 };
+    default:
+      return { crownY: 1.4, eyeY: 1.12, eyeX: 0.18, eyeZ: 0.22, neckY: 0.9, neckZ: 0.16, earX: 0.38, headR: 0.36 };
+  }
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter live preview). */
 function GearAttach({
   accessory,
-  headY,
-  chestY,
-  faceZ,
+  form,
   materials,
 }: {
   accessory: string;
-  headY: number;
-  chestY: number;
-  faceZ: number;
+  form: MoneyForm;
   materials: {
     body: THREE.MeshStandardMaterial;
     ink: THREE.MeshStandardMaterial;
@@ -510,81 +544,102 @@ function GearAttach({
     pink: THREE.MeshStandardMaterial;
   };
 }) {
+  const L = gearLandmarks(form);
+
   if (accessory === "cap") {
     return (
-      <group position={[0, headY, 0]}>
+      <group position={[0, L.crownY, 0]}>
         <mesh castShadow material={materials.dark}>
-          <cylinderGeometry args={[0.2, 0.22, 0.18, 14]} />
+          <cylinderGeometry args={[L.headR * 0.55, L.headR * 0.6, 0.16, 14]} />
         </mesh>
-        <mesh castShadow position={[0, 0.12, 0]} material={materials.dark}>
-          <cylinderGeometry args={[0.28, 0.28, 0.05, 14]} />
+        <mesh castShadow position={[0, 0.1, 0]} material={materials.dark}>
+          <cylinderGeometry args={[L.headR * 0.78, L.headR * 0.78, 0.045, 14]} />
         </mesh>
-        <mesh castShadow position={[0, 0.22, 0]} material={materials.gold}>
-          <sphereGeometry args={[0.06, 10, 8]} />
+        <mesh castShadow position={[0, 0.18, 0]} material={materials.gold}>
+          <sphereGeometry args={[0.055, 10, 8]} />
         </mesh>
       </group>
     );
   }
+
+  // Gold Monocle — sits on the RIGHT eye, not the face center
   if (accessory === "goggles") {
     return (
-      <group position={[0.16, headY - 0.2, faceZ + 0.06]}>
+      <group position={[L.eyeX, L.eyeY, L.eyeZ]}>
         <mesh castShadow material={materials.gold}>
-          <torusGeometry args={[0.12, 0.035, 8, 18]} />
+          <torusGeometry args={[0.1, 0.028, 8, 18]} />
         </mesh>
-        <mesh material={materials.gold} position={[0, 0, 0.02]}>
-          <circleGeometry args={[0.08, 16]} />
+        <mesh material={materials.gold} position={[0, 0, 0.015]}>
+          <circleGeometry args={[0.07, 16]} />
+        </mesh>
+        <mesh castShadow position={[-0.08, -0.02, 0]} rotation={[0, 0, 0.2]} material={materials.gold}>
+          <capsuleGeometry args={[0.012, 0.08, 4, 6]} />
         </mesh>
       </group>
     );
   }
+
+  // Bow Tie — on the neck / collar
   if (accessory === "bandana") {
     return (
-      <group position={[0, chestY + 0.35, faceZ]}>
-        <mesh castShadow material={materials.pink} rotation={[0.15, 0, 0]}>
-          <boxGeometry args={[0.32, 0.14, 0.1]} />
+      <group position={[0, L.neckY, L.neckZ]}>
+        <mesh castShadow material={materials.pink} rotation={[0.1, 0, 0]}>
+          <boxGeometry args={[0.28, 0.1, 0.08]} />
         </mesh>
-        <mesh castShadow position={[0.14, -0.12, 0.02]} rotation={[0, 0, -0.5]} material={materials.pink}>
-          <boxGeometry args={[0.12, 0.2, 0.05]} />
+        <mesh castShadow position={[-0.14, -0.02, 0.01]} rotation={[0, 0, 0.55]} material={materials.pink}>
+          <boxGeometry args={[0.14, 0.12, 0.05]} />
+        </mesh>
+        <mesh castShadow position={[0.14, -0.02, 0.01]} rotation={[0, 0, -0.55]} material={materials.pink}>
+          <boxGeometry args={[0.14, 0.12, 0.05]} />
+        </mesh>
+        <mesh castShadow position={[0, -0.02, 0.04]} material={materials.gold}>
+          <sphereGeometry args={[0.04, 10, 8]} />
         </mesh>
       </group>
     );
   }
+
+  // Signal Phones — full over-ear headphones
   if (accessory === "headset") {
-    // Signal Phones — over-ear headphones parked on the head (band + cups + mic)
+    const earY = L.eyeY - 0.02;
+    const bandY = L.crownY + 0.02;
     return (
-      <group position={[0, headY + 0.02, 0]}>
-        {/* Headband sitting on top of the head */}
-        <mesh castShadow rotation={[0, 0, Math.PI / 2]} position={[0, 0.06, 0]} material={materials.dark}>
-          <torusGeometry args={[0.34, 0.05, 8, 24, Math.PI]} />
+      <group>
+        <mesh castShadow rotation={[0, 0, Math.PI / 2]} position={[0, bandY, 0]} material={materials.dark}>
+          <torusGeometry args={[L.headR * 0.95, 0.045, 8, 24, Math.PI]} />
         </mesh>
-        {/* Ear cups clamped to the sides of the head */}
-        <mesh castShadow position={[-0.38, -0.12, 0.05]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
-          <cylinderGeometry args={[0.15, 0.15, 0.13, 16]} />
+        <mesh castShadow position={[-L.earX, earY, L.eyeZ * 0.35]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
+          <cylinderGeometry args={[0.14, 0.14, 0.12, 16]} />
         </mesh>
-        <mesh castShadow position={[0.38, -0.12, 0.05]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
-          <cylinderGeometry args={[0.15, 0.15, 0.13, 16]} />
+        <mesh position={[-L.earX, earY, L.eyeZ * 0.35 + 0.06]} material={materials.pink}>
+          <circleGeometry args={[0.1, 16]} />
         </mesh>
-        <mesh position={[-0.38, -0.12, 0.12]} material={materials.pink}>
-          <circleGeometry args={[0.11, 16]} />
+        <mesh castShadow position={[L.earX, earY, L.eyeZ * 0.35]} rotation={[0, 0, Math.PI / 2]} material={materials.ink}>
+          <cylinderGeometry args={[0.14, 0.14, 0.12, 16]} />
         </mesh>
-        <mesh position={[0.38, -0.12, 0.12]} material={materials.pink}>
-          <circleGeometry args={[0.11, 16]} />
+        <mesh position={[L.earX, earY, L.eyeZ * 0.35 + 0.06]} material={materials.pink}>
+          <circleGeometry args={[0.1, 16]} />
         </mesh>
-        {/* Mic boom toward the face */}
-        <mesh castShadow position={[0.26, -0.28, 0.16]} rotation={[0.55, 0.5, 0.15]} material={materials.dark}>
-          <capsuleGeometry args={[0.022, 0.2, 4, 8]} />
+        <mesh
+          castShadow
+          position={[L.earX * 0.55, earY - 0.18, L.eyeZ * 0.55 + 0.08]}
+          rotation={[0.5, 0.45, 0.1]}
+          material={materials.dark}
+        >
+          <capsuleGeometry args={[0.02, 0.18, 4, 8]} />
         </mesh>
-        <mesh castShadow position={[0.16, -0.38, 0.26]} material={materials.gold}>
-          <sphereGeometry args={[0.045, 10, 8]} />
+        <mesh castShadow position={[L.earX * 0.35, earY - 0.28, L.eyeZ * 0.7 + 0.14]} material={materials.gold}>
+          <sphereGeometry args={[0.04, 10, 8]} />
         </mesh>
       </group>
     );
   }
+
   if (accessory === "lantern") {
     return (
-      <group position={[0.42, headY - 0.1, faceZ]}>
+      <group position={[L.earX + 0.08, L.crownY - 0.15, L.eyeZ]}>
         <mesh castShadow material={materials.gold}>
-          <octahedronGeometry args={[0.16, 0]} />
+          <octahedronGeometry args={[0.14, 0]} />
         </mesh>
         <pointLight color="#fbbf24" intensity={0.6} distance={2.5} />
       </group>
@@ -592,31 +647,26 @@ function GearAttach({
   }
   if (accessory === "cape") {
     return (
-      <mesh
-        castShadow
-        position={[0, chestY + 0.05, -0.32]}
-        rotation={[0.4, 0, 0]}
-        material={materials.ink}
-      >
+      <mesh castShadow position={[0, L.neckY - 0.15, -0.32]} rotation={[0.4, 0, 0]} material={materials.ink}>
         <boxGeometry args={[0.85, 1.0, 0.08]} />
       </mesh>
     );
   }
   if (accessory === "scarf") {
     return (
-      <group position={[0, chestY + 0.35, faceZ * 0.5]}>
+      <group position={[0, L.neckY, L.neckZ * 0.6]}>
         <mesh castShadow material={materials.gold} rotation={[0.25, 0, 0]}>
-          <torusGeometry args={[0.26, 0.07, 8, 18]} />
+          <torusGeometry args={[0.24, 0.06, 8, 18]} />
         </mesh>
-        <mesh castShadow position={[0.14, -0.28, 0.1]} material={materials.gold}>
-          <boxGeometry args={[0.12, 0.42, 0.08]} />
+        <mesh castShadow position={[0.12, -0.24, 0.08]} material={materials.gold}>
+          <boxGeometry args={[0.1, 0.36, 0.07]} />
         </mesh>
       </group>
     );
   }
   if (accessory === "vest") {
     return (
-      <mesh castShadow position={[0, chestY, faceZ * 0.35]} material={materials.dark}>
+      <mesh castShadow position={[0, L.neckY - 0.25, L.neckZ * 0.4]} material={materials.dark}>
         <boxGeometry args={[0.7, 0.55, 0.32]} />
       </mesh>
     );
@@ -625,7 +675,7 @@ function GearAttach({
     return (
       <mesh
         castShadow
-        position={[0.06, chestY, faceZ]}
+        position={[0.06, L.neckY - 0.15, L.neckZ * 0.5]}
         rotation={[0, 0, -0.55]}
         material={materials.gold}
       >

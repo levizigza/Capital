@@ -7,7 +7,7 @@ import { getIslandTheme } from "../themes/islandThemes";
 import { getAnimationStyle } from "../animationStyles";
 
 /**
- * Mario Party–style kinesthetic opener for islands that lack a movement game.
+ * Fortune Party–style kinesthetic opener for islands that lack a movement game.
  * Clear this first; mastery quiz gates literacy after the dash.
  */
 export default function PartyDashMinigame({
@@ -39,7 +39,7 @@ export default function PartyDashMinigame({
     >
       <p className="mb-3 text-sm opacity-80">
         Kinesthetic warm-up on {island.name}: catch value, dodge impulse spends. Ace the mastery
-        quiz after you clear the dash — that’s the Mario Party pairing.
+        quiz after you clear the dash — clear the course, then prove mastery.
       </p>
       <CoinCatcherGame
         userTier={learningProfileToTier(learningProfile)}

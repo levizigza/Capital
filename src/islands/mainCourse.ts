@@ -1,5 +1,5 @@
 /**
- * Main Course vs Side Tomfoolery — Super Mario 64 structure for Capital.
+ * Main Course vs Side Tomfoolery — castle-grounds structure for Capital.
  *
  * SM64 pattern we follow:
  * - Harbor = Castle Grounds (safe hub, practice verbs)
@@ -8,7 +8,7 @@
  * - Main course = required seals/stars to progress the Story Circle
  * - Side tomfoolery = optional board, arcade, secret pads — never required
  *
- * Mario Party pattern for the worlds inside paintings:
+ * Fortune Party pattern for the worlds inside paintings:
  * - Stick = move, Action = jump/grab/shove
  * - Short timed arenas with clear verbs, then mastery quiz
  */
@@ -91,7 +91,7 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     id: "party_plaza",
     track: "side",
     title: "Fortune Party Plaza",
-    blurb: "Mario Party board — roll, land, play. Pure tomfoolery.",
+    blurb: "Fortune Party board — roll, land, play. Pure tomfoolery.",
     placeId: "*",
     done: () => false,
   },

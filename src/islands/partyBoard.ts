@@ -1,7 +1,7 @@
 /**
  * Fortune Archipelago party board — dice, chance, capsules, seals, rivals.
  *
- * Core loop (Mario Party–inspired, financially themed):
+ * Core loop (Fortune Party–style, financially themed):
  *   Roll → Move → Resolve space → Optional minigame → Rival turns → repeat
  * Win condition for an island session: most Ledger Seals after N turns (or free play).
  */
@@ -111,7 +111,7 @@ export type SpaceResolvePayload = {
   pendingDeal?: import("./voyagerLedger").DealOffer;
 };
 
-/** Larger loop for richer party boards (~Mario Party density). */
+/** Larger loop for richer party boards (dense party density). */
 export const BOARD_SIZE = 16;
 
 /** Default turns in a ranked island party session */

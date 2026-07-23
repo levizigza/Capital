@@ -312,11 +312,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     (character: CapitalCharacter) => {
       updateSave((prev) => {
         const guided = prev.hubGuidedIntro ?? createDefaultHubGuidedIntro();
-        return {
+        let next = {
           ...prev,
           character,
           hubGuidedIntro: advanceHubGuided(guided, "saved_outfitter"),
         };
+        // Persist companion ownership (free Slow Coin always counts as owned)
+        if (character.companion && character.companion !== "none") {
+          next = applyCompanionPurchase(next, character.companion);
+        } else {
+          next = applyCompanionPurchase(next, "tortoise");
+          next = {
+            ...next,
+            character: { ...character, companion: "tortoise" },
+          };
+        }
+        return next;
       });
       if (character.name) {
         setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev));
@@ -328,6 +339,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const onHarborPurchase = useCallback(
     (purchase: import("./views/HomeHubView").HarborPurchase): boolean => {
+      // Free grants (starter pet) skip the coin charge path
+      if (purchase.price <= 0) {
+        updateSave((prev) => {
+          let next = prev;
+          if (purchase.kind === "companion") next = applyCompanionPurchase(prev, purchase.companionId);
+          else if (purchase.kind === "capsule") next = applyCapsulePurchase(prev, purchase.itemId);
+          else if (purchase.kind === "carpet") next = applyCarpetPolish(prev, purchase.tierId);
+          else if (purchase.kind === "plaza_pass") next = applyPlazaPass(prev, purchase.room);
+          return next;
+        });
+        return true;
+      }
       let charged = false;
       setUserProfile((prev) => {
         if (!prev || prev.totalCoins < purchase.price) return prev;
@@ -836,7 +859,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           if (activeIsland) {
             const games = activeIsland.minigames ?? [];
             const requested = games.find((g) => g.id === playId);
-            // Dialogue quizzes/sims → kinesthetic play pad first (Mario Party pairing).
+            // Dialogue quizzes/sims → kinesthetic play pad first (party action pairing).
             if (requested && !isKinestheticComponent(requested.componentId)) {
               const lead = games.find((g) => isKinestheticComponent(g.componentId));
               playId = lead?.id ?? partyDashIdForIsland(activeIsland.id);
@@ -1195,7 +1218,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         id: activeMinigameId,
         name: `${activeIsland.name} Painting Arena`,
         icon: "🖼️",
-        description: "Dive the painting — 3D Mario Party action world. Quiz after clear.",
+        description: "Dive the painting — 3D Fortune Party action world. Quiz after clear.",
         componentId: "PartyArenaMinigame",
       };
     }

@@ -32,7 +32,7 @@ export const STORY_BEATS: Array<{
   { id: "change", label: "Change", kidLine: "You’re different now.", campbell: "Master of Two Worlds" },
 ];
 
-/** Harbor Keeper — Castle Grounds Lakitu. */
+/** Harbor Keeper — Castle Grounds guide. */
 export const HARBOR_KEEPER_MASCOT_ID = "piggy_penny" as const;
 
 /**

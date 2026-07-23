@@ -39,7 +39,7 @@ type Pickup = {
 };
 
 /**
- * Mario Party–style 3D action arena inside a painting.
+ * Fortune Party–style 3D action arena inside a painting.
  * Verbs: WASD move · Space jump · E / click Action to grab nearby value.
  * Goal: bank enough value coins while dodging impulse spends before time runs out.
  */
@@ -104,7 +104,7 @@ function ArenaPlayer({
     const p = group.current.position;
     const k = keys.current;
 
-    // Camera-relative tank controls (Mario Party: stick = move)
+    // Camera-relative tank controls (stick = move)
     const turn = (Number(k.l) - Number(k.r)) * 2.4 * dt;
     yaw.current += turn;
     const forward = Number(k.f) - Number(k.b);
@@ -556,7 +556,7 @@ export function PartyArenaWorld({
       {phase === "ready" ? (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/55 p-6">
           <div className="max-w-md rounded-3xl border-2 border-amber-300/60 bg-[#0c1622] p-6 text-center text-white shadow-2xl">
-            <div className="text-xs font-bold uppercase tracking-widest text-amber-200">Mario Party · Action Arena</div>
+            <div className="text-xs font-bold uppercase tracking-widest text-amber-200">Fortune Party · Action Arena</div>
             <h2 className="mt-2 text-2xl font-black">{title ?? "Party Arena"}</h2>
             <p className="mt-2 text-sm text-white/80">
               This is a real 3D game world inside the painting — not a quiz. Move, jump, and grab{" "}

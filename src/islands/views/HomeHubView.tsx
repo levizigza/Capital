@@ -526,10 +526,17 @@ export function HomeHubView({
           setStage={setOutfitterStage}
           save={save}
           defaultName={userProfile.name}
-          onLeave={() => setHubModal(null)}
+          onLeave={() => {
+            const next =
+              draft.companion === "none" ? { ...draft, companion: "tortoise" } : draft;
+            onSaveCharacter(next);
+            setHubModal(null);
+          }}
           onSaveLook={(c) => setDraft({ ...c, companion: draft.companion })}
-          onAdoptPet={() => {
-            onSaveCharacter(draft);
+          onAdoptPet={(c) => {
+            onSaveCharacter(
+              c ?? (draft.companion === "none" ? { ...draft, companion: "tortoise" } : draft),
+            );
             setHubModal(null);
           }}
           onHarborPurchase={(price, companionId) => {
@@ -538,11 +545,12 @@ export function HomeHubView({
               companionId,
               price,
             });
-            if (!ok) {
+            if (!ok && price > 0) {
               toast.error(`Need 🪙 ${price} for that pet`);
               return false;
             }
-            toast.success(`Adopted! −🪙 ${price}`);
+            if (price > 0) toast.success(`Adopted! −🪙 ${price}`);
+            else if (companionId !== "none") toast.success("Companion ready!");
             return true;
           }}
         />

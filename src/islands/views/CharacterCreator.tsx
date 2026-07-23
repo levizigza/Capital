@@ -349,7 +349,7 @@ export function CharacterCreator({
             className={dark ? "flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50" : "flex-1"}
             onClick={onCancel}
           >
-            Leave
+            {dark ? "Save look & leave" : "Leave"}
           </GameButton>
         ) : null}
         <GameButton

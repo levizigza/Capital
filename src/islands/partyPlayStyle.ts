@@ -1,5 +1,5 @@
 /**
- * Mario Party–style play classification.
+ * Fortune Party–style play classification.
  * Kinesthetic / movement games come first on the shore; quizzes prove mastery after.
  */
 

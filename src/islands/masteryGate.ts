@@ -386,7 +386,7 @@ export const PARTY_DASH_MASTERY_GATE: MasteryGateDef = {
   title: "Party Pad Mastery Quiz",
   bossLabel: "Play-Pad Boss",
   requirementCopy:
-    "You cleared the kinesthetic Party Dash. Ace every question to prove the lesson stuck — Mario Party style.",
+    "You cleared the kinesthetic Party Dash. Ace every question to prove the lesson stuck — then prove it on the quiz.",
   questions: [
     {
       id: "pd1",

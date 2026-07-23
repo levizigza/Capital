@@ -18,13 +18,15 @@ type Props = {
   defaultName?: string;
   onLeave: () => void;
   onSaveLook: (c: CapitalCharacter) => void;
-  onAdoptPet: () => void;
+  /** Commit look + pet to save. Prefer passing the resolved character. */
+  onAdoptPet: (character?: CapitalCharacter) => void;
   onHarborPurchase: (price: number, companionId: string) => boolean;
 };
 
 /**
  * Full-bleed 3D Outfitter — Snapchat-style layers over a live mannequin.
  * Plaza Canvas must be unmounted while this is open.
+ * Leave always commits the current draft (look + pet) so plaza matches the fitting room.
  */
 export function OutfitterStudioOverlay({
   draft,
@@ -33,23 +35,46 @@ export function OutfitterStudioOverlay({
   setStage,
   save,
   defaultName,
-  onLeave,
+  onLeave: _onLeave,
   onSaveLook,
   onAdoptPet,
   onHarborPurchase,
 }: Props) {
+  void _onLeave;
   const pets = CHARACTER_COMPANIONS.filter((c) => c.id !== "none");
+
+  const commitAndLeave = () => {
+    const companionId = draft.companion === "none" ? "tortoise" : draft.companion;
+    const next: CapitalCharacter = { ...draft, companion: companionId };
+    setDraft(next);
+    const price = companionPrice(companionId);
+    const owned = ownsCompanion(save, companionId);
+    if (!owned && price > 0) {
+      const ok = onHarborPurchase(price, companionId);
+      if (!ok) {
+        const free: CapitalCharacter = { ...draft, companion: "tortoise" };
+        setDraft(free);
+        onHarborPurchase(0, "tortoise");
+        onAdoptPet(free);
+        return;
+      }
+    } else {
+      onHarborPurchase(0, companionId);
+    }
+    onAdoptPet(next);
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onLeave();
+        commitAndLeave();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onLeave]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft, save, onAdoptPet, onHarborPurchase]);
 
   return (
     <div
@@ -71,16 +96,16 @@ export function OutfitterStudioOverlay({
           </div>
           <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">Become you</h2>
           <p className="max-w-sm text-xs text-white/80 sm:text-sm">
-            Spin the mannequin with Body · Coat · Gear — like a Snapchat style picker.
+            Spin the mannequin with Body · Coat · Gear — Leave saves your look to the plaza.
           </p>
         </div>
         <button
           type="button"
-          onClick={onLeave}
+          onClick={commitAndLeave}
           className="rounded-full border-2 border-white/35 bg-black/45 px-3 py-1.5 text-sm font-bold text-white hover:bg-black/60"
           data-testid="outfitter-leave"
         >
-          ✕ Leave
+          ✕ Save & leave
         </button>
       </header>
 
@@ -95,7 +120,7 @@ export function OutfitterStudioOverlay({
               preview="none"
               saveLabel="Next: pick a pet →"
               onDraftChange={setDraft}
-              onCancel={onLeave}
+              onCancel={commitAndLeave}
               onSave={(c) => {
                 setDraft({ ...c, companion: draft.companion });
                 onSaveLook(c);
@@ -106,7 +131,9 @@ export function OutfitterStudioOverlay({
             <div className="flex min-h-0 flex-col gap-3 text-center text-white">
               <div>
                 <div className="text-lg font-black">Companion crates</div>
-                <p className="text-sm text-white/75">Choose a pet — or go back to looks.</p>
+                <p className="text-sm text-white/75">
+                  Slow Coin is free forever — other pets cost coins. Leave anytime to save.
+                </p>
               </div>
               <div className="flex max-h-[32vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
                 {pets.map((pet) => {
@@ -127,7 +154,7 @@ export function OutfitterStudioOverlay({
                       <span className="text-3xl">{companionEmoji(pet.id)}</span>
                       <span className="text-xs font-bold">{pet.label}</span>
                       <span className="text-[10px] font-semibold opacity-80">
-                        {owned ? "Owned" : `🪙 ${price}`}
+                        {owned || price === 0 ? (price === 0 ? "Free" : "Owned") : `🪙 ${price}`}
                       </span>
                     </button>
                   );
@@ -144,21 +171,12 @@ export function OutfitterStudioOverlay({
                 <GameButton
                   variant="primary"
                   className="flex-1"
-                  disabled={draft.companion === "none"}
-                  onClick={() => {
-                    const price = companionPrice(draft.companion);
-                    const owned = ownsCompanion(save, draft.companion);
-                    if (!owned && price > 0) {
-                      const ok = onHarborPurchase(price, draft.companion);
-                      if (!ok) return;
-                    }
-                    onAdoptPet();
-                  }}
+                  onClick={commitAndLeave}
                 >
                   {draft.companion === "none"
-                    ? "Pick a pet"
-                    : ownsCompanion(save, draft.companion)
-                      ? "Leave shop ✓"
+                    ? "Take free Slow Coin ✓"
+                    : ownsCompanion(save, draft.companion) || companionPrice(draft.companion) === 0
+                      ? "Save & leave ✓"
                       : `Adopt · 🪙 ${companionPrice(draft.companion)}`}
                 </GameButton>
               </div>
