@@ -12,7 +12,10 @@ import {
   currentHarborHour,
   harborNpcPose,
   NPC_TALK_RADIUS,
+  type HarborNpcLife,
 } from "../harborNpcLives";
+import { HarborBehaviorNpc } from "../npcBehavior/NpcBrainViews";
+import type { Vec3 } from "../npcBehavior";
 import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -67,14 +70,15 @@ const PLAZA_R = 16;
 function Player({
   character,
   hotspots,
-  npcPositions,
+  npcBodies,
   onNear,
   onNearNpc,
   playerPosOut,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
-  npcPositions: { id: string; name: string; line: string; position: [number, number, number] }[];
+  /** Live Unity-Behavior agent bodies (updated each frame by HarborBehaviorNpc) */
+  npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
   onNear: (id: string | null) => void;
   onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
@@ -158,14 +162,14 @@ function Player({
     }
     onNear(near);
 
-    let npcNear: (typeof npcPositions)[number] | null = null;
+    let npcNear: { id: string; name: string; line: string; position: Vec3 } | null = null;
     let npcBest = NPC_TALK_RADIUS;
     if (!near) {
-      for (const n of npcPositions) {
-        const d = Math.hypot(n.position[0] - p.x, n.position[2] - p.z);
+      for (const [id, body] of npcBodies.current) {
+        const d = Math.hypot(body.position[0] - p.x, body.position[2] - p.z);
         if (d < npcBest) {
           npcBest = d;
-          npcNear = n;
+          npcNear = { id, name: body.name, line: body.line, position: body.position };
         }
       }
     }
@@ -299,10 +303,13 @@ function PlazaScene({
   hotspots,
   onHotspot,
   locals,
+  lives,
   keeperEmote = "idle",
   keeperSpeech,
   pulseHotspotId,
   nearNpcId,
+  playerPos,
+  npcBodies,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -313,15 +320,16 @@ function PlazaScene({
     coat: string;
     form: MoneyForm;
     glyph?: string;
-    pos: [number, number, number];
-    yaw: number;
     line: string;
     name: string;
   }[];
+  lives: HarborNpcLife[];
   keeperEmote?: NpcEmote;
   keeperSpeech?: string | null;
   pulseHotspotId?: string | null;
   nearNpcId?: string | null;
+  playerPos: MutableRefObject<THREE.Vector3>;
+  npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
 }) {
   // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
@@ -546,62 +554,23 @@ function PlazaScene({
 
       {locals.map((npc) => {
         const isKeeper = npc.mascotId === HARBOR_KEEPER_MASCOT_ID;
-        const pose = isKeeper ? emoteToPose(keeperEmote) : "stand";
-        const bubble = !isKeeper
-          ? null
-          : nearNpcId === npc.mascotId && keeperSpeech
-            ? keeperSpeech
-            : keeperEmote === "wave"
-              ? "👋 Hi! Come talk!"
-              : keeperEmote === "cheer"
-                ? "🎉 You got this!"
-                : keeperEmote === "nod"
-                  ? "🙂 *nod nod*"
-                  : keeperEmote === "point"
-                    ? "👉 That way!"
-                    : keeperEmote === "talk" && keeperSpeech
-                      ? keeperSpeech
-                      : null;
+        const life = lives.find((l) => l.mascotId === npc.mascotId);
+        if (!life) return null;
         return (
-          <group key={npc.mascotId} position={npc.pos} rotation={[0, npc.yaw, 0]}>
-            {isKeeper && pulseHotspotId === "guide" ? <HotspotPulse active /> : null}
-            <HarborNpcMesh
-              coat={npc.coat}
-              form={npc.form}
-              glyph={npc.glyph}
-              character={npc.look}
-              pose={pose}
-              animationStyle="capital-default"
-            />
-            <Billboard position={[0, 2.05, 0]} follow>
-              <Text
-                fontSize={0.22}
-                color="#ffffff"
-                anchorX="center"
-                anchorY="middle"
-                outlineWidth={0.03}
-                outlineColor="#0f172a"
-              >
-                {npc.mascot.name}
-              </Text>
-            </Billboard>
-            {bubble ? (
-              <Billboard position={[0, 2.55, 0]} follow>
-                <Text
-                  fontSize={0.16}
-                  color="#fef3c7"
-                  anchorX="center"
-                  anchorY="bottom"
-                  outlineWidth={0.022}
-                  outlineColor="#0f172a"
-                  maxWidth={3.4}
-                  textAlign="center"
-                >
-                  {bubble}
-                </Text>
-              </Billboard>
-            ) : null}
-          </group>
+          <HarborBehaviorNpc
+            key={npc.mascotId}
+            life={life}
+            look={npc.look}
+            coat={npc.coat}
+            form={npc.form}
+            glyph={npc.glyph}
+            guidedEmote={isKeeper ? keeperEmote : "idle"}
+            keeperSpeech={isKeeper ? keeperSpeech : null}
+            showPulse={Boolean(isKeeper && pulseHotspotId === "guide")}
+            nearPlayer={nearNpcId === npc.mascotId}
+            playerPos={playerPos}
+            bodyOut={npcBodies}
+          />
         );
       })}
 
@@ -670,24 +639,14 @@ export function WalkableHarborView({
           coat: colorHex(look.color),
           form: mascot.form as MoneyForm,
           glyph: mascot.glyph,
-          pos: pose.position,
-          yaw: pose.yaw,
           line: pose.line,
           name: pose.name,
         };
       }),
     [lives, hour],
   );
-  const npcPositions = useMemo(
-    () =>
-      locals.map((n) => ({
-        id: n.mascotId,
-        name: n.name,
-        line: n.line,
-        position: n.pos,
-      })),
-    [locals],
-  );
+  const npcBodies = useRef(new Map<string, { position: Vec3; line: string; name: string }>());
+  const playerPos = useRef(new THREE.Vector3(0, 0, 3));
 
   const guideTarget = useMemo(() => {
     if (guideLookAt) return guideLookAt;
@@ -714,7 +673,6 @@ export function WalkableHarborView({
 
   const [ready, setReady] = useState(false);
   const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
-  const playerPos = useRef(new THREE.Vector3(0, 0, 3));
 
   useEffect(() => {
     if (ready) return;
@@ -754,15 +712,18 @@ export function WalkableHarborView({
             hotspots={hotspots}
             onHotspot={onHotspot}
             locals={locals}
+            lives={lives}
             keeperEmote={keeperEmote}
             keeperSpeech={keeperSpeech}
             pulseHotspotId={pulseHotspotId}
             nearNpcId={nearNpcId}
+            playerPos={playerPos}
+            npcBodies={npcBodies}
           />
           <Player
             character={character}
             hotspots={hotspots}
-            npcPositions={npcPositions}
+            npcBodies={npcBodies}
             onNear={setNear}
             onNearNpc={(n) => {
               setNearNpcId(n?.id ?? null);

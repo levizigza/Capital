@@ -28,6 +28,7 @@ import { pickPersona, varyMascotForPersona } from "../npcPersonas";
 import { MoneyBagGuide } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
+import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 
 type Props = {
   island: IslandDefinition;
@@ -170,7 +171,7 @@ function NpcFromMascot({
   islandId: string;
   persona?: import("../npcPersonas").NpcPersona;
   animationStyle: string;
-  pose?: "stand" | "wave" | "talk";
+  pose?: "stand" | "wave" | "talk" | "run";
   scale?: number;
 }) {
   const mascot = getMascot(mascotId);
@@ -201,16 +202,17 @@ function AmbientCritter({
   animationStyle,
   fauna,
   islandId,
+  playerPos,
 }: {
   resident: AmbientResident;
   look: EraLook3D;
   animationStyle: string;
   fauna: string;
   islandId: string;
+  playerPos: MutableRefObject<THREE.Vector3>;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   if (resident.social === "animal" || resident.social === "machine") {
-    // Era-continuous critters — animals OR genre-city machines
     const color = look.accent;
     const asMachine =
       resident.social === "machine" ||
@@ -219,83 +221,64 @@ function AmbientCritter({
       fauna.includes("android") ||
       fauna.includes("probe") ||
       fauna.includes("wisp");
-    return (
-      <group position={resident.position} rotation={[0, resident.yaw, 0]} scale={resident.scale}>
-        {asMachine ? (
-          <group>
-            <mesh castShadow position={[0, 0.35, 0]}>
-              <boxGeometry args={[0.38, 0.32, 0.38]} />
-              <meshStandardMaterial
-                color="#334155"
-                emissive={color}
-                emissiveIntensity={wire ? 0.2 : 0.18}
-                metalness={0.55}
-                roughness={0.35}
-                wireframe={wire}
-              />
-            </mesh>
-            <mesh position={[0, 0.62, 0]}>
-              <sphereGeometry args={[0.12, 8, 6]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.35} />
-            </mesh>
-            {fauna.includes("drone") || fauna.includes("probe") || resident.social === "machine" ? (
-              <>
-                <mesh position={[-0.32, 0.4, 0]} rotation={[0, 0, 0.2]}>
-                  <boxGeometry args={[0.28, 0.04, 0.1]} />
-                  <meshStandardMaterial color={look.shore} metalness={0.4} />
-                </mesh>
-                <mesh position={[0.32, 0.4, 0]} rotation={[0, 0, -0.2]}>
-                  <boxGeometry args={[0.28, 0.04, 0.1]} />
-                  <meshStandardMaterial color={look.shore} metalness={0.4} />
-                </mesh>
-              </>
-            ) : null}
-          </group>
-        ) : fauna.includes("fish") || fauna.includes("whale") || fauna.includes("critter") ? (
-          <mesh castShadow position={[0, 0.35, 0]} rotation={[0, 0, 0.2]}>
-            <capsuleGeometry args={[0.18, 0.45, 4, 8]} />
-            <meshStandardMaterial
-              color={color}
-              emissive={color}
-              emissiveIntensity={wire ? 0.45 : 0.15}
-              wireframe={wire}
-              flatShading
-            />
-          </mesh>
-        ) : fauna.includes("fox") || fauna.includes("cat") || fauna.includes("dog") || fauna.includes("lizard") ? (
-          <group>
-            <mesh castShadow position={[0, 0.28, 0]}>
-              <sphereGeometry args={[0.28, 10, 8]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={wire ? 0.4 : 0.1} wireframe={wire} flatShading />
-            </mesh>
-            <mesh castShadow position={[0.22, 0.42, -0.05]}>
-              <coneGeometry args={[0.08, 0.22, 5]} />
-              <meshStandardMaterial color={look.shore} wireframe={wire} flatShading />
-            </mesh>
-          </group>
-        ) : (
-          <mesh castShadow position={[0, 0.55, 0]}>
-            <sphereGeometry args={[0.16, 8, 6]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.3} wireframe={wire} />
-          </mesh>
-        )}
+    const mesh = asMachine ? (
+      <group>
+        <mesh castShadow position={[0, 0.35, 0]}>
+          <boxGeometry args={[0.38, 0.32, 0.38]} />
+          <meshStandardMaterial
+            color="#334155"
+            emissive={color}
+            emissiveIntensity={wire ? 0.2 : 0.18}
+            metalness={0.55}
+            roughness={0.35}
+            wireframe={wire}
+          />
+        </mesh>
+        <mesh position={[0, 0.62, 0]}>
+          <sphereGeometry args={[0.12, 8, 6]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.35} />
+        </mesh>
       </group>
+    ) : (
+      <mesh castShadow position={[0, 0.35, 0]}>
+        <sphereGeometry args={[0.28, 10, 8]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={wire ? 0.4 : 0.1}
+          wireframe={wire}
+          flatShading
+        />
+      </mesh>
+    );
+    return (
+      <ShoreBehaviorDriver
+        resident={resident}
+        playerPos={playerPos}
+        render={() => <group scale={resident.scale}>{mesh}</group>}
+      />
     );
   }
   return (
-    <group position={resident.position} rotation={[0, resident.yaw, 0]}>
-      <NpcFromMascot
-        mascotId={resident.mascotId}
-        seed={resident.id}
-        islandId={islandId}
-        persona={resident.persona}
-        animationStyle={animationStyle}
-        pose="stand"
-        scale={resident.scale}
-      />
-    </group>
+    <ShoreBehaviorDriver
+      resident={resident}
+      playerPos={playerPos}
+      render={(pose) => (
+        <NpcFromMascot
+          mascotId={resident.mascotId}
+          seed={resident.id}
+          islandId={islandId}
+          persona={resident.persona}
+          animationStyle={animationStyle}
+          pose={pose === "run" ? "run" : pose === "wave" ? "wave" : "stand"}
+          scale={resident.scale}
+        />
+      )}
+    />
   );
 }
+
+
 
 function PadMarker({
   hotspot,
@@ -786,6 +769,7 @@ function ShoreScene({
           animationStyle={animationStyle}
           fauna={culture.fauna}
           islandId={island.id}
+          playerPos={playerPosOut}
         />
       ))}
 
