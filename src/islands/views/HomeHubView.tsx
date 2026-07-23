@@ -25,7 +25,7 @@ import { ensureLedger } from "../voyagerLedger";
 import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
-import { HUB_ISLAND_ID, isHubIslandId } from "../worldMapLayout";
+import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
 import { toast } from "sonner";
