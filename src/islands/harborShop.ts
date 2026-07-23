@@ -137,7 +137,11 @@ export function isRoomUnlocked(save: IslandSaveV1, room: PlazaRoomId): boolean {
 }
 
 export function companionPrice(id: string): number {
-  return COMPANION_PRICES[id] ?? 0;
+  if (Object.prototype.hasOwnProperty.call(COMPANION_PRICES, id)) {
+    return COMPANION_PRICES[id]!;
+  }
+  // Unknown ids are not free — treat as unavailable / not for sale
+  return Number.POSITIVE_INFINITY;
 }
 
 export function ownsCompanion(save: IslandSaveV1, companionId: string): boolean {

@@ -792,11 +792,26 @@ export function WalkableIslandExplore({
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
   const look = useMemo(() => getIslandLook3D(island.id, theme.animationStyle), [island.id, theme.animationStyle]);
   const [near, setNear] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
   const playerPos = useRef(new THREE.Vector3(0, 0, 4.5));
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const [ready, setReady] = useState(false);
+  const [loadHint, setLoadHint] = useState(`Landing on ${island.name}…`);
+
+  useEffect(() => {
+    setLoadHint(`Landing on ${island.name}…`);
+    setReady(false);
+  }, [island.name]);
+
+  useEffect(() => {
+    if (ready) return;
+    const t = window.setTimeout(() => {
+      setLoadHint("Still landing… if this hangs, refresh the page.");
+    }, 8000);
+    return () => window.clearTimeout(t);
+  }, [ready]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -818,10 +833,10 @@ export function WalkableIslandExplore({
     <div className="relative h-full w-full overflow-hidden" data-testid="island-shore-explore">
       {!ready ? (
         <div
-          className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center text-sm font-bold"
+          className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center px-4 text-center text-sm font-bold"
           style={{ background: look.skyTop, color: look.accent }}
         >
-          Landing on {island.name}…
+          {loadHint}
         </div>
       ) : null}
       <Canvas
@@ -835,7 +850,14 @@ export function WalkableIslandExplore({
           setReady(true);
         }}
       >
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <mesh position={[0, 1, 0]}>
+              <boxGeometry args={[0.01, 0.01, 0.01]} />
+              <meshBasicMaterial transparent opacity={0} />
+            </mesh>
+          }
+        >
           <ShoreScene
             island={island}
             look={look}

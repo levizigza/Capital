@@ -301,8 +301,8 @@ export function guideTargetForHighlight(
   if (!highlight) return null;
   if (highlight === "guide") return piggyPos;
   if (highlight === "practice") {
-    const arcade = hotspots.find((h) => h.id === "arcade");
-    return arcade?.position ?? [0, 0, 3];
+    const pad = hotspots.find((h) => h.id === "practice");
+    return pad?.position ?? [0, 0, 2.5];
   }
   const hit = hotspots.find((h) => h.id === highlight);
   return hit?.position ?? [0, 0, -6];

@@ -3,7 +3,7 @@ import { GameButton, GamePanel } from "@/game-ui";
 import { toast } from "sonner";
 import type { UserProfile } from "@/App";
 import type { IslandSaveV1 } from "../types";
-import { PARTY_ITEMS } from "../partyItems";
+import { PARTY_ITEMS, MAX_PARTY_ITEMS } from "../partyItems";
 import {
   CAPSULE_OFFERS,
   canBuyCapsule,
@@ -46,12 +46,16 @@ export function CapsuleStudioOverlay({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         onLeave();
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
   }, [onLeave]);
+
+  const ownedItems = hubPartyItems(save);
+  const slotsUsed = ownedItems.length;
 
   return (
     <div
@@ -72,10 +76,13 @@ export function CapsuleStudioOverlay({
           </div>
           <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">Tiny spend</h2>
           <p className="max-w-sm text-xs text-white/80 sm:text-sm">
-            Coins can buy help — Fortune Capsules, carpet polish, and plaza passes.
+            Buy help for the plaza — capsules, carpet polish, and Pasaran Lane. Esc leaves anytime.
           </p>
-          <div className="mt-1 text-sm font-bold text-amber-100">
-            Balance: 🪙 {userProfile.totalCoins}
+          <div className="mt-1 flex flex-wrap gap-3 text-sm font-bold text-amber-100">
+            <span>Balance: 🪙 {userProfile.totalCoins}</span>
+            <span>
+              Capsules: {slotsUsed}/{MAX_PARTY_ITEMS}
+            </span>
           </div>
         </div>
         <button
@@ -91,13 +98,20 @@ export function CapsuleStudioOverlay({
       <div className="relative z-[2] mt-auto max-h-[52vh] w-full overflow-y-auto px-3 pb-3 sm:px-4 sm:pb-4">
         <div className="mx-auto w-full max-w-xl space-y-3 rounded-3xl border border-white/15 bg-black/55 p-3 shadow-2xl backdrop-blur-md sm:p-4">
           <GamePanel padding="default" className="space-y-2 border-white/10 bg-white/95 text-left">
-            <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
-              Fortune Capsules
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Fortune Capsules
+              </div>
+              <div className="text-[11px] font-semibold text-muted-foreground">
+                {slotsUsed >= MAX_PARTY_ITEMS
+                  ? "Bag full — sell or use items on the practice board"
+                  : `${MAX_PARTY_ITEMS - slotsUsed} slot${MAX_PARTY_ITEMS - slotsUsed === 1 ? "" : "s"} free`}
+              </div>
             </div>
             {CAPSULE_OFFERS.map((offer) => {
               const def = PARTY_ITEMS[offer.itemId];
               const check = canBuyCapsule(save, userProfile.totalCoins, offer.itemId, offer.price);
-              const owned = hubPartyItems(save).includes(offer.itemId);
+              const owned = ownedItems.includes(offer.itemId);
               return (
                 <div
                   key={offer.itemId}
@@ -108,11 +122,15 @@ export function CapsuleStudioOverlay({
                       {def.icon} {def.name}
                     </div>
                     <div className="line-clamp-1 text-[11px] text-muted-foreground">{def.moneyTip}</div>
+                    {!check.ok && !owned ? (
+                      <div className="text-[11px] font-semibold text-amber-800">{check.reason}</div>
+                    ) : null}
                   </div>
                   <GameButton
                     size="sm"
                     variant={owned ? "ghost" : "primary"}
                     disabled={!check.ok}
+                    title={!check.ok ? check.reason : undefined}
                     onClick={() => {
                       const ok = onHarborPurchase({
                         kind: "capsule",
@@ -149,11 +167,17 @@ export function CapsuleStudioOverlay({
                     <div className="text-[11px] text-muted-foreground">
                       Early unlock — cheaper than earning every coin for the tier.
                     </div>
+                    {!can ? (
+                      <div className="text-[11px] font-semibold text-amber-800">
+                        Need 🪙 {next.price} (you have {userProfile.totalCoins})
+                      </div>
+                    ) : null}
                   </div>
                   <GameButton
                     size="sm"
                     variant="primary"
                     disabled={!can}
+                    title={!can ? `Need 🪙 ${next.price}` : undefined}
                     onClick={() => {
                       const ok = onHarborPurchase({
                         kind: "carpet",
@@ -176,26 +200,38 @@ export function CapsuleStudioOverlay({
               Plaza pass
             </div>
             {isRoomUnlocked(save, "market") ? (
-              <p className="text-sm text-muted-foreground">🧺 Pasaran Lane unlocked.</p>
+              <p className="text-sm text-muted-foreground">
+                🧺 Pasaran Lane is open on the plaza — walk to the market stall for fair-trade practice.
+              </p>
             ) : (
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <div className="text-sm font-bold">🧺 Pasaran Lane pass</div>
                   <div className="text-[11px] text-muted-foreground">
-                    Open the market wing of Harbor Haven.
+                    Opens a market stall on the plaza for exact-change practice.
                   </div>
+                  {userProfile.totalCoins < PLAZA_PASS_PRICE ? (
+                    <div className="text-[11px] font-semibold text-amber-800">
+                      Need 🪙 {PLAZA_PASS_PRICE} (you have {userProfile.totalCoins})
+                    </div>
+                  ) : null}
                 </div>
                 <GameButton
                   size="sm"
                   variant="primary"
                   disabled={userProfile.totalCoins < PLAZA_PASS_PRICE}
+                  title={
+                    userProfile.totalCoins < PLAZA_PASS_PRICE
+                      ? `Need 🪙 ${PLAZA_PASS_PRICE}`
+                      : undefined
+                  }
                   onClick={() => {
                     const ok = onHarborPurchase({
                       kind: "plaza_pass",
                       room: "market",
                       price: PLAZA_PASS_PRICE,
                     });
-                    if (ok) toast.success("Pasaran Lane unlocked!");
+                    if (ok) toast.success("Pasaran Lane unlocked on the plaza!");
                     else toast.error(`Need 🪙 ${PLAZA_PASS_PRICE}`);
                   }}
                 >

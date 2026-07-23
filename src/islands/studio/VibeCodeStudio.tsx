@@ -71,7 +71,6 @@ function applyPromptToLevel(level: VibeLevel, prompt: string): VibeLevel {
 }
 
 export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudioProps) {
-  useInputAction("cancel", onClose);
   const [tab, setTab] = useState<StudioTab>("guide");
   const [templateId, setTemplateId] = useState<VibeLevel["template"]>("explorable-puzzle");
   const [level, setLevel] = useState<VibeLevel>(() =>
@@ -80,11 +79,25 @@ export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudi
   const [jsonText, setJsonText] = useState(() => exportLevelJson(level));
   const [prompt, setPrompt] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const community = useMemo(() => loadCommunityLevels(), [status]);
+
+  const requestClose = () => {
+    if (dirty && !confirmLeave) {
+      setConfirmLeave(true);
+      return;
+    }
+    onClose();
+  };
+
+  useInputAction("cancel", requestClose);
 
   const syncJson = (next: VibeLevel) => {
     setLevel(next);
     setJsonText(exportLevelJson(next));
+    setDirty(true);
+    setConfirmLeave(false);
   };
 
   const applyPrompt = () => {
@@ -99,6 +112,7 @@ export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudi
     try {
       const parsed = importLevelJson(jsonText);
       setLevel(parsed);
+      setDirty(true);
       setStatus("JSON looks good!");
     } catch (e) {
       setStatus(`Fix JSON: ${e instanceof Error ? e.message : "invalid"}`);
@@ -108,6 +122,8 @@ export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudi
   const publish = () => {
     saveCommunityLevel(level);
     onPublish?.(level);
+    setDirty(false);
+    setConfirmLeave(false);
     setStatus(`Published "${level.title}" to the community gallery!`);
   };
 
@@ -125,13 +141,44 @@ export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudi
               <a href="https://github.com/voideditor/void" className="text-cyan-400 underline" target="_blank" rel="noreferrer">
                 Void
               </a>
-              , built for kids.
+              , built for kids. Esc asks before leaving unsaved work.
             </p>
           </div>
-          <GameButton variant="outline" size="sm" onClick={onClose}>
+          <GameButton variant="outline" size="sm" onClick={requestClose}>
             Back to Hub
           </GameButton>
         </div>
+
+        {confirmLeave ? (
+          <div
+            className="rounded-lg border border-amber-500/50 bg-amber-950/50 px-3 py-3 text-sm"
+            role="alertdialog"
+            aria-label="Leave without publishing?"
+          >
+            <p className="font-semibold text-amber-100">Leave without publishing?</p>
+            <p className="mt-1 text-amber-100/80">
+              Your draft stays in this session only. Publish to keep it in the community gallery.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <GameButton variant="primary" size="sm" onClick={onClose}>
+                Leave anyway
+              </GameButton>
+              <GameButton variant="outline" size="sm" onClick={() => setConfirmLeave(false)}>
+                Keep editing
+              </GameButton>
+              <GameButton
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  publish();
+                  onClose();
+                }}
+              >
+                Publish & leave
+              </GameButton>
+            </div>
+          </div>
+        ) : null}
 
         {status ? (
           <div className="rounded-lg bg-violet-900/40 border border-violet-500/40 px-3 py-2 text-sm">
@@ -210,7 +257,11 @@ export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudi
             <textarea
               className="w-full h-[min(50vh,420px)] rounded-lg bg-slate-900 border border-slate-700 p-3 text-xs font-mono"
               value={jsonText}
-              onChange={(e) => setJsonText(e.target.value)}
+              onChange={(e) => {
+                setJsonText(e.target.value);
+                setDirty(true);
+                setConfirmLeave(false);
+              }}
               spellCheck={false}
             />
             <div className="flex gap-2 mt-2 flex-wrap">

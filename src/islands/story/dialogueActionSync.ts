@@ -13,7 +13,7 @@ export type GuidedVisualBeats = {
   /** Coin Bag billboard tip — must match hop target */
   bagTip: string;
   /** Hotspot that should pulse / glow */
-  pulseHotspot?: "outfitter" | "capsule" | "travel" | "arcade" | "guide";
+  pulseHotspot?: "outfitter" | "capsule" | "travel" | "arcade" | "practice" | "guide" | "market";
 };
 
 /** Map guided step id → what the player must SEE. */
@@ -47,8 +47,8 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   practice_optional: {
     keeperEmote: "talk",
     keeperBubbleWhenNear: "Piggy Penny: Practice board is optional — or skip to the carpet!",
-    bagTip: "Practice, or skip to dock",
-    pulseHotspot: "arcade",
+    bagTip: "Practice board pad — or skip to dock",
+    pulseHotspot: "practice",
   },
   to_dock: {
     keeperEmote: "point",

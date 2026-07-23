@@ -36,7 +36,7 @@ export const PLAZA_ROOMS: Array<{
     id: "plaza",
     label: "Main Plaza",
     icon: "🏛️",
-    blurb: "Outfitter, Arcade, Capsules — your SM64-style hub street.",
+    blurb: "Outfitter, Arcade, Capsules — your Harbor Haven hub street.",
   },
   {
     id: "market",

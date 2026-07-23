@@ -73,7 +73,9 @@ export function resolveHarborGuideLookAt(opts: {
 
   if (opts.highlight) {
     if (opts.highlight === "guide") return piggy;
-    if (opts.highlight === "practice") return find("arcade") ?? ([0, 0, 3] as GuideLookAt);
+    if (opts.highlight === "practice") {
+      return find("practice") ?? ([0, 0, 2.5] as GuideLookAt);
+    }
     return find(opts.highlight) ?? ([0, 0, -6] as GuideLookAt);
   }
 

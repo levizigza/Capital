@@ -25,6 +25,7 @@ import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { ensureLedger } from "../voyagerLedger";
 import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
+import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
 import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
@@ -44,7 +45,7 @@ import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
-type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | null;
+type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | "market" | null;
 
 export type HarborPurchase =
   | { kind: "capsule"; itemId: PartyItemId; price: number }
@@ -117,11 +118,18 @@ export function HomeHubView({
   onExit,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
+    if (hubModal) return;
     onHubGuidedEvent("opened_map");
     onOpenTravel();
   });
-  useInputAction("menu", () => setHubModal("settings"));
+  useInputAction("menu", () => {
+    // O opens settings — never while a store owns the screen
+    if (hubModal) return;
+    setHubModal("settings");
+  });
   useInputAction("cancel", () => {
+    // Outfitter / Capsule / Market own Esc (save-or-leave). Don't discard drafts here.
+    if (hubModal === "outfitter" || hubModal === "capsule" || hubModal === "market") return;
     if (hubModal) setHubModal(null);
     else onExit();
   });
@@ -153,11 +161,7 @@ export function HomeHubView({
     nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
   const keeperSpeech = castleMode ? visualBeats.keeperBubbleWhenNear : null;
   const pulseHotspotId =
-    visualBeats.pulseHotspot === "guide"
-      ? null
-      : visualBeats.pulseHotspot === "arcade"
-        ? "arcade"
-        : (visualBeats.pulseHotspot ?? null);
+    visualBeats.pulseHotspot === "guide" ? null : (visualBeats.pulseHotspot ?? null);
 
   const buddyTip = coinBagHarborTip(guided, {
     nearStoreLabel: nearStore?.label,
@@ -175,6 +179,8 @@ export function HomeHubView({
 
   const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
+  const marketOpen = isRoomUnlocked(save, "market");
+
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
       { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6.5, 0, -5] },
@@ -183,6 +189,10 @@ export function HomeHubView({
       { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
       { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
       { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
+      // Always on the plaza so Coin Bag can point here during the optional practice beat
+      ...(onPlayHarborBoard
+        ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
+        : []),
       ...(pavilionOpen
         ? [
             {
@@ -193,11 +203,21 @@ export function HomeHubView({
             } satisfies HarborHotspot,
           ]
         : []),
+      ...(marketOpen
+        ? [
+            {
+              id: "market",
+              label: "Pasaran Lane",
+              icon: "🧺",
+              position: [7.2, 0, -3.2],
+            } satisfies HarborHotspot,
+          ]
+        : []),
       ...(onOpenEditor
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
-    [onOpenEditor, pavilionOpen],
+    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard],
   );
 
   const harborGuideLookAt = useMemo(
@@ -245,6 +265,11 @@ export function HomeHubView({
       setHubModal("capsule");
     } else if (id === "pavilion") {
       setHubModal("pavilion");
+    } else if (id === "market") {
+      setHubModal("market");
+    } else if (id === "practice" && onPlayHarborBoard) {
+      onHubGuidedEvent("practice_opened");
+      onPlayHarborBoard();
     }
   };
 
@@ -458,8 +483,8 @@ export function HomeHubView({
               {castleMode
                 ? `🐰 Coin Bag stays beside you · ${guidedStep?.verb}`
                 : nearStore
-                  ? "E enter · WASD walk"
-                  : `WASD walk · M map · ${boat.emoji} ${boat.label}`}
+                  ? "E enter · Esc leaves shops · WASD walk"
+                  : `WASD walk · M map · O settings · ${boat.emoji} ${boat.label}`}
             </p>
             {(canResume || onPlayHarborBoard) && !nearStore && !castleMode ? (
               <div className="flex flex-wrap items-center justify-center gap-2">
@@ -526,18 +551,12 @@ export function HomeHubView({
           setStage={setOutfitterStage}
           save={save}
           defaultName={userProfile.name}
-          onLeave={() => {
-            const next =
-              draft.companion === "none" ? { ...draft, companion: "tortoise" } : draft;
-            onSaveCharacter(next);
-            setHubModal(null);
-          }}
+          onLeave={() => setHubModal(null)}
           onSaveLook={(c) => setDraft({ ...c, companion: draft.companion })}
           onAdoptPet={(c) => {
             onSaveCharacter(
               c ?? (draft.companion === "none" ? { ...draft, companion: "tortoise" } : draft),
             );
-            setHubModal(null);
           }}
           onHarborPurchase={(price, companionId) => {
             const ok = onHarborPurchase({
@@ -565,6 +584,10 @@ export function HomeHubView({
           showPeekDone={guidedStep?.id === "tiny_spend"}
           onPeekDone={() => onHubGuidedEvent("capsule_visit")}
         />
+      ) : null}
+
+      {hubModal === "market" ? (
+        <HarborMarketOverlay onLeave={() => setHubModal(null)} />
       ) : null}
 
       <GameModal

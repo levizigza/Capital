@@ -713,13 +713,22 @@ export function WalkableHarborView({
   }, [near, hotspots, onNearChange]);
 
   const [ready, setReady] = useState(false);
+  const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
   const playerPos = useRef(new THREE.Vector3(0, 0, 3));
+
+  useEffect(() => {
+    if (ready) return;
+    const t = window.setTimeout(() => {
+      setLoadHint("Still loading… if this hangs, refresh the page (Esc won’t help here).");
+    }, 8000);
+    return () => window.clearTimeout(t);
+  }, [ready]);
 
   return (
     <div className="relative h-full w-full overflow-hidden">
       {!ready ? (
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#7dd3fc] text-sm font-bold text-[#16283b]/70">
-          Loading Harbor Haven…
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#7dd3fc] px-4 text-center text-sm font-bold text-[#16283b]/70">
+          {loadHint}
         </div>
       ) : null}
       <Canvas
@@ -733,7 +742,14 @@ export function WalkableHarborView({
           setReady(true);
         }}
       >
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <mesh position={[0, 1, 0]}>
+              <boxGeometry args={[0.01, 0.01, 0.01]} />
+              <meshBasicMaterial transparent opacity={0} />
+            </mesh>
+          }
+        >
           <PlazaScene
             hotspots={hotspots}
             onHotspot={onHotspot}

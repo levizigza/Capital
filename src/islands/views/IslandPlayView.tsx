@@ -366,9 +366,9 @@ export function IslandPlayView({
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <GamePanel title="NPCs here" padding="default">
-            <InputPromptHint action="interact" className="mb-2">
-              Talk —
-            </InputPromptHint>
+            <p className="mb-2 text-xs font-semibold text-muted-foreground">
+              Tap a local to talk
+            </p>
             {visibleNpcs.length === 0 ? (
               <p className="text-sm text-gray-600">No one is here.</p>
             ) : (

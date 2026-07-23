@@ -92,8 +92,8 @@ export function TravelMapView({
       }
       bottom={
         <div className="flex flex-col items-center gap-1 px-4 pb-1 text-center">
-          <InputPromptHint action="interact" className="justify-center text-white/80">
-            Tap an island · Esc back
+          <InputPromptHint action="cancel" className="justify-center text-white/80">
+            Tap an island · Esc back to Harbor
           </InputPromptHint>
           {nextBoat ? (
             <p className="text-[10px] font-medium text-white/65">

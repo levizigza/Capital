@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import {
   type CapitalCharacter,
   baseEmoji,
@@ -19,6 +19,79 @@ type Props = {
   /** Start from Harbor look, then morph into animationStyle (island enter) */
   morphFromHome?: boolean;
 };
+
+/** Place 2D accessory emoji where the 3D gear would sit (hat top, monocle right, bow collar…). */
+function accessoryBadgeStyle(accessoryId: string, size: number): CSSProperties {
+  const base: CSSProperties = {
+    position: "absolute",
+    fontSize: size * 0.34,
+    filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.25))",
+    lineHeight: 1,
+  };
+  switch (accessoryId) {
+    case "goggles":
+      return { ...base, top: size * 0.22, right: size * 0.02, left: "auto", fontSize: size * 0.3 };
+    case "bandana":
+      return {
+        ...base,
+        top: "auto",
+        bottom: size * 0.14,
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontSize: size * 0.28,
+      };
+    case "headset":
+      return {
+        ...base,
+        top: size * 0.12,
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontSize: size * 0.38,
+      };
+    case "cape":
+      return {
+        ...base,
+        top: size * 0.45,
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontSize: size * 0.32,
+        opacity: 0.95,
+      };
+    case "scarf":
+      return {
+        ...base,
+        top: "auto",
+        bottom: size * 0.08,
+        left: "50%",
+        transform: "translateX(-50%)",
+      };
+    case "vest":
+    case "sash":
+      return {
+        ...base,
+        top: size * 0.42,
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontSize: size * 0.3,
+      };
+    case "lantern":
+      return {
+        ...base,
+        top: size * 0.08,
+        right: -size * 0.02,
+        left: "auto",
+        fontSize: size * 0.28,
+      };
+    case "cap":
+    default:
+      return {
+        ...base,
+        top: -size * 0.08,
+        left: "50%",
+        transform: "translateX(-50%)",
+      };
+  }
+}
 
 /**
  * Circular emoji avatar with era morph.
@@ -108,21 +181,10 @@ export function CharacterAvatar({
       >
         <span>{baseEmoji(character.base)}</span>
       </div>
-      {acc && (
-        <span
-          style={{
-            position: "absolute",
-            top: -size * 0.08,
-            left: "50%",
-            transform: "translateX(-50%)",
-            fontSize: size * 0.34,
-            filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.25))",
-          }}
-        >
-          {acc}
-        </span>
-      )}
-      {pet && (
+      {acc ? (
+        <span style={accessoryBadgeStyle(character.accessory, size)}>{acc}</span>
+      ) : null}
+      {pet ? (
         <span
           style={{
             position: "absolute",
@@ -137,7 +199,7 @@ export function CharacterAvatar({
         >
           {pet}
         </span>
-      )}
+      ) : null}
     </div>
   );
 
@@ -159,9 +221,7 @@ export function CharacterAvatar({
       data-morph-phase={phase}
       data-era={morph.id}
     >
-      {fading
-        ? renderFace(fading.morphClass, fadeOpacity, fadeScale, 1)
-        : null}
+      {fading ? renderFace(fading.morphClass, fadeOpacity, fadeScale, 1) : null}
       {renderFace(morph.morphClass, shownOpacity, shownScale, 2)}
     </div>
   );

@@ -46,4 +46,8 @@ describe("starter companion", () => {
       expect.arrayContaining(["otter", "tortoise"]),
     );
   });
+
+  it("does not give unknown pets away for free", () => {
+    expect(companionPrice("mystery_pet")).toBe(Number.POSITIVE_INFINITY);
+  });
 });

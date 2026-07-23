@@ -193,7 +193,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }>({ open: false });
 
   const [hubModal, setHubModal] = useState<
-    "outfitter" | "capsule" | "settings" | "pavilion" | null
+    "outfitter" | "capsule" | "settings" | "pavilion" | "market" | null
   >(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);

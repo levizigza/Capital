@@ -562,15 +562,24 @@ export function PartyArenaWorld({
               This is a real 3D game world inside the painting — not a quiz. Move, jump, and grab{" "}
               <strong>{goalCoins} value coins</strong> before time runs out. Red impulse spends steal a life.
             </p>
-            <button
-              type="button"
-              className="mt-5 rounded-full bg-[#f4a629] px-8 py-3 text-base font-extrabold text-[#16283b]"
-              data-testid="arena-start"
-              autoFocus
-              onClick={() => setPhase("play")}
-            >
-              Dive in →
-            </button>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                className="rounded-full bg-[#f4a629] px-8 py-3 text-base font-extrabold text-[#16283b]"
+                data-testid="arena-start"
+                autoFocus
+                onClick={() => setPhase("play")}
+              >
+                Dive in →
+              </button>
+              <button
+                type="button"
+                className="rounded-full border-2 border-white/35 bg-black/40 px-6 py-3 text-sm font-bold text-white"
+                onClick={onExit}
+              >
+                ← Leave (Esc)
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

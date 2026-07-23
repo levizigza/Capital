@@ -195,6 +195,12 @@ export class InputManager {
       const onKey = (e: KeyboardEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        // Esc always aborts rebind — never steals the Cancel key by accident
+        if (e.code === "Escape") {
+          cleanup();
+          reject(new DOMException("Aborted", "AbortError"));
+          return;
+        }
         cleanup();
         resolve({ type: "keyboard", code: e.code, device: "keyboard" });
       };

@@ -88,7 +88,8 @@ export function ControlsSettingsPanel() {
         {listening ? (
           <div className="mb-4 rounded-lg border-2 border-blue-400 bg-blue-50 px-3 py-3 text-sm text-blue-900">
             Press a key, mouse button, or controller input for{" "}
-            <strong>{INPUT_ACTION_META[listening].label}</strong>…
+            <strong>{INPUT_ACTION_META[listening].label}</strong>
+            … Esc cancels.
             <GameButton size="sm" variant="outline" className="ml-2" onClick={cancelRebind}>
               Cancel
             </GameButton>

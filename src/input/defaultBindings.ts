@@ -12,7 +12,8 @@ export const DEFAULT_BINDINGS: InputBindingsMap = {
     gamepad: [{ type: "gamepad_button", button: 1 }],
   },
   menu: {
-    keyboard: [{ type: "keyboard", code: "Escape" }],
+    // Esc is cancel/back only — Settings opens with O so stores never fight Esc.
+    keyboard: [{ type: "keyboard", code: "KeyO" }],
     gamepad: [{ type: "gamepad_button", button: 9 }],
   },
   map: {

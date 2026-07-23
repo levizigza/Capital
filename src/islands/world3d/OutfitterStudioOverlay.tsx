@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { GameButton } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
 import { CharacterCreator } from "../views/CharacterCreator";
 import { OutfitterStudio3D } from "./OutfitterStudio3D";
-import { ownsCompanion, companionPrice } from "../harborShop";
+import { ownsCompanion, companionPrice, STARTER_COMPANION_ID } from "../harborShop";
 import type { IslandSaveV1 } from "../types";
 
 type Stage = "look" | "pet";
@@ -16,6 +16,7 @@ type Props = {
   setStage: (s: Stage) => void;
   save: IslandSaveV1;
   defaultName?: string;
+  /** Always commits the current draft (look + pet) then closes. */
   onLeave: () => void;
   onSaveLook: (c: CapitalCharacter) => void;
   /** Commit look + pet to save. Prefer passing the resolved character. */
@@ -26,7 +27,7 @@ type Props = {
 /**
  * Full-bleed 3D Outfitter — Snapchat-style layers over a live mannequin.
  * Plaza Canvas must be unmounted while this is open.
- * Leave always commits the current draft (look + pet) so plaza matches the fitting room.
+ * Leave / Esc always commits the current draft so plaza matches the fitting room.
  */
 export function OutfitterStudioOverlay({
   draft,
@@ -35,46 +36,45 @@ export function OutfitterStudioOverlay({
   setStage,
   save,
   defaultName,
-  onLeave: _onLeave,
+  onLeave,
   onSaveLook,
   onAdoptPet,
   onHarborPurchase,
 }: Props) {
-  void _onLeave;
   const pets = CHARACTER_COMPANIONS.filter((c) => c.id !== "none");
 
-  const commitAndLeave = () => {
-    const companionId = draft.companion === "none" ? "tortoise" : draft.companion;
+  const commitAndLeave = useCallback(() => {
+    const companionId = draft.companion === "none" ? STARTER_COMPANION_ID : draft.companion;
     const next: CapitalCharacter = { ...draft, companion: companionId };
-    setDraft(next);
     const price = companionPrice(companionId);
     const owned = ownsCompanion(save, companionId);
+
     if (!owned && price > 0) {
       const ok = onHarborPurchase(price, companionId);
       if (!ok) {
-        const free: CapitalCharacter = { ...draft, companion: "tortoise" };
-        setDraft(free);
-        onHarborPurchase(0, "tortoise");
-        onAdoptPet(free);
+        // Stay in the fitting room — player can pick Slow Coin (free) or another pet.
+        setDraft(next);
         return;
       }
     } else {
       onHarborPurchase(0, companionId);
     }
+    setDraft(next);
     onAdoptPet(next);
-  };
+    onLeave();
+  }, [draft, save, onHarborPurchase, onAdoptPet, onLeave, setDraft]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         commitAndLeave();
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draft, save, onAdoptPet, onHarborPurchase]);
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [commitAndLeave]);
 
   return (
     <div
@@ -86,7 +86,6 @@ export function OutfitterStudioOverlay({
     >
       <OutfitterStudio3D character={draft} className="absolute inset-0" />
 
-      {/* Soft vignette so UI stays readable */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
 
       <header className="relative z-[2] flex items-start justify-between gap-3 p-3 sm:p-4">
@@ -95,8 +94,8 @@ export function OutfitterStudioOverlay({
             Harbor Haven · 3D Outfitter
           </div>
           <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">Become you</h2>
-          <p className="max-w-sm text-xs text-white/80 sm:text-sm">
-            Spin the mannequin with Body · Coat · Gear — Leave saves your look to the plaza.
+          <p className="max-w-md text-xs text-white/80 sm:text-sm">
+            Body · Coat · Gear on the live mirror. Esc or Save & leave keeps your look on the plaza.
           </p>
         </div>
         <button
@@ -132,7 +131,8 @@ export function OutfitterStudioOverlay({
               <div>
                 <div className="text-lg font-black">Companion crates</div>
                 <p className="text-sm text-white/75">
-                  Slow Coin is free forever — other pets cost coins. Leave anytime to save.
+                  Slow Coin is free forever. Paid pets only charge when you can afford them —
+                  otherwise stay here and pick another.
                 </p>
               </div>
               <div className="flex max-h-[32vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
@@ -168,11 +168,7 @@ export function OutfitterStudioOverlay({
                 >
                   ← Looks
                 </GameButton>
-                <GameButton
-                  variant="primary"
-                  className="flex-1"
-                  onClick={commitAndLeave}
-                >
+                <GameButton variant="primary" className="flex-1" onClick={commitAndLeave}>
                   {draft.companion === "none"
                     ? "Take free Slow Coin ✓"
                     : ownsCompanion(save, draft.companion) || companionPrice(draft.companion) === 0

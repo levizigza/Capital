@@ -244,7 +244,9 @@ export function IslandShoreView({
                 Enter · {near.label}
               </GameButton>
             ) : (
-              <HudBadge className="bg-black/55 text-white">WASD walk · find play pads · E interact</HudBadge>
+              <HudBadge className="bg-black/55 text-white">
+                WASD walk · E interact · Esc Harbor · M map
+              </HudBadge>
             )}
             <p className="text-[11px] font-semibold tracking-wide text-white/75">
               Paintings = main/side 3D worlds · Party Plaza = {SIDE_TOMFOOLERY[0]?.title} · Pier = carpet
