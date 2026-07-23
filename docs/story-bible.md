@@ -87,24 +87,23 @@ Courses themselves follow Bob-omb Battlefield wisdom: a readable main path with 
 
 Each chapter island is a **fully fleshed genre-city world** — not a clone plaza with the same cash-guy. Harbor Haven stays the Ordinary World (temperate meadow hub only).
 
-| Genre world | Tagline | Example islands |
-|-------------|---------|-----------------|
-| **Cyberpunk** | Technology without equality | Gridlock Galleria |
-| **Solarpunk** | Technology in harmony with nature | Coincraft Cove, Portfolio Skies, Key Cove |
-| **Biopunk** | Biology becomes programmable | Phosphor Reef |
-| **Posthuman** | Humanity evolves beyond humanity | Intangible Isle |
-| **Spacefaring** | Civilization expands beyond Earth | Diversify Keep, Real Estate Row |
-| **Post-Apocalyptic** | Civilization after collapse | Credit Ruins, Budget Kart Coast |
-| **AI Future** | Humanity shares the world with new minds | Dotgraph Atoll, Digital Asset Atoll |
+**IP rule:** Genre families (cyberpunk, solarpunk, …) are *lenses*. Shipped names, cast, and machines are Fortune Archipelago originals — parody energy only, never franchise titles, trade dress, or 1:1 remakes (see [ip-safe-design.md](./ip-safe-design.md)).
 
-- Distinct **biomes** retuned as city geography (neon sprawl, gene mangrove, cognisphere floe, scrap coast, orbital highlands, mind cliffs…) — Harbor meadow is hub-only
-- Distinct **layout shapes** (crescent cove, phosphor radar, neon strip, village clusters, keep courtyard, ruins path, floating isles)
-- **Cast variety** from the Money Mascot roster — brokers, piggies, vaults, rockets — tinted to the culture’s roles
-- Ambient life: **families**, **pairs**, **loners**, plus **animals and machines** (canopy bots, service drones, gene critters, neon androids, scrap bots, orbital probes, mind wisps)
-- **Era continuity** — decade art lens × genre city = unique DNA; no solid strangers in a vector world
-- Terrain props match the city (neon pylons, solar trees, gene pods, wreckage, orbital dishes, drone towers, upload spires)
+| Genre lens | Capital canon world | Example districts |
+|------------|---------------------|-------------------|
+| **Cyberpunk** | Ledgerlight Sprawl | Gridlock Galleria Strip |
+| **Solarpunk** | Verdant Shareholds | Lagoon Sharehold, Aurora Terrace, Practice Cay |
+| **Biopunk** | Helix Harbor | Phosphor Gene Ring |
+| **Posthuman** | Selfstock Archive | Mindcliff Patent Library |
+| **Spacefaring** | Voidfolio Reach | Diversify Orbital Keep, Deed Auction Mesa |
+| **Post-Apocalyptic** | Afterledger Wastes | Temple Afterledger, Kart Salvage Coast |
+| **AI Future** | Mindwage Terminal | Dotgraph Floe, Token Undercity |
 
-Runtime source: `src/islands/genreWorlds.ts` + `islandCulture.ts` + `islandBiomes.ts`.
+- Distinct **biomes** retuned as city geography — Harbor meadow is hub-only
+- Distinct **districts** so sister islands of the same genre still feel different
+- **Cast + machines** kids can retell (Chrome Cashier, Gene Pod Stack, Upload Spire…)
+- Ambient life: families, pairs, loners, animals, **and walking machines**
+- Runtime: `src/islands/genreWorlds.ts` + `islandCulture.ts` + `islandBiomes.ts`
 
 ---
 

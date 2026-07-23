@@ -107,6 +107,21 @@ If any checklist item fails:
 
 ---
 
+## 6. Genre biome cities (future-lens worlds)
+
+Chapter islands use **genre families** (cyberpunk, solarpunk, biopunk, posthuman, spacefaring, post-apocalyptic, AI future) as *creative lenses* — not as remakes of named franchises.
+
+| Do | Don’t |
+|----|-------|
+| Invent Capital **canon names** (Ledgerlight Sprawl, Verdant Shareholds, Helix Harbor…) | Ship “Night City”, “Rapture”, “Westworld”, film/game titles |
+| Give each island a **district** so sister genres don’t clone | Copy a franchise skyline, logo, or proprietary term |
+| Design original **cast + machines** kids can retell | Port character silhouettes or catchphrases from examples |
+| Teach a **money lesson** through the lens | Let the genre overwhelm the learning kernel |
+
+Runtime hygiene: `genreWorlds.ts` stores `forbiddenEchoes` per world; `textHasForbiddenGenreEcho()` guards copy. Examples in design chats are inspiration only — never paste them into dialogue, quests, or HUD.
+
+---
+
 ## Appendix: Internal Mechanic Library
 
 These are the sanctioned mechanic building blocks. Use these terms in `mechanics_used[]`:

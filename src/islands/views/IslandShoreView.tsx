@@ -32,7 +32,7 @@ import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../main
 import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
-import { getGenreWorld } from "../genreWorlds";
+import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -92,6 +92,8 @@ export function IslandShoreView({
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
   const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
+  const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
+  const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
 
   const toggleGuide = useCallback(() => {
     if (!a11y || !onA11yChange) return;
@@ -175,9 +177,9 @@ export function IslandShoreView({
             <p className="max-w-md text-xs text-white/85 drop-shadow">
               {genre ? (
                 <>
-                  <span className="font-bold text-amber-200">{genre.label}</span>
+                  <span className="font-bold text-amber-200">{genre.canonName}</span>
                   {" · "}
-                  {genre.cityLabel}
+                  {district?.districtName ?? genre.cityLabel}
                   {" — "}
                   {culture.cultureName}
                 </>
@@ -187,11 +189,15 @@ export function IslandShoreView({
                 </>
               )}
               {" · "}
-              {culture.vibe}
+              {district?.feel ?? culture.vibe}
             </p>
+            {genreBlurb ? (
+              <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
+            ) : null}
             {genre ? (
-              <p className="max-w-md text-[10px] text-white/70 drop-shadow">
-                {genre.tagline} · {genre.machines}
+              <p className="max-w-md text-[10px] text-white/55 drop-shadow">
+                Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
+                {genre.signatureMachines.slice(0, 2).join(" · ")}
               </p>
             ) : null}
             {nextStep ? (

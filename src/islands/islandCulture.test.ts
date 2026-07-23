@@ -41,9 +41,10 @@ describe("islandCulture", () => {
     expect(c.layout).toBe("strip");
   });
 
-  it("builds mixed ambient residents including animals", () => {
+  it("builds mixed ambient residents including animals and machines", () => {
     const amb = buildAmbientEcosystem(fakeIsland("signal_city"));
     expect(amb.some((a) => a.social === "animal")).toBe(true);
+    expect(amb.some((a) => a.social === "machine")).toBe(true);
     expect(amb.some((a) => a.social === "loner" || a.social === "pair")).toBe(true);
     const ids = new Set(amb.map((a) => a.mascotId));
     expect(ids.size).toBeGreaterThan(1);

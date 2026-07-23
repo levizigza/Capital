@@ -199,10 +199,11 @@ function AmbientCritter({
   fauna: string;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
-  if (resident.social === "animal") {
+  if (resident.social === "animal" || resident.social === "machine") {
     // Era-continuous critters — animals OR genre-city machines
     const color = look.accent;
-    const isMachine =
+    const asMachine =
+      resident.social === "machine" ||
       fauna.includes("bot") ||
       fauna.includes("drone") ||
       fauna.includes("android") ||
@@ -210,7 +211,7 @@ function AmbientCritter({
       fauna.includes("wisp");
     return (
       <group position={resident.position} rotation={[0, resident.yaw, 0]} scale={resident.scale}>
-        {isMachine ? (
+        {asMachine ? (
           <group>
             <mesh castShadow position={[0, 0.35, 0]}>
               <boxGeometry args={[0.38, 0.32, 0.38]} />
@@ -227,7 +228,7 @@ function AmbientCritter({
               <sphereGeometry args={[0.12, 8, 6]} />
               <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} />
             </mesh>
-            {fauna.includes("drone") || fauna.includes("probe") ? (
+            {fauna.includes("drone") || fauna.includes("probe") || resident.social === "machine" ? (
               <>
                 <mesh position={[-0.32, 0.4, 0]} rotation={[0, 0, 0.2]}>
                   <boxGeometry args={[0.28, 0.04, 0.1]} />

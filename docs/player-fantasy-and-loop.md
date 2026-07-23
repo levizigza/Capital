@@ -25,7 +25,7 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 
 **Financial quest taxonomy:** Main Quest = Story Circle campaign spine (`MAIN_COURSE` + island `track: "main"`). Side Quests = optional open-world digressions (`SIDE_TOMFOOLERY` + island `track: "side"`). Coin Bag tips prefer Main Quest.
 
-**Genre biome cities:** Chapter islands are Cyberpunk / Solarpunk / Biopunk / Posthuman / Spacefaring / Post-Apocalyptic / AI Future worlds (`genreWorlds.ts`). Harbor stays meadow Ordinary World.
+**Genre biome cities:** Chapter islands are original Capital futures under genre *lenses* (`genreWorlds.ts` — Ledgerlight Sprawl, Verdant Shareholds, Helix Harbor, Selfstock Archive, Voidfolio Reach, Afterledger Wastes, Mindwage Terminal). Sister islands are distinct **districts**. Harbor stays meadow Ordinary World. No franchise titles in shipped copy.
 
 ## 3. Goals, rules, failure
 
