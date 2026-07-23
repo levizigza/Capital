@@ -3,7 +3,6 @@ import { createDefaultVoyagerLedger } from "./voyagerLedger";
 import {
   HARBOR_HAVEN_ID,
   LEGACY_HUB_ISLAND_ID,
-  normalizeHubIslandId,
 } from "./islandIds";
 
 const SAVE_KEY = "island_save_v1";
@@ -28,22 +27,31 @@ export function createDefaultIslandSave(): IslandSaveV1 {
   };
 }
 
+function hasCoveChapterProgress(save: IslandSaveV1): boolean {
+  return Object.keys(save.questStatus ?? {}).some((qid) => qid.startsWith("q_cc_"));
+}
+
 /**
  * Harbor Haven split from Coincraft Cove.
  * Old saves treated coincraft_cove as the hub — remap hub keys, keep Cove progress.
+ * Never steal a live Cove chapter session back to Harbor.
  */
 export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
   let next = { ...save };
+  const discovered = new Set(next.discovered?.islands ?? []);
+  const knowsHarbor = discovered.has(HARBOR_HAVEN_ID);
+  const coveProgress = hasCoveChapterProgress(next);
 
-  // Discover Harbor Haven; keep Cove as a discovered chapter island.
-  const islands = new Set(next.discovered?.islands ?? []);
-  if (islands.has(LEGACY_HUB_ISLAND_ID) || !next.currentIslandId) {
-    islands.add(HARBOR_HAVEN_ID);
+  // Always ensure Harbor exists once we've seen the split world.
+  discovered.add(HARBOR_HAVEN_ID);
+  // Keep Cove discoverable if they ever touched the legacy hub or Cove quests.
+  if (discovered.has(LEGACY_HUB_ISLAND_ID) || coveProgress) {
+    discovered.add(LEGACY_HUB_ISLAND_ID);
   }
   if (next.discovered) {
     next = {
       ...next,
-      discovered: { ...next.discovered, islands: Array.from(islands) },
+      discovered: { ...next.discovered, islands: Array.from(discovered) },
     };
   }
 
@@ -61,24 +69,19 @@ export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
     next = { ...next, partyBoard: boards };
   }
 
-  // If the player was "on hub" under the legacy id, park them on Harbor Haven.
-  // Cove chapter progress (quests) stays on coincraft_cove.
+  // Remap coincraft_cove → Harbor ONLY for true legacy-hub resumes.
+  // If the player has Cove chapter progress, coincraft_cove is Island 1 — keep it.
   if (next.currentIslandId === LEGACY_HUB_ISLAND_ID) {
-    const hasCoveProgress = Object.keys(next.questStatus ?? {}).some((qid) =>
-      qid.startsWith("q_cc_"),
-    );
-    // Prefer Harbor as home resume; Cove remains reachable from the map.
+    if (coveProgress || knowsHarbor) {
+      // Mid-chapter (or post-split) Cove session — leave currentIslandId alone.
+      return next;
+    }
+    // Pure legacy hub park: no Cove quests yet → land on Harbor Haven.
     next = {
       ...next,
       currentIslandId: HARBOR_HAVEN_ID,
-      // Preserve Cove area only if they were mid-chapter with progress.
-      currentAreaId: hasCoveProgress ? next.currentAreaId : "hh_plaza",
+      currentAreaId: "hh_plaza",
     };
-  } else if (next.currentIslandId) {
-    const normalized = normalizeHubIslandId(next.currentIslandId);
-    if (normalized && normalized !== next.currentIslandId) {
-      next = { ...next, currentIslandId: normalized };
-    }
   }
 
   return next;

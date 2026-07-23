@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { GameButton, GamePanel, GameTabs } from "@/game-ui";
+import { useInputAction } from "@/input";
 import {
   PROMPT_TIPS_FOR_KIDS,
   VIBE_TEMPLATES,
@@ -70,6 +71,7 @@ function applyPromptToLevel(level: VibeLevel, prompt: string): VibeLevel {
 }
 
 export function VibeCodeStudio({ authorName, onClose, onPublish }: VibeCodeStudioProps) {
+  useInputAction("cancel", onClose);
   const [tab, setTab] = useState<StudioTab>("guide");
   const [templateId, setTemplateId] = useState<VibeLevel["template"]>("explorable-puzzle");
   const [level, setLevel] = useState<VibeLevel>(() =>

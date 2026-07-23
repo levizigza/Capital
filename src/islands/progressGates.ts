@@ -86,7 +86,7 @@ export function bossUnlockProgress(save: IslandSaveV1): {
  * Hub is never locked.
  */
 export function isIslandProgressLocked(island: IslandDefinition, save: IslandSaveV1): boolean {
-  if (isHubIslandId(island.id) || island.id === HUB_ISLAND_ID) return false;
+  if (isHubIslandId(island.id)) return false;
 
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;

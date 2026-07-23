@@ -112,12 +112,17 @@ export function HomeHubView({
   updateLearningProfile,
   highlightOutfitter = false,
   onClearHomecoming,
+  onExit,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     onHubGuidedEvent("opened_map");
     onOpenTravel();
   });
   useInputAction("menu", () => setHubModal("settings"));
+  useInputAction("cancel", () => {
+    if (hubModal) setHubModal(null);
+    else onExit();
+  });
 
   const profile = getProfileDef(learningProfile);
   const boat = getEffectiveBoatTier(userProfile.totalCoins, save);
@@ -336,6 +341,16 @@ export function HomeHubView({
                 ↻
               </GameButton>
             ) : null}
+            <GameButton
+              variant="outline"
+              size="sm"
+              onClick={onExit}
+              className="bg-black/35 text-white"
+              data-testid="hub-leave-islands"
+              title="Leave Islands"
+            >
+              Leave
+            </GameButton>
           </div>
         }
         bottom={

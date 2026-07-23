@@ -9,6 +9,7 @@ import {
   HudChip,
   useGameMotion,
 } from "@/game-ui";
+import { useInputAction } from "@/input";
 
 import type { IslandSaveV1 } from "../types";
 import type { CatalogGame } from "./gameCatalog";
@@ -65,6 +66,7 @@ export function ArcadeView({
   const [genre, setGenre] = useState<FilterGenre>("all");
   const [complexity, setComplexity] = useState<FilterComplexity>("all");
   const { reduced } = useGameMotion();
+  useInputAction("cancel", onBack);
 
   const filtered = catalog.filter((g) => {
     if (genre !== "all" && g.genre !== genre) return false;

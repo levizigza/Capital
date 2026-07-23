@@ -2,7 +2,7 @@
  * Board economy modes — keep Harbor grind, era cashflow, and party boards coherent.
  *
  * Rules:
- * - Harbor (coincraft_cove) alone tracks Harbor escape streak.
+ * - Harbor Haven alone tracks Harbor escape streak.
  * - Era islands with minigames share the Voyager Ledger cashflow loop,
  *   but never unlock Harbor escape.
  * - capital-default / empty islands stay on classic party spaces.
@@ -12,7 +12,7 @@ import type { AnimationStyleId } from "./animationStyles";
 import { getAnimationStyle } from "./animationStyles";
 import type { IslandDefinition } from "./types";
 import { getIslandTheme } from "./themes/islandThemes";
-import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
+import { isHubIslandId } from "./worldMapLayout";
 
 export type BoardEconomyMode = "harbor_cashflow" | "era_cashflow" | "party";
 
@@ -33,7 +33,7 @@ export type BoardPatternKind =
   | "raid";
 
 export function getBoardEconomyMode(island: IslandDefinition): BoardEconomyMode {
-  if (isHubIslandId(island.id) || island.id === HUB_ISLAND_ID) return "harbor_cashflow";
+  if (isHubIslandId(island.id)) return "harbor_cashflow";
 
   const theme = getIslandTheme(island.id, island.themeId);
   const style = getAnimationStyle(theme.animationStyle);

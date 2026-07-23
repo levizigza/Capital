@@ -3,6 +3,8 @@ import { test, expect } from "@playwright/test";
 /**
  * Islands smoke test — full navigation path + save/load persistence.
  * Requires VITE_ISLANDS=1 and VITE_QA=1 (set in playwright.config.ts webServer.env).
+ *
+ * Post-v34: Harbor Haven is the hub; Coincraft Cove is Island 1 (chapter view).
  */
 test.describe("Islands smoke", () => {
   test.setTimeout(120_000);
@@ -34,34 +36,34 @@ test.describe("Islands smoke", () => {
     });
   });
 
-  test("launch → hub → map → island → quest → minigame → save/load", async ({ page }) => {
+  test("launch → hub → map → Cove chapter → minigame → save/load", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
 
-    // Hub visible once save loads
+    // Harbor Haven visible once save loads
     await expect(page.getByTestId("hub-travel-map")).toBeVisible({ timeout: 60_000 });
     await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
       timeout: 15_000,
     }).toBe(true);
+    await expect(page.getByTestId("hub-leave-islands")).toBeVisible();
     await page.getByTestId("hub-travel-map").click();
 
-    // Caribbean archipelago map — hub in center, outer resorts in a ring
+    // Archipelago map — Harbor hub + Cove as first painting
+    await expect(page.getByTestId("island-pin-harbor_haven")).toBeVisible();
     await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
     await expect(page.getByTestId("island-pin-financial_assets")).toBeVisible();
 
-    // Enter hub island via QA (POV sailing is manual)
+    // Enter Cove chapter via QA (POV sailing is manual)
     await page.evaluate(() => window.__QA__?.enterIsland("coincraft_cove"));
 
-    // Island party board
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("island");
+    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("chapter");
     await expect(page.getByText("Coincraft Cove")).toBeVisible();
-    await expect(page.getByTestId("island-party-board")).toBeVisible();
+    await expect(page.getByTestId("coin-bag-buddy-hud")).toBeVisible();
 
     // Minigame via QA bridge
     await page.evaluate(() => window.__QA__?.startMinigame("mg_coin_sort"));
     await expect(page.getByTestId("minigame-modal")).toBeVisible();
     await expect(page.getByText("Coin Sort Challenge")).toBeVisible();
 
-    // Interact with earn/spend module
     const earnBtn = page.getByRole("button", { name: /Sort Crates|Earn/i }).first();
     if (await earnBtn.isVisible()) {
       await earnBtn.click();
@@ -69,7 +71,7 @@ test.describe("Islands smoke", () => {
 
     await page.getByTestId("minigame-close").click();
 
-    // Persist save with island progress
+    // Persist save with Cove chapter progress
     await page.evaluate(async () => {
       const qa = window.__QA__;
       if (!qa) throw new Error("QA bridge missing");
@@ -79,7 +81,7 @@ test.describe("Islands smoke", () => {
     const saveBeforeReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveBeforeReload?.currentIslandId).toBe("coincraft_cove");
 
-    // Reload and verify save restored
+    // Reload and verify Cove chapter session survives migrate
     await page.reload();
     await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false)).toBe(true);
 

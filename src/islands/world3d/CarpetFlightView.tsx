@@ -27,6 +27,7 @@ import { MoneyCarpet } from "./MoneyCarpet";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
+import { useInputAction } from "@/input";
 
 type Props = {
   userProfile: UserProfile;
@@ -368,6 +369,8 @@ export function CarpetFlightView({
       document.body.style.overflow = prev;
     };
   }, []);
+
+  useInputAction("cancel", onBack);
 
   const handleArrive = (id: string) => {
     setArriving(id);

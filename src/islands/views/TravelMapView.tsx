@@ -10,7 +10,7 @@ import { useInputAction, InputPromptHint } from "@/input";
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getEffectiveBoatTier, nextBoatTier } from "../boats";
-import { HUB_ISLAND_ID } from "../worldMapLayout";
+import { HUB_ISLAND_ID, isIslandLocked } from "../worldMapLayout";
 import { GALAPAGOS_ARCHIPELAGO_NAME } from "../galapagosIslands";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 
@@ -59,6 +59,24 @@ export function TravelMapView({
             currentId={currentId}
             onSelect={beginVoyage}
           />
+          {/* Accessible / QA pin list — 3D dioramas aren't in the DOM tree */}
+          <div className="sr-only">
+            {islandList.map((island) => {
+              const locked = isIslandLocked(island, save.inventory, save);
+              return (
+                <button
+                  key={island.id}
+                  type="button"
+                  data-testid={`island-pin-${island.id}`}
+                  data-locked={locked ? "1" : "0"}
+                  disabled={locked || island.id === currentId}
+                  onClick={() => beginVoyage(island.id)}
+                >
+                  {island.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       }
       topLeft={

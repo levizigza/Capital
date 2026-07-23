@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   GameViewport,
@@ -233,6 +233,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       mounted = false;
     };
   }, []);
+
+  /** After reload, put mid-chapter / mid-board players back where they were — never soft-drop on Harbor with no Resume. */
+  const didResumeRef = useRef(false);
+  useEffect(() => {
+    if (!save || bootLandHub || didResumeRef.current) return;
+    if (content.islands.length === 0) return;
+    didResumeRef.current = true;
+    const id = save.currentIslandId;
+    if (!id || isHubIslandId(id)) {
+      setView("home");
+      return;
+    }
+    const isl = getIslandById(content, id);
+    if (!isl) {
+      setView("home");
+      return;
+    }
+    setActiveIslandId(id);
+    setView(islandHasChapterContent(isl) ? "chapter" : "island");
+  }, [save, bootLandHub, content]);
 
   useEffect(() => {
     if (!save || analyticsSessionReady) return;

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 
 import { GameButton } from "@/game-ui";
@@ -10,8 +11,27 @@ export type PartyRewardOverlayProps = {
 };
 
 export function PartyRewardOverlay({ reward, minigameName, onContinue }: PartyRewardOverlayProps) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === "Enter") {
+        e.preventDefault();
+        onContinue();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onContinue]);
+
   return (
-    <div className="party-reward-overlay" role="dialog" aria-modal="true" data-testid="party-reward-overlay">
+    <div
+      className="party-reward-overlay"
+      role="dialog"
+      aria-modal="true"
+      data-testid="party-reward-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onContinue();
+      }}
+    >
       <motion.div
         className="party-reward-card"
         initial={{ scale: 0.85, opacity: 0 }}
@@ -31,7 +51,7 @@ export function PartyRewardOverlay({ reward, minigameName, onContinue }: PartyRe
           {reward.xp > 0 ? <span>✨ +{reward.xp} XP</span> : null}
           {reward.starEarned ? <span>⭐ +1 Star</span> : null}
         </div>
-        <GameButton variant="primary" className="mt-5 w-full" onClick={onContinue}>
+        <GameButton variant="primary" className="mt-5 w-full" onClick={onContinue} autoFocus>
           Back to Board
         </GameButton>
       </motion.div>
