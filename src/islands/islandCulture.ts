@@ -7,8 +7,9 @@ import type { IslandDefinition } from "./types";
 import type { IslandVisualStyle } from "./themes/islandThemes";
 import { getIslandTheme } from "./themes/islandThemes";
 import type { MoneyMascot, MoneyMascotId } from "./moneyCast";
-import { MONEY_CAST, getMascot, castMascotForNpc } from "./moneyCast";
+import { getMascot } from "./moneyCast";
 import { getGenreWorld } from "./genreWorlds";
+import { castPersonaMascot, type NpcPersona } from "./npcPersonas";
 
 export type ShoreLayoutShape =
   | "crescent" // seaside cove
@@ -415,19 +416,14 @@ export type AmbientResident = {
   /** Family members share a household offset index */
   household?: number;
   yaw: number;
+  /** Folk / business / artist / model / … within the 30 */
+  persona?: NpcPersona;
 };
 
 function hashStr(s: string): number {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   return h;
-}
-
-function pickFromRoles(roles: MoneyMascot["role"][], seed: string): MoneyMascot {
-  const role = roles[hashStr(seed) % roles.length]!;
-  const pool = MONEY_CAST.filter((m) => m.role === role);
-  if (!pool.length) return castMascotForNpc(seed);
-  return pool[hashStr(seed + role) % pool.length]!;
 }
 
 /**
@@ -446,7 +442,8 @@ export function buildAmbientEcosystem(island: IslandDefinition): AmbientResident
     const r = ring + (hashStr(`${island.id}:${social}:${i}`) % 10) * 0.12;
     const x = culture.layout === "strip" ? (i % 2 === 0 ? -r : r) : Math.cos(ang) * r;
     const z = culture.layout === "strip" ? -2 + i * 1.4 : Math.sin(ang) * r;
-    const mascot = pickFromRoles(culture.roles, `${island.id}:${social}:${i}`);
+    const seed = `${island.id}:${social}:${i}`;
+    const cast = castPersonaMascot(island.id, seed);
     const scale =
       social === "animal"
         ? 0.45
@@ -458,11 +455,12 @@ export function buildAmbientEcosystem(island: IslandDefinition): AmbientResident
     out.push({
       id: `ambient_${social}_${n++}`,
       social,
-      mascotId: mascot.id,
+      mascotId: cast.mascot.id,
       position: [x, 0, z],
       scale,
       household,
       yaw: ang + Math.PI,
+      persona: cast.persona,
     });
   };
 
@@ -496,6 +494,5 @@ export function castForIslandNpc(
   mascotId?: string | null,
 ): MoneyMascot {
   if (mascotId) return getMascot(mascotId);
-  const culture = getIslandCulture(island);
-  return pickFromRoles(culture.roles, `${island.id}:${npcId}`);
+  return castPersonaMascot(island.id, `${island.id}:${npcId}`).mascot;
 }

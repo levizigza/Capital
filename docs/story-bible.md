@@ -103,7 +103,9 @@ Each chapter island is a **fully fleshed genre-city world** — not a clone plaz
 - Distinct **districts** so sister islands of the same genre still feel different
 - **Cast + machines** kids can retell (Chrome Cashier, Gene Pod Stack, Upload Spire…)
 - Ambient life: families, pairs, loners, animals, **and walking machines**
-- Runtime: `src/islands/genreWorlds.ts` + `islandCulture.ts` + `islandBiomes.ts`
+- Travel-map dioramas use **genre architecture + ecology kits** (neon slabs, solar domes, scrap shacks, orbital habitats…) — not the same cottage on every pin
+- NPCs drawn from the **30 Money Mascots** with persona kits: folk/clan, business, artist, model, scout, scholar, scrap crew, tech crew (gear + coat make the vibe)
+- Runtime: `genreWorlds.ts` · `mapDioramaKits.ts` · `npcPersonas.ts` · `islandCulture.ts` · `islandBiomes.ts`
 
 ---
 

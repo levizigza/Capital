@@ -88,6 +88,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         title={layout.hub.island.name}
         subtitle="Harbor Haven"
         seed={layout.hub.island.id}
+        islandId={layout.hub.island.id}
         position={hubPos}
         scale={1.15}
         current={layout.hub.island.id === currentId}
@@ -110,6 +111,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
             title={node.island.name}
             subtitle={genreLine ?? era.decade}
             seed={node.island.id}
+            islandId={node.island.id}
             position={pos}
             scale={1}
             current={node.island.id === currentId}

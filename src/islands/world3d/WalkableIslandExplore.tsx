@@ -23,7 +23,8 @@ import {
   type AmbientResident,
 } from "../islandCulture";
 import { genreHudLine } from "../genreWorlds";
-import { getMascot, varyMascot } from "../moneyCast";
+import { getMascot } from "../moneyCast";
+import { pickPersona, varyMascotForPersona } from "../npcPersonas";
 import { MoneyBagGuide } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
 
@@ -156,18 +157,23 @@ function Player({
 function NpcFromMascot({
   mascotId,
   seed,
+  islandId,
+  persona,
   animationStyle,
   pose,
   scale = 0.95,
 }: {
   mascotId: string;
   seed: string;
+  islandId: string;
+  persona?: import("../npcPersonas").NpcPersona;
   animationStyle: string;
   pose?: "stand" | "wave" | "talk";
   scale?: number;
 }) {
   const mascot = getMascot(mascotId);
-  const lookChar = varyMascot(mascotId, seed);
+  const personaId = persona ?? pickPersona(islandId, seed);
+  const lookChar = varyMascotForPersona(mascotId, personaId, seed);
   return (
     <HarborNpcMesh
       coat={colorHex(lookChar.color as "tide")}
@@ -192,11 +198,13 @@ function AmbientCritter({
   look,
   animationStyle,
   fauna,
+  islandId,
 }: {
   resident: AmbientResident;
   look: EraLook3D;
   animationStyle: string;
   fauna: string;
+  islandId: string;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   if (resident.social === "animal" || resident.social === "machine") {
@@ -277,6 +285,8 @@ function AmbientCritter({
       <NpcFromMascot
         mascotId={resident.mascotId}
         seed={resident.id}
+        islandId={islandId}
+        persona={resident.persona}
         animationStyle={animationStyle}
         pose="stand"
         scale={resident.scale}
@@ -292,6 +302,7 @@ function PadMarker({
   guided,
   collected,
   animationStyle,
+  islandId,
 }: {
   hotspot: ShoreHotspot;
   look: EraLook3D;
@@ -300,6 +311,7 @@ function PadMarker({
   guided?: boolean;
   collected?: boolean;
   animationStyle: string;
+  islandId: string;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const lit = active || !!guided;
@@ -400,6 +412,7 @@ function PadMarker({
         <NpcFromMascot
           mascotId={hotspot.mascotId ?? "coiny"}
           seed={hotspot.refId ?? hotspot.id}
+          islandId={islandId}
           animationStyle={animationStyle}
           pose={active ? "wave" : "stand"}
         />
@@ -729,6 +742,7 @@ function ShoreScene({
           look={look}
           animationStyle={animationStyle}
           fauna={culture.fauna}
+          islandId={island.id}
         />
       ))}
 
@@ -741,6 +755,7 @@ function ShoreScene({
           guided={guideArrows && guidedHotspotId === h.id}
           collected={h.kind === "item" && h.refId ? collectedItemIds.includes(h.refId) : false}
           animationStyle={animationStyle}
+          islandId={island.id}
         />
       ))}
 
