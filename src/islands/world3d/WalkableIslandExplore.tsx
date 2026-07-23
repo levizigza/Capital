@@ -22,6 +22,7 @@ import {
   shoreAnchorsForCulture,
   type AmbientResident,
 } from "../islandCulture";
+import { genreHudLine } from "../genreWorlds";
 import { getMascot, varyMascot } from "../moneyCast";
 import { MoneyBagGuide } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -199,11 +200,47 @@ function AmbientCritter({
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   if (resident.social === "animal") {
-    // Era-continuous critters — simple silhouettes matching the decade lens
+    // Era-continuous critters — animals OR genre-city machines
     const color = look.accent;
+    const isMachine =
+      fauna.includes("bot") ||
+      fauna.includes("drone") ||
+      fauna.includes("android") ||
+      fauna.includes("probe") ||
+      fauna.includes("wisp");
     return (
       <group position={resident.position} rotation={[0, resident.yaw, 0]} scale={resident.scale}>
-        {fauna.includes("fish") || fauna.includes("whale") ? (
+        {isMachine ? (
+          <group>
+            <mesh castShadow position={[0, 0.35, 0]}>
+              <boxGeometry args={[0.38, 0.32, 0.38]} />
+              <meshStandardMaterial
+                color="#334155"
+                emissive={color}
+                emissiveIntensity={wire ? 0.55 : 0.25}
+                metalness={0.55}
+                roughness={0.35}
+                wireframe={wire}
+              />
+            </mesh>
+            <mesh position={[0, 0.62, 0]}>
+              <sphereGeometry args={[0.12, 8, 6]} />
+              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} />
+            </mesh>
+            {fauna.includes("drone") || fauna.includes("probe") ? (
+              <>
+                <mesh position={[-0.32, 0.4, 0]} rotation={[0, 0, 0.2]}>
+                  <boxGeometry args={[0.28, 0.04, 0.1]} />
+                  <meshStandardMaterial color={look.shore} metalness={0.4} />
+                </mesh>
+                <mesh position={[0.32, 0.4, 0]} rotation={[0, 0, -0.2]}>
+                  <boxGeometry args={[0.28, 0.04, 0.1]} />
+                  <meshStandardMaterial color={look.shore} metalness={0.4} />
+                </mesh>
+              </>
+            ) : null}
+          </group>
+        ) : fauna.includes("fish") || fauna.includes("whale") || fauna.includes("critter") ? (
           <mesh castShadow position={[0, 0.35, 0]} rotation={[0, 0, 0.2]}>
             <capsuleGeometry args={[0.18, 0.45, 4, 8]} />
             <meshStandardMaterial
@@ -591,6 +628,7 @@ function ShoreScene({
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const anchors = useMemo(() => shoreAnchorsForCulture(culture), [culture]);
   const ambients = useMemo(() => buildAmbientEcosystem(island), [island]);
+  const genreLine = genreHudLine(island.id);
   const guidedHotspotId = useMemo(() => {
     if (!guideArrows || !guideLookAt) return null;
     let best: string | null = null;
@@ -674,7 +712,11 @@ function ShoreScene({
 
       <IslandTitle
         title={island.name}
-        subtitle={`${biome.label} · ${culture.cultureName}`}
+        subtitle={
+          genreLine
+            ? `${genreLine} · ${culture.cultureName}`
+            : `${biome.label} · ${culture.cultureName}`
+        }
         height={8.2}
         accent={look.accent}
       />

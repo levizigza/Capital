@@ -19,18 +19,26 @@ function fakeIsland(id: string, themeId?: string): IslandDefinition {
 }
 
 describe("islandCulture", () => {
-  it("gives Signal City a phosphor trader culture + radar layout", () => {
+  it("gives Signal City a biopunk gene-reef culture + radar layout", () => {
     const c = getIslandCulture(fakeIsland("signal_city"));
-    expect(c.cultureName).toMatch(/Phosphor|Signal|Trader/i);
+    expect(c.cultureName).toMatch(/Gene|Phosphor|Reef/i);
     expect(c.layout).toBe("radar");
-    expect(c.fauna).toBe("phosphor_fish");
+    expect(c.fauna).toBe("gene_critters");
     expect(c.ecosystem.animals).toBeGreaterThan(0);
   });
 
-  it("gives Coincraft a craft harbor culture with families", () => {
+  it("gives Coincraft a solarpunk canopy culture with families", () => {
     const c = getIslandCulture(fakeIsland("coincraft_cove"));
     expect(c.layout).toBe("crescent");
+    expect(c.cultureName).toMatch(/Canopy|Craft/i);
     expect(c.ecosystem.families).toBeGreaterThan(0);
+    expect(c.fauna).toBe("canopy_bots");
+  });
+
+  it("gives Gridlock cyberpunk androids", () => {
+    const c = getIslandCulture(fakeIsland("venture_foundry"));
+    expect(c.fauna).toBe("neon_androids");
+    expect(c.layout).toBe("strip");
   });
 
   it("builds mixed ambient residents including animals", () => {

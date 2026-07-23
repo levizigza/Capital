@@ -32,6 +32,7 @@ import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../main
 import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
+import { getGenreWorld } from "../genreWorlds";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -90,6 +91,7 @@ export function IslandShoreView({
   const courseProg = useMemo(() => mainCourseProgress(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
+  const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
 
   const toggleGuide = useCallback(() => {
     if (!a11y || !onA11yChange) return;
@@ -171,8 +173,27 @@ export function IslandShoreView({
               <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
             <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {biome.label} — {culture.cultureName} · {culture.vibe}
+              {genre ? (
+                <>
+                  <span className="font-bold text-amber-200">{genre.label}</span>
+                  {" · "}
+                  {genre.cityLabel}
+                  {" — "}
+                  {culture.cultureName}
+                </>
+              ) : (
+                <>
+                  {biome.label} — {culture.cultureName}
+                </>
+              )}
+              {" · "}
+              {culture.vibe}
             </p>
+            {genre ? (
+              <p className="max-w-md text-[10px] text-white/70 drop-shadow">
+                {genre.tagline} · {genre.machines}
+              </p>
+            ) : null}
             {nextStep ? (
               <div className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100">
                 <span className="font-bold uppercase tracking-wide text-amber-200">Main course</span>

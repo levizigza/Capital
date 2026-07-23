@@ -1,6 +1,6 @@
 /**
- * Per-island human ecosystems + culture.
- * Each shore is its own world: layout shape, cast roles, families/loners/animals.
+ * Per-island human + machine ecosystems + culture.
+ * Each shore is its own genre-city world: layout, cast roles, families/loners/animals/bots.
  */
 
 import type { IslandDefinition } from "./types";
@@ -8,6 +8,7 @@ import type { IslandVisualStyle } from "./themes/islandThemes";
 import { getIslandTheme } from "./themes/islandThemes";
 import type { MoneyMascot, MoneyMascotId } from "./moneyCast";
 import { MONEY_CAST, getMascot, castMascotForNpc } from "./moneyCast";
+import { getGenreWorld } from "./genreWorlds";
 
 export type ShoreLayoutShape =
   | "crescent" // seaside cove
@@ -21,6 +22,24 @@ export type ShoreLayoutShape =
 
 export type SocialKind = "family" | "pair" | "loner" | "animal";
 
+export type FaunaKind =
+  | "gulls"
+  | "phosphor_fish"
+  | "neon_cats"
+  | "poly_foxes"
+  | "quest_birds"
+  | "ruin_lizards"
+  | "sky_whales"
+  | "harbor_dogs"
+  /** Genre-city machines & critters */
+  | "canopy_bots"
+  | "service_drones"
+  | "gene_critters"
+  | "neon_androids"
+  | "scrap_bots"
+  | "orbital_probes"
+  | "mind_wisps";
+
 export type IslandCulture = {
   id: string;
   /** Player-facing culture line */
@@ -33,8 +52,8 @@ export type IslandCulture = {
   landmarks: Array<"stall" | "antenna" | "statue" | "garden" | "terminal" | "hut" | "tower">;
   /** Ambient ecosystem mix */
   ecosystem: { families: number; pairs: number; loners: number; animals: number };
-  /** Signature animal vibe (visual only) */
-  fauna: "gulls" | "phosphor_fish" | "neon_cats" | "poly_foxes" | "quest_birds" | "ruin_lizards" | "sky_whales" | "harbor_dogs";
+  /** Signature animal / machine vibe (visual only) */
+  fauna: FaunaKind;
 };
 
 const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "id">>> = {
@@ -48,67 +67,67 @@ const CULTURE_BY_STYLE: Partial<Record<IslandVisualStyle, Omit<IslandCulture, "i
     fauna: "gulls",
   },
   "vector-dawn": {
-    cultureName: "Dotgraph Navigators",
-    vibe: "Lone plotters and quiet pairs · constellation goats of thrift",
+    cultureName: "Cognisphere Plotters",
+    vibe: "Human–AI pairs · quiet androids · scoreboard goats of thrift",
     layout: "radar",
     roles: ["plan", "save", "cash"],
-    landmarks: ["antenna", "statue"],
-    ecosystem: { families: 0, pairs: 2, loners: 3, animals: 2 },
-    fauna: "phosphor_fish",
+    landmarks: ["antenna", "statue", "terminal"],
+    ecosystem: { families: 0, pairs: 2, loners: 2, animals: 3 },
+    fauna: "service_drones",
   },
   "wireframe-seas": {
-    cultureName: "Phosphor Reef Traders",
-    vibe: "Broker dens · rival analysts · glowing reef fish schools",
+    cultureName: "Gene Reef Brokers",
+    vibe: "Living-capital traders · rival biologists · pulse schools",
     layout: "radar",
     roles: ["invest", "credit", "trade", "plan"],
     landmarks: ["terminal", "antenna", "tower"],
     ecosystem: { families: 1, pairs: 2, loners: 2, animals: 4 },
-    fauna: "phosphor_fish",
+    fauna: "gene_critters",
   },
   "neon-grid": {
-    cultureName: "Foundry Night Crew",
-    vibe: "Startup packs · night-shift loners · neon alley cats",
+    cultureName: "Corp Sprawl Night Crew",
+    vibe: "Wage packs · chrome loners · alley androids under neon",
     layout: "strip",
     roles: ["spend", "invest", "plan", "cash"],
     landmarks: ["terminal", "stall", "tower"],
-    ecosystem: { families: 1, pairs: 1, loners: 3, animals: 3 },
-    fauna: "neon_cats",
+    ecosystem: { families: 1, pairs: 1, loners: 3, animals: 4 },
+    fauna: "neon_androids",
   },
   "lowpoly-coast": {
-    cultureName: "Kart Coast Kin",
-    vibe: "Big families on the boardwalk · fox companions everywhere",
+    cultureName: "Scrap Coast Caravans",
+    vibe: "Salvage families · kart kin · jury-rigged scrap bots",
     layout: "cluster",
     roles: ["cash", "save", "spend", "protect"],
     landmarks: ["hut", "garden", "statue"],
     ecosystem: { families: 3, pairs: 1, loners: 1, animals: 4 },
-    fauna: "poly_foxes",
+    fauna: "scrap_bots",
   },
   "quest-keep": {
-    cultureName: "Keep of Ledgers",
-    vibe: "Quest guilds · mentor pairs · messenger birds",
+    cultureName: "Orbital Ledger Keep",
+    vibe: "Colony guilds · supply mentors · probe escorts",
     layout: "keep",
     roles: ["protect", "plan", "save", "trade"],
     landmarks: ["statue", "tower", "garden"],
     ecosystem: { families: 1, pairs: 2, loners: 2, animals: 3 },
-    fauna: "quest_birds",
+    fauna: "orbital_probes",
   },
   "ruin-realism": {
-    cultureName: "Temple Credit Clans",
-    vibe: "Scattered loners in ruins · cautious pairs · sun lizards",
+    cultureName: "Credit Ruin Clans",
+    vibe: "Scattered scavengers · cautious pairs · scrap sentries",
     layout: "ruins",
     roles: ["credit", "protect", "plan"],
     landmarks: ["statue", "tower"],
     ecosystem: { families: 0, pairs: 2, loners: 4, animals: 3 },
-    fauna: "ruin_lizards",
+    fauna: "scrap_bots",
   },
   "painterly-skies": {
-    cultureName: "Sky Isle Dreamers",
-    vibe: "Floating family camps · dreamy loners · sky whales far out",
+    cultureName: "Sky Garden Commons",
+    vibe: "Floating co-ops · dreamy loners · canopy bots on wind rails",
     layout: "floating",
     roles: ["invest", "save", "plan", "protect"],
     landmarks: ["garden", "tower", "hut"],
-    ecosystem: { families: 2, pairs: 1, loners: 2, animals: 2 },
-    fauna: "sky_whales",
+    ecosystem: { families: 2, pairs: 1, loners: 2, animals: 3 },
+    fauna: "canopy_bots",
   },
   "neon-metropolis": {
     cultureName: "Signal Block Neighbors",
@@ -140,61 +159,124 @@ const DEFAULT_CULTURE: Omit<IslandCulture, "id"> = {
   fauna: "harbor_dogs",
 };
 
-/** Island-id overrides — keep chapter identity even when visualStyle is shared. */
+/** Island-id overrides — genre-city identity even when visualStyle is shared. */
 const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
   coincraft_cove: {
-    cultureName: "Craft Harbor Guild",
-    vibe: "Earn · choose · save-or-spend · lagoon market",
+    cultureName: "Canopy Craft Guild",
+    vibe: "Solarpunk lagoon · earn · choose · shared gardens",
     layout: "crescent",
-    roles: ["cash", "save", "spend", "teach"],
-    landmarks: ["market", "lighthouse", "hut"],
-    ecosystem: { families: 2, pairs: 1, loners: 1, animals: 2 },
-    fauna: "harbor_dogs",
+    roles: ["cash", "save", "spend", "trade"],
+    landmarks: ["stall", "hut", "garden"],
+    ecosystem: { families: 2, pairs: 1, loners: 1, animals: 3 },
+    fauna: "canopy_bots",
   },
   starter_key_cove: {
-    cultureName: "Key Cay Scrubbers",
-    vibe: "Sparse dunes · starter keys · quiet practice",
+    cultureName: "Starter Cay Co-op",
+    vibe: "Sparse solar dunes · practice keys · quiet bots",
     layout: "crescent",
-    roles: ["teach", "cash"],
-    landmarks: ["dock"],
-    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 1 },
-    fauna: "harbor_dogs",
+    roles: ["cash", "save", "plan"],
+    landmarks: ["hut", "garden"],
+    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 2 },
+    fauna: "canopy_bots",
+  },
+  future_shores: {
+    cultureName: "Aurora Commons",
+    vibe: "Sky gardens · renewable portfolios · hopeful machines",
+    layout: "floating",
+    roles: ["invest", "save", "plan", "protect"],
+    landmarks: ["garden", "tower", "hut"],
+    ecosystem: { families: 2, pairs: 1, loners: 2, animals: 3 },
+    fauna: "canopy_bots",
+  },
+  paycheck_peninsula: {
+    cultureName: "Dotgraph Cognisphere",
+    vibe: "AI Future floe · wages vs automation · companion minds",
+    layout: "radar",
+    roles: ["plan", "save", "cash"],
+    landmarks: ["antenna", "terminal", "statue"],
+    ecosystem: { families: 0, pairs: 2, loners: 2, animals: 4 },
+    fauna: "service_drones",
   },
   digital_assets: {
-    cultureName: "Terminal Nomads",
-    vibe: "Obsidian vents · token traders · volatility",
+    cultureName: "Terminal Mind Nomads",
+    vibe: "AI undercity · token traders · rights for silicon",
     layout: "strip",
-    roles: ["trade", "risk", "tech"],
-    landmarks: ["terminal", "antenna"],
-    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 1 },
-    fauna: "neon_cats",
+    roles: ["trade", "invest", "plan"],
+    landmarks: ["terminal", "antenna", "tower"],
+    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 3 },
+    fauna: "service_drones",
+  },
+  signal_city: {
+    cultureName: "Phosphor Gene Reef",
+    vibe: "Biopunk brokers · living architecture · pulse schools",
+    layout: "radar",
+    roles: ["invest", "credit", "trade", "plan"],
+    landmarks: ["terminal", "antenna", "tower"],
+    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 4 },
+    fauna: "gene_critters",
+  },
+  venture_foundry: {
+    cultureName: "Gridlock Corp Sprawl",
+    vibe: "Cyberpunk inequality · debt neon · chrome wage packs",
+    layout: "strip",
+    roles: ["spend", "invest", "credit", "cash"],
+    landmarks: ["terminal", "stall", "tower"],
+    ecosystem: { families: 1, pairs: 1, loners: 3, animals: 4 },
+    fauna: "neon_androids",
+  },
+  financial_assets: {
+    cultureName: "Budget Scrap Racers",
+    vibe: "Post-apoc kart coast · salvage budgets · patched bots",
+    layout: "cluster",
+    roles: ["cash", "save", "spend", "protect"],
+    landmarks: ["hut", "statue", "garden"],
+    ecosystem: { families: 3, pairs: 1, loners: 1, animals: 4 },
+    fauna: "scrap_bots",
+  },
+  credit_kingdom: {
+    cultureName: "Temple Credit Ruinfolk",
+    vibe: "Collapsed credit · scarce trust · scrap sentries",
+    layout: "ruins",
+    roles: ["credit", "protect", "plan"],
+    landmarks: ["statue", "tower"],
+    ecosystem: { families: 0, pairs: 2, loners: 4, animals: 3 },
+    fauna: "scrap_bots",
+  },
+  business_assets: {
+    cultureName: "Diversify Orbital Keep",
+    vibe: "Spacefaring portfolios · colony supply · probe escorts",
+    layout: "keep",
+    roles: ["protect", "plan", "save", "trade"],
+    landmarks: ["statue", "tower", "garden"],
+    ecosystem: { families: 1, pairs: 2, loners: 2, animals: 3 },
+    fauna: "orbital_probes",
   },
   real_estate: {
-    cultureName: "Deed Auctioneers",
-    vibe: "Adobe lots · bids · renovation dust",
+    cultureName: "Colony Deed Auctioneers",
+    vibe: "Orbital lots · habitat bids · vacuum dust",
     layout: "keep",
-    roles: ["trade", "spend", "build"],
-    landmarks: ["auction", "deed"],
-    ecosystem: { families: 1, pairs: 2, loners: 1, animals: 1 },
-    fauna: "poly_foxes",
+    roles: ["trade", "spend", "plan"],
+    landmarks: ["statue", "terminal", "tower"],
+    ecosystem: { families: 1, pairs: 2, loners: 1, animals: 2 },
+    fauna: "orbital_probes",
   },
   intangibles: {
-    cultureName: "Patent Librarians",
-    vibe: "Mist cliffs · ideas you can’t touch",
+    cultureName: "Mindcliff Archivists",
+    vibe: "Posthuman patents · uploaded selves · what still counts as you",
     layout: "floating",
-    roles: ["teach", "create", "law"],
-    landmarks: ["library", "column"],
-    ecosystem: { families: 0, pairs: 1, loners: 2, animals: 2 },
-    fauna: "sky_whales",
+    roles: ["plan", "protect", "invest"],
+    landmarks: ["tower", "statue", "garden"],
+    ecosystem: { families: 0, pairs: 1, loners: 3, animals: 3 },
+    fauna: "mind_wisps",
   },
   demo: {
-    cultureName: "Sandbox Testers",
-    vibe: "Chalk reef · lab buoys · try anything",
+    cultureName: "Sandbox Gene Testers",
+    vibe: "Biopunk chalk reef · lab buoys · try anything living",
     layout: "plaza",
-    roles: ["teach", "cash"],
-    landmarks: ["lab"],
-    ecosystem: { families: 0, pairs: 0, loners: 2, animals: 1 },
-    fauna: "harbor_dogs",
+    roles: ["plan", "cash", "save"],
+    landmarks: ["terminal", "garden"],
+    ecosystem: { families: 0, pairs: 0, loners: 2, animals: 2 },
+    fauna: "gene_critters",
   },
 };
 
@@ -202,7 +284,13 @@ export function getIslandCulture(island: IslandDefinition): IslandCulture {
   const theme = getIslandTheme(island.id, island.themeId);
   const base = CULTURE_BY_STYLE[theme.visualStyle] ?? DEFAULT_CULTURE;
   const override = CULTURE_BY_ISLAND[island.id] ?? {};
-  return { id: island.id, ...base, ...override };
+  const culture = { id: island.id, ...base, ...override };
+  // Soft genre enrichment when vibe was not overridden
+  const genre = getGenreWorld(island.id);
+  if (genre && !CULTURE_BY_ISLAND[island.id]?.vibe) {
+    culture.vibe = `${genre.label} · ${genre.tagline}`;
+  }
+  return culture;
 }
 
 /** Anchor positions for pier / board / journal / plaza center by layout. */

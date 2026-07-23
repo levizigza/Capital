@@ -12,6 +12,7 @@ import {
 } from "../worldMapLayout";
 import { getEraLook3D } from "./eraLooks";
 import { getIslandLook3D } from "./islandBiomes";
+import { genreHudLine } from "../genreWorlds";
 import { DioramaIslandMesh } from "./DioramaIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
@@ -101,12 +102,13 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         const look = getIslandLook3D(node.island.id, theme.animationStyle);
         const locked = isIslandLocked(node.island, save.inventory, save);
         const pos = mapToScene(node);
+        const genreLine = genreHudLine(node.island.id);
         return (
           <DioramaIslandMesh
             key={node.island.id}
             look={look}
             title={node.island.name}
-            subtitle={era.decade}
+            subtitle={genreLine ?? era.decade}
             seed={node.island.id}
             position={pos}
             scale={1}

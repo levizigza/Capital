@@ -294,6 +294,149 @@ function ProceduralAntenna({ look, scale }: { look: EraLook3D; scale: number }) 
   );
 }
 
+function ProceduralNeonPylon({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 1.1, 0]}>
+        <boxGeometry args={[0.22, 2.2, 0.22]} />
+        <meshStandardMaterial color="#1e1b4b" roughness={0.4} metalness={0.55} />
+      </mesh>
+      <mesh castShadow position={[0, 2.35, 0]}>
+        <boxGeometry args={[0.55, 0.12, 0.12]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.85} />
+      </mesh>
+      <mesh position={[0, 1.6, 0.14]}>
+        <boxGeometry args={[0.08, 0.9, 0.04]} />
+        <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralSolarTree({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.7, 0]}>
+        <cylinderGeometry args={[0.08, 0.12, 1.4, 6]} />
+        <meshStandardMaterial color="#365314" roughness={0.8} flatShading />
+      </mesh>
+      <mesh castShadow position={[0, 1.55, 0]} rotation={[0.4, 0.2, 0]}>
+        <boxGeometry args={[1.1, 0.06, 0.7]} />
+        <meshStandardMaterial color="#0ea5e9" emissive="#38bdf8" emissiveIntensity={0.35} metalness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0.35, 1.35, 0.1]} rotation={[-0.35, 0.5, 0.1]}>
+        <boxGeometry args={[0.7, 0.05, 0.45]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.25} metalness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralGenePod({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <sphereGeometry args={[0.45, 12, 10]} />
+        <meshStandardMaterial
+          color={look.land}
+          emissive={look.accent}
+          emissiveIntensity={0.35}
+          transparent
+          opacity={0.72}
+          roughness={0.25}
+        />
+      </mesh>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <sphereGeometry args={[0.18, 8, 6]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.6} />
+      </mesh>
+      <mesh castShadow position={[0, 0.08, 0]}>
+        <cylinderGeometry args={[0.2, 0.28, 0.16, 8]} />
+        <meshStandardMaterial color="#14532d" roughness={0.7} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralWreckage({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.35, 0]} rotation={[0.2, 0.4, 0.15]}>
+        <boxGeometry args={[1.1, 0.35, 0.55]} />
+        <meshStandardMaterial color="#57534e" roughness={0.9} metalness={0.35} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.35, 0.75, -0.1]} rotation={[0, 0.3, 0.5]}>
+        <boxGeometry args={[0.25, 1.0, 0.18]} />
+        <meshStandardMaterial color={look.shore} roughness={0.75} metalness={0.4} />
+      </mesh>
+      <mesh castShadow position={[-0.4, 0.25, 0.2]} rotation={[0.1, -0.4, 0]}>
+        <boxGeometry args={[0.5, 0.2, 0.4]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.2} />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralOrbitalDish({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.55, 0]}>
+        <cylinderGeometry args={[0.08, 0.14, 1.1, 8]} />
+        <meshStandardMaterial color="#64748b" roughness={0.45} metalness={0.55} />
+      </mesh>
+      <mesh castShadow position={[0, 1.25, 0]} rotation={[0.55, 0, 0]}>
+        <cylinderGeometry args={[0.55, 0.55, 0.08, 16]} />
+        <meshStandardMaterial color="#e2e8f0" roughness={0.35} metalness={0.6} />
+      </mesh>
+      <mesh position={[0, 1.35, 0.15]}>
+        <sphereGeometry args={[0.1, 8, 6]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralDroneTower({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 0.9, 0]}>
+        <boxGeometry args={[0.35, 1.8, 0.35]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0, 1.95, 0]}>
+        <boxGeometry args={[0.7, 0.12, 0.7]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.55} />
+      </mesh>
+      <mesh position={[0.28, 1.4, 0]}>
+        <boxGeometry args={[0.08, 0.35, 0.08]} />
+        <meshStandardMaterial color="#94a3b8" emissive="#38bdf8" emissiveIntensity={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+function ProceduralUploadSpire({ look, scale }: { look: EraLook3D; scale: number }) {
+  return (
+    <group scale={scale}>
+      <mesh castShadow position={[0, 1.2, 0]}>
+        <coneGeometry args={[0.28, 2.4, 5]} />
+        <meshStandardMaterial
+          color="#ddd6fe"
+          emissive={look.accent}
+          emissiveIntensity={0.45}
+          roughness={0.3}
+          metalness={0.35}
+          flatShading
+        />
+      </mesh>
+      <mesh position={[0, 2.5, 0]}>
+        <sphereGeometry args={[0.14, 8, 6]} />
+        <meshStandardMaterial color={look.accent} emissive={look.accent} emissiveIntensity={0.9} />
+      </mesh>
+    </group>
+  );
+}
+
 function ProceduralGrass({ look, scale }: { look: EraLook3D; scale: number }) {
   return (
     <group scale={scale}>
@@ -456,6 +599,20 @@ function PropMesh({
         return <ProceduralColumn look={look} scale={1} />;
       case "antenna":
         return <ProceduralAntenna look={look} scale={1} />;
+      case "neon_pylon":
+        return <ProceduralNeonPylon look={look} scale={1} />;
+      case "solar_tree":
+        return <ProceduralSolarTree look={look} scale={1} />;
+      case "gene_pod":
+        return <ProceduralGenePod look={look} scale={1} />;
+      case "wreckage":
+        return <ProceduralWreckage look={look} scale={1} />;
+      case "orbital_dish":
+        return <ProceduralOrbitalDish look={look} scale={1} />;
+      case "drone_tower":
+        return <ProceduralDroneTower look={look} scale={1} />;
+      case "upload_spire":
+        return <ProceduralUploadSpire look={look} scale={1} />;
       case "hut":
         return (
           <IslandHut

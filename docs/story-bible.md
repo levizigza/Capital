@@ -83,16 +83,28 @@ Island shores are **painting rooms**. Glowing frames are portals into **self-con
 
 Courses themselves follow Bob-omb Battlefield wisdom: a readable main path with room for distraction — but the **next main-course beat** stays visible on the HUD.
 
-### Island cultures (human ecosystems)
+### Island cultures (genre biome cities)
 
-Each island is its **own culture**, not a clone plaza with the same cash-guy:
+Each chapter island is a **fully fleshed genre-city world** — not a clone plaza with the same cash-guy. Harbor Haven stays the Ordinary World (temperate meadow hub only).
 
-- Distinct **biomes** (tropical lagoon, scrub cay, tundra, mangrove reef, salt desert, lava terminal, savanna, highland forest, adobe mesa, iron jungle, aurora isles, mist cliffs) — Harbor meadow is hub-only
+| Genre world | Tagline | Example islands |
+|-------------|---------|-----------------|
+| **Cyberpunk** | Technology without equality | Gridlock Galleria |
+| **Solarpunk** | Technology in harmony with nature | Coincraft Cove, Portfolio Skies, Key Cove |
+| **Biopunk** | Biology becomes programmable | Phosphor Reef |
+| **Posthuman** | Humanity evolves beyond humanity | Intangible Isle |
+| **Spacefaring** | Civilization expands beyond Earth | Diversify Keep, Real Estate Row |
+| **Post-Apocalyptic** | Civilization after collapse | Credit Ruins, Budget Kart Coast |
+| **AI Future** | Humanity shares the world with new minds | Dotgraph Atoll, Digital Asset Atoll |
+
+- Distinct **biomes** retuned as city geography (neon sprawl, gene mangrove, cognisphere floe, scrap coast, orbital highlands, mind cliffs…) — Harbor meadow is hub-only
 - Distinct **layout shapes** (crescent cove, phosphor radar, neon strip, village clusters, keep courtyard, ruins path, floating isles)
 - **Cast variety** from the Money Mascot roster — brokers, piggies, vaults, rockets — tinted to the culture’s roles
-- Ambient life: **families**, **pairs**, **loners**, and **animals** (gulls, phosphor fish, neon cats, poly foxes…)
-- **Era continuity** — on Wireframe Seas, locals and nature read as wire/phosphor too; no solid strangers in a vector world
-- Terrain props match the biome (cactus, pine, ice spires, mangroves, crystals…) — not universal palms
+- Ambient life: **families**, **pairs**, **loners**, plus **animals and machines** (canopy bots, service drones, gene critters, neon androids, scrap bots, orbital probes, mind wisps)
+- **Era continuity** — decade art lens × genre city = unique DNA; no solid strangers in a vector world
+- Terrain props match the city (neon pylons, solar trees, gene pods, wreckage, orbital dishes, drone towers, upload spires)
+
+Runtime source: `src/islands/genreWorlds.ts` + `islandCulture.ts` + `islandBiomes.ts`.
 
 ---
 

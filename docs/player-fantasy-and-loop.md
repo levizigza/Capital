@@ -25,6 +25,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 
 **Financial quest taxonomy:** Main Quest = Story Circle campaign spine (`MAIN_COURSE` + island `track: "main"`). Side Quests = optional open-world digressions (`SIDE_TOMFOOLERY` + island `track: "side"`). Coin Bag tips prefer Main Quest.
 
+**Genre biome cities:** Chapter islands are Cyberpunk / Solarpunk / Biopunk / Posthuman / Spacefaring / Post-Apocalyptic / AI Future worlds (`genreWorlds.ts`). Harbor stays meadow Ordinary World.
+
 ## 3. Goals, rules, failure
 
 | Question | Capital answer |
