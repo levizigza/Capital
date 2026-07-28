@@ -244,6 +244,8 @@ export type IslandSaveV1 = {
   harborHomecoming?: {
     pending?: boolean;
     celebrated?: boolean;
+    /** True after Piggy's welcome-back Talk Battle for this homecoming */
+    piggyTalked?: boolean;
     chapterIslandId?: string;
     questId?: string;
     message?: string;

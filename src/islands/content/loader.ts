@@ -5,6 +5,12 @@ import { enrichIslandWithPopCulture } from "../moneyPopCulture";
 // Auto-discover all *.islands.json files in this directory at build time
 const modules = import.meta.glob("./*.islands.json", { eager: true });
 
+/**
+ * Demo / prototype packs kept on disk for schema tests but excluded from the
+ * live Archipelago map so players only see the main-course first island.
+ */
+const LIVE_PACK_DENYLIST = new Set(["./demo.islands.json"]);
+
 let _cache: IslandsContent | null = null;
 
 export function loadIslandsContent(): IslandsContent {
@@ -13,6 +19,7 @@ export function loadIslandsContent(): IslandsContent {
   const allIslands: IslandsContent["islands"] = [];
 
   for (const [path, raw] of Object.entries(modules)) {
+    if (LIVE_PACK_DENYLIST.has(path)) continue;
     try {
       const data = (raw as any).default ?? raw;
       const parsed = IslandsContentSchema.parse(data);

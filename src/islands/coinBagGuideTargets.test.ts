@@ -106,4 +106,13 @@ describe("resolveHarborGuideLookAt", () => {
       -4.5, 0, -9.5,
     ]);
   });
+
+  it("points Piggy during homecoming, then Carpet Dock after welcome-back", () => {
+    expect(
+      resolveHarborGuideLookAt({ hotspots: spots, homecomingPending: true }),
+    ).toEqual([4.8, 0, -4]);
+    expect(
+      resolveHarborGuideLookAt({ hotspots: spots, pointNextPainting: true }),
+    ).toEqual([0, 0, 13]);
+  });
 });

@@ -16,6 +16,8 @@ Each island **must** include before ship:
 | Island ID | Docs folder | Content JSON |
 |-----------|-------------|--------------|
 | `coincraft_cove` | [coincraft-cove/](./coincraft-cove/) | `src/islands/content/coincraft-cove.islands.json` |
+| `paycheck_peninsula` | [paycheck-peninsula/](./paycheck-peninsula/) | `src/islands/content/paycheck-peninsula.islands.json` |
+| `credit_kingdom` | [credit-kingdom/](./credit-kingdom/) | `src/islands/content/credit-kingdom.islands.json` |
 
 ## Quick start (new island)
 

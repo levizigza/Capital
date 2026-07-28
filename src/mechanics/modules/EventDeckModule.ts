@@ -54,8 +54,10 @@ type EventDeckModuleState = {
 };
 
 function parseConfig(raw: Record<string, unknown>): EventDeckConfig {
+  const fromArray = raw.deckIds as string[] | undefined;
+  const fromSingle = typeof raw.deckId === "string" ? [raw.deckId] : undefined;
   return {
-    deckIds: (raw.deckIds as string[]) ?? undefined,
+    deckIds: fromArray ?? fromSingle,
     tags: (raw.tags as string[]) ?? [],
     maxDraws: (raw.maxDraws as number) ?? 20,
     seed: typeof raw.seed === "number" ? raw.seed : undefined,

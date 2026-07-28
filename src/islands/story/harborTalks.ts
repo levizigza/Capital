@@ -256,12 +256,71 @@ export const HARBOR_DIALOGUES: DialogueGraph[] = [
   piggyGuidedGraph("done"),
 ];
 
+/** Welcome-back Talk Battle after Cove Change (or any chapter homecoming). */
+export function piggyHomecomingGraph(message?: string | null): DialogueGraph {
+  const opener =
+    message?.replace(/^Piggy Penny:\s*/i, "").trim() ||
+    "You earned coins and made a real choice. Harbor feels different because YOU are.";
+  return {
+    id: "dlg_harbor_piggy_penny_homecoming",
+    startNodeId: "h1",
+    nodes: [
+      {
+        id: "h1",
+        speaker: "Piggy Penny",
+        text: opener,
+        choices: [
+          {
+            id: "h1_ok",
+            text: "I felt that choice!",
+            nextNodeId: "h2",
+          },
+        ],
+      },
+      {
+        id: "h2",
+        speaker: "Piggy Penny",
+        text: "That's the Change beat — earn fair, then choose. Coin Bag will point you to the Carpet Dock. Next painting: Paycheck Peninsula!",
+        choices: [
+          {
+            id: "h2_go",
+            text: "To the dock!",
+          },
+        ],
+        end: true,
+      },
+    ],
+  };
+}
+
+export type HarborDialogueOpts = {
+  guidedStep?: HubGuidedStepId | null;
+  /** Show Piggy's welcome-back graph when pending/celebrated and not yet talked */
+  homecoming?: {
+    pending?: boolean;
+    celebrated?: boolean;
+    piggyTalked?: boolean;
+    message?: string | null;
+  } | null;
+};
+
 export function resolveHarborDialogue(
   npcId: string,
-  guidedStep?: HubGuidedStepId | null,
+  guidedStepOrOpts?: HubGuidedStepId | null | HarborDialogueOpts,
 ): DialogueGraph | undefined {
-  if (npcId === "piggy_penny" && guidedStep && guidedStep !== "done") {
-    return piggyGuidedGraph(guidedStep);
+  const opts: HarborDialogueOpts =
+    guidedStepOrOpts && typeof guidedStepOrOpts === "object"
+      ? guidedStepOrOpts
+      : { guidedStep: guidedStepOrOpts as HubGuidedStepId | null | undefined };
+
+  if (npcId === "piggy_penny") {
+    if (opts.guidedStep && opts.guidedStep !== "done") {
+      return piggyGuidedGraph(opts.guidedStep);
+    }
+    const hc = opts.homecoming;
+    if (hc && !hc.piggyTalked && (hc.pending || hc.celebrated)) {
+      return piggyHomecomingGraph(hc.message);
+    }
   }
   return HARBOR_DIALOGUES.find((g) => g.id === `dlg_harbor_${npcId}`);
 }

@@ -69,6 +69,24 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   },
 };
 
+/** Harbor welcome-back after a chapter Change (e.g. Cove save-or-spend). */
+export const HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
+  keeperEmote: "cheer",
+  keeperBubbleWhenNear:
+    "Piggy Penny: You came home different! Talk to me — I noticed your choice!",
+  bagTip: "Talk to Piggy — she’s cheering!",
+  pulseHotspot: "guide",
+};
+
+/** After Piggy’s welcome-back — point the next painting. */
+export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
+  keeperEmote: "point",
+  keeperBubbleWhenNear:
+    "Piggy Penny: Carpet Dock that way — Paycheck Peninsula is your next painting!",
+  bagTip: "Carpet Dock → Paycheck Peninsula",
+  pulseHotspot: "travel",
+};
+
 export function guidedVisualBeats(stepId?: string | null): GuidedVisualBeats {
   if (stepId && GUIDED_VISUAL_BEATS[stepId]) return GUIDED_VISUAL_BEATS[stepId]!;
   return {
@@ -76,4 +94,18 @@ export function guidedVisualBeats(stepId?: string | null): GuidedVisualBeats {
     keeperBubbleWhenNear: "",
     bagTip: "This way!",
   };
+}
+
+export function resolveHarborVisualBeats(opts: {
+  guidedStepId?: string | null;
+  homecomingPending?: boolean;
+  /** Cove Change done, Piggy already talked — nudge next painting */
+  pointNextPainting?: boolean;
+}): GuidedVisualBeats {
+  if (opts.guidedStepId && opts.guidedStepId !== "done") {
+    return guidedVisualBeats(opts.guidedStepId);
+  }
+  if (opts.homecomingPending) return HOMECOMING_VISUAL_BEATS;
+  if (opts.pointNextPainting) return POST_HOMECOMING_VISUAL_BEATS;
+  return guidedVisualBeats(opts.guidedStepId);
 }

@@ -15,8 +15,7 @@
 
 import type { IslandSaveV1, QuestTrack } from "./types";
 import { hasCompletedCoveChange } from "./chapterLoop";
-import { hasHarborFreedom, BOSS_ISLAND_ID, BOSS_MASTERY_REQUIRED } from "./progressGates";
-import { ensureLedger } from "./voyagerLedger";
+import { hasHarborFreedom, BOSS_ISLAND_ID } from "./progressGates";
 import {
   HUB_ISLAND_ID,
   COVE_ISLAND_ID,
@@ -79,9 +78,9 @@ export const MAIN_COURSE: MainCourseStep[] = [
     id: "boss_ordeal",
     track: "main",
     title: "Credit Kingdom · Ordeal",
-    blurb: "Late-game storm. Needs mastery clears — like a Big Star Door.",
+    blurb: "Late-game storm. Clear First Recovery — interest feeds on haste.",
     placeId: BOSS_ISLAND_ID,
-    done: (s) => (s.discovered?.islands ?? []).includes(BOSS_ISLAND_ID) && (ensureLedger(s.voyagerLedger).masteryClears?.length ?? 0) >= BOSS_MASTERY_REQUIRED,
+    done: (s) => Boolean(s.questStatus["q_ck_first_recovery"]?.completed),
   },
 ];
 

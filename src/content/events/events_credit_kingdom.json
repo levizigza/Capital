@@ -1,0 +1,140 @@
+{
+  "deckId": "credit_kingdom",
+  "displayName": "Credit Kingdom Dispatches",
+  "events": [
+    {
+      "id": "ck_late_fee_fog",
+      "title": "Late Fee Fog",
+      "prompt": "A bill is due tomorrow. Paying early costs a little now. Waiting risks a late fee that feeds the Debt Cloud.",
+      "icon": "🌫️",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Pay on time (−8 coins, protect score)",
+          "effects": [
+            { "type": "money", "amount": -8 },
+            { "type": "score", "amount": 12 },
+            { "type": "flag", "key": "ck_on_time", "value": true }
+          ]
+        },
+        {
+          "label": "Wait and hope (−0 now, risk late fee)",
+          "effects": [
+            { "type": "money", "amount": -15 },
+            { "type": "debt", "amount": 10 },
+            { "type": "score", "amount": -5 }
+          ]
+        }
+      ],
+      "explanation": "On-time history is the strongest credit signal. Haste to spend later often costs more than patience now.",
+      "weight": 10,
+      "tags": ["credit", "payments", "debt"]
+    },
+    {
+      "id": "ck_apr_trap",
+      "title": "APR Whisper",
+      "prompt": "A glowing tablet offers a quick loan. Low monthly number… high APR. Borrow for a want, or wait and earn?",
+      "icon": "📜",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Wait and earn instead",
+          "effects": [
+            { "type": "score", "amount": 15 },
+            { "type": "counter", "key": "ck_patience", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Take the high-APR loan for a want",
+          "effects": [
+            { "type": "money", "amount": 20 },
+            { "type": "debt", "amount": 28 },
+            { "type": "score", "amount": -8 }
+          ]
+        }
+      ],
+      "explanation": "APR is the true price of borrowed money. Low monthly payments can still mean a costly Kingdom trap.",
+      "weight": 10,
+      "tags": ["credit", "apr", "borrowing"]
+    },
+    {
+      "id": "ck_utilization",
+      "title": "Utilization Spikes",
+      "prompt": "Your credit tablet shows you used almost all available limit. Paying it down now calms the Score Vault.",
+      "icon": "📡",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Pay down the balance (−12 coins)",
+          "effects": [
+            { "type": "money", "amount": -12 },
+            { "type": "score", "amount": 14 },
+            { "type": "debt", "amount": -12 }
+          ]
+        },
+        {
+          "label": "Keep the balance maxed",
+          "effects": [
+            { "type": "score", "amount": -10 },
+            { "type": "flag", "key": "ck_high_util", "value": true }
+          ]
+        }
+      ],
+      "explanation": "Credit utilization — how much of your limit you use — is a big score factor. Lower balances rebuild trust.",
+      "weight": 9,
+      "tags": ["credit", "utilization", "score"]
+    },
+    {
+      "id": "ck_secured_vs_unsecured",
+      "title": "Two Doors",
+      "prompt": "One door asks for collateral (secured). The other is unsecured but pricier. Which rebuilds trust safer?",
+      "icon": "🚪",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Choose the secured path with a clear plan",
+          "effects": [
+            { "type": "score", "amount": 10 },
+            { "type": "counter", "key": "ck_smart_borrow", "delta": 1 }
+          ]
+        },
+        {
+          "label": "Take unsecured because it feels faster",
+          "effects": [
+            { "type": "debt", "amount": 15 },
+            { "type": "score", "amount": -4 }
+          ]
+        }
+      ],
+      "explanation": "Secured loans use collateral and often cost less. Unsecured loans are easier to open — and easier to regret.",
+      "weight": 8,
+      "tags": ["credit", "loans", "secured"]
+    },
+    {
+      "id": "ck_emergency_ledger",
+      "title": "Emergency Ledger",
+      "prompt": "The Collector approaches. An emergency pouch lets you pay without new debt. Empty pouch means borrowing under pressure.",
+      "icon": "📒",
+      "triggers": [],
+      "choices": [
+        {
+          "label": "Use emergency savings (−10 coins, no new debt)",
+          "effects": [
+            { "type": "money", "amount": -10 },
+            { "type": "score", "amount": 16 }
+          ]
+        },
+        {
+          "label": "Borrow under pressure",
+          "effects": [
+            { "type": "debt", "amount": 20 },
+            { "type": "score", "amount": -12 }
+          ]
+        }
+      ],
+      "explanation": "An emergency fund is credit recovery armor — it keeps interest storms from feeding on haste.",
+      "weight": 10,
+      "tags": ["credit", "emergency-fund", "debt"]
+    }
+  ]
+}

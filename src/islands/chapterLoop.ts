@@ -106,3 +106,55 @@ export function hasCompletedCoveChange(save: IslandSaveV1): boolean {
 export function isCoveChapterIsland(islandId: string): boolean {
   return islandId === COVE_ISLAND_ID;
 }
+
+/** Synthetic "Why it happened" timeline for Cove Change — shown once on quest clear. */
+export function buildCoveChangeReplayTimeline(opts: {
+  islandId: string;
+  islandName: string;
+}): import("./decisionTimeline").DecisionTimeline {
+  const now = new Date().toISOString();
+  return {
+    id: `cove-change-${Date.now()}`,
+    startedAt: now,
+    completedAt: now,
+    context: {
+      islandId: opts.islandId,
+      islandName: opts.islandName,
+      questId: COVE_CHANGE_QUEST_ID,
+      questTitle: "Save or Spend?",
+      minigameId: "quest_cc_save_or_spend",
+      minigameName: "Chapter choice",
+    },
+    success: true,
+    score: 100,
+    entries: [
+      {
+        timestamp: now,
+        context: { islandId: opts.islandId, questId: COVE_CHANGE_QUEST_ID },
+        action: {
+          eventTitle: "Needs vs wants with Alma",
+          chosenLabel: "Helped sort needs and wants",
+          chosenIndex: 0,
+        },
+        alternatives: ["Walked away"],
+        stateDiff: "Quest started",
+        explanation: "Learning needs vs wants is the first money skill on Cove.",
+      },
+      {
+        timestamp: now,
+        context: { islandId: opts.islandId, questId: COVE_CHANGE_QUEST_ID },
+        action: {
+          eventTitle: "Start a savings jar with Kira",
+          chosenLabel: "Collected the savings jar",
+          chosenIndex: 0,
+        },
+        alternatives: ["Spend everything now"],
+        stateDiff: "+50 coins, craft badge",
+        explanation:
+          "Choosing to save — even a little — is the Change beat. Harbor will notice when you fly home.",
+      },
+    ],
+    storySummary:
+      "You earned fairly, faced save-or-spend, and returned changed. That's Coincraft Cove's Story Circle.",
+  };
+}

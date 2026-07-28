@@ -174,10 +174,10 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
     genre: "party",
     fortuneBlurb: "Spacefaring keep — diversify gem asset classes across colony worlds.",
   },
-  /** 2010s Realism — credit ruins */
+  /** 2010s Realism — Credit Kingdom Ordeal (ruins flavor) */
   credit_kingdom: {
     id: "credit_kingdom",
-    name: "Credit Ruins",
+    name: "Credit Kingdom",
     visualStyle: "ruin-realism",
     animationStyle: "era-2010s",
     skinClass: "island-theme-ruins",

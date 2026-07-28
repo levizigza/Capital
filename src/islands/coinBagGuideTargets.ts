@@ -64,6 +64,8 @@ export function resolveHarborGuideLookAt(opts: {
   hotspots: { id: string; position: GuideLookAt }[];
   piggyPos?: GuideLookAt;
   homecomingPending?: boolean;
+  /** After Piggy welcome-back — point Carpet Dock for next painting */
+  pointNextPainting?: boolean;
   nearStoreId?: string | null;
   pointPavilion?: boolean;
   defaultId?: string;
@@ -80,6 +82,7 @@ export function resolveHarborGuideLookAt(opts: {
   }
 
   if (opts.homecomingPending) return piggy;
+  if (opts.pointNextPainting) return find("travel") ?? ([0, 0, 13] as GuideLookAt);
   if (opts.nearStoreId) return find(opts.nearStoreId);
   if (opts.pointPavilion) return find("pavilion") ?? piggy;
   return find(opts.defaultId ?? "travel") ?? piggy;

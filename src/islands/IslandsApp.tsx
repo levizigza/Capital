@@ -24,7 +24,7 @@ import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
-import { islandHasChapterContent } from "./chapterLoop";
+import { islandHasChapterContent, buildCoveChangeReplayTimeline } from "./chapterLoop";
 import { COVE_CHANGE_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
@@ -35,6 +35,7 @@ import {
   findHarborNpc,
   resolveHarborDialogue,
   HARBOR_DIALOGUES,
+  piggyHomecomingGraph,
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
@@ -91,6 +92,7 @@ const TUTORIAL_STARTED_KEY = "islands_tutorial_started_v1";
 const TUTORIAL_QUEST_IDS = new Set(["q_cc_first_coins"]);
 
 import type { DecisionTimeline } from "./decisionTimeline";
+import { saveTimeline } from "./decisionTimeline";
 import {
   createDefaultSkillStats,
   applySkillChanges,
@@ -804,12 +806,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           harborHomecoming: {
             pending: true,
             celebrated: false,
+            piggyTalked: false,
             chapterIslandId: activeIsland.id,
             questId,
             message:
               "Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.",
           },
         }));
+        const timeline = buildCoveChangeReplayTimeline({
+          islandId: activeIsland.id,
+          islandName:
+            typeof activeIsland.name === "string"
+              ? activeIsland.name
+              : "Coincraft Cove",
+        });
+        saveTimeline(timeline);
+        setPendingReplayTimeline(timeline);
       }
     },
     [activeIsland, learningProfile, setUserProfile, updateSave, save?.questStatus]
@@ -906,7 +918,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
           ? getHubGuidedStep(save.hubGuidedIntro)?.id
           : null;
-      const harborGraph = resolveHarborDialogue(npcId, guided);
+      const harborGraph = resolveHarborDialogue(npcId, {
+        guidedStep: guided,
+        homecoming: save?.harborHomecoming,
+      });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
 
       setDialogueState({ open: true, graphId, nodeId: undefined, npcId });
@@ -926,6 +941,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       content,
       dialogueState.open,
       save?.hubGuidedIntro,
+      save?.harborHomecoming,
       updateSave,
       view,
     ],
@@ -1001,18 +1017,30 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ? findDialogue(activeIsland.dialogues, dialogueState.graphId)
       : undefined;
     if (fromIsland) return fromIsland;
+    if (dialogueState.graphId === "dlg_harbor_piggy_penny_homecoming") {
+      return piggyHomecomingGraph(save?.harborHomecoming?.message);
+    }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
     if (fromHarbor) return fromHarbor;
-    // Guided Piggy graphs are minted per-step and may not be in the static list
+    // Guided / homecoming Piggy graphs are minted and may not be in the static list
     if (dialogueState.npcId) {
       const guided =
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
           ? getHubGuidedStep(save.hubGuidedIntro)?.id
           : null;
-      return resolveHarborDialogue(dialogueState.npcId, guided);
+      return resolveHarborDialogue(dialogueState.npcId, {
+        guidedStep: guided,
+        homecoming: save?.harborHomecoming,
+      });
     }
     return undefined;
-  }, [activeIsland, dialogueState.graphId, dialogueState.npcId, save?.hubGuidedIntro]);
+  }, [
+    activeIsland,
+    dialogueState.graphId,
+    dialogueState.npcId,
+    save?.hubGuidedIntro,
+    save?.harborHomecoming,
+  ]);
 
   const dialogueNode = useMemo(() => {
     if (!dialogueGraph) return undefined;
@@ -1049,6 +1077,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     ) {
       onHubGuidedEvent("talked_guide");
     }
+    // Mark Piggy welcome-back as heard so Coin Bag can point the next painting
+    if (
+      npcId === "piggy_penny" &&
+      save?.harborHomecoming &&
+      !save.harborHomecoming.piggyTalked &&
+      (save.harborHomecoming.pending || save.harborHomecoming.celebrated)
+    ) {
+      updateSave((prev) => ({
+        ...prev,
+        harborHomecoming: {
+          ...(prev.harborHomecoming ?? {}),
+          pending: false,
+          celebrated: true,
+          piggyTalked: true,
+        },
+      }));
+    }
     setDialogueState({ open: false });
     void trackScreenEnter(
       view === "home"
@@ -1061,6 +1106,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     dialogueState.npcId,
     onHubGuidedEvent,
     save?.hubGuidedIntro,
+    save?.harborHomecoming,
+    updateSave,
     view,
   ]);
 

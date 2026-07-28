@@ -3,10 +3,9 @@
   "islands": [
     {
       "id": "credit_kingdom",
-      "name": "Credit Ruins",
-      "description": "2010s cinematic realism — overgrown temples of credit history. Recover score artifacts, dodge The Collector, and rebuild trust with lenders.",
+      "name": "Credit Kingdom",
+      "description": "Late-game Ordeal — overgrown temples of credit history. Recover score artifacts, dodge interest storms, and rebuild trust. Ruins are the scenery; the Kingdom is the test.",
       "icon": "🗿",
-      "requiredItems": ["fa_island_medallion"],
       "provenance": {
         "learning_objectives": [
           "Understand how credit scores are calculated",
@@ -15,7 +14,7 @@
           "Practice recovering from credit mistakes"
         ],
         "mechanics_used": ["party-board", "resource-management", "event-deck", "quiz-challenge"],
-        "originality_notes": "Theme: ruined jungle temples as metaphors for damaged credit (not a bank sim). Verb: recover artifacts on a Fortune Party board with rival captains. Structure: chance + skill minigames teaching credit repair.",
+        "originality_notes": "Theme: ruined jungle temples as metaphors for damaged credit (not a bank sim). Verb: recover artifacts on a Fortune Party board with rival captains. Structure: chance + skill minigames teaching credit repair. Canon name: Credit Kingdom (Story Bible Ordeal).",
         "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Credit Karma", "Mario", "Nintendo"]
       },
       "areas": [
@@ -80,7 +79,7 @@
             {
               "id": "c1",
               "speaker": "Cleo the Archivist",
-              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Collector.",
+              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Collector — interest feeds on haste.",
               "choices": [
                 {
                   "id": "c1a",
@@ -121,8 +120,8 @@
             {
               "id": "EventDeck",
               "config": {
-                "title": "Credit Ruins Dispatches",
-                "deckId": "credit_ruins"
+                "title": "Credit Kingdom Dispatches",
+                "deckIds": ["credit_kingdom"]
               }
             }
           ]

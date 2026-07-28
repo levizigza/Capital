@@ -28,6 +28,25 @@ describe("harborTalks", () => {
     expect(findHarborNpc("piggy_penny")?.name).toMatch(/Piggy/);
   });
 
+  it("serves Piggy homecoming graph after Cove Change", () => {
+    const g = resolveHarborDialogue("piggy_penny", {
+      guidedStep: "done",
+      homecoming: {
+        pending: true,
+        celebrated: false,
+        piggyTalked: false,
+        message: "Piggy Penny: You came home different.",
+      },
+    });
+    expect(g?.id).toBe("dlg_harbor_piggy_penny_homecoming");
+    expect(g?.nodes[0]?.text).toMatch(/came home different/i);
+
+    const afterTalk = resolveHarborDialogue("piggy_penny", {
+      homecoming: { pending: false, celebrated: true, piggyTalked: true },
+    });
+    expect(afterTalk?.id).toBe("dlg_harbor_piggy_penny");
+  });
+
   it("gives distinct tip beats per mascot role", () => {
     const piggy = resolveProfileText(harborTipPreview("piggy_penny"), "apprentice");
     const spendy = resolveProfileText(harborTipPreview("spendy_sue"), "apprentice");

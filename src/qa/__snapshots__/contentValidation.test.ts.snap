@@ -5,6 +5,9 @@ exports[`content validation snapshots > all event deck JSON files pass schema va
   "events_budgeting_teens.json": {
     "errors": [],
   },
+  "events_credit_kingdom.json": {
+    "errors": [],
+  },
   "events_finance_kids.json": {
     "errors": [],
   },
@@ -24,6 +27,10 @@ exports[`content validation snapshots > all island JSON files pass schema + cros
     "errors": [],
     "warnings": [],
   },
+  "credit-kingdom.islands.json": {
+    "errors": [],
+    "warnings": [],
+  },
   "demo.islands.json": {
     "errors": [],
     "warnings": [],
@@ -40,11 +47,11 @@ exports[`content validation snapshots > all island JSON files pass schema + cros
     "errors": [],
     "warnings": [],
   },
-  "intangibles.islands.json": {
+  "harbor-haven.islands.json": {
     "errors": [],
     "warnings": [],
   },
-  "island2-placeholder.islands.json": {
+  "intangibles.islands.json": {
     "errors": [],
     "warnings": [],
   },
@@ -70,6 +77,7 @@ exports[`content validation snapshots > all island JSON files pass schema + cros
 exports[`content validation snapshots > loaded event decks match on-disk JSON count 1`] = `
 [
   "budgeting_teens",
+  "credit_kingdom",
   "finance_kids",
   "startup_adults",
 ]

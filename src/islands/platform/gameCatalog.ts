@@ -53,6 +53,7 @@ const COMPONENT_META: Record<
   CompoundSnowballGame: { genre: "simulation", complexity: "easy", visualShell: "retro", estimatedMinutes: 3 },
   DiversifyBasketsGame: { genre: "strategy", complexity: "easy", visualShell: "flat", estimatedMinutes: 4 },
   PriceItRightGame: { genre: "simulation", complexity: "easy", visualShell: "notebook", estimatedMinutes: 3 },
+  LifeForkGame: { genre: "quiz", complexity: "easy", visualShell: "notebook", estimatedMinutes: 4 },
 };
 
 export function buildGameCatalog(content: IslandsContent): CatalogGame[] {

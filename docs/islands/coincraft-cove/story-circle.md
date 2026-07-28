@@ -38,8 +38,7 @@ Piggy Penny’s job ends at the threshold; Captain Penny owns Need→Find on the
 - [x] Verbs: Talk · Earn · Choose · Return  
 - [x] Guides: Piggy (Harbor) → Captain Penny (Cove)  
 - [x] Soft fails on minigames  
-- [ ] Return Change still thin — strengthen Harbor welcome-back line when `q_cc_save_or_spend` completes (runtime guided beat)  
+- [x] Return Change — Piggy welcome-back Talk Battle + cheer emote; Coin Bag points next painting after talk; ReplayModal on `q_cc_save_or_spend` clear  
 - [x] Fits Story Bible (no second myth)
 
-**Next polish:** Wire `q_cc_save_or_spend` completion → Harbor Keeper celebration + optional Freedom progress hint.  
-**Runtime (v34):** Cove is a separate chapter island from Harbor Haven; completing `q_cc_save_or_spend` sets `harborHomecoming` and unlocks Paycheck Peninsula.
+**Runtime:** Completing `q_cc_save_or_spend` sets `harborHomecoming` (pending), opens decision Replay, unlocks Paycheck Peninsula. Harbor Piggy graph `dlg_harbor_piggy_penny_homecoming` then Coin Bag → Carpet Dock / Peninsula.

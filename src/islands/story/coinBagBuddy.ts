@@ -68,6 +68,8 @@ export function coinBagHarborTip(
     homecomingPending?: boolean;
     homecomingMessage?: string | null;
     pavilionUnlocked?: boolean;
+    /** After Cove Change + Piggy welcome — name the next painting */
+    nextPaintingHint?: string | null;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -78,6 +80,13 @@ export function coinBagHarborTip(
     return {
       tip: opts.homecomingMessage || "Talk to Piggy — she noticed!",
       coach: "You came home changed. Piggy has a welcome-back for you.",
+    };
+  }
+
+  if (opts?.nextPaintingHint) {
+    return {
+      tip: `Next painting: ${opts.nextPaintingHint}`,
+      coach: "Carpet Dock opens the Archipelago map. I’ll hop with you.",
     };
   }
 

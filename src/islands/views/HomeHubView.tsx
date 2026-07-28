@@ -38,11 +38,12 @@ import {
   type HubGuidedEvent,
   type HubGuidedIntroState,
 } from "../story/hubGuidedIntro";
-import { guidedVisualBeats } from "../story/dialogueActionSync";
+import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
+import { hasCompletedCoveChange } from "../chapterLoop";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -163,12 +164,31 @@ export function HomeHubView({
     updateA11y({ ...a11y, guideArrows: !guideArrows });
   }, [a11y, updateA11y, guideArrows]);
 
-  const visualBeats = guidedVisualBeats(guidedStep?.id);
+  const peninsulaChapterDone =
+    (save.completedMinigames ?? []).includes("mg_treasure_hunt") ||
+    (save.completedMinigames ?? []).includes("mg_budget_split");
+  const needsPiggyWelcome =
+    hasCompletedCoveChange(save) &&
+    Boolean(save.harborHomecoming) &&
+    !save.harborHomecoming?.piggyTalked &&
+    Boolean(save.harborHomecoming?.pending || save.harborHomecoming?.celebrated);
+  const pointNextPainting =
+    hasCompletedCoveChange(save) &&
+    Boolean(save.harborHomecoming?.piggyTalked) &&
+    !peninsulaChapterDone;
+
+  const visualBeats = resolveHarborVisualBeats({
+    guidedStepId: guidedStep?.id,
+    homecomingPending: needsPiggyWelcome,
+    pointNextPainting,
+  });
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
   /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
   const keeperEmote =
     nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
-  const keeperSpeech = castleMode ? visualBeats.keeperBubbleWhenNear : null;
+  const homecomingActive = needsPiggyWelcome || pointNextPainting;
+  const keeperSpeech =
+    castleMode || homecomingActive ? visualBeats.keeperBubbleWhenNear || null : null;
   const pulseHotspotId =
     visualBeats.pulseHotspot === "guide" ? null : (visualBeats.pulseHotspot ?? null);
 
@@ -182,9 +202,10 @@ export function HomeHubView({
     nearNpcName: nearNpc && !nearStore ? nearNpc.name : null,
     hasFreedom: freed,
     currentIslandId: save.currentIslandId,
-    homecomingPending: Boolean(save.harborHomecoming?.pending),
+    homecomingPending: needsPiggyWelcome,
     homecomingMessage: save.harborHomecoming?.message,
     pavilionUnlocked: coinBagShouldPointPavilion(save),
+    nextPaintingHint: pointNextPainting ? "Paycheck Peninsula" : null,
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -193,7 +214,8 @@ export function HomeHubView({
     ecosystemMotion: "mixed",
     structuralTip: structuralBuddy,
   });
-  const bagGuideTip = castleMode ? visualBeats.bagTip : buddyTip.tip;
+  const bagGuideTip =
+    castleMode || homecomingActive ? visualBeats.bagTip : buddyTip.tip;
 
   const showOutfitterHighlight =
     highlightOutfitter || guidedStep?.highlight === "outfitter";
@@ -246,7 +268,8 @@ export function HomeHubView({
       resolveHarborGuideLookAt({
         highlight: guidedStep?.highlight ?? (showOutfitterHighlight ? "outfitter" : null),
         hotspots: harborHotspots,
-        homecomingPending: Boolean(save.harborHomecoming?.pending),
+        homecomingPending: needsPiggyWelcome,
+        pointNextPainting,
         nearStoreId: nearStore?.id ?? null,
         pointPavilion: coinBagShouldPointPavilion(save),
         defaultId: "travel",
@@ -255,7 +278,8 @@ export function HomeHubView({
       guidedStep?.highlight,
       showOutfitterHighlight,
       harborHotspots,
-      save.harborHomecoming?.pending,
+      needsPiggyWelcome,
+      pointNextPainting,
       nearStore?.id,
       save,
     ],

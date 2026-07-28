@@ -16,7 +16,7 @@ const MINIGAME_COMPONENTS: Record<string, () => Promise<{ default: ComponentType
   PropertyAuctionGame: () => import("./PropertyAuctionGame"),
   IPScenarioGame: () => import("./IPScenarioGame"),
   BudgetBalancerGame: () => import("./BudgetBalancerMinigame"),
-  /** Alias — Credit Ruins JSON uses the file/component name */
+  /** Alias — Credit Kingdom JSON uses the file/component name */
   BudgetBalancerMinigame: () => import("./BudgetBalancerMinigame"),
   CompoundSnowballGame: () => import("./CompoundSnowballGame"),
   DiversifyBasketsGame: () => import("./DiversifyBasketsGame"),
@@ -25,6 +25,7 @@ const MINIGAME_COMPONENTS: Record<string, () => Promise<{ default: ComponentType
   MancalaCompoundGame: () => import("./MancalaCompoundGame"),
   PartyDashMinigame: () => import("./PartyDashMinigame"),
   PartyArenaMinigame: () => import("./PartyArenaMinigame"),
+  LifeForkGame: () => import("./LifeForkGame"),
 };
 
 export function getMinigameComponent(componentId: string): ComponentType<MinigameProps> | null {
