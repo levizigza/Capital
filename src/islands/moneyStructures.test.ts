@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { buildShoreHotspots } from "./islandShoreLayout";
-import { COVE_COIN_JAR, moneyStructureForIsland } from "./moneyStructures";
-import { COVE_ISLAND_ID } from "./islandIds";
+import {
+  COVE_COIN_JAR,
+  HARBOR_LEDGER_BANK,
+  moneyStructureForIsland,
+} from "./moneyStructures";
+import { COVE_ISLAND_ID, HARBOR_HAVEN_ID } from "./islandIds";
 import type { IslandDefinition } from "./types";
 
 function stubCove(): IslandDefinition {
@@ -31,9 +35,19 @@ describe("money structures", () => {
   it("registers the Cove Giant Coin Jar", () => {
     const s = moneyStructureForIsland(COVE_ISLAND_ID);
     expect(s?.id).toBe(COVE_COIN_JAR.id);
+    expect(s?.theme).toBe("jar");
     expect(s?.parts.length).toBeGreaterThanOrEqual(3);
     expect(s?.parts.some((p) => p.minigameId === "mg_treasure_vault")).toBe(true);
     expect(s?.parts.some((p) => p.softBeat === "lookout")).toBe(true);
+  });
+
+  it("registers the Harbor Ledger Bank", () => {
+    const s = moneyStructureForIsland(HARBOR_HAVEN_ID);
+    expect(s?.id).toBe(HARBOR_LEDGER_BANK.id);
+    expect(s?.theme).toBe("bank");
+    expect(s?.entryVerb.toLowerCase()).toMatch(/vault/);
+    expect(s?.parts.some((p) => p.minigameId === "mg_inbox_storm")).toBe(true);
+    expect(s?.parts.some((p) => p.softBeat === "ledger")).toBe(true);
   });
 
   it("adds a money_structure shore hotspot on Cove", () => {

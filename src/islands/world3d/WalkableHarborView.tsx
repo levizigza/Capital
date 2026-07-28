@@ -21,6 +21,7 @@ import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { HarborBuilding, WoodenPier, NatureProps } from "./NatureProps";
+import { LedgerBankLandmark } from "./LedgerBankLandmark";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
@@ -35,6 +36,8 @@ export type HarborHotspot = {
   label: string;
   icon: string;
   position: [number, number, number];
+  /** Special plaza landmarks (Money Structures) */
+  kind?: "building" | "money_structure";
 };
 
 type Props = {
@@ -187,8 +190,9 @@ function Player({
       const len = Math.hypot(hx, hz) || 1;
       const doorX = hx - (hx / len) * 1.35;
       const doorZ = hz - (hz / len) * 1.35;
+      const reach = h.kind === "money_structure" ? INTERACT_R * 1.65 : INTERACT_R;
       const d = Math.hypot(doorX - p.x, doorZ - p.z);
-      if (d < best) {
+      if (d < reach && d < best) {
         best = d;
         near = h.id;
         nearDoor = { x: doorX, z: doorZ };
@@ -561,11 +565,20 @@ function PlazaScene({
                 document.body.style.cursor = "auto";
               }}
             >
-              <HarborBuilding
-                label={h.label}
-                accent={pulsing ? "#fbbf24" : LOOK.accent}
-                body={buildingColors[idx % buildingColors.length]}
-              />
+              {h.kind === "money_structure" ? (
+                <LedgerBankLandmark
+                  position={[0, 0, 0]}
+                  active={nearby}
+                  guided={pulsing}
+                  label={h.label}
+                />
+              ) : (
+                <HarborBuilding
+                  label={h.label}
+                  accent={pulsing ? "#fbbf24" : LOOK.accent}
+                  body={buildingColors[idx % buildingColors.length]}
+                />
+              )}
             </group>
             {/* Labels only when relevant — pulsing guide target or player nearby */}
             {showLabel ? (

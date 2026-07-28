@@ -145,7 +145,7 @@ type IslandsAppProps = {
 
 type View = "home" | "travel" | "voyage" | "explore" | "island" | "chapter" | "arcade" | "studio";
 type VoyageReturn = "home" | "travel" | "island" | "chapter" | "explore";
-type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | null;
+type MinigameSource = "board" | "arcade" | "dialogue" | "qa" | "structure" | null;
 
 type PendingMasteryClear = {
   gate: MasteryGateDef;
@@ -1405,6 +1405,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       setMinigameStartedAt(null);
       return;
     }
+    const source = minigameSource;
     const durationMs = minigameStartedAt ? Date.now() - minigameStartedAt : 0;
     await analytics.track("fail_reason", {
       context: "minigame",
@@ -1416,10 +1417,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(null);
     setMinigameStartedAt(null);
     setMinigameSource(null);
+    if (source === "structure") {
+      setView("home");
+      setActiveIslandId(HUB_ISLAND_ID);
+      void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+      return;
+    }
     void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
       islandId: activeIsland?.id,
     });
-  }, [activeIsland?.id, activeMinigameId, minigameStartedAt]);
+  }, [activeIsland?.id, activeMinigameId, minigameStartedAt, minigameSource]);
 
   const onMinigameComplete = useCallback(
     async (success: boolean, score?: number, timeline?: DecisionTimeline) => {
@@ -1504,7 +1511,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setMinigameStartedAt(null);
         setMinigameSource(null);
         setPendingMastery(null);
-        void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+        if (source === "structure") {
+          setView("home");
+          setActiveIslandId(HUB_ISLAND_ID);
+          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+        } else {
+          void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+        }
         if (timeline && timeline.entries.length > 0) {
           setPendingReplayTimeline(timeline);
         }
@@ -1576,7 +1589,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
         setMinigameSource(null);
-        void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+        if (source === "structure") {
+          setView("home");
+          setActiveIslandId(HUB_ISLAND_ID);
+          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+        } else {
+          void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+        }
       }
     },
     [
@@ -1655,21 +1674,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }, [pendingMastery]);
 
   const activeMinigameDef = useMemo(() => {
-    if (!activeIsland || !activeMinigameId) return undefined;
-    const found = activeIsland.minigames?.find((m) => m.id === activeMinigameId);
-    if (found) return found;
-    // Runtime Party Dash opener for islands that lack a kinesthetic lead-in.
-    if (activeMinigameId === partyDashIdForIsland(activeIsland.id)) {
-      return {
-        id: activeMinigameId,
-        name: `${activeIsland.name} Painting Arena`,
-        icon: "🖼️",
-        description: "Dive the painting — 3D Fortune Party action world. Quiz after clear.",
-        componentId: "PartyArenaMinigame",
-      };
+    if (!activeMinigameId) return undefined;
+    if (activeIsland) {
+      const found = activeIsland.minigames?.find((m) => m.id === activeMinigameId);
+      if (found) return found;
+      if (activeMinigameId === partyDashIdForIsland(activeIsland.id)) {
+        return {
+          id: activeMinigameId,
+          name: `${activeIsland.name} Painting Arena`,
+          icon: "🖼️",
+          description: "Dive the painting — 3D Fortune Party action world. Quiz after clear.",
+          componentId: "PartyArenaMinigame",
+        };
+      }
+    }
+    for (const island of content.islands) {
+      const found = island.minigames?.find((m) => m.id === activeMinigameId);
+      if (found) return found;
     }
     return undefined;
-  }, [activeIsland, activeMinigameId]);
+  }, [activeIsland, activeMinigameId, content.islands]);
 
   const MinigameComponent = useMemo(() => {
     if (!activeMinigameDef) return null;
@@ -1950,6 +1974,20 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               }));
             }}
             onMarkEchoSurprise={onMarkEchoSurprise}
+            onPlayStructureMinigame={(minigameId) => {
+              const host =
+                content.islands.find((i) => i.minigames?.some((m) => m.id === minigameId))?.id ??
+                null;
+              if (host) setActiveIslandId(host);
+              setMinigameSource("structure");
+              setActiveMinigameId(minigameId as MinigameId);
+              setMinigameStartedAt(Date.now());
+              void analytics.track("minigame_started", {
+                islandId: host ?? HUB_ISLAND_ID,
+                minigameId,
+                source: "money_structure",
+              });
+            }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}

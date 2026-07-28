@@ -13,11 +13,16 @@ Capital’s north star for this phase: make **one money choice** feel unforgetta
 
 ## Money Structures (Astro-style depth)
 
-Each island may host one **Money Structure** — a landmark you climb *into*. Inside, glowing parts (cork, spring, lid…) open playable money worlds. First slice: **Giant Coin Jar** on Coincraft Cove.
+Each island may host one **Money Structure** — a landmark you climb *into*. Inside, glowing parts open playable money worlds.
+
+| Place | Structure | Entry | Parts |
+|-------|-----------|-------|-------|
+| Coincraft Cove | Giant Coin Jar | Coin slot | Cork Vault · Coin Spring · Lid Lookout |
+| Harbor Haven | Ledger Bank | Brass vault door | Safe Heart · Payday Stamp · Teller Window |
+
+Next on path: Paycheck Payroll Tower · Credit Interest Keep.
 
 This is **structure depth**, not map width — still no new outer islands.
-
-Polish this loop like a boss fight before adding systems.
 
 ## Cold playtest checklist
 

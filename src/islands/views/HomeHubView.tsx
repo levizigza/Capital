@@ -71,10 +71,16 @@ import {
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
+import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import { downloadWeeklyShareCard, downloadHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
 import { isKilled } from "@/sre";
+import {
+  moneyStructureForIsland,
+  type MoneyStructurePart,
+} from "../moneyStructures";
+import { HARBOR_HAVEN_ID } from "../islandIds";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -141,6 +147,8 @@ export type HomeHubViewProps = {
   onMarkScarSpectacle?: (scarCount: number) => void;
   /** Day-2 scar echo surprise acknowledged */
   onMarkEchoSurprise?: () => void;
+  /** Launch a minigame from a Money Structure part (may be hosted on another island) */
+  onPlayStructureMinigame?: (minigameId: string) => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -184,6 +192,7 @@ export function HomeHubView({
   onStudioGalleryOpened,
   onMarkScarSpectacle,
   onMarkEchoSurprise,
+  onPlayStructureMinigame,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -198,6 +207,10 @@ export function HomeHubView({
   useInputAction("cancel", () => {
     // Talk Battle owns Esc while open
     if (talkOpen) return;
+    if (bankOpen) {
+      setBankOpen(false);
+      return;
+    }
     // Outfitter / Capsule / Market own Esc (save-or-leave). Don't discard drafts here.
     if (hubModal === "outfitter" || hubModal === "capsule" || hubModal === "market") return;
     if (hubModal) setHubModal(null);
@@ -248,6 +261,9 @@ export function HomeHubView({
   const [feltShareOpen, setFeltShareOpen] = useState(false);
   const [trailerOpen, setTrailerOpen] = useState(false);
   const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
+  const [bankOpen, setBankOpen] = useState(false);
+  const [enteringBank, setEnteringBank] = useState(false);
+  const ledgerBank = useMemo(() => moneyStructureForIsland(HARBOR_HAVEN_ID), []);
 
   const visualBeats = resolveHarborVisualBeats({
     guidedStepId: guidedStep?.id,
@@ -474,8 +490,28 @@ export function HomeHubView({
       ...(onOpenEditor
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
+      ...(ledgerBank
+        ? [
+            {
+              id: "ledger_bank",
+              label: ledgerBank.exteriorLabel,
+              icon: ledgerBank.icon,
+              position: ledgerBank.shorePosition,
+              kind: "money_structure" as const,
+            } satisfies HarborHotspot,
+          ]
+        : []),
     ],
-    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length, studioMarks.length, save.harborRitual],
+    [
+      onOpenEditor,
+      pavilionOpen,
+      marketOpen,
+      onPlayHarborBoard,
+      plaques.length,
+      studioMarks.length,
+      save.harborRitual,
+      ledgerBank,
+    ],
   );
 
   const harborGuideLookAt = useMemo(
@@ -566,8 +602,34 @@ export function HomeHubView({
     } else if (id === "practice" && onPlayHarborBoard) {
       onHubGuidedEvent("practice_opened");
       onPlayHarborBoard();
+    } else if (id === "ledger_bank" && ledgerBank) {
+      if (enteringBank) return;
+      setEnteringBank(true);
+      playCapitalSfx("scar_chime");
+      window.setTimeout(() => {
+        setEnteringBank(false);
+        setBankOpen(true);
+        playCapitalSfx("plinth_hum");
+      }, 900);
     }
   };
+
+  const onEnterBankPart = useCallback(
+    (part: MoneyStructurePart) => {
+      if (part.softBeat === "ledger" || part.softBeat === "lookout") {
+        playCapitalSfx("harbor_cheer");
+        toast.message("Teller Window", {
+          description: "Marble cool under your hands — the ledger remembers every jar and stamp.",
+        });
+        return;
+      }
+      if (part.minigameId) {
+        playCapitalSfx("scar_chime");
+        onPlayStructureMinigame?.(part.minigameId);
+      }
+    },
+    [onPlayStructureMinigame],
+  );
 
   const onNearChange = useCallback(
     (id: string | null, label: string | null) => {
@@ -632,8 +694,35 @@ export function HomeHubView({
               : "Freedom seal · carpet upgraded"
             : null));
 
+  if (bankOpen && ledgerBank) {
+    return (
+      <MoneyStructureInteriorView
+        structure={ledgerBank}
+        character={voyager}
+        onExit={() => setBankOpen(false)}
+        onEnterPart={onEnterBankPart}
+      />
+    );
+  }
+
   return (
     <>
+      {enteringBank ? (
+        <div
+          className="absolute inset-0 z-[55] flex flex-col items-center justify-center bg-[#0f172a]/92 text-center text-white"
+          data-testid="money-structure-enter-transition"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-200/90">
+            Money is a machine
+          </p>
+          <h2 className="mt-3 text-2xl font-black">
+            {ledgerBank?.enterTransition ?? "Vault door swinging open…"}
+          </h2>
+          <p className="mt-2 max-w-sm text-sm text-white/70">
+            Inside the Bank, every piece opens a world.
+          </p>
+        </div>
+      ) : null}
       <GameHudLayout
         background={
           <div className="absolute inset-0">
@@ -682,7 +771,7 @@ export function HomeHubView({
                   }
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
-                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen}
+                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen || enteringBank}
                   weatherFog={
                     spectacleOpen || trailerOpen
                       ? { near: 8, far: 42 }

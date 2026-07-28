@@ -256,7 +256,9 @@ export function IslandShoreView({
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-200/90">
             Money is a machine
           </p>
-          <h2 className="mt-3 text-2xl font-black">Squeezing through the coin slot…</h2>
+          <h2 className="mt-3 text-2xl font-black">
+            {structure.enterTransition}
+          </h2>
           <p className="mt-2 max-w-sm text-sm text-white/70">
             Inside the Jar, every piece opens a world.
           </p>

@@ -127,15 +127,24 @@ function PartPad({
         />
       </mesh>
       {/* Creative piece silhouette */}
-      {part.id === "cork_vault" ? (
+      {part.id === "cork_vault" || part.id === "vault_safe" ? (
         <mesh position={[0, y, 0]} castShadow>
           <cylinderGeometry args={[0.55, 0.65, 1.1, 12]} />
-          <meshStandardMaterial color="#b45309" roughness={0.75} />
+          <meshStandardMaterial
+            color={part.id === "vault_safe" ? "#b45309" : "#b45309"}
+            roughness={0.75}
+            metalness={part.id === "vault_safe" ? 0.45 : 0.05}
+          />
         </mesh>
-      ) : part.id === "coin_spring" ? (
+      ) : part.id === "coin_spring" || part.id === "stamp_press" ? (
         <mesh position={[0, y, 0]} rotation={[0.4, 0, 0]} castShadow>
           <torusGeometry args={[0.55, 0.14, 8, 24]} />
           <meshStandardMaterial color="#d97706" metalness={0.55} roughness={0.35} />
+        </mesh>
+      ) : part.id === "teller_window" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <boxGeometry args={[1.4, 0.9, 0.2]} />
+          <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.4} />
         </mesh>
       ) : (
         <mesh position={[0, y, 0]} castShadow>
@@ -183,20 +192,19 @@ function InteriorWorld({
   return (
     <>
       <WorldLighting look={look} />
-      <color attach="background" args={["#0c4a6e"]} />
-      <fog attach="fog" args={["#0c4a6e", 12, 38]} />
-
-      {/* Jar glass walls — toy interior */}
+      {/* Jar / bank shell walls — toy interior */}
       <mesh position={[0, 4, 0]}>
         <cylinderGeometry args={[10.5, 11, 10, 32, 1, true]} />
         <meshStandardMaterial
-          color="#7dd3fc"
+          color={structure.theme === "bank" ? "#94a3b8" : "#7dd3fc"}
           transparent
-          opacity={0.18}
+          opacity={structure.theme === "bank" ? 0.22 : 0.18}
           side={THREE.BackSide}
           roughness={0.2}
         />
       </mesh>
+      <color attach="background" args={[structure.theme === "bank" ? "#1e293b" : "#0c4a6e"]} />
+      <fog attach="fog" args={[structure.theme === "bank" ? "#1e293b" : "#0c4a6e", 12, 38]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[11, 48]} />
         <meshStandardMaterial color="#0f172a" roughness={0.85} />
@@ -318,7 +326,7 @@ export function MoneyStructureInteriorView({
         }
         topRight={
           <GameButton variant="outline" size="sm" onClick={onExit}>
-            Exit Jar
+            {structure.theme === "bank" ? "Exit Bank" : "Exit Jar"}
           </GameButton>
         }
         bottom={
@@ -340,7 +348,7 @@ export function MoneyStructureInteriorView({
           ) : nearId === "exit" ? (
             <div className="flex justify-center">
               <GameButton variant="primary" onClick={onExit}>
-                Squeeze back to Cove
+                {structure.theme === "bank" ? "Step back to Harbor" : "Squeeze back to Cove"}
               </GameButton>
             </div>
           ) : (
