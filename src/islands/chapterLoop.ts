@@ -1,5 +1,5 @@
 import type { IslandDefinition, IslandQuest, IslandSaveV1, QuestObjective, QuestTrack } from "./types";
-import { COVE_CHANGE_QUEST_ID, COVE_ISLAND_ID, isHubIslandId } from "./islandIds";
+import { COVE_CHANGE_QUEST_ID, COVE_ISLAND_ID, PAYCHECK_CHANGE_QUEST_ID, isHubIslandId } from "./islandIds";
 import { questTrack } from "./questTracks";
 
 /** Islands with explore/quest chapter content (not the Harbor plaza). */
@@ -101,6 +101,10 @@ export function islandMainQuestsComplete(island: IslandDefinition, save: IslandS
 
 export function hasCompletedCoveChange(save: IslandSaveV1): boolean {
   return Boolean(save.questStatus[COVE_CHANGE_QUEST_ID]?.completed);
+}
+
+export function hasCompletedPaycheckChange(save: IslandSaveV1): boolean {
+  return Boolean(save.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.completed);
 }
 
 export function isCoveChapterIsland(islandId: string): boolean {

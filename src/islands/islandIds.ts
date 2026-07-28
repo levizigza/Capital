@@ -12,6 +12,8 @@ export const COVE_ISLAND_ID = "coincraft_cove";
 export const PAYCHECK_PENINSULA_ID = "paycheck_peninsula";
 /** Cove “Take” quest that triggers Harbor Return/Change */
 export const COVE_CHANGE_QUEST_ID = "q_cc_save_or_spend";
+/** Paycheck Peninsula Change — rainy-day Take that triggers Harbor Return */
+export const PAYCHECK_CHANGE_QUEST_ID = "q_pp_rainy_day";
 /** Credit Kingdom Ordeal clear — triggers Harbor Return/Change */
 export const CREDIT_ORDEAL_QUEST_ID = "q_ck_first_recovery";
 

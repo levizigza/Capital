@@ -119,8 +119,8 @@
           "id": "q_pp_rainy_day",
           "track": "main",
           "title": "Expect the Unexpected",
-          "description": "Coach Carlos has a surprise expense challenge. Learn why an emergency fund matters.",
-          "hint": "Head to Rainy Day Park after completing Budget Basics.",
+          "description": "Coach Carlos sets the challenge. Vendor Vee forces the Take — protect rainy-day or spend it. Harbor will notice.",
+          "hint": "Head to Rainy Day Park after Budget Basics, then face Vee's fork on Main Street.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_coach_carlos" },
             { "type": "talkToNpc", "npcId": "npc_vendor_vee" },
@@ -248,31 +248,64 @@
             {
               "id": "vv1",
               "speaker": "Vendor Vee",
-              "text": "Oh no, the town fountain just broke and we need supplies to fix it! This is exactly the kind of surprise expense Coach Carlos was talking about. Good thing we planned ahead!",
+              "text": "The fountain broke — and my stall has a glitter sale TODAY. This is the Take: protect your rainy-day coins, or spend the stash on wants and hope nothing else breaks?",
               "choices": [
                 {
-                  "id": "vv1_a",
-                  "text": "Good thing I have my Rainy Day Fund!",
-                  "nextNodeId": "vv2",
-                  "effects": [{ "type": "giveItem", "itemId": "pp_rainy_day_fund" }]
+                  "id": "vv_protect",
+                  "text": "Protect the fund — fountain first.",
+                  "nextNodeId": "vv_protect_end",
+                  "effects": [
+                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" },
+                    {
+                      "type": "setIrreversible",
+                      "key": "paycheck_protect_vs_spend",
+                      "choiceId": "protect",
+                      "label": "Protected rainy-day over a glitter sale"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "pp_protector_plaque",
+                      "label": "Peninsula: rainy-day before glitter",
+                      "kind": "plaque",
+                      "stance": "saver",
+                      "stanceDelta": 2
+                    }
+                  ]
                 },
                 {
-                  "id": "vv1_b",
-                  "text": "How much does it cost?",
-                  "nextNodeId": "vv3"
+                  "id": "vv_spend",
+                  "text": "Spend the stash — I'll rebuild later.",
+                  "nextNodeId": "vv_spend_end",
+                  "effects": [
+                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" },
+                    {
+                      "type": "setIrreversible",
+                      "key": "paycheck_protect_vs_spend",
+                      "choiceId": "spend",
+                      "label": "Spent the emergency stash on wants"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "pp_spender_plaque",
+                      "label": "Peninsula: glitter ate the umbrella",
+                      "kind": "plaza_prop",
+                      "stance": "spender",
+                      "stanceDelta": 2
+                    }
+                  ]
                 }
               ]
             },
             {
-              "id": "vv2",
+              "id": "vv_protect_end",
               "speaker": "Vendor Vee",
-              "text": "See? That's the power of an emergency fund. You handled a surprise without going into debt. Impressive!",
+              "text": "That's the Change. Harbor will remember you kept an umbrella when the sky cracked. Fly home — Piggy is waiting.",
               "end": true
             },
             {
-              "id": "vv3",
+              "id": "vv_spend_end",
               "speaker": "Vendor Vee",
-              "text": "30 coins for parts. If you'd been saving a bit each week, you'd have this covered no problem. That's the lesson!",
+              "text": "Glitter now, thinner pouch later. Harbor will show it — and you can still rebuild. Fly home changed either way.",
               "end": true
             }
           ]

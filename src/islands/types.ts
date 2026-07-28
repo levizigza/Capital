@@ -262,6 +262,8 @@ export type IslandSaveV1 = {
     celebrated?: boolean;
     /** True after Piggy's welcome-back Talk Battle for this homecoming */
     piggyTalked?: boolean;
+    /** Soft HUD — walk + Piggy only until welcome Talk Battle ends */
+    quietPending?: boolean;
     chapterIslandId?: string;
     questId?: string;
     message?: string;

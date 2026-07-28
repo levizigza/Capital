@@ -20,6 +20,7 @@ import {
   HUB_ISLAND_ID,
   COVE_ISLAND_ID,
   PAYCHECK_PENINSULA_ID,
+  PAYCHECK_CHANGE_QUEST_ID,
   CREDIT_ORDEAL_QUEST_ID,
 } from "./islandIds";
 
@@ -62,10 +63,10 @@ export const MAIN_COURSE: MainCourseStep[] = [
     id: "second_painting",
     track: "main",
     title: "Paycheck Peninsula · Budget Course",
-    blurb: "Open yet linear — climb the budget mountain, side paths welcome.",
+    blurb: "Allocate a paycheck, then face the rainy-day Take — protect or spend.",
     placeId: PAYCHECK_PENINSULA_ID,
-    paintingId: "mg_treasure_hunt",
-    done: (s) => (s.completedMinigames ?? []).includes("mg_treasure_hunt") || (s.completedMinigames ?? []).includes("mg_budget_split"),
+    paintingId: "mg_budget_split",
+    done: (s) => Boolean(s.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.completed),
   },
   {
     id: "freedom_seal",

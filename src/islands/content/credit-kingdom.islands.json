@@ -47,6 +47,13 @@
           "icon": "🧭",
           "areaId": "ck_score_vault",
           "dialogueGraphId": "dlg_cleo_ruins"
+        },
+        {
+          "id": "npc_collector_rex",
+          "name": "Rex the Collector",
+          "icon": "⛓️",
+          "areaId": "ck_debt_canyon",
+          "dialogueGraphId": "dlg_collector_rex"
         }
       ],
       "items": [
@@ -56,6 +63,13 @@
           "description": "A fragment of on-time payment history.",
           "icon": "💎",
           "location": { "areaId": "ck_score_vault" }
+        },
+        {
+          "id": "ck_canyon_seal",
+          "name": "Canyon Seal",
+          "description": "Proof you faced interest in the canyon — and chose a payment plan over panic.",
+          "icon": "🦭",
+          "location": { "areaId": "ck_debt_canyon" }
         }
       ],
       "quests": [
@@ -63,12 +77,15 @@
           "id": "q_ck_first_recovery",
           "track": "main",
           "title": "First Recovery",
-          "description": "Talk to the Archivist and clear a credit minigame on the party board.",
+          "description": "Archivist Cleo stains your path. Clear Credit Inbox, then face Rex in Debt Canyon and balance a payment before interest compounds.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_credit_cleo_ruins" },
-            { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" }
+            { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" },
+            { "type": "talkToNpc", "npcId": "npc_collector_rex" },
+            { "type": "completeMinigame", "minigameId": "mg_ck_budget_balancer" },
+            { "type": "collectItem", "itemId": "ck_canyon_seal" }
           ],
-          "rewards": { "coins": 40, "xp": 30 }
+          "rewards": { "coins": 40, "xp": 30, "items": ["ck_credit_shard"] }
         }
       ],
       "dialogues": [
@@ -142,19 +159,58 @@
             {
               "id": "c2",
               "speaker": "Cleo the Archivist",
-              "text": "Patience is a credit signal. Roll the Fortune Party board — Inbox, Debt Loadout, Score Scanner. On-time history rebuilds the Kingdom.",
+              "text": "Patience is a credit signal. Clear the Credit Inbox, then descend Debt Canyon — Rex the Collector waits with a payment plan, not a panic button.",
               "end": true
             },
             {
               "id": "c2_rush",
               "speaker": "Cleo the Archivist",
-              "text": "Speed has a price. The board still teaches recovery — but Harbor will show fog where haste landed. Clear the Inbox to prove you can rebuild.",
+              "text": "Speed has a price. The Inbox still teaches recovery — then face Rex. Fog will follow you home either way; prove you can rebuild.",
               "end": true
             },
             {
               "id": "c3",
               "speaker": "Cleo the Archivist",
               "text": "Watch your pouch. Chance spaces cut deeper here.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_collector_rex",
+          "startNodeId": "r1",
+          "nodes": [
+            {
+              "id": "r1",
+              "speaker": "Rex the Collector",
+              "text": "Interest doesn't yell — it compounds. Balance a payment in the canyon. Panic spends; a plan rebuilds trust.",
+              "choices": [
+                {
+                  "id": "r1_plan",
+                  "text": "I'll run Debt Loadout — a plan, not panic.",
+                  "nextNodeId": "r2",
+                  "effects": [
+                    { "type": "startMinigame", "minigameId": "mg_ck_budget_balancer" },
+                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                  ]
+                },
+                {
+                  "id": "r1_later",
+                  "text": "Not yet.",
+                  "nextNodeId": "r3"
+                }
+              ]
+            },
+            {
+              "id": "r2",
+              "speaker": "Rex the Collector",
+              "text": "Good. Harbor will keep your Cleo fork on the Memory Plinth — patience or haste — and this seal proves you faced the canyon.",
+              "end": true
+            },
+            {
+              "id": "r3",
+              "speaker": "Rex the Collector",
+              "text": "Debt waits. Come back when you're ready to choose a plan.",
               "end": true
             }
           ]

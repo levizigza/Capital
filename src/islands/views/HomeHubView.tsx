@@ -43,7 +43,7 @@ import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBu
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
-import { hasCompletedCoveChange } from "../chapterLoop";
+import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
 import { harborScarPlaques, stanceGreetingHint } from "../worldMemory";
 import {
   dailyRumorText,
@@ -211,14 +211,13 @@ export function HomeHubView({
     updateA11y({ ...a11y, guideArrows: !guideArrows });
   }, [a11y, updateA11y, guideArrows]);
 
-  const peninsulaChapterDone =
-    (save.completedMinigames ?? []).includes("mg_treasure_hunt") ||
-    (save.completedMinigames ?? []).includes("mg_budget_split");
+  const peninsulaChapterDone = hasCompletedPaycheckChange(save);
   const needsPiggyWelcome =
-    hasCompletedCoveChange(save) &&
     Boolean(save.harborHomecoming) &&
     !save.harborHomecoming?.piggyTalked &&
     Boolean(save.harborHomecoming?.pending || save.harborHomecoming?.celebrated);
+  const quietHarbor =
+    needsPiggyWelcome && Boolean(save.harborHomecoming?.quietPending);
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
     Boolean(save.harborHomecoming?.piggyTalked) &&
@@ -557,6 +556,13 @@ export function HomeHubView({
           </div>
         }
         topLeft={
+          quietHarbor ? (
+            <div className="cap-play-hud-left">
+              <p className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90">
+                Harbor is quiet — find Piggy
+              </p>
+            </div>
+          ) : (
           <div className="cap-play-hud-left">
             <button
               type="button"
@@ -571,8 +577,10 @@ export function HomeHubView({
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
           </div>
+          )
         }
         topRight={
+          quietHarbor ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -590,17 +598,40 @@ export function HomeHubView({
               Leave
             </GameButton>
           </div>
+          )
         }
         bottom={
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
+            {quietHarbor ? (
+              <p className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow">
+                No ledger. No glitter. Just the walk home — talk to Piggy when you are ready.
+              </p>
+            ) : (
             <CoinBagBuddyHud
               tip={buddyTip.tip}
               detail={castleMode ? guidedStep?.coach : buddyTip.coach}
               guideArrows={guideArrows}
               onToggleGuide={toggleGuide}
             />
+            )}
             {/* Single primary action — never stack Enter + Board */}
-            {nearStore ? (
+            {quietHarbor ? (
+              nearNpc && onTalkNpc ? (
+                <GameButton
+                  variant="primary"
+                  size="lg"
+                  onClick={() => onTalkNpc(nearNpc.id)}
+                  className="w-full shadow-lg"
+                  data-testid="hub-talk-npc"
+                >
+                  Talk to {nearNpc.name}
+                </GameButton>
+              ) : (
+                <p className="text-center text-xs font-medium text-white/80">
+                  Walk toward Piggy Penny on the plaza.
+                </p>
+              )
+            ) : nearStore ? (
               <GameButton
                 variant="primary"
                 size="lg"

@@ -25,7 +25,7 @@ import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
 import { islandHasChapterContent, buildCoveChangeReplayTimeline } from "./chapterLoop";
-import { COVE_CHANGE_QUEST_ID, CREDIT_ORDEAL_QUEST_ID } from "./islandIds";
+import { COVE_CHANGE_QUEST_ID, CREDIT_ORDEAL_QUEST_ID, PAYCHECK_CHANGE_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
@@ -898,6 +898,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               pending: true,
               celebrated: false,
               piggyTalked: false,
+              quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
               message: `Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.${scarBit}`,
@@ -915,6 +916,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setPendingReplayTimeline(timeline);
       }
 
+      // Paycheck Peninsula Change → Harbor homecoming
+      if (questId === PAYCHECK_CHANGE_QUEST_ID) {
+        updateSave((prev) => {
+          const lastScar = (prev.harborScars ?? []).at(-1);
+          const scarBit = lastScar
+            ? ` Dotgraph left a mark: ${lastScar.label}.`
+            : "";
+          return {
+            ...prev,
+            harborHomecoming: {
+              pending: true,
+              celebrated: false,
+              piggyTalked: false,
+              quietPending: true,
+              chapterIslandId: activeIsland.id,
+              questId,
+              message: `Piggy Penny: A paycheck isn't freedom until you face a surprise. You chose — and Harbor got quieter to listen.${scarBit}`,
+            },
+          };
+        });
+      }
+
       // Credit Kingdom Ordeal clear → Harbor homecoming
       if (questId === CREDIT_ORDEAL_QUEST_ID) {
         updateSave((prev) => {
@@ -928,6 +951,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               pending: true,
               celebrated: false,
               piggyTalked: false,
+              quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
               message: `Piggy Penny: You faced the interest storm and came home. That's Ordeal courage.${scarBit}`,
@@ -1267,6 +1291,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               pending: false,
               celebrated: true,
               piggyTalked: true,
+              quietPending: false,
             },
           };
         }
@@ -1859,6 +1884,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   ...(prev.harborHomecoming ?? {}),
                   pending: false,
                   celebrated: true,
+                  quietPending: false,
                 },
               }));
             }}
