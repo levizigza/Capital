@@ -39,6 +39,8 @@ describe("Accessibility settings", () => {
       reducedMotion: false,
       highContrast: false,
       guideArrows: true,
+      musicEnabled: true,
+      musicVolume: 0.42,
     });
   });
 
@@ -48,6 +50,8 @@ describe("Accessibility settings", () => {
       reducedMotion: true,
       highContrast: true,
       guideArrows: false,
+      musicEnabled: false,
+      musicVolume: 0.2,
     };
     persistAccessibilitySettings(custom);
     expect(loadAccessibilitySettings()).toEqual(custom);
@@ -60,6 +64,8 @@ describe("Accessibility settings", () => {
     expect(s.reducedMotion).toBe(false);
     expect(s.highContrast).toBe(false);
     expect(s.guideArrows).toBe(true);
+    expect(s.musicEnabled).toBe(true);
+    expect(s.musicVolume).toBe(0.42);
   });
 
   it("returns defaults when stored JSON is corrupted", () => {
@@ -70,6 +76,8 @@ describe("Accessibility settings", () => {
       reducedMotion: false,
       highContrast: false,
       guideArrows: true,
+      musicEnabled: true,
+      musicVolume: 0.42,
     });
   });
 
