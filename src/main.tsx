@@ -11,8 +11,16 @@ import {
   clearStaleRecoverGuard,
   isStaleChunkError,
 } from '@/lib/hardRecover'
+import {
+  bootstrapSre,
+  reportReactError,
+  shouldSkipServiceWorker,
+  recordSreEvent,
+} from '@/sre'
 
 import "./main.css"
+
+bootstrapSre()
 
 // Successful boot after a ?fresh= recovery — drop the guard so future deploys can recover again.
 try {
@@ -57,7 +65,8 @@ if (import.meta.env.PROD) {
 
 // Production (incl. GitHub Pages): register SW under BASE_URL so /Capital/ works.
 // On activate / controller change, reload once so stale Vite chunks never stick.
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
+// Kill switch VITE_KILL_SW / capital_kill_serviceWorker skips registration during incidents.
+if (import.meta.env.PROD && "serviceWorker" in navigator && !shouldSkipServiceWorker()) {
   let reloading = false;
   const reloadOnce = () => {
     if (reloading) return;
@@ -125,6 +134,7 @@ if (!rootElement) {
           onError={(error, info) => {
             console.error('[ErrorBoundary] Caught error:', error);
             console.error('[ErrorBoundary] Component stack:', info.componentStack);
+            reportReactError(error, info.componentStack ?? undefined);
           }}
         >
           <InputProvider>
@@ -136,6 +146,14 @@ if (!rootElement) {
     }
   } catch (error) {
     console.error('[ERROR] Failed to render App:', error);
+    recordSreEvent({
+      signal: "errors",
+      name: "react.mount_failed",
+      severity: "critical",
+      tags: {
+        message: error instanceof Error ? error.message.slice(0, 200) : String(error).slice(0, 200),
+      },
+    });
     rootElement.innerHTML = `<h1 style="color: red; text-align: center; margin-top: 50px;">Error: ${error}</h1>`;
   }
 }

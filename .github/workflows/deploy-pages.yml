@@ -15,7 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  quality:
+    uses: ./.github/workflows/qa.yml
+
   build:
+    needs: quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,12 +34,19 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build for GitHub Pages
+      - name: Stamp health + build for GitHub Pages
         run: npm run build
         env:
           GITHUB_PAGES: "true"
           # Ensures Vite base matches https://levizigza.github.io/Capital/
           GITHUB_REPOSITORY: ${{ github.repository }}
+          VITE_BUILD_ID: ${{ github.sha }}
+          GITHUB_SHA: ${{ github.sha }}
+
+      - name: Verify health manifest
+        run: |
+          test -f dist/health.json
+          node -e "const h=require('./dist/health.json'); if(h.status!=='ok') process.exit(1); console.log('health ok', h.buildId)"
 
       - name: SPA fallback (404 → index)
         run: cp dist/index.html dist/404.html

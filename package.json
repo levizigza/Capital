@@ -9,7 +9,9 @@
         "kill": "fuser -k 5000/tcp",
         "build": "tsc -b --noCheck && vite build",
         "lint": "eslint .",
+        "typecheck": "tsc -b --noCheck",
         "test": "vitest run",
+        "sre:health": "node scripts/write-health.mjs",
         "test:e2e": "playwright test",
         "test:e2e:smoke": "playwright test e2e/islands-smoke.spec.ts",
         "test:qa": "vitest run src/qa",
@@ -20,7 +22,7 @@
         "assets:check": "npm run assets:validate && npm run assets:export-credits",
         "pixel:sample": "node scripts/generate-sample-npc-sprites.mjs",
         "pixel:pack": "node scripts/pack-pixel-atlas.mjs",
-        "prebuild": "npm run assets:check",
+        "prebuild": "npm run assets:check && npm run sre:health",
         "optimize": "vite optimize",
         "preview": "vite preview"
     },

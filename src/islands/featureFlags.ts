@@ -6,3 +6,11 @@ export const ISLANDS_ENABLED = import.meta.env.VITE_ISLANDS !== "0";
 // instead of the legacy mode-selection screen. Set VITE_DEFAULT_MODE to
 // "select" to restore the old chooser.
 export const ISLANDS_DEFAULT = ISLANDS_ENABLED && import.meta.env.VITE_DEFAULT_MODE !== "select";
+
+/** SRE kill switches — see docs/sre/runbook.md */
+export {
+  isKilled,
+  setKillSwitch,
+  allKillSwitchStates,
+  type KillSwitchId,
+} from "@/sre/flags";

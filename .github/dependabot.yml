@@ -5,7 +5,13 @@ updates:
     schedule:
       interval: "daily"
 
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
       interval: "weekly"
+

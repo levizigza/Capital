@@ -28,6 +28,7 @@ import { GuideProjector } from "../views/GuideWayfinder";
 import type { GuideProjection } from "../views/GuideWayfinder";
 import type { NpcEmote } from "../story/dialogueActionSync";
 import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
+import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
 
 export type HarborHotspot = {
   id: string;
@@ -662,7 +663,10 @@ export function WalkableHarborView({
     typeof navigator !== "undefined" &&
     typeof (navigator as Navigator & { deviceMemory?: number }).deviceMemory === "number" &&
     ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
-  const perfSoft = reduced || lowMem;
+  /** SRE: error-budget burn or kill switch forces soft/2D path. */
+  const kill3d = isKilled("harbor3d");
+  const budgetDegrade = shouldDegradeForBudget();
+  const perfSoft = reduced || lowMem || budgetDegrade;
 
   const hour = currentHarborHour();
   const lives = useMemo(() => buildHarborNpcLives(), []);
@@ -730,6 +734,37 @@ export function WalkableHarborView({
     }, 8000);
     return () => window.clearTimeout(t);
   }, [ready]);
+
+  useEffect(() => {
+    if (ready) reportHarborReady();
+  }, [ready]);
+
+  useEffect(() => {
+    if (kill3d) setReady(true);
+  }, [kill3d]);
+
+  if (kill3d) {
+    return (
+      <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-b from-[#7dd3fc] to-[#bae6fd] px-6 text-center">
+        <p className="text-lg font-bold text-[#16283b]">Harbor Haven (safe mode)</p>
+        <p className="max-w-md text-sm text-[#16283b]/80">
+          3D Harbor is temporarily disabled for reliability. Use Travel, Settings, or hotspots below when available.
+        </p>
+        <div className="flex max-w-lg flex-wrap justify-center gap-2">
+          {hotspots.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className="rounded-lg bg-white/80 px-3 py-2 text-sm font-semibold text-[#16283b] shadow"
+              onClick={() => onHotspot(h.id)}
+            >
+              {h.icon} {h.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full w-full overflow-hidden">

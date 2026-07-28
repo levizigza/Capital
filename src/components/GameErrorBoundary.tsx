@@ -1,8 +1,8 @@
 import { Component, ReactNode } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Warning, ArrowLeft, ArrowClockwise } from '@phosphor-icons/react'
+import { reportReactError } from '@/sre'
 
 interface Props {
   children: ReactNode
@@ -13,7 +13,7 @@ interface Props {
 interface State {
   hasError: boolean
   error: Error | null
-  errorInfo: any
+  errorInfo: { componentStack?: string } | null
 }
 
 export class GameErrorBoundary extends Component<Props, State> {
@@ -26,8 +26,9 @@ export class GameErrorBoundary extends Component<Props, State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: { componentStack?: string }) {
     console.error('Game Error Boundary caught error:', error, errorInfo)
+    reportReactError(error, errorInfo?.componentStack)
     this.setState({
       error,
       errorInfo

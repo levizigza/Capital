@@ -68,6 +68,7 @@ import {
   roomPinnedLevels,
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
+import { isKilled } from "@/sre";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -295,7 +296,9 @@ export function HomeHubView({
       { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -8] },
       { id: "capsule", label: "Capsule Stall", icon: "📦", position: [4.2, 0, -7.2] },
       { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
-      { id: "gallery", label: "Studio Gallery", icon: "🖼️", position: [5.4, 0, -3.2] },
+      ...(!isKilled("studioGallery")
+        ? [{ id: "gallery", label: "Studio Gallery", icon: "🖼️", position: [5.4, 0, -3.2] } satisfies HarborHotspot]
+        : []),
       { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
       { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
       {
@@ -304,14 +307,18 @@ export function HomeHubView({
         icon: "☀️",
         position: [-5.2, 0, -2.2],
       },
-      {
-        id: "family",
-        label: "Family Room",
-        icon: "🏠",
-        position: [-7.2, 0, -0.5],
-      },
+      ...(!isKilled("familyRooms")
+        ? [
+            {
+              id: "family",
+              label: "Family Room",
+              icon: "🏠",
+              position: [-7.2, 0, -0.5],
+            } satisfies HarborHotspot,
+          ]
+        : []),
       // Always on the plaza so Coin Bag can point here during the optional practice beat
-      ...(onPlayHarborBoard
+      ...(onPlayHarborBoard && !isKilled("partyBoard")
         ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
         : []),
       ...(plaques.length > 0

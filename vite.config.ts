@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, Plugin, PluginOption } from "vite";
+import { execSync } from "node:child_process";
 
 import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
@@ -11,6 +12,21 @@ import { localSparkMockPlugin } from "./vite-local-spark-mock";
 
 const projectRoot =
   process.env.PROJECT_ROOT || dirname(fileURLToPath(import.meta.url));
+
+function resolveBuildId(): string {
+  if (process.env.VITE_BUILD_ID) return process.env.VITE_BUILD_ID;
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 12);
+  try {
+    return execSync("git rev-parse --short HEAD", {
+      cwd: projectRoot,
+      encoding: "utf8",
+    }).trim();
+  } catch {
+    return `dev-${Date.now().toString(36)}`;
+  }
+}
+
+const buildId = resolveBuildId();
 
 /** GitHub Pages project site: https://levizigza.github.io/Capital/ */
 const pagesRepo =
@@ -54,6 +70,10 @@ function localDevOverrides(): Plugin {
 /// <reference types="vitest/config" />
 export default defineConfig({
   base: pagesBase,
+
+  define: {
+    __CAPITAL_BUILD_ID__: JSON.stringify(buildId),
+  },
 
   test: {
     environment: "node",

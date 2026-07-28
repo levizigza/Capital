@@ -14,6 +14,18 @@ export function isStaleChunkError(message: string | undefined | null): boolean {
 
 export async function hardRecoverFromStaleBuild(reason = "stale-chunk"): Promise<void> {
   try {
+    const { recordSreEvent } = await import("@/sre");
+    recordSreEvent({
+      signal: "errors",
+      name: "recover.stale_build",
+      severity: "warn",
+      tags: { reason },
+    });
+  } catch {
+    /* ignore */
+  }
+
+  try {
     if ("serviceWorker" in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
       await Promise.all(regs.map((r) => r.unregister()));

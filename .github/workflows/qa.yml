@@ -5,13 +5,17 @@ on:
     paths:
       - "src/**"
       - "e2e/**"
-      - "scripts/validate-content.mjs"
+      - "scripts/**"
+      - "docs/sre/**"
+      - "public/health.json"
       - "playwright.config.ts"
       - "vite.config.ts"
       - "package.json"
       - "package-lock.json"
+      - ".github/workflows/**"
   push:
     branches: [main, master]
+  workflow_call:
 
 jobs:
   unit:
@@ -35,6 +39,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run content:validate
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      # Scoped gate: expand to full tree as legacy lint debt is cleared (see docs/sre).
+      - run: npx eslint src/sre --max-warnings 0
 
   e2e-smoke:
     runs-on: ubuntu-latest
