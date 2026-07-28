@@ -61,14 +61,20 @@ export function tickWorldDirector(signals: DirectorSignals): DirectorDecision {
   else if (signals.idleSeconds > 20) adaptiveFocus = "explore";
   worldBlackboard.set(WB.adaptiveFocus, adaptiveFocus);
 
-  // 3) Atmosphere intent — calm static worlds stay put; stress prefers clearer day light
+  // 3) Atmosphere — cashflow stains the sky; stress prefers readable day light
   let skyIntent: SkyMode | null = null;
   if (signals.ecosystemMotion === "static") {
     skyIntent = null; // respect authored still skies (void ruins, archives)
   } else if (signals.failPressure >= 2) {
     skyIntent = "day"; // readability when struggling
-  } else if (signals.idleSeconds > 30 && signals.ecosystemMotion === "mixed") {
-    skyIntent = "sunset"; // gentle linger mood
+  } else if (signals.cashflow >= 40) {
+    skyIntent = "day";
+  } else if (signals.cashflow >= 15) {
+    skyIntent = "sunset";
+  } else if (signals.cashflow >= 0) {
+    skyIntent = "sunset";
+  } else {
+    skyIntent = "night";
   }
   setSkyIntent(skyIntent);
 

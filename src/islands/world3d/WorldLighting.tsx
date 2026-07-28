@@ -23,7 +23,7 @@ function resolveSkyMode(look: EraLook3D): SkyMode {
   if (look.skyMode === "void" || look.skyMode === "stars") return look.skyMode;
   const intent = getSkyIntent();
   // Soft director override only for day/sunset/night when world allows it
-  if (intent === "day" || intent === "sunset") {
+  if (intent === "day" || intent === "sunset" || intent === "night") {
     if (!look.skyMode || look.skyMode === "day" || look.skyMode === "sunset" || look.skyMode === "night") {
       return intent;
     }

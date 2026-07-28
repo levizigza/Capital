@@ -61,6 +61,10 @@ type Props = {
   onGuideProject?: (p: GuideProjection | null) => void;
   /** Freeze WASD / Enter / M while Talk Battle owns the screen */
   inputFrozen?: boolean;
+  /** Cashflow weather — soft fog density */
+  weatherFog?: { near: number; far: number } | null;
+  /** Per-NPC Talk Battle memory for ambient greetings */
+  npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -338,6 +342,7 @@ function PlazaScene({
   nearNpcId,
   playerPos,
   npcBodies,
+  look,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -359,6 +364,7 @@ function PlazaScene({
   nearNpcId?: string | null;
   playerPos: MutableRefObject<THREE.Vector3>;
   npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
+  look: ReturnType<typeof getEraLook3D>;
 }) {
   // Keep vegetation on the outer ring only — never under the title / fountain.
   const accentProps = useMemo(() => {
@@ -396,13 +402,13 @@ function PlazaScene({
 
   return (
     <>
-      <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={512} />
-      <OceanWater color={LOOK.sea} shading={LOOK.shading} size={400} calm />
+      <WorldLighting look={look} contactShadows={false} shadowMapSize={512} />
+      <OceanWater color={look.sea} shading={look.shading} size={400} calm />
 
       {/* Island land mass + cliff thickness */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]} receiveShadow>
         <circleGeometry args={[18, 64]} />
-        <meshStandardMaterial color={LOOK.land} roughness={0.92} flatShading />
+        <meshStandardMaterial color={look.land} roughness={0.92} flatShading />
       </mesh>
       <mesh position={[0, -0.7, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[17.2, 18.8, 1.3, 48]} />
@@ -643,33 +649,49 @@ export function WalkableHarborView({
   guideArrows = true,
   onGuideProject,
   inputFrozen = false,
+  weatherFog = null,
+  npcMemory = null,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  /** Mid-phone budget: also soften when deviceMemory is low */
+  const lowMem =
+    typeof navigator !== "undefined" &&
+    typeof (navigator as Navigator & { deviceMemory?: number }).deviceMemory === "number" &&
+    ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
+  const perfSoft = reduced || lowMem;
 
   const hour = currentHarborHour();
   const lives = useMemo(() => buildHarborNpcLives(), []);
+  const look = useMemo(() => {
+    const base = { ...LOOK };
+    if (weatherFog) {
+      base.fogNear = weatherFog.near;
+      base.fogFar = weatherFog.far;
+    }
+    return base;
+  }, [weatherFog]);
   const locals = useMemo(
     () =>
       lives.map((life) => {
-        const pose = harborNpcPose(life, hour);
+        const pose = harborNpcPose(life, hour, npcMemory?.[life.mascotId]);
         const mascot = getMascot(life.mascotId);
-        const look = varyMascot(life.mascotId, `harbor:${life.mascotId}:${hour}`);
+        const lookChar = varyMascot(life.mascotId, `harbor:${life.mascotId}:${hour}`);
         return {
           mascotId: life.mascotId,
           mascot,
-          look,
-          coat: colorHex(look.color),
+          look: lookChar,
+          coat: colorHex(lookChar.color),
           form: mascot.form as MoneyForm,
           glyph: mascot.glyph,
           line: pose.line,
           name: pose.name,
         };
       }),
-    [lives, hour],
+    [lives, hour, npcMemory],
   );
   const npcBodies = useRef(new Map<string, { position: Vec3; line: string; name: string }>());
   const playerPos = useRef(new THREE.Vector3(0, 0, 3));
@@ -717,11 +739,11 @@ export function WalkableHarborView({
         </div>
       ) : null}
       <Canvas
-        shadows
-        dpr={reduced ? [1, 1] : [1, 1.25]}
+        shadows={!perfSoft}
+        dpr={perfSoft ? [1, 1] : [1, 1.25]}
         camera={{ position: [0, 5, 14], fov: 50 }}
         className="absolute inset-0 z-[2]"
-        gl={{ antialias: !reduced, alpha: false, powerPreference: "high-performance" }}
+        gl={{ antialias: !perfSoft, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
@@ -747,6 +769,7 @@ export function WalkableHarborView({
             nearNpcId={nearNpcId}
             playerPos={playerPos}
             npcBodies={npcBodies}
+            look={look}
           />
           <Player
             character={character}

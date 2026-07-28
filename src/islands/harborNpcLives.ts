@@ -92,12 +92,22 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
 export function harborNpcPose(
   life: HarborNpcLife,
   hour: HarborHour = currentHarborHour(),
+  memory?: { talks?: number; lastChoiceIds?: string[] } | null,
 ): { position: [number, number, number]; yaw: number; line: string; name: string } {
   const mascot = getMascot(life.mascotId);
+  let line = life.lines[hour];
+  if (memory && (memory.talks ?? 0) >= 1) {
+    const last = memory.lastChoiceIds?.at(-1);
+    if (last) {
+      line = `${mascot.name}: I remember you chose “${last}”. ${line.includes(": ") ? line.split(": ").slice(1).join(": ") : line}`;
+    } else if ((memory.talks ?? 0) >= 2) {
+      line = `${mascot.name}: Good to see you again (${memory.talks} chats). ${line.includes(": ") ? line.split(": ").slice(1).join(": ") : line}`;
+    }
+  }
   return {
     position: life.schedule[hour],
     yaw: life.yaw + (hour === "evening" && life.motion === "dynamic" ? 0.4 : 0),
-    line: life.lines[hour],
+    line,
     name: mascot.name,
   };
 }

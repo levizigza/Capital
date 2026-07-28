@@ -57,6 +57,17 @@ import {
   bumpPlays,
 } from "../studio/communityStorage";
 import type { VibeLevel } from "../studio/levelSchema";
+import {
+  createFamilyRoom,
+  getActiveFamilyRoom,
+  importFamilyRoomJson,
+  joinFamilyRoom,
+  leaveFamilyRoom,
+  exportFamilyRoomJson,
+  pinLevelToRoom,
+  roomPinnedLevels,
+} from "../familyRoom";
+import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -69,6 +80,7 @@ type HubModal =
   | "memory"
   | "ritual"
   | "gallery"
+  | "family"
   | null;
 
 export type HarborPurchase =
@@ -292,6 +304,12 @@ export function HomeHubView({
         icon: "☀️",
         position: [-5.2, 0, -2.2],
       },
+      {
+        id: "family",
+        label: "Family Room",
+        icon: "🏠",
+        position: [-7.2, 0, -0.5],
+      },
       // Always on the plaza so Coin Bag can point here during the optional practice beat
       ...(onPlayHarborBoard
         ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
@@ -362,10 +380,17 @@ export function HomeHubView({
   };
 
   const [galleryLevels, setGalleryLevels] = useState<VibeLevel[]>([]);
+  const [familyRoom, setFamilyRoom] = useState(() => getActiveFamilyRoom());
+  const [familyName, setFamilyName] = useState("");
+  const [familyCode, setFamilyCode] = useState("");
+  const [familyImport, setFamilyImport] = useState("");
 
   useEffect(() => {
     if (hubModal === "gallery") {
       setGalleryLevels(loadVisibleCommunityLevels());
+    }
+    if (hubModal === "family") {
+      setFamilyRoom(getActiveFamilyRoom());
     }
   }, [hubModal]);
 
@@ -391,6 +416,8 @@ export function HomeHubView({
       setHubModal("gallery");
     } else if (id === "ritual") {
       setHubModal("ritual");
+    } else if (id === "family") {
+      setHubModal("family");
     } else if (id === "travel") {
       onHubGuidedEvent("near_dock");
       onHubGuidedEvent("opened_map");
@@ -511,6 +538,8 @@ export function HomeHubView({
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
                   inputFrozen={talkOpen}
+                  weatherFog={weatherFogParams(harborWeatherMood(save))}
+                  npcMemory={save.npcMemory ?? null}
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
@@ -892,6 +921,7 @@ export function HomeHubView({
                       className="h-8 px-2 text-xs"
                       onClick={() => {
                         bumpPlays(lvl.id);
+                        pinLevelToRoom(lvl.id);
                         onStudioGalleryOpened?.();
                         setHubModal(null);
                         onOpenStudio();
@@ -928,6 +958,144 @@ export function HomeHubView({
             }}
           >
             Open Vibe Studio →
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "family"}
+        onClose={() => setHubModal(null)}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Family Room"
+      >
+        <div className="space-y-3 text-left">
+          <p className="text-sm text-muted-foreground text-center">
+            Local household / classroom room — invite code stays on-device. Share JSON to join on another device. Never pay-to-win.
+          </p>
+          {familyRoom ? (
+            <>
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+                <p className="font-bold">{familyRoom.name}</p>
+                <p className="font-mono text-lg tracking-widest">{familyRoom.code}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {familyRoom.members.length} member
+                  {familyRoom.members.length === 1 ? "" : "s"}:{" "}
+                  {familyRoom.members.map((m) => m.name).join(", ")}
+                </p>
+              </div>
+              <ul className="space-y-1 text-sm">
+                {roomPinnedLevels(familyRoom).map((lvl) => (
+                  <li key={lvl.id} className="rounded-lg border px-2 py-1">
+                    {lvl.icon} {lvl.title}
+                  </li>
+                ))}
+              </ul>
+              <GameButton
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  const text = exportFamilyRoomJson(familyRoom);
+                  try {
+                    await navigator.clipboard.writeText(text);
+                    toast.message("Room JSON copied — paste on another device to join");
+                  } catch {
+                    toast.message(text);
+                  }
+                }}
+              >
+                Copy share JSON
+              </GameButton>
+              <GameButton
+                variant="ghost"
+                className="w-full"
+                onClick={() => {
+                  leaveFamilyRoom();
+                  setFamilyRoom(null);
+                  toast.message("Left Family Room");
+                }}
+              >
+                Leave room
+              </GameButton>
+            </>
+          ) : (
+            <>
+              <div className="space-y-2 rounded-xl border px-3 py-2">
+                <p className="text-xs font-bold uppercase text-muted-foreground">Create</p>
+                <input
+                  className="w-full rounded border px-2 py-1 text-sm"
+                  placeholder="Room name"
+                  value={familyName}
+                  onChange={(e) => setFamilyName(e.target.value)}
+                />
+                <GameButton
+                  variant="primary"
+                  className="w-full"
+                  onClick={() => {
+                    const room = createFamilyRoom(familyName || "Family Harbor", voyager.name);
+                    setFamilyRoom(room);
+                    toast.message(`Room ${room.code} created`);
+                  }}
+                >
+                  Create room
+                </GameButton>
+              </div>
+              <div className="space-y-2 rounded-xl border px-3 py-2">
+                <p className="text-xs font-bold uppercase text-muted-foreground">Join with code</p>
+                <input
+                  className="w-full rounded border px-2 py-1 font-mono text-sm uppercase"
+                  placeholder="ABC123"
+                  value={familyCode}
+                  onChange={(e) => setFamilyCode(e.target.value)}
+                />
+                <GameButton
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    const room = joinFamilyRoom(familyCode, voyager.name);
+                    if (!room) {
+                      toast.error("Code not found on this device — import share JSON first");
+                      return;
+                    }
+                    setFamilyRoom(room);
+                    toast.message(`Joined ${room.name}`);
+                  }}
+                >
+                  Join
+                </GameButton>
+              </div>
+              <div className="space-y-2 rounded-xl border px-3 py-2">
+                <p className="text-xs font-bold uppercase text-muted-foreground">Import share JSON</p>
+                <textarea
+                  className="h-20 w-full rounded border px-2 py-1 font-mono text-xs"
+                  placeholder='{"code":"..."}'
+                  value={familyImport}
+                  onChange={(e) => setFamilyImport(e.target.value)}
+                />
+                <GameButton
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    try {
+                      const room = importFamilyRoomJson(familyImport);
+                      setFamilyRoom(room);
+                      toast.message(`Imported ${room.code}`);
+                    } catch {
+                      toast.error("Invalid room JSON");
+                    }
+                  }}
+                >
+                  Import
+                </GameButton>
+              </div>
+            </>
+          )}
+          <p className="text-center text-xs text-muted-foreground">
+            {weatherCoachLine(harborWeatherMood(save))}
+          </p>
+          <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
+            Back to plaza
           </GameButton>
         </div>
       </GameModal>

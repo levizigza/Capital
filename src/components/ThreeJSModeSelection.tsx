@@ -353,6 +353,9 @@ export default function ThreeJSModeSelection({ onSelectMode }: ThreeJSModeSelect
                     🌱
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Creative Mode</h2>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-200/90 mb-2">
+                    Legacy archive — Harbor Haven is the main product
+                  </p>
                   <p className="text-base sm:text-lg text-green-300 font-semibold mb-3">Finance Garden</p>
                   <p className="text-sm sm:text-base text-gray-300">
                     Explore a 3D world, grow your wealth, battle bosses, and watch your financial garden bloom!
@@ -385,6 +388,9 @@ export default function ThreeJSModeSelection({ onSelectMode }: ThreeJSModeSelect
                     📊
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">Structured Mode</h2>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-amber-200/90 mb-2">
+                    Legacy archive — use ?legacy=1 only for old hubs
+                  </p>
                   <p className="text-base sm:text-lg text-blue-300 font-semibold mb-3">Analytics Dashboard</p>
                   <p className="text-sm sm:text-base text-gray-300">
                     Track progress with charts, complete quests, and level up your financial skills!

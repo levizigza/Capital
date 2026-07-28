@@ -18,6 +18,10 @@ Each island **must** include before ship:
 | `coincraft_cove` | [coincraft-cove/](./coincraft-cove/) | `src/islands/content/coincraft-cove.islands.json` |
 | `paycheck_peninsula` | [paycheck-peninsula/](./paycheck-peninsula/) | `src/islands/content/paycheck-peninsula.islands.json` |
 | `credit_kingdom` | [credit-kingdom/](./credit-kingdom/) | `src/islands/content/credit-kingdom.islands.json` |
+| `harbor_haven` | [harbor-haven/](./harbor-haven/) | `src/islands/content/harbor-haven.islands.json` |
+| Outer chapters | matching `docs/islands/<slug>/` | live `*.islands.json` packs (story-circle required) |
+
+**Gate:** `src/qa/contentValidation.test.ts` fails if a live island pack lacks `story-circle.md`.
 
 ## Quick start (new island)
 

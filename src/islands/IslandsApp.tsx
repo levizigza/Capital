@@ -216,9 +216,20 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }>({ open: false });
   /** After closing Talk Battle, ignore the same NPC briefly so auto-talk doesn't loop */
   const talkCooldownRef = useRef<{ npcId: string; until: number } | null>(null);
+  /** Last Talk Battle choice id — flushed into npcMemory on finishTalk */
+  const lastTalkChoiceRef = useRef<string | null>(null);
 
   const [hubModal, setHubModal] = useState<
-    "outfitter" | "capsule" | "settings" | "pavilion" | "market" | "memory" | "ritual" | "gallery" | null
+    | "outfitter"
+    | "capsule"
+    | "settings"
+    | "pavilion"
+    | "market"
+    | "memory"
+    | "ritual"
+    | "gallery"
+    | "family"
+    | null
   >(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
@@ -1246,7 +1257,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         !save.harborHomecoming.piggyTalked &&
         (save.harborHomecoming.pending || save.harborHomecoming.celebrated);
       updateSave((prev) => {
-        let next = recordNpcTalk(prev, npcId);
+        let next = recordNpcTalk(prev, npcId, lastTalkChoiceRef.current ?? undefined);
+        lastTalkChoiceRef.current = null;
         if (welcomedPiggy) {
           next = {
             ...next,
@@ -1261,6 +1273,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         next = bumpWeeklyTalk(next);
         return next;
       });
+    } else {
+      lastTalkChoiceRef.current = null;
     }
     setDialogueState({ open: false });
     void trackScreenEnter(
@@ -1284,6 +1298,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!dialogueNode || !dialogueGraph) return;
       const choice = dialogueNode.choices?.find((c) => c.id === choiceId);
       if (!choice) return;
+
+      lastTalkChoiceRef.current = choiceId;
 
       await analytics.track("dialogue_choice", {
         islandId: activeIsland?.id ?? HUB_ISLAND_ID,

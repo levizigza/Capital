@@ -5,14 +5,15 @@ import type { UserProfile } from "@/App";
 import type { IslandSaveV1 } from "../types";
 import { PARTY_ITEMS, MAX_PARTY_ITEMS } from "../partyItems";
 import {
-  CAPSULE_OFFERS,
+  capsuleOffersForSave,
   canBuyCapsule,
   capsuleLabel,
   hubPartyItems,
   isRoomUnlocked,
   nextPurchasableCarpet,
-  PLAZA_PASS_PRICE,
+  plazaPassPriceForSave,
 } from "../harborShop";
+import { weatherCoachLine, harborWeatherMood } from "../harborWeather";
 import { CapsuleStudio3D } from "./CapsuleStudio3D";
 
 export type CapsulePurchase =
@@ -42,6 +43,10 @@ export function CapsuleStudioOverlay({
   showPeekDone,
   onPeekDone,
 }: Props) {
+  const offers = capsuleOffersForSave(save);
+  const plazaPassPrice = plazaPassPriceForSave(save);
+  const weatherLine = weatherCoachLine(harborWeatherMood(save));
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -84,6 +89,7 @@ export function CapsuleStudioOverlay({
               Capsules: {slotsUsed}/{MAX_PARTY_ITEMS}
             </span>
           </div>
+          <p className="mt-1 text-[11px] font-semibold text-sky-100/90">{weatherLine}</p>
         </div>
         <button
           type="button"
@@ -108,7 +114,7 @@ export function CapsuleStudioOverlay({
                   : `${MAX_PARTY_ITEMS - slotsUsed} slot${MAX_PARTY_ITEMS - slotsUsed === 1 ? "" : "s"} free`}
               </div>
             </div>
-            {CAPSULE_OFFERS.map((offer) => {
+            {offers.map((offer) => {
               const def = PARTY_ITEMS[offer.itemId];
               const check = canBuyCapsule(save, userProfile.totalCoins, offer.itemId, offer.price);
               const owned = ownedItems.includes(offer.itemId);
@@ -210,32 +216,32 @@ export function CapsuleStudioOverlay({
                   <div className="text-[11px] text-muted-foreground">
                     Opens a market stall on the plaza for exact-change practice.
                   </div>
-                  {userProfile.totalCoins < PLAZA_PASS_PRICE ? (
+                  {userProfile.totalCoins < plazaPassPrice ? (
                     <div className="text-[11px] font-semibold text-amber-800">
-                      Need 🪙 {PLAZA_PASS_PRICE} (you have {userProfile.totalCoins})
+                      Need 🪙 {plazaPassPrice} (you have {userProfile.totalCoins})
                     </div>
                   ) : null}
                 </div>
                 <GameButton
                   size="sm"
                   variant="primary"
-                  disabled={userProfile.totalCoins < PLAZA_PASS_PRICE}
+                  disabled={userProfile.totalCoins < plazaPassPrice}
                   title={
-                    userProfile.totalCoins < PLAZA_PASS_PRICE
-                      ? `Need 🪙 ${PLAZA_PASS_PRICE}`
+                    userProfile.totalCoins < plazaPassPrice
+                      ? `Need 🪙 ${plazaPassPrice}`
                       : undefined
                   }
                   onClick={() => {
                     const ok = onHarborPurchase({
                       kind: "plaza_pass",
                       room: "market",
-                      price: PLAZA_PASS_PRICE,
+                      price: plazaPassPrice,
                     });
                     if (ok) toast.success("Pasaran Lane unlocked on the plaza!");
-                    else toast.error(`Need 🪙 ${PLAZA_PASS_PRICE}`);
+                    else toast.error(`Need 🪙 ${plazaPassPrice}`);
                   }}
                 >
-                  🪙 {PLAZA_PASS_PRICE}
+                  🪙 {plazaPassPrice}
                 </GameButton>
               </div>
             )}

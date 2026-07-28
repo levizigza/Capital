@@ -9,6 +9,7 @@ import { PARTY_ITEMS, MAX_PARTY_ITEMS } from "./partyItems";
 import { BOAT_TIERS, getBoatTier, type BoatTier } from "./boats";
 import { hasHarborFreedom, type PlazaRoomId } from "./progressGates";
 import { HUB_ISLAND_ID } from "./worldMapLayout";
+import { scaleHarborPrice } from "./harborWeather";
 
 export type HarborShopState = {
   /** Highest carpet tier id unlocked by purchase (not just coin thresholds). */
@@ -80,8 +81,29 @@ export function nextPurchasableCarpet(
   const idx = BOAT_TIERS.findIndex((t) => t.id === current.id);
   const next = BOAT_TIERS[idx + 1];
   if (!next) return null;
-  const price = Math.max(50, Math.round(next.minCoins * CARPET_POLISH_MARKUP));
+  const price = scaleHarborPrice(
+    Math.max(50, Math.round(next.minCoins * CARPET_POLISH_MARKUP)),
+    save,
+  );
   return { tier: next, price };
+}
+
+/** Capsule offers with cashflow-reactive prices. */
+export function capsuleOffersForSave(save: IslandSaveV1): CapsuleOffer[] {
+  return CAPSULE_OFFERS.map((o) => ({
+    ...o,
+    price: scaleHarborPrice(o.price, save),
+  }));
+}
+
+export function plazaPassPriceForSave(save: IslandSaveV1): number {
+  return scaleHarborPrice(PLAZA_PASS_PRICE, save);
+}
+
+export function companionPriceForSave(id: string, save: IslandSaveV1): number {
+  const base = companionPrice(id);
+  if (!Number.isFinite(base) || base <= 0) return base;
+  return scaleHarborPrice(base, save);
 }
 
 export function hubPartyItems(save: IslandSaveV1): PartyItemId[] {
