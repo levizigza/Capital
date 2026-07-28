@@ -41,6 +41,16 @@ import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { getGenreWorld } from "./genreWorlds";
 import { harborScarPlaques, stanceGreetingHint, recordNpcTalk } from "./worldMemory";
+import {
+  syncHarborRitual,
+  markRitualGreeted,
+  markRumorSeen,
+  markPaydayDone,
+  markRewardClaimed,
+  bumpWeeklyTalk,
+  bumpWeeklyStudio,
+  DAILY_RITUAL_REWARD_COINS,
+} from "./harborRitual";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -107,7 +117,7 @@ import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
-import { ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -208,7 +218,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const talkCooldownRef = useRef<{ npcId: string; until: number } | null>(null);
 
   const [hubModal, setHubModal] = useState<
-    "outfitter" | "capsule" | "settings" | "pavilion" | "market" | null
+    "outfitter" | "capsule" | "settings" | "pavilion" | "market" | "memory" | "ritual" | "gallery" | null
   >(null);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
@@ -590,6 +600,70 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     },
     [activeIslandId, awardPartyStar, setUserProfile, updateSave]
   );
+
+  const onSyncHarborRitual = useCallback(() => {
+    updateSave((prev) => syncHarborRitual(prev));
+  }, [updateSave]);
+
+  const onClaimRitualPayday = useCallback(() => {
+    let applied: number | null = null;
+    updateSave((prev) => {
+      if (prev.harborRitual?.today.paydayDone) return prev;
+      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
+        trackHarborEscape: true,
+      });
+      applied = coins;
+      return markPaydayDone(
+        withHarborFreedomRewards({
+          ...prev,
+          voyagerLedger: ledger,
+        }),
+      );
+    });
+    if (applied !== null) {
+      setUserProfile((prev) => ({
+        ...prev,
+        totalCoins: Math.max(0, prev.totalCoins + applied!),
+      }));
+      toast.message(
+        applied >= 0 ? `Pay Day +${applied} coins` : `Pay Day shortfall ${applied}`,
+        { description: "Ledger cashflow hit your pouch." },
+      );
+    }
+  }, [setUserProfile, updateSave]);
+
+  const onClaimRitualReward = useCallback(() => {
+    let claimed = false;
+    updateSave((prev) => {
+      if (prev.harborRitual?.today.rewardClaimed) return prev;
+      if (!prev.harborRitual?.today.paydayDone || !prev.harborRitual?.today.rumorSeen) {
+        return prev;
+      }
+      claimed = true;
+      return markRewardClaimed(prev);
+    });
+    if (claimed) {
+      setUserProfile((prev) => ({
+        ...prev,
+        totalCoins: prev.totalCoins + DAILY_RITUAL_REWARD_COINS,
+      }));
+      toast.message(`+${DAILY_RITUAL_REWARD_COINS} ritual coins`, {
+        description: "Tiny thank-you for showing up today — never pay-to-win.",
+      });
+    }
+  }, [setUserProfile, updateSave]);
+
+  const onMarkRitualRumor = useCallback(() => {
+    updateSave((prev) => markRumorSeen(prev));
+  }, [updateSave]);
+
+  const onMarkRitualGreeted = useCallback(() => {
+    updateSave((prev) => markRitualGreeted(prev));
+  }, [updateSave]);
+
+  const onStudioGalleryOpened = useCallback(() => {
+    updateSave((prev) => bumpWeeklyStudio(prev));
+  }, [updateSave]);
 
   const startVoyage = useCallback((targetIslandId: string, returnView: VoyageReturn) => {
     setVoyageTargetId(targetIslandId);
@@ -1184,6 +1258,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             },
           };
         }
+        next = bumpWeeklyTalk(next);
         return next;
       });
     }
@@ -1771,6 +1846,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               }));
             }}
+            onSyncHarborRitual={onSyncHarborRitual}
+            onClaimRitualPayday={onClaimRitualPayday}
+            onClaimRitualReward={onClaimRitualReward}
+            onMarkRitualRumor={onMarkRitualRumor}
+            onMarkRitualGreeted={onMarkRitualGreeted}
+            onStudioGalleryOpened={onStudioGalleryOpened}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}

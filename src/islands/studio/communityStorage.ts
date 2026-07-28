@@ -28,6 +28,31 @@ export function deleteCommunityLevel(id: string): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(levels));
 }
 
+const HIDDEN_KEY = "financequest_community_hidden_v1";
+
+export function loadHiddenCommunityIds(): string[] {
+  try {
+    const raw = localStorage.getItem(HIDDEN_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Soft-hide a level locally (report/hide — no server). */
+export function hideCommunityLevel(id: string): void {
+  const ids = new Set(loadHiddenCommunityIds());
+  ids.add(id);
+  localStorage.setItem(HIDDEN_KEY, JSON.stringify([...ids]));
+}
+
+export function loadVisibleCommunityLevels(): VibeLevel[] {
+  const hidden = new Set(loadHiddenCommunityIds());
+  return loadCommunityLevels().filter((l) => !hidden.has(l.id));
+}
+
 export function bumpPlays(id: string): void {
   const levels = loadCommunityLevels();
   const idx = levels.findIndex((l) => l.id === id);

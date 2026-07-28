@@ -274,6 +274,8 @@ export type IslandSaveV1 = {
   stance?: import("./worldMemory").VoyagerStance;
   /** Per-NPC talk memory for greeting branches */
   npcMemory?: Record<string, import("./worldMemory").NpcMemoryEntry>;
+  /** Daily Harbor ritual + weekly archipelago challenge */
+  harborRitual?: import("./harborRitual").HarborRitualState;
   /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.

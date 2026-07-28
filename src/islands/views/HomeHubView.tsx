@@ -45,10 +45,31 @@ import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange } from "../chapterLoop";
 import { harborScarPlaques, stanceGreetingHint } from "../worldMemory";
+import {
+  dailyRumorText,
+  ritualNeedsAttention,
+  weeklyMeta,
+  weeklyShareText,
+} from "../harborRitual";
+import {
+  loadVisibleCommunityLevels,
+  hideCommunityLevel,
+  bumpPlays,
+} from "../studio/communityStorage";
+import type { VibeLevel } from "../studio/levelSchema";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
-type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | "market" | "memory" | null;
+type HubModal =
+  | "outfitter"
+  | "capsule"
+  | "settings"
+  | "pavilion"
+  | "market"
+  | "memory"
+  | "ritual"
+  | "gallery"
+  | null;
 
 export type HarborPurchase =
   | { kind: "capsule"; itemId: PartyItemId; price: number }
@@ -90,6 +111,12 @@ export type HomeHubViewProps = {
   onTalkNpc?: (npcId: string) => void;
   /** True while Talk Battle is open — don't re-trigger auto-talk */
   talkOpen?: boolean;
+  onSyncHarborRitual?: () => void;
+  onClaimRitualPayday?: () => void;
+  onClaimRitualReward?: () => void;
+  onMarkRitualRumor?: () => void;
+  onMarkRitualGreeted?: () => void;
+  onStudioGalleryOpened?: () => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -125,6 +152,12 @@ export function HomeHubView({
   onExit,
   onTalkNpc,
   talkOpen = false,
+  onSyncHarborRitual,
+  onClaimRitualPayday,
+  onClaimRitualReward,
+  onMarkRitualRumor,
+  onMarkRitualGreeted,
+  onStudioGalleryOpened,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -196,7 +229,24 @@ export function HomeHubView({
   useEffect(() => {
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
     gameEvents.emit("world.entered", { place: "harbor", ecosystemMotion: "mixed" });
-  }, []);
+    onSyncHarborRitual?.();
+  }, [onSyncHarborRitual]);
+
+  useEffect(() => {
+    if (!save.harborRitual) return;
+    if (save.harborRitual.today.greeted) return;
+    if (hubModal) return;
+    if (save.harborHomecoming?.pending) return;
+    // Defer ritual greet until Castle Grounds intro is done
+    if (guided && !isHubGuidedComplete(guided)) return;
+    setHubModal("ritual");
+  }, [
+    save.harborRitual,
+    save.harborHomecoming?.pending,
+    hubModal,
+    guided,
+    setHubModal,
+  ]);
 
   const structuralBuddy = coinBagHarborTip(guided, {
     nearStoreLabel: nearStore?.label,
@@ -233,8 +283,15 @@ export function HomeHubView({
       { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -8] },
       { id: "capsule", label: "Capsule Stall", icon: "📦", position: [4.2, 0, -7.2] },
       { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
+      { id: "gallery", label: "Studio Gallery", icon: "🖼️", position: [5.4, 0, -3.2] },
       { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
       { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
+      {
+        id: "ritual",
+        label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
+        icon: "☀️",
+        position: [-5.2, 0, -2.2],
+      },
       // Always on the plaza so Coin Bag can point here during the optional practice beat
       ...(onPlayHarborBoard
         ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
@@ -273,7 +330,7 @@ export function HomeHubView({
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
-    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length],
+    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length, save.harborRitual],
   );
 
   const harborGuideLookAt = useMemo(
@@ -304,6 +361,23 @@ export function HomeHubView({
     setHubModal("outfitter");
   };
 
+  const [galleryLevels, setGalleryLevels] = useState<VibeLevel[]>([]);
+
+  useEffect(() => {
+    if (hubModal === "gallery") {
+      setGalleryLevels(loadVisibleCommunityLevels());
+    }
+  }, [hubModal]);
+
+  const weekly = save.harborRitual?.weekly;
+  const weeklyInfo = weekly ? weeklyMeta(weekly.id) : null;
+  const rumor = dailyRumorText(save);
+
+  const closeRitual = () => {
+    onMarkRitualGreeted?.();
+    setHubModal(null);
+  };
+
   const onHarborHotspot = (id: string) => {
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
@@ -311,8 +385,13 @@ export function HomeHubView({
         onHubGuidedEvent("near_outfitter");
       }
       openOutfitter();
-    } else if (id === "studio") onOpenStudio();
-    else if (id === "travel") {
+    }     else if (id === "studio") onOpenStudio();
+    else if (id === "gallery") {
+      onStudioGalleryOpened?.();
+      setHubModal("gallery");
+    } else if (id === "ritual") {
+      setHubModal("ritual");
+    } else if (id === "travel") {
       onHubGuidedEvent("near_dock");
       onHubGuidedEvent("opened_map");
       onOpenTravel();
@@ -680,6 +759,175 @@ export function HomeHubView({
           </ul>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "ritual"}
+        onClose={closeRitual}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Harbor Daily Ritual"
+      >
+        <div className="space-y-4 text-left">
+          <p className="text-sm text-muted-foreground text-center">
+            Streak {save.harborRitual?.streak ?? 1} day
+            {(save.harborRitual?.streak ?? 1) === 1 ? "" : "s"} — show up, listen, collect.
+          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
+            <p className="font-bold">Mascot rumor</p>
+            <p className="mt-1">{rumor}</p>
+            {!save.harborRitual?.today.rumorSeen ? (
+              <GameButton
+                variant="outline"
+                className="mt-2 w-full"
+                onClick={() => onMarkRitualRumor?.()}
+              >
+                Heard it →
+              </GameButton>
+            ) : (
+              <p className="mt-2 text-xs font-semibold text-emerald-800">Heard today</p>
+            )}
+          </div>
+          <div className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-950">
+            <p className="font-bold">Pay Day</p>
+            <p className="mt-1 text-muted-foreground">
+              One ledger Pay Day for Harbor escape streak — same math as the board.
+            </p>
+            <GameButton
+              variant="primary"
+              className="mt-2 w-full"
+              disabled={Boolean(save.harborRitual?.today.paydayDone)}
+              onClick={() => onClaimRitualPayday?.()}
+            >
+              {save.harborRitual?.today.paydayDone ? "Pay Day collected" : "Collect Pay Day"}
+            </GameButton>
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
+            <p className="font-bold">Tiny reward</p>
+            <p className="mt-1 text-muted-foreground">
+              +5 coins after rumor + Pay Day — never buys progress.
+            </p>
+            <GameButton
+              variant="outline"
+              className="mt-2 w-full"
+              disabled={
+                Boolean(save.harborRitual?.today.rewardClaimed) ||
+                !save.harborRitual?.today.paydayDone ||
+                !save.harborRitual?.today.rumorSeen
+              }
+              onClick={() => onClaimRitualReward?.()}
+            >
+              {save.harborRitual?.today.rewardClaimed ? "Reward claimed" : "Claim +5 coins"}
+            </GameButton>
+          </div>
+          {weekly && weeklyInfo ? (
+            <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950">
+              <p className="font-bold">Weekly · {weeklyInfo.title}</p>
+              <p className="mt-1">{weeklyInfo.blurb}</p>
+              <p className="mt-1 font-semibold">
+                {weekly.progress}/{weekly.target}
+                {weekly.done ? " — cleared!" : ""}
+              </p>
+              <GameButton
+                variant="outline"
+                className="mt-2 w-full"
+                onClick={async () => {
+                  const text = weeklyShareText(weekly, voyager.name || "Voyager");
+                  try {
+                    await navigator.clipboard.writeText(text);
+                    toast.message("Share line copied", { description: text });
+                  } catch {
+                    toast.message(text);
+                  }
+                }}
+              >
+                Copy share line
+              </GameButton>
+            </div>
+          ) : null}
+          <GameButton variant="primary" className="w-full" onClick={closeRitual}>
+            Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "gallery"}
+        onClose={() => setHubModal(null)}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Studio Gallery"
+      >
+        <div className="space-y-3 text-left">
+          <p className="text-sm text-muted-foreground text-center">
+            Local community levels from Vibe Studio. Hide anything you don’t want — no pay-to-win.
+          </p>
+          {galleryLevels.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-stone-300 px-3 py-6 text-center text-sm text-muted-foreground">
+              No published levels yet. Open VibeCode, build, and publish — they’ll show here.
+            </p>
+          ) : (
+            <ul className="max-h-72 space-y-2 overflow-y-auto">
+              {galleryLevels.map((lvl) => (
+                <li
+                  key={lvl.id}
+                  className="flex items-start gap-2 rounded-xl border border-stone-200 bg-stone-50 px-3 py-2"
+                >
+                  <span className="text-xl" aria-hidden>
+                    {lvl.icon || "🎮"}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold">{lvl.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      by {lvl.author} · {lvl.plays} plays
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-col gap-1">
+                    <GameButton
+                      variant="outline"
+                      className="h-8 px-2 text-xs"
+                      onClick={() => {
+                        bumpPlays(lvl.id);
+                        onStudioGalleryOpened?.();
+                        setHubModal(null);
+                        onOpenStudio();
+                        toast.message(`Opening Studio for “${lvl.title}”`);
+                      }}
+                    >
+                      Open
+                    </GameButton>
+                    <GameButton
+                      variant="ghost"
+                      className="h-8 px-2 text-xs"
+                      onClick={() => {
+                        hideCommunityLevel(lvl.id);
+                        setGalleryLevels(loadVisibleCommunityLevels());
+                        toast.message("Hidden on this device");
+                      }}
+                    >
+                      Hide
+                    </GameButton>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
+            Back to plaza
+          </GameButton>
+          <GameButton
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              setHubModal(null);
+              onOpenStudio();
+            }}
+          >
+            Open Vibe Studio →
           </GameButton>
         </div>
       </GameModal>
