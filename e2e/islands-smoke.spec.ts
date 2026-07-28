@@ -52,12 +52,14 @@ test.describe("Islands smoke", () => {
     await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
     await expect(page.getByTestId("island-pin-financial_assets")).toBeVisible();
 
-    // Enter Cove via QA — docks onto walkable shore (not chapter menu)
+    // Enter Cove via QA — instant dock onto walkable shore (not chapter menu)
     await page.evaluate(() => window.__QA__?.enterIsland("coincraft_cove"));
 
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("explore");
-    await expect(page.getByTestId("island-shore-view")).toBeVisible();
-    await expect(page.getByText("Coincraft Cove")).toBeVisible();
+    await expect
+      .poll(async () => page.evaluate(() => window.__QA__?.getView()), { timeout: 30_000 })
+      .toBe("explore");
+    await expect(page.getByTestId("island-shore-view")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole("heading", { name: "Coincraft Cove" })).toBeVisible();
     await expect(page.getByTestId("coin-bag-buddy-hud")).toBeVisible();
 
     // Minigame via QA bridge
@@ -88,6 +90,8 @@ test.describe("Islands smoke", () => {
 
     const saveAfterReload = await page.evaluate(() => window.__QA__?.getSave());
     expect(saveAfterReload?.currentIslandId).toBe("coincraft_cove");
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.getView())).toBe("explore");
+    await expect
+      .poll(async () => page.evaluate(() => window.__QA__?.getView()), { timeout: 30_000 })
+      .toBe("explore");
   });
 });

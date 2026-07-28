@@ -1,11 +1,20 @@
 import type { IslandSaveV1 } from "@/islands/types";
 import type { SignaturePhase } from "./signatureLoop";
 
-export type QAView = "home" | "travel" | "island" | "voyage" | "arcade" | "studio";
+export type QAView =
+  | "home"
+  | "travel"
+  | "island"
+  | "explore"
+  | "chapter"
+  | "voyage"
+  | "arcade"
+  | "studio";
 
 export type QABridge = {
   getView: () => QAView;
   getSave: () => IslandSaveV1 | null;
+  /** Instant dock — skips dissolve FX so smoke tests do not race transitions. */
   enterIsland: (islandId: string) => void;
   openTravel: () => void;
   openHub: () => void;

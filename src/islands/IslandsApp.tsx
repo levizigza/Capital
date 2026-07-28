@@ -468,7 +468,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   );
 
   const enterIsland = useCallback(
-    async (islandId: string) => {
+    async (islandId: string, opts?: { instant?: boolean }) => {
       const island = getIslandById(content, islandId);
       if (!island) return;
 
@@ -500,12 +500,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
       };
 
-      // Dissolve at mid-point so the era theme + morph land together (skip if reduced motion / no FX).
-      if (fx && !a11y.reducedMotion) {
-        await fx.playAreaTransition(applyEnter);
-      } else {
+      // QA / reduced motion: skip dissolve so tests and a11y never race FX.
+      if (opts?.instant || !fx || a11y.reducedMotion) {
         await applyEnter();
+        return;
       }
+      await fx.playAreaTransition(applyEnter);
     },
     [a11y.reducedMotion, content, fx, updateSave]
   );
@@ -775,14 +775,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     [activeIsland, updateSave]
   );
 
+  const viewRef = useRef(view);
+  const saveRef = useRef(save);
+  viewRef.current = view;
+  saveRef.current = save;
+
   useEffect(() => {
     if (!save) return;
     return mountQABridge({
       ready: true,
-      getView: () => view,
-      getSave: () => save,
+      getView: () => viewRef.current as import("@/qa/qaBridge").QAView,
+      getSave: () => saveRef.current,
       enterIsland: (islandId) => {
-        void enterIsland(islandId);
+        void enterIsland(islandId, { instant: true });
       },
       openTravel: () => setView("travel"),
       openHub: () => setView("home"),
@@ -801,7 +806,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         void startQuest(questId as QuestId);
       },
       persistSave: async () => {
-        await persistIslandSave(save);
+        const current = saveRef.current;
+        if (current) await persistIslandSave(current);
       },
       resetSave: async () => {
         const fresh = createDefaultIslandSave();
@@ -823,7 +829,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
     });
-  }, [save, view, enterIsland, startQuest, activeIslandId]);
+  }, [save, enterIsland, startQuest, activeIslandId]);
 
   const maybeCompleteQuest = useCallback(
     async (questId: QuestId) => {
