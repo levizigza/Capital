@@ -72,7 +72,9 @@ export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
   // Remap coincraft_cove → Harbor ONLY for true legacy-hub resumes.
   // If the player has Cove chapter progress, coincraft_cove is Island 1 — keep it.
   if (next.currentIslandId === LEGACY_HUB_ISLAND_ID) {
-    if (coveProgress || knowsHarbor) {
+    const coveArea =
+      typeof next.currentAreaId === "string" && next.currentAreaId.startsWith("cc_");
+    if (coveProgress || knowsHarbor || coveArea) {
       // Mid-chapter (or post-split) Cove session — leave currentIslandId alone.
       return next;
     }
@@ -87,8 +89,29 @@ export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
   return next;
 }
 
+function parseSave(raw: unknown): IslandSaveV1 | null {
+  if (!raw || typeof raw !== "object") return null;
+  const parsed = raw as IslandSaveV1;
+  if (parsed.version !== "1") return null;
+  return migrateIslandSave({
+    ...parsed,
+    voyagerLedger: parsed.voyagerLedger ?? createDefaultVoyagerLedger(),
+  });
+}
+
+function newerSave(a: IslandSaveV1 | null, b: IslandSaveV1 | null): IslandSaveV1 | null {
+  if (!a) return b;
+  if (!b) return a;
+  const at = Date.parse(a.updatedAt ?? "") || 0;
+  const bt = Date.parse(b.updatedAt ?? "") || 0;
+  return bt >= at ? b : a;
+}
+
 export async function loadIslandSave(): Promise<IslandSaveV1> {
   const fallback = createDefaultIslandSave();
+  let fromKv: IslandSaveV1 | null = null;
+  let fromLocal: IslandSaveV1 | null = null;
+
   try {
     const kvPromise = window.spark.kv.get<IslandSaveV1>(SAVE_KEY);
     const existing =
@@ -98,16 +121,19 @@ export async function loadIslandSave(): Promise<IslandSaveV1> {
             new Promise<null>((resolve) => setTimeout(() => resolve(null), 5_000)),
           ])
         : await kvPromise;
-    if (existing && existing.version === "1") {
-      return migrateIslandSave({
-        ...existing,
-        voyagerLedger: existing.voyagerLedger ?? createDefaultVoyagerLedger(),
-      });
-    }
+    fromKv = parseSave(existing);
   } catch {
-    // ignore
+    /* ignore */
   }
-  return fallback;
+
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) fromLocal = parseSave(JSON.parse(raw));
+  } catch {
+    /* ignore */
+  }
+
+  return newerSave(fromKv, fromLocal) ?? fallback;
 }
 
 export async function persistIslandSave(save: IslandSaveV1): Promise<void> {
@@ -115,7 +141,17 @@ export async function persistIslandSave(save: IslandSaveV1): Promise<void> {
     ...save,
     updatedAt: new Date().toISOString(),
   };
-  await window.spark.kv.set(SAVE_KEY, next);
+  // Always mirror locally so GitHub Pages / preview survive without Spark KV.
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(next));
+  } catch {
+    /* private mode */
+  }
+  try {
+    await window.spark.kv.set(SAVE_KEY, next);
+  } catch {
+    /* local mirror is enough */
+  }
 }
 
 /** Max events to keep in save for replay/audit */

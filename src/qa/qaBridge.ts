@@ -15,7 +15,7 @@ export type QABridge = {
   getView: () => QAView;
   getSave: () => IslandSaveV1 | null;
   /** Instant dock — skips dissolve FX so smoke tests do not race transitions. */
-  enterIsland: (islandId: string) => void;
+  enterIsland: (islandId: string) => void | Promise<void>;
   openTravel: () => void;
   openHub: () => void;
   startMinigame: (minigameId: string) => void;

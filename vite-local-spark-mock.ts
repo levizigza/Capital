@@ -71,7 +71,7 @@ function handleKvRequest(
 }
 
 /**
- * Mock GitHub Spark runtime endpoints for local development.
+ * Mock GitHub Spark runtime endpoints for local development and preview smoke.
  * Also removes Spark's proxy rules so they cannot forward requests
  * to api.github.com (which fails without auth) or interfere with
  * the WebSocket upgrade used by HMR.
@@ -80,6 +80,45 @@ function handleKvRequest(
  */
 export function localSparkMockPlugin(): Plugin {
   const isWorkbench = !!process.env.SPARK_WORKBENCH_ID;
+
+  const attachMock = (middlewares: {
+    use: (fn: (req: IncomingMessage, res: ServerResponse, next: () => void) => void) => void;
+  }) => {
+    middlewares.use(async (req, res, next) => {
+      const urlPath = (req.url ?? "").split("?")[0];
+      if (!urlPath.startsWith("/_spark/")) {
+        next();
+        return;
+      }
+
+      try {
+        if (urlPath === "/_spark/loaded" && req.method === "POST") {
+          await readBody(req);
+          res.statusCode = 204;
+          res.end();
+          return;
+        }
+
+        if (urlPath === "/_spark/user" && req.method === "GET") {
+          sendJson(res, 200, {
+            id: 1,
+            login: "local-dev",
+            email: "dev@localhost",
+            isOwner: true,
+          });
+          return;
+        }
+
+        if (handleKvRequest(req, res, urlPath)) {
+          return;
+        }
+
+        sendJson(res, 404, { error: "Unknown Spark endpoint" });
+      } catch (error) {
+        sendJson(res, 500, { error: String(error) });
+      }
+    });
+  };
 
   return {
     name: "local-spark-mock",
@@ -106,41 +145,12 @@ export function localSparkMockPlugin(): Plugin {
 
     configureServer(server: ViteDevServer) {
       if (isWorkbench) return;
+      attachMock(server.middlewares);
+    },
 
-      server.middlewares.use(async (req, res, next) => {
-        const urlPath = (req.url ?? "").split("?")[0];
-        if (!urlPath.startsWith("/_spark/")) {
-          next();
-          return;
-        }
-
-        try {
-          if (urlPath === "/_spark/loaded" && req.method === "POST") {
-            await readBody(req);
-            res.statusCode = 204;
-            res.end();
-            return;
-          }
-
-          if (urlPath === "/_spark/user" && req.method === "GET") {
-            sendJson(res, 200, {
-              id: 1,
-              login: "local-dev",
-              email: "dev@localhost",
-              isOwner: true,
-            });
-            return;
-          }
-
-          if (handleKvRequest(req, res, urlPath)) {
-            return;
-          }
-
-          sendJson(res, 404, { error: "Unknown Spark endpoint" });
-        } catch (error) {
-          sendJson(res, 500, { error: String(error) });
-        }
-      });
+    configurePreviewServer(server) {
+      if (isWorkbench) return;
+      attachMock(server.middlewares);
     },
   };
 }

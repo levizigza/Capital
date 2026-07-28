@@ -38,7 +38,7 @@ describe("hub vs Cove navigability", () => {
     const legacy = migrateIslandSave({
       ...base,
       currentIslandId: COVE_ISLAND_ID,
-      currentAreaId: "cc_harbor",
+      currentAreaId: undefined,
       questStatus: {},
       discovered: {
         ...base.discovered,
@@ -47,6 +47,22 @@ describe("hub vs Cove navigability", () => {
     });
     expect(legacy.currentIslandId).toBe(HARBOR_HAVEN_ID);
     expect(legacy.discovered.islands).toContain(HARBOR_HAVEN_ID);
+  });
+
+  it("keeps a fresh Cove shore dock (cc_ area, no quests yet)", () => {
+    const base = createDefaultIslandSave();
+    const docked = migrateIslandSave({
+      ...base,
+      currentIslandId: COVE_ISLAND_ID,
+      currentAreaId: "cc_harbor",
+      questStatus: {},
+      discovered: {
+        ...base.discovered,
+        islands: [COVE_ISLAND_ID],
+      },
+    });
+    expect(docked.currentIslandId).toBe(COVE_ISLAND_ID);
+    expect(docked.currentAreaId).toBe("cc_harbor");
   });
 
   it("recognizes Cove as chapter content", () => {

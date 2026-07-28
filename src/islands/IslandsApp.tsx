@@ -379,11 +379,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const updateSave = useCallback((updater: (prev: IslandSaveV1) => IslandSaveV1) => {
     setSave((prev) => {
       if (!prev) return prev;
-      const next = updater(prev);
-      persistIslandSave(next).catch((e) => console.warn("[islands] failed to persist save", e));
-      return next;
+      return updater(prev);
     });
   }, []);
+
+  /** Debounced persist — always writes the latest save, never a stale in-flight body. */
+  useEffect(() => {
+    if (!save) return;
+    const t = window.setTimeout(() => {
+      persistIslandSave(save).catch((e) => console.warn("[islands] failed to persist save", e));
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [save]);
 
   const saveCharacter = useCallback(
     (character: CapitalCharacter) => {
@@ -483,7 +490,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             currentAreaId: prev.currentIslandId === islandId ? prev.currentAreaId || defaultArea : defaultArea,
             discovered: {
               ...prev.discovered,
-              islands: uniq([...prev.discovered.islands, islandId]),
+              islands: uniq([
+                ...prev.discovered.islands,
+                HUB_ISLAND_ID,
+                islandId,
+              ]),
               areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
             },
           };
@@ -786,9 +797,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ready: true,
       getView: () => viewRef.current as import("@/qa/qaBridge").QAView,
       getSave: () => saveRef.current,
-      enterIsland: (islandId) => {
-        void enterIsland(islandId, { instant: true });
-      },
+      enterIsland: (islandId) => enterIsland(islandId, { instant: true }),
       openTravel: () => setView("travel"),
       openHub: () => setView("home"),
       startMinigame: (minigameId) => {
