@@ -30,7 +30,7 @@ type Props = {
 
 const LOOK = getEraLook3D("capital-default");
 /** Default ride length — short enough to feel like a horizon glide. */
-const FLIGHT_SECS = 5.5;
+const FLIGHT_SECS = 3.2;
 const RUSH_MULT = 3.2;
 
 /**
@@ -187,15 +187,20 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
   }, []);
 
   useEffect(() => {
+    if (reduced) {
+      speedRef.current = RUSH_MULT;
+      setRushing(true);
+    }
     const down = (e: KeyboardEvent) => {
-      if (e.key === "Shift" || e.code === "Space") {
+      if (e.key === "Shift" || e.code === "Space" || e.key === "Enter") {
         e.preventDefault();
         speedRef.current = RUSH_MULT;
         setRushing(true);
       }
     };
     const up = (e: KeyboardEvent) => {
-      if (e.key === "Shift" || e.code === "Space") {
+      if (e.key === "Shift" || e.code === "Space" || e.key === "Enter") {
+        if (reduced) return;
         speedRef.current = 1;
         setRushing(false);
       }
@@ -206,7 +211,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, []);
+  }, [reduced]);
 
   const finish = () => {
     if (finishing.current) return;

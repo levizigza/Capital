@@ -70,6 +70,8 @@ export function coinBagHarborTip(
     pavilionUnlocked?: boolean;
     /** After Cove Change + Piggy welcome — name the next painting */
     nextPaintingHint?: string | null;
+    /** Relationship strain tip when scars outpace homecomings */
+    bondStrain?: boolean;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -80,6 +82,13 @@ export function coinBagHarborTip(
     return {
       tip: opts.homecomingMessage || "Talk to Piggy — she noticed!",
       coach: "You came home changed. Piggy has a welcome-back for you.",
+    };
+  }
+
+  if (opts?.bondStrain) {
+    return {
+      tip: "Piggy’s quiet — she still cares",
+      coach: "Hard plaques sting. Walk to her. Repair is a money skill too.",
     };
   }
 

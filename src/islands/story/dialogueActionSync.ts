@@ -87,6 +87,14 @@ export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   pulseHotspot: "travel",
 };
 
+/** Plaza reacts when a new scar lands — money is alive. */
+export const SCAR_SPECTACLE_VISUAL_BEATS: GuidedVisualBeats = {
+  keeperEmote: "cheer",
+  keeperBubbleWhenNear: "Piggy Penny: Harbor felt that! The Memory Plinth is glowing!",
+  bagTip: "The plaza remembers — look!",
+  pulseHotspot: "guide",
+};
+
 export function guidedVisualBeats(stepId?: string | null): GuidedVisualBeats {
   if (stepId && GUIDED_VISUAL_BEATS[stepId]) return GUIDED_VISUAL_BEATS[stepId]!;
   return {
@@ -101,10 +109,12 @@ export function resolveHarborVisualBeats(opts: {
   homecomingPending?: boolean;
   /** Cove Change done, Piggy already talked — nudge next painting */
   pointNextPainting?: boolean;
+  scarSpectacleActive?: boolean;
 }): GuidedVisualBeats {
   if (opts.guidedStepId && opts.guidedStepId !== "done") {
     return guidedVisualBeats(opts.guidedStepId);
   }
+  if (opts.scarSpectacleActive) return SCAR_SPECTACLE_VISUAL_BEATS;
   if (opts.homecomingPending) return HOMECOMING_VISUAL_BEATS;
   if (opts.pointNextPainting) return POST_HOMECOMING_VISUAL_BEATS;
   return guidedVisualBeats(opts.guidedStepId);

@@ -270,6 +270,11 @@ export type IslandSaveV1 = {
   };
   /** After an irreversible Take on an island — soft HUD until travel/hub */
   chapterQuietPending?: boolean;
+  /** One-shot Harbor "money is alive" plaza spectacle when scars grow */
+  scarSpectacle?: {
+    shownForCount: number;
+    lastShownAt?: string;
+  };
   /** Permanent plaza marks from Studio publishes (identity > grind) */
   harborStudioMarks?: {
     levelId: string;
@@ -277,6 +282,8 @@ export type IslandSaveV1 = {
     author: string;
     stampedAt: string;
   }[];
+  /** Celebrated Piggy homecomings — relationship arc depth */
+  piggyBondHomecomings?: number;
   /** Permanent Harbor memory of chapter choices (plaques, tones, props) */
   harborScars?: import("./worldMemory").HarborScar[];
   /** Locked-forever decisions keyed by decision id */

@@ -1065,12 +1065,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
           ? getHubGuidedStep(save.hubGuidedIntro)?.id
           : null;
+      const hc = save?.harborHomecoming;
+      const upcomingBond =
+        hc && !hc.piggyTalked && (hc.pending || hc.celebrated)
+          ? (save?.piggyBondHomecomings ?? 0) + 1
+          : (save?.piggyBondHomecomings ?? 0);
       const harborGraph = resolveHarborDialogue(npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
         scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(
-          (save?.harborScars ?? []).length,
+          upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
         ),
         stanceHint: stanceGreetingHint(save?.stance),
@@ -1096,6 +1101,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       dialogueState.open,
       save?.hubGuidedIntro,
       save?.harborHomecoming,
+      save?.piggyBondHomecomings,
+      save?.harborScars,
+      save?.stance,
+      save?.npcMemory,
       updateSave,
       view,
     ],
@@ -1218,9 +1227,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       : undefined;
     if (fromIsland) return fromIsland;
     if (dialogueState.graphId === "dlg_harbor_piggy_penny_homecoming") {
+      const upcoming =
+        (save?.piggyBondHomecomings ?? 0) +
+        (save?.harborHomecoming && !save.harborHomecoming.piggyTalked ? 1 : 0);
       return piggyHomecomingGraph(save?.harborHomecoming?.message, {
         scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
-        bondBeat: (save?.harborScars ?? []).length,
+        bondBeat: Math.max(upcoming, 1),
       });
     }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
@@ -1235,7 +1247,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
         scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
-        bondBeat: (save?.harborScars ?? []).length,
+        bondBeat: save?.piggyBondHomecomings ?? 0,
         stanceHint: stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
       });
@@ -1247,6 +1259,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     dialogueState.npcId,
     save?.hubGuidedIntro,
     save?.harborHomecoming,
+    save?.piggyBondHomecomings,
     save?.harborScars,
     save?.stance,
     save?.npcMemory,
@@ -1299,6 +1312,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         if (welcomedPiggy) {
           next = {
             ...next,
+            piggyBondHomecomings: (next.piggyBondHomecomings ?? 0) + 1,
             harborHomecoming: {
               ...(next.harborHomecoming ?? {}),
               pending: false,
@@ -1907,6 +1921,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onMarkRitualRumor={onMarkRitualRumor}
             onMarkRitualGreeted={onMarkRitualGreeted}
             onStudioGalleryOpened={onStudioGalleryOpened}
+            onMarkScarSpectacle={(scarCount) => {
+              updateSave((prev) => ({
+                ...prev,
+                scarSpectacle: {
+                  shownForCount: Math.max(prev.scarSpectacle?.shownForCount ?? 0, scarCount),
+                  lastShownAt: new Date().toISOString(),
+                },
+              }));
+            }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}

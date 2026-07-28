@@ -101,15 +101,15 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "tiny_spend",
     storyBeat: "need",
-    coach: "Coin Bag points to Capsule Stall — peek together. Piggy nods.",
-    guideLine: "Piggy Penny: Coins aren’t for staring. Peek the Capsule Stall — I’ll nod when you do.",
+    coach: "Capsule Stall peek — then Coin Bag points to the Carpet Dock.",
+    guideLine: "Piggy Penny: Peek the Capsule Stall — then we sail to Coincraft Cove!",
     verb: "Spend (or peek)",
     highlight: "capsule",
   },
   {
     id: "practice_optional",
     storyBeat: "need",
-    coach: "Optional practice — Coin Bag points, or skip to the dock together.",
+    coach: "Practice is optional tomfoolery — dock when you're ready.",
     guideLine: "Piggy Penny: Practice board is optional — or skip to the carpet!",
     verb: "Play or Skip",
     highlight: "practice",
@@ -117,8 +117,8 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "to_dock",
     storyBeat: "go",
-    coach: "Coin Bag points to the Carpet Dock — walk with your buddy.",
-    guideLine: "Piggy Penny: The Fortune Thread starts at the Carpet Dock!",
+    coach: "Carpet Dock — first painting is Coincraft Cove. Nothing else yet.",
+    guideLine: "Piggy Penny: Coincraft Cove is your first painting — open the map at the dock!",
     verb: "Walk",
     highlight: "travel",
   },
@@ -183,12 +183,13 @@ export function advanceHubGuided(
     case "capsule_visit":
       if (next.step === "tiny_spend") {
         next.didSpendLesson = true;
-        next.step = "practice_optional";
+        // Critical path skips optional practice — dock next (trailer first session)
+        next.step = "to_dock";
       }
       break;
     case "capsule_bought":
       next.didSpendLesson = true;
-      if (next.step === "tiny_spend") next.step = "practice_optional";
+      if (next.step === "tiny_spend") next.step = "to_dock";
       break;
     case "practice_opened":
       next.didPractice = true;

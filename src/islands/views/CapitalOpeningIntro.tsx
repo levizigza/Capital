@@ -315,17 +315,34 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
     window.setTimeout(finish, reduced ? 250 : 950);
   }, [entering, finish, reduced]);
 
-  const sweepMs = 700;
+  const sweepMs = reduced ? 180 : 380;
   useEffect(() => {
     const timers: number[] = [];
     PATCHES.forEach((_, i) => {
-      timers.push(window.setTimeout(() => setStage(i), 600 + i * sweepMs));
+      timers.push(window.setTimeout(() => setStage(i), 280 + i * sweepMs));
     });
-    const afterSweep = 600 + PATCHES.length * sweepMs;
+    const afterSweep = 280 + PATCHES.length * sweepMs;
     timers.push(window.setTimeout(() => setStage("settle"), afterSweep));
-    timers.push(window.setTimeout(() => setStage("reveal"), afterSweep + 700));
+    timers.push(window.setTimeout(() => setStage("reveal"), afterSweep + (reduced ? 200 : 420)));
     return () => timers.forEach((t) => window.clearTimeout(t));
-  }, [sweepMs]);
+  }, [sweepMs, reduced]);
+
+  // Skip mural sweep — trailer-quality first session
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter" && e.key !== " " && e.key !== "Escape") return;
+      if (entering) return;
+      if (stage === "reveal") {
+        e.preventDefault();
+        enter();
+        return;
+      }
+      e.preventDefault();
+      setStage("reveal");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [stage, entering, enter]);
 
   const isReveal = stage === "reveal";
   const isAssembled = stage === "settle" || isReveal;
@@ -413,18 +430,16 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
               <p className="mt-3 max-w-md text-sm text-white/80 md:text-base">
-                A gamified financial literacy adventure — learn money skills by
-                sailing era islands, running Fortune Party boards, and making
-                real cashflow choices that stick.
+                Money is alive here. Sail Harbor Haven, make choices that stick, and come home changed.
               </p>
               <div className="cap-enter">
                 <button type="button" className="cap-enter-boat" onClick={enter} autoFocus>
                   <span className="cap-enter-boat__icon" aria-hidden>
                     🪄
                   </span>
-                  Board the carpet to enter
+                  Board the carpet — Coincraft Cove awaits
                 </button>
-                <span className="cap-enter-hint">Click the carpet to come ashore</span>
+                <span className="cap-enter-hint">Enter · Space to skip the mural</span>
               </div>
             </div>
           </motion.div>
@@ -434,6 +449,13 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
       {!isReveal && !entering ? (
         <div className="cap-opening-caption">
           {currentPatch ? `${currentPatch.year} — ${currentPatch.caption}` : "One mural, painted piece by piece"}
+          <button
+            type="button"
+            className="ml-3 underline decoration-white/40 underline-offset-2"
+            onClick={() => setStage("reveal")}
+          >
+            Skip
+          </button>
         </div>
       ) : null}
     </motion.div>

@@ -288,6 +288,26 @@ export function piggyHomecomingGraph(
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
         : "That's the Change beat — earn fair, then choose.";
 
+  const phase =
+    (opts?.bondBeat ?? 0) >= 3
+      ? "trust"
+      : (opts?.scars?.length ?? 0) >= 2 && (opts?.bondBeat ?? 0) < 2
+        ? "strain"
+        : (opts?.bondBeat ?? 0) >= 1
+          ? "repair"
+          : "welcome";
+
+  const phaseLine =
+    phase === "strain"
+      ? "I worried when the plaza took a harder mark — but you came back. That matters."
+      : phase === "repair"
+        ? (opts?.bondBeat ?? 0) >= 2
+          ? bond
+          : "We patched over a hard choice together. Coin Bag and I still walk with you."
+        : phase === "trust"
+          ? bond
+          : bond;
+
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
     startNodeId: "h1",
@@ -307,7 +327,7 @@ export function piggyHomecomingGraph(
       {
         id: "h2",
         speaker: "Piggy Penny",
-        text: `${scarLine} ${bond}`,
+        text: `${scarLine} ${phaseLine}`,
         choices: [
           {
             id: "h2_go",
