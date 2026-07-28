@@ -17,7 +17,7 @@
 | 3 | **Go** | Accept the quest; step into craft market life | `cc_craft_market`, startQuest | “Let’s go earn.” |
 | 4 | **Search** | Talk, sort/earn minigames, meet Alma / Shelly | `mg_coin_sort`, `npc_artisan_alma`, `npc_shelly` | “I try jobs.” |
 | 5 | **Find** | First coins + pouch; feel of earned money | item `cc_coin_pouch`, quest rewards | “I earned it!” |
-| 6 | **Take** | Save or Spend with Alma — a real tradeoff | `q_cc_save_or_spend`, `cc_savings_jar` | “Do I save or buy?” |
+| 6 | **Take** | Save or Spend with Kira — irreversible jar-first vs treat-first | `q_cc_save_or_spend`, `kk1_a` / `kk1_spend`, `cc_savings_jar` | “Do I jar or treat?” |
 | 7 | **Return** | Carpet / Hub back to Harbor Haven | travel map, dock | “Back home.” |
 | 8 | **Change** | Harbor guide notices; practice board / seals progress toward Freedom | ledger seals, Piggy Penny return line | “I’m getting better.” |
 

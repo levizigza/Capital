@@ -20,6 +20,7 @@ import {
   HUB_ISLAND_ID,
   COVE_ISLAND_ID,
   PAYCHECK_PENINSULA_ID,
+  CREDIT_ORDEAL_QUEST_ID,
 } from "./islandIds";
 
 /** Same taxonomy as island quests — campaign painting spine vs optional digressions. */
@@ -80,7 +81,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
     title: "Credit Kingdom · Ordeal",
     blurb: "Late-game storm. Clear First Recovery — interest feeds on haste.",
     placeId: BOSS_ISLAND_ID,
-    done: (s) => Boolean(s.questStatus["q_ck_first_recovery"]?.completed),
+    done: (s) => Boolean(s.questStatus[CREDIT_ORDEAL_QUEST_ID]?.completed),
   },
 ];
 

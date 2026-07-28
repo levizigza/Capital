@@ -12,6 +12,8 @@ export const COVE_ISLAND_ID = "coincraft_cove";
 export const PAYCHECK_PENINSULA_ID = "paycheck_peninsula";
 /** Cove “Take” quest that triggers Harbor Return/Change */
 export const COVE_CHANGE_QUEST_ID = "q_cc_save_or_spend";
+/** Credit Kingdom Ordeal clear — triggers Harbor Return/Change */
+export const CREDIT_ORDEAL_QUEST_ID = "q_ck_first_recovery";
 
 export const HUB_ISLAND_ID = HARBOR_HAVEN_ID;
 

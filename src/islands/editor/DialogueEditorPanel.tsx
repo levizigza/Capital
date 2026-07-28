@@ -317,6 +317,24 @@ function ChoiceEditor({
       case "startMinigame":
         effect = { type, minigameId: refs.minigameIds[0] ?? "" };
         break;
+      case "setIrreversible":
+        effect = {
+          type,
+          key: "decision_key",
+          choiceId: "choice",
+          label: "Locked choice",
+        };
+        break;
+      case "addScar":
+        effect = {
+          type,
+          id: "scar_id",
+          label: "Harbor scar",
+          kind: "plaque",
+          stance: "saver",
+          stanceDelta: 1,
+        };
+        break;
     }
     onChange({ ...choice, effects: [...(choice.effects ?? []), effect] });
   };
@@ -366,7 +384,7 @@ function ChoiceEditor({
           />
         ))}
         <div className="flex flex-wrap gap-1">
-          {(["startQuest", "giveItem", "completeQuest", "startMinigame"] as const).map((t) => (
+          {(["startQuest", "giveItem", "completeQuest", "startMinigame", "setIrreversible", "addScar"] as const).map((t) => (
             <Button key={t} size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => addEffect(t)}>
               + {t}
             </Button>
@@ -388,6 +406,22 @@ function EffectRow({
   onChange: (e: DialogueEffect) => void;
   onRemove: () => void;
 }) {
+  if (effect.type === "setIrreversible" || effect.type === "addScar") {
+    return (
+      <div className="flex items-center gap-1 text-[10px]">
+        <Badge variant="secondary">{effect.type}</Badge>
+        <span className="flex-1 truncate font-mono text-muted-foreground">
+          {effect.type === "setIrreversible"
+            ? `${effect.key} → ${effect.choiceId}`
+            : effect.label}
+        </span>
+        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-xs" onClick={onRemove}>
+          ✕
+        </Button>
+      </div>
+    );
+  }
+
   const idOptions =
     effect.type === "startQuest" || effect.type === "completeQuest"
       ? refs.questIds

@@ -38,8 +38,9 @@ Piggy / Coin Bag: late-game storm — only when ready.
 - [x] Verbs: Talk · Choose · Pay · Return  
 - [x] Guides: Cleo (island) · Piggy (Harbor return)  
 - [x] Soft fails on minigames  
-- [ ] Harbor Change scar/plaque after Ordeal (Phase 2 emotion pass)  
+- [x] Harbor Change scar/plaque after Ordeal (Memory Plinth + irreversible borrow-vs-wait)  
 - [x] Fits Story Bible (no second myth; Kingdom = Ordeal, ruins = scenery)
 
 **Unlock:** Harbor freedom + mastery clears (no off-spine medallion soft-lock).  
-**Main course done:** `q_ck_first_recovery` completed.
+**Main course done:** `q_ck_first_recovery` completed.  
+**Irreversible:** `credit_borrow_vs_wait` via Cleo fork → Harbor scar.

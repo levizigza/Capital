@@ -44,10 +44,11 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange } from "../chapterLoop";
+import { harborScarPlaques, stanceGreetingHint } from "../worldMemory";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
-type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | "market" | null;
+type HubModal = "outfitter" | "capsule" | "settings" | "pavilion" | "market" | "memory" | null;
 
 export type HarborPurchase =
   | { kind: "capsule"; itemId: PartyItemId; price: number }
@@ -223,6 +224,8 @@ export function HomeHubView({
   const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
   const marketOpen = isRoomUnlocked(save, "market");
+  const plaques = harborScarPlaques(save);
+  const stanceLine = stanceGreetingHint(save.stance);
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
@@ -235,6 +238,16 @@ export function HomeHubView({
       // Always on the plaza so Coin Bag can point here during the optional practice beat
       ...(onPlayHarborBoard
         ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
+        : []),
+      ...(plaques.length > 0
+        ? [
+            {
+              id: "memory",
+              label: "Memory Plinth",
+              icon: "🪨",
+              position: [3.2, 0, -1.5],
+            } satisfies HarborHotspot,
+          ]
         : []),
       ...(pavilionOpen
         ? [
@@ -260,7 +273,7 @@ export function HomeHubView({
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
-    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard],
+    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length],
   );
 
   const harborGuideLookAt = useMemo(
@@ -308,10 +321,12 @@ export function HomeHubView({
     else if (id === "capsule") {
       onHubGuidedEvent("capsule_visit");
       setHubModal("capsule");
-    } else if (id === "pavilion") {
+    }     else if (id === "pavilion") {
       setHubModal("pavilion");
     } else if (id === "market") {
       setHubModal("market");
+    } else if (id === "memory") {
+      setHubModal("memory");
     } else if (id === "practice" && onPlayHarborBoard) {
       onHubGuidedEvent("practice_opened");
       onPlayHarborBoard();
@@ -631,6 +646,39 @@ export function HomeHubView({
             Polish carpet at Capsules →
           </GameButton>
           <GameButton variant="outline" className="w-full" onClick={() => setHubModal(null)}>
+            Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "memory"}
+        onClose={() => setHubModal(null)}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Memory Plinth"
+      >
+        <div className="space-y-4 text-left">
+          <p className="text-sm text-muted-foreground text-center">
+            Harbor remembers the choices that changed you. These plaques stay.
+          </p>
+          {stanceLine ? (
+            <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-950">
+              {stanceLine}
+            </p>
+          ) : null}
+          <ul className="space-y-2">
+            {plaques.map((p) => (
+              <li
+                key={p.id}
+                className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-900"
+              >
+                {p.label}
+              </li>
+            ))}
+          </ul>
+          <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
           </GameButton>
         </div>

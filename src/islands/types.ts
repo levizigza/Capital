@@ -73,7 +73,23 @@ export type DialogueEffect =
   | { type: "startQuest"; questId: QuestId }
   | { type: "completeQuest"; questId: QuestId }
   | { type: "giveItem"; itemId: ItemId }
-  | { type: "startMinigame"; minigameId: MinigameId };
+  | { type: "startMinigame"; minigameId: MinigameId }
+  | {
+      type: "setIrreversible";
+      /** Stable key — once set, cannot be overwritten */
+      key: string;
+      choiceId: string;
+      label: string;
+    }
+  | {
+      type: "addScar";
+      id: string;
+      label: string;
+      kind?: import("./worldMemory").HarborScarKind;
+      /** saver | spender | risk — bumps Voyager stance */
+      stance?: import("./worldMemory").StanceAxis;
+      stanceDelta?: number;
+    };
 
 export type IslandItem = {
   id: ItemId;
@@ -250,6 +266,14 @@ export type IslandSaveV1 = {
     questId?: string;
     message?: string;
   };
+  /** Permanent Harbor memory of chapter choices (plaques, tones, props) */
+  harborScars?: import("./worldMemory").HarborScar[];
+  /** Locked-forever decisions keyed by decision id */
+  irreversibleChoices?: Record<string, import("./worldMemory").IrreversibleChoiceRecord>;
+  /** Soft personality axes derived from money choices */
+  stance?: import("./worldMemory").VoyagerStance;
+  /** Per-NPC talk memory for greeting branches */
+  npcMemory?: Record<string, import("./worldMemory").NpcMemoryEntry>;
   /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.

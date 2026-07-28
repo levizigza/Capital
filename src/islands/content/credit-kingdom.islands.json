@@ -84,16 +84,71 @@
                 {
                   "id": "c1a",
                   "text": "Teach me credit recovery.",
-                  "nextNodeId": "c2",
+                  "nextNodeId": "c_fork",
                   "effects": [{ "type": "startQuest", "questId": "q_ck_first_recovery" }]
                 },
                 { "id": "c1b", "text": "I'll explore the board.", "nextNodeId": "c3" }
               ]
             },
             {
+              "id": "c_fork",
+              "speaker": "Cleo the Archivist",
+              "text": "First Ordeal choice — it stains Harbor. Wait and rebuild with on-time shards, or rush a high-APR loan for speed?",
+              "choices": [
+                {
+                  "id": "c_wait",
+                  "text": "Wait and rebuild — no rush loan.",
+                  "nextNodeId": "c2",
+                  "effects": [
+                    {
+                      "type": "setIrreversible",
+                      "key": "credit_borrow_vs_wait",
+                      "choiceId": "wait",
+                      "label": "Waited instead of rushing a loan"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "credit_patience_plaque",
+                      "label": "Kingdom: waited out the interest storm",
+                      "kind": "plaque",
+                      "stance": "saver",
+                      "stanceDelta": 2
+                    }
+                  ]
+                },
+                {
+                  "id": "c_borrow",
+                  "text": "Rush the loan — I need speed.",
+                  "nextNodeId": "c2_rush",
+                  "effects": [
+                    {
+                      "type": "setIrreversible",
+                      "key": "credit_borrow_vs_wait",
+                      "choiceId": "borrow",
+                      "label": "Rushed a high-APR loan"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "credit_haste_plaque",
+                      "label": "Kingdom: haste fed the Debt Cloud",
+                      "kind": "plaza_prop",
+                      "stance": "risk",
+                      "stanceDelta": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "c2",
               "speaker": "Cleo the Archivist",
-              "text": "Roll the Fortune Party board. Minigames here teach scores, APR, and rebuilding trust — painted in cinematic ruin light.",
+              "text": "Patience is a credit signal. Roll the Fortune Party board — Inbox, Debt Loadout, Score Scanner. On-time history rebuilds the Kingdom.",
+              "end": true
+            },
+            {
+              "id": "c2_rush",
+              "speaker": "Cleo the Archivist",
+              "text": "Speed has a price. The board still teaches recovery — but Harbor will show fog where haste landed. Clear the Inbox to prove you can rebuild.",
               "end": true
             },
             {

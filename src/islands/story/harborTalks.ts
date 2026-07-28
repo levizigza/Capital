@@ -257,10 +257,27 @@ export const HARBOR_DIALOGUES: DialogueGraph[] = [
 ];
 
 /** Welcome-back Talk Battle after Cove Change (or any chapter homecoming). */
-export function piggyHomecomingGraph(message?: string | null): DialogueGraph {
+export function piggyHomecomingGraph(
+  message?: string | null,
+  opts?: {
+    scars?: { label: string }[];
+    bondBeat?: number;
+  },
+): DialogueGraph {
   const opener =
     message?.replace(/^Piggy Penny:\s*/i, "").trim() ||
     "You earned coins and made a real choice. Harbor feels different because YOU are.";
+  const scarLine =
+    opts?.scars && opts.scars.length > 0
+      ? `I hung a plaque for: ${opts.scars[opts.scars.length - 1]!.label}.`
+      : "Coin Bag and I watched you grow.";
+  const bond =
+    opts?.bondBeat && opts.bondBeat >= 3
+      ? "We've walked a few homecomings together now. I trust your pouch — and you."
+      : opts?.bondBeat && opts.bondBeat >= 2
+        ? "Second time you've flown home changed. I'm proud — and a little sniffly."
+        : "That's the Change beat — earn fair, then choose.";
+
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
     startNodeId: "h1",
@@ -280,11 +297,23 @@ export function piggyHomecomingGraph(message?: string | null): DialogueGraph {
       {
         id: "h2",
         speaker: "Piggy Penny",
-        text: "That's the Change beat — earn fair, then choose. Coin Bag will point you to the Carpet Dock. Next painting: Paycheck Peninsula!",
+        text: `${scarLine} ${bond}`,
         choices: [
           {
             id: "h2_go",
-            text: "To the dock!",
+            text: "Show me what's next!",
+            nextNodeId: "h3",
+          },
+        ],
+      },
+      {
+        id: "h3",
+        speaker: "Piggy Penny",
+        text: "Coin Bag will point the Carpet Dock when a painting waits — or wander the plaza and read your Memory Plinth. Harbor keeps your story.",
+        choices: [
+          {
+            id: "h3_ok",
+            text: "Thanks, Piggy!",
           },
         ],
         end: true,
@@ -302,7 +331,44 @@ export type HarborDialogueOpts = {
     piggyTalked?: boolean;
     message?: string | null;
   } | null;
+  scars?: { label: string }[];
+  /** Count of celebrated homecomings / scars for Piggy bond depth */
+  bondBeat?: number;
+  /** Dominant stance for local greeting flavor */
+  stanceHint?: string | null;
+  /** Prior talks with this NPC */
+  npcTalks?: number;
 };
+
+function stanceLocalGraph(
+  mascotId: MoneyMascotId,
+  opts: { stanceHint?: string | null; npcTalks?: number },
+): DialogueGraph {
+  const base = localGraph(mascotId);
+  const m = getMascot(mascotId);
+  const recall =
+    (opts.npcTalks ?? 0) >= 2
+      ? `Back again — I've counted ${opts.npcTalks} chats with you.`
+      : null;
+  const hint = opts.stanceHint;
+  if (!hint && !recall) return base;
+
+  const opener = [recall, hint].filter(Boolean).join(" ");
+  return {
+    ...base,
+    id: base.id,
+    startNodeId: "n0",
+    nodes: [
+      {
+        id: "n0",
+        speaker: m.name,
+        text: opener,
+        choices: [{ id: "n0_ok", text: "Hi!", nextNodeId: "n1" }],
+      },
+      ...base.nodes,
+    ],
+  };
+}
 
 export function resolveHarborDialogue(
   npcId: string,
@@ -319,9 +385,24 @@ export function resolveHarborDialogue(
     }
     const hc = opts.homecoming;
     if (hc && !hc.piggyTalked && (hc.pending || hc.celebrated)) {
-      return piggyHomecomingGraph(hc.message);
+      return piggyHomecomingGraph(hc.message, {
+        scars: opts.scars,
+        bondBeat: opts.bondBeat,
+      });
     }
   }
+
+  if (npcId !== "piggy_penny" && (opts.stanceHint || (opts.npcTalks ?? 0) >= 2)) {
+    try {
+      return stanceLocalGraph(npcId as MoneyMascotId, {
+        stanceHint: opts.stanceHint,
+        npcTalks: opts.npcTalks,
+      });
+    } catch {
+      /* fall through */
+    }
+  }
+
   return HARBOR_DIALOGUES.find((g) => g.id === `dlg_harbor_${npcId}`);
 }
 

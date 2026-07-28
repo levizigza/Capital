@@ -25,6 +25,20 @@ export const DialogueEffectSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("completeQuest"), questId: z.string() }),
   z.object({ type: z.literal("giveItem"), itemId: z.string() }),
   z.object({ type: z.literal("startMinigame"), minigameId: z.string() }),
+  z.object({
+    type: z.literal("setIrreversible"),
+    key: z.string(),
+    choiceId: z.string(),
+    label: z.string(),
+  }),
+  z.object({
+    type: z.literal("addScar"),
+    id: z.string(),
+    label: z.string(),
+    kind: z.enum(["plaque", "npc_tone", "plaza_prop"]).optional(),
+    stance: z.enum(["saver", "spender", "risk"]).optional(),
+    stanceDelta: z.number().optional(),
+  }),
 ]);
 
 export const DialogueChoiceSchema = z.object({

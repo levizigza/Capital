@@ -230,13 +230,51 @@
             {
               "id": "kk1",
               "speaker": "Keeper Kira",
-              "text": "Welcome to the Savings Lighthouse! Every coin you put in the jar today means more to spend tomorrow. Want to start saving?",
+              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This choice sticks — put some in the jar forever, or treat yourself at Shelly's stall first?",
               "choices": [
                 {
                   "id": "kk1_a",
-                  "text": "Yes! Show me how saving works.",
+                  "text": "Jar first — I'll save.",
                   "nextNodeId": "kk2",
-                  "effects": [{ "type": "giveItem", "itemId": "cc_savings_jar" }]
+                  "effects": [
+                    { "type": "giveItem", "itemId": "cc_savings_jar" },
+                    {
+                      "type": "setIrreversible",
+                      "key": "cove_save_vs_spend",
+                      "choiceId": "save",
+                      "label": "Chose the savings jar first"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "cove_saver_plaque",
+                      "label": "Cove: jar before glitter",
+                      "kind": "plaque",
+                      "stance": "saver",
+                      "stanceDelta": 2
+                    }
+                  ]
+                },
+                {
+                  "id": "kk1_spend",
+                  "text": "Treat first — then I'll jar what's left.",
+                  "nextNodeId": "kk2_spend",
+                  "effects": [
+                    { "type": "giveItem", "itemId": "cc_savings_jar" },
+                    {
+                      "type": "setIrreversible",
+                      "key": "cove_save_vs_spend",
+                      "choiceId": "spend",
+                      "label": "Chose a treat before the jar"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "cove_spender_plaque",
+                      "label": "Cove: glitter before jar",
+                      "kind": "plaque",
+                      "stance": "spender",
+                      "stanceDelta": 2
+                    }
+                  ]
                 },
                 { "id": "kk1_b", "text": "Maybe later.", "nextNodeId": "kk3" }
               ]
@@ -244,7 +282,13 @@
             {
               "id": "kk2",
               "speaker": "Keeper Kira",
-              "text": "Here's your Savings Jar! Every time you earn coins, try putting some in here instead of spending them all. You'll be amazed how fast they grow!",
+              "text": "Here's your Savings Jar! Harbor will remember you put the jar first. Every time you earn, try adding a little more.",
+              "end": true
+            },
+            {
+              "id": "kk2_spend",
+              "speaker": "Keeper Kira",
+              "text": "You still get a jar — and Harbor will remember the treat came first. Wants aren't wrong; knowing the order is the Change.",
               "end": true
             },
             {

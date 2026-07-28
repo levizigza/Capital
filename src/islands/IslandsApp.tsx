@@ -25,7 +25,7 @@ import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
 import { islandHasChapterContent, buildCoveChangeReplayTimeline } from "./chapterLoop";
-import { COVE_CHANGE_QUEST_ID } from "./islandIds";
+import { COVE_CHANGE_QUEST_ID, CREDIT_ORDEAL_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
@@ -40,6 +40,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { getGenreWorld } from "./genreWorlds";
+import { harborScarPlaques, stanceGreetingHint, recordNpcTalk } from "./worldMemory";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
@@ -801,18 +802,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
       // Cove Change beat → Harbor homecoming celebration + unlock Island 2.
       if (questId === COVE_CHANGE_QUEST_ID) {
-        updateSave((prev) => ({
-          ...prev,
-          harborHomecoming: {
-            pending: true,
-            celebrated: false,
-            piggyTalked: false,
-            chapterIslandId: activeIsland.id,
-            questId,
-            message:
-              "Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.",
-          },
-        }));
+        updateSave((prev) => {
+          const lastScar = (prev.harborScars ?? []).at(-1);
+          const scarBit = lastScar
+            ? ` I already set a plaque: ${lastScar.label}.`
+            : "";
+          return {
+            ...prev,
+            harborHomecoming: {
+              pending: true,
+              celebrated: false,
+              piggyTalked: false,
+              chapterIslandId: activeIsland.id,
+              questId,
+              message: `Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.${scarBit}`,
+            },
+          };
+        });
         const timeline = buildCoveChangeReplayTimeline({
           islandId: activeIsland.id,
           islandName:
@@ -822,6 +828,27 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
         saveTimeline(timeline);
         setPendingReplayTimeline(timeline);
+      }
+
+      // Credit Kingdom Ordeal clear → Harbor homecoming
+      if (questId === CREDIT_ORDEAL_QUEST_ID) {
+        updateSave((prev) => {
+          const lastScar = (prev.harborScars ?? []).at(-1);
+          const scarBit = lastScar
+            ? ` The plaza still shows: ${lastScar.label}.`
+            : "";
+          return {
+            ...prev,
+            harborHomecoming: {
+              pending: true,
+              celebrated: false,
+              piggyTalked: false,
+              chapterIslandId: activeIsland.id,
+              questId,
+              message: `Piggy Penny: You faced the interest storm and came home. That's Ordeal courage.${scarBit}`,
+            },
+          };
+        });
       }
     },
     [activeIsland, learningProfile, setUserProfile, updateSave, save?.questStatus]
@@ -921,6 +948,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       const harborGraph = resolveHarborDialogue(npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
+        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        bondBeat: Math.max(
+          (save?.harborScars ?? []).length,
+          save?.harborHomecoming?.celebrated ? 1 : 0,
+        ),
+        stanceHint: stanceGreetingHint(save?.stance),
+        npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
 
@@ -1006,6 +1040,50 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             };
           });
         }
+        if (effect.type === "setIrreversible") {
+          updateSave((prev) => {
+            if (prev.irreversibleChoices?.[effect.key]) return prev;
+            return {
+              ...prev,
+              irreversibleChoices: {
+                ...(prev.irreversibleChoices ?? {}),
+                [effect.key]: {
+                  choiceId: effect.choiceId,
+                  label: effect.label,
+                  islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+                  at: new Date().toISOString(),
+                },
+              },
+            };
+          });
+        }
+        if (effect.type === "addScar") {
+          updateSave((prev) => {
+            const scars = prev.harborScars ?? [];
+            if (scars.some((s) => s.id === effect.id)) return prev;
+            const stanceAxis = effect.stance as "saver" | "spender" | "risk" | undefined;
+            const stanceDelta = typeof effect.stanceDelta === "number" ? effect.stanceDelta : 1;
+            const stance = { ...(prev.stance ?? { saver: 0, spender: 0, risk: 0 }) };
+            if (stanceAxis) {
+              stance[stanceAxis] = Math.max(0, (stance[stanceAxis] ?? 0) + stanceDelta);
+            }
+            return {
+              ...prev,
+              stance,
+              harborScars: [
+                ...scars,
+                {
+                  id: effect.id,
+                  islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+                  choiceId: effect.id,
+                  label: effect.label,
+                  kind: (effect.kind as "plaque" | "npc_tone" | "plaza_prop") ?? "plaque",
+                  createdAt: new Date().toISOString(),
+                },
+              ].slice(-24),
+            };
+          });
+        }
       }
     },
     [activeIsland, analytics, collectItem, startQuest, updateSave]
@@ -1018,7 +1096,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       : undefined;
     if (fromIsland) return fromIsland;
     if (dialogueState.graphId === "dlg_harbor_piggy_penny_homecoming") {
-      return piggyHomecomingGraph(save?.harborHomecoming?.message);
+      return piggyHomecomingGraph(save?.harborHomecoming?.message, {
+        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        bondBeat: (save?.harborScars ?? []).length,
+      });
     }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
     if (fromHarbor) return fromHarbor;
@@ -1031,6 +1112,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return resolveHarborDialogue(dialogueState.npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
+        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        bondBeat: (save?.harborScars ?? []).length,
+        stanceHint: stanceGreetingHint(save?.stance),
+        npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
       });
     }
     return undefined;
@@ -1040,6 +1125,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     dialogueState.npcId,
     save?.hubGuidedIntro,
     save?.harborHomecoming,
+    save?.harborScars,
+    save?.stance,
+    save?.npcMemory,
   ]);
 
   const dialogueNode = useMemo(() => {
@@ -1077,22 +1165,27 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     ) {
       onHubGuidedEvent("talked_guide");
     }
-    // Mark Piggy welcome-back as heard so Coin Bag can point the next painting
-    if (
-      npcId === "piggy_penny" &&
-      save?.harborHomecoming &&
-      !save.harborHomecoming.piggyTalked &&
-      (save.harborHomecoming.pending || save.harborHomecoming.celebrated)
-    ) {
-      updateSave((prev) => ({
-        ...prev,
-        harborHomecoming: {
-          ...(prev.harborHomecoming ?? {}),
-          pending: false,
-          celebrated: true,
-          piggyTalked: true,
-        },
-      }));
+    if (npcId) {
+      const welcomedPiggy =
+        npcId === "piggy_penny" &&
+        save?.harborHomecoming &&
+        !save.harborHomecoming.piggyTalked &&
+        (save.harborHomecoming.pending || save.harborHomecoming.celebrated);
+      updateSave((prev) => {
+        let next = recordNpcTalk(prev, npcId);
+        if (welcomedPiggy) {
+          next = {
+            ...next,
+            harborHomecoming: {
+              ...(next.harborHomecoming ?? {}),
+              pending: false,
+              celebrated: true,
+              piggyTalked: true,
+            },
+          };
+        }
+        return next;
+      });
     }
     setDialogueState({ open: false });
     void trackScreenEnter(
