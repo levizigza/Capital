@@ -2,11 +2,17 @@ import { describe, expect, it } from "vitest";
 import { buildShoreHotspots } from "./islandShoreLayout";
 import {
   COVE_COIN_JAR,
+  CREDIT_INTEREST_KEEP,
   HARBOR_LEDGER_BANK,
   PAYCHECK_PAYROLL_TOWER,
   moneyStructureForIsland,
 } from "./moneyStructures";
-import { COVE_ISLAND_ID, HARBOR_HAVEN_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
+import {
+  COVE_ISLAND_ID,
+  CREDIT_KINGDOM_ID,
+  HARBOR_HAVEN_ID,
+  PAYCHECK_PENINSULA_ID,
+} from "./islandIds";
 import type { IslandDefinition } from "./types";
 
 function stubCove(): IslandDefinition {
@@ -55,6 +61,29 @@ function stubPaycheck(): IslandDefinition {
   };
 }
 
+function stubCredit(): IslandDefinition {
+  return {
+    id: CREDIT_KINGDOM_ID,
+    name: "Credit Kingdom",
+    description: "test",
+    icon: "🏰",
+    areas: [{ id: "ck_gate", name: "Gate", description: "", icon: "🚪", connections: [] }],
+    npcs: [],
+    items: [],
+    quests: [],
+    dialogues: [],
+    minigames: [
+      {
+        id: "mg_ck_budget_balancer",
+        name: "Debt Loadout",
+        description: "x",
+        icon: "⚖️",
+        componentId: "BudgetBalancerMinigame",
+      },
+    ],
+  };
+}
+
 describe("money structures", () => {
   it("registers the Cove Giant Coin Jar", () => {
     const s = moneyStructureForIsland(COVE_ISLAND_ID);
@@ -84,6 +113,16 @@ describe("money structures", () => {
     expect(s?.parts.some((p) => p.softBeat === "umbrella")).toBe(true);
   });
 
+  it("registers the Credit Interest Keep", () => {
+    const s = moneyStructureForIsland(CREDIT_KINGDOM_ID);
+    expect(s?.id).toBe(CREDIT_INTEREST_KEEP.id);
+    expect(s?.theme).toBe("keep");
+    expect(s?.entryVerb.toLowerCase()).toMatch(/spiral|interest/);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_budget_balancer")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_inbox_credit")).toBe(true);
+    expect(s?.parts.some((p) => p.softBeat === "battlement")).toBe(true);
+  });
+
   it("adds a money_structure shore hotspot on Cove", () => {
     const spots = buildShoreHotspots(stubCove());
     const jar = spots.find((h) => h.kind === "money_structure");
@@ -98,5 +137,13 @@ describe("money structures", () => {
     expect(tower?.label).toMatch(/Payroll Tower/i);
     expect(tower?.structureId).toBe("paycheck_payroll_tower");
     expect(tower?.subtitle?.toLowerCase()).toMatch(/chute|climb/);
+  });
+
+  it("adds a money_structure shore hotspot on Credit", () => {
+    const spots = buildShoreHotspots(stubCredit());
+    const keep = spots.find((h) => h.kind === "money_structure");
+    expect(keep?.label).toMatch(/Interest Keep/i);
+    expect(keep?.structureId).toBe("credit_interest_keep");
+    expect(keep?.subtitle?.toLowerCase()).toMatch(/spiral|interest/);
   });
 });

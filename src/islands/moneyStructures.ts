@@ -1,12 +1,17 @@
 /**
  * Money Structures — Astro-style landmarks: enter the machine, each part is a world.
- * Cove Jar · Harbor Bank · Paycheck Payroll Tower
+ * Cove Jar · Harbor Bank · Paycheck Payroll Tower · Credit Interest Keep
  */
 
-import { COVE_ISLAND_ID, HARBOR_HAVEN_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
+import {
+  COVE_ISLAND_ID,
+  CREDIT_KINGDOM_ID,
+  HARBOR_HAVEN_ID,
+  PAYCHECK_PENINSULA_ID,
+} from "./islandIds";
 import { shoreXZ } from "./world3d/ledgerlight";
 
-export type MoneyStructureTheme = "jar" | "bank" | "tower";
+export type MoneyStructureTheme = "jar" | "bank" | "tower" | "keep";
 
 export type MoneyStructurePart = {
   id: string;
@@ -16,7 +21,7 @@ export type MoneyStructurePart = {
   entryPiece: string;
   position: [number, number, number];
   minigameId?: string;
-  softBeat?: "lookout" | "ledger" | "umbrella";
+  softBeat?: "lookout" | "ledger" | "umbrella" | "battlement";
 };
 
 export type MoneyStructureDef = {
@@ -164,10 +169,55 @@ export const PAYCHECK_PAYROLL_TOWER: MoneyStructureDef = {
   ],
 };
 
+/** Interest Keep — spiral through the gate into Credit's storm machine. */
+export const CREDIT_INTEREST_KEEP: MoneyStructureDef = {
+  id: "credit_interest_keep",
+  islandId: CREDIT_KINGDOM_ID,
+  name: "Interest Keep",
+  exteriorLabel: "Interest Keep",
+  icon: "🏰",
+  theme: "keep",
+  entryVerb: "Spiral through the interest gate",
+  entryHint: "The spiral pulls you in — anvil, dispatch, and battlement each open a world.",
+  enterTransition: "Spiraling through the interest gate…",
+  shorePosition: shoreXZ(0, -6.8, 0),
+  exitPosition: [0, 0, 8],
+  parts: [
+    {
+      id: "debt_anvil",
+      label: "Debt Anvil",
+      icon: "⚖️",
+      blurb: "Hammer payments across debts before interest compounds.",
+      entryPiece: "Glowing debt anvil",
+      position: [-4.2, 0, -2.5],
+      minigameId: "mg_ck_budget_balancer",
+    },
+    {
+      id: "dispatch_hatch",
+      label: "Dispatch Hatch",
+      icon: "📨",
+      blurb: "APR letters, late fees, rebuild paths — open the inbox storm.",
+      entryPiece: "Rusted dispatch hatch",
+      position: [4.2, 0, -2.2],
+      minigameId: "mg_ck_inbox_credit",
+    },
+    {
+      id: "score_battlement",
+      label: "Score Battlement",
+      icon: "📡",
+      blurb: "Stand the wall — utilization vs on-time history, quiet before the storm.",
+      entryPiece: "Battlement signal post",
+      position: [0, 0, -6.2],
+      softBeat: "battlement",
+    },
+  ],
+};
+
 const BY_ISLAND: Record<string, MoneyStructureDef> = {
   [COVE_ISLAND_ID]: COVE_COIN_JAR,
   [HARBOR_HAVEN_ID]: HARBOR_LEDGER_BANK,
   [PAYCHECK_PENINSULA_ID]: PAYCHECK_PAYROLL_TOWER,
+  [CREDIT_KINGDOM_ID]: CREDIT_INTEREST_KEEP,
 };
 
 export function moneyStructureForIsland(islandId: string): MoneyStructureDef | null {
@@ -183,6 +233,7 @@ export function moneyStructurePart(
 
 export function hostIslandForStructureMinigame(minigameId: string): string | null {
   if (minigameId === "mg_treasure_vault" || minigameId === "mg_coin_catcher") return COVE_ISLAND_ID;
+  if (minigameId.startsWith("mg_ck_")) return CREDIT_KINGDOM_ID;
   if (
     minigameId === "mg_inbox_storm" ||
     minigameId === "mg_budget_split" ||
@@ -197,11 +248,13 @@ export function hostIslandForStructureMinigame(minigameId: string): string | nul
 export function structureExitLabel(theme: MoneyStructureTheme): string {
   if (theme === "bank") return "Exit Bank";
   if (theme === "tower") return "Exit Tower";
+  if (theme === "keep") return "Exit Keep";
   return "Exit Jar";
 }
 
 export function structureReturnLabel(theme: MoneyStructureTheme): string {
   if (theme === "bank") return "Step back to Harbor";
   if (theme === "tower") return "Slide back to Peninsula";
+  if (theme === "keep") return "Climb back to Credit";
   return "Squeeze back to Cove";
 }

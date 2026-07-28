@@ -23,12 +23,14 @@ import { playCapitalSfx } from "../audio/capitalSfx";
 function themeShell(theme: MoneyStructureDef["theme"]) {
   if (theme === "bank") return { wall: "#94a3b8", wallOp: 0.22, bg: "#1e293b" };
   if (theme === "tower") return { wall: "#38bdf8", wallOp: 0.2, bg: "#0c4a6e" };
+  if (theme === "keep") return { wall: "#78716c", wallOp: 0.24, bg: "#1c1917" };
   return { wall: "#7dd3fc", wallOp: 0.18, bg: "#0c4a6e" };
 }
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Exit · vault door" : "Back to Harbor";
   if (theme === "tower") return near ? "Exit · paycheck chute" : "Back to Peninsula";
+  if (theme === "keep") return near ? "Exit · interest spiral" : "Back to Credit";
   return near ? "Exit · coin slot" : "Back to Cove";
 }
 
@@ -185,6 +187,21 @@ function PartPad({
         <mesh position={[0, y, 0]} castShadow>
           <coneGeometry args={[0.85, 1.1, 12]} />
           <meshStandardMaterial color="#0ea5e9" metalness={0.15} roughness={0.5} />
+        </mesh>
+      ) : part.id === "debt_anvil" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <boxGeometry args={[1.1, 0.55, 0.7]} />
+          <meshStandardMaterial color="#78716c" metalness={0.55} roughness={0.35} />
+        </mesh>
+      ) : part.id === "dispatch_hatch" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <boxGeometry args={[1.0, 0.75, 0.2]} />
+          <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.45} />
+        </mesh>
+      ) : part.id === "score_battlement" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <cylinderGeometry args={[0.15, 0.2, 1.4, 8]} />
+          <meshStandardMaterial color="#94a3b8" metalness={0.4} roughness={0.4} />
         </mesh>
       ) : (
         <mesh position={[0, y, 0]} castShadow>

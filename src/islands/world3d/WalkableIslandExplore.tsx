@@ -18,6 +18,7 @@ import { colorHex, type MoneyForm } from "../character";
 import type { ShoreHotspot } from "../islandShoreLayout";
 import { CoinJarLandmark } from "./CoinJarLandmark";
 import { PayrollTowerLandmark } from "./PayrollTowerLandmark";
+import { InterestKeepLandmark } from "./InterestKeepLandmark";
 import {
   buildAmbientEcosystem,
   getIslandCulture,
@@ -367,6 +368,16 @@ function PadMarker({
     if (theme === "tower") {
       return (
         <PayrollTowerLandmark
+          position={hotspot.position}
+          active={active}
+          guided={guided}
+          label={hotspot.label}
+        />
+      );
+    }
+    if (theme === "keep") {
+      return (
+        <InterestKeepLandmark
           position={hotspot.position}
           active={active}
           guided={guided}

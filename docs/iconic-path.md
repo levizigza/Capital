@@ -20,8 +20,9 @@ Each island may host one **Money Structure** — a landmark you climb *into*. In
 | Coincraft Cove | Giant Coin Jar | Coin slot | Cork Vault · Coin Spring · Lid Lookout |
 | Harbor Haven | Ledger Bank | Brass vault door | Safe Heart · Payday Stamp · Teller Window |
 | Paycheck Peninsula | Payroll Tower | Paycheck chute | Bucket Press · Time Clock · Umbrella Loft |
+| Credit Kingdom | Interest Keep | Interest spiral | Debt Anvil · Dispatch Hatch · Score Battlement |
 
-Next on path: Credit Interest Keep.
+Money Structures path complete for the triangle spine (Cove → Paycheck → Credit + Harbor).
 
 This is **structure depth**, not map width — still no new outer islands.
 

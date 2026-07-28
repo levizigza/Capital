@@ -10,6 +10,8 @@ export const LEGACY_HUB_ISLAND_ID = "coincraft_cove";
 export const COVE_ISLAND_ID = "coincraft_cove";
 /** Island 2 — unlocked after Cove save/spend chapter */
 export const PAYCHECK_PENINSULA_ID = "paycheck_peninsula";
+/** Island 3 — late-game Ordeal (boss door) */
+export const CREDIT_KINGDOM_ID = "credit_kingdom";
 /** Cove “Take” quest that triggers Harbor Return/Change */
 export const COVE_CHANGE_QUEST_ID = "q_cc_save_or_spend";
 /** Paycheck Peninsula Change — rainy-day Take that triggers Harbor Return */

@@ -189,6 +189,13 @@ export function IslandShoreView({
         });
         return;
       }
+      if (part.softBeat === "battlement") {
+        playCapitalSfx("harbor_cheer");
+        toast.message("Score Battlement", {
+          description: "On-time history beats haste — interest feeds on rushing.",
+        });
+        return;
+      }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
         onPlayMinigame(part.minigameId);
