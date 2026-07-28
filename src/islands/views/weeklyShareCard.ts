@@ -7,6 +7,48 @@ export async function downloadWeeklyShareCard(opts: {
   streak: number;
   plinthHint?: string | null;
 }): Promise<void> {
+  await downloadSharePng({
+    brand: "CAPITAL · Harbor Haven",
+    headline: opts.title,
+    lines: [
+      opts.voyagerName,
+      opts.progress,
+      `Streak ${opts.streak} day${opts.streak === 1 ? "" : "s"}`,
+    ],
+    accent: opts.plinthHint ?? null,
+    footer: "Money is alive — choices stick.",
+    filename: `capital-harbor-week-${Date.now()}.png`,
+  });
+}
+
+/** Post-spectacle share — the iconic “Harbor felt that” moment. */
+export async function downloadHarborFeltCard(opts: {
+  voyagerName: string;
+  scarLabel: string;
+  chapter?: string | null;
+}): Promise<void> {
+  await downloadSharePng({
+    brand: "CAPITAL · Harbor Haven",
+    headline: "Harbor felt that",
+    lines: [
+      opts.voyagerName,
+      opts.chapter ? `${opts.chapter}` : "A choice stuck",
+      `“${opts.scarLabel}”`,
+    ],
+    accent: "Memory Plinth · money is alive",
+    footer: "Choices leave plaques. Share yours.",
+    filename: `capital-harbor-felt-${Date.now()}.png`,
+  });
+}
+
+async function downloadSharePng(opts: {
+  brand: string;
+  headline: string;
+  lines: string[];
+  accent?: string | null;
+  footer: string;
+  filename: string;
+}): Promise<void> {
   const w = 1080;
   const h = 1080;
   const canvas = document.createElement("canvas");
@@ -28,27 +70,29 @@ export async function downloadWeeklyShareCard(opts: {
 
   ctx.fillStyle = "#fef3c7";
   ctx.font = "700 42px Georgia, serif";
-  ctx.fillText("CAPITAL · Harbor Haven", 110, 220);
+  ctx.fillText(opts.brand, 110, 220);
 
   ctx.fillStyle = "#fff";
   ctx.font = "800 64px system-ui, sans-serif";
-  wrapText(ctx, opts.title, 110, 340, w - 220, 72);
+  wrapText(ctx, opts.headline, 110, 340, w - 220, 72);
 
   ctx.font = "600 40px system-ui, sans-serif";
   ctx.fillStyle = "#e0f2fe";
-  ctx.fillText(opts.voyagerName, 110, 520);
-  ctx.fillText(opts.progress, 110, 580);
-  ctx.fillText(`Streak ${opts.streak} day${opts.streak === 1 ? "" : "s"}`, 110, 640);
+  let y = 520;
+  for (const line of opts.lines) {
+    wrapText(ctx, line, 110, y, w - 220, 48);
+    y += 60;
+  }
 
-  if (opts.plinthHint) {
+  if (opts.accent) {
     ctx.fillStyle = "#fde68a";
     ctx.font = "500 32px system-ui, sans-serif";
-    wrapText(ctx, opts.plinthHint, 110, 720, w - 220, 40);
+    wrapText(ctx, opts.accent, 110, 760, w - 220, 40);
   }
 
   ctx.fillStyle = "rgba(255,255,255,0.7)";
   ctx.font = "500 28px system-ui, sans-serif";
-  ctx.fillText("Money is alive — choices stick.", 110, 980);
+  ctx.fillText(opts.footer, 110, 980);
 
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob((b) => resolve(b), "image/png"),
@@ -57,7 +101,7 @@ export async function downloadWeeklyShareCard(opts: {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `capital-harbor-week-${Date.now()}.png`;
+  a.download = opts.filename;
   a.click();
   URL.revokeObjectURL(url);
 }

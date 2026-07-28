@@ -6,6 +6,7 @@
 
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "./moneyCast";
 import { PLAZA_POP_CAMEOS } from "./moneyPopCulture";
+import { scarEchoAmbientLine } from "./worldMemory";
 
 export type HarborHour = "morning" | "midday" | "afternoon" | "evening";
 
@@ -93,10 +94,18 @@ export function harborNpcPose(
   life: HarborNpcLife,
   hour: HarborHour = currentHarborHour(),
   memory?: { talks?: number; lastChoiceIds?: string[] } | null,
+  scarEcho?: { label: string; dayOffset: "same" | "later" } | null,
 ): { position: [number, number, number]; yaw: number; line: string; name: string } {
   const mascot = getMascot(life.mascotId);
   let line = life.lines[hour];
-  if (memory && (memory.talks ?? 0) >= 1) {
+  // Day-2 plaque echo — a few locals name the scar so the plaza feels haunted by choice
+  if (
+    scarEcho?.label &&
+    life.mascotId !== "piggy_penny" &&
+    (life.mascotId.charCodeAt(0) + hour.length) % 3 === 0
+  ) {
+    line = scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset);
+  } else if (memory && (memory.talks ?? 0) >= 1) {
     const last = memory.lastChoiceIds?.at(-1);
     if (last) {
       line = `${mascot.name}: I remember you chose “${last}”. ${line.includes(": ") ? line.split(": ").slice(1).join(": ") : line}`;

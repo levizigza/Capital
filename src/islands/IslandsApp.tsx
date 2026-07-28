@@ -1911,7 +1911,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   ...(prev.harborHomecoming ?? {}),
                   pending: false,
                   celebrated: true,
-                  quietPending: false,
+                  // Keep quiet until Piggy Talk Battle — signature hush
+                  quietPending: prev.harborHomecoming?.quietPending ?? true,
                 },
               }));
             }}

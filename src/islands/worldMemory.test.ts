@@ -104,6 +104,7 @@ describe("worldMemory", () => {
       "Credit Kingdom",
     ]);
     expect(scarTriggersChapterQuiet("pp_protector_plaque")).toBe(true);
-    expect(scarTriggersChapterQuiet("cove_saver_plaque")).toBe(false);
+    expect(scarTriggersChapterQuiet("cove_saver_plaque")).toBe(true);
+    expect(scarTriggersChapterQuiet("credit_haste_plaque")).toBe(true);
   });
 });

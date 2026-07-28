@@ -44,12 +44,13 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
-import { harborScarPlaques, stanceGreetingHint, groupScarsByChapter } from "../worldMemory";
+import { harborScarPlaques, stanceGreetingHint, groupScarsByChapter, scarChapterTitle } from "../worldMemory";
 import {
   dailyRumorText,
   ritualNeedsAttention,
   weeklyMeta,
   weeklyShareText,
+  localDayKey,
 } from "../harborRitual";
 import {
   loadVisibleCommunityLevels,
@@ -69,7 +70,7 @@ import {
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
-import { downloadWeeklyShareCard } from "./weeklyShareCard";
+import { downloadWeeklyShareCard, downloadHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
@@ -237,12 +238,15 @@ export function HomeHubView({
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
   const [spectacleOpen, setSpectacleOpen] = useState(false);
+  const [plinthGlow, setPlinthGlow] = useState(false);
+  const [feltShareOpen, setFeltShareOpen] = useState(false);
 
   const visualBeats = resolveHarborVisualBeats({
     guidedStepId: guidedStep?.id,
     homecomingPending: needsPiggyWelcome,
     pointNextPainting,
     scarSpectacleActive: spectacleOpen,
+    plinthGlowActive: plinthGlow && !spectacleOpen,
   });
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
   /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
@@ -250,9 +254,23 @@ export function HomeHubView({
     nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
   const homecomingActive = needsPiggyWelcome || pointNextPainting;
   const keeperSpeech =
-    castleMode || homecomingActive ? visualBeats.keeperBubbleWhenNear || null : null;
+    castleMode || homecomingActive || spectacleOpen || plinthGlow
+      ? visualBeats.keeperBubbleWhenNear || null
+      : null;
   const pulseHotspotId =
     visualBeats.pulseHotspot === "guide" ? null : (visualBeats.pulseHotspot ?? null);
+
+  const latestPlaque = plaques[plaques.length - 1] ?? null;
+  const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
+  const scarEcho =
+    latestPlaque != null
+      ? {
+          label: latestPlaque.label,
+          dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
+            | "same"
+            | "later",
+        }
+      : null;
 
   useEffect(() => {
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
@@ -265,7 +283,7 @@ export function HomeHubView({
     if (count < 1) return;
     if (hubModal) return;
     if (talkOpen) return;
-    if (spectacleOpen) return;
+    if (spectacleOpen || feltShareOpen) return;
     if (guided && !isHubGuidedComplete(guided)) return;
     const shown = save.scarSpectacle?.shownForCount ?? 0;
     if (count > shown) setSpectacleOpen(true);
@@ -276,18 +294,28 @@ export function HomeHubView({
     guided,
     talkOpen,
     spectacleOpen,
+    feltShareOpen,
   ]);
 
   const closeSpectacle = useCallback(() => {
     setSpectacleOpen(false);
     onMarkScarSpectacle?.(plaques.length);
+    setPlinthGlow(true);
+    setFeltShareOpen(true);
+    playCapitalSfx("plinth_hum");
   }, [plaques.length, onMarkScarSpectacle]);
+
+  useEffect(() => {
+    if (!plinthGlow) return;
+    const t = window.setTimeout(() => setPlinthGlow(false), 12000);
+    return () => window.clearTimeout(t);
+  }, [plinthGlow]);
 
   useEffect(() => {
     if (!save.harborRitual) return;
     if (save.harborRitual.today.greeted) return;
     if (hubModal) return;
-    if (spectacleOpen) return;
+    if (spectacleOpen || feltShareOpen) return;
     if (save.harborHomecoming?.pending) return;
     // Trailer path: Castle Grounds done + map opened once before ritual auto-opens
     if (guided && !isHubGuidedComplete(guided)) return;
@@ -301,6 +329,7 @@ export function HomeHubView({
     guided,
     setHubModal,
     spectacleOpen,
+    feltShareOpen,
   ]);
 
   const structuralBuddy = coinBagHarborTip(guided, {
@@ -322,7 +351,7 @@ export function HomeHubView({
     structuralTip: structuralBuddy,
   });
   const bagGuideTip =
-    castleMode || homecomingActive || spectacleOpen
+    castleMode || homecomingActive || spectacleOpen || plinthGlow
       ? visualBeats.bagTip
       : buddyTip.tip;
 
@@ -547,9 +576,10 @@ export function HomeHubView({
   const canResume =
     !!save.currentIslandId && !isHubIslandId(save.currentIslandId);
 
-  const homecoming = save.harborHomecoming?.pending
-    ? save.harborHomecoming
-    : null;
+  const homecoming =
+    save.harborHomecoming?.pending && !spectacleOpen && !feltShareOpen
+      ? save.harborHomecoming
+      : null;
 
   const coachText =
     homecoming?.message ||
@@ -596,15 +626,17 @@ export function HomeHubView({
                   guideLookAt={harborGuideLookAt}
                   guideTip={bagGuideTip}
                   keeperEmote={
-                    castleMode || homecomingActive || spectacleOpen ? keeperEmote : "idle"
+                    castleMode || homecomingActive || spectacleOpen || plinthGlow
+                      ? keeperEmote
+                      : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || spectacleOpen
+                    castleMode || homecomingActive || spectacleOpen || plinthGlow
                       ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
                       : null
                   }
                   pulseHotspotId={
-                    castleMode || spectacleOpen || homecomingActive
+                    castleMode || spectacleOpen || plinthGlow || homecomingActive
                       ? pulseHotspotId
                       : showOutfitterHighlight
                         ? "outfitter"
@@ -612,13 +644,14 @@ export function HomeHubView({
                   }
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
-                  inputFrozen={talkOpen || spectacleOpen}
+                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen}
                   weatherFog={
                     spectacleOpen
                       ? { near: 8, far: 42 }
                       : weatherFogParams(harborWeatherMood(save))
                   }
                   npcMemory={save.npcMemory ?? null}
+                  scarEcho={scarEcho}
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
@@ -1273,6 +1306,54 @@ export function HomeHubView({
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={feltShareOpen && !spectacleOpen}
+        onClose={() => setFeltShareOpen(false)}
+        maxWidth="sm"
+        usePortal
+        showCloseButton
+        title="Harbor felt that"
+      >
+        <div className="space-y-3 text-center">
+          <p className="text-sm text-muted-foreground">
+            {latestPlaque
+              ? `“${latestPlaque.label}” lives on the Memory Plinth. Share the moment.`
+              : "Your choice stuck. Share the moment."}
+          </p>
+          <GameButton
+            variant="primary"
+            className="w-full"
+            onClick={async () => {
+              if (!latestPlaque) {
+                setFeltShareOpen(false);
+                return;
+              }
+              try {
+                await downloadHarborFeltCard({
+                  voyagerName: voyager.name || "Voyager",
+                  scarLabel: latestPlaque.label,
+                  chapter: scarChapterTitle(latestPlaque),
+                });
+                toast.message("Share card downloaded");
+              } catch {
+                toast.error("Couldn’t build share card");
+              }
+              setFeltShareOpen(false);
+            }}
+            autoFocus
+          >
+            Download “Harbor felt that” PNG
+          </GameButton>
+          <GameButton
+            variant="outline"
+            className="w-full"
+            onClick={() => setFeltShareOpen(false)}
+          >
+            Keep walking
           </GameButton>
         </div>
       </GameModal>

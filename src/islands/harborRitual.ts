@@ -101,6 +101,14 @@ export function pickDailyRumor(save: IslandSaveV1, dayKey: string): { id: string
   const plaques = harborScarPlaques(save);
   if (plaques.length > 0) {
     const p = plaques[plaques.length - 1]!;
+    const scarDay = (p.createdAt || "").slice(0, 10);
+    // Day 2+: Harbor still names the plaque — world proved it remembers
+    if (scarDay && scarDay < dayKey) {
+      return {
+        id: `scar_echo_${p.id}`,
+        text: `Day-after echo: locals still tip their jars about “${p.label}.” The Plinth did not forget overnight.`,
+      };
+    }
     return {
       id: `scar_${p.id}`,
       text: `Memory Plinth rumor: “${p.label}” still shapes how locals greet you.`,

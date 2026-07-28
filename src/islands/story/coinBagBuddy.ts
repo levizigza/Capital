@@ -152,7 +152,9 @@ export function coinBagIslandTip(
       return {
         tip: "Breathe — that choice sticks",
         coach:
-          island.id === "paycheck_peninsula"
+          island.id === "coincraft_cove"
+            ? "Harbor is already listening. Soft HUD. When you're ready, carpet home — Piggy will feel it."
+            : island.id === "paycheck_peninsula"
             ? "No glitter HUD. Walk Main Street, then fly home when you're ready — Harbor is listening."
             : island.id === "credit_kingdom"
               ? "Interest is quiet. So are we. Finish the canyon, then carpet home."

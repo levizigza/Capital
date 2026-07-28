@@ -517,7 +517,7 @@ export function IslandPlayView({
               onOpenHub();
             }}
           >
-            Hub
+            {chapterQuiet ? "Fly home changed" : "Hub"}
           </GameButton>
         </div>
       }

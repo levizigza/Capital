@@ -66,6 +66,8 @@ type Props = {
   weatherFog?: { near: number; far: number } | null;
   /** Per-NPC Talk Battle memory for ambient greetings */
   npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
+  /** Latest plaque echo so plaza locals name the scar (day-2 memory) */
+  scarEcho?: { label: string; dayOffset: "same" | "later" } | null;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -652,6 +654,7 @@ export function WalkableHarborView({
   inputFrozen = false,
   weatherFog = null,
   npcMemory = null,
+  scarEcho = null,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -681,7 +684,7 @@ export function WalkableHarborView({
   const locals = useMemo(
     () =>
       lives.map((life) => {
-        const pose = harborNpcPose(life, hour, npcMemory?.[life.mascotId]);
+        const pose = harborNpcPose(life, hour, npcMemory?.[life.mascotId], scarEcho);
         const mascot = getMascot(life.mascotId);
         const lookChar = varyMascot(life.mascotId, `harbor:${life.mascotId}:${hour}`);
         return {
@@ -695,7 +698,7 @@ export function WalkableHarborView({
           name: pose.name,
         };
       }),
-    [lives, hour, npcMemory],
+    [lives, hour, npcMemory, scarEcho],
   );
   const npcBodies = useRef(new Map<string, { position: Vec3; line: string; name: string }>());
   const playerPos = useRef(new THREE.Vector3(0, 0, 3));

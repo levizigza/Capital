@@ -5,6 +5,8 @@
 
 **Mythology:** The whole journey *is* the story — see [story-bible.md](./story-bible.md) (Harmon Story Circle + Hero’s Journey). Harbor Haven = Castle Grounds; every island is a full circle chapter. Expand inside that cosmos; do not invent a second one.
 
+**Iconic path (now):** Depth on the Cove → Harbor signature loop before map width — see [iconic-path.md](./iconic-path.md).
+
 ---
 
 ## Target customers

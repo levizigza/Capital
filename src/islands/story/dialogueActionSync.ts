@@ -13,7 +13,15 @@ export type GuidedVisualBeats = {
   /** Coin Bag billboard tip — must match hop target */
   bagTip: string;
   /** Hotspot that should pulse / glow */
-  pulseHotspot?: "outfitter" | "capsule" | "travel" | "arcade" | "practice" | "guide" | "market";
+  pulseHotspot?:
+    | "outfitter"
+    | "capsule"
+    | "travel"
+    | "arcade"
+    | "practice"
+    | "guide"
+    | "market"
+    | "memory";
 };
 
 /** Map guided step id → what the player must SEE. */
@@ -91,8 +99,16 @@ export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
 export const SCAR_SPECTACLE_VISUAL_BEATS: GuidedVisualBeats = {
   keeperEmote: "cheer",
   keeperBubbleWhenNear: "Piggy Penny: Harbor felt that! The Memory Plinth is glowing!",
-  bagTip: "The plaza remembers — look!",
-  pulseHotspot: "guide",
+  bagTip: "Memory Plinth — it’s glowing!",
+  pulseHotspot: "memory",
+};
+
+/** Brief afterglow — keep the Plinth pulsing so the glow claim is true. */
+export const PLINTH_GLOW_VISUAL_BEATS: GuidedVisualBeats = {
+  keeperEmote: "point",
+  keeperBubbleWhenNear: "Piggy Penny: Touch the Memory Plinth — your choice lives there.",
+  bagTip: "Tap the glowing Memory Plinth",
+  pulseHotspot: "memory",
 };
 
 export function guidedVisualBeats(stepId?: string | null): GuidedVisualBeats {
@@ -110,11 +126,14 @@ export function resolveHarborVisualBeats(opts: {
   /** Cove Change done, Piggy already talked — nudge next painting */
   pointNextPainting?: boolean;
   scarSpectacleActive?: boolean;
+  /** Memory Plinth still pulsing after spectacle */
+  plinthGlowActive?: boolean;
 }): GuidedVisualBeats {
   if (opts.guidedStepId && opts.guidedStepId !== "done") {
     return guidedVisualBeats(opts.guidedStepId);
   }
   if (opts.scarSpectacleActive) return SCAR_SPECTACLE_VISUAL_BEATS;
+  if (opts.plinthGlowActive) return PLINTH_GLOW_VISUAL_BEATS;
   if (opts.homecomingPending) return HOMECOMING_VISUAL_BEATS;
   if (opts.pointNextPainting) return POST_HOMECOMING_VISUAL_BEATS;
   return guidedVisualBeats(opts.guidedStepId);

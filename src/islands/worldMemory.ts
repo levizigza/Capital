@@ -156,7 +156,23 @@ export function groupScarsByChapter(
 
 /** True if this scar should trigger an in-chapter quiet beat. */
 export function scarTriggersChapterQuiet(scarId: string): boolean {
-  return scarId.startsWith("pp_") || scarId.startsWith("credit_");
+  return (
+    scarId.startsWith("cove_") ||
+    scarId.startsWith("pp_") ||
+    scarId.startsWith("credit_")
+  );
+}
+
+/** Ambient plaza line when Harbor still carries yesterday’s plaque. */
+export function scarEchoAmbientLine(
+  mascotName: string,
+  scarLabel: string,
+  dayOffset: "same" | "later",
+): string {
+  if (dayOffset === "later") {
+    return `${mascotName}: Still thinking about “${scarLabel}” on the Plinth. Money left footprints.`;
+  }
+  return `${mascotName}: The Plinth just got “${scarLabel}”. Harbor felt that.`;
 }
 
 export function stanceGreetingHint(
