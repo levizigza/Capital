@@ -7,6 +7,7 @@ on:
       - "e2e/**"
       - "scripts/**"
       - "docs/sre/**"
+      - "docs/security/**"
       - "public/health.json"
       - "playwright.config.ts"
       - "vite.config.ts"
@@ -50,7 +51,19 @@ jobs:
           cache: npm
       - run: npm ci
       # Scoped gate: expand to full tree as legacy lint debt is cleared (see docs/sre).
-      - run: npx eslint src/sre --max-warnings 0
+      - run: npx eslint src/sre src/security --max-warnings 0
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run security:check
+      - run: npm test -- src/security src/islands/familyRoom.test.ts
 
   e2e-smoke:
     runs-on: ubuntu-latest

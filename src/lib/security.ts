@@ -31,9 +31,10 @@ export class SecurityService {
 
   static sanitizeInput(input: string): string {
     if (!input) return ''
-    
+
     const trimmed = input.trim().slice(0, SECURITY_CONFIG.maxInputLength)
-    
+
+    // Defense in depth: strip tags/handlers then remove residual markup chars.
     return trimmed
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<[^>]*>/g, '')
@@ -41,9 +42,7 @@ export class SecurityService {
       .replace(/on\w+\s*=/gi, '')
       .replace(/data:text\/html/gi, '')
       .replace(/vbscript:/gi, '')
-      .replace(/<iframe/gi, '')
-      .replace(/onerror=/gi, '')
-      .replace(/eval\(/gi, '')
+      .replace(/[<>`]/g, '')
   }
   
   static sanitizeURL(url: string): string {
@@ -127,7 +126,11 @@ export class SecurityService {
     }
     
     if (requesterRole === 'parent') {
-      return true
+      // Parents may only access explicitly linked children — never all students.
+      // Until a verified parent↔child link store exists, deny by default.
+      void requesterId
+      void targetStudentId
+      return false
     }
     
     return false

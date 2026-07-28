@@ -207,26 +207,33 @@ export function showQuestCompletion(data: QuestCompletionData): Promise<void> {
   return new Promise((resolve) => {
     const popup = document.createElement('div')
     popup.className = 'quest-completion-popup'
-    popup.innerHTML = `
-      <div style="text-align: center;">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">
-          🎉 Quest Complete!
-        </h2>
-        <p style="font-size: 1.125rem; margin-bottom: 1rem;">
-          ${data.title}
-        </p>
-        <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
-          <div style="padding: 0.5rem 1rem; background: oklch(0.60 0.18 145); color: white; border-radius: 0.5rem;">
-            +${data.xpGained} XP
-          </div>
-        </div>
-        ${data.rewards && data.rewards.length > 0 ? `
-          <div style="font-size: 0.875rem; color: oklch(0.40 0 0);">
-            Rewards: ${data.rewards.join(', ')}
-          </div>
-        ` : ''}
-      </div>
-    `
+
+    const wrap = document.createElement('div')
+    wrap.style.textAlign = 'center'
+
+    const h2 = document.createElement('h2')
+    h2.style.cssText = 'font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;'
+    h2.textContent = '🎉 Quest Complete!'
+
+    const p = document.createElement('p')
+    p.style.cssText = 'font-size: 1.125rem; margin-bottom: 1rem;'
+    p.textContent = data.title
+
+    const xpRow = document.createElement('div')
+    xpRow.style.cssText = 'display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;'
+    const xp = document.createElement('div')
+    xp.style.cssText = 'padding: 0.5rem 1rem; background: oklch(0.60 0.18 145); color: white; border-radius: 0.5rem;'
+    xp.textContent = `+${data.xpGained} XP`
+    xpRow.appendChild(xp)
+
+    wrap.append(h2, p, xpRow)
+    if (data.rewards && data.rewards.length > 0) {
+      const rewards = document.createElement('div')
+      rewards.style.cssText = 'font-size: 0.875rem; color: oklch(0.40 0 0);'
+      rewards.textContent = `Rewards: ${data.rewards.join(', ')}`
+      wrap.appendChild(rewards)
+    }
+    popup.appendChild(wrap)
     
     document.body.appendChild(popup)
     
@@ -271,24 +278,30 @@ export function showTierUnlock(data: TierUnlockData): Promise<void> {
     // Show banner
     const banner = document.createElement('div')
     banner.className = 'tier-unlock-banner'
-    banner.innerHTML = `
-      <div style="text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 0.5rem;">
-          🏆
-        </div>
-        <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">
-          Tier ${data.tier} Unlocked!
-        </h2>
-        <p style="font-size: 1.25rem; opacity: 0.9;">
-          ${data.title}
-        </p>
-        ${data.rewards && data.rewards.length > 0 ? `
-          <div style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.8;">
-            New features: ${data.rewards.join(', ')}
-          </div>
-        ` : ''}
-      </div>
-    `
+
+    const wrap = document.createElement('div')
+    wrap.style.textAlign = 'center'
+
+    const trophy = document.createElement('div')
+    trophy.style.cssText = 'font-size: 3rem; margin-bottom: 0.5rem;'
+    trophy.textContent = '🏆'
+
+    const h2 = document.createElement('h2')
+    h2.style.cssText = 'font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;'
+    h2.textContent = `Tier ${data.tier} Unlocked!`
+
+    const p = document.createElement('p')
+    p.style.cssText = 'font-size: 1.25rem; opacity: 0.9;'
+    p.textContent = data.title
+
+    wrap.append(trophy, h2, p)
+    if (data.rewards && data.rewards.length > 0) {
+      const rewards = document.createElement('div')
+      rewards.style.cssText = 'margin-top: 1rem; font-size: 0.875rem; opacity: 0.8;'
+      rewards.textContent = `New features: ${data.rewards.join(', ')}`
+      wrap.appendChild(rewards)
+    }
+    banner.appendChild(wrap)
     
     document.body.appendChild(banner)
     

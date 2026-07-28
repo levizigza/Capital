@@ -12,6 +12,7 @@
         "typecheck": "tsc -b --noCheck",
         "test": "vitest run",
         "sre:health": "node scripts/write-health.mjs",
+        "security:check": "node scripts/security-check.mjs",
         "test:e2e": "playwright test",
         "test:e2e:smoke": "playwright test e2e/islands-smoke.spec.ts",
         "test:qa": "vitest run src/qa",

@@ -39,11 +39,18 @@ describe("familyRoom", () => {
 
     const imported = importFamilyRoomJson(json);
     expect(imported.code).toBe(room.code);
+    expect(imported.hostId).not.toBe(room.hostId);
 
     const joined = joinFamilyRoom(room.code, "Alex");
     expect(joined?.members.some((m) => m.name === "Alex")).toBe(true);
 
     pinLevelToRoom("lvl_demo");
     expect(getActiveFamilyRoom()?.pinnedLevelIds).toContain("lvl_demo");
+  });
+
+  it("rejects prototype-polluting family JSON", () => {
+    expect(() =>
+      importFamilyRoomJson('{"__proto__":{"admin":true},"code":"ABCDEF","members":[]}'),
+    ).toThrow();
   });
 });

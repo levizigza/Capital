@@ -17,10 +17,12 @@ import {
   shouldSkipServiceWorker,
   recordSreEvent,
 } from '@/sre'
+import { bootstrapSecurity } from '@/security'
 
 import "./main.css"
 
 bootstrapSre()
+void bootstrapSecurity()
 
 // Successful boot after a ?fresh= recovery — drop the guard so future deploys can recover again.
 try {
@@ -114,7 +116,12 @@ const isPixelPreview =
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
-  document.body.innerHTML = '<h1 style="color: red; text-align: center; margin-top: 50px;">Error: Root element not found</h1>';
+  const h1 = document.createElement('h1');
+  h1.style.color = 'red';
+  h1.style.textAlign = 'center';
+  h1.style.marginTop = '50px';
+  h1.textContent = 'Error: Root element not found';
+  document.body.replaceChildren(h1);
 } else {
   try {
     const root = createRoot(rootElement);
@@ -154,6 +161,11 @@ if (!rootElement) {
         message: error instanceof Error ? error.message.slice(0, 200) : String(error).slice(0, 200),
       },
     });
-    rootElement.innerHTML = `<h1 style="color: red; text-align: center; margin-top: 50px;">Error: ${error}</h1>`;
+    const h1 = document.createElement('h1');
+    h1.style.color = 'red';
+    h1.style.textAlign = 'center';
+    h1.style.marginTop = '50px';
+    h1.textContent = `Error: ${error instanceof Error ? error.message : 'Failed to render'}`;
+    rootElement.replaceChildren(h1);
   }
 }

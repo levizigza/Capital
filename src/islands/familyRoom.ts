@@ -1,11 +1,20 @@
 /**
  * Family Room — local-first social for households / classrooms.
- * No server: invite codes live in localStorage; share via copy/paste JSON.
- * Never pay-to-win.
+ * No server: invite codes live in encrypted local storage; share via copy/paste JSON.
+ * Never pay-to-win. Imports are Zod-validated + re-keyed (never trust foreign hostIds).
  */
 
 import { loadCommunityLevels } from "./studio/communityStorage";
 import type { VibeLevel } from "./studio/levelSchema";
+import {
+  parseFamilyRoomImport,
+  FamilyRoomSchema,
+  sanitizePlainText,
+  safeJsonParse,
+  secureGetItemSync,
+  secureSetItemSync,
+  secureRemoveItem,
+} from "@/security";
 
 const ROOM_KEY = "capital_family_room_v1";
 const ROOMS_INDEX_KEY = "capital_family_rooms_index_v1";
@@ -28,30 +37,37 @@ export type FamilyRoom = {
 
 function randomCode(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
   let out = "";
   for (let i = 0; i < 6; i++) {
-    out += alphabet[Math.floor(Math.random() * alphabet.length)]!;
+    out += alphabet[bytes[i]! % alphabet.length]!;
   }
   return out;
 }
 
 function loadIndex(): Record<string, FamilyRoom> {
   try {
-    const raw = localStorage.getItem(ROOMS_INDEX_KEY);
+    const raw = secureGetItemSync(ROOMS_INDEX_KEY);
     if (!raw) return {};
-    return JSON.parse(raw) as Record<string, FamilyRoom>;
+    const parsed = safeJsonParse<Record<string, unknown>>(raw, { maxBytes: 200_000 });
+    const out: Record<string, FamilyRoom> = {};
+    for (const [code, room] of Object.entries(parsed)) {
+      const result = FamilyRoomSchema.safeParse(room);
+      if (result.success) out[code] = result.data;
+    }
+    return out;
   } catch {
     return {};
   }
 }
 
 function saveIndex(index: Record<string, FamilyRoom>): void {
-  localStorage.setItem(ROOMS_INDEX_KEY, JSON.stringify(index));
+  secureSetItemSync(ROOMS_INDEX_KEY, JSON.stringify(index));
 }
 
 export function getActiveFamilyRoom(): FamilyRoom | null {
   try {
-    const code = localStorage.getItem(ROOM_KEY);
+    const code = secureGetItemSync(ROOM_KEY);
     if (!code) return null;
     return loadIndex()[code] ?? null;
   } catch {
@@ -60,8 +76,8 @@ export function getActiveFamilyRoom(): FamilyRoom | null {
 }
 
 export function setActiveFamilyRoom(code: string | null): void {
-  if (!code) localStorage.removeItem(ROOM_KEY);
-  else localStorage.setItem(ROOM_KEY, code);
+  if (!code) secureRemoveItem(ROOM_KEY);
+  else secureSetItemSync(ROOM_KEY, code);
 }
 
 export function createFamilyRoom(name: string, hostName: string): FamilyRoom {
@@ -69,13 +85,13 @@ export function createFamilyRoom(name: string, hostName: string): FamilyRoom {
   const hostId = `m_${Date.now().toString(36)}`;
   const room: FamilyRoom = {
     code,
-    name: name.trim() || "Family Harbor",
+    name: sanitizePlainText(name, 80) || "Family Harbor",
     createdAt: new Date().toISOString(),
     hostId,
     members: [
       {
         id: hostId,
-        name: hostName.trim() || "Host",
+        name: sanitizePlainText(hostName, 64) || "Host",
         joinedAt: new Date().toISOString(),
       },
     ],
@@ -90,11 +106,13 @@ export function createFamilyRoom(name: string, hostName: string): FamilyRoom {
 
 export function joinFamilyRoom(code: string, memberName: string): FamilyRoom | null {
   const normalized = code.trim().toUpperCase();
+  if (!/^[A-Z0-9]{6}$/.test(normalized)) return null;
   const index = loadIndex();
   const room = index[normalized];
   if (!room) return null;
-  const name = memberName.trim() || "Voyager";
+  const name = sanitizePlainText(memberName, 64) || "Voyager";
   if (!room.members.some((m) => m.name.toLowerCase() === name.toLowerCase())) {
+    if (room.members.length >= 32) return room;
     room.members.push({
       id: `m_${Date.now().toString(36)}`,
       name,
@@ -114,8 +132,10 @@ export function leaveFamilyRoom(): void {
 export function pinLevelToRoom(levelId: string): FamilyRoom | null {
   const room = getActiveFamilyRoom();
   if (!room) return null;
-  if (!room.pinnedLevelIds.includes(levelId)) {
-    room.pinnedLevelIds = [...room.pinnedLevelIds, levelId].slice(-30);
+  const safeId = sanitizePlainText(levelId, 128);
+  if (!safeId) return room;
+  if (!room.pinnedLevelIds.includes(safeId)) {
+    room.pinnedLevelIds = [...room.pinnedLevelIds, safeId].slice(-30);
     const index = loadIndex();
     index[room.code] = room;
     saveIndex(index);
@@ -132,15 +152,13 @@ export function roomPinnedLevels(room: FamilyRoom): VibeLevel[] {
 
 /** Export room for another device / parent paste. */
 export function exportFamilyRoomJson(room: FamilyRoom): string {
-  return JSON.stringify(room, null, 2);
+  return JSON.stringify(FamilyRoomSchema.parse(room), null, 2);
 }
 
-/** Import a shared room JSON onto this device. */
+/** Import a shared room JSON onto this device (validated + re-keyed). */
 export function importFamilyRoomJson(text: string): FamilyRoom {
-  const room = JSON.parse(text) as FamilyRoom;
-  if (!room?.code || !Array.isArray(room.members)) {
-    throw new Error("Invalid family room JSON");
-  }
+  const raw = safeJsonParse(text, { maxBytes: 100_000 });
+  const room = parseFamilyRoomImport(raw);
   const index = loadIndex();
   index[room.code] = room;
   saveIndex(index);

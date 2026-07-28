@@ -1,13 +1,14 @@
 import { useEffect, useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { ProgressBackupSchema, safeJsonParse, eraseAllUserData } from '@/security'
 
 export interface PersistedData {
   version: string
   timestamp: string
-  userProfile: any
-  gameScores: any[]
-  accessibilitySettings: any
-  bankingData: any
+  userProfile: unknown
+  gameScores: unknown[]
+  accessibilitySettings: unknown
+  bankingData: unknown
   lastSaved: string
 }
 
@@ -109,13 +110,13 @@ export function useDataPersistence() {
 
   const importData = useCallback(async (file: File) => {
     try {
-      const text = await file.text()
-      const importedData: PersistedData = JSON.parse(text)
-
-      if (!importedData.version || !importedData.timestamp) {
-        toast.error('Invalid data file format')
+      if (file.size > 512_000) {
+        toast.error('Backup file too large')
         return false
       }
+      const text = await file.text()
+      const raw = safeJsonParse(text, { maxBytes: 512_000 })
+      const importedData = ProgressBackupSchema.parse(raw)
 
       if (importedData.userProfile) {
         await window.spark.kv.set('user-profile', importedData.userProfile)
@@ -147,11 +148,7 @@ export function useDataPersistence() {
 
   const clearAllData = useCallback(async () => {
     try {
-      const keys = await window.spark.kv.keys()
-      for (const key of keys) {
-        await window.spark.kv.delete(key)
-      }
-      localStorage.removeItem(PERSISTENCE_KEY)
+      await eraseAllUserData()
       setLastSaved(null)
       toast.success('All data cleared successfully')
       return true

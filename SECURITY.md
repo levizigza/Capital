@@ -1,5 +1,8 @@
 # Security & Privacy Implementation Guide
 
+> **Source of truth:** [`docs/security/`](./docs/security/README.md) (threat model, vault, DB plan).  
+> This legacy document mixes outdated claims (e.g. “no localStorage”) with older FinanceQuest naming. Prefer `docs/security/` and `src/security/`.
+
 ## Overview
 FinanceQuest Pro implements comprehensive security measures to protect user data and ensure privacy compliance. This document outlines all security features and implementation details.
 

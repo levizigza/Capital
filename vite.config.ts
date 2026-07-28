@@ -66,6 +66,36 @@ function localDevOverrides(): Plugin {
   };
 }
 
+/** Production CSP via meta — GitHub Pages cannot set HTTP security headers. */
+function capitalCspPlugin(): Plugin {
+  const csp = [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-src 'none'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: blob: https:",
+    "connect-src 'self'",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'",
+    "form-action 'self'",
+    "upgrade-insecure-requests",
+  ].join("; ");
+
+  return {
+    name: "capital-csp",
+    apply: "build",
+    transformIndexHtml(html) {
+      return html.replace(
+        /<head>/i,
+        `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />`,
+      );
+    },
+  };
+}
+
 // https://vite.dev/config/
 /// <reference types="vitest/config" />
 export default defineConfig({
@@ -92,6 +122,7 @@ export default defineConfig({
     createIconImportProxy() as PluginOption,
     sparkPlugin() as PluginOption,
     localDevOverrides(),
+    capitalCspPlugin(),
   ],
 
   resolve: {
