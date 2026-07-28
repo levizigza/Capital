@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
 import { scarChapterTitle } from "../worldMemory";
+import { signatureTiming } from "@/qa/signatureLoop";
 
 type Props = {
   scars: HarborScar[];
@@ -20,15 +21,19 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
   const isCove = Boolean(latest?.id.startsWith("cove_"));
 
   useEffect(() => {
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const t = signatureTiming(Boolean(reduced));
     playCapitalSfx("scar_chime");
     const t0 = window.setTimeout(() => {
       setPhase("in");
       playCapitalSfx("harbor_cheer");
       playCapitalSfx("plinth_hum");
-    }, 420);
-    const t1 = window.setTimeout(() => setPhase("hold"), 900);
-    const t2 = window.setTimeout(() => setPhase("out"), 3800);
-    const t3 = window.setTimeout(onDone, 4500);
+    }, t.hushMs);
+    const t1 = window.setTimeout(() => setPhase("hold"), t.revealMs);
+    const t2 = window.setTimeout(() => setPhase("out"), t.holdEndMs);
+    const t3 = window.setTimeout(onDone, t.doneMs);
     return () => {
       window.clearTimeout(t0);
       window.clearTimeout(t1);
@@ -40,10 +45,11 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
   return (
     <div
       className={`pointer-events-auto absolute inset-0 z-[40] flex items-center justify-center transition-opacity duration-500 ${
-        phase === "out" || phase === "hush" ? "opacity-100" : "opacity-100"
-      } ${phase === "out" ? "opacity-0" : ""}`}
+        phase === "out" ? "opacity-0" : "opacity-100"
+      }`}
       role="dialog"
       aria-label="Harbor remembers your choice"
+      data-testid="scar-spectacle"
       onClick={onDone}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();

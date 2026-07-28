@@ -1,4 +1,4 @@
-/** Build a simple PNG share card for weekly Harbor challenges (no deps). */
+/** Share cards — weekly ritual + iconic “Harbor felt that” social object. */
 
 export async function downloadWeeklyShareCard(opts: {
   voyagerName: string;
@@ -7,47 +7,41 @@ export async function downloadWeeklyShareCard(opts: {
   streak: number;
   plinthHint?: string | null;
 }): Promise<void> {
-  await downloadSharePng({
-    brand: "CAPITAL · Harbor Haven",
-    headline: opts.title,
-    lines: [
-      opts.voyagerName,
-      opts.progress,
-      `Streak ${opts.streak} day${opts.streak === 1 ? "" : "s"}`,
-    ],
+  await paintAndDownload({
+    mode: "weekly",
+    voyagerName: opts.voyagerName,
+    title: opts.title,
+    lines: [opts.progress, `Streak ${opts.streak} day${opts.streak === 1 ? "" : "s"}`],
     accent: opts.plinthHint ?? null,
-    footer: "Money is alive — choices stick.",
     filename: `capital-harbor-week-${Date.now()}.png`,
   });
 }
 
-/** Post-spectacle share — the iconic “Harbor felt that” moment. */
+/** Post-spectacle share — the iconic social object. */
 export async function downloadHarborFeltCard(opts: {
   voyagerName: string;
   scarLabel: string;
   chapter?: string | null;
 }): Promise<void> {
-  await downloadSharePng({
-    brand: "CAPITAL · Harbor Haven",
-    headline: "Harbor felt that",
-    lines: [
-      opts.voyagerName,
-      opts.chapter ? `${opts.chapter}` : "A choice stuck",
-      `“${opts.scarLabel}”`,
-    ],
+  await paintAndDownload({
+    mode: "felt",
+    voyagerName: opts.voyagerName,
+    title: "Harbor felt that",
+    lines: [opts.chapter || "Coincraft Cove", `“${opts.scarLabel}”`],
     accent: "Memory Plinth · money is alive",
-    footer: "Choices leave plaques. Share yours.",
     filename: `capital-harbor-felt-${Date.now()}.png`,
+    scarLabel: opts.scarLabel,
   });
 }
 
-async function downloadSharePng(opts: {
-  brand: string;
-  headline: string;
+async function paintAndDownload(opts: {
+  mode: "weekly" | "felt";
+  voyagerName: string;
+  title: string;
   lines: string[];
   accent?: string | null;
-  footer: string;
   filename: string;
+  scarLabel?: string;
 }): Promise<void> {
   const w = 1080;
   const h = 1080;
@@ -57,42 +51,84 @@ async function downloadSharePng(opts: {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas unavailable");
 
-  const grad = ctx.createLinearGradient(0, 0, w, h);
-  grad.addColorStop(0, "#0c4a6e");
-  grad.addColorStop(0.45, "#0369a1");
-  grad.addColorStop(1, "#fbbf24");
-  ctx.fillStyle = grad;
+  // Atmosphere — dusk Harbor wash (not flat purple AI default)
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#0b1c2e");
+  sky.addColorStop(0.4, "#134e6e");
+  sky.addColorStop(0.72, "#1d6a8a");
+  sky.addColorStop(1, "#f0b429");
+  ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
 
-  ctx.fillStyle = "rgba(15,23,42,0.55)";
-  roundRect(ctx, 72, 120, w - 144, h - 280, 48);
+  // Soft sun disk
+  ctx.fillStyle = "rgba(253, 224, 71, 0.35)";
+  ctx.beginPath();
+  ctx.arc(820, 220, 140, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#fef3c7";
-  ctx.font = "700 42px Georgia, serif";
-  ctx.fillText(opts.brand, 110, 220);
+  // Horizon water band
+  ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
+  ctx.fillRect(0, 720, w, 360);
+
+  // Card panel
+  ctx.fillStyle = "rgba(8, 15, 28, 0.72)";
+  roundRect(ctx, 64, 160, w - 128, 640, 36);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(253, 230, 138, 0.55)";
+  ctx.lineWidth = 3;
+  roundRect(ctx, 64, 160, w - 128, 640, 36);
+  ctx.stroke();
+
+  ctx.fillStyle = "#fde68a";
+  ctx.font = "700 36px Georgia, 'Times New Roman', serif";
+  ctx.fillText("CAPITAL", 110, 240);
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.font = "600 28px system-ui, sans-serif";
+  ctx.fillText("Harbor Haven", 110, 285);
+
+  if (opts.mode === "felt") {
+    // Plaque seal
+    ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
+    ctx.beginPath();
+    ctx.arc(900, 280, 70, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#fbbf24";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(900, 280, 70, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#fef3c7";
+    ctx.font = "800 28px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("PLINTH", 900, 288);
+    ctx.textAlign = "left";
+  }
 
   ctx.fillStyle = "#fff";
-  ctx.font = "800 64px system-ui, sans-serif";
-  wrapText(ctx, opts.headline, 110, 340, w - 220, 72);
+  ctx.font = "800 72px system-ui, sans-serif";
+  wrapText(ctx, opts.title, 110, 380, w - 240, 78);
 
-  ctx.font = "600 40px system-ui, sans-serif";
+  ctx.fillStyle = "#bae6fd";
+  ctx.font = "600 36px system-ui, sans-serif";
+  ctx.fillText(opts.voyagerName, 110, 500);
+
   ctx.fillStyle = "#e0f2fe";
-  let y = 520;
+  ctx.font = "600 40px Georgia, serif";
+  let y = 570;
   for (const line of opts.lines) {
-    wrapText(ctx, line, 110, y, w - 220, 48);
-    y += 60;
+    wrapText(ctx, line, 110, y, w - 240, 48);
+    y += 58;
   }
 
   if (opts.accent) {
     ctx.fillStyle = "#fde68a";
-    ctx.font = "500 32px system-ui, sans-serif";
-    wrapText(ctx, opts.accent, 110, 760, w - 220, 40);
+    ctx.font = "500 30px system-ui, sans-serif";
+    wrapText(ctx, opts.accent, 110, 720, w - 240, 38);
   }
 
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.font = "500 28px system-ui, sans-serif";
-  ctx.fillText(opts.footer, 110, 980);
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.font = "600 32px Georgia, serif";
+  ctx.fillText("Money is alive — choices stick.", 110, 980);
 
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob((b) => resolve(b), "image/png"),

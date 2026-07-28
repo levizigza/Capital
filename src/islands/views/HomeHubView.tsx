@@ -70,8 +70,11 @@ import {
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
+import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { downloadWeeklyShareCard, downloadHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
+import { isKilled } from "@/sre";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
 
@@ -136,6 +139,8 @@ export type HomeHubViewProps = {
   onStudioGalleryOpened?: () => void;
   /** Persist scar spectacle shownForCount */
   onMarkScarSpectacle?: (scarCount: number) => void;
+  /** Day-2 scar echo surprise acknowledged */
+  onMarkEchoSurprise?: () => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -178,6 +183,7 @@ export function HomeHubView({
   onMarkRitualGreeted,
   onStudioGalleryOpened,
   onMarkScarSpectacle,
+  onMarkEchoSurprise,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -240,6 +246,8 @@ export function HomeHubView({
   const [spectacleOpen, setSpectacleOpen] = useState(false);
   const [plinthGlow, setPlinthGlow] = useState(false);
   const [feltShareOpen, setFeltShareOpen] = useState(false);
+  const [trailerOpen, setTrailerOpen] = useState(false);
+  const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
 
   const visualBeats = resolveHarborVisualBeats({
     guidedStepId: guidedStep?.id,
@@ -307,15 +315,42 @@ export function HomeHubView({
 
   useEffect(() => {
     if (!plinthGlow) return;
-    const t = window.setTimeout(() => setPlinthGlow(false), 12000);
+    const t = window.setTimeout(() => setPlinthGlow(false), SIGNATURE_TIMING.plinthGlowMs);
     return () => window.clearTimeout(t);
   }, [plinthGlow]);
 
   useEffect(() => {
+    const rumorId = save.harborRitual?.today.rumorId;
+    if (!rumorId?.startsWith("scar_echo_")) return;
+    if (save.harborRitual?.today.echoSurpriseSeen) return;
+    if (hubModal || talkOpen || spectacleOpen || feltShareOpen || trailerOpen) return;
+    if (guided && !isHubGuidedComplete(guided)) return;
+    if (save.harborHomecoming?.pending) return;
+    setEchoSurpriseOpen(true);
+  }, [
+    save.harborRitual?.today.rumorId,
+    save.harborRitual?.today.echoSurpriseSeen,
+    save.harborHomecoming?.pending,
+    hubModal,
+    talkOpen,
+    spectacleOpen,
+    feltShareOpen,
+    trailerOpen,
+    guided,
+  ]);
+
+  useEffect(() => {
+    const onQaTrailer = () => setTrailerOpen(true);
+    window.addEventListener("capital:signature-trailer", onQaTrailer);
+    return () => window.removeEventListener("capital:signature-trailer", onQaTrailer);
+  }, []);
+
+  useEffect(() => {
     if (!save.harborRitual) return;
     if (save.harborRitual.today.greeted) return;
-    if (hubModal) return;
-    if (spectacleOpen || feltShareOpen) return;
+    if (hubModal || talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen) {
+      return;
+    }
     if (save.harborHomecoming?.pending) return;
     // Trailer path: Castle Grounds done + map opened once before ritual auto-opens
     if (guided && !isHubGuidedComplete(guided)) return;
@@ -330,6 +365,9 @@ export function HomeHubView({
     setHubModal,
     spectacleOpen,
     feltShareOpen,
+    trailerOpen,
+    echoSurpriseOpen,
+    talkOpen,
   ]);
 
   const structuralBuddy = coinBagHarborTip(guided, {
@@ -644,9 +682,9 @@ export function HomeHubView({
                   }
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
-                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen}
+                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen}
                   weatherFog={
-                    spectacleOpen
+                    spectacleOpen || trailerOpen
                       ? { near: 8, far: 42 }
                       : weatherFogParams(harborWeatherMood(save))
                   }
@@ -660,6 +698,11 @@ export function HomeHubView({
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
                 ) : null}
+                <SignatureTrailerOverlay
+                  open={trailerOpen}
+                  scarLabel={latestPlaque?.label}
+                  onDone={() => setTrailerOpen(false)}
+                />
               </>
             )}
           </div>
@@ -942,6 +985,19 @@ export function HomeHubView({
               </div>
             ))}
           </div>
+          {plaques.length > 0 ? (
+            <GameButton
+              variant="outline"
+              className="w-full"
+              data-testid="replay-signature-beat"
+              onClick={() => {
+                setHubModal(null);
+                setTrailerOpen(true);
+              }}
+            >
+              Replay signature beat (~24s)
+            </GameButton>
+          ) : null}
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
           </GameButton>
@@ -1318,15 +1374,16 @@ export function HomeHubView({
         showCloseButton
         title="Harbor felt that"
       >
-        <div className="space-y-3 text-center">
+        <div className="space-y-3 text-center" data-testid="harbor-felt-share">
           <p className="text-sm text-muted-foreground">
             {latestPlaque
-              ? `“${latestPlaque.label}” lives on the Memory Plinth. Share the moment.`
+              ? `“${latestPlaque.label}” lives on the Memory Plinth. This is the card people remember.`
               : "Your choice stuck. Share the moment."}
           </p>
           <GameButton
             variant="primary"
             className="w-full"
+            data-testid="harbor-felt-download"
             onClick={async () => {
               if (!latestPlaque) {
                 setFeltShareOpen(false);
@@ -1354,6 +1411,50 @@ export function HomeHubView({
             onClick={() => setFeltShareOpen(false)}
           >
             Keep walking
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen}
+        onClose={() => {
+          setEchoSurpriseOpen(false);
+          onMarkEchoSurprise?.();
+        }}
+        maxWidth="sm"
+        usePortal
+        showCloseButton
+        title="Still here"
+      >
+        <div className="space-y-3 text-center" data-testid="day2-echo-surprise">
+          <p className="text-sm text-muted-foreground">
+            {latestPlaque
+              ? `Locals still tip their jars about “${latestPlaque.label}.” The Plinth did not forget overnight.`
+              : rumor}
+          </p>
+          <GameButton
+            variant="primary"
+            className="w-full"
+            onClick={() => {
+              setEchoSurpriseOpen(false);
+              onMarkEchoSurprise?.();
+              playCapitalSfx("plinth_hum");
+              setPlinthGlow(true);
+              setHubModal("memory");
+            }}
+            autoFocus
+          >
+            Visit the Plinth
+          </GameButton>
+          <GameButton
+            variant="outline"
+            className="w-full"
+            onClick={() => {
+              setEchoSurpriseOpen(false);
+              onMarkEchoSurprise?.();
+            }}
+          >
+            I hear them
           </GameButton>
         </div>
       </GameModal>

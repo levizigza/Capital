@@ -1,4 +1,5 @@
 import type { IslandSaveV1 } from "@/islands/types";
+import type { SignaturePhase } from "./signatureLoop";
 
 export type QAView = "home" | "travel" | "island" | "voyage" | "arcade" | "studio";
 
@@ -12,6 +13,10 @@ export type QABridge = {
   startQuest: (questId: string) => void;
   persistSave: () => Promise<void>;
   resetSave: () => Promise<void>;
+  /** Seed Harbor at a signature-loop phase (cold playtest). */
+  seedSignatureLoop: (phase?: SignaturePhase) => Promise<void>;
+  /** Play the ~24s mute-friendly trailer cut over Harbor. */
+  playSignatureTrailer: () => void;
   ready: boolean;
 };
 

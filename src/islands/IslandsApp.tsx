@@ -45,6 +45,7 @@ import {
   syncHarborRitual,
   markRitualGreeted,
   markRumorSeen,
+  markEchoSurpriseSeen,
   markPaydayDone,
   markRewardClaimed,
   bumpWeeklyTalk,
@@ -115,6 +116,7 @@ import {
 } from "./economy";
 import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
+import { buildSignatureLoopSave, type SignaturePhase } from "@/qa/signatureLoop";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
@@ -672,6 +674,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     updateSave((prev) => markRitualGreeted(prev));
   }, [updateSave]);
 
+  const onMarkEchoSurprise = useCallback(() => {
+    updateSave((prev) => markEchoSurpriseSeen(prev));
+  }, [updateSave]);
+
   const onStudioGalleryOpened = useCallback(() => {
     updateSave((prev) => bumpWeeklyStudio(prev));
   }, [updateSave]);
@@ -803,6 +809,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setActiveIslandId(null);
         setView("home");
         await persistIslandSave(fresh);
+      },
+      seedSignatureLoop: async (phase?: SignaturePhase) => {
+        const seeded = buildSignatureLoopSave(phase ?? "spectacle_ready");
+        setSave(seeded);
+        setActiveIslandId(null);
+        setView("home");
+        setHubModal(null);
+        await persistIslandSave(seeded);
+      },
+      playSignatureTrailer: () => {
+        setView("home");
+        window.dispatchEvent(new Event("capital:signature-trailer"));
       },
     });
   }, [save, view, enterIsland, startQuest, activeIslandId]);
@@ -1931,6 +1949,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               }));
             }}
+            onMarkEchoSurprise={onMarkEchoSurprise}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}

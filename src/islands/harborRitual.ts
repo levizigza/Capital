@@ -13,6 +13,8 @@ export type HarborRitualToday = {
   rewardClaimed?: boolean;
   /** Modal already shown for this day */
   greeted?: boolean;
+  /** Soft day-2 scar surprise already shown (not a tutorial) */
+  echoSurpriseSeen?: boolean;
 };
 
 export type WeeklyChallengeId = "talk_three" | "one_payday" | "studio_play";
@@ -207,6 +209,17 @@ export function markRumorSeen(save: IslandSaveV1): IslandSaveV1 {
     harborRitual: {
       ...save.harborRitual,
       today: { ...save.harborRitual.today, rumorSeen: true },
+    },
+  };
+}
+
+export function markEchoSurpriseSeen(save: IslandSaveV1): IslandSaveV1 {
+  if (!save.harborRitual) return save;
+  return {
+    ...save,
+    harborRitual: {
+      ...save.harborRitual,
+      today: { ...save.harborRitual.today, echoSurpriseSeen: true },
     },
   };
 }
