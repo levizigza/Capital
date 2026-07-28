@@ -485,41 +485,22 @@ export function IslandPlayView({
       topRight={
         <div className="flex flex-wrap items-center justify-end gap-2">
           {typeof totalCoins === "number" ? <WealthHud totalCoins={totalCoins} compact /> : null}
-          {character ? (
-            <div className="flex flex-col items-center gap-0.5">
-              <CharacterAvatar
-                character={character}
-                size={44}
-                animationStyle={animationStyle}
-                morphFromHome={!isHomeLook(animationStyle ?? "capital-default")}
-              />
-              <span className="era-badge text-[9px]">{era.eraLabel}</span>
-            </div>
-          ) : null}
-          <span title={profileDef.description}>
-            <HudBadge className="bg-indigo-50 text-indigo-900">
-              {profileDef.icon} {profileDef.label}
-            </HudBadge>
-          </span>
-          <Suspense fallback={null}>
-            <LazyEconomyWeather economy={save.economyState ?? createDefaultEconomyState()} />
-          </Suspense>
-          <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
-            🪄 Float
-          </GameButton>
           {onOpenBoard ? (
             <GameButton variant="outline" size="sm" onClick={onOpenBoard}>
-              🎲 Party board
+              Board
             </GameButton>
           ) : null}
+          <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
+            Map
+          </GameButton>
           <GameButton variant="primary" size="sm" onClick={onOpenHub}>
-            🏠 Hub
+            Hub
           </GameButton>
         </div>
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-[var(--game-gap)] pb-4">
-        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
+        <CoinBagBuddyHud tip={buddy.tip} detail={buddy.coach} track={buddy.track} />
         {island.id === "future_shores" && onOpenStudio ? (
           <GamePanel padding="default" className="border-dashed border-amber-400 bg-amber-50/80">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

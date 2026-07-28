@@ -104,16 +104,18 @@ export function HarborBehaviorNpc({
         animationStyle="capital-default"
       />
       <Billboard position={[0, 2.05, 0]} follow>
-        <Text
-          fontSize={0.22}
-          color="#ffffff"
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.03}
-          outlineColor="#0f172a"
-        >
-          {agent.blackboard.getOr(BB.name, life.mascotId)}
-        </Text>
+        {(nearPlayer || showPulse) && (
+          <Text
+            fontSize={0.22}
+            color="#ffffff"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.03}
+            outlineColor="#0f172a"
+          >
+            {agent.blackboard.getOr(BB.name, life.mascotId)}
+          </Text>
+        )}
       </Billboard>
       {bubble ? (
         <Billboard position={[0, 2.55, 0]} follow>

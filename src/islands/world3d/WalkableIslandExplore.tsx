@@ -445,19 +445,22 @@ function PadMarker({
           pose={active ? "wave" : "stand"}
         />
       )}
-      <Billboard position={[0, hotspot.kind === "npc" ? 2.15 : 1.55, 0]} follow>
-        <Text
-          fontSize={0.22}
-          color="#ffffff"
-          anchorX="center"
-          outlineWidth={0.028}
-          outlineColor="#0f172a"
-          maxWidth={3.2}
-          textAlign="center"
-        >
-          {`${hotspot.icon} ${hotspot.label}`}
-        </Text>
-      </Billboard>
+      {/* Name / label only when this hotspot is the active interact target */}
+      {active ? (
+        <Billboard position={[0, hotspot.kind === "npc" ? 2.15 : 1.55, 0]} follow>
+          <Text
+            fontSize={0.22}
+            color="#ffffff"
+            anchorX="center"
+            outlineWidth={0.028}
+            outlineColor="#0f172a"
+            maxWidth={3.2}
+            textAlign="center"
+          >
+            {`${hotspot.icon} ${hotspot.label}`}
+          </Text>
+        </Billboard>
+      ) : null}
     </group>
   );
 }

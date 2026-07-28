@@ -22,7 +22,6 @@ import { OceanWater } from "./OceanWater";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { HarborBuilding, WoodenPier, NatureProps } from "./NatureProps";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
-import { IslandTitle } from "./IslandTitle";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -335,6 +334,7 @@ function PlazaScene({
   keeperEmote = "idle",
   keeperSpeech,
   pulseHotspotId,
+  nearHotspotId,
   nearNpcId,
   playerPos,
   npcBodies,
@@ -355,6 +355,7 @@ function PlazaScene({
   keeperEmote?: NpcEmote;
   keeperSpeech?: string | null;
   pulseHotspotId?: string | null;
+  nearHotspotId?: string | null;
   nearNpcId?: string | null;
   playerPos: MutableRefObject<THREE.Vector3>;
   npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
@@ -485,14 +486,6 @@ function PlazaScene({
 
       <Fountain />
 
-      {/* High billboard title — clear of canopy */}
-      <IslandTitle
-        title="Harbor Haven"
-        subtitle="Fortune Archipelago"
-        height={9.5}
-        accent={LOOK.accent}
-      />
-
       <WoodenPier position={[0, 0.05, 14.2]} />
 
       {/* Seawall + lanterns */}
@@ -541,6 +534,8 @@ function PlazaScene({
         // Face the door toward the plaza center so entrances are readable.
         const yaw = Math.atan2(-h.position[0], -h.position[2]);
         const pulsing = pulseHotspotId === h.id;
+        const nearby = nearHotspotId === h.id;
+        const showLabel = pulsing || nearby;
         return (
           <group key={h.id} position={h.position}>
             <HotspotPulse active={pulsing} />
@@ -563,19 +558,21 @@ function PlazaScene({
                 body={buildingColors[idx % buildingColors.length]}
               />
             </group>
-            {/* Billboard so labels never read mirrored from behind */}
-            <Billboard follow position={[0, 3.05, 0]}>
-              <Text
-                fontSize={0.28}
-                color={pulsing ? "#92400e" : "#16283b"}
-                anchorX="center"
-                anchorY="middle"
-                outlineWidth={0.018}
-                outlineColor="#ffffff"
-              >
-                {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-              </Text>
-            </Billboard>
+            {/* Labels only when relevant — pulsing guide target or player nearby */}
+            {showLabel ? (
+              <Billboard follow position={[0, 3.05, 0]}>
+                <Text
+                  fontSize={0.28}
+                  color={pulsing ? "#92400e" : "#16283b"}
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.018}
+                  outlineColor="#ffffff"
+                >
+                  {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
+                </Text>
+              </Billboard>
+            ) : null}
           </group>
         );
       })}
@@ -746,6 +743,7 @@ export function WalkableHarborView({
             keeperEmote={keeperEmote}
             keeperSpeech={keeperSpeech}
             pulseHotspotId={pulseHotspotId}
+            nearHotspotId={near}
             nearNpcId={nearNpcId}
             playerPos={playerPos}
             npcBodies={npcBodies}

@@ -538,7 +538,7 @@ export function PartyArenaWorld({
       <div className="pointer-events-none absolute inset-x-0 bottom-20 z-20 flex justify-center px-4">
         <CoinBagBuddyHud
           tip="Grab gold value coins — I’m pointing the nearest one!"
-          coach="Stay with me in the painting. Dodge red impulse spends."
+          detail="Stay with me in the painting. Dodge red impulse spends."
           track="main"
         />
       </div>

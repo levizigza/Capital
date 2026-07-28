@@ -397,14 +397,13 @@ export function HomeHubView({
                 <GuideEdgeCue
                   projection={guideProjection}
                   enabled={guideArrows}
-                  label={bagGuideTip}
                 />
               </>
             )}
           </div>
         }
         topLeft={
-          <div className="flex items-center gap-2">
+          <div className="cap-play-hud-left">
             <button
               type="button"
               onClick={openOutfitter}
@@ -414,26 +413,17 @@ export function HomeHubView({
               <CharacterAvatar character={voyager} size={36} animationStyle="capital-default" />
             </button>
             <WealthHud totalCoins={userProfile.totalCoins} compact />
-            {!simplified ? (
+            {!simplified && !castleMode ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
           </div>
         }
         topRight={
           <div className="flex items-center gap-1.5">
-            <HudBadge>
-              {profile.icon} {profile.label}
-            </HudBadge>
-            {onReplayIntro ? (
-              <GameButton
-                variant="ghost"
-                size="sm"
-                onClick={onReplayIntro}
-                title="Replay opening animation"
-                className="text-white/90"
-              >
-                ↻
-              </GameButton>
+            {!castleMode ? (
+              <HudBadge>
+                {profile.icon} {profile.label}
+              </HudBadge>
             ) : null}
             <GameButton
               variant="outline"
@@ -449,6 +439,12 @@ export function HomeHubView({
         }
         bottom={
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
+            <CoinBagBuddyHud
+              tip={buddyTip.tip}
+              detail={castleMode ? guidedStep?.coach : buddyTip.coach}
+              guideArrows={guideArrows}
+              onToggleGuide={toggleGuide}
+            />
             {/* Single primary action — never stack Enter + Board */}
             {nearStore ? (
               <GameButton
@@ -496,22 +492,9 @@ export function HomeHubView({
                   className="w-full bg-white/90"
                   data-testid="hub-travel-map"
                 >
-                  🪄 Skip → Archipelago map
+                  Archipelago map
                 </GameButton>
               </div>
-            ) : guidedStep?.highlight === "travel" ? (
-              <GameButton
-                variant="primary"
-                size="lg"
-                onClick={() => {
-                  onHubGuidedEvent("opened_map");
-                  onOpenTravel();
-                }}
-                className="w-full shadow-lg"
-                data-testid="hub-travel-map"
-              >
-                🪄 Archipelago map
-              </GameButton>
             ) : (
               <GameButton
                 variant="primary"
@@ -523,70 +506,31 @@ export function HomeHubView({
                 className="w-full shadow-lg"
                 data-testid="hub-travel-map"
               >
-                🪄 Archipelago map
+                Archipelago map
               </GameButton>
             )}
-            <p className="text-[11px] font-semibold tracking-wide text-white/75">
-              {castleMode
-                ? `🐰 Coin Bag stays beside you · ${guidedStep?.verb}`
-                : nearStore
-                  ? "E enter · Esc leaves shops · WASD walk"
-                  : `WASD walk · M map · O settings · ${boat.emoji} ${boat.label}`}
+            <p className="cap-hint-whisper sr-only md:not-sr-only">
+              {nearStore
+                ? "E enter · Esc leaves shops"
+                : nearNpc
+                  ? "E talk · WASD walk"
+                  : "WASD walk · M map"}
             </p>
-            {(canResume || onPlayHarborBoard) && !nearStore && !castleMode ? (
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                {canResume ? (
-                  <GameButton variant="ghost" size="sm" onClick={onResume} className="text-white/85">
-                    Resume {getIslandById(content, save.currentIslandId!)?.name ?? "voyage"}
-                  </GameButton>
-                ) : null}
-                {onPlayHarborBoard ? (
-                  <GameButton
-                    variant="ghost"
-                    size="sm"
-                    onClick={onPlayHarborBoard}
-                    className="text-white/70"
-                  >
-                    Practice board
-                  </GameButton>
-                ) : null}
-              </div>
-            ) : null}
           </div>
         }
       >
-        {/* Pass-through stage — harbor canvas must receive clicks */}
-        <div
-          data-hud-pass
-          className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1"
-        >
+        {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
+        <div data-hud-pass className="flex h-full min-h-0 flex-col">
+          <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode ? (
             <div
-              className="pointer-events-none max-w-md rounded-2xl bg-[#0c4a6e]/90 px-4 py-2 text-center shadow-lg"
+              className="sr-only"
               data-testid="castle-grounds-coach"
               data-guided-step={guidedStep?.id}
             >
-              <div className="text-[10px] font-bold uppercase tracking-wide text-sky-200/90">
-                Harbor Haven · {guidedStep?.verb}
-              </div>
-              <div className="text-sm font-semibold text-white">{guidedStep?.coach}</div>
+              {guidedStep?.coach}
             </div>
           ) : null}
-          <CoinBagBuddyHud
-            tip={buddyTip.tip}
-            coach={buddyTip.coach}
-            guideArrows={guideArrows}
-            onToggleGuide={toggleGuide}
-          />
-          {coachText && (!castleMode || nearNpc) ? (
-            <div className="pointer-events-none max-w-sm rounded-2xl bg-black/70 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
-              {nearNpc && !nearStore ? (
-                <div className="text-[10px] uppercase tracking-wide text-white/70">{nearNpc.name}</div>
-              ) : null}
-              {nearNpc && !nearStore ? nearNpc.line : coachText}
-            </div>
-          ) : null}
-          <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
         </div>
       </GameHudLayout>
 

@@ -285,27 +285,19 @@ export function IslandShoreView({
                 Enter · {near.label}
               </GameButton>
             ) : (
-              <HudBadge className="bg-black/55 text-white">
-                WASD walk · E interact · Esc Harbor · M map
-              </HudBadge>
+              <p className="cap-hint-whisper">WASD walk · E interact</p>
             )}
-            <p className="text-[11px] font-semibold tracking-wide text-white/75">
-              Paintings = main/side 3D worlds · Party Plaza = {SIDE_TOMFOOLERY[0]?.title} · Pier = carpet
-            </p>
           </div>
         }
       >
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
-            tip={buddy.tip}
-            coach={buddy.coach}
-            track={buddy.track}
-            guideArrows={guideArrows}
-            onToggleGuide={onA11yChange ? toggleGuide : undefined}
-          />
-          <div className="pointer-events-none max-w-sm rounded-2xl bg-black/65 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg">
-            Dive a painting for a real 3D action world — quizzes prove mastery after you clear it.
-          </div>
+          tip={buddy.tip}
+          detail={buddy.coach}
+          track={buddy.track}
+          guideArrows={guideArrows}
+          onToggleGuide={onA11yChange ? toggleGuide : undefined}
+        />
         </div>
       </GameHudLayout>
 

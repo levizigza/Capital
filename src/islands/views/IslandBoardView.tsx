@@ -410,26 +410,20 @@ export function IslandBoardView({
       }
       topRight={
         <div className="flex flex-wrap items-center justify-end gap-2">
-          <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
           <WealthHud totalCoins={userProfile.totalCoins} compact />
+          <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
           <HudBadge className="bg-violet-100 text-violet-900">🏅 {party.stars}</HudBadge>
-          {party.turnsRemaining != null ? (
-            <HudBadge className="bg-amber-100 text-amber-950">Turns {party.turnsRemaining}</HudBadge>
-          ) : null}
           <GameButton variant="outline" size="sm" onClick={onOpenArchipelago}>
-            🗺️ Map
+            Map
           </GameButton>
           <GameButton variant="primary" size="sm" onClick={onBoardBoat}>
-            🪄 Carpet
-          </GameButton>
-          <GameButton variant="outline" size="sm" onClick={onOpenHub}>
-            🏠 Hub
+            Carpet
           </GameButton>
         </div>
       }
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-4 pb-4">
-        <CoinBagBuddyHud tip={buddy.tip} coach={buddy.coach} track={buddy.track} />
+        <CoinBagBuddyHud tip={buddy.tip} detail={buddy.coach} track={buddy.track} />
         {minigameCount === 0 ? (
           <GamePanel title="Island under construction" padding="default">
             <p className="text-sm text-gray-700 mb-3">
