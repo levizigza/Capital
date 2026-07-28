@@ -199,6 +199,18 @@ export function coinBagIslandTip(
       }
     }
 
+    if (island.id === "coincraft_cove") {
+      const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
+      if (!anyStarted) {
+        return {
+          tip: "Giant Coin Jar — squeeze the slot!",
+          coach:
+            "That big Jar is a money machine. Walk into the glowing coin slot — cork, spring, and lid each open a world.",
+          track: "main",
+        };
+      }
+    }
+
     const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
     if (next) {
       const title =

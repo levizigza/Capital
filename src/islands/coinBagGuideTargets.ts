@@ -23,6 +23,7 @@ function hotspotForObjective(
   if (obj.type === "completeMinigame") {
     return (
       hotspots.find((h) => h.kind === "play_pad" && h.minigameId === obj.minigameId)?.position ??
+      hotspots.find((h) => h.kind === "money_structure")?.position ??
       null
     );
   }

@@ -16,6 +16,7 @@ import { WoodenPier, NatureProps } from "./NatureProps";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { colorHex, type MoneyForm } from "../character";
 import type { ShoreHotspot } from "../islandShoreLayout";
+import { CoinJarLandmark } from "./CoinJarLandmark";
 import {
   buildAmbientEcosystem,
   getIslandCulture,
@@ -153,8 +154,9 @@ function Player({
     let near: string | null = null;
     let best = INTERACT_R;
     for (const h of hotspots) {
+      const reach = h.kind === "money_structure" ? INTERACT_R * 1.55 : INTERACT_R;
       const d = Math.hypot(h.position[0] - p.x, h.position[2] - p.z);
-      if (d < best) {
+      if (d < reach && d < best) {
         best = d;
         near = h.id;
       }
@@ -357,6 +359,17 @@ function PadMarker({
               : look.shore;
 
   if (collected) return null;
+
+  if (hotspot.kind === "money_structure") {
+    return (
+      <CoinJarLandmark
+        position={hotspot.position}
+        active={active}
+        guided={guided}
+        label={hotspot.label}
+      />
+    );
+  }
 
   return (
     <group position={hotspot.position}>

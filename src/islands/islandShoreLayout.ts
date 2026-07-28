@@ -9,6 +9,7 @@ import {
   shoreAnchorsForCulture,
   castForIslandNpc,
 } from "./islandCulture";
+import { moneyStructureForIsland } from "./moneyStructures";
 
 export type ShoreHotspotKind =
   | "pier"
@@ -16,7 +17,8 @@ export type ShoreHotspotKind =
   | "journal"
   | "npc"
   | "play_pad"
-  | "item";
+  | "item"
+  | "money_structure";
 
 export type ShoreHotspot = {
   id: string;
@@ -29,6 +31,8 @@ export type ShoreHotspot = {
   subtitle?: string;
   /** Resolved mascot for NPC pads */
   mascotId?: string;
+  /** Money structure id when kind === money_structure */
+  structureId?: string;
 };
 
 function ringPos(
@@ -156,6 +160,19 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
       subtitle: "Pick up",
     });
   });
+
+  const structure = moneyStructureForIsland(island.id);
+  if (structure) {
+    spots.push({
+      id: `structure_${structure.id}`,
+      kind: "money_structure",
+      label: structure.exteriorLabel,
+      icon: structure.icon,
+      position: structure.shorePosition,
+      structureId: structure.id,
+      subtitle: structure.entryVerb,
+    });
+  }
 
   return spots;
 }

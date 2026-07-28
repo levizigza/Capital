@@ -26,7 +26,11 @@ import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
+import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import { buildShoreHotspots } from "../islandShoreLayout";
+import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStructures";
+import { toast } from "sonner";
+import { playCapitalSfx } from "../audio/capitalSfx";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
@@ -82,8 +86,11 @@ export function IslandShoreView({
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
+  const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
+  const [structureOpen, setStructureOpen] = useState(false);
+  const [enteringJar, setEnteringJar] = useState(false);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
@@ -133,6 +140,10 @@ export function IslandShoreView({
   });
   useInputAction("cancel", () => {
     if (talkOpen) return;
+    if (structureOpen) {
+      setStructureOpen(false);
+      return;
+    }
     if (journalOpen) setJournalOpen(false);
     else onOpenHub();
   });
@@ -143,13 +154,41 @@ export function IslandShoreView({
 
   // Auto-start Talk Battle when you walk up to an NPC pad
   useEffect(() => {
-    if (!near || talkOpen) return;
+    if (!near || talkOpen || structureOpen || enteringJar) return;
     const h = hotspots.find((x) => x.id === near.id);
     if (h?.kind === "npc" && h.refId) {
       const t = window.setTimeout(() => onTalkNpc(h.refId as NpcId), 350);
       return () => window.clearTimeout(t);
     }
-  }, [near, hotspots, onTalkNpc, talkOpen]);
+  }, [near, hotspots, onTalkNpc, talkOpen, structureOpen, enteringJar]);
+
+  const enterStructure = useCallback(() => {
+    if (!structure || enteringJar) return;
+    setEnteringJar(true);
+    playCapitalSfx("scar_chime");
+    window.setTimeout(() => {
+      setEnteringJar(false);
+      setStructureOpen(true);
+      playCapitalSfx("plinth_hum");
+    }, 900);
+  }, [structure, enteringJar]);
+
+  const onEnterPart = useCallback(
+    (part: MoneyStructurePart) => {
+      if (part.softBeat === "lookout") {
+        playCapitalSfx("harbor_cheer");
+        toast.message("Lid Lookout", {
+          description: "Cove looks tiny from up here — save a little, the jar still holds.",
+        });
+        return;
+      }
+      if (part.minigameId) {
+        playCapitalSfx("scar_chime");
+        onPlayMinigame(part.minigameId);
+      }
+    },
+    [onPlayMinigame],
+  );
 
   const activate = useCallback(
     (hotspotId: string) => {
@@ -175,16 +214,54 @@ export function IslandShoreView({
         onPlayMinigame(h.minigameId);
         return;
       }
+      if (h.kind === "money_structure") {
+        enterStructure();
+        return;
+      }
       if (h.kind === "item" && h.refId) {
         if (!save.inventory.includes(h.refId)) onCollectItem(h.refId as ItemId);
         return;
       }
     },
-    [hotspots, onOpenTravel, onOpenBoard, onTalkNpc, onPlayMinigame, onCollectItem, save.inventory],
+    [
+      hotspots,
+      onOpenTravel,
+      onOpenBoard,
+      onTalkNpc,
+      onPlayMinigame,
+      onCollectItem,
+      save.inventory,
+      enterStructure,
+    ],
   );
+
+  if (structureOpen && structure) {
+    return (
+      <MoneyStructureInteriorView
+        structure={structure}
+        character={character}
+        onExit={() => setStructureOpen(false)}
+        onEnterPart={onEnterPart}
+      />
+    );
+  }
 
   return (
     <div className="relative h-full min-h-[100dvh] w-full" data-testid="island-shore-view">
+      {enteringJar ? (
+        <div
+          className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-[#0f172a]/92 text-center text-white"
+          data-testid="money-structure-enter-transition"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-200/90">
+            Money is a machine
+          </p>
+          <h2 className="mt-3 text-2xl font-black">Squeezing through the coin slot…</h2>
+          <p className="mt-2 max-w-sm text-sm text-white/70">
+            Inside the Jar, every piece opens a world.
+          </p>
+        </div>
+      ) : null}
       <GameHudLayout
         background={
           <div className="absolute inset-0">
@@ -199,7 +276,7 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
-              inputFrozen={talkOpen}
+              inputFrozen={talkOpen || enteringJar}
             />
             <GuideEdgeCue
               projection={guideProjection}

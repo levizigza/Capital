@@ -11,6 +11,12 @@ Capital’s north star for this phase: make **one money choice** feel unforgetta
 5. Quiet plaza → Piggy homecoming  
 6. Day-2 rumor + plaza locals naming the plaque  
 
+## Money Structures (Astro-style depth)
+
+Each island may host one **Money Structure** — a landmark you climb *into*. Inside, glowing parts (cork, spring, lid…) open playable money worlds. First slice: **Giant Coin Jar** on Coincraft Cove.
+
+This is **structure depth**, not map width — still no new outer islands.
+
 Polish this loop like a boss fight before adding systems.
 
 ## Cold playtest checklist
