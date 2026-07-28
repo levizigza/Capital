@@ -268,6 +268,15 @@ export type IslandSaveV1 = {
     questId?: string;
     message?: string;
   };
+  /** After an irreversible Take on an island — soft HUD until travel/hub */
+  chapterQuietPending?: boolean;
+  /** Permanent plaza marks from Studio publishes (identity > grind) */
+  harborStudioMarks?: {
+    levelId: string;
+    title: string;
+    author: string;
+    stampedAt: string;
+  }[];
   /** Permanent Harbor memory of chapter choices (plaques, tones, props) */
   harborScars?: import("./worldMemory").HarborScar[];
   /** Locked-forever decisions keyed by decision id */

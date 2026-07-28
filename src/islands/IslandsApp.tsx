@@ -24,7 +24,7 @@ import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
-import { islandHasChapterContent, buildCoveChangeReplayTimeline } from "./chapterLoop";
+import { islandHasChapterContent, buildCoveChangeReplayTimeline, buildPaycheckChangeReplayTimeline } from "./chapterLoop";
 import { COVE_CHANGE_QUEST_ID, CREDIT_ORDEAL_QUEST_ID, PAYCHECK_CHANGE_QUEST_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
@@ -40,7 +40,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { getGenreWorld } from "./genreWorlds";
-import { harborScarPlaques, stanceGreetingHint, recordNpcTalk } from "./worldMemory";
+import { harborScarPlaques, stanceGreetingHint, recordNpcTalk, scarTriggersChapterQuiet } from "./worldMemory";
 import {
   syncHarborRitual,
   markRitualGreeted,
@@ -936,6 +936,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             },
           };
         });
+        const ppChoice = save?.irreversibleChoices?.paycheck_protect_vs_spend?.choiceId;
+        const timeline = buildPaycheckChangeReplayTimeline({
+          islandId: activeIsland.id,
+          islandName:
+            typeof activeIsland.name === "string"
+              ? activeIsland.name
+              : "Paycheck Peninsula",
+          choiceId: ppChoice,
+        });
+        saveTimeline(timeline);
+        setPendingReplayTimeline(timeline);
       }
 
       // Credit Kingdom Ordeal clear → Harbor homecoming
@@ -1176,9 +1187,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             if (stanceAxis) {
               stance[stanceAxis] = Math.max(0, (stance[stanceAxis] ?? 0) + stanceDelta);
             }
+            const quiet = scarTriggersChapterQuiet(effect.id);
             return {
               ...prev,
               stance,
+              chapterQuietPending: quiet ? true : prev.chapterQuietPending,
               harborScars: [
                 ...scars,
                 {
@@ -1931,6 +1944,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           <VibeCodeStudio
             authorName={userProfile.name || "Creator"}
             onClose={() => setView("home")}
+            onPublish={(level) => {
+              updateSave((prev) => {
+                const marks = prev.harborStudioMarks ?? [];
+                const next = {
+                  levelId: level.id,
+                  title: level.title || "Untitled level",
+                  author: level.author || userProfile.name || "Creator",
+                  stampedAt: new Date().toISOString(),
+                };
+                const filtered = marks.filter((m) => m.levelId !== level.id);
+                return {
+                  ...prev,
+                  harborStudioMarks: [next, ...filtered].slice(0, 12),
+                };
+              });
+              toast.success("Harbor stamped your Studio mark on the plaza!");
+            }}
           />
         ) : view === "explore" && activeIsland && !(activeMinigameId && activeMinigameDef && usesCourseWorld(activeMinigameDef.componentId)) ? (
           <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
@@ -1976,8 +2006,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
               onCollectItem={(itemId) => void collectItem(itemId)}
               onStartQuest={(questId) => void startQuest(questId)}
-              onOpenTravel={() => setView("travel")}
-              onOpenHub={() => setView("home")}
+              onOpenTravel={() => {
+                updateSave((prev) =>
+                  prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
+                );
+                setView("travel");
+              }}
+              onOpenHub={() => {
+                updateSave((prev) =>
+                  prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
+                );
+                setView("home");
+              }}
               onOpenStudio={() => setView("studio")}
               onPlayMinigame={(minigameId) => {
                 setMinigameSource("dialogue");
@@ -1985,6 +2025,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 setMinigameStartedAt(Date.now());
               }}
               onOpenBoard={() => setView("island")}
+              chapterQuiet={Boolean(save?.chapterQuietPending)}
+              onClearChapterQuiet={() =>
+                updateSave((prev) => ({ ...prev, chapterQuietPending: false }))
+              }
             />
           </IslandThemeProvider>
         ) : view === "island" && activeIsland ? (

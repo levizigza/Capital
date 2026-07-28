@@ -44,7 +44,7 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
-import { harborScarPlaques, stanceGreetingHint } from "../worldMemory";
+import { harborScarPlaques, stanceGreetingHint, groupScarsByChapter } from "../worldMemory";
 import {
   dailyRumorText,
   ritualNeedsAttention,
@@ -82,6 +82,7 @@ type HubModal =
   | "ritual"
   | "gallery"
   | "family"
+  | "studio_stele"
   | null;
 
 export type HarborPurchase =
@@ -287,6 +288,8 @@ export function HomeHubView({
 
   const marketOpen = isRoomUnlocked(save, "market");
   const plaques = harborScarPlaques(save);
+  const plaqueGroups = groupScarsByChapter(plaques);
+  const studioMarks = save.harborStudioMarks ?? [];
   const stanceLine = stanceGreetingHint(save.stance);
 
   const harborHotspots = useMemo<HarborHotspot[]>(
@@ -326,7 +329,17 @@ export function HomeHubView({
               id: "memory",
               label: "Memory Plinth",
               icon: "🪨",
-              position: [3.2, 0, -1.5],
+              position: [3.2, 0, -1.5] as [number, number, number],
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      ...(studioMarks.length > 0
+        ? [
+            {
+              id: "studio_stele",
+              label: "Studio Stele",
+              icon: "🗿",
+              position: [6.0, 0, -1.0] as [number, number, number],
             } satisfies HarborHotspot,
           ]
         : []),
@@ -354,7 +367,7 @@ export function HomeHubView({
         ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
     ],
-    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length, save.harborRitual],
+    [onOpenEditor, pavilionOpen, marketOpen, onPlayHarborBoard, plaques.length, studioMarks.length, save.harborRitual],
   );
 
   const harborGuideLookAt = useMemo(
@@ -439,6 +452,8 @@ export function HomeHubView({
       setHubModal("market");
     } else if (id === "memory") {
       setHubModal("memory");
+    } else if (id === "studio_stele") {
+      setHubModal("studio_stele");
     } else if (id === "practice" && onPlayHarborBoard) {
       onHubGuidedEvent("practice_opened");
       onPlayHarborBoard();
@@ -807,20 +822,60 @@ export function HomeHubView({
       >
         <div className="space-y-4 text-left">
           <p className="text-sm text-muted-foreground text-center">
-            Harbor remembers the choices that changed you. These plaques stay.
+            Harbor remembers the choices that changed you — by chapter.
           </p>
           {stanceLine ? (
             <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-950">
               {stanceLine}
             </p>
           ) : null}
+          <div className="space-y-4">
+            {plaqueGroups.map((group) => (
+              <div key={group.chapter}>
+                <p className="mb-1 text-xs font-black uppercase tracking-wide text-stone-500">
+                  {group.chapter}
+                </p>
+                <ul className="space-y-2">
+                  {group.scars.map((p) => (
+                    <li
+                      key={p.id}
+                      className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-900"
+                    >
+                      {p.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
+            Back to plaza
+          </GameButton>
+        </div>
+      </GameModal>
+
+      <GameModal
+        open={hubModal === "studio_stele"}
+        onClose={() => setHubModal(null)}
+        maxWidth="md"
+        usePortal
+        showCloseButton
+        title="Studio Stele"
+      >
+        <div className="space-y-4 text-left">
+          <p className="text-sm text-muted-foreground text-center">
+            Levels you published leave a permanent mark on Harbor. Identity over grind.
+          </p>
           <ul className="space-y-2">
-            {plaques.map((p) => (
+            {studioMarks.map((m) => (
               <li
-                key={p.id}
-                className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-900"
+                key={m.levelId}
+                className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950"
               >
-                {p.label}
+                <p className="font-bold">{m.title}</p>
+                <p className="text-xs opacity-80">
+                  by {m.author} · stamped {new Date(m.stampedAt).toLocaleDateString()}
+                </p>
               </li>
             ))}
           </ul>

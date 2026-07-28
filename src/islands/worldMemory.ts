@@ -127,6 +127,38 @@ export function harborScarPlaques(save: IslandSaveV1): HarborScar[] {
   return (save.harborScars ?? []).filter((s) => s.kind === "plaque" || s.kind === "plaza_prop");
 }
 
+/** Chapter shelf name for Memory Plinth grouping. */
+export function scarChapterTitle(scar: HarborScar): string {
+  const id = `${scar.id} ${scar.islandId}`.toLowerCase();
+  if (id.includes("cove") || scar.islandId === "coincraft_cove") return "Coincraft Cove";
+  if (id.includes("pp_") || id.includes("paycheck") || scar.islandId === "paycheck_peninsula") {
+    return "Paycheck Peninsula";
+  }
+  if (id.includes("credit") || scar.islandId === "credit_kingdom") return "Credit Kingdom";
+  return "Harbor memory";
+}
+
+export function groupScarsByChapter(
+  scars: HarborScar[],
+): { chapter: string; scars: HarborScar[] }[] {
+  const order = ["Coincraft Cove", "Paycheck Peninsula", "Credit Kingdom", "Harbor memory"];
+  const map = new Map<string, HarborScar[]>();
+  for (const s of scars) {
+    const ch = scarChapterTitle(s);
+    const list = map.get(ch) ?? [];
+    list.push(s);
+    map.set(ch, list);
+  }
+  return order
+    .filter((ch) => map.has(ch))
+    .map((ch) => ({ chapter: ch, scars: map.get(ch)! }));
+}
+
+/** True if this scar should trigger an in-chapter quiet beat. */
+export function scarTriggersChapterQuiet(scarId: string): boolean {
+  return scarId.startsWith("pp_") || scarId.startsWith("credit_");
+}
+
 export function stanceGreetingHint(
   stance?: VoyagerStance | null,
 ): string | null {

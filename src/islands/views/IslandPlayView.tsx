@@ -72,6 +72,9 @@ export type IslandPlayViewProps = {
   onPlayMinigame?: (minigameId: string) => void;
   /** Optional Fortune Party board for this island */
   onOpenBoard?: () => void;
+  /** Soft HUD after irreversible Take */
+  chapterQuiet?: boolean;
+  onClearChapterQuiet?: () => void;
   devCheats?: ReactNode;
 };
 
@@ -312,6 +315,8 @@ export function IslandPlayView({
   onOpenStudio,
   onPlayMinigame,
   onOpenBoard,
+  chapterQuiet = false,
+  onClearChapterQuiet,
   devCheats,
 }: IslandPlayViewProps) {
   const { uiScale } = useGameUi();
@@ -484,16 +489,34 @@ export function IslandPlayView({
       }
       topRight={
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {typeof totalCoins === "number" ? <WealthHud totalCoins={totalCoins} compact /> : null}
-          {onOpenBoard ? (
+          {chapterQuiet ? (
+            <HudBadge className="bg-slate-900/80 text-white">Quiet after the Take</HudBadge>
+          ) : typeof totalCoins === "number" ? (
+            <WealthHud totalCoins={totalCoins} compact />
+          ) : null}
+          {!chapterQuiet && onOpenBoard ? (
             <GameButton variant="outline" size="sm" onClick={onOpenBoard}>
               Board
             </GameButton>
           ) : null}
-          <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
+          <GameButton
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              onClearChapterQuiet?.();
+              onOpenTravel();
+            }}
+          >
             Map
           </GameButton>
-          <GameButton variant="primary" size="sm" onClick={onOpenHub}>
+          <GameButton
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              onClearChapterQuiet?.();
+              onOpenHub();
+            }}
+          >
             Hub
           </GameButton>
         </div>

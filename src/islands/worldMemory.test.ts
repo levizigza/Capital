@@ -3,9 +3,12 @@ import {
   addHarborScar,
   applyStanceDelta,
   dominantStance,
+  groupScarsByChapter,
   hasIrreversible,
   recordIrreversible,
   recordNpcTalk,
+  scarChapterTitle,
+  scarTriggersChapterQuiet,
   stanceGreetingHint,
 } from "./worldMemory";
 import type { IslandSaveV1 } from "./types";
@@ -62,5 +65,45 @@ describe("worldMemory", () => {
     save = recordNpcTalk(save, "coiny", "later");
     expect(save.npcMemory?.coiny?.talks).toBe(2);
     expect(save.npcMemory?.coiny?.lastChoiceIds).toEqual(["yes", "later"]);
+  });
+
+  it("groups plaques by chapter shelf", () => {
+    const scars = [
+      {
+        id: "cove_saver_plaque",
+        islandId: "coincraft_cove",
+        choiceId: "a",
+        label: "Cove jar",
+        kind: "plaque" as const,
+        createdAt: "1",
+      },
+      {
+        id: "pp_protector_plaque",
+        islandId: "paycheck_peninsula",
+        choiceId: "b",
+        label: "Umbrella",
+        kind: "plaque" as const,
+        createdAt: "2",
+      },
+      {
+        id: "credit_patience_plaque",
+        islandId: "credit_kingdom",
+        choiceId: "c",
+        label: "Waited",
+        kind: "plaque" as const,
+        createdAt: "3",
+      },
+    ];
+    expect(scarChapterTitle(scars[0]!)).toBe("Coincraft Cove");
+    expect(scarChapterTitle(scars[1]!)).toBe("Paycheck Peninsula");
+    expect(scarChapterTitle(scars[2]!)).toBe("Credit Kingdom");
+    const groups = groupScarsByChapter(scars);
+    expect(groups.map((g) => g.chapter)).toEqual([
+      "Coincraft Cove",
+      "Paycheck Peninsula",
+      "Credit Kingdom",
+    ]);
+    expect(scarTriggersChapterQuiet("pp_protector_plaque")).toBe(true);
+    expect(scarTriggersChapterQuiet("cove_saver_plaque")).toBe(false);
   });
 });

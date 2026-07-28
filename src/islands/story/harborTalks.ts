@@ -260,20 +260,30 @@ export const HARBOR_DIALOGUES: DialogueGraph[] = [
 export function piggyHomecomingGraph(
   message?: string | null,
   opts?: {
-    scars?: { label: string }[];
+    scars?: { id?: string; label: string; islandId?: string }[];
     bondBeat?: number;
   },
 ): DialogueGraph {
   const opener =
     message?.replace(/^Piggy Penny:\s*/i, "").trim() ||
     "You earned coins and made a real choice. Harbor feels different because YOU are.";
+
+  const named = (opts?.scars ?? [])
+    .slice(-3)
+    .map((s) => {
+      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
+      if (id.includes("cove")) return `Cove — ${s.label}`;
+      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
+      if (id.includes("credit")) return `Kingdom — ${s.label}`;
+      return s.label;
+    });
   const scarLine =
-    opts?.scars && opts.scars.length > 0
-      ? `I hung a plaque for: ${opts.scars[opts.scars.length - 1]!.label}.`
+    named.length > 0
+      ? `Your Memory Plinth holds: ${named.join(" · ")}.`
       : "Coin Bag and I watched you grow.";
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
-      ? "We've walked a few homecomings together now. I trust your pouch — and you."
+      ? "Three homecomings. Cove, Dotgraph, Kingdom — I trust your pouch, and you."
       : opts?.bondBeat && opts.bondBeat >= 2
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
         : "That's the Change beat — earn fair, then choose.";

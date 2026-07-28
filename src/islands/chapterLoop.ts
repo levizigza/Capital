@@ -162,3 +162,62 @@ export function buildCoveChangeReplayTimeline(opts: {
       "You earned fairly, faced save-or-spend, and returned changed. That's Coincraft Cove's Story Circle.",
   };
 }
+
+/** Replay for Paycheck Peninsula rainy-day Take. */
+export function buildPaycheckChangeReplayTimeline(opts: {
+  islandId: string;
+  islandName: string;
+  choiceId?: string;
+}): import("./decisionTimeline").DecisionTimeline {
+  const now = new Date().toISOString();
+  const protectedFund = opts.choiceId !== "spend";
+  return {
+    id: `pp-change-${Date.now()}`,
+    startedAt: now,
+    completedAt: now,
+    context: {
+      islandId: opts.islandId,
+      islandName: opts.islandName,
+      questId: PAYCHECK_CHANGE_QUEST_ID,
+      questTitle: "Expect the Unexpected",
+      minigameId: "quest_pp_rainy_day",
+      minigameName: "Rainy-day Take",
+    },
+    success: true,
+    score: 100,
+    entries: [
+      {
+        timestamp: now,
+        context: { islandId: opts.islandId, questId: PAYCHECK_CHANGE_QUEST_ID },
+        action: {
+          eventTitle: "Budget Basics with Priya",
+          chosenLabel: "Split needs, wants, and savings",
+          chosenIndex: 0,
+        },
+        alternatives: ["Spend the whole paycheck"],
+        stateDiff: "Budget planner earned",
+        explanation: "A paycheck only becomes a plan when you name the buckets.",
+      },
+      {
+        timestamp: now,
+        context: { islandId: opts.islandId, questId: PAYCHECK_CHANGE_QUEST_ID },
+        action: {
+          eventTitle: "Vendor Vee's fountain vs glitter",
+          chosenLabel: protectedFund
+            ? "Protected rainy-day — fountain first"
+            : "Spent the stash on the glitter sale",
+          chosenIndex: protectedFund ? 0 : 1,
+        },
+        alternatives: protectedFund
+          ? ["Spend the emergency stash on wants"]
+          : ["Protect the fund — fountain first"],
+        stateDiff: protectedFund ? "Umbrella plaque" : "Glitter plaza mark",
+        explanation: protectedFund
+          ? "Surprises don't ask permission. Keeping an umbrella is the Change beat."
+          : "Glitter now thins the pouch — Harbor will still remember, and you can rebuild.",
+      },
+    ],
+    storySummary:
+      "You turned a paycheck into a plan, faced a surprise Take, and Dotgraph left a mark on Harbor.",
+  };
+}

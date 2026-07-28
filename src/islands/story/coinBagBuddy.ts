@@ -139,6 +139,55 @@ export function coinBagIslandTip(
         : "this island";
 
   if (island && typeof island === "object") {
+    if (save.chapterQuietPending) {
+      return {
+        tip: "Breathe — that choice sticks",
+        coach:
+          island.id === "paycheck_peninsula"
+            ? "No glitter HUD. Walk Main Street, then fly home when you're ready — Harbor is listening."
+            : island.id === "credit_kingdom"
+              ? "Interest is quiet. So are we. Finish the canyon, then carpet home."
+              : "The island got quieter after your Take. When you're ready, fly home changed.",
+        track: "main",
+      };
+    }
+
+    if (island.id === "paycheck_peninsula") {
+      const rainy = save.questStatus["q_pp_rainy_day"];
+      const basics = save.questStatus["q_pp_budget_basics"];
+      if (rainy?.started && !rainy.completed) {
+        const have = rainy.completedObjectives ?? [];
+        if (!have.includes("talk:npc_coach_carlos")) {
+          return {
+            tip: "Rainy Day Park — Coach Carlos",
+            coach: "Surprises love empty pouches. Carlos will set the challenge.",
+            track: "main",
+          };
+        }
+        if (!have.includes("talk:npc_vendor_vee") || !have.includes("item:pp_rainy_day_fund")) {
+          return {
+            tip: "Vendor Vee — fountain vs glitter",
+            coach: "This is the Take. Protect the umbrella, or spend the stash. Harbor will remember.",
+            track: "main",
+          };
+        }
+      }
+      if (basics?.started && !basics.completed) {
+        return {
+          tip: "Budget Bureau — needs, wants, savings",
+          coach: "Dotgraph runs on buckets. Priya's whiteboard is waiting.",
+          track: "main",
+        };
+      }
+      if (!basics?.started) {
+        return {
+          tip: "Main Street — Payroll Pat has your check",
+          coach: "First paycheck energy! Grab it, then we plan — not panic.",
+          track: "main",
+        };
+      }
+    }
+
     const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
     if (next) {
       const title =
