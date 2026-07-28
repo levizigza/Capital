@@ -23,6 +23,7 @@ export { CharacterPreview3D } from "./CharacterPreview3D";
 export { OutfitterStudio3D } from "./OutfitterStudio3D";
 export { MoneyStructureInteriorView } from "./MoneyStructureInteriorView";
 export { LedgerBankLandmark } from "./LedgerBankLandmark";
+export { PayrollTowerLandmark } from "./PayrollTowerLandmark";
 export { CapsuleStudio3D } from "./CapsuleStudio3D";
 export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
 export { MoneyBagGuide, guideTargetForHighlight, COIN_BAG_GUIDE_ID } from "./MoneyBagGuide";

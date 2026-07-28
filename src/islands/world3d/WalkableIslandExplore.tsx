@@ -17,6 +17,7 @@ import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { colorHex, type MoneyForm } from "../character";
 import type { ShoreHotspot } from "../islandShoreLayout";
 import { CoinJarLandmark } from "./CoinJarLandmark";
+import { PayrollTowerLandmark } from "./PayrollTowerLandmark";
 import {
   buildAmbientEcosystem,
   getIslandCulture,
@@ -30,6 +31,7 @@ import { MoneyBagGuide } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
+import { moneyStructureForIsland } from "../moneyStructures";
 
 type Props = {
   island: IslandDefinition;
@@ -361,6 +363,17 @@ function PadMarker({
   if (collected) return null;
 
   if (hotspot.kind === "money_structure") {
+    const theme = moneyStructureForIsland(islandId)?.theme;
+    if (theme === "tower") {
+      return (
+        <PayrollTowerLandmark
+          position={hotspot.position}
+          active={active}
+          guided={guided}
+          label={hotspot.label}
+        />
+      );
+    }
     return (
       <CoinJarLandmark
         position={hotspot.position}

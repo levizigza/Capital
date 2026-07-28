@@ -1,49 +1,39 @@
 /**
  * Money Structures — Astro-style landmarks: enter the machine, each part is a world.
- * Cove: Giant Coin Jar · Harbor: Ledger Bank
+ * Cove Jar · Harbor Bank · Paycheck Payroll Tower
  */
 
 import { COVE_ISLAND_ID, HARBOR_HAVEN_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
 import { shoreXZ } from "./world3d/ledgerlight";
 
-export type MoneyStructureTheme = "jar" | "bank";
+export type MoneyStructureTheme = "jar" | "bank" | "tower";
 
 export type MoneyStructurePart = {
   id: string;
   label: string;
   icon: string;
-  /** Short line on the pad */
   blurb: string;
-  /** Creative piece that opens the world (GPU / cork / spring…) */
   entryPiece: string;
   position: [number, number, number];
-  /** Dive into this minigame (island content id) */
   minigameId?: string;
-  /** Soft beat with no minigame dive */
-  softBeat?: "lookout" | "ledger";
+  softBeat?: "lookout" | "ledger" | "umbrella";
 };
 
 export type MoneyStructureDef = {
   id: string;
   islandId: string;
   name: string;
-  /** Shore / plaza hotspot label */
   exteriorLabel: string;
   icon: string;
   theme: MoneyStructureTheme;
-  /** Enter verb on HUD */
   entryVerb: string;
   entryHint: string;
-  /** Transition title while entering */
   enterTransition: string;
-  /** Shore / plaza position */
   shorePosition: [number, number, number];
   parts: MoneyStructurePart[];
-  /** Interior exit pad */
   exitPosition: [number, number, number];
 };
 
-/** Giant Coin Jar — squeeze through the slot, play the money guts. */
 export const COVE_COIN_JAR: MoneyStructureDef = {
   id: "cove_coin_jar",
   islandId: COVE_ISLAND_ID,
@@ -87,7 +77,6 @@ export const COVE_COIN_JAR: MoneyStructureDef = {
   ],
 };
 
-/** Ledger Bank — brass vault door opens the plaza's money machine. */
 export const HARBOR_LEDGER_BANK: MoneyStructureDef = {
   id: "harbor_ledger_bank",
   islandId: HARBOR_HAVEN_ID,
@@ -131,9 +120,54 @@ export const HARBOR_LEDGER_BANK: MoneyStructureDef = {
   ],
 };
 
+/** Payroll Tower — climb the check chute into the paycheck machine. */
+export const PAYCHECK_PAYROLL_TOWER: MoneyStructureDef = {
+  id: "paycheck_payroll_tower",
+  islandId: PAYCHECK_PENINSULA_ID,
+  name: "Payroll Tower",
+  exteriorLabel: "Payroll Tower",
+  icon: "🏢",
+  theme: "tower",
+  entryVerb: "Climb the glowing paycheck chute",
+  entryHint: "The chute sucks you up — clock, press, and umbrella loft each open a world.",
+  enterTransition: "Riding the paycheck chute…",
+  shorePosition: shoreXZ(0, -7.2, 0),
+  exitPosition: [0, 0, 8],
+  parts: [
+    {
+      id: "budget_press",
+      label: "Bucket Press",
+      icon: "📊",
+      blurb: "Needs · Wants · Savings — the press that sorts a paycheck.",
+      entryPiece: "Three-bucket stamp press",
+      position: [-4.2, 0, -2.5],
+      minigameId: "mg_budget_split",
+    },
+    {
+      id: "time_clock",
+      label: "Time Clock",
+      icon: "🕒",
+      blurb: "Punch in — the inbox storm starts on the hour.",
+      entryPiece: "Neon time-clock dial",
+      position: [4.2, 0, -2.2],
+      minigameId: "mg_inbox_storm",
+    },
+    {
+      id: "umbrella_loft",
+      label: "Umbrella Loft",
+      icon: "☂️",
+      blurb: "Rainy-day loft — look out over Main Street before the surprise.",
+      entryPiece: "Folded umbrella hatch",
+      position: [0, 0, -6.2],
+      softBeat: "umbrella",
+    },
+  ],
+};
+
 const BY_ISLAND: Record<string, MoneyStructureDef> = {
   [COVE_ISLAND_ID]: COVE_COIN_JAR,
   [HARBOR_HAVEN_ID]: HARBOR_LEDGER_BANK,
+  [PAYCHECK_PENINSULA_ID]: PAYCHECK_PAYROLL_TOWER,
 };
 
 export function moneyStructureForIsland(islandId: string): MoneyStructureDef | null {
@@ -147,12 +181,27 @@ export function moneyStructurePart(
   return structure.parts.find((p) => p.id === partId);
 }
 
-/** Island whose content owns a structure minigame (for cross-island launches). */
 export function hostIslandForStructureMinigame(minigameId: string): string | null {
-  if (minigameId.startsWith("mg_") && minigameId.includes("inbox")) return PAYCHECK_PENINSULA_ID;
   if (minigameId === "mg_treasure_vault" || minigameId === "mg_coin_catcher") return COVE_ISLAND_ID;
-  if (minigameId.startsWith("mg_budget") || minigameId.startsWith("mg_price")) {
+  if (
+    minigameId === "mg_inbox_storm" ||
+    minigameId === "mg_budget_split" ||
+    minigameId.startsWith("mg_price") ||
+    minigameId === "mg_treasure_hunt"
+  ) {
     return PAYCHECK_PENINSULA_ID;
   }
   return COVE_ISLAND_ID;
+}
+
+export function structureExitLabel(theme: MoneyStructureTheme): string {
+  if (theme === "bank") return "Exit Bank";
+  if (theme === "tower") return "Exit Tower";
+  return "Exit Jar";
+}
+
+export function structureReturnLabel(theme: MoneyStructureTheme): string {
+  if (theme === "bank") return "Step back to Harbor";
+  if (theme === "tower") return "Slide back to Peninsula";
+  return "Squeeze back to Cove";
 }

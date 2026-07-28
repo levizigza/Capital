@@ -182,6 +182,13 @@ export function IslandShoreView({
         });
         return;
       }
+      if (part.softBeat === "umbrella") {
+        playCapitalSfx("harbor_cheer");
+        toast.message("Umbrella Loft", {
+          description: "Rainy-day loft — Main Street looks small. Keep a little dry for later.",
+        });
+        return;
+      }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
         onPlayMinigame(part.minigameId);

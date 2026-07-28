@@ -12,8 +12,25 @@ import type { CapitalCharacter } from "../character";
 import { VoyagerMesh } from "./VoyagerMesh";
 import { WorldLighting } from "./WorldLighting";
 import { getEraLook3D } from "./eraLooks";
-import type { MoneyStructureDef, MoneyStructurePart } from "../moneyStructures";
+import {
+  structureExitLabel,
+  structureReturnLabel,
+  type MoneyStructureDef,
+  type MoneyStructurePart,
+} from "../moneyStructures";
 import { playCapitalSfx } from "../audio/capitalSfx";
+
+function themeShell(theme: MoneyStructureDef["theme"]) {
+  if (theme === "bank") return { wall: "#94a3b8", wallOp: 0.22, bg: "#1e293b" };
+  if (theme === "tower") return { wall: "#38bdf8", wallOp: 0.2, bg: "#0c4a6e" };
+  return { wall: "#7dd3fc", wallOp: 0.18, bg: "#0c4a6e" };
+}
+
+function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
+  if (theme === "bank") return near ? "Exit · vault door" : "Back to Harbor";
+  if (theme === "tower") return near ? "Exit · paycheck chute" : "Back to Peninsula";
+  return near ? "Exit · coin slot" : "Back to Cove";
+}
 
 type Props = {
   structure: MoneyStructureDef;
@@ -131,7 +148,7 @@ function PartPad({
         <mesh position={[0, y, 0]} castShadow>
           <cylinderGeometry args={[0.55, 0.65, 1.1, 12]} />
           <meshStandardMaterial
-            color={part.id === "vault_safe" ? "#b45309" : "#b45309"}
+            color="#b45309"
             roughness={0.75}
             metalness={part.id === "vault_safe" ? 0.45 : 0.05}
           />
@@ -145,6 +162,29 @@ function PartPad({
         <mesh position={[0, y, 0]} castShadow>
           <boxGeometry args={[1.4, 0.9, 0.2]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.4} />
+        </mesh>
+      ) : part.id === "budget_press" ? (
+        <group position={[0, y, 0]}>
+          {([-0.55, 0, 0.55] as const).map((x, i) => (
+            <mesh key={i} position={[x, 0, 0]} castShadow>
+              <boxGeometry args={[0.4, 0.85, 0.4]} />
+              <meshStandardMaterial
+                color={i === 0 ? "#22c55e" : i === 1 ? "#f59e0b" : "#38bdf8"}
+                metalness={0.2}
+                roughness={0.45}
+              />
+            </mesh>
+          ))}
+        </group>
+      ) : part.id === "time_clock" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <cylinderGeometry args={[0.7, 0.7, 0.22, 24]} />
+          <meshStandardMaterial color="#f8fafc" metalness={0.25} roughness={0.35} />
+        </mesh>
+      ) : part.id === "umbrella_loft" ? (
+        <mesh position={[0, y, 0]} castShadow>
+          <coneGeometry args={[0.85, 1.1, 12]} />
+          <meshStandardMaterial color="#0ea5e9" metalness={0.15} roughness={0.5} />
         </mesh>
       ) : (
         <mesh position={[0, y, 0]} castShadow>
@@ -181,6 +221,7 @@ function InteriorWorld({
   inputFrozen: boolean;
 }) {
   const look = useMemo(() => getEraLook3D("capital-default"), []);
+  const shell = themeShell(structure.theme);
   const pads = useMemo(
     () => [
       ...structure.parts.map((p) => ({ id: p.id, position: p.position })),
@@ -192,19 +233,19 @@ function InteriorWorld({
   return (
     <>
       <WorldLighting look={look} />
-      {/* Jar / bank shell walls — toy interior */}
+      {/* Structure shell walls — toy interior */}
       <mesh position={[0, 4, 0]}>
         <cylinderGeometry args={[10.5, 11, 10, 32, 1, true]} />
         <meshStandardMaterial
-          color={structure.theme === "bank" ? "#94a3b8" : "#7dd3fc"}
+          color={shell.wall}
           transparent
-          opacity={structure.theme === "bank" ? 0.22 : 0.18}
+          opacity={shell.wallOp}
           side={THREE.BackSide}
           roughness={0.2}
         />
       </mesh>
-      <color attach="background" args={[structure.theme === "bank" ? "#1e293b" : "#0c4a6e"]} />
-      <fog attach="fog" args={[structure.theme === "bank" ? "#1e293b" : "#0c4a6e", 12, 38]} />
+      <color attach="background" args={[shell.bg]} />
+      <fog attach="fog" args={[shell.bg, 12, 38]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[11, 48]} />
         <meshStandardMaterial color="#0f172a" roughness={0.85} />
@@ -240,7 +281,7 @@ function InteriorWorld({
         </mesh>
         <Billboard position={[0, 1.8, 0]} follow>
           <Text fontSize={0.28} color="#e0f2fe" outlineWidth={0.02} outlineColor="#0f172a">
-            {nearId === "exit" ? "Exit · coin slot" : "Back to Cove"}
+            {themeExitHint(structure.theme, nearId === "exit")}
           </Text>
         </Billboard>
       </group>
@@ -326,7 +367,7 @@ export function MoneyStructureInteriorView({
         }
         topRight={
           <GameButton variant="outline" size="sm" onClick={onExit}>
-            {structure.theme === "bank" ? "Exit Bank" : "Exit Jar"}
+            {structureExitLabel(structure.theme)}
           </GameButton>
         }
         bottom={
@@ -348,7 +389,7 @@ export function MoneyStructureInteriorView({
           ) : nearId === "exit" ? (
             <div className="flex justify-center">
               <GameButton variant="primary" onClick={onExit}>
-                {structure.theme === "bank" ? "Step back to Harbor" : "Squeeze back to Cove"}
+                {structureReturnLabel(structure.theme)}
               </GameButton>
             </div>
           ) : (

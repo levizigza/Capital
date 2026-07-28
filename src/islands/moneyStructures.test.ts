@@ -3,9 +3,10 @@ import { buildShoreHotspots } from "./islandShoreLayout";
 import {
   COVE_COIN_JAR,
   HARBOR_LEDGER_BANK,
+  PAYCHECK_PAYROLL_TOWER,
   moneyStructureForIsland,
 } from "./moneyStructures";
-import { COVE_ISLAND_ID, HARBOR_HAVEN_ID } from "./islandIds";
+import { COVE_ISLAND_ID, HARBOR_HAVEN_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
 import type { IslandDefinition } from "./types";
 
 function stubCove(): IslandDefinition {
@@ -31,6 +32,29 @@ function stubCove(): IslandDefinition {
   };
 }
 
+function stubPaycheck(): IslandDefinition {
+  return {
+    id: PAYCHECK_PENINSULA_ID,
+    name: "Paycheck Peninsula",
+    description: "test",
+    icon: "💸",
+    areas: [{ id: "pp_main", name: "Main", description: "", icon: "🏢", connections: [] }],
+    npcs: [],
+    items: [],
+    quests: [],
+    dialogues: [],
+    minigames: [
+      {
+        id: "mg_budget_split",
+        name: "Budget Split",
+        description: "x",
+        icon: "📊",
+        componentId: "BudgetSplitMinigame",
+      },
+    ],
+  };
+}
+
 describe("money structures", () => {
   it("registers the Cove Giant Coin Jar", () => {
     const s = moneyStructureForIsland(COVE_ISLAND_ID);
@@ -50,11 +74,29 @@ describe("money structures", () => {
     expect(s?.parts.some((p) => p.softBeat === "ledger")).toBe(true);
   });
 
+  it("registers the Paycheck Payroll Tower", () => {
+    const s = moneyStructureForIsland(PAYCHECK_PENINSULA_ID);
+    expect(s?.id).toBe(PAYCHECK_PAYROLL_TOWER.id);
+    expect(s?.theme).toBe("tower");
+    expect(s?.entryVerb.toLowerCase()).toMatch(/chute|paycheck/);
+    expect(s?.parts.some((p) => p.minigameId === "mg_budget_split")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_inbox_storm")).toBe(true);
+    expect(s?.parts.some((p) => p.softBeat === "umbrella")).toBe(true);
+  });
+
   it("adds a money_structure shore hotspot on Cove", () => {
     const spots = buildShoreHotspots(stubCove());
     const jar = spots.find((h) => h.kind === "money_structure");
     expect(jar?.label).toMatch(/Coin Jar/i);
     expect(jar?.structureId).toBe("cove_coin_jar");
     expect(jar?.subtitle?.toLowerCase()).toMatch(/slot|squeeze/);
+  });
+
+  it("adds a money_structure shore hotspot on Paycheck", () => {
+    const spots = buildShoreHotspots(stubPaycheck());
+    const tower = spots.find((h) => h.kind === "money_structure");
+    expect(tower?.label).toMatch(/Payroll Tower/i);
+    expect(tower?.structureId).toBe("paycheck_payroll_tower");
+    expect(tower?.subtitle?.toLowerCase()).toMatch(/chute|climb/);
   });
 });
