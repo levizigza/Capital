@@ -26,6 +26,10 @@ Money Structures path complete for the triangle spine (Cove → Paycheck → Cre
 
 Harbor plaza craft: see [astro-craft-translation.md](./astro-craft-translation.md) — CPU-Plaza distill (fountain + bank + Money Carpet Gate + few pavilions; utilities as signposts).
 
+**World open (Astro Bot style):** carpet land + Money Structure enter use unique motifs per world (coin slot / paycheck chute / interest spiral / vault door) via `WorldArriveOverlay` — visual only; Fortune soundtrack cues unchanged.
+
+Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berms, banners, pier mouth).
+
 This is **structure depth**, not map width — still no new outer islands.
 
 ## Cold playtest checklist

@@ -35,6 +35,7 @@ import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
+import { ShoreRhythmCraft } from "./ShorePlazaCraft";
 
 type Props = {
   island: IslandDefinition;
@@ -797,7 +798,7 @@ function ShoreScene({
 
   return (
     <>
-      <WorldLighting look={look} contactShadows={false} shadowMapSize={512} />
+      <WorldLighting look={look} contactShadows shadowMapSize={768} />
       <OceanWater
         color={look.sea}
         shading={look.shading}
@@ -811,6 +812,7 @@ function ShoreScene({
       />
 
       <BiomeGround look={look} biome={biome} wire={wire} plazaRadius={plazaRadius} />
+      {!wire ? <ShoreRhythmCraft look={look} culture={culture} pier={anchors.pier} /> : null}
 
       {culture.layout === "radar" ? (
         <>
@@ -861,9 +863,11 @@ function ShoreScene({
       <WoodenPier position={anchors.pier} />
       {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
 
-      {/* Toy culture — one coin + one bell near spawn / pier approach */}
+      {/* Toy culture — denser micro-delights on every shore */}
       <ShoreSpinCoin position={[shoreScale(1.6), 0.02, shoreScale(-1.2)]} accent={look.accent} />
+      <ShoreSpinCoin position={[shoreScale(-2.8), 0.02, shoreScale(1.4)]} accent={look.accent} />
       <ShoreBell position={[shoreScale(-2.2), 0, shoreScale(anchors.pier[2] * 0.35)]} />
+      <ShoreBell position={[shoreScale(3.4), 0, shoreScale(-3.2)]} />
 
       <IslandTitle
         title={island.name}

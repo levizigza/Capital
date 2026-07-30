@@ -32,6 +32,7 @@ import { EraIslandMesh } from "./EraIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { useInputAction } from "@/input";
+import { WorldArriveOverlay } from "../views/WorldArriveOverlay";
 
 type Props = {
   userProfile: UserProfile;
@@ -466,7 +467,6 @@ export function CarpetFlightView({
 
   const handleArrive = (id: string) => {
     setArriving(id);
-    window.setTimeout(() => onEnterIsland(id), 700);
   };
 
   const setBoost = (on: boolean) => {
@@ -669,9 +669,13 @@ export function CarpetFlightView({
       </div>
 
       {arriving ? (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 text-2xl font-black text-white">
-          Landing…
-        </div>
+        <WorldArriveOverlay
+          islandId={arriving}
+          islandName={islands.find((i) => i.id === arriving)?.name ?? "Island"}
+          kind="carpet_land"
+          durationMs={1650}
+          onDone={() => onEnterIsland(arriving)}
+        />
       ) : null}
     </div>
   );

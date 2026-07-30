@@ -31,6 +31,7 @@ import { buildShoreHotspots } from "../islandShoreLayout";
 import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStructures";
 import { toast } from "sonner";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
@@ -165,13 +166,13 @@ export function IslandShoreView({
   const enterStructure = useCallback(() => {
     if (!structure || enteringJar) return;
     setEnteringJar(true);
-    playCapitalSfx("scar_chime");
-    window.setTimeout(() => {
-      setEnteringJar(false);
-      setStructureOpen(true);
-      playCapitalSfx("plinth_hum");
-    }, 900);
   }, [structure, enteringJar]);
+
+  const finishStructureEnter = useCallback(() => {
+    setEnteringJar(false);
+    setStructureOpen(true);
+    playCapitalSfx("plinth_hum");
+  }, []);
 
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
@@ -262,21 +263,15 @@ export function IslandShoreView({
 
   return (
     <div className="relative h-full min-h-[100dvh] w-full" data-testid="island-shore-view">
-      {enteringJar ? (
-        <div
-          className="absolute inset-0 z-[50] flex flex-col items-center justify-center bg-[#0f172a]/92 text-center text-white"
-          data-testid="money-structure-enter-transition"
-        >
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-200/90">
-            Money is a machine
-          </p>
-          <h2 className="mt-3 text-2xl font-black">
-            {structure.enterTransition}
-          </h2>
-          <p className="mt-2 max-w-sm text-sm text-white/70">
-            Inside the Jar, every piece opens a world.
-          </p>
-        </div>
+      {enteringJar && structure ? (
+        <WorldArriveOverlay
+          islandId={island.id}
+          islandName={structure.name}
+          kind="structure_enter"
+          headline={structure.enterTransition}
+          durationMs={1700}
+          onDone={finishStructureEnter}
+        />
       ) : null}
       <GameHudLayout
         background={

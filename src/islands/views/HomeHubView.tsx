@@ -74,6 +74,7 @@ import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import { downloadWeeklyShareCard, downloadHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
 import { isKilled } from "@/sre";
 import {
@@ -695,14 +696,14 @@ export function HomeHubView({
     } else if (id === "ledger_bank" && ledgerBank) {
       if (enteringBank) return;
       setEnteringBank(true);
-      playCapitalSfx("scar_chime");
-      window.setTimeout(() => {
-        setEnteringBank(false);
-        setBankOpen(true);
-        playCapitalSfx("plinth_hum");
-      }, 900);
     }
   };
+
+  const finishBankEnter = useCallback(() => {
+    setEnteringBank(false);
+    setBankOpen(true);
+    playCapitalSfx("plinth_hum");
+  }, []);
 
   const onEnterBankPart = useCallback(
     (part: MoneyStructurePart) => {
@@ -797,21 +798,15 @@ export function HomeHubView({
 
   return (
     <>
-      {enteringBank ? (
-        <div
-          className="absolute inset-0 z-[55] flex flex-col items-center justify-center bg-[#0f172a]/92 text-center text-white"
-          data-testid="money-structure-enter-transition"
-        >
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-amber-200/90">
-            Money is a machine
-          </p>
-          <h2 className="mt-3 text-2xl font-black">
-            {ledgerBank?.enterTransition ?? "Vault door swinging open…"}
-          </h2>
-          <p className="mt-2 max-w-sm text-sm text-white/70">
-            Inside the Bank, every piece opens a world.
-          </p>
-        </div>
+      {enteringBank && ledgerBank ? (
+        <WorldArriveOverlay
+          islandId={HARBOR_HAVEN_ID}
+          islandName={ledgerBank.name}
+          kind="structure_enter"
+          headline={ledgerBank.enterTransition}
+          durationMs={1700}
+          onDone={finishBankEnter}
+        />
       ) : null}
       <GameHudLayout
         background={

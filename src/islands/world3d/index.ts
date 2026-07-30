@@ -41,6 +41,7 @@ export {
   UtilityQuay,
   PierMouthFrame,
 } from "./HarborPlazaCraft";
+export { ShoreRhythmCraft, ShorePlazaTier, ShoreEyePath, ShorePierMouth } from "./ShorePlazaCraft";
 export { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 export { CapsuleStudio3D } from "./CapsuleStudio3D";
 export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
