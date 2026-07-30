@@ -743,13 +743,23 @@ export function WalkableHarborView({
 
   const [ready, setReady] = useState(false);
   const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
+  const [force2d, setForce2d] = useState(false);
+  const readyRef = useRef(false);
+  readyRef.current = ready;
 
   useEffect(() => {
     if (ready) return;
-    const t = window.setTimeout(() => {
+    const hint = window.setTimeout(() => {
       setLoadHint("Still loading… if this hangs, refresh the page (Esc won’t help here).");
     }, 8000);
-    return () => window.clearTimeout(t);
+    // Never leave players on an empty sky — fall back to hotspot buttons.
+    const failsafe = window.setTimeout(() => {
+      if (!readyRef.current) setForce2d(true);
+    }, 6000);
+    return () => {
+      window.clearTimeout(hint);
+      window.clearTimeout(failsafe);
+    };
   }, [ready]);
 
   useEffect(() => {
@@ -757,15 +767,19 @@ export function WalkableHarborView({
   }, [ready]);
 
   useEffect(() => {
-    if (kill3d) setReady(true);
-  }, [kill3d]);
+    if (kill3d || force2d) setReady(true);
+  }, [kill3d, force2d]);
 
-  if (kill3d) {
+  if (kill3d || force2d) {
     return (
       <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-b from-[#7dd3fc] to-[#bae6fd] px-6 text-center">
-        <p className="text-lg font-bold text-[#16283b]">Harbor Haven (safe mode)</p>
+        <p className="text-lg font-bold text-[#16283b]">
+          {force2d && !kill3d ? "Harbor Haven (quick map)" : "Harbor Haven (safe mode)"}
+        </p>
         <p className="max-w-md text-sm text-[#16283b]/80">
-          3D Harbor is temporarily disabled for reliability. Use Travel, Settings, or hotspots below when available.
+          {force2d && !kill3d
+            ? "3D is slow on this device — tap a place below. Ledger Bank is the money machine."
+            : "3D Harbor is temporarily disabled for reliability. Use Travel, Settings, or hotspots below when available."}
         </p>
         <div className="flex max-w-lg flex-wrap justify-center gap-2">
           {hotspots.map((h) => (
@@ -778,6 +792,13 @@ export function WalkableHarborView({
               {h.icon} {h.label}
             </button>
           ))}
+          <button
+            type="button"
+            className="rounded-lg bg-[#f4a629] px-3 py-2 text-sm font-bold text-[#16283b] shadow"
+            onClick={onOpenTravel}
+          >
+            🗺️ Archipelago map
+          </button>
         </div>
       </div>
     );
