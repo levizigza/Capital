@@ -250,8 +250,10 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       <group>
         <ToyClockFace position={[-2.2, 0, 2.4]} />
         <ToyClockFace position={[2.6, 0, 1.8]} />
+        <ToyClockFace position={[0, 0, -3.8]} />
         <ToyCoin position={[0.8, 0, 3.5]} accent="#38bdf8" />
         <ToyCoin position={[-3.4, 0, -0.5]} accent="#7dd3fc" />
+        <ToyCoin position={[3.2, 0, -2.2]} accent="#bae6fd" />
       </group>
     );
   }
@@ -261,7 +263,9 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
         <ToySpiralBead position={[-2.4, 0.2, 2.2]} phase={0} />
         <ToySpiralBead position={[2.8, 0.2, 1.6]} phase={1.2} />
         <ToySpiralBead position={[0.2, 0.2, 3.6]} phase={2.4} />
+        <ToySpiralBead position={[-1.5, 0.2, -3.5]} phase={3.1} />
         <ToyCoin position={[-3.2, 0, -1.2]} accent="#a78bfa" />
+        <ToyCoin position={[3.4, 0, -0.8]} accent="#c4b5fd" />
       </group>
     );
   }
@@ -270,11 +274,14 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       <group>
         <ToyStamp position={[-2.6, 0, 2.5]} />
         <ToyStamp position={[2.4, 0, 2.0]} />
+        <ToyStamp position={[0.2, 0, -4.0]} />
         <ToyCoin position={[0.5, 0, 3.8]} accent="#f59e0b" />
         <ToyCoin position={[-1.8, 0, 3.2]} accent="#fbbf24" />
+        <ToyCoin position={[3.0, 0, -1.5]} accent="#fde68a" />
       </group>
     );
   }
+  // jar — denser coin toys
   return (
     <group>
       <ToyCoin position={[-2.4, 0, 2.6]} />
@@ -282,6 +289,9 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       <ToyCoin position={[0.2, 0, 3.8]} accent="#fde68a" />
       <ToyCoin position={[-3.5, 0, -0.8]} accent="#f59e0b" />
       <ToyCoin position={[3.2, 0, -1.4]} />
+      <ToyCoin position={[-1.2, 0, -3.8]} accent="#fbbf24" />
+      <ToyCoin position={[1.8, 0, -4.2]} accent="#fde68a" />
+      <ToyStamp position={[3.6, 0, 0.4]} />
     </group>
   );
 }

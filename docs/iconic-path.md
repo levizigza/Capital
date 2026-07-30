@@ -50,7 +50,10 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Share | PNG prompt immediately; card readable at thumbnail size |
 | Piggy | Quiet Harbor until Talk Battle |
 | Day 2 | Soft “Still here” surprise — no tutorial tone |
+| Soft Beat | Lid / Loft / Battlement / Teller — hush overlay, not a toast |
 | Trailer | Memory Plinth → Replay signature beat (~24s, mute-friendly) |
+
+**Harbor tutorial chrome:** early Castle Grounds hides Leave, Archipelago chip, and Outfitter avatar until those steps matter — Coin Bag + Piggy only.
 
 **QA seeds (dev / `VITE_QA=1`):**
 

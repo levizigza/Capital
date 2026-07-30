@@ -499,16 +499,18 @@ export function IslandPlayView({
               Board
             </GameButton>
           ) : null}
-          <GameButton
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              onClearChapterQuiet?.();
-              onOpenTravel();
-            }}
-          >
-            Map
-          </GameButton>
+          {!chapterQuiet ? (
+            <GameButton
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                onClearChapterQuiet?.();
+                onOpenTravel();
+              }}
+            >
+              Map
+            </GameButton>
+          ) : null}
           <GameButton
             variant="primary"
             size="sm"

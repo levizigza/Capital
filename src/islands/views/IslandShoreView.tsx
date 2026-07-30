@@ -29,9 +29,9 @@ import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import { buildShoreHotspots } from "../islandShoreLayout";
 import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStructures";
-import { toast } from "sonner";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
+import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
@@ -92,6 +92,7 @@ export function IslandShoreView({
   const [journalOpen, setJournalOpen] = useState(false);
   const [structureOpen, setStructureOpen] = useState(false);
   const [enteringJar, setEnteringJar] = useState(false);
+  const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
@@ -176,25 +177,8 @@ export function IslandShoreView({
 
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
-      if (part.softBeat === "lookout") {
-        playCapitalSfx("harbor_cheer");
-        toast.message("Lid Lookout", {
-          description: "Cove looks tiny from up here — save a little, the jar still holds.",
-        });
-        return;
-      }
-      if (part.softBeat === "umbrella") {
-        playCapitalSfx("harbor_cheer");
-        toast.message("Umbrella Loft", {
-          description: "Rainy-day loft — Main Street looks small. Keep a little dry for later.",
-        });
-        return;
-      }
-      if (part.softBeat === "battlement") {
-        playCapitalSfx("harbor_cheer");
-        toast.message("Score Battlement", {
-          description: "On-time history beats haste — interest feeds on rushing.",
-        });
+      if (part.softBeat === "lookout" || part.softBeat === "umbrella" || part.softBeat === "battlement") {
+        setSoftBeat(part.softBeat);
         return;
       }
       if (part.minigameId) {
@@ -252,12 +236,21 @@ export function IslandShoreView({
 
   if (structureOpen && structure) {
     return (
-      <MoneyStructureInteriorView
-        structure={structure}
-        character={character}
-        onExit={() => setStructureOpen(false)}
-        onEnterPart={onEnterPart}
-      />
+      <>
+        <MoneyStructureInteriorView
+          structure={structure}
+          character={character}
+          onExit={() => setStructureOpen(false)}
+          onEnterPart={onEnterPart}
+        />
+        {softBeat ? (
+          <SoftBeatOverlay
+            kind={softBeat}
+            hushActive={Boolean(save.chapterQuietPending)}
+            onDone={() => setSoftBeat(null)}
+          />
+        ) : null}
+      </>
     );
   }
 
@@ -340,7 +333,13 @@ export function IslandShoreView({
               <div className="mt-1 text-[11px] font-bold text-emerald-200">Main course clear — explore freely</div>
             )}
             {save.chapterQuietPending ? (
-              <HudBadge className="mt-1 bg-slate-900/80 text-white">Quiet after the Take · fly home changed</HudBadge>
+              <HudBadge className="mt-1 bg-slate-900/80 text-white">
+                {island.id === "paycheck_peninsula"
+                  ? "Quiet after the rainy-day Take · fly home changed"
+                  : island.id === "credit_kingdom"
+                    ? "Quiet after the interest Take · fly home changed"
+                    : "Quiet after the Take · fly home changed"}
+              </HudBadge>
             ) : null}
           </div>
         }

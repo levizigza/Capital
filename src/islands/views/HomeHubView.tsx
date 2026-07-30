@@ -70,6 +70,7 @@ import {
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
+import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
@@ -245,6 +246,23 @@ export function HomeHubView({
     Boolean(save.harborHomecoming?.pending || save.harborHomecoming?.celebrated);
   const quietHarbor =
     needsPiggyWelcome && Boolean(save.harborHomecoming?.quietPending);
+  /** Early Castle Grounds — one job, minimal chrome */
+  const earlyCastle =
+    Boolean(castleMode && guidedStep) &&
+    !["practice_optional", "to_dock", "first_island", "done"].includes(guidedStep!.id);
+  const showOutfitterChrome =
+    !quietHarbor &&
+    (!castleMode ||
+      guidedStep?.highlight === "outfitter" ||
+      guidedStep?.id === "walk_outfitter" ||
+      guidedStep?.id === "become_you");
+  const showTravelChip =
+    !quietHarbor &&
+    (!castleMode ||
+      guidedStep?.id === "practice_optional" ||
+      guidedStep?.id === "to_dock" ||
+      guidedStep?.id === "first_island");
+  const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
     Boolean(save.harborHomecoming?.piggyTalked) &&
@@ -265,6 +283,7 @@ export function HomeHubView({
   const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
   const [enteringBank, setEnteringBank] = useState(false);
+  const [bankSoftBeat, setBankSoftBeat] = useState<SoftBeatKind | null>(null);
   const ledgerBank = useMemo(() => moneyStructureForIsland(HARBOR_HAVEN_ID), []);
 
   const visualBeats = resolveHarborVisualBeats({
@@ -730,10 +749,7 @@ export function HomeHubView({
   const onEnterBankPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "ledger" || part.softBeat === "lookout") {
-        playCapitalSfx("harbor_cheer");
-        toast.message("Teller Window", {
-          description: "Marble cool under your hands — the ledger remembers every jar and stamp.",
-        });
+        setBankSoftBeat("ledger");
         return;
       }
       if (part.minigameId) {
@@ -809,12 +825,21 @@ export function HomeHubView({
 
   if (bankOpen && ledgerBank) {
     return (
-      <MoneyStructureInteriorView
-        structure={ledgerBank}
-        character={voyager}
-        onExit={() => setBankOpen(false)}
-        onEnterPart={onEnterBankPart}
-      />
+      <>
+        <MoneyStructureInteriorView
+          structure={ledgerBank}
+          character={voyager}
+          onExit={() => setBankOpen(false)}
+          onEnterPart={onEnterBankPart}
+        />
+        {bankSoftBeat ? (
+          <SoftBeatOverlay
+            kind={bankSoftBeat}
+            hushActive={plaques.length > 0}
+            onDone={() => setBankSoftBeat(null)}
+          />
+        ) : null}
+      </>
     );
   }
 
@@ -910,17 +935,25 @@ export function HomeHubView({
                 Harbor is quiet — find Piggy
               </p>
             </div>
+          ) : earlyCastle && !showOutfitterChrome ? (
+            <div className="cap-play-hud-left">
+              <p className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90">
+                Harbor Haven
+              </p>
+            </div>
           ) : (
           <div className="cap-play-hud-left">
-            <button
-              type="button"
-              onClick={openOutfitter}
-              aria-label="Open Outfitter"
-              className="rounded-full ring-2 ring-white/40"
-            >
-              <CharacterAvatar character={voyager} size={36} animationStyle="capital-default" />
-            </button>
-            <WealthHud totalCoins={userProfile.totalCoins} compact />
+            {showOutfitterChrome ? (
+              <button
+                type="button"
+                onClick={openOutfitter}
+                aria-label="Open Outfitter"
+                className="rounded-full ring-2 ring-white/40"
+              >
+                <CharacterAvatar character={voyager} size={36} animationStyle="capital-default" />
+              </button>
+            ) : null}
+            {!earlyCastle ? <WealthHud totalCoins={userProfile.totalCoins} compact /> : null}
             {!simplified && !castleMode ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
@@ -928,23 +961,25 @@ export function HomeHubView({
           )
         }
         topRight={
-          quietHarbor ? null : (
+          quietHarbor || earlyCastle ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
                 {profile.icon} {profile.label}
               </HudBadge>
             ) : null}
-            <GameButton
-              variant="outline"
-              size="sm"
-              onClick={onExit}
-              className="bg-black/35 text-white"
-              data-testid="hub-leave-islands"
-              title="Leave Islands"
-            >
-              Leave
-            </GameButton>
+            {showLeaveChrome ? (
+              <GameButton
+                variant="outline"
+                size="sm"
+                onClick={onExit}
+                className="bg-black/35 text-white"
+                data-testid="hub-leave-islands"
+                title="Leave Islands"
+              >
+                Leave
+              </GameButton>
+            ) : null}
           </div>
           )
         }
@@ -959,7 +994,7 @@ export function HomeHubView({
               tip={buddyTip.tip}
               detail={castleMode ? guidedStep?.coach : undefined}
               guideArrows={guideArrows}
-              onToggleGuide={toggleGuide}
+              onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />
             )}
             {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
@@ -1028,7 +1063,7 @@ export function HomeHubView({
                   Archipelago map
                 </GameButton>
               </div>
-            ) : (
+            ) : showTravelChip ? (
               <button
                 type="button"
                 data-testid="hub-travel-map"
@@ -1040,6 +1075,10 @@ export function HomeHubView({
               >
                 Archipelago map · or walk to Money Carpet
               </button>
+            ) : (
+              <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
+                WASD walk · follow Coin Bag
+              </p>
             )}
             <p className="cap-hint-whisper sr-only md:not-sr-only">
               {nearStore
