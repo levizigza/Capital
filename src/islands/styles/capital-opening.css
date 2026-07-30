@@ -205,7 +205,7 @@ html.capital-intro-active body {
   z-index: 20;
   padding: 0.15rem 0.55rem;
   border-radius: 999px;
-  font-family: var(--font-sans, sans-serif);
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
   font-size: clamp(0.68rem, 1.4vw, 0.92rem);
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -214,6 +214,17 @@ html.capital-intro-active body {
   color: #ffe9b8;
   border: 1px solid rgba(255, 233, 184, 0.55);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.isle-patch.is-spot .isle-patch__year,
+.isle-patch.is-assembled .isle-patch__year {
+  opacity: 1;
+}
+.cap-opening-root--revealed .isle-patch__year,
+.cap-opening-root--revealed .isle-patch__tag {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 .isle-patch__tag {
   position: absolute;
@@ -779,27 +790,56 @@ html.capital-intro-active body {
   align-items: center;
   justify-content: flex-end;
   text-align: center;
-  padding: 0 1.5rem 1.75rem;
+  padding: 0 1.5rem 2rem;
   z-index: 7;
   pointer-events: none;
-  background: linear-gradient(to top, rgba(6, 12, 20, 0.94) 0%, rgba(6, 12, 20, 0.7) 45%, transparent 100%);
+  background: linear-gradient(
+    to top,
+    rgba(6, 12, 20, 0.96) 0%,
+    rgba(6, 12, 20, 0.72) 42%,
+    transparent 100%
+  );
 }
 .cap-opening-reveal__plate {
   pointer-events: auto;
-  width: min(100%, 580px);
-  background: rgba(10, 18, 28, 0.82);
-  backdrop-filter: blur(6px);
-  border-radius: 1.25rem;
-  padding: 1rem 1.5rem 1.25rem;
-  border: 1px solid rgba(255, 233, 184, 0.15);
+  width: min(100%, 560px);
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
+  padding: 0.5rem 0.75rem 0.85rem;
+  border: none;
+  box-shadow: none;
 }
-.cap-opening-eyebrow {
-  font-family: var(--font-sans, sans-serif);
+.cap-opening-mark {
+  margin: 0 0 0.55rem;
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.72rem;
-  color: rgba(255, 233, 184, 0.85);
+  letter-spacing: 0.32em;
+  font-size: 0.68rem;
+  color: rgba(253, 230, 138, 0.92);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+.cap-opening-eyebrow {
+  display: none;
+}
+.cap-opening-tagline {
+  margin: 0.85rem auto 0;
+  max-width: 26rem;
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45);
+}
+.cap-opening-time {
+  margin: 0.45rem 0 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
 }
 .cap-opening-title {
   position: relative;
@@ -875,33 +915,53 @@ html.capital-intro-active body {
 }
 .cap-opening-caption {
   position: absolute;
-  bottom: 3.25rem;
+  bottom: 2.75rem;
   left: 0;
   right: 0;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   z-index: 7;
-  font-family: var(--font-sans, sans-serif);
-  font-size: 0.74rem;
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.78);
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.72);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
+.cap-opening-caption__era {
+  color: rgba(253, 230, 138, 0.95);
+}
+.cap-opening-caption__skip {
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.cap-opening-caption__skip:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
 
-.cap-enter { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 1.25rem; }
+.cap-enter { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 1.35rem; }
 .cap-enter-boat {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.5rem;
+  gap: 0.7rem;
+  padding: 0.85rem 1.65rem;
   border-radius: 999px;
   border: 3px solid var(--cap-ink, #16283b);
   background: var(--cap-gold, #f4a629);
   color: var(--cap-ink, #16283b);
-  font-family: var(--font-sans, sans-serif);
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 1.05rem;
   cursor: pointer;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28);
   animation: cap-enter-bob 1.9s ease-in-out infinite;
@@ -911,15 +971,23 @@ html.capital-intro-active body {
 .cap-enter-boat:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28); }
 .cap-enter-boat:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .cap-enter-boat__icon { font-size: 1.5rem; display: inline-block; animation: cap-enter-rock 1.6s ease-in-out infinite; }
+.cap-enter-boat__icon--bill {
+  width: 1.55rem;
+  height: 1rem;
+  border-radius: 2px;
+  background: linear-gradient(135deg, #166534, #22c55e 45%, #14532d);
+  box-shadow: inset 0 0 0 1px rgba(254, 240, 138, 0.55);
+  animation: cap-enter-rock 1.6s ease-in-out infinite;
+}
 @keyframes cap-enter-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 @keyframes cap-enter-rock { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
 .cap-enter-hint {
-  font-family: var(--font-sans, sans-serif);
-  font-size: 0.68rem;
+  font-family: "Space Grotesk", var(--font-sans, sans-serif);
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.55);
 }
 .cap-sail-away {
   position: absolute;
@@ -929,6 +997,22 @@ html.capital-intro-active body {
   font-size: clamp(3rem, 9vw, 5rem);
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.4));
   pointer-events: none;
+}
+.cap-sail-away--carpet {
+  font-size: 0;
+}
+.cap-sail-away__bill {
+  display: block;
+  width: clamp(4.5rem, 14vw, 7rem);
+  height: clamp(2.4rem, 7vw, 3.6rem);
+  border-radius: 4px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(254, 240, 138, 0.55) 0 18%, transparent 19%),
+    linear-gradient(135deg, #14532d 0%, #22c55e 42%, #166534 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(254, 240, 138, 0.45),
+    0 10px 24px rgba(0, 0, 0, 0.35);
+  transform: perspective(120px) rotateX(28deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

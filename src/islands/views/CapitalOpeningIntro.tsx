@@ -315,15 +315,15 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
     window.setTimeout(finish, reduced ? 250 : 950);
   }, [entering, finish, reduced]);
 
-  const sweepMs = reduced ? 180 : 380;
+  const sweepMs = reduced ? 140 : 300;
   useEffect(() => {
     const timers: number[] = [];
     PATCHES.forEach((_, i) => {
-      timers.push(window.setTimeout(() => setStage(i), 280 + i * sweepMs));
+      timers.push(window.setTimeout(() => setStage(i), 200 + i * sweepMs));
     });
-    const afterSweep = 280 + PATCHES.length * sweepMs;
+    const afterSweep = 200 + PATCHES.length * sweepMs;
     timers.push(window.setTimeout(() => setStage("settle"), afterSweep));
-    timers.push(window.setTimeout(() => setStage("reveal"), afterSweep + (reduced ? 200 : 420)));
+    timers.push(window.setTimeout(() => setStage("reveal"), afterSweep + (reduced ? 160 : 360)));
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, [sweepMs, reduced]);
 
@@ -400,13 +400,13 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
       <AnimatePresence>
         {entering && !reduced ? (
           <motion.div
-            className="cap-sail-away"
+            className="cap-sail-away cap-sail-away--carpet"
             aria-hidden
-            initial={{ bottom: "16%", opacity: 1, scale: 1 }}
-            animate={{ bottom: "52%", opacity: 0, scale: 0.35 }}
+            initial={{ bottom: "14%", opacity: 1, scale: 1, rotate: -4 }}
+            animate={{ bottom: "58%", opacity: 0, scale: 0.4, rotate: 8 }}
             transition={{ duration: 0.95, ease: "easeIn" }}
           >
-            🪄
+            <span className="cap-sail-away__bill" />
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -415,31 +415,30 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
         {isReveal && !entering ? (
           <motion.div
             className="cap-opening-reveal"
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: reduced ? 0.25 : 0.6 }}
+            transition={{ duration: reduced ? 0.25 : 0.65 }}
           >
             <div className="cap-opening-reveal__plate">
-              <div className="cap-opening-eyebrow">
-                Fortune Archipelago · gamified financial literacy · {timeLabel.toLowerCase()}
-              </div>
+              <p className="cap-opening-mark">Fortune Archipelago</p>
               <h1 className="cap-opening-title">
                 <span className="cap-opening-title__ornament" aria-hidden />
                 <span className="cap-opening-title__word">Capital</span>
                 <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
-              <p className="mt-3 max-w-md text-sm text-white/80 md:text-base">
-                Money is alive here. Sail Harbor Haven, make choices that stick, and come home changed.
+              <p className="cap-opening-tagline">
+                Money is alive here. Board the carpet to Harbor Haven.
+              </p>
+              <p className="cap-opening-time" aria-hidden>
+                {timeLabel}
               </p>
               <div className="cap-enter">
                 <button type="button" className="cap-enter-boat" onClick={enter} autoFocus>
-                  <span className="cap-enter-boat__icon" aria-hidden>
-                    🪄
-                  </span>
-                  Board the carpet — Coincraft Cove awaits
+                  <span className="cap-enter-boat__icon cap-enter-boat__icon--bill" aria-hidden />
+                  Board the Money Carpet
                 </button>
-                <span className="cap-enter-hint">Enter · Space to skip the mural</span>
+                <span className="cap-enter-hint">Enter · Space</span>
               </div>
             </div>
           </motion.div>
@@ -448,10 +447,14 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
 
       {!isReveal && !entering ? (
         <div className="cap-opening-caption">
-          {currentPatch ? `${currentPatch.year} — ${currentPatch.caption}` : "One mural, painted piece by piece"}
+          {currentPatch ? (
+            <span className="cap-opening-caption__era">{currentPatch.year}</span>
+          ) : (
+            <span>One mural · seven eras</span>
+          )}
           <button
             type="button"
-            className="ml-3 underline decoration-white/40 underline-offset-2"
+            className="cap-opening-caption__skip"
             onClick={() => setStage("reveal")}
           >
             Skip

@@ -21,6 +21,8 @@ import {
   markCapitalIntroSeen,
   shouldPlayCapitalIntroOnBoot,
 } from "../views/CapitalOpeningIntro";
+import { WorldArriveOverlay } from "../views/WorldArriveOverlay";
+import { HARBOR_HAVEN_ID } from "../islandIds";
 
 export { hasSeenCapitalIntro, markCapitalIntroSeen, shouldPlayCapitalIntroOnBoot };
 
@@ -100,7 +102,7 @@ function FlightPov({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={BASE_VOYAGER} flying hideRider povRide showBuddy />
+      <MoneyCarpet character={BASE_VOYAGER} flying hideRider={false} povRide showBuddy />
     </group>
   );
 }
@@ -114,69 +116,48 @@ function OpeningWorld({
 }) {
   return (
     <>
-      <WorldLighting look={{ ...LOOK, fogNear: 22, fogFar: 130 }} shadowMapSize={512} />
-      <OceanWater color={LOOK.sea} shading={LOOK.shading} size={1200} />
-
+      <WorldLighting look={LOOK} contactShadows={false} shadowMapSize={512} />
+      <OceanWater color={LOOK.sea} shading={LOOK.shading} size={280} calm />
       <EraIslandMesh
         look={LOOK}
         seed="harbor-haven"
-        position={[0, 0, -6]}
-        scale={2.8}
+        position={[0, -0.2, -6]}
+        scale={2.4}
         detail="near"
         showPier
-        selected
-      />
-      <IslandTitle
-        title="Harbor Haven"
-        subtitle="Your first island"
-        height={9.8}
-        position={[0, 0, -6]}
-        accent={LOOK.accent}
-      />
-
-      <EraIslandMesh
-        look={getEraLook3D("era-1980s")}
-        seed="horizon-80s"
-        position={[-28, 0, -40]}
-        scale={1.4}
-        detail="far"
       />
       <EraIslandMesh
         look={getEraLook3D("era-1990s")}
-        seed="horizon-90s"
-        position={[32, 0, -48]}
+        seed="open-a"
+        position={[-28, -0.4, -36]}
         scale={1.6}
         detail="far"
       />
       <EraIslandMesh
-        look={getEraLook3D("era-1960s")}
-        seed="horizon-60s"
-        position={[18, 0, -70]}
-        scale={1.2}
-        detail="far"
-      />
-      <EraIslandMesh
         look={getEraLook3D("era-2000s")}
-        seed="horizon-00s"
-        position={[-22, 0, -62]}
-        scale={1.5}
+        seed="open-b"
+        position={[32, -0.3, -40]}
+        scale={1.9}
         detail="far"
       />
-
+      <IslandTitle title="Harbor Haven" subtitle="Ordinary World" height={6.2} accent={LOOK.accent} />
       <FlightPov onLanded={onLanded} speedRef={speedRef} />
     </>
   );
 }
 
+/**
+ * Boot carpet ceremony — quieter chrome, iconic Harbor arrive.
+ */
 export function CarpetOpeningIntro({ onComplete }: Props) {
-  const [phase, setPhase] = useState<"fly" | "land">("fly");
-  const [ready, setReady] = useState(false);
-  const [rushing, setRushing] = useState(false);
-  const finishing = useRef(false);
-  const speedRef = useRef(1);
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [ready, setReady] = useState(false);
+  const [phase, setPhase] = useState<"fly" | "land">("fly");
+  const [rushing, setRushing] = useState(false);
+  const speedRef = useRef(1);
+  const finishing = useRef(false);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -187,12 +168,14 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
   }, []);
 
   useEffect(() => {
-    if (reduced) {
-      speedRef.current = RUSH_MULT;
-      setRushing(true);
-    }
     const down = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        finish();
+        return;
+      }
       if (e.key === "Shift" || e.code === "Space" || e.key === "Enter") {
+        if (reduced) return;
         e.preventDefault();
         speedRef.current = RUSH_MULT;
         setRushing(true);
@@ -227,7 +210,6 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
 
   const onLanded = () => {
     setPhase("land");
-    window.setTimeout(finish, 900);
   };
 
   const setRush = (on: boolean) => {
@@ -244,7 +226,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
     >
       {!ready ? (
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c1622] text-sm font-bold text-white/70">
-          Loading carpet flight…
+          Unfolding the Money Carpet…
         </div>
       ) : null}
       <Canvas
@@ -264,60 +246,54 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
         </Suspense>
       </Canvas>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/45 to-transparent px-4 pb-12 pt-5 text-center">
-        <p className="text-sm font-semibold text-white/90">
-          {phase === "fly"
-            ? rushing
-              ? "Rushing to Harbor Haven…"
-              : "Harbor Haven on the horizon"
-            : "Landing…"}
-        </p>
-      </div>
+      {phase === "fly" ? (
+        <>
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/50 to-transparent px-4 pb-14 pt-6 text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200/90">
+              Fortune Archipelago
+            </p>
+            <p className="mt-1 text-sm font-semibold text-white/95">
+              {rushing ? "Rushing to Harbor Haven…" : "Harbor Haven on the horizon"}
+            </p>
+          </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-3 bg-gradient-to-t from-black/60 via-black/25 to-transparent px-4 pb-7 pt-16 text-center">
-        {phase === "fly" ? (
-          <button
-            type="button"
-            className={`pointer-events-auto rounded-full border-2 px-5 py-2.5 text-sm font-extrabold shadow-lg backdrop-blur-sm ${
-              rushing
-                ? "border-amber-200 bg-amber-400 text-[#16283b]"
-                : "border-white/30 bg-white/15 text-white hover:bg-white/25"
-            }`}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              setRush(true);
-            }}
-            onPointerUp={() => setRush(false)}
-            onPointerLeave={() => setRush(false)}
-            onPointerCancel={() => setRush(false)}
-          >
-            {rushing ? "Rushing…" : "Hold to speed up"}
-          </button>
-        ) : null}
-        <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-2">
-          {phase === "fly" ? (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-2 bg-gradient-to-t from-black/65 via-black/20 to-transparent px-4 pb-8 pt-20 text-center">
             <button
               type="button"
-              className="rounded-full border-2 border-[#16283b] bg-[#f4a629] px-4 py-2 text-xs font-extrabold text-[#16283b] shadow-lg"
-              onClick={() => setRush(true)}
+              className={`pointer-events-auto rounded-full border-2 px-6 py-2.5 text-sm font-extrabold shadow-lg backdrop-blur-sm ${
+                rushing
+                  ? "border-amber-200 bg-amber-400 text-[#16283b]"
+                  : "border-white/30 bg-white/15 text-white hover:bg-white/25"
+              }`}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                setRush(true);
+              }}
+              onPointerUp={() => setRush(false)}
+              onPointerLeave={() => setRush(false)}
+              onPointerCancel={() => setRush(false)}
             >
-              Rush to island →
+              {rushing ? "Rushing…" : "Hold to rush · Shift"}
             </button>
-          ) : null}
-          <button
-            type="button"
-            className="rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/20"
-            onClick={finish}
-          >
-            Skip →
-          </button>
-        </div>
-      </div>
+            <button
+              type="button"
+              className="pointer-events-auto text-[11px] font-bold uppercase tracking-[0.2em] text-white/55 underline-offset-2 hover:text-white/90 hover:underline"
+              onClick={finish}
+            >
+              Skip
+            </button>
+          </div>
+        </>
+      ) : null}
 
       {phase === "land" ? (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 text-xl font-black text-white">
-          Harbor Haven
-        </div>
+        <WorldArriveOverlay
+          islandId={HARBOR_HAVEN_ID}
+          islandName="Harbor Haven"
+          kind="carpet_land"
+          durationMs={1500}
+          onDone={finish}
+        />
       ) : null}
     </div>
   );
