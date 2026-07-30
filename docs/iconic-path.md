@@ -28,7 +28,11 @@ Harbor plaza craft: see [astro-craft-translation.md](./astro-craft-translation.m
 
 **World open (Astro Bot style):** carpet land + Money Structure enter use unique motifs per world (coin slot / paycheck chute / interest spiral / vault door) via `WorldArriveOverlay` — visual only; Fortune soundtrack cues unchanged.
 
-Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berms, banners, pier mouth) plus **organ-true motifs** from [`moneyOrgans.ts`](../src/islands/moneyOrgans.ts) — Coin stacks · Clock field · Spiral runes. Harbor Memory lights ledger lines + Plinth scar label when a plaque exists. Cove hush dims the Coin Jar in-world after irreversible Take.
+Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berms, banners, pier mouth) plus **organ-true motifs** from [`moneyOrgans.ts`](../src/islands/moneyOrgans.ts) — Coin stacks · Clock field · Spiral runes. Harbor Memory lights ledger lines + Plinth scar label when a plaque exists. Cove / Paycheck / Credit hush dims the Money Structure landmark in-world after irreversible Take.
+
+**Money Structure toys:** interiors use organ floor motifs + pokeable toys (coins, clocks, stamps, spirals); part pads answer when poked.
+
+**Share object:** after scar spectacle, “Harbor felt that” PNG preview + Share/download (organ-tinted) — default social object.
 
 **Mural thesis:** see [mural-thesis.md](./mural-thesis.md) — living money organs; if it cannot name organ + suit verb, it does not ship on the spine.
 

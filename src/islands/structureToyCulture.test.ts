@@ -1,0 +1,55 @@
+import { describe, expect, it } from "vitest";
+import {
+  COVE_COIN_JAR,
+  CREDIT_INTEREST_KEEP,
+  HARBOR_LEDGER_BANK,
+  PAYCHECK_PAYROLL_TOWER,
+} from "./moneyStructures";
+import { scarChapterTitle, scarTriggersChapterQuiet } from "./worldMemory";
+
+describe("money structure toy culture contract", () => {
+  it("gives each spine structure three pokeable parts", () => {
+    for (const s of [COVE_COIN_JAR, HARBOR_LEDGER_BANK, PAYCHECK_PAYROLL_TOWER, CREDIT_INTEREST_KEEP]) {
+      expect(s.parts).toHaveLength(3);
+      expect(new Set(s.parts.map((p) => p.id)).size).toBe(3);
+    }
+  });
+
+  it("uses distinct themes for organ interiors", () => {
+    expect(COVE_COIN_JAR.theme).toBe("jar");
+    expect(HARBOR_LEDGER_BANK.theme).toBe("bank");
+    expect(PAYCHECK_PAYROLL_TOWER.theme).toBe("tower");
+    expect(CREDIT_INTEREST_KEEP.theme).toBe("keep");
+  });
+});
+
+describe("clock + spiral harbor quiet parity", () => {
+  it("quiet-triggers paycheck and credit scars like Cove", () => {
+    expect(scarTriggersChapterQuiet("cove_save_plaque")).toBe(true);
+    expect(scarTriggersChapterQuiet("pp_rainy_protect")).toBe(true);
+    expect(scarTriggersChapterQuiet("credit_haste_plaque")).toBe(true);
+  });
+
+  it("chapters map to organ share titles", () => {
+    expect(
+      scarChapterTitle({
+        id: "pp_rainy",
+        islandId: "paycheck_peninsula",
+        choiceId: "x",
+        label: "Protected the loft",
+        kind: "plaque",
+        createdAt: "2026-07-30",
+      }),
+    ).toBe("Paycheck Peninsula");
+    expect(
+      scarChapterTitle({
+        id: "credit_haste",
+        islandId: "credit_kingdom",
+        choiceId: "x",
+        label: "Paid on time",
+        kind: "plaque",
+        createdAt: "2026-07-30",
+      }),
+    ).toBe("Credit Kingdom");
+  });
+});

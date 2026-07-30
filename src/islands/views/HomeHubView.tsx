@@ -72,7 +72,7 @@ import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harbor
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
-import { downloadWeeklyShareCard, downloadHarborFeltCard } from "./weeklyShareCard";
+import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
@@ -260,6 +260,7 @@ export function HomeHubView({
   const [spectacleOpen, setSpectacleOpen] = useState(false);
   const [plinthGlow, setPlinthGlow] = useState(false);
   const [feltShareOpen, setFeltShareOpen] = useState(false);
+  const [feltPreviewUrl, setFeltPreviewUrl] = useState<string | null>(null);
   const [trailerOpen, setTrailerOpen] = useState(false);
   const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
@@ -329,6 +330,24 @@ export function HomeHubView({
     setFeltShareOpen(true);
     playCapitalSfx("plinth_hum");
   }, [plaques.length, onMarkScarSpectacle]);
+
+  useEffect(() => {
+    if (!feltShareOpen || !latestPlaque) {
+      setFeltPreviewUrl(null);
+      return;
+    }
+    let cancelled = false;
+    void harborFeltCardDataUrl({
+      voyagerName: voyager.name || "Voyager",
+      scarLabel: latestPlaque.label,
+      chapter: scarChapterTitle(latestPlaque),
+    }).then((url) => {
+      if (!cancelled) setFeltPreviewUrl(url);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [feltShareOpen, latestPlaque, voyager.name]);
 
   useEffect(() => {
     if (!plinthGlow) return;
@@ -1553,6 +1572,18 @@ export function HomeHubView({
               ? `“${latestPlaque.label}” lives on the Memory Plinth. This is the card people remember.`
               : "Your choice stuck. Share the moment."}
           </p>
+          {feltPreviewUrl ? (
+            <img
+              src={feltPreviewUrl}
+              alt="Harbor felt that share card"
+              className="mx-auto max-h-56 w-auto rounded-xl border border-amber-200/40 shadow-lg"
+              data-testid="harbor-felt-preview"
+            />
+          ) : (
+            <div className="mx-auto flex h-40 max-w-[12rem] items-center justify-center rounded-xl bg-slate-900/40 text-xs text-muted-foreground">
+              Painting the Plinth…
+            </div>
+          )}
           <GameButton
             variant="primary"
             className="w-full"
@@ -1563,20 +1594,21 @@ export function HomeHubView({
                 return;
               }
               try {
-                await downloadHarborFeltCard({
+                const result = await shareHarborFeltCard({
                   voyagerName: voyager.name || "Voyager",
                   scarLabel: latestPlaque.label,
                   chapter: scarChapterTitle(latestPlaque),
                 });
-                toast.message("Share card downloaded");
-              } catch {
+                toast.message(result === "shared" ? "Shared" : "Share card downloaded");
+              } catch (err) {
+                if (err instanceof DOMException && err.name === "AbortError") return;
                 toast.error("Couldn’t build share card");
               }
               setFeltShareOpen(false);
             }}
             autoFocus
           >
-            Download “Harbor felt that” PNG
+            Share “Harbor felt that”
           </GameButton>
           <GameButton
             variant="outline"

@@ -380,6 +380,7 @@ function PadMarker({
           active={active}
           guided={guided}
           label={hotspot.label}
+          hushActive={hushActive}
         />
       );
     }
@@ -390,6 +391,7 @@ function PadMarker({
           active={active}
           guided={guided}
           label={hotspot.label}
+          hushActive={hushActive}
         />
       );
     }

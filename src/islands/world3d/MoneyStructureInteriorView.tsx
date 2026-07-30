@@ -19,6 +19,7 @@ import {
   type MoneyStructurePart,
 } from "../moneyStructures";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
 
 function themeShell(theme: MoneyStructureDef["theme"]) {
   if (theme === "bank") return { wall: "#94a3b8", wallOp: 0.22, bg: "#1e293b" };
@@ -129,12 +130,32 @@ function PartPad({
   active: boolean;
 }) {
   const bounce = useRef(0);
+  const poke = useRef(0);
+  const meshGroup = useRef<THREE.Group>(null);
   useFrame((_, dt) => {
     bounce.current += dt;
+    if (poke.current > 0) poke.current = Math.max(0, poke.current - dt * 2.5);
+    if (meshGroup.current) {
+      meshGroup.current.rotation.y = poke.current * 1.8;
+      meshGroup.current.position.y = Math.sin(bounce.current * 2.5) * 0.06 + poke.current * 0.12;
+    }
   });
-  const y = 0.9 + Math.sin(bounce.current * 2.5) * 0.06;
+  const y = 0.9;
   return (
-    <group position={part.position}>
+    <group
+      position={part.position}
+      onClick={(e) => {
+        e.stopPropagation();
+        poke.current = 1;
+        playCapitalSfx("plinth_hum");
+      }}
+      onPointerOver={() => {
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto";
+      }}
+    >
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
         <circleGeometry args={[active ? 1.4 : 1.15, 24]} />
         <meshStandardMaterial
@@ -145,9 +166,10 @@ function PartPad({
           opacity={0.85}
         />
       </mesh>
+      <group ref={meshGroup} position={[0, y, 0]}>
       {/* Creative piece silhouette */}
       {part.id === "cork_vault" || part.id === "vault_safe" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <cylinderGeometry args={[0.55, 0.65, 1.1, 12]} />
           <meshStandardMaterial
             color="#b45309"
@@ -156,17 +178,17 @@ function PartPad({
           />
         </mesh>
       ) : part.id === "coin_spring" || part.id === "stamp_press" ? (
-        <mesh position={[0, y, 0]} rotation={[0.4, 0, 0]} castShadow>
+        <mesh rotation={[0.4, 0, 0]} castShadow>
           <torusGeometry args={[0.55, 0.14, 8, 24]} />
           <meshStandardMaterial color="#d97706" metalness={0.55} roughness={0.35} />
         </mesh>
       ) : part.id === "teller_window" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <boxGeometry args={[1.4, 0.9, 0.2]} />
           <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.4} />
         </mesh>
       ) : part.id === "budget_press" ? (
-        <group position={[0, y, 0]}>
+        <group>
           {([-0.55, 0, 0.55] as const).map((x, i) => (
             <mesh key={i} position={[x, 0, 0]} castShadow>
               <boxGeometry args={[0.4, 0.85, 0.4]} />
@@ -179,36 +201,37 @@ function PartPad({
           ))}
         </group>
       ) : part.id === "time_clock" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <cylinderGeometry args={[0.7, 0.7, 0.22, 24]} />
           <meshStandardMaterial color="#f8fafc" metalness={0.25} roughness={0.35} />
         </mesh>
       ) : part.id === "umbrella_loft" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <coneGeometry args={[0.85, 1.1, 12]} />
           <meshStandardMaterial color="#0ea5e9" metalness={0.15} roughness={0.5} />
         </mesh>
       ) : part.id === "debt_anvil" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <boxGeometry args={[1.1, 0.55, 0.7]} />
           <meshStandardMaterial color="#78716c" metalness={0.55} roughness={0.35} />
         </mesh>
       ) : part.id === "dispatch_hatch" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <boxGeometry args={[1.0, 0.75, 0.2]} />
           <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.45} />
         </mesh>
       ) : part.id === "score_battlement" ? (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <cylinderGeometry args={[0.15, 0.2, 1.4, 8]} />
           <meshStandardMaterial color="#94a3b8" metalness={0.4} roughness={0.4} />
         </mesh>
       ) : (
-        <mesh position={[0, y, 0]} castShadow>
+        <mesh castShadow>
           <cylinderGeometry args={[0.85, 0.85, 0.25, 20]} />
           <meshStandardMaterial color="#0ea5e9" metalness={0.3} roughness={0.4} />
         </mesh>
       )}
+      </group>
       <Billboard position={[0, 2.1, 0]} follow>
         <Text
           fontSize={0.28}
@@ -267,20 +290,8 @@ function InteriorWorld({
         <circleGeometry args={[11, 48]} />
         <meshStandardMaterial color="#0f172a" roughness={0.85} />
       </mesh>
-      {/* Coin floor mosaic */}
-      {Array.from({ length: 12 }).map((_, i) => {
-        const a = (i / 12) * Math.PI * 2;
-        return (
-          <mesh
-            key={i}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[Math.cos(a) * 3.2, 0.04, Math.sin(a) * 3.2]}
-          >
-            <circleGeometry args={[0.45, 16]} />
-            <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.2} />
-          </mesh>
-        );
-      })}
+      <StructureFloorMotif theme={structure.theme} />
+      <StructureToyCulture theme={structure.theme} />
 
       {structure.parts.map((p) => (
         <PartPad key={p.id} part={p} active={nearId === p.id} />
@@ -411,7 +422,7 @@ export function MoneyStructureInteriorView({
             </div>
           ) : (
             <p className="text-center text-xs font-semibold text-white/90">
-              WASD · touch a glowing money-part
+              WASD · poke the toys · touch a glowing money-part
             </p>
           )
         }

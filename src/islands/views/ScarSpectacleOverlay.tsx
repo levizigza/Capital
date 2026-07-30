@@ -19,6 +19,19 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
   const latest = scars[scars.length - 1];
   const chapter = latest ? scarChapterTitle(latest) : "Harbor";
   const isCove = Boolean(latest?.id.startsWith("cove_"));
+  const isClock = Boolean(
+    latest?.id.startsWith("pp_") || latest?.islandId === "paycheck_peninsula",
+  );
+  const isSpiral = Boolean(
+    latest?.id.startsWith("credit_") || latest?.islandId === "credit_kingdom",
+  );
+  const headline = isCove
+    ? "Harbor felt your first Change"
+    : isClock
+      ? "Harbor felt the rainy-day Take"
+      : isSpiral
+        ? "Harbor felt the interest spiral"
+        : "Harbor felt that choice";
 
   useEffect(() => {
     const reduced =
@@ -72,7 +85,7 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
             Money is alive
           </p>
           <h2 className="mt-2 text-xl font-black leading-snug sm:text-2xl">
-            {isCove ? "Harbor felt your first Change" : "Harbor felt that choice"}
+            {headline}
           </h2>
           <p className="mt-2 text-sm text-white/85">
             {chapter}

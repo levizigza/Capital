@@ -44,6 +44,7 @@ export {
 export { ShoreRhythmCraft, ShorePlazaTier, ShoreEyePath, ShorePierMouth } from "./ShorePlazaCraft";
 export { OrganShoreMotifs, OrganLedgerLines } from "./OrganShoreMotifs";
 export { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
+export { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
 export { CapsuleStudio3D } from "./CapsuleStudio3D";
 export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
 export { MoneyBagGuide, guideTargetForHighlight, COIN_BAG_GUIDE_ID } from "./MoneyBagGuide";
