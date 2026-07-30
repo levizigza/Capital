@@ -41,22 +41,26 @@ export function resolveShoreGuideLookAt(
 ): GuideLookAt | null {
   const pier = hotspots.find((h) => h.kind === "pier")?.position ?? null;
   const journal = hotspots.find((h) => h.kind === "journal")?.position ?? null;
+  const moneyMachine = hotspots.find((h) => h.kind === "money_structure")?.position ?? null;
+
+  const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
+  if (!anyStarted && moneyMachine) return moneyMachine;
 
   const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
-  if (!next) return pier;
+  if (!next) return moneyMachine ?? pier;
 
   const quest = island.quests.find((q) => q.id === next.questId);
-  if (!quest) return journal ?? pier;
+  if (!quest) return journal ?? moneyMachine ?? pier;
 
   const status = save.questStatus[quest.id];
   if (!status?.started) {
     const first = quest.objectives[0];
-    return hotspotForObjective(first, hotspots) ?? journal ?? pier;
+    return hotspotForObjective(first, hotspots) ?? moneyMachine ?? journal ?? pier;
   }
 
   const have = status.completedObjectives || [];
   const obj = quest.objectives.find((o) => !have.includes(objectiveKey(o)));
-  return hotspotForObjective(obj, hotspots) ?? journal ?? pier;
+  return hotspotForObjective(obj, hotspots) ?? moneyMachine ?? journal ?? pier;
 }
 
 /** Harbor free-roam / guided look-at from hotspot id or Piggy default. */
@@ -86,5 +90,6 @@ export function resolveHarborGuideLookAt(opts: {
   if (opts.pointNextPainting) return find("travel") ?? ([0, 0, 13] as GuideLookAt);
   if (opts.nearStoreId) return find(opts.nearStoreId);
   if (opts.pointPavilion) return find("pavilion") ?? piggy;
-  return find(opts.defaultId ?? "travel") ?? piggy;
+  // Free roam: point the plaza Money Structure before the travel dock.
+  return find("ledger_bank") ?? find(opts.defaultId ?? "travel") ?? piggy;
 }

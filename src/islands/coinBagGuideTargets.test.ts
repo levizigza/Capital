@@ -89,6 +89,7 @@ describe("resolveHarborGuideLookAt", () => {
     { id: "travel", position: [0, 0, 13] as [number, number, number] },
     { id: "outfitter", position: [0, 0, -8] as [number, number, number] },
     { id: "pavilion", position: [-4.5, 0, -9.5] as [number, number, number] },
+    { id: "ledger_bank", position: [2.4, 0, -1.2] as [number, number, number] },
   ];
 
   it("uses guided highlight first", () => {
@@ -97,8 +98,13 @@ describe("resolveHarborGuideLookAt", () => {
     ]);
   });
 
-  it("defaults to travel / carpet dock", () => {
-    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([0, 0, 13]);
+  it("defaults to Ledger Bank money machine on free roam", () => {
+    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([2.4, 0, -1.2]);
+  });
+
+  it("falls back to travel when no bank hotspot", () => {
+    const noBank = spots.filter((s) => s.id !== "ledger_bank");
+    expect(resolveHarborGuideLookAt({ hotspots: noBank })).toEqual([0, 0, 13]);
   });
 
   it("points pavilion when asked", () => {

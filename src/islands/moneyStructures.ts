@@ -49,7 +49,7 @@ export const COVE_COIN_JAR: MoneyStructureDef = {
   entryVerb: "Squeeze through the coin slot",
   entryHint: "Walk into the glowing slot — the Jar opens like a toy world.",
   enterTransition: "Squeezing through the coin slot…",
-  shorePosition: shoreXZ(0, -6.5, 0),
+  shorePosition: shoreXZ(0, -2.2, 0),
   exitPosition: [0, 0, 8],
   parts: [
     {
@@ -92,7 +92,7 @@ export const HARBOR_LEDGER_BANK: MoneyStructureDef = {
   entryVerb: "Step through the brass vault door",
   entryHint: "The vault door swings — stamp, teller, and safe each open a world.",
   enterTransition: "Vault door swinging open…",
-  shorePosition: [3.8, 0, 5.2],
+  shorePosition: [2.4, 0, -1.2],
   exitPosition: [0, 0, 8],
   parts: [
     {
@@ -136,7 +136,7 @@ export const PAYCHECK_PAYROLL_TOWER: MoneyStructureDef = {
   entryVerb: "Climb the glowing paycheck chute",
   entryHint: "The chute sucks you up — clock, press, and umbrella loft each open a world.",
   enterTransition: "Riding the paycheck chute…",
-  shorePosition: shoreXZ(0, -7.2, 0),
+  shorePosition: shoreXZ(0, -2.4, 0),
   exitPosition: [0, 0, 8],
   parts: [
     {
@@ -180,7 +180,7 @@ export const CREDIT_INTEREST_KEEP: MoneyStructureDef = {
   entryVerb: "Spiral through the interest gate",
   entryHint: "The spiral pulls you in — anvil, dispatch, and battlement each open a world.",
   enterTransition: "Spiraling through the interest gate…",
-  shorePosition: shoreXZ(0, -6.8, 0),
+  shorePosition: shoreXZ(0, -2.3, 0),
   exitPosition: [0, 0, 8],
   parts: [
     {

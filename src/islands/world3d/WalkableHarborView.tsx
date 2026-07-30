@@ -580,15 +580,15 @@ function PlazaScene({
                 />
               )}
             </group>
-            {/* Labels only when relevant — pulsing guide target or player nearby */}
-            {showLabel ? (
-              <Billboard follow position={[0, 3.05, 0]}>
+            {/* Money structures always name themselves; other pads only when near/guided */}
+            {showLabel || h.kind === "money_structure" ? (
+              <Billboard follow position={[0, h.kind === "money_structure" ? 4.4 : 3.05, 0]}>
                 <Text
-                  fontSize={0.28}
-                  color={pulsing ? "#92400e" : "#16283b"}
+                  fontSize={h.kind === "money_structure" ? 0.34 : 0.28}
+                  color={pulsing ? "#92400e" : h.kind === "money_structure" ? "#78350f" : "#16283b"}
                   anchorX="center"
                   anchorY="middle"
-                  outlineWidth={0.018}
+                  outlineWidth={0.02}
                   outlineColor="#ffffff"
                 >
                   {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}

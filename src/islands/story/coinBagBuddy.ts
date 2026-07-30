@@ -130,8 +130,8 @@ export function coinBagHarborTip(
     };
   }
   return {
-    tip: "Explore Harbor — or open the map",
-    coach: "I’m your buddy for the whole journey. Ask Piggy, shop, or sail.",
+    tip: "Ledger Bank — walk into the vault!",
+    coach: "That brass bank on the plaza is a money machine. Stamp, teller, and safe each open a world.",
   };
 }
 
@@ -166,6 +166,15 @@ export function coinBagIslandTip(
     if (island.id === "paycheck_peninsula") {
       const rainy = save.questStatus["q_pp_rainy_day"];
       const basics = save.questStatus["q_pp_budget_basics"];
+      const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
+      if (!anyStarted) {
+        return {
+          tip: "Payroll Tower — climb the chute!",
+          coach:
+            "That glowing tower is a money machine. Bucket press, time clock, and umbrella loft each open a world.",
+          track: "main",
+        };
+      }
       if (rainy?.started && !rainy.completed) {
         const have = rainy.completedObjectives ?? [];
         if (!have.includes("talk:npc_coach_carlos")) {
@@ -194,6 +203,18 @@ export function coinBagIslandTip(
         return {
           tip: "Main Street — Payroll Pat has your check",
           coach: "First paycheck energy! Grab it, then we plan — not panic.",
+          track: "main",
+        };
+      }
+    }
+
+    if (island.id === "credit_kingdom") {
+      const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
+      if (!anyStarted) {
+        return {
+          tip: "Interest Keep — spiral the gate!",
+          coach:
+            "That ruined keep is a money machine. Anvil, dispatch, and battlement each open a world.",
           track: "main",
         };
       }
