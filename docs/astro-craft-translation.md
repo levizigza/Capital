@@ -18,10 +18,21 @@ How Team Asobi’s Playroom / Astro Bot hub craft and [Impeccable](https://githu
 From spawn, a cold player must name **three** places without HUD help:
 
 1. **Fountain** — plaza center  
-2. **Ledger Bank** — money machine hero  
+2. **Ledger Bank** — money machine hero (dome + brass vault)  
 3. **Money Carpet Gate** — leave home / archipelago  
 
-Secondary places use **signposts or boards**, never identical yellow-roof shops.
+### Visual rhythm (Astro CPU Plaza craft)
+
+| Rule | Harbor application |
+|------|--------------------|
+| Vertical tiers | Raised stone plaza, sand berms, cliff bands, banner poles |
+| Eye trail | Coin inlays: pier → fountain → bank |
+| Material contrast | Stone / brass / fabric / neon / coin-amber in one vista |
+| Cluster utilities | West + east quays with shared plinths — never lonely posts |
+| Soft life | Bobbing coins, pennant banners, warm lanterns |
+| Simple silhouette + rich detail | Landmarks read at distance; secondary mesh craft up close |
+
+Secondary places use **signposts on quay plinths**, never identical yellow-roof shops.
 
 ## Wayfinding (existing W-rules)
 

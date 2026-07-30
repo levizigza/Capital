@@ -1,6 +1,6 @@
 /**
- * Harbor plaza landmark kit — unique silhouettes (Astro CPU-Plaza craft).
- * Never reuse HarborBuilding clones for these.
+ * Harbor plaza landmark kit — unique silhouettes with Astro-grade material craft.
+ * Simple readable shapes + rich secondary detail (not barren primitives).
  */
 
 import { useRef } from "react";
@@ -16,83 +16,112 @@ type AccentProps = {
 export function MoneyCarpetGate({ active = false, guided = false }: AccentProps) {
   const cloth = useRef<THREE.Mesh>(null);
   const glow = useRef<THREE.Mesh>(null);
+  const fringe = useRef<THREE.Group>(null);
   const lit = active || guided;
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     if (cloth.current) {
-      cloth.current.position.y = 0.55 + Math.sin(t * 1.6) * 0.06;
-      cloth.current.rotation.z = Math.sin(t * 1.1) * 0.04;
+      cloth.current.position.y = 0.62 + Math.sin(t * 1.6) * 0.07;
+      cloth.current.rotation.z = Math.sin(t * 1.1) * 0.05;
     }
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = (lit ? 0.7 : 0.28) + Math.sin(t * 2.4) * 0.08;
+      mat.emissiveIntensity = (lit ? 0.85 : 0.32) + Math.sin(t * 2.4) * 0.1;
+    }
+    if (fringe.current) {
+      fringe.current.children.forEach((c, i) => {
+        c.rotation.x = Math.sin(t * 3 + i) * 0.2;
+      });
     }
   });
 
   return (
     <group>
-      {/* Pier plinth */}
-      <mesh castShadow receiveShadow position={[0, 0.08, 0]}>
-        <boxGeometry args={[3.2, 0.16, 2.4]} />
-        <meshStandardMaterial color="#78716c" roughness={0.9} flatShading />
+      <mesh castShadow receiveShadow position={[0, 0.1, 0.2]}>
+        <boxGeometry args={[3.6, 0.2, 2.8]} />
+        <meshStandardMaterial color="#78716c" roughness={0.88} />
       </mesh>
-      {/* Gate posts */}
-      {([-1.25, 1.25] as const).map((x) => (
-        <mesh key={x} castShadow position={[x, 1.35, -0.2]}>
-          <cylinderGeometry args={[0.14, 0.18, 2.6, 8]} />
-          <meshStandardMaterial color="#92400e" roughness={0.7} />
-        </mesh>
+      <mesh castShadow receiveShadow position={[0, 0.22, 0.2]}>
+        <boxGeometry args={[3.2, 0.08, 2.4]} />
+        <meshStandardMaterial color="#a8a29e" roughness={0.75} />
+      </mesh>
+      {/* Twin pillars with brass caps */}
+      {([-1.35, 1.35] as const).map((x) => (
+        <group key={x} position={[x, 0, -0.15]}>
+          <mesh castShadow position={[0, 1.45, 0]}>
+            <cylinderGeometry args={[0.18, 0.22, 2.8, 10]} />
+            <meshStandardMaterial color="#92400e" roughness={0.65} />
+          </mesh>
+          <mesh castShadow position={[0, 2.95, 0]}>
+            <cylinderGeometry args={[0.28, 0.22, 0.22, 10]} />
+            <meshStandardMaterial color="#fbbf24" metalness={0.55} roughness={0.3} />
+          </mesh>
+        </group>
       ))}
-      {/* Arch lintel */}
-      <mesh castShadow position={[0, 2.55, -0.2]}>
-        <boxGeometry args={[2.8, 0.28, 0.35]} />
-        <meshStandardMaterial color="#b45309" roughness={0.55} />
+      {/* Curved lintel + coin emblem */}
+      <mesh castShadow position={[0, 2.85, -0.15]}>
+        <boxGeometry args={[3.1, 0.35, 0.45]} />
+        <meshStandardMaterial color="#b45309" roughness={0.5} />
       </mesh>
-      {/* Cove-warm painting portal plane */}
-      <mesh ref={glow} position={[0, 1.45, -0.15]}>
-        <planeGeometry args={[2.1, 2.2]} />
+      <mesh position={[0, 2.85, 0.12]}>
+        <cylinderGeometry args={[0.22, 0.22, 0.08, 16]} />
+        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.45} metalness={0.5} />
+      </mesh>
+      {/* Nested painting portal — warm Cove over cool sea */}
+      <mesh ref={glow} position={[0, 1.5, -0.12]}>
+        <planeGeometry args={[2.2, 2.35]} />
         <meshStandardMaterial
           color="#fde68a"
           emissive="#f59e0b"
-          emissiveIntensity={0.35}
+          emissiveIntensity={0.4}
+          transparent
+          opacity={0.9}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh position={[0, 1.5, -0.2]}>
+        <planeGeometry args={[1.9, 2.05]} />
+        <meshStandardMaterial color="#7dd3fc" emissive="#38bdf8" emissiveIntensity={0.3} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position={[0, 1.25, -0.18]}>
+        <sphereGeometry args={[0.35, 10, 8]} />
+        <meshStandardMaterial color="#4ade80" roughness={0.7} flatShading />
+      </mesh>
+      {/* Floating money carpet with fringe */}
+      <mesh ref={cloth} castShadow position={[0, 0.62, 0.7]} rotation={[-0.18, 0, 0]}>
+        <boxGeometry args={[1.85, 0.07, 2.35]} />
+        <meshStandardMaterial color="#166534" roughness={0.5} metalness={0.1} />
+      </mesh>
+      <mesh position={[0, 0.7, 0.7]} rotation={[-0.18, 0, 0]}>
+        <planeGeometry args={[1.35, 1.7]} />
+        <meshStandardMaterial
+          color="#fef08a"
+          emissive="#facc15"
+          emissiveIntensity={lit ? 0.5 : 0.2}
           transparent
           opacity={0.88}
           side={THREE.DoubleSide}
           depthWrite={false}
         />
       </mesh>
-      {/* Soft sea / Cove hint behind the warm pane */}
-      <mesh position={[0, 1.45, -0.22]}>
-        <planeGeometry args={[1.85, 1.95]} />
-        <meshStandardMaterial color="#7dd3fc" emissive="#38bdf8" emissiveIntensity={0.25} side={THREE.DoubleSide} />
-      </mesh>
-      {/* Floating money carpet */}
-      <mesh ref={cloth} castShadow position={[0, 0.55, 0.55]} rotation={[-0.15, 0, 0]}>
-        <boxGeometry args={[1.7, 0.06, 2.1]} />
-        <meshStandardMaterial color="#166534" roughness={0.55} metalness={0.08} />
-      </mesh>
-      <mesh position={[0, 0.62, 0.55]} rotation={[-0.15, 0, 0]}>
-        <planeGeometry args={[1.2, 1.5]} />
-        <meshStandardMaterial
-          color="#fef08a"
-          emissive="#facc15"
-          emissiveIntensity={lit ? 0.45 : 0.18}
-          transparent
-          opacity={0.85}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-      {/* Ground ring */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0.4]}>
-        <ringGeometry args={[1.35, 1.75, 28]} />
+      <group ref={fringe} position={[0, 0.55, 1.75]}>
+        {[-0.7, -0.35, 0, 0.35, 0.7].map((x) => (
+          <mesh key={x} position={[x, 0, 0]}>
+            <boxGeometry args={[0.08, 0.35, 0.04]} />
+            <meshStandardMaterial color="#14532d" />
+          </mesh>
+        ))}
+      </group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.55]}>
+        <ringGeometry args={[1.45, 1.9, 28]} />
         <meshStandardMaterial
           color="#fbbf24"
           emissive="#b45309"
-          emissiveIntensity={lit ? 0.4 : 0.15}
+          emissiveIntensity={lit ? 0.45 : 0.16}
           transparent
-          opacity={0.65}
+          opacity={0.7}
           depthWrite={false}
         />
       </mesh>
@@ -100,103 +129,82 @@ export function MoneyCarpetGate({ active = false, guided = false }: AccentProps)
   );
 }
 
-/** Soft fabric / mannequin silhouette for Outfitter. */
+/** Soft fabric Outfitter — mannequin + draped stall + clothing rack. */
 export function OutfitterPavilion({ active = false, guided = false }: AccentProps) {
   const lit = active || guided;
-  return (
-    <group>
-      <mesh castShadow receiveShadow position={[0, 0.06, 0]}>
-        <cylinderGeometry args={[1.35, 1.45, 0.12, 16]} />
-        <meshStandardMaterial color="#a8a29e" roughness={0.9} />
-      </mesh>
-      {/* Tent poles */}
-      {([-0.95, 0.95] as const).flatMap((x) =>
-        ([-0.85, 0.85] as const).map((z) => (
-          <mesh key={`${x}-${z}`} castShadow position={[x, 1.1, z]}>
-            <cylinderGeometry args={[0.06, 0.07, 2.1, 6]} />
-            <meshStandardMaterial color="#5c3a1e" roughness={0.8} />
-          </mesh>
-        )),
-      )}
-      {/* Fabric canopy */}
-      <mesh castShadow position={[0, 2.15, 0]}>
-        <coneGeometry args={[1.65, 0.85, 4]} />
-        <meshStandardMaterial color="#f472b6" roughness={0.55} flatShading />
-      </mesh>
-      <mesh castShadow position={[0, 1.55, 0]}>
-        <boxGeometry args={[1.9, 0.08, 1.7]} />
-        <meshStandardMaterial color="#fda4af" roughness={0.6} />
-      </mesh>
-      {/* Mannequin */}
-      <mesh castShadow position={[0, 0.55, 0.15]}>
-        <cylinderGeometry args={[0.28, 0.32, 0.7, 8]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.65} />
-      </mesh>
-      <mesh castShadow position={[0, 1.05, 0.15]}>
-        <sphereGeometry args={[0.28, 10, 8]} />
-        <meshStandardMaterial color="#fef3c7" roughness={0.65} />
-      </mesh>
-      <mesh castShadow position={[0, 1.45, 0.15]}>
-        <sphereGeometry args={[0.22, 10, 8]} />
-        <meshStandardMaterial color="#fde68a" roughness={0.55} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <ringGeometry args={[1.2, 1.5, 24]} />
-        <meshStandardMaterial
-          color="#f9a8d4"
-          emissive="#db2777"
-          emissiveIntensity={lit ? 0.35 : 0.12}
-          transparent
-          opacity={0.55}
-          depthWrite={false}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-/** Neon cabinet cluster for Arcade. */
-export function ArcadePavilion({ active = false, guided = false }: AccentProps) {
-  const screen = useRef<THREE.Mesh>(null);
-  const lit = active || guided;
-
+  const swatch = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
-    if (!screen.current) return;
-    const mat = screen.current.material as THREE.MeshStandardMaterial;
-    mat.emissiveIntensity = (lit ? 0.85 : 0.4) + Math.sin(clock.elapsedTime * 4) * 0.12;
+    if (!swatch.current) return;
+    swatch.current.rotation.y = Math.sin(clock.elapsedTime * 0.8) * 0.15;
   });
 
   return (
     <group>
       <mesh castShadow receiveShadow position={[0, 0.08, 0]}>
-        <boxGeometry args={[2.6, 0.14, 1.8]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.85} />
+        <cylinderGeometry args={[1.55, 1.7, 0.16, 18]} />
+        <meshStandardMaterial color="#d6d3d1" roughness={0.88} />
       </mesh>
-      {/* Cabinet body */}
-      <mesh castShadow position={[0, 1.0, 0]}>
-        <boxGeometry args={[1.5, 1.85, 1.15]} />
-        <meshStandardMaterial color="#312e81" roughness={0.55} />
+      {/* Raised stage */}
+      <mesh castShadow receiveShadow position={[0, 0.22, 0]}>
+        <cylinderGeometry args={[1.35, 1.4, 0.18, 16]} />
+        <meshStandardMaterial color="#fce7f3" roughness={0.7} />
       </mesh>
-      <mesh ref={screen} position={[0, 1.35, 0.6]}>
-        <boxGeometry args={[1.15, 0.75, 0.08]} />
-        <meshStandardMaterial color="#22d3ee" emissive="#06b6d4" emissiveIntensity={0.5} />
+      {([-1.05, 1.05] as const).flatMap((x) =>
+        ([-0.95, 0.95] as const).map((z) => (
+          <mesh key={`${x}-${z}`} castShadow position={[x, 1.2, z]}>
+            <cylinderGeometry args={[0.07, 0.08, 2.2, 6]} />
+            <meshStandardMaterial color="#5c3a1e" roughness={0.8} />
+          </mesh>
+        )),
+      )}
+      {/* Layered canopy — silhouette + soft volume */}
+      <mesh castShadow position={[0, 2.35, 0]}>
+        <coneGeometry args={[1.85, 0.95, 4]} />
+        <meshStandardMaterial color="#f472b6" roughness={0.5} flatShading />
       </mesh>
-      <mesh position={[0, 0.55, 0.62]}>
-        <boxGeometry args={[0.9, 0.35, 0.12]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.4} metalness={0.3} />
+      <mesh castShadow position={[0, 2.0, 0]}>
+        <cylinderGeometry args={[1.55, 1.55, 0.12, 4]} />
+        <meshStandardMaterial color="#fb7185" roughness={0.55} />
       </mesh>
-      {/* Side cabinets */}
-      {([-1.05, 1.05] as const).map((x) => (
-        <mesh key={x} castShadow position={[x, 0.75, -0.1]}>
-          <boxGeometry args={[0.55, 1.35, 0.7]} />
-          <meshStandardMaterial color={x < 0 ? "#7c3aed" : "#db2777"} roughness={0.5} />
+      <mesh castShadow position={[0, 1.7, 0.05]} rotation={[-0.25, 0, 0]}>
+        <boxGeometry args={[2.2, 0.08, 1.6]} />
+        <meshStandardMaterial color="#fda4af" roughness={0.6} />
+      </mesh>
+      {/* Mannequin with coat */}
+      <mesh castShadow position={[0, 0.7, 0.2]}>
+        <cylinderGeometry args={[0.3, 0.34, 0.85, 10]} />
+        <meshStandardMaterial color="#fef3c7" roughness={0.6} />
+      </mesh>
+      <mesh castShadow position={[0, 1.25, 0.2]}>
+        <sphereGeometry args={[0.3, 12, 10]} />
+        <meshStandardMaterial color="#fef3c7" roughness={0.55} />
+      </mesh>
+      <mesh castShadow position={[0, 1.7, 0.2]}>
+        <sphereGeometry args={[0.24, 12, 10]} />
+        <meshStandardMaterial color="#fde68a" roughness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0, 1.05, 0.35]}>
+        <boxGeometry args={[0.85, 0.7, 0.2]} />
+        <meshStandardMaterial color="#c084fc" roughness={0.55} />
+      </mesh>
+      {/* Clothing rack */}
+      <group ref={swatch} position={[0.95, 0.9, -0.35]}>
+        <mesh castShadow position={[0, 0.4, 0]}>
+          <cylinderGeometry args={[0.04, 0.05, 1.4, 6]} />
+          <meshStandardMaterial color="#44403c" metalness={0.4} />
         </mesh>
-      ))}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
-        <ringGeometry args={[1.15, 1.45, 20]} />
+        {[-0.25, 0, 0.25].map((x, i) => (
+          <mesh key={x} castShadow position={[x, 0.85, 0.05]}>
+            <boxGeometry args={[0.2, 0.45, 0.08]} />
+            <meshStandardMaterial color={["#38bdf8", "#fbbf24", "#4ade80"][i]} roughness={0.5} />
+          </mesh>
+        ))}
+      </group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+        <ringGeometry args={[1.35, 1.7, 24]} />
         <meshStandardMaterial
-          color="#22d3ee"
-          emissive="#0891b2"
+          color="#f9a8d4"
+          emissive="#db2777"
           emissiveIntensity={lit ? 0.4 : 0.14}
           transparent
           opacity={0.55}
@@ -207,45 +215,138 @@ export function ArcadePavilion({ active = false, guided = false }: AccentProps) 
   );
 }
 
-/** Daily / practice notice board. */
-export function HarborNoticeBoard({ active = false, guided = false }: AccentProps) {
+/** Arcade — marquee + neon cabinets + coin slot glow. */
+export function ArcadePavilion({ active = false, guided = false }: AccentProps) {
+  const screen = useRef<THREE.Mesh>(null);
+  const marquee = useRef<THREE.Mesh>(null);
   const lit = active || guided;
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    if (screen.current) {
+      const mat = screen.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = (lit ? 0.95 : 0.45) + Math.sin(t * 4) * 0.15;
+    }
+    if (marquee.current) {
+      const mat = marquee.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = 0.35 + Math.sin(t * 5) * 0.2;
+    }
+  });
+
   return (
     <group>
-      <mesh castShadow position={[-0.55, 0.85, 0]}>
-        <cylinderGeometry args={[0.08, 0.1, 1.7, 8]} />
-        <meshStandardMaterial color="#5c3a1e" roughness={0.85} />
+      <mesh castShadow receiveShadow position={[0, 0.1, 0]}>
+        <boxGeometry args={[3.0, 0.18, 2.1]} />
+        <meshStandardMaterial color="#1e293b" roughness={0.8} />
       </mesh>
-      <mesh castShadow position={[0.55, 0.85, 0]}>
-        <cylinderGeometry args={[0.08, 0.1, 1.7, 8]} />
-        <meshStandardMaterial color="#5c3a1e" roughness={0.85} />
+      {/* Main cabinet */}
+      <mesh castShadow position={[0, 1.05, 0]}>
+        <boxGeometry args={[1.65, 1.95, 1.25]} />
+        <meshStandardMaterial color="#312e81" roughness={0.5} metalness={0.1} />
       </mesh>
-      <mesh castShadow position={[0, 1.35, 0.05]}>
-        <boxGeometry args={[1.7, 1.15, 0.12]} />
-        <meshStandardMaterial color="#92400e" roughness={0.75} />
+      {/* Bevel crown */}
+      <mesh castShadow position={[0, 2.15, 0]}>
+        <boxGeometry args={[1.85, 0.28, 1.4]} />
+        <meshStandardMaterial color="#1e1b4b" roughness={0.45} />
       </mesh>
-      <mesh position={[0, 1.4, 0.13]}>
-        <planeGeometry args={[1.4, 0.9]} />
+      <mesh ref={marquee} position={[0, 2.35, 0.55]}>
+        <boxGeometry args={[1.5, 0.28, 0.12]} />
+        <meshStandardMaterial color="#f472b6" emissive="#db2777" emissiveIntensity={0.4} />
+      </mesh>
+      <mesh ref={screen} position={[0, 1.4, 0.65]}>
+        <boxGeometry args={[1.25, 0.85, 0.1]} />
+        <meshStandardMaterial color="#22d3ee" emissive="#06b6d4" emissiveIntensity={0.55} />
+      </mesh>
+      <mesh position={[0, 0.55, 0.68]}>
+        <boxGeometry args={[1.0, 0.4, 0.16]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.35} metalness={0.4} />
+      </mesh>
+      <mesh position={[0.25, 0.58, 0.78]}>
+        <cylinderGeometry args={[0.06, 0.06, 0.05, 10]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.5} />
+      </mesh>
+      {([-1.15, 1.15] as const).map((x) => (
+        <group key={x} position={[x, 0, -0.05]}>
+          <mesh castShadow position={[0, 0.8, 0]}>
+            <boxGeometry args={[0.6, 1.45, 0.75]} />
+            <meshStandardMaterial color={x < 0 ? "#7c3aed" : "#db2777"} roughness={0.45} />
+          </mesh>
+          <mesh position={[0, 1.15, 0.4]}>
+            <boxGeometry args={[0.4, 0.35, 0.06]} />
+            <meshStandardMaterial
+              color={x < 0 ? "#c4b5fd" : "#fda4af"}
+              emissive={x < 0 ? "#8b5cf6" : "#f472b6"}
+              emissiveIntensity={0.35}
+            />
+          </mesh>
+        </group>
+      ))}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+        <ringGeometry args={[1.25, 1.6, 22]} />
         <meshStandardMaterial
-          color="#fef3c7"
-          emissive="#fde68a"
-          emissiveIntensity={lit ? 0.25 : 0.08}
+          color="#22d3ee"
+          emissive="#0891b2"
+          emissiveIntensity={lit ? 0.45 : 0.16}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
         />
-      </mesh>
-      {/* Dice / sun pins */}
-      <mesh position={[-0.35, 1.55, 0.16]}>
-        <boxGeometry args={[0.28, 0.28, 0.06]} />
-        <meshStandardMaterial color="#f59e0b" roughness={0.4} />
-      </mesh>
-      <mesh position={[0.4, 1.25, 0.16]}>
-        <sphereGeometry args={[0.14, 10, 8]} />
-        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.35} />
       </mesh>
     </group>
   );
 }
 
-/** Memory Plinth — scar / plaque hero. */
+/** Harbor Board — framed cork with hanging tickets. */
+export function HarborNoticeBoard({ active = false, guided = false }: AccentProps) {
+  const lit = active || guided;
+  return (
+    <group>
+      <mesh castShadow receiveShadow position={[0, 0.08, 0]}>
+        <boxGeometry args={[2.2, 0.14, 0.9]} />
+        <meshStandardMaterial color="#a8a29e" roughness={0.85} />
+      </mesh>
+      {([-0.7, 0.7] as const).map((x) => (
+        <mesh key={x} castShadow position={[x, 1.0, 0]}>
+          <cylinderGeometry args={[0.09, 0.11, 1.9, 8]} />
+          <meshStandardMaterial color="#5c3a1e" roughness={0.85} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, 1.55, 0.06]}>
+        <boxGeometry args={[2.0, 1.45, 0.16]} />
+        <meshStandardMaterial color="#78350f" roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.55, 0.16]}>
+        <planeGeometry args={[1.7, 1.15]} />
+        <meshStandardMaterial
+          color="#fef3c7"
+          emissive="#fde68a"
+          emissiveIntensity={lit ? 0.28 : 0.1}
+        />
+      </mesh>
+      {/* Ticket slips */}
+      {[
+        [-0.45, 1.75, "#38bdf8"],
+        [0.1, 1.65, "#fbbf24"],
+        [0.5, 1.8, "#f472b6"],
+      ].map(([x, y, c], i) => (
+        <mesh key={i} position={[x as number, y as number, 0.2]} rotation={[0, 0, (i - 1) * 0.08]}>
+          <planeGeometry args={[0.35, 0.45]} />
+          <meshStandardMaterial color={c as string} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[-0.4, 1.95, 0.2]}>
+        <boxGeometry args={[0.32, 0.32, 0.08]} />
+        <meshStandardMaterial color="#f59e0b" roughness={0.4} />
+      </mesh>
+      <mesh position={[0.45, 1.35, 0.2]}>
+        <sphereGeometry args={[0.16, 10, 8]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Memory Plinth — scar monument with stepped base. */
 export function MemoryPlinthMesh({ active = false, guided = false }: AccentProps) {
   const glow = useRef<THREE.Mesh>(null);
   const lit = active || guided;
@@ -253,28 +354,40 @@ export function MemoryPlinthMesh({ active = false, guided = false }: AccentProps
   useFrame(({ clock }) => {
     if (!glow.current) return;
     const mat = glow.current.material as THREE.MeshStandardMaterial;
-    mat.emissiveIntensity = (lit ? 0.65 : 0.22) + Math.sin(clock.elapsedTime * 2) * 0.08;
+    mat.emissiveIntensity = (lit ? 0.75 : 0.28) + Math.sin(clock.elapsedTime * 2) * 0.1;
   });
 
   return (
     <group>
-      <mesh castShadow receiveShadow position={[0, 0.2, 0]}>
-        <cylinderGeometry args={[0.85, 1.05, 0.4, 8]} />
-        <meshStandardMaterial color="#78716c" roughness={0.92} flatShading />
+      <mesh castShadow receiveShadow position={[0, 0.12, 0]}>
+        <cylinderGeometry args={[1.15, 1.35, 0.24, 8]} />
+        <meshStandardMaterial color="#78716c" roughness={0.9} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 0.85, 0]}>
-        <boxGeometry args={[0.95, 1.1, 0.55]} />
+      <mesh castShadow receiveShadow position={[0, 0.35, 0]}>
+        <cylinderGeometry args={[0.95, 1.1, 0.28, 8]} />
         <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
       </mesh>
-      <mesh ref={glow} position={[0, 1.55, 0]}>
-        <sphereGeometry args={[0.28, 12, 10]} />
-        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.3} metalness={0.35} />
+      <mesh castShadow position={[0, 1.05, 0]}>
+        <boxGeometry args={[1.05, 1.25, 0.6]} />
+        <meshStandardMaterial color="#cbd5e1" roughness={0.7} />
+      </mesh>
+      <mesh castShadow position={[0, 1.75, 0]}>
+        <boxGeometry args={[1.2, 0.18, 0.7]} />
+        <meshStandardMaterial color="#94a3b8" roughness={0.65} />
+      </mesh>
+      <mesh ref={glow} position={[0, 2.15, 0]}>
+        <sphereGeometry args={[0.32, 14, 12]} />
+        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.35} metalness={0.4} />
+      </mesh>
+      <mesh position={[0, 1.1, 0.32]}>
+        <planeGeometry args={[0.7, 0.55]} />
+        <meshStandardMaterial color="#78350f" roughness={0.6} />
       </mesh>
     </group>
   );
 }
 
-/** Thin utility signpost — secondary destinations without shop clutter. */
+/** Utility signpost — denser plaque on quay (not a lonely stick). */
 export function HarborSignpost({
   accent = "#38bdf8",
   active = false,
@@ -284,21 +397,29 @@ export function HarborSignpost({
 }) {
   return (
     <group>
-      <mesh castShadow position={[0, 0.85, 0]}>
-        <cylinderGeometry args={[0.07, 0.09, 1.7, 6]} />
-        <meshStandardMaterial color="#57534e" roughness={0.8} />
+      <mesh castShadow receiveShadow position={[0, 0.06, 0]}>
+        <cylinderGeometry args={[0.28, 0.32, 0.12, 8]} />
+        <meshStandardMaterial color="#78716c" roughness={0.85} />
       </mesh>
-      <mesh castShadow position={[0, 1.65, 0.08]}>
-        <boxGeometry args={[0.85, 0.45, 0.08]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.6} />
+      <mesh castShadow position={[0, 0.95, 0]}>
+        <cylinderGeometry args={[0.08, 0.1, 1.8, 6]} />
+        <meshStandardMaterial color="#44403c" roughness={0.75} metalness={0.2} />
       </mesh>
-      <mesh position={[0, 1.65, 0.14]}>
-        <planeGeometry args={[0.65, 0.28]} />
+      <mesh castShadow position={[0, 1.85, 0.1]}>
+        <boxGeometry args={[1.05, 0.55, 0.1]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.55} />
+      </mesh>
+      <mesh position={[0, 1.85, 0.17]}>
+        <planeGeometry args={[0.85, 0.38]} />
         <meshStandardMaterial
           color={accent}
           emissive={accent}
-          emissiveIntensity={active ? 0.45 : 0.18}
+          emissiveIntensity={active ? 0.5 : 0.22}
         />
+      </mesh>
+      <mesh position={[0, 2.25, 0]}>
+        <sphereGeometry args={[0.1, 8, 6]} />
+        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.3} />
       </mesh>
     </group>
   );

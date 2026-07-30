@@ -33,6 +33,14 @@ export {
   MemoryPlinthMesh,
   HarborSignpost,
 } from "./HarborLandmarks";
+export {
+  PlazaTier,
+  CoinEyePath,
+  ShoreBerms,
+  HarborBanners,
+  UtilityQuay,
+  PierMouthFrame,
+} from "./HarborPlazaCraft";
 export { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 export { CapsuleStudio3D } from "./CapsuleStudio3D";
 export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
