@@ -40,6 +40,8 @@ type Props = {
   character?: CapitalCharacter | null;
   onExit: () => void;
   onEnterPart: (part: MoneyStructurePart) => void;
+  /** Freeze walk while a Soft Beat overlay owns the screen */
+  inputFrozen?: boolean;
 };
 
 const SPEED = 6.2;
@@ -329,6 +331,7 @@ export function MoneyStructureInteriorView({
   character,
   onExit,
   onEnterPart,
+  inputFrozen = false,
 }: Props) {
   const [nearId, setNearId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
@@ -338,8 +341,20 @@ export function MoneyStructureInteriorView({
     playCapitalSfx("plinth_hum");
   }, []);
 
-  useInputAction("cancel", () => onExit());
+  useInputAction("cancel", () => {
+    if (inputFrozen) return;
+    onExit();
+  });
   useInputAction("confirm", () => {
+    if (inputFrozen) return;
+    if (nearId === "exit") {
+      onExit();
+      return;
+    }
+    if (nearPart) onEnterPart(nearPart);
+  });
+  useInputAction("interact", () => {
+    if (inputFrozen) return;
     if (nearId === "exit") {
       onExit();
       return;
@@ -378,28 +393,29 @@ export function MoneyStructureInteriorView({
                   character={character}
                   nearId={nearId}
                   setNearId={setNearId}
-                  inputFrozen={false}
+                  inputFrozen={inputFrozen}
                 />
               </Suspense>
             </Canvas>
           </div>
         }
         topLeft={
-          <div className="rounded-xl bg-black/45 px-3 py-2 text-white">
-            <p className="text-xs font-bold uppercase tracking-wide text-amber-200/90">
-              Money Structure
-            </p>
+          <div className="rounded-xl bg-black/40 px-3 py-2 text-white">
             <h1 className="text-lg font-black">{structure.name}</h1>
-            <p className="max-w-sm text-xs text-white/80">{structure.entryHint}</p>
+            {!nearPart && nearId !== "exit" ? (
+              <p className="max-w-sm text-xs text-white/75">{structure.entryHint}</p>
+            ) : null}
           </div>
         }
         topRight={
-          <GameButton variant="outline" size="sm" onClick={onExit}>
+          <GameButton variant="outline" size="sm" onClick={onExit} disabled={inputFrozen}>
             {structureExitLabel(structure.theme)}
           </GameButton>
         }
         bottom={
-          nearPart ? (
+          inputFrozen ? (
+            <p className="text-center text-xs font-semibold text-white/70">…</p>
+          ) : nearPart ? (
             <div className="mx-auto max-w-md rounded-2xl border border-amber-200/40 bg-[#0f172a]/85 px-4 py-3 text-center text-white shadow-xl">
               <p className="text-xs font-bold uppercase tracking-wide text-amber-200">
                 {nearPart.entryPiece}
@@ -422,7 +438,7 @@ export function MoneyStructureInteriorView({
             </div>
           ) : (
             <p className="text-center text-xs font-semibold text-white/90">
-              WASD · poke the toys · touch a glowing money-part
+              WASD · E on a glowing part · poke the toys
             </p>
           )
         }

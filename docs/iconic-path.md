@@ -81,3 +81,8 @@ Piggy, Coin Bag, and plaza locals are **living receipts** — not props:
 - Ambient lines name the latest plaque (dense plaza echo + Piggy always).
 - Talk Battles open on scar memory when plaques exist.
 - Coin Bag points at Plinth / locals after spectacle and on day-2 echo.
+
+## Opt-in talk (PC courtesy)
+
+Talk Battle is **never** auto-started by walking near someone (Harbor or shores).  
+Approach → prompt → **E / Enter / Talk button**. Same pattern as Zelda/BOTW interact prompts.

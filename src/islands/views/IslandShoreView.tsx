@@ -57,7 +57,7 @@ export type IslandShoreViewProps = {
   onOpenHub: () => void;
   onEnterArea: (areaId: string) => void;
   onStartQuest: (questId: string) => void;
-  /** True while Talk Battle is open — freeze world + don't re-trigger auto-talk */
+  /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
 };
 
@@ -154,16 +154,6 @@ export function IslandShoreView({
     setNear(id && label ? { id, label } : null);
   }, []);
 
-  // Auto-start Talk Battle when you walk up to an NPC pad
-  useEffect(() => {
-    if (!near || talkOpen || structureOpen || enteringJar) return;
-    const h = hotspots.find((x) => x.id === near.id);
-    if (h?.kind === "npc" && h.refId) {
-      const t = window.setTimeout(() => onTalkNpc(h.refId as NpcId), 350);
-      return () => window.clearTimeout(t);
-    }
-  }, [near, hotspots, onTalkNpc, talkOpen, structureOpen, enteringJar]);
-
   const enterStructure = useCallback(() => {
     if (!structure || enteringJar) return;
     setEnteringJar(true);
@@ -242,6 +232,7 @@ export function IslandShoreView({
           character={character}
           onExit={() => setStructureOpen(false)}
           onEnterPart={onEnterPart}
+          inputFrozen={Boolean(softBeat)}
         />
         {softBeat ? (
           <SoftBeatOverlay
@@ -373,10 +364,14 @@ export function IslandShoreView({
                 onClick={() => activate(near.id)}
                 className="shadow-lg"
               >
-                Enter · {near.label}
+                {hotspots.find((h) => h.id === near.id)?.kind === "npc"
+                  ? `Talk · ${near.label}`
+                  : hotspots.find((h) => h.id === near.id)?.kind === "money_structure"
+                    ? `Enter · ${near.label}`
+                    : `Go · ${near.label}`}
               </GameButton>
             ) : (
-              <p className="cap-hint-whisper">WASD walk · E interact</p>
+              <p className="cap-hint-whisper">WASD walk · E interact when near</p>
             )}
           </div>
         }

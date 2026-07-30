@@ -137,7 +137,7 @@ export type HomeHubViewProps = {
   onClearHomecoming?: () => void;
   /** Auto / manual talk with a Harbor local (opens Talk Battle) */
   onTalkNpc?: (npcId: string) => void;
-  /** True while Talk Battle is open — don't re-trigger auto-talk */
+  /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
   onSyncHarborRitual?: () => void;
   onClaimRitualPayday?: () => void;
@@ -786,20 +786,39 @@ export function HomeHubView({
       } else {
         setNearNpc(npc);
       }
-      if (talkOpen || hubModal || !onTalkNpc) return;
-      // Castle Grounds: only auto-Talk Piggy so locals don't ambush the tutorial
-      if (castleMode && !isKeeper) return;
-      onTalkNpc(npc.id);
+      // Opt-in only — never auto-open Talk Battle on walk-by (Zelda/BOTW courtesy).
     },
-    [
-      castleMode,
-      guidedStep?.guideLine,
-      hubModal,
-      onTalkNpc,
-      talkOpen,
-      visualBeats.keeperBubbleWhenNear,
-    ],
+    [castleMode, guidedStep?.guideLine, visualBeats.keeperBubbleWhenNear],
   );
+
+  /** Zelda/BOTW courtesy: approach shows prompt; E / Enter opts in — never ambush. */
+  const tryInteract = useCallback(() => {
+    if (hubModal || talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen) {
+      return;
+    }
+    if (bankOpen) return;
+    if (nearStore) {
+      onHarborHotspot(nearStore.id);
+      return;
+    }
+    if (nearNpc && onTalkNpc) {
+      onTalkNpc(nearNpc.id);
+    }
+  }, [
+    hubModal,
+    talkOpen,
+    spectacleOpen,
+    feltShareOpen,
+    trailerOpen,
+    echoSurpriseOpen,
+    bankOpen,
+    nearStore,
+    nearNpc,
+    onTalkNpc,
+  ]);
+
+  useInputAction("interact", tryInteract);
+  useInputAction("confirm", tryInteract);
 
   const nearTravel = nearStore?.id === "travel";
   const canResume =
@@ -831,6 +850,7 @@ export function HomeHubView({
           character={voyager}
           onExit={() => setBankOpen(false)}
           onEnterPart={onEnterBankPart}
+          inputFrozen={Boolean(bankSoftBeat)}
         />
         {bankSoftBeat ? (
           <SoftBeatOverlay
@@ -1011,7 +1031,7 @@ export function HomeHubView({
                 </GameButton>
               ) : (
                 <p className="text-center text-xs font-medium text-white/80">
-                  Walk toward Piggy Penny on the plaza.
+                  Walk toward Piggy Penny — press E when you’re ready to talk.
                 </p>
               )
             ) : nearStore ? (
@@ -1077,7 +1097,7 @@ export function HomeHubView({
               </button>
             ) : (
               <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
-                WASD walk · follow Coin Bag
+                WASD walk · E talk when near · follow Coin Bag
               </p>
             )}
             <p className="cap-hint-whisper sr-only md:not-sr-only">
@@ -1085,7 +1105,7 @@ export function HomeHubView({
                 ? "E enter · Esc leaves shops"
                 : nearNpc
                   ? "E talk · WASD walk"
-                  : "WASD walk · M map"}
+                  : "WASD walk · E talk · M map"}
             </p>
           </div>
         }

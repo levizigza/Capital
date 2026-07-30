@@ -216,7 +216,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     nodeId?: string;
     npcId?: NpcId;
   }>({ open: false });
-  /** After closing Talk Battle, ignore the same NPC briefly so auto-talk doesn't loop */
+  /** After closing Talk Battle, brief cooldown so re-press doesn’t reopen instantly */
   const talkCooldownRef = useRef<{ npcId: string; until: number } | null>(null);
   /** Last Talk Battle choice id — flushed into npcMemory on finishTalk */
   const lastTalkChoiceRef = useRef<string | null>(null);
