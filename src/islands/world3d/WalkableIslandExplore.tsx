@@ -36,6 +36,7 @@ import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
+import { moneyOrganForIsland } from "../moneyOrgans";
 
 type Props = {
   island: IslandDefinition;
@@ -53,6 +54,8 @@ type Props = {
   onGuideProject?: (p: import("../views/GuideWayfinder").GuideProjection | null) => void;
   /** Freeze WASD / Enter while Talk Battle owns the screen */
   inputFrozen?: boolean;
+  /** Quiet after irreversible Take — Coin organ hush in-world */
+  chapterQuiet?: boolean;
 };
 
 const SPEED = 8.4;
@@ -339,6 +342,7 @@ function PadMarker({
   collected,
   animationStyle,
   islandId,
+  hushActive = false,
 }: {
   hotspot: ShoreHotspot;
   look: EraLook3D;
@@ -348,6 +352,7 @@ function PadMarker({
   collected?: boolean;
   animationStyle: string;
   islandId: string;
+  hushActive?: boolean;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const lit = active || !!guided;
@@ -394,6 +399,7 @@ function PadMarker({
         active={active}
         guided={guided}
         label={hotspot.label}
+        hushActive={hushActive}
       />
     );
   }
@@ -727,6 +733,7 @@ function ShoreScene({
   guideLookAt,
   guideArrows,
   inputFrozen = false,
+  chapterQuiet = false,
 }: {
   island: IslandDefinition;
   look: EraLook3D;
@@ -741,6 +748,7 @@ function ShoreScene({
   guideLookAt?: [number, number, number] | null;
   guideArrows?: boolean;
   inputFrozen?: boolean;
+  chapterQuiet?: boolean;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const culture = useMemo(() => getIslandCulture(island), [island]);
@@ -795,6 +803,7 @@ function ShoreScene({
 
   const plazaRadius =
     (culture.layout === "radar" ? 10.5 : culture.layout === "keep" ? 7.5 : 9.2) * SHORE_WORLD_SCALE;
+  const organ = moneyOrganForIsland(island.id);
 
   return (
     <>
@@ -812,7 +821,9 @@ function ShoreScene({
       />
 
       <BiomeGround look={look} biome={biome} wire={wire} plazaRadius={plazaRadius} />
-      {!wire ? <ShoreRhythmCraft look={look} culture={culture} pier={anchors.pier} /> : null}
+      {!wire ? (
+        <ShoreRhythmCraft look={look} culture={culture} pier={anchors.pier} organ={organ} />
+      ) : null}
 
       {culture.layout === "radar" ? (
         <>
@@ -864,20 +875,28 @@ function ShoreScene({
       {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
 
       {/* Toy culture — denser micro-delights on every shore */}
-      <ShoreSpinCoin position={[shoreScale(1.6), 0.02, shoreScale(-1.2)]} accent={look.accent} />
-      <ShoreSpinCoin position={[shoreScale(-2.8), 0.02, shoreScale(1.4)]} accent={look.accent} />
+      <ShoreSpinCoin
+        position={[shoreScale(1.6), 0.02, shoreScale(-1.2)]}
+        accent={chapterQuiet ? "#94a3b8" : look.accent}
+      />
+      <ShoreSpinCoin
+        position={[shoreScale(-2.8), 0.02, shoreScale(1.4)]}
+        accent={chapterQuiet ? "#64748b" : look.accent}
+      />
       <ShoreBell position={[shoreScale(-2.2), 0, shoreScale(anchors.pier[2] * 0.35)]} />
       <ShoreBell position={[shoreScale(3.4), 0, shoreScale(-3.2)]} />
 
       <IslandTitle
         title={island.name}
         subtitle={
-          genreLine
-            ? `${genreLine} · ${culture.cultureName}`
-            : `${biome.label} · ${culture.cultureName}`
+          chapterQuiet
+            ? "Quiet after the Take · fly home changed"
+            : genreLine
+              ? `${genreLine} · ${culture.cultureName}`
+              : `${biome.label} · ${culture.cultureName}`
         }
         height={shoreScale(8.2)}
-        accent={look.accent}
+        accent={chapterQuiet ? "#94a3b8" : look.accent}
       />
 
       {ambients.map((res) => (
@@ -902,6 +921,7 @@ function ShoreScene({
           collected={h.kind === "item" && h.refId ? collectedItemIds.includes(h.refId) : false}
           animationStyle={animationStyle}
           islandId={island.id}
+          hushActive={chapterQuiet}
         />
       ))}
 
@@ -935,6 +955,7 @@ export function WalkableIslandExplore({
   guideArrows = true,
   onGuideProject,
   inputFrozen = false,
+  chapterQuiet = false,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
@@ -1014,6 +1035,7 @@ export function WalkableIslandExplore({
           guideLookAt={guideLookAt}
           guideArrows={guideArrows}
           inputFrozen={inputFrozen}
+          chapterQuiet={chapterQuiet}
         />
         <Suspense fallback={null}>
           <MoneyBagGuide

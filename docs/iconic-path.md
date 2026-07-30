@@ -28,7 +28,9 @@ Harbor plaza craft: see [astro-craft-translation.md](./astro-craft-translation.m
 
 **World open (Astro Bot style):** carpet land + Money Structure enter use unique motifs per world (coin slot / paycheck chute / interest spiral / vault door) via `WorldArriveOverlay` — visual only; Fortune soundtrack cues unchanged.
 
-Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berms, banners, pier mouth).
+Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berms, banners, pier mouth) plus **organ-true motifs** from [`moneyOrgans.ts`](../src/islands/moneyOrgans.ts) — Coin stacks · Clock field · Spiral runes. Harbor Memory lights ledger lines + Plinth scar label when a plaque exists. Cove hush dims the Coin Jar in-world after irreversible Take.
+
+**Mural thesis:** see [mural-thesis.md](./mural-thesis.md) — living money organs; if it cannot name organ + suit verb, it does not ship on the spine.
 
 This is **structure depth**, not map width — still no new outer islands.
 

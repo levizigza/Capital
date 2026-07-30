@@ -41,6 +41,7 @@ import {
   PlazaToyCoins,
   PierMouthFrame,
 } from "./HarborPlazaCraft";
+import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
@@ -386,6 +387,7 @@ function PlazaScene({
   playerPos,
   npcBodies,
   look,
+  scarEcho = null,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -408,7 +410,9 @@ function PlazaScene({
   playerPos: MutableRefObject<THREE.Vector3>;
   npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
   look: ReturnType<typeof getEraLook3D>;
+  scarEcho?: { label: string; dayOffset: "same" | "later" } | null;
 }) {
+  const memoryLit = Boolean(scarEcho);
   // Distill: vegetation in 3 outer clusters — never a full prop ring.
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
@@ -495,6 +499,8 @@ function PlazaScene({
       <HarborBanners />
       <UtilityQuay />
       <EastUtilityLedge />
+      {/* Memory organ — ledger lines appear when Harbor carries a scar */}
+      <OrganLedgerLines accent="#f59e0b" active={memoryLit} harborScale />
 
       {/* Soft radial spokes under coin path */}
       {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -505,7 +511,12 @@ function PlazaScene({
           receiveShadow
         >
           <planeGeometry args={[0.35, 8.5]} />
-          <meshStandardMaterial color="#d6d3d1" roughness={0.85} transparent opacity={0.7} />
+          <meshStandardMaterial
+            color={memoryLit ? "#fde68a" : "#d6d3d1"}
+            roughness={0.85}
+            transparent
+            opacity={memoryLit ? 0.85 : 0.7}
+          />
         </mesh>
       ))}
 
@@ -605,7 +616,12 @@ function PlazaScene({
               ) : kind === "notice_board" ? (
                 <HarborNoticeBoard active={nearby} guided={pulsing} />
               ) : kind === "plinth" ? (
-                <MemoryPlinthMesh active={nearby} guided={pulsing} />
+                <MemoryPlinthMesh
+                  active={nearby}
+                  guided={pulsing}
+                  scarRemembered={memoryLit}
+                  scarLabel={scarEcho?.label}
+                />
               ) : (
                 <HarborSignpost accent={h.accent ?? LOOK.accent} active={nearby || pulsing} />
               )}
@@ -864,6 +880,7 @@ export function WalkableHarborView({
           playerPos={playerPos}
           npcBodies={npcBodies}
           look={look}
+          scarEcho={scarEcho}
         />
         <Player
           character={character}

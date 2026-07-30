@@ -8,12 +8,15 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { EraLook3D } from "./eraLooks";
 import type { IslandCulture } from "../islandCulture";
+import type { MoneyOrgan } from "../moneyOrgans";
+import { OrganShoreMotifs } from "./OrganShoreMotifs";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 
 type CraftProps = {
   look: EraLook3D;
   culture: IslandCulture;
   pier: [number, number, number];
+  organ?: MoneyOrgan | null;
 };
 
 /** Raised plaza + warm collar — breaks flat pancake shores. */
@@ -44,8 +47,13 @@ export function ShorePlazaTier({ look, culture }: Pick<CraftProps, "look" | "cul
   );
 }
 
-/** Coin / accent inlays from pier toward plaza center. */
-export function ShoreEyePath({ look, pier }: Pick<CraftProps, "look" | "pier">) {
+/** Coin / accent inlays from pier toward plaza — shape follows money organ. */
+export function ShoreEyePath({
+  look,
+  pier,
+  organ,
+}: Pick<CraftProps, "look" | "pier" | "organ">) {
+  const motif = organ?.pathMotif ?? "coin";
   const coins = Array.from({ length: 8 }, (_, i) => {
     const t = (i + 1) / 9;
     return [pier[0] * (1 - t), 0.13, pier[2] * (1 - t)] as [number, number, number];
@@ -54,11 +62,17 @@ export function ShoreEyePath({ look, pier }: Pick<CraftProps, "look" | "pier">) 
     <group>
       {coins.map((p, i) => (
         <mesh key={i} rotation={[-Math.PI / 2, 0, i * 0.35]} position={p} receiveShadow>
-          <circleGeometry args={[shoreScale(0.2), 14]} />
+          {motif === "tick" ? (
+            <planeGeometry args={[shoreScale(0.18), shoreScale(0.35)]} />
+          ) : motif === "spiral" ? (
+            <ringGeometry args={[shoreScale(0.12), shoreScale(0.22), 12]} />
+          ) : (
+            <circleGeometry args={[shoreScale(0.2), 16]} />
+          )}
           <meshStandardMaterial
-            color={look.accent}
-            emissive={look.accent}
-            emissiveIntensity={0.28}
+            color={organ?.accentHint ?? look.accent}
+            emissive={organ?.accentHint ?? look.accent}
+            emissiveIntensity={0.3}
             metalness={0.4}
             roughness={0.4}
           />
@@ -190,15 +204,16 @@ export function ShorePierMouth({ look, pier }: Pick<CraftProps, "look" | "pier">
   );
 }
 
-/** Full shore craft kit — one call from ShoreScene. */
-export function ShoreRhythmCraft({ look, culture, pier }: CraftProps) {
+/** Full shore craft kit — organ-true mural piece. */
+export function ShoreRhythmCraft({ look, culture, pier, organ }: CraftProps) {
   return (
     <group>
       <ShoreBerms look={look} />
       <ShorePlazaTier look={look} culture={culture} />
-      <ShoreEyePath look={look} pier={pier} />
+      <ShoreEyePath look={look} pier={pier} organ={organ} />
       <ShoreBanners look={look} culture={culture} />
       <ShorePierMouth look={look} pier={pier} />
+      {organ ? <OrganShoreMotifs organ={organ} /> : null}
     </group>
   );
 }

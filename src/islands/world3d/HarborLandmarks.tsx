@@ -5,7 +5,9 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
+import { SafeText } from "./SafeText";
 
 type AccentProps = {
   active?: boolean;
@@ -346,15 +348,21 @@ export function HarborNoticeBoard({ active = false, guided = false }: AccentProp
   );
 }
 
-/** Memory Plinth — scar monument with stepped base. */
-export function MemoryPlinthMesh({ active = false, guided = false }: AccentProps) {
+/** Memory Plinth — scar monument; brighter when Harbor carries a plaque. */
+export function MemoryPlinthMesh({
+  active = false,
+  guided = false,
+  scarRemembered = false,
+  scarLabel,
+}: AccentProps & { scarRemembered?: boolean; scarLabel?: string }) {
   const glow = useRef<THREE.Mesh>(null);
-  const lit = active || guided;
+  const lit = active || guided || scarRemembered;
 
   useFrame(({ clock }) => {
     if (!glow.current) return;
     const mat = glow.current.material as THREE.MeshStandardMaterial;
-    mat.emissiveIntensity = (lit ? 0.75 : 0.28) + Math.sin(clock.elapsedTime * 2) * 0.1;
+    const base = scarRemembered ? 0.95 : lit ? 0.75 : 0.28;
+    mat.emissiveIntensity = base + Math.sin(clock.elapsedTime * (scarRemembered ? 2.4 : 2)) * 0.12;
   });
 
   return (
@@ -367,6 +375,19 @@ export function MemoryPlinthMesh({ active = false, guided = false }: AccentProps
         <cylinderGeometry args={[0.95, 1.1, 0.28, 8]} />
         <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
       </mesh>
+      {scarRemembered ? (
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.52, 0]}>
+          <ringGeometry args={[1.05, 1.45, 24]} />
+          <meshStandardMaterial
+            color="#fbbf24"
+            emissive="#f59e0b"
+            emissiveIntensity={0.45}
+            transparent
+            opacity={0.7}
+            depthWrite={false}
+          />
+        </mesh>
+      ) : null}
       <mesh castShadow position={[0, 1.05, 0]}>
         <boxGeometry args={[1.05, 1.25, 0.6]} />
         <meshStandardMaterial color="#cbd5e1" roughness={0.7} />
@@ -376,13 +397,32 @@ export function MemoryPlinthMesh({ active = false, guided = false }: AccentProps
         <meshStandardMaterial color="#94a3b8" roughness={0.65} />
       </mesh>
       <mesh ref={glow} position={[0, 2.15, 0]}>
-        <sphereGeometry args={[0.32, 14, 12]} />
-        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.35} metalness={0.4} />
+        <sphereGeometry args={[scarRemembered ? 0.38 : 0.32, 14, 12]} />
+        <meshStandardMaterial
+          color="#fde68a"
+          emissive="#f59e0b"
+          emissiveIntensity={scarRemembered ? 0.55 : 0.35}
+          metalness={0.4}
+        />
       </mesh>
       <mesh position={[0, 1.1, 0.32]}>
         <planeGeometry args={[0.7, 0.55]} />
         <meshStandardMaterial color="#78350f" roughness={0.6} />
       </mesh>
+      {scarRemembered && scarLabel ? (
+        <Billboard follow position={[0, 2.85, 0]}>
+          <SafeText
+            fontSize={0.22}
+            color="#78350f"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.02}
+            outlineColor="#fffbeb"
+          >
+            {scarLabel}
+          </SafeText>
+        </Billboard>
+      ) : null}
     </group>
   );
 }

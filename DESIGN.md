@@ -2,7 +2,8 @@
 
 **Mode (Harbor plaza):** Experience — the world leads; UI recedes.  
 **Mood:** Cozy Seaside money adventure (see `docs/art-direction-bible.md`).  
-**Craft north star:** `docs/astro-craft-translation.md`
+**Craft north star:** `docs/astro-craft-translation.md`  
+**Mural thesis:** `docs/mural-thesis.md` — living money organs (Memory · Coin · Clock · Spiral).
 
 ## Visual hierarchy (Harbor)
 
@@ -10,7 +11,7 @@
 2. Ledger Bank (hero silhouette, always labeled)  
 3. Money Carpet Gate on the pier axis (exit / travel)  
 4. Outfitter + Arcade pavilions (unique meshes)  
-5. Notice board + Memory Plinth  
+5. Notice board + Memory Plinth (scar-lit when Harbor remembers)  
 6. Signpost cluster for utilities (never clone shops)
 
 ## Anti-references

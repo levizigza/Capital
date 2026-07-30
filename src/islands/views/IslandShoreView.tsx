@@ -288,6 +288,7 @@ export function IslandShoreView({
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
               inputFrozen={talkOpen || enteringJar}
+              chapterQuiet={Boolean(save.chapterQuietPending)}
             />
             <GuideEdgeCue
               projection={guideProjection}
@@ -338,6 +339,9 @@ export function IslandShoreView({
             ) : (
               <div className="mt-1 text-[11px] font-bold text-emerald-200">Main course clear — explore freely</div>
             )}
+            {save.chapterQuietPending ? (
+              <HudBadge className="mt-1 bg-slate-900/80 text-white">Quiet after the Take · fly home changed</HudBadge>
+            ) : null}
           </div>
         }
         topRight={
