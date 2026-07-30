@@ -4,7 +4,8 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 type Props = {
@@ -102,7 +103,7 @@ export function CoinJarLandmark({
       </group>
 
       <Billboard position={[0, 4.4, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.32}
           color="#fffbeb"
           anchorX="center"
@@ -111,7 +112,7 @@ export function CoinJarLandmark({
           outlineColor="#0f172a"
         >
           {active ? "Enter · coin slot" : label}
-        </Text>
+        </SafeText>
       </Billboard>
     </group>
   );

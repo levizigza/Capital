@@ -75,9 +75,10 @@ function capitalCspPlugin(): Plugin {
     "frame-src 'none'",
     "script-src 'self'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com data:",
     "img-src 'self' data: blob: https:",
-    "connect-src 'self'",
+    // drei/troika Text fetches webfonts — without this Harbor Suspense never resolves on Pages.
+    "connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://fonts.gstatic.com https://fonts.googleapis.com",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "form-action 'self'",

@@ -4,8 +4,9 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
+import { SafeText } from "./SafeText";
 
 type Props = {
   position: [number, number, number];
@@ -85,7 +86,7 @@ export function LedgerBankLandmark({
       </mesh>
 
       <Billboard position={[0, 3.7, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.3}
           color="#fffbeb"
           anchorX="center"
@@ -94,7 +95,7 @@ export function LedgerBankLandmark({
           outlineColor="#0f172a"
         >
           {active ? "Enter · vault door" : label}
-        </Text>
+        </SafeText>
       </Billboard>
     </group>
   );

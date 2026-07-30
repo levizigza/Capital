@@ -4,7 +4,8 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 type Props = {
@@ -99,7 +100,7 @@ export function PayrollTowerLandmark({
       </mesh>
 
       <Billboard position={[0, 5.3, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.28}
           color="#ecfeff"
           anchorX="center"
@@ -108,7 +109,7 @@ export function PayrollTowerLandmark({
           outlineColor="#0c4a6e"
         >
           {active ? "Enter · paycheck chute" : label}
-        </Text>
+        </SafeText>
       </Billboard>
     </group>
   );

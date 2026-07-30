@@ -1,4 +1,5 @@
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 
 type Props = {
   title: string;
@@ -29,7 +30,7 @@ export function IslandTitle({
           <planeGeometry args={[subtitle ? 6.4 : 5.2, subtitle ? 1.7 : 1.15]} />
           <meshBasicMaterial color="#fef3c7" transparent opacity={0.88} depthWrite={false} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, subtitle ? 0.28 : 0, 0]}
           fontSize={0.72}
           color={ink}
@@ -41,9 +42,9 @@ export function IslandTitle({
           depthOffset={-2}
         >
           {title}
-        </Text>
+        </SafeText>
         {subtitle ? (
-          <Text
+          <SafeText
             position={[0, -0.4, 0]}
             fontSize={0.32}
             color={accent}
@@ -55,7 +56,7 @@ export function IslandTitle({
             depthOffset={-2}
           >
             {subtitle}
-          </Text>
+          </SafeText>
         ) : null}
       </Billboard>
     </group>

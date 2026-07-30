@@ -1,12 +1,13 @@
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
 import { getMascot, varyMascot } from "../moneyCast";
 import { colorHex, type MoneyForm } from "../character";
+import { SafeText } from "./SafeText";
 import {
   buildHarborNpcLives,
   currentHarborHour,
@@ -583,7 +584,7 @@ function PlazaScene({
             {/* Money structures always name themselves; other pads only when near/guided */}
             {showLabel || h.kind === "money_structure" ? (
               <Billboard follow position={[0, h.kind === "money_structure" ? 4.4 : 3.05, 0]}>
-                <Text
+                <SafeText
                   fontSize={h.kind === "money_structure" ? 0.34 : 0.28}
                   color={pulsing ? "#92400e" : h.kind === "money_structure" ? "#78350f" : "#16283b"}
                   anchorX="center"
@@ -592,7 +593,7 @@ function PlazaScene({
                   outlineColor="#ffffff"
                 >
                   {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-                </Text>
+                </SafeText>
               </Billboard>
             ) : null}
           </group>
@@ -800,40 +801,34 @@ export function WalkableHarborView({
           setReady(true);
         }}
       >
-        <Suspense
-          fallback={
-            <mesh position={[0, 1, 0]}>
-              <boxGeometry args={[0.01, 0.01, 0.01]} />
-              <meshBasicMaterial transparent opacity={0} />
-            </mesh>
-          }
-        >
-          <PlazaScene
-            hotspots={hotspots}
-            onHotspot={onHotspot}
-            locals={locals}
-            lives={lives}
-            keeperEmote={keeperEmote}
-            keeperSpeech={keeperSpeech}
-            pulseHotspotId={pulseHotspotId}
-            nearHotspotId={near}
-            nearNpcId={nearNpcId}
-            playerPos={playerPos}
-            npcBodies={npcBodies}
-            look={look}
-          />
-          <Player
-            character={character}
-            hotspots={hotspots}
-            npcBodies={npcBodies}
-            onNear={setNear}
-            onNearNpc={(n) => {
-              setNearNpcId(n?.id ?? null);
-              onNearNpc?.(n);
-            }}
-            playerPosOut={playerPos}
-            inputFrozen={inputFrozen}
-          />
+        {/* Meshes outside Text Suspense — CDN font blocks must not blank Harbor on Pages. */}
+        <PlazaScene
+          hotspots={hotspots}
+          onHotspot={onHotspot}
+          locals={locals}
+          lives={lives}
+          keeperEmote={keeperEmote}
+          keeperSpeech={keeperSpeech}
+          pulseHotspotId={pulseHotspotId}
+          nearHotspotId={near}
+          nearNpcId={nearNpcId}
+          playerPos={playerPos}
+          npcBodies={npcBodies}
+          look={look}
+        />
+        <Player
+          character={character}
+          hotspots={hotspots}
+          npcBodies={npcBodies}
+          onNear={setNear}
+          onNearNpc={(n) => {
+            setNearNpcId(n?.id ?? null);
+            onNearNpc?.(n);
+          }}
+          playerPosOut={playerPos}
+          inputFrozen={inputFrozen}
+        />
+        <Suspense fallback={null}>
           <MoneyBagGuide
             lookAt={guideTarget}
             playerPos={playerPos}

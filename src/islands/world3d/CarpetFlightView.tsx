@@ -9,7 +9,7 @@ import {
   type MutableRefObject,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 import type { UserProfile } from "@/App";
@@ -351,7 +351,7 @@ function WorldScene({
         onArrive={onArrive}
         onMorph={onMorph}
       />
-      <Text
+      <SafeText
         position={[0, 10, -8]}
         fontSize={1.4}
         color={look.accent}
@@ -360,7 +360,7 @@ function WorldScene({
         outlineColor="#0c1622"
       >
         Fortune Archipelago
-      </Text>
+      </SafeText>
     </>
   );
 }

@@ -5,7 +5,8 @@
 
 import { useMemo, useRef, useState, type MutableRefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 import {
@@ -153,7 +154,7 @@ function EmoteFace({
       </mesh>
       <group ref={zzz} position={[0.25, 1.55, 0.1]} visible={false}>
         <Billboard follow>
-          <Text
+          <SafeText
             fontSize={0.22}
             color="#fef3c7"
             anchorX="center"
@@ -162,7 +163,7 @@ function EmoteFace({
             outlineColor="#0f172a"
           >
             Zzz
-          </Text>
+          </SafeText>
         </Billboard>
       </group>
     </>
@@ -322,9 +323,9 @@ export function CarpetCoinBagBuddy({
           <cylinderGeometry args={[0.17, 0.17, 0.07, 16]} />
         </mesh>
         <Billboard position={[0, 0.5, 0.44]} follow={false}>
-          <Text fontSize={0.18} color="#14532d" anchorX="center" anchorY="middle">
+          <SafeText fontSize={0.18} color="#14532d" anchorX="center" anchorY="middle">
             $
-          </Text>
+          </SafeText>
         </Billboard>
 
         <EmoteFace emoteRef={emoteRef} />
@@ -359,7 +360,7 @@ export function CarpetCoinBagBuddy({
       </group>
 
       <Billboard position={[0, 1.7, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.14}
           color="#ffffff"
           anchorX="center"
@@ -368,10 +369,10 @@ export function CarpetCoinBagBuddy({
           outlineColor="#14532d"
         >
           Coin Bag
-        </Text>
+        </SafeText>
       </Billboard>
       <Billboard position={[0, 1.95, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.13}
           color="#fef3c7"
           anchorX="center"
@@ -381,7 +382,7 @@ export function CarpetCoinBagBuddy({
           maxWidth={2.4}
         >
           {caption}
-        </Text>
+        </SafeText>
       </Billboard>
     </group>
   );

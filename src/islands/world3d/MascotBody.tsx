@@ -1,5 +1,5 @@
 import type * as THREE from "three";
-import { Text } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import type { MoneyForm } from "../character";
 
 type Mats = {
@@ -61,7 +61,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.02, 0.1]} material={materials.paper}>
           <boxGeometry args={[0.55, 0.82, 0.02]} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, 0.08, 0.12]}
           fontSize={0.55}
           color="#16283b"
@@ -69,7 +69,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
           anchorY="middle"
         >
           {g}
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.32} z={0.13} />
       </group>
     );
@@ -103,9 +103,9 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.05, 0.4]} material={materials.gold}>
           <circleGeometry args={[0.14, 16]} />
         </mesh>
-        <Text position={[0, 0.05, 0.42]} fontSize={0.18} color="#16283b" anchorX="center" anchorY="middle">
+        <SafeText position={[0, 0.05, 0.42]} fontSize={0.18} color="#16283b" anchorX="center" anchorY="middle">
           $
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.12} z={0.4} />
       </group>
     );
@@ -193,7 +193,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.05, 0.06]} material={materials.paper}>
           <boxGeometry args={[0.55, 0.55, 0.02]} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, 0.08, 0.08]}
           fontSize={0.28}
           color="#be123c"
@@ -201,7 +201,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
           anchorY="middle"
         >
           20%
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.32} z={0.08} />
       </group>
     );
@@ -260,9 +260,9 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0.2, -0.85, 0]} material={materials.dark}>
           <sphereGeometry args={[0.14, 10, 8]} />
         </mesh>
-        <Text position={[0.2, -0.85, 0.15]} fontSize={0.1} color="#fbbf24" anchorX="center" anchorY="middle">
+        <SafeText position={[0.2, -0.85, 0.15]} fontSize={0.1} color="#fbbf24" anchorX="center" anchorY="middle">
           DEBT
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.05} z={0.32} />
       </group>
     );
@@ -333,9 +333,9 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0, 0.3]} material={materials.gold}>
           <boxGeometry args={[0.22, 0.35, 0.05]} />
         </mesh>
-        <Text position={[0, 0.15, 0.33]} fontSize={0.1} color="#16283b" anchorX="center" anchorY="middle">
+        <SafeText position={[0, 0.15, 0.33]} fontSize={0.1} color="#16283b" anchorX="center" anchorY="middle">
           TIPS
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.05} z={0.3} />
       </group>
     );
@@ -347,7 +347,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh castShadow material={materials.gold}>
           <cylinderGeometry args={[0.48, 0.48, 0.16, 28]} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, 0.02, 0.1]}
           rotation={[-Math.PI / 2, 0, 0]}
           fontSize={0.42}
@@ -356,7 +356,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
           anchorY="middle"
         >
           {g}
-        </Text>
+        </SafeText>
         <mesh position={[-0.22, 0.12, 0.1]} material={materials.dark}>
           <boxGeometry args={[0.18, 0.06, 0.04]} />
         </mesh>
@@ -377,7 +377,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.28, 0.06]} material={materials.gold}>
           <circleGeometry args={[0.12, 16]} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, -0.05, 0.07]}
           fontSize={0.12}
           color="#16283b"
@@ -385,7 +385,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
           anchorY="middle"
         >
           {form === "loan" ? "LOAN" : "DIVIDEND"}
-        </Text>
+        </SafeText>
         {form === "loan" ? (
           <mesh castShadow position={[0, 0.62, 0]} material={materials.body}>
             <cylinderGeometry args={[0.22, 0.26, 0.18, 12]} />
@@ -465,9 +465,9 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.1, 0.28]} material={materials.gold}>
           <circleGeometry args={[0.16, 16]} />
         </mesh>
-        <Text position={[0, 0.1, 0.3]} fontSize={0.22} color="#16283b" anchorX="center" anchorY="middle">
+        <SafeText position={[0, 0.1, 0.3]} fontSize={0.22} color="#16283b" anchorX="center" anchorY="middle">
           $
-        </Text>
+        </SafeText>
         <Eyes materials={materials} y={0.35} z={0.3} />
       </group>
     );
@@ -485,7 +485,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
         <mesh position={[0, 0.05, 0.07]} material={materials.paper}>
           <boxGeometry args={[0.5, 0.65, 0.02]} />
         </mesh>
-        <Text
+        <SafeText
           position={[0, 0.2, 0.09]}
           fontSize={0.14}
           color="#16283b"
@@ -493,7 +493,7 @@ export function MascotBody({ form, materials, glyph }: Props) {
           anchorY="middle"
         >
           TAX
-        </Text>
+        </SafeText>
         <mesh position={[0.35, -0.1, 0.1]} material={materials.gold}>
           <boxGeometry args={[0.06, 0.35, 0.06]} />
         </mesh>

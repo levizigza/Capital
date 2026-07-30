@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
@@ -485,7 +486,7 @@ function PadMarker({
       {/* Name / label only when this hotspot is the active interact target */}
       {active ? (
         <Billboard position={[0, hotspot.kind === "npc" ? 2.15 : 1.55, 0]} follow>
-          <Text
+          <SafeText
             fontSize={0.22}
             color="#ffffff"
             anchorX="center"
@@ -495,7 +496,7 @@ function PadMarker({
             textAlign="center"
           >
             {`${hotspot.icon} ${hotspot.label}`}
-          </Text>
+          </SafeText>
         </Billboard>
       ) : null}
     </group>
@@ -965,29 +966,23 @@ export function WalkableIslandExplore({
           setReady(true);
         }}
       >
-        <Suspense
-          fallback={
-            <mesh position={[0, 1, 0]}>
-              <boxGeometry args={[0.01, 0.01, 0.01]} />
-              <meshBasicMaterial transparent opacity={0} />
-            </mesh>
-          }
-        >
-          <ShoreScene
-            island={island}
-            look={look}
-            biome={biome}
-            hotspots={hotspots}
-            nearId={near}
-            collectedItemIds={collectedItemIds}
-            character={character}
-            animationStyle={theme.animationStyle}
-            onNear={setNear}
-            playerPosOut={playerPos}
-            guideLookAt={guideLookAt}
-            guideArrows={guideArrows}
-            inputFrozen={inputFrozen}
-          />
+        {/* Shore meshes outside Text Suspense — Pages CSP must not blank the island. */}
+        <ShoreScene
+          island={island}
+          look={look}
+          biome={biome}
+          hotspots={hotspots}
+          nearId={near}
+          collectedItemIds={collectedItemIds}
+          character={character}
+          animationStyle={theme.animationStyle}
+          onNear={setNear}
+          playerPosOut={playerPos}
+          guideLookAt={guideLookAt}
+          guideArrows={guideArrows}
+          inputFrozen={inputFrozen}
+        />
+        <Suspense fallback={null}>
           <MoneyBagGuide
             lookAt={guideLookAt}
             playerPos={playerPos}

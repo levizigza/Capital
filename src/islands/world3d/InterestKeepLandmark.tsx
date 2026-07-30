@@ -4,7 +4,8 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 type Props = {
@@ -102,7 +103,7 @@ export function InterestKeepLandmark({
       </mesh>
 
       <Billboard position={[0, 4.2, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.28}
           color="#fff1f2"
           anchorX="center"
@@ -111,7 +112,7 @@ export function InterestKeepLandmark({
           outlineColor="#450a0a"
         >
           {active ? "Enter · interest spiral" : label}
-        </Text>
+        </SafeText>
       </Billboard>
     </group>
   );

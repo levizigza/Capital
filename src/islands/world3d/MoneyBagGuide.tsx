@@ -1,6 +1,7 @@
 import { useMemo, useRef, type MutableRefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
+import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
 export const COIN_BAG_GUIDE_ID = "coin_bag_guide";
@@ -118,9 +119,9 @@ function BunnyMoneyBagMesh({
           <cylinderGeometry args={[0.17, 0.17, 0.07, 20]} />
         </mesh>
         <Billboard position={[0, 0.5, 0.44]} follow={false}>
-          <Text fontSize={0.18} color="#14532d" anchorX="center" anchorY="middle">
+          <SafeText fontSize={0.18} color="#14532d" anchorX="center" anchorY="middle">
             $
-          </Text>
+          </SafeText>
         </Billboard>
 
         <mesh position={[-0.12, 0.66, 0.34]} material={white}>
@@ -262,7 +263,7 @@ export function MoneyBagGuide({
       <BunnyMoneyBagMesh hopPhase={hopPhase} pointingRef={pointingFlag} />
       <PointArrow activeRef={pointingFlag} />
       <Billboard position={[0, 1.95, 0]} follow>
-        <Text
+        <SafeText
           fontSize={0.2}
           color="#ffffff"
           anchorX="center"
@@ -271,11 +272,11 @@ export function MoneyBagGuide({
           outlineColor="#14532d"
         >
           Coin Bag
-        </Text>
+        </SafeText>
       </Billboard>
       {tip ? (
         <Billboard position={[0, 2.28, 0]} follow>
-          <Text
+          <SafeText
             fontSize={0.155}
             color="#fef3c7"
             anchorX="center"
@@ -285,7 +286,7 @@ export function MoneyBagGuide({
             maxWidth={3.6}
           >
             {`→ ${tip}`}
-          </Text>
+          </SafeText>
         </Billboard>
       ) : null}
     </group>
