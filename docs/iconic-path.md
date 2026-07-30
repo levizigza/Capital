@@ -24,6 +24,8 @@ Each island may host one **Money Structure** — a landmark you climb *into*. In
 
 Money Structures path complete for the triangle spine (Cove → Paycheck → Credit + Harbor).
 
+Harbor plaza craft: see [astro-craft-translation.md](./astro-craft-translation.md) — CPU-Plaza distill (fountain + bank + Money Carpet Gate + few pavilions; utilities as signposts).
+
 This is **structure depth**, not map width — still no new outer islands.
 
 ## Cold playtest checklist

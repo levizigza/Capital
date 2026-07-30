@@ -44,7 +44,7 @@ const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
     coach: "Your call. I’ll point at practice — or we head to the carpet.",
   },
   to_dock: {
-    tip: "Carpet Dock this way",
+    tip: "Money Carpet this way",
     coach: "The Fortune Thread starts at the dock. Stick with me.",
   },
   first_island: {
@@ -95,7 +95,7 @@ export function coinBagHarborTip(
   if (opts?.nextPaintingHint) {
     return {
       tip: `Next painting: ${opts.nextPaintingHint}`,
-      coach: "Carpet Dock opens the Archipelago map. I’ll hop with you.",
+      coach: "Money Carpet opens the Archipelago map. I’ll hop with you.",
     };
   }
 
@@ -257,7 +257,7 @@ export function coinBagIslandTip(
       }
       return {
         tip: `Chapter clear on ${name} — fly home`,
-        coach: "Harbor will notice. Carpet Dock / Hub when you’re ready.",
+        coach: "Harbor will notice. Money Carpet / Hub when you’re ready.",
         track: "main",
       };
     }

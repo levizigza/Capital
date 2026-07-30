@@ -16,6 +16,7 @@ import { genreHudLine } from "../genreWorlds";
 import { DioramaIslandMesh } from "./DioramaIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
+import { moneyStructureForIsland } from "../moneyStructures";
 
 type Props = {
   islands: Parameters<typeof buildArchipelagoLayout>[0];
@@ -26,6 +27,51 @@ type Props = {
 
 const LOOK = getEraLook3D("capital-default");
 const SPACING = 6.4;
+
+/** Tiny Money Structure silhouette chip above each diorama pin. */
+function StructurePinBadge({
+  islandId,
+  position,
+}: {
+  islandId: string;
+  position: [number, number, number];
+}) {
+  const structure = moneyStructureForIsland(islandId);
+  if (!structure) return null;
+  const theme = structure.theme;
+  const y = position[1] + 2.35;
+  if (theme === "jar") {
+    return (
+      <mesh position={[position[0], y, position[2]]} castShadow>
+        <cylinderGeometry args={[0.22, 0.28, 0.45, 10]} />
+        <meshStandardMaterial color="#fde68a" emissive="#f59e0b" emissiveIntensity={0.35} transparent opacity={0.9} />
+      </mesh>
+    );
+  }
+  if (theme === "tower") {
+    return (
+      <mesh position={[position[0], y, position[2]]} castShadow>
+        <boxGeometry args={[0.28, 0.55, 0.28]} />
+        <meshStandardMaterial color="#cbd5e1" emissive="#64748b" emissiveIntensity={0.25} />
+      </mesh>
+    );
+  }
+  if (theme === "keep") {
+    return (
+      <mesh position={[position[0], y, position[2]]} castShadow>
+        <coneGeometry args={[0.28, 0.5, 5]} />
+        <meshStandardMaterial color="#94a3b8" emissive="#475569" emissiveIntensity={0.22} flatShading />
+      </mesh>
+    );
+  }
+  // bank / default
+  return (
+    <mesh position={[position[0], y, position[2]]} castShadow>
+      <boxGeometry args={[0.4, 0.35, 0.3]} />
+      <meshStandardMaterial color="#94a3b8" emissive="#b45309" emissiveIntensity={0.2} />
+    </mesh>
+  );
+}
 
 function mapToScene(node: ArchipelagoNode): [number, number, number] {
   const x = ((node.mapX - 50) / 38) * SPACING * 1.35;
@@ -109,6 +155,7 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         hideLabels
         onSelect={() => onSelect(layout.hub.island.id)}
       />
+      <StructurePinBadge islandId={layout.hub.island.id} position={hubPos} />
 
       {layout.outer.map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
@@ -118,20 +165,22 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         const pos = mapToScene(node);
         const genreLine = genreHudLine(node.island.id);
         return (
-          <DioramaIslandMesh
-            key={node.island.id}
-            look={look}
-            title={node.island.name}
-            subtitle={genreLine ?? era.decade}
-            seed={node.island.id}
-            islandId={node.island.id}
-            position={pos}
-            scale={1}
-            current={node.island.id === currentId}
-            locked={locked}
-            hideLabels
-            onSelect={() => onSelect(node.island.id)}
-          />
+          <group key={node.island.id}>
+            <DioramaIslandMesh
+              look={look}
+              title={node.island.name}
+              subtitle={genreLine ?? era.decade}
+              seed={node.island.id}
+              islandId={node.island.id}
+              position={pos}
+              scale={1}
+              current={node.island.id === currentId}
+              locked={locked}
+              hideLabels
+              onSelect={() => onSelect(node.island.id)}
+            />
+            <StructurePinBadge islandId={node.island.id} position={pos} />
+          </group>
         );
       })}
 

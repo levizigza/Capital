@@ -25,6 +25,15 @@ export { MoneyStructureInteriorView } from "./MoneyStructureInteriorView";
 export { LedgerBankLandmark } from "./LedgerBankLandmark";
 export { PayrollTowerLandmark } from "./PayrollTowerLandmark";
 export { InterestKeepLandmark } from "./InterestKeepLandmark";
+export {
+  MoneyCarpetGate,
+  OutfitterPavilion,
+  ArcadePavilion,
+  HarborNoticeBoard,
+  MemoryPlinthMesh,
+  HarborSignpost,
+} from "./HarborLandmarks";
+export { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 export { CapsuleStudio3D } from "./CapsuleStudio3D";
 export { CapsuleStudioOverlay } from "./CapsuleStudioOverlay";
 export { MoneyBagGuide, guideTargetForHighlight, COIN_BAG_GUIDE_ID } from "./MoneyBagGuide";

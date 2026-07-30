@@ -21,8 +21,16 @@ import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { EraIslandMesh } from "./EraIslandMesh";
-import { HarborBuilding, WoodenPier, NatureProps } from "./NatureProps";
+import { WoodenPier, NatureProps } from "./NatureProps";
 import { LedgerBankLandmark } from "./LedgerBankLandmark";
+import {
+  MoneyCarpetGate,
+  OutfitterPavilion,
+  ArcadePavilion,
+  HarborNoticeBoard,
+  MemoryPlinthMesh,
+  HarborSignpost,
+} from "./HarborLandmarks";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
@@ -32,13 +40,25 @@ import type { NpcEmote } from "../story/dialogueActionSync";
 import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
 
+export type HarborLandmarkKind =
+  | "building"
+  | "money_structure"
+  | "carpet_gate"
+  | "outfitter"
+  | "arcade"
+  | "notice_board"
+  | "plinth"
+  | "signpost";
+
 export type HarborHotspot = {
   id: string;
   label: string;
   icon: string;
   position: [number, number, number];
-  /** Special plaza landmarks (Money Structures) */
-  kind?: "building" | "money_structure";
+  /** Plaza craft — unique silhouettes; signpost for utilities */
+  kind?: HarborLandmarkKind;
+  /** Signpost accent color */
+  accent?: string;
 };
 
 type Props = {
@@ -374,36 +394,41 @@ function PlazaScene({
   npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
   look: ReturnType<typeof getEraLook3D>;
 }) {
-  // Keep vegetation on the outer ring only — never under the title / fountain.
+  // Distill: vegetation in 3 outer clusters — never a full prop ring.
   const accentProps = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId("harbor-props"), LOOK, "near");
+    const clusters: [number, number][] = [
+      [11.5, -9.5],
+      [-12.2, -6.5],
+      [10.8, 10.2],
+    ];
     return t.props
       .filter((p) => p.kind !== "hut")
-      .slice(0, 18)
+      .slice(0, 9)
       .map((p, i) => {
-        const ang = (i / 18) * Math.PI * 2;
-        const r = 12.2 + (i % 3) * 1.1;
+        const [cx, cz] = clusters[i % clusters.length]!;
+        const jig = ((i * 37) % 10) * 0.12;
         return {
           ...p,
-          // Prefer shorter bushes/grass near the inner edge
-          kind: r < 12.6 && (p.kind === "palm" || p.kind === "tree") ? ("bush" as const) : p.kind,
-          position: [Math.cos(ang) * r, 0.02, Math.sin(ang) * r] as [number, number, number],
-          scale: (p.kind === "palm" || p.kind === "tree" ? 0.85 : 1) * p.scale,
+          kind: i % 3 === 0 && (p.kind === "palm" || p.kind === "tree") ? ("bush" as const) : p.kind,
+          position: [cx + Math.cos(i) * jig, 0.02, cz + Math.sin(i) * jig] as [
+            number,
+            number,
+            number,
+          ],
+          scale: (p.kind === "palm" || p.kind === "tree" ? 0.8 : 1) * p.scale * 0.95,
         };
-      })
-      .filter((p) => Math.hypot(p.position[0], p.position[2]) >= 11.5);
+      });
   }, []);
 
-  const buildingColors = ["#fef3c7", "#ecfccb", "#e0f2fe", "#ffe4e6", "#f5f5f4"];
-
   const cobbles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => {
-      const ang = (i / 20) * Math.PI * 2 + (i % 5) * 0.07;
-      const rad = 2.2 + (i % 7) * 0.95;
+    return Array.from({ length: 10 }, (_, i) => {
+      const ang = (i / 10) * Math.PI * 2 + (i % 3) * 0.11;
+      const rad = 2.6 + (i % 4) * 1.15;
       return {
         x: Math.cos(ang) * rad,
         z: Math.sin(ang) * rad,
-        s: 0.35 + (i % 4) * 0.08,
+        s: 0.38 + (i % 3) * 0.1,
       };
     });
   }, []);
@@ -440,19 +465,16 @@ function PlazaScene({
         <meshStandardMaterial color="#0369a1" transparent opacity={0.3} depthWrite={false} />
       </mesh>
 
-      {/* Outer hills with rock outcrops */}
+      {/* Outer hills — fewer, intentional (negative space between) */}
       {[
-        [12, 0.4, -10],
-        [-13, 0.55, -8],
-        [10, 0.35, 12],
-        [-11, 0.45, 11],
-        [0, 0.7, -15],
-        [14, 0.5, 4],
-        [-14.5, 0.45, -2],
+        [13, 0.45, -11],
+        [-14, 0.55, -7],
+        [0, 0.65, -15.5],
+        [12.5, 0.4, 11],
       ].map((p, i) => (
         <group key={i} position={p as [number, number, number]}>
           <mesh castShadow receiveShadow>
-            <sphereGeometry args={[2.0 + (i % 3) * 0.35, 12, 9]} />
+            <sphereGeometry args={[2.1 + (i % 2) * 0.35, 12, 9]} />
             <meshStandardMaterial color={LOOK.land} roughness={0.88} flatShading />
           </mesh>
           <mesh castShadow position={[0.8, 0.3, 0.4]} rotation={[0.3, 0.5, 0.2]} scale={0.55}>
@@ -502,9 +524,11 @@ function PlazaScene({
 
       <WoodenPier position={[0, 0.05, 14.2]} />
 
-      {/* Seawall + lanterns */}
-      {Array.from({ length: 28 }).map((_, i) => {
-        const ang = (i / 28) * Math.PI * 2;
+      {/* Seawall — intentional gaps (distill), lanterns at openings */}
+      {Array.from({ length: 12 }).map((_, i) => {
+        // Skip south pier mouth so the carpet gate reads clearly
+        if (i === 3 || i === 4) return null;
+        const ang = (i / 12) * Math.PI * 2 + Math.PI * 0.08;
         const r = 14.5;
         return (
           <group key={i}>
@@ -513,7 +537,7 @@ function PlazaScene({
               position={[Math.cos(ang) * r, 0.35, Math.sin(ang) * r]}
               rotation={[0, -ang, 0]}
             >
-              <boxGeometry args={[3.2, 0.75, 0.5]} />
+              <boxGeometry args={[3.4, 0.75, 0.5]} />
               <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
             </mesh>
             <mesh
@@ -521,10 +545,10 @@ function PlazaScene({
               position={[Math.cos(ang) * r, 0.78, Math.sin(ang) * r]}
               rotation={[0, -ang, 0]}
             >
-              <boxGeometry args={[3.0, 0.12, 0.55]} />
+              <boxGeometry args={[3.2, 0.12, 0.55]} />
               <meshStandardMaterial color="#78716c" roughness={0.8} flatShading />
             </mesh>
-            {i % 4 === 0 ? (
+            {i % 3 === 0 ? (
               <PlazaLantern
                 position={[Math.cos(ang) * (r - 0.55), 0.05, Math.sin(ang) * (r - 0.55)]}
               />
@@ -535,21 +559,30 @@ function PlazaScene({
 
       <NatureProps props={accentProps} look={LOOK} useKenney={KENNEY_ENABLED} />
 
-      {/* Market crates near the pier path */}
-      <MarketCrate position={[1.8, 0.02, 9.2]} rot={0.3} />
-      <MarketCrate position={[2.4, 0.02, 9.6]} rot={-0.5} />
-      <MarketCrate position={[-2.1, 0.02, 8.8]} rot={1.1} />
-      <mesh castShadow position={[-1.5, 0.28, 9.5]}>
+      {/* Pier approach — one crate cluster, not a clutter pile */}
+      <MarketCrate position={[2.1, 0.02, 10.4]} rot={0.3} />
+      <mesh castShadow position={[-1.8, 0.28, 10.2]}>
         <cylinderGeometry args={[0.22, 0.24, 0.5, 10]} />
         <meshStandardMaterial color="#78350f" roughness={0.8} flatShading />
       </mesh>
 
-      {hotspots.map((h, idx) => {
+      {hotspots.map((h) => {
         // Face the door toward the plaza center so entrances are readable.
         const yaw = Math.atan2(-h.position[0], -h.position[2]);
         const pulsing = pulseHotspotId === h.id;
         const nearby = nearHotspotId === h.id;
-        const showLabel = pulsing || nearby;
+        const kind = h.kind ?? "building";
+        const hero =
+          kind === "money_structure" || kind === "carpet_gate" || kind === "plinth";
+        const showLabel = pulsing || nearby || hero;
+        const labelY =
+          kind === "money_structure"
+            ? 4.4
+            : kind === "carpet_gate"
+              ? 3.6
+              : kind === "signpost"
+                ? 2.35
+                : 3.15;
         return (
           <group key={h.id} position={h.position}>
             <HotspotPulse active={pulsing} />
@@ -566,27 +599,32 @@ function PlazaScene({
                 document.body.style.cursor = "auto";
               }}
             >
-              {h.kind === "money_structure" ? (
+              {kind === "money_structure" ? (
                 <LedgerBankLandmark
                   position={[0, 0, 0]}
                   active={nearby}
                   guided={pulsing}
                   label={h.label}
                 />
+              ) : kind === "carpet_gate" ? (
+                <MoneyCarpetGate active={nearby} guided={pulsing} />
+              ) : kind === "outfitter" ? (
+                <OutfitterPavilion active={nearby} guided={pulsing} />
+              ) : kind === "arcade" ? (
+                <ArcadePavilion active={nearby} guided={pulsing} />
+              ) : kind === "notice_board" ? (
+                <HarborNoticeBoard active={nearby} guided={pulsing} />
+              ) : kind === "plinth" ? (
+                <MemoryPlinthMesh active={nearby} guided={pulsing} />
               ) : (
-                <HarborBuilding
-                  label={h.label}
-                  accent={pulsing ? "#fbbf24" : LOOK.accent}
-                  body={buildingColors[idx % buildingColors.length]}
-                />
+                <HarborSignpost accent={h.accent ?? LOOK.accent} active={nearby || pulsing} />
               )}
             </group>
-            {/* Money structures always name themselves; other pads only when near/guided */}
-            {showLabel || h.kind === "money_structure" ? (
-              <Billboard follow position={[0, h.kind === "money_structure" ? 4.4 : 3.05, 0]}>
+            {showLabel ? (
+              <Billboard follow position={[0, labelY, 0]}>
                 <SafeText
-                  fontSize={h.kind === "money_structure" ? 0.34 : 0.28}
-                  color={pulsing ? "#92400e" : h.kind === "money_structure" ? "#78350f" : "#16283b"}
+                  fontSize={hero ? 0.34 : 0.26}
+                  color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
                   anchorX="center"
                   anchorY="middle"
                   outlineWidth={0.02}

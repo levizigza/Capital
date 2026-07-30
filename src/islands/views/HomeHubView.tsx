@@ -418,77 +418,57 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => [
-      { id: "arcade", label: "Arcade", icon: "🕹️", position: [-6.5, 0, -5] },
-      { id: "outfitter", label: "Outfitter", icon: "👗", position: [0, 0, -8] },
-      { id: "capsule", label: "Capsule Stall", icon: "📦", position: [4.2, 0, -7.2] },
-      { id: "studio", label: "VibeCode", icon: "✨", position: [6.5, 0, -5] },
-      ...(!isKilled("studioGallery")
-        ? [{ id: "gallery", label: "Studio Gallery", icon: "🖼️", position: [5.4, 0, -3.2] } satisfies HarborHotspot]
-        : []),
-      { id: "travel", label: "Carpet Dock", icon: "🪄", position: [0, 0, 13] },
-      { id: "settings", label: "Settings", icon: "⚙️", position: [-8, 0, 3.5] },
+      // —— Plaza heroes (unique meshes) ——
       {
-        id: "ritual",
-        label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
-        icon: "☀️",
-        position: [-5.2, 0, -2.2],
+        id: "arcade",
+        label: "Arcade",
+        icon: "🕹️",
+        position: [-5.2, 0, -4.2],
+        kind: "arcade",
       },
-      ...(!isKilled("familyRooms")
+      {
+        id: "outfitter",
+        label: "Outfitter",
+        icon: "👗",
+        position: [0, 0, -7.2],
+        kind: "outfitter",
+      },
+      {
+        id: "travel",
+        label: "Money Carpet",
+        icon: "🪄",
+        position: [0, 0, 12.6],
+        kind: "carpet_gate",
+      },
+      ...(onPlayHarborBoard && !isKilled("partyBoard")
         ? [
             {
-              id: "family",
-              label: "Family Room",
-              icon: "🏠",
-              position: [-7.2, 0, -0.5],
+              id: "practice",
+              label: "Harbor Board",
+              icon: "🎲",
+              position: [-3.6, 0, 1.2],
+              kind: "notice_board" as const,
             } satisfies HarborHotspot,
           ]
-        : []),
-      // Always on the plaza so Coin Bag can point here during the optional practice beat
-      ...(onPlayHarborBoard && !isKilled("partyBoard")
-        ? [{ id: "practice", label: "Practice Board", icon: "🎲", position: [-2.2, 0, -2.5] } satisfies HarborHotspot]
-        : []),
+        : [
+            {
+              id: "ritual",
+              label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
+              icon: "☀️",
+              position: [-3.6, 0, 1.2],
+              kind: "notice_board" as const,
+            } satisfies HarborHotspot,
+          ]),
       ...(plaques.length > 0
         ? [
             {
               id: "memory",
               label: "Memory Plinth",
               icon: "🪨",
-              position: [3.2, 0, -1.5] as [number, number, number],
+              position: [4.0, 0, 1.6] as [number, number, number],
+              kind: "plinth" as const,
             } satisfies HarborHotspot,
           ]
-        : []),
-      ...(studioMarks.length > 0
-        ? [
-            {
-              id: "studio_stele",
-              label: "Studio Stele",
-              icon: "🗿",
-              position: [6.0, 0, -1.0] as [number, number, number],
-            } satisfies HarborHotspot,
-          ]
-        : []),
-      ...(pavilionOpen
-        ? [
-            {
-              id: "pavilion",
-              label: "Freedom Pavilion",
-              icon: "🏆",
-              position: [-4.5, 0, -9.5],
-            } satisfies HarborHotspot,
-          ]
-        : []),
-      ...(marketOpen
-        ? [
-            {
-              id: "market",
-              label: "Pasaran Lane",
-              icon: "🧺",
-              position: [7.2, 0, -3.2],
-            } satisfies HarborHotspot,
-          ]
-        : []),
-      ...(onOpenEditor
-        ? [{ id: "editor", label: "Editor", icon: "🛠️", position: [8, 0, 3.5] } satisfies HarborHotspot]
         : []),
       ...(ledgerBank
         ? [
@@ -498,6 +478,116 @@ export function HomeHubView({
               icon: ledgerBank.icon,
               position: ledgerBank.shorePosition,
               kind: "money_structure" as const,
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      // —— Utility quay (thin signposts — no clone shops) ——
+      {
+        id: "capsule",
+        label: "Capsule Stall",
+        icon: "📦",
+        position: [-9.2, 0, -1.5],
+        kind: "signpost",
+        accent: "#a78bfa",
+      },
+      ...(!isKilled("studioGallery")
+        ? [
+            {
+              id: "gallery",
+              label: "Studio Gallery",
+              icon: "🖼️",
+              position: [-9.2, 0, 0.6],
+              kind: "signpost" as const,
+              accent: "#f9a8d4",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      {
+        id: "studio",
+        label: "VibeCode",
+        icon: "✨",
+        position: [-9.2, 0, 2.7],
+        kind: "signpost",
+        accent: "#fde68a",
+      },
+      {
+        id: "settings",
+        label: "Settings",
+        icon: "⚙️",
+        position: [9.0, 0, 2.2],
+        kind: "signpost",
+        accent: "#94a3b8",
+      },
+      ...(!isKilled("familyRooms")
+        ? [
+            {
+              id: "family",
+              label: "Family Room",
+              icon: "🏠",
+              position: [9.0, 0, 0.2],
+              kind: "signpost" as const,
+              accent: "#86efac",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      // Ritual stays reachable when practice board owns the notice mesh
+      ...(onPlayHarborBoard && !isKilled("partyBoard")
+        ? [
+            {
+              id: "ritual",
+              label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
+              icon: "☀️",
+              position: [-5.0, 0, 2.4],
+              kind: "signpost" as const,
+              accent: "#fbbf24",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      ...(studioMarks.length > 0
+        ? [
+            {
+              id: "studio_stele",
+              label: "Studio Stele",
+              icon: "🗿",
+              position: [8.6, 0, -2.2] as [number, number, number],
+              kind: "signpost" as const,
+              accent: "#c4b5fd",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      ...(pavilionOpen
+        ? [
+            {
+              id: "pavilion",
+              label: "Freedom Pavilion",
+              icon: "🏆",
+              position: [-7.5, 0, -6.5],
+              kind: "signpost" as const,
+              accent: "#fcd34d",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      ...(marketOpen
+        ? [
+            {
+              id: "market",
+              label: "Pasaran Lane",
+              icon: "🧺",
+              position: [7.8, 0, -3.5],
+              kind: "signpost" as const,
+              accent: "#fdba74",
+            } satisfies HarborHotspot,
+          ]
+        : []),
+      ...(onOpenEditor
+        ? [
+            {
+              id: "editor",
+              label: "Editor",
+              icon: "🛠️",
+              position: [9.0, 0, 4.0],
+              kind: "signpost" as const,
+              accent: "#64748b",
             } satisfies HarborHotspot,
           ]
         : []),
@@ -850,12 +940,12 @@ export function HomeHubView({
             ) : (
             <CoinBagBuddyHud
               tip={buddyTip.tip}
-              detail={castleMode ? guidedStep?.coach : buddyTip.coach}
+              detail={castleMode ? guidedStep?.coach : undefined}
               guideArrows={guideArrows}
               onToggleGuide={toggleGuide}
             />
             )}
-            {/* Single primary action — never stack Enter + Board */}
+            {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
             {quietHarbor ? (
               nearNpc && onTalkNpc ? (
                 <GameButton
@@ -880,7 +970,7 @@ export function HomeHubView({
                 className="w-full shadow-lg"
                 data-testid="hub-enter-store"
               >
-                {nearTravel ? `🪄 Board carpet` : `Enter ${nearStore.label}`}
+                {nearTravel ? `🪄 Board carpet · open map` : `Enter ${nearStore.label}`}
               </GameButton>
             ) : nearNpc && onTalkNpc ? (
               <GameButton
@@ -922,18 +1012,17 @@ export function HomeHubView({
                 </GameButton>
               </div>
             ) : (
-              <GameButton
-                variant="primary"
-                size="lg"
+              <button
+                type="button"
+                data-testid="hub-travel-map"
                 onClick={() => {
                   onHubGuidedEvent("opened_map");
                   onOpenTravel();
                 }}
-                className="w-full shadow-lg"
-                data-testid="hub-travel-map"
+                className="rounded-full bg-black/35 px-3 py-1.5 text-[11px] font-semibold text-white/85 backdrop-blur-sm hover:bg-black/50"
               >
-                Archipelago map
-              </GameButton>
+                Archipelago map · or walk to Money Carpet
+              </button>
             )}
             <p className="cap-hint-whisper sr-only md:not-sr-only">
               {nearStore

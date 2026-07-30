@@ -34,6 +34,7 @@ import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { moneyStructureForIsland } from "../moneyStructures";
+import { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 
 type Props = {
   island: IslandDefinition;
@@ -425,34 +426,58 @@ function PadMarker({
       ) : null}
       {hotspot.kind === "play_pad" ? (
         <group>
-          <mesh position={[0, 1.35, 0]} castShadow>
-            <boxGeometry args={[1.6, 1.9, 0.18]} />
+          {/* Culture frame — portal previews the island's money mood */}
+          <mesh position={[0, 1.35, -0.02]} castShadow>
+            <boxGeometry args={[1.85, 2.15, 0.14]} />
             <meshStandardMaterial
-              color={wire ? look.accent : "#78350f"}
+              color={wire ? look.accent : look.land}
               roughness={0.55}
-              metalness={0.15}
+              metalness={0.12}
               wireframe={wire}
               emissive={wire ? look.accent : "#000000"}
-              emissiveIntensity={wire ? 0.2 : 0}
+              emissiveIntensity={wire ? 0.15 : 0}
             />
           </mesh>
-          <mesh position={[0, 1.35, 0.12]} castShadow>
-            <planeGeometry args={[1.25, 1.5]} />
+          <mesh position={[0, 1.35, 0.06]} castShadow>
+            <boxGeometry args={[1.55, 1.85, 0.1]} />
+            <meshStandardMaterial
+              color={wire ? look.accent : "#1c1917"}
+              roughness={0.5}
+              metalness={0.18}
+              wireframe={wire}
+            />
+          </mesh>
+          {/* Living painting — accent = island culture */}
+          <mesh position={[0, 1.35, 0.14]} castShadow>
+            <planeGeometry args={[1.28, 1.55]} />
             <meshStandardMaterial
               color={look.accent}
               emissive={look.accent}
-              emissiveIntensity={active ? 0.65 : 0.35}
-              roughness={0.4}
+              emissiveIntensity={active ? 0.7 : guided ? 0.45 : 0.32}
+              roughness={0.35}
               side={THREE.DoubleSide}
               wireframe={wire}
             />
           </mesh>
+          {/* Soft destination wash */}
+          <mesh position={[0, 1.15, 0.15]}>
+            <planeGeometry args={[1.05, 0.85]} />
+            <meshStandardMaterial
+              color={look.sea}
+              emissive={look.shore}
+              emissiveIntensity={0.2}
+              transparent
+              opacity={0.55}
+              side={THREE.DoubleSide}
+              depthWrite={false}
+            />
+          </mesh>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.7]}>
-            <ringGeometry args={[0.55, 0.85, 24]} />
+            <ringGeometry args={[0.55, 0.9, 24]} />
             <meshStandardMaterial
               color={look.accent}
               emissive={look.accent}
-              emissiveIntensity={active ? 0.5 : 0.2}
+              emissiveIntensity={active ? 0.55 : 0.22}
               transparent
               opacity={0.7}
               depthWrite={false}
@@ -835,6 +860,10 @@ function ShoreScene({
 
       <WoodenPier position={anchors.pier} />
       {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
+
+      {/* Toy culture — one coin + one bell near spawn / pier approach */}
+      <ShoreSpinCoin position={[shoreScale(1.6), 0.02, shoreScale(-1.2)]} accent={look.accent} />
+      <ShoreBell position={[shoreScale(-2.2), 0, shoreScale(anchors.pier[2] * 0.35)]} />
 
       <IslandTitle
         title={island.name}
