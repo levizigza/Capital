@@ -6,7 +6,11 @@
 
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "./moneyCast";
 import { PLAZA_POP_CAMEOS } from "./moneyPopCulture";
-import { scarEchoAmbientLine } from "./worldMemory";
+import {
+  localNamesScarEcho,
+  piggyScarMemoryLine,
+  scarEchoAmbientLine,
+} from "./worldMemory";
 
 export type HarborHour = "morning" | "midday" | "afternoon" | "evening";
 
@@ -98,15 +102,12 @@ export function harborNpcPose(
 ): { position: [number, number, number]; yaw: number; line: string; name: string } {
   const mascot = getMascot(life.mascotId);
   let line = life.lines[hour];
-  // Day-2 plaque echo — more locals name the scar so the plaza feels haunted by choice
-  if (
-    scarEcho?.label &&
-    life.mascotId !== "piggy_penny" &&
-    (life.mascotId.charCodeAt(0) + hour.length) % 2 === 0
-  ) {
-    line = scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset);
-  } else if (scarEcho?.label && life.mascotId === "piggy_penny" && scarEcho.dayOffset === "later") {
-    line = `Piggy Penny: Still here — “${scarEcho.label}” did not wash out with the tide.`;
+  // Cast-as-memory: plaza locals + Piggy name the scar so Harbor feels haunted by choice
+  if (scarEcho?.label && localNamesScarEcho(life.mascotId, hour)) {
+    line =
+      life.mascotId === "piggy_penny"
+        ? piggyScarMemoryLine(scarEcho.label, scarEcho.dayOffset)
+        : scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset);
   } else if (memory && (memory.talks ?? 0) >= 1) {
     const last = memory.lastChoiceIds?.at(-1);
     if (last) {

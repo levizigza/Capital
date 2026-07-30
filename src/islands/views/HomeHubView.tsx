@@ -416,6 +416,9 @@ export function HomeHubView({
     pavilionUnlocked: coinBagShouldPointPavilion(save),
     nextPaintingHint: pointNextPainting ? "Paycheck Peninsula" : null,
     bondStrain,
+    latestScarLabel: latestPlaque?.label ?? null,
+    plinthGlow: plinthGlow || feltShareOpen,
+    day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,

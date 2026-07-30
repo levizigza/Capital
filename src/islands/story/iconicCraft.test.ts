@@ -52,6 +52,15 @@ describe("iconic craft — Piggy / Coin Bag bond", () => {
     expect(tip.coach.toLowerCase()).toMatch(/repair|plaque/);
   });
 
+  it("points at Plinth memory when a scar exists", () => {
+    const tip = coinBagHarborTip(null, {
+      latestScarLabel: "Jar before treat",
+      plinthGlow: true,
+    });
+    expect(tip.tip).toMatch(/Plinth|Jar before treat/);
+    expect(tip.coach.toLowerCase()).toMatch(/harbor felt|share|plinth/);
+  });
+
   it("deepens homecoming dialogue by bondBeat", () => {
     const first = piggyHomecomingGraph("You earned coins.", { bondBeat: 1, scars: [] });
     const third = piggyHomecomingGraph("You earned coins.", {

@@ -72,6 +72,12 @@ export function coinBagHarborTip(
     nextPaintingHint?: string | null;
     /** Relationship strain tip when scars outpace homecomings */
     bondStrain?: boolean;
+    /** Latest plaque label — Coin Bag points at memory */
+    latestScarLabel?: string | null;
+    /** After spectacle / share — walk the Plinth */
+    plinthGlow?: boolean;
+    /** Day-2 rumor still naming the scar */
+    day2Echo?: boolean;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -92,13 +98,6 @@ export function coinBagHarborTip(
     };
   }
 
-  if (opts?.nextPaintingHint) {
-    return {
-      tip: `Next painting: ${opts.nextPaintingHint}`,
-      coach: "Money Carpet opens the Archipelago map. I’ll hop with you.",
-    };
-  }
-
   if (opts?.nearStoreLabel) {
     return {
       tip: `Enter ${opts.nearStoreLabel}`,
@@ -108,9 +107,40 @@ export function coinBagHarborTip(
   if (opts?.nearNpcName) {
     return {
       tip: `Hear ${opts.nearNpcName} out`,
-      coach: `Locals know Harbor secrets. I’m listening too.`,
+      coach: hasScarMemory(opts)
+        ? `They’ll name “${opts.latestScarLabel}”. Locals are living receipts.`
+        : `Locals know Harbor secrets. I’m listening too.`,
     };
   }
+
+  if (opts?.plinthGlow && opts?.latestScarLabel) {
+    return {
+      tip: `Plinth glows — “${opts.latestScarLabel}”`,
+      coach: "Harbor felt that. Share the card, then walk the Memory Plinth with me.",
+    };
+  }
+
+  if (opts?.day2Echo && opts?.latestScarLabel) {
+    return {
+      tip: `Locals still say “${opts.latestScarLabel}”`,
+      coach: "Day two and the plaza remembers. Talk to Piggy or a local — they’re living receipts.",
+    };
+  }
+
+  if (opts?.latestScarLabel) {
+    return {
+      tip: `Ask a local about “${opts.latestScarLabel}”`,
+      coach: "Plaza folk name your plaque. Piggy too. Money is people here.",
+    };
+  }
+
+  if (opts?.nextPaintingHint) {
+    return {
+      tip: `Next painting: ${opts.nextPaintingHint}`,
+      coach: "Money Carpet opens the Archipelago map. I’ll hop with you.",
+    };
+  }
+
   if (opts?.hasFreedom && opts?.pavilionUnlocked !== false) {
     return {
       tip: "Freedom Pavilion is open — this way!",
@@ -133,6 +163,10 @@ export function coinBagHarborTip(
     tip: "Ledger Bank — walk into the vault!",
     coach: "That brass bank on the plaza is a money machine. Stamp, teller, and safe each open a world.",
   };
+}
+
+function hasScarMemory(opts?: { latestScarLabel?: string | null }): boolean {
+  return Boolean(opts?.latestScarLabel);
 }
 
 /** Quest-aware tip while playing an island chapter / board. Prefers Main Quest. */

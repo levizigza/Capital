@@ -361,7 +361,7 @@ export type HarborDialogueOpts = {
     piggyTalked?: boolean;
     message?: string | null;
   } | null;
-  scars?: { label: string }[];
+  scars?: { id?: string; label: string; islandId?: string }[];
   /** Count of celebrated homecomings / scars for Piggy bond depth */
   bondBeat?: number;
   /** Dominant stance for local greeting flavor */
@@ -369,6 +369,81 @@ export type HarborDialogueOpts = {
   /** Prior talks with this NPC */
   npcTalks?: number;
 };
+
+function formatScarShelf(
+  scars: { id?: string; label: string; islandId?: string }[],
+): string {
+  return scars
+    .slice(-3)
+    .map((s) => {
+      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
+      if (id.includes("cove")) return `Cove — ${s.label}`;
+      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
+      if (id.includes("credit")) return `Kingdom — ${s.label}`;
+      return s.label;
+    })
+    .join(" · ");
+}
+
+/** Free-roam Piggy when plaques exist — conscience that remembers. */
+export function piggyMemoryGraph(
+  scars: { id?: string; label: string; islandId?: string }[],
+  opts?: { stanceHint?: string | null },
+): DialogueGraph {
+  const shelf = formatScarShelf(scars);
+  const latest = scars[scars.length - 1]?.label ?? "your choice";
+  const stance = opts?.stanceHint ? ` ${opts.stanceHint}` : "";
+  return {
+    id: "dlg_harbor_piggy_penny_memory",
+    startNodeId: "m1",
+    nodes: [
+      {
+        id: "m1",
+        speaker: "Piggy Penny",
+        text: `The Plinth still holds “${latest}.”${stance} Harbor doesn’t forget — and neither do I.`,
+        choices: [{ id: "m1_ok", text: "I see it too", nextNodeId: "m2" }],
+      },
+      {
+        id: "m2",
+        speaker: "Piggy Penny",
+        text:
+          shelf.length > 0
+            ? `Your shelf: ${shelf}. Coin Bag will point when the next painting waits — or walk the Memory Plinth with me anytime.`
+            : "Coin Bag sticks with you. When a painting calls, we’ll float together.",
+        choices: [{ id: "m2_ok", text: "Thanks, Piggy!" }],
+        end: true,
+      },
+    ],
+  };
+}
+
+/** Plaza local who names the scar — living receipt, not ambient prop. */
+function scarMemoryLocalGraph(
+  mascotId: MoneyMascotId,
+  scars: { id?: string; label: string; islandId?: string }[],
+  opts: { stanceHint?: string | null; npcTalks?: number },
+): DialogueGraph {
+  const base = localGraph(mascotId);
+  const m = getMascot(mascotId);
+  const latest = scars[scars.length - 1]?.label ?? "that choice";
+  const talks =
+    (opts.npcTalks ?? 0) >= 2 ? ` We’ve talked ${opts.npcTalks} times —` : "";
+  const stanceBit = opts.stanceHint ? ` ${opts.stanceHint}` : "";
+  return {
+    ...base,
+    id: `dlg_harbor_${mascotId}_scar_memory`,
+    startNodeId: "s0",
+    nodes: [
+      {
+        id: "s0",
+        speaker: m.name,
+        text: `${talks} Folks still tip jars about “${latest}” on the Plinth.${stanceBit} Money left footprints.`,
+        choices: [{ id: "s0_ok", text: "Harbor felt that", nextNodeId: "n1" }],
+      },
+      ...base.nodes,
+    ],
+  };
+}
 
 function stanceLocalGraph(
   mascotId: MoneyMascotId,
@@ -409,6 +484,9 @@ export function resolveHarborDialogue(
       ? guidedStepOrOpts
       : { guidedStep: guidedStepOrOpts as HubGuidedStepId | null | undefined };
 
+  const scars = opts.scars ?? [];
+  const hasScars = scars.length > 0;
+
   if (npcId === "piggy_penny") {
     if (opts.guidedStep && opts.guidedStep !== "done") {
       return piggyGuidedGraph(opts.guidedStep);
@@ -416,9 +494,23 @@ export function resolveHarborDialogue(
     const hc = opts.homecoming;
     if (hc && !hc.piggyTalked && (hc.pending || hc.celebrated)) {
       return piggyHomecomingGraph(hc.message, {
-        scars: opts.scars,
+        scars,
         bondBeat: opts.bondBeat,
       });
+    }
+    if (hasScars) {
+      return piggyMemoryGraph(scars, { stanceHint: opts.stanceHint });
+    }
+  }
+
+  if (npcId !== "piggy_penny" && hasScars) {
+    try {
+      return scarMemoryLocalGraph(npcId as MoneyMascotId, scars, {
+        stanceHint: opts.stanceHint,
+        npcTalks: opts.npcTalks,
+      });
+    } catch {
+      /* fall through */
     }
   }
 

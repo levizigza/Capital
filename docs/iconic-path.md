@@ -70,3 +70,11 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
 
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
+
+## Cast as memory
+
+Piggy, Coin Bag, and plaza locals are **living receipts** — not props:
+
+- Ambient lines name the latest plaque (dense plaza echo + Piggy always).
+- Talk Battles open on scar memory when plaques exist.
+- Coin Bag points at Plinth / locals after spectacle and on day-2 echo.

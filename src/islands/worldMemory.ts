@@ -175,6 +175,24 @@ export function scarEchoAmbientLine(
   return `${mascotName}: The Plinth just got “${scarLabel}”. Harbor felt that.`;
 }
 
+/** Piggy always names the scar — living conscience, not a prop. */
+export function piggyScarMemoryLine(
+  scarLabel: string,
+  dayOffset: "same" | "later",
+): string {
+  if (dayOffset === "later") {
+    return `Piggy Penny: Still here — “${scarLabel}” did not wash out with the tide.`;
+  }
+  return `Piggy Penny: Harbor felt “${scarLabel}”. I’m proud you came home changed.`;
+}
+
+/** True when this local should name the scar (dense plaza memory, not sparse). */
+export function localNamesScarEcho(mascotId: string, hourKey: string): boolean {
+  if (mascotId === "piggy_penny") return true;
+  // ~2/3 of locals + hour drift so the plaza feels haunted by choice
+  return (mascotId.charCodeAt(0) + hourKey.length) % 3 !== 0;
+}
+
 export function stanceGreetingHint(
   stance?: VoyagerStance | null,
 ): string | null {
