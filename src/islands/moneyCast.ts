@@ -453,7 +453,8 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
 /** Harbor plaza sample — readable crowd without spawning all 30.
  *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide). */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
-  { mascotId: "piggy_penny", pos: [4.8, 0, -4.0], yaw: -0.6 },
+  // Front-and-center for first meet (player spawns ~[0,0,3] facing -Z)
+  { mascotId: "piggy_penny", pos: [1.4, 0, 0.6], yaw: 0.15 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },

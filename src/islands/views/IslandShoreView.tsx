@@ -224,29 +224,26 @@ export function IslandShoreView({
     ],
   );
 
-  if (structureOpen && structure) {
-    return (
-      <>
-        <MoneyStructureInteriorView
-          structure={structure}
-          character={character}
-          onExit={() => setStructureOpen(false)}
-          onEnterPart={onEnterPart}
-          inputFrozen={Boolean(softBeat)}
-        />
-        {softBeat ? (
-          <SoftBeatOverlay
-            kind={softBeat}
-            hushActive={Boolean(save.chapterQuietPending)}
-            onDone={() => setSoftBeat(null)}
-          />
-        ) : null}
-      </>
-    );
-  }
-
   return (
     <div className="relative h-full min-h-[100dvh] w-full" data-testid="island-shore-view">
+      {structureOpen && structure ? (
+        <>
+          <MoneyStructureInteriorView
+            structure={structure}
+            character={character}
+            onExit={() => setStructureOpen(false)}
+            onEnterPart={onEnterPart}
+            inputFrozen={Boolean(softBeat)}
+          />
+          {softBeat ? (
+            <SoftBeatOverlay
+              kind={softBeat}
+              hushActive={Boolean(save.chapterQuietPending)}
+              onDone={() => setSoftBeat(null)}
+            />
+          ) : null}
+        </>
+      ) : null}
       {enteringJar && structure ? (
         <WorldArriveOverlay
           islandId={island.id}
@@ -257,6 +254,10 @@ export function IslandShoreView({
           onDone={finishStructureEnter}
         />
       ) : null}
+      <div
+        style={structureOpen ? { visibility: "hidden" } : undefined}
+        aria-hidden={structureOpen || undefined}
+      >
       <GameHudLayout
         background={
           <div className="absolute inset-0">
@@ -271,7 +272,7 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
-              inputFrozen={talkOpen || enteringJar}
+              inputFrozen={talkOpen || enteringJar || structureOpen}
               chapterQuiet={Boolean(save.chapterQuietPending)}
             />
             <GuideEdgeCue
@@ -386,6 +387,7 @@ export function IslandShoreView({
         />
         </div>
       </GameHudLayout>
+      </div>
 
       <GameModal
         open={journalOpen}

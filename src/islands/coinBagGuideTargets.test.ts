@@ -116,7 +116,7 @@ describe("resolveHarborGuideLookAt", () => {
   it("points Piggy during homecoming, then Carpet Dock after welcome-back", () => {
     expect(
       resolveHarborGuideLookAt({ hotspots: spots, homecomingPending: true }),
-    ).toEqual([4.8, 0, -4]);
+    ).toEqual([1.4, 0, 0.6]);
     expect(
       resolveHarborGuideLookAt({ hotspots: spots, pointNextPainting: true }),
     ).toEqual([0, 0, 13]);

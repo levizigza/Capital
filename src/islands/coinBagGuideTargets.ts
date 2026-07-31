@@ -75,7 +75,7 @@ export function resolveHarborGuideLookAt(opts: {
   pointPavilion?: boolean;
   defaultId?: string;
 }): GuideLookAt | null {
-  const piggy = opts.piggyPos ?? ([4.8, 0, -4] as GuideLookAt);
+  const piggy = opts.piggyPos ?? ([1.4, 0, 0.6] as GuideLookAt);
   const find = (id: string) => opts.hotspots.find((h) => h.id === id)?.position ?? null;
 
   if (opts.highlight) {

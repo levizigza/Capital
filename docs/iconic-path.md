@@ -46,6 +46,9 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 |------|------------------|
 | Cove Take | Soft HUD, “Quiet after the Take”, Coin Bag hush tip |
 | Carpet to Cove | Targeted flight is a short **carpet rail** (≤12s) — never a stuck free-flight | 
+| Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
+| Structure exit | No Harbor remount — walkable plaza returns instantly |
+| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → “Harbor felt…” → Plinth pulse |
 | Share | PNG prompt immediately; card readable at thumbnail size |

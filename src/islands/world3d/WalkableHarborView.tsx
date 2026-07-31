@@ -796,10 +796,16 @@ export function WalkableHarborView({
     const hint = window.setTimeout(() => {
       setLoadHint("Still loading… if this hangs, refresh the page (Esc won’t help here).");
     }, 8000);
-    // Never leave players on an empty sky — fall back to hotspot buttons.
+    // Give mid-PCs time; once 3D has worked this session, never force the dashboard fallback.
+    let harborOk = false;
+    try {
+      harborOk = sessionStorage.getItem("capital_harbor3d_ok") === "1";
+    } catch {
+      /* ignore */
+    }
     const failsafe = window.setTimeout(() => {
-      if (!readyRef.current) setForce2d(true);
-    }, 6000);
+      if (!readyRef.current && !harborOk) setForce2d(true);
+    }, 14_000);
     return () => {
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
@@ -864,6 +870,11 @@ export function WalkableHarborView({
         onCreated={({ gl }) => {
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
+          try {
+            sessionStorage.setItem("capital_harbor3d_ok", "1");
+          } catch {
+            /* ignore */
+          }
         }}
       >
         {/* Meshes outside Text Suspense — CDN font blocks must not blank Harbor on Pages. */}

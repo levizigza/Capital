@@ -10,8 +10,6 @@ import { useInputAction } from "@/input";
 import { GameButton, GameHudLayout } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh } from "./VoyagerMesh";
-import { WorldLighting } from "./WorldLighting";
-import { getEraLook3D } from "./eraLooks";
 import {
   structureExitLabel,
   structureReturnLabel,
@@ -20,13 +18,9 @@ import {
 } from "../moneyStructures";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
-
-function themeShell(theme: MoneyStructureDef["theme"]) {
-  if (theme === "bank") return { wall: "#94a3b8", wallOp: 0.22, bg: "#1e293b" };
-  if (theme === "tower") return { wall: "#38bdf8", wallOp: 0.2, bg: "#0c4a6e" };
-  if (theme === "keep") return { wall: "#78716c", wallOp: 0.24, bg: "#1c1917" };
-  return { wall: "#7dd3fc", wallOp: 0.18, bg: "#0c4a6e" };
-}
+import { StructureInteriorLights } from "./StructureInteriorLights";
+import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
+import { structureShell } from "./structureInteriorTheme";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Exit · vault door" : "Back to Harbor";
@@ -262,8 +256,7 @@ function InteriorWorld({
   setNearId: (id: string | null) => void;
   inputFrozen: boolean;
 }) {
-  const look = useMemo(() => getEraLook3D("capital-default"), []);
-  const shell = themeShell(structure.theme);
+  const shell = structureShell(structure.theme);
   const pads = useMemo(
     () => [
       ...structure.parts.map((p) => ({ id: p.id, position: p.position })),
@@ -274,7 +267,7 @@ function InteriorWorld({
 
   return (
     <>
-      <WorldLighting look={look} />
+      <StructureInteriorLights bg={shell.bg} accent={shell.accent} />
       {/* Structure shell walls — toy interior */}
       <mesh position={[0, 4, 0]}>
         <cylinderGeometry args={[10.5, 11, 10, 32, 1, true]} />
@@ -283,14 +276,12 @@ function InteriorWorld({
           transparent
           opacity={shell.wallOp}
           side={THREE.BackSide}
-          roughness={0.2}
+          roughness={0.35}
         />
       </mesh>
-      <color attach="background" args={[shell.bg]} />
-      <fog attach="fog" args={[shell.bg, 12, 38]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[11, 48]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.85} />
+        <meshStandardMaterial color="#1e293b" roughness={0.75} metalness={0.08} />
       </mesh>
       <StructureFloorMotif theme={structure.theme} />
       <StructureToyCulture theme={structure.theme} />
@@ -362,28 +353,35 @@ export function MoneyStructureInteriorView({
     if (nearPart) onEnterPart(nearPart);
   });
 
+  const shell = structureShell(structure.theme);
+
   return (
     <div
-      className="fixed inset-0 z-[60] bg-[#0c4a6e]"
+      className="fixed inset-0 z-[60]"
+      style={{ background: shell.bg }}
       data-testid="money-structure-interior"
       data-structure={structure.id}
+      data-ready={ready ? "1" : "0"}
     >
       <GameHudLayout
+        className="h-full min-h-[100dvh]"
         background={
           <div className="absolute inset-0">
+            <StructureRoomBackdrop theme={structure.theme} name={structure.name} />
             {!ready ? (
-              <div className="flex h-full items-center justify-center text-sm font-bold text-white/80">
+              <div className="absolute inset-0 z-[1] flex items-center justify-center text-sm font-bold text-white/85">
                 Inside the {structure.name}…
               </div>
             ) : null}
             <Canvas
               shadows
               dpr={[1, 1.5]}
-              camera={{ position: [0, 9, 14], fov: 50, near: 0.1, far: 80 }}
-              className="absolute inset-0 h-full w-full"
+              camera={{ position: [0, 8.5, 12.5], fov: 48, near: 0.1, far: 80 }}
+              className="absolute inset-0 z-[2] h-full w-full"
+              gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
               onCreated={({ camera, gl }) => {
-                camera.lookAt(0, 1, 0);
-                gl.setClearColor("#0c4a6e");
+                camera.lookAt(0, 1.2, -1);
+                gl.setClearColor(shell.bg, 0);
                 setReady(true);
               }}
             >

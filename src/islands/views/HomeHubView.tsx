@@ -512,7 +512,8 @@ export function HomeHubView({
             } satisfies HarborHotspot,
           ]
         : []),
-      ...(ledgerBank
+      // Hide vault during first Piggy meet — E must not steal Talk.
+      ...(ledgerBank && guidedStep?.id !== "meet_guide"
         ? [
             {
               id: "ledger_bank",
@@ -643,6 +644,7 @@ export function HomeHubView({
       studioMarks.length,
       save.harborRitual,
       ledgerBank,
+      guidedStep?.id,
     ],
   );
 
@@ -797,6 +799,13 @@ export function HomeHubView({
       return;
     }
     if (bankOpen) return;
+    // First meet: Piggy talk always wins over bank / stalls (coach is selling Talk).
+    const meetingPiggy =
+      guidedStep?.id === "meet_guide" && nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
+    if (meetingPiggy && onTalkNpc && nearNpc) {
+      onTalkNpc(nearNpc.id);
+      return;
+    }
     if (nearStore) {
       onHarborHotspot(nearStore.id);
       return;
@@ -812,6 +821,7 @@ export function HomeHubView({
     trailerOpen,
     echoSurpriseOpen,
     bankOpen,
+    guidedStep?.id,
     nearStore,
     nearNpc,
     onTalkNpc,
@@ -842,27 +852,6 @@ export function HomeHubView({
               : "Freedom seal · carpet upgraded"
             : null));
 
-  if (bankOpen && ledgerBank) {
-    return (
-      <>
-        <MoneyStructureInteriorView
-          structure={ledgerBank}
-          character={voyager}
-          onExit={() => setBankOpen(false)}
-          onEnterPart={onEnterBankPart}
-          inputFrozen={Boolean(bankSoftBeat)}
-        />
-        {bankSoftBeat ? (
-          <SoftBeatOverlay
-            kind={bankSoftBeat}
-            hushActive={plaques.length > 0}
-            onDone={() => setBankSoftBeat(null)}
-          />
-        ) : null}
-      </>
-    );
-  }
-
   return (
     <>
       {enteringBank && ledgerBank ? (
@@ -875,6 +864,29 @@ export function HomeHubView({
           onDone={finishBankEnter}
         />
       ) : null}
+      {/* Keep Harbor mounted under the bank — Structure exit must not remount the plaza. */}
+      {bankOpen && ledgerBank ? (
+        <>
+          <MoneyStructureInteriorView
+            structure={ledgerBank}
+            character={voyager}
+            onExit={() => setBankOpen(false)}
+            onEnterPart={onEnterBankPart}
+            inputFrozen={Boolean(bankSoftBeat)}
+          />
+          {bankSoftBeat ? (
+            <SoftBeatOverlay
+              kind={bankSoftBeat}
+              hushActive={plaques.length > 0}
+              onDone={() => setBankSoftBeat(null)}
+            />
+          ) : null}
+        </>
+      ) : null}
+      <div
+        style={bankOpen ? { visibility: "hidden" } : undefined}
+        aria-hidden={bankOpen || undefined}
+      >
       <GameHudLayout
         background={
           <div className="absolute inset-0">
@@ -923,7 +935,15 @@ export function HomeHubView({
                   }
                   guideArrows={guideArrows}
                   onGuideProject={setGuideProjection}
-                  inputFrozen={talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen || enteringBank}
+                  inputFrozen={
+                    talkOpen ||
+                    spectacleOpen ||
+                    feltShareOpen ||
+                    trailerOpen ||
+                    echoSurpriseOpen ||
+                    enteringBank ||
+                    bankOpen
+                  }
                   weatherFog={
                     spectacleOpen || trailerOpen
                       ? { near: 8, far: 42 }
@@ -1124,6 +1144,7 @@ export function HomeHubView({
           ) : null}
         </div>
       </GameHudLayout>
+      </div>
 
       {hubModal === "outfitter" ? (
         <OutfitterStudioOverlay
