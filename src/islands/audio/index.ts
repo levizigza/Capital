@@ -7,3 +7,5 @@ export {
   type SoundtrackTrack,
 } from "./soundtrackCatalog";
 export { capitalMusic } from "./capitalMusic";
+export { playOpeningFoley } from "./openingAudio";
+export { playCapitalSfx } from "./capitalSfx";

@@ -153,6 +153,7 @@ export type MusicPlace =
   | { kind: "map" }
   | { kind: "voyage" }
   | { kind: "talk" }
+  | { kind: "opening" }
   | { kind: "shore"; islandId: string; genreId?: string | null }
   | { kind: "silence" };
 
@@ -163,6 +164,9 @@ export function cueForPlace(place: MusicPlace): MusicCueId | null {
     case "map":
       return "archipelago_map";
     case "voyage":
+      return "voyage_carpet";
+    case "opening":
+      /** Title mural — same wonder cue as carpet threshold (brand invitation). */
       return "voyage_carpet";
     case "talk":
       return "talk_soft";

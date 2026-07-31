@@ -20,10 +20,11 @@ describe("Capital soundtrack catalog", () => {
     expect(cueForIsland("unknown_island", "cyberpunk")).toBe("neon_sprawl");
   });
 
-  it("resolves place kinds for hub / map / talk", () => {
+  it("resolves place kinds for hub / map / talk / opening", () => {
     expect(cueForPlace({ kind: "harbor" })).toBe("harbor_haven");
     expect(cueForPlace({ kind: "map" })).toBe("archipelago_map");
     expect(cueForPlace({ kind: "voyage" })).toBe("voyage_carpet");
+    expect(cueForPlace({ kind: "opening" })).toBe("voyage_carpet");
     expect(cueForPlace({ kind: "talk" })).toBe("talk_soft");
     expect(cueForPlace({ kind: "silence" })).toBeNull();
     expect(cueForPlace({ kind: "shore", islandId: "digital_assets" })).toBe("ai_undercity");

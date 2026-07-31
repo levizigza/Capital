@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -7,6 +7,8 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { capitalMusic } from "../audio/capitalMusic";
+import { playOpeningFoley } from "../audio/openingAudio";
 
 type Props = {
   onComplete: () => void;
@@ -283,47 +285,78 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
   const fgX = useTransform(sx, (v) => v * -22);
   const fgY = useTransform(sy, (v) => v * -12);
 
+  const finish = useCallback(() => {
+    markCapitalIntroSeen();
+    onComplete();
+  }, [onComplete]);
+
+  const bedStarted = useRef(false);
+  const ensureOpeningAudio = useCallback(() => {
+    capitalMusic.unlock();
+    capitalMusic.playPlace({ kind: "opening" });
+    if (!bedStarted.current) {
+      bedStarted.current = true;
+      playOpeningFoley("surf_bed");
+    }
+  }, []);
+
   const handlePointer = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      ensureOpeningAudio();
       if (reduced) return;
       const nx = (e.clientX / window.innerWidth - 0.5) * 2;
       const ny = (e.clientY / window.innerHeight - 0.5) * 2;
       px.set(nx);
       py.set(ny);
     },
-    [px, py, reduced],
+    [px, py, reduced, ensureOpeningAudio],
   );
-
-  const finish = useCallback(() => {
-    markCapitalIntroSeen();
-    onComplete();
-  }, [onComplete]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.documentElement.classList.add("capital-intro-active");
+    // Queue title theme — starts after first gesture (browser autoplay policy)
+    capitalMusic.playPlace({ kind: "opening" });
     return () => {
       document.body.style.overflow = prev;
       document.documentElement.classList.remove("capital-intro-active");
+      playOpeningFoley("stop_bed");
     };
   }, []);
 
   const enter = useCallback(() => {
     if (entering) return;
+    ensureOpeningAudio();
     setEntering(true);
+    playOpeningFoley("board_carpet");
     window.setTimeout(finish, reduced ? 250 : 950);
-  }, [entering, finish, reduced]);
+  }, [entering, finish, reduced, ensureOpeningAudio]);
 
   const sweepMs = reduced ? 140 : 300;
   useEffect(() => {
     const timers: number[] = [];
     PATCHES.forEach((_, i) => {
-      timers.push(window.setTimeout(() => setStage(i), 200 + i * sweepMs));
+      timers.push(
+        window.setTimeout(() => {
+          setStage(i);
+          playOpeningFoley("piece_lock", i);
+        }, 200 + i * sweepMs),
+      );
     });
     const afterSweep = 200 + PATCHES.length * sweepMs;
-    timers.push(window.setTimeout(() => setStage("settle"), afterSweep));
-    timers.push(window.setTimeout(() => setStage("reveal"), afterSweep + (reduced ? 160 : 360)));
+    timers.push(
+      window.setTimeout(() => {
+        setStage("settle");
+        playOpeningFoley("mural_settle");
+      }, afterSweep),
+    );
+    timers.push(
+      window.setTimeout(() => {
+        setStage("reveal");
+        playOpeningFoley("title_reveal");
+      }, afterSweep + (reduced ? 160 : 360)),
+    );
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, [sweepMs, reduced]);
 
@@ -332,6 +365,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Enter" && e.key !== " " && e.key !== "Escape") return;
       if (entering) return;
+      ensureOpeningAudio();
       if (stage === "reveal") {
         e.preventDefault();
         enter();
@@ -339,10 +373,11 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
       }
       e.preventDefault();
       setStage("reveal");
+      playOpeningFoley("title_reveal");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [stage, entering, enter]);
+  }, [stage, entering, enter, ensureOpeningAudio]);
 
   const isReveal = stage === "reveal";
   const isAssembled = stage === "settle" || isReveal;
@@ -434,7 +469,15 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 {timeLabel}
               </p>
               <div className="cap-enter">
-                <button type="button" className="cap-enter-boat" onClick={enter} autoFocus>
+                <button
+                  type="button"
+                  className="cap-enter-boat"
+                  onClick={() => {
+                    ensureOpeningAudio();
+                    enter();
+                  }}
+                  autoFocus
+                >
                   <span className="cap-enter-boat__icon cap-enter-boat__icon--bill" aria-hidden />
                   Board the Money Carpet
                 </button>
@@ -455,7 +498,11 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
           <button
             type="button"
             className="cap-opening-caption__skip"
-            onClick={() => setStage("reveal")}
+            onClick={() => {
+              ensureOpeningAudio();
+              setStage("reveal");
+              playOpeningFoley("title_reveal");
+            }}
           >
             Skip
           </button>
