@@ -28,3 +28,8 @@ App UI: glanceable objective strip, one primary action. Prefer diegetic map at C
 ## Motion
 
 Purposeful only: carpet bob, vault dial, fountain shimmer, guide arrow. Respect `prefers-reduced-motion`.
+
+## Soundtrack (Wave 6)
+
+Spine beds: Memory Courtyard · Coin Jar Morning · Clock Stamp Shift · Spiral Interest Keep.  
+Post-Take hush ducks the shore organ bed; Soft Beats and structure interiors stay quieter than plaza.
