@@ -1,6 +1,6 @@
 /**
  * Astro-style world open — unique enter beat per destination.
- * Visual + SFX only; never touches capitalMusic BGM.
+ * Visual + organ SFX; structure enter ducks BGM via MoneyStructureInteriorView.
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -11,7 +11,8 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { moneyStructureForIsland } from "../moneyStructures";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
+import { moneyOrganForIsland } from "../moneyOrgans";
 
 export type WorldArriveKind = "carpet_land" | "structure_enter" | "painting_portal";
 
@@ -108,7 +109,15 @@ export function WorldArriveOverlay({
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
 
   useEffect(() => {
-    playCapitalSfx(kind === "structure_enter" ? "scar_chime" : "plinth_hum");
+    const organ = moneyOrganForIsland(islandId);
+    if (kind === "structure_enter" && organ) {
+      playOrganSfx(organ.id);
+      playCapitalSfx("scar_chime");
+    } else if (organ && kind === "carpet_land") {
+      playOrganSfx(organ.id);
+    } else {
+      playCapitalSfx("plinth_hum");
+    }
     const tIn = window.setTimeout(() => setPhase("hold"), 280);
     const tOut = window.setTimeout(() => setPhase("out"), Math.max(600, durationMs - 320));
     const tDone = window.setTimeout(onDone, durationMs);
@@ -117,7 +126,7 @@ export function WorldArriveOverlay({
       window.clearTimeout(tOut);
       window.clearTimeout(tDone);
     };
-  }, [durationMs, kind, onDone]);
+  }, [durationMs, kind, islandId, onDone]);
 
   const opacity = phase === "out" ? 0 : 1;
   const scale = phase === "in" ? 1.12 : phase === "out" ? 0.92 : 1;

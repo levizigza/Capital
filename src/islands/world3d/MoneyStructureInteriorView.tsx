@@ -16,7 +16,9 @@ import {
   type MoneyStructureDef,
   type MoneyStructurePart,
 } from "../moneyStructures";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playOrganSfx } from "../audio/capitalSfx";
+import { capitalMusic } from "../audio/capitalMusic";
+import { moneyOrganForStructureTheme } from "../moneyOrgans";
 import { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
 import { StructureInteriorLights } from "./StructureInteriorLights";
 import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
@@ -121,9 +123,11 @@ function InteriorPlayer({
 function PartPad({
   part,
   active,
+  theme,
 }: {
   part: MoneyStructurePart;
   active: boolean;
+  theme: MoneyStructureDef["theme"];
 }) {
   const bounce = useRef(0);
   const poke = useRef(0);
@@ -143,7 +147,7 @@ function PartPad({
       onClick={(e) => {
         e.stopPropagation();
         poke.current = 1;
-        playCapitalSfx("plinth_hum");
+        playOrganSfx(moneyOrganForStructureTheme(theme).id);
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -287,7 +291,7 @@ function InteriorWorld({
       <StructureToyCulture theme={structure.theme} />
 
       {structure.parts.map((p) => (
-        <PartPad key={p.id} part={p} active={nearId === p.id} />
+        <PartPad key={p.id} part={p} active={nearId === p.id} theme={structure.theme} />
       ))}
 
       {/* Exit mouth */}
@@ -327,10 +331,23 @@ export function MoneyStructureInteriorView({
   const [nearId, setNearId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const nearPart = structure.parts.find((p) => p.id === nearId) ?? null;
+  const organ = moneyOrganForStructureTheme(structure.theme);
 
   useEffect(() => {
-    playCapitalSfx("plinth_hum");
-  }, []);
+    playOrganSfx(organ.id);
+    capitalMusic.playPlace({ kind: "structure", organ: organ.id });
+    return () => {
+      // Restore plaza / shore bed when leaving the organ room
+      if (structure.theme === "bank") {
+        capitalMusic.playPlace({ kind: "harbor" });
+      } else {
+        capitalMusic.playPlace({
+          kind: "shore",
+          islandId: structure.islandId,
+        });
+      }
+    };
+  }, [organ.id, structure.theme, structure.islandId]);
 
   useInputAction("cancel", () => {
     if (inputFrozen) return;
@@ -361,6 +378,7 @@ export function MoneyStructureInteriorView({
       style={{ background: shell.bg }}
       data-testid="money-structure-interior"
       data-structure={structure.id}
+      data-organ={organ.id}
       data-ready={ready ? "1" : "0"}
     >
       <GameHudLayout
@@ -399,6 +417,9 @@ export function MoneyStructureInteriorView({
         }
         topLeft={
           <div className="rounded-xl bg-black/40 px-3 py-2 text-white">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
+              {organ.name} organ
+            </p>
             <h1 className="text-lg font-black">{structure.name}</h1>
             {!nearPart && nearId !== "exit" ? (
               <p className="max-w-sm text-xs text-white/75">{structure.entryHint}</p>

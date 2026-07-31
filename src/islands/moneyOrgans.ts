@@ -13,6 +13,7 @@ import {
   HARBOR_HAVEN_ID,
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
+import type { MoneyStructureTheme } from "./moneyStructures";
 
 /** The four organs of living money on the frozen triangle + Harbor. */
 export type MoneyOrganId = "memory" | "coin" | "clock" | "spiral";
@@ -107,3 +108,25 @@ export function isMoneyOrganIsland(islandId: string | null | undefined): boolean
 
 export const MURAL_THESIS =
   "You are inside living money. Harbor remembers. Cove holds. Paycheck clocks. Credit spirals.";
+
+const THEME_ORGAN: Record<MoneyStructureTheme, MoneyOrganId> = {
+  bank: "memory",
+  jar: "coin",
+  tower: "clock",
+  keep: "spiral",
+};
+
+/** Money Structure theme → living-money organ. */
+export function moneyOrganForStructureTheme(theme: MoneyStructureTheme): MoneyOrgan {
+  return MONEY_ORGANS[THEME_ORGAN[theme]];
+}
+
+/** Soft Beat pad → organ (Lid / Teller / Loft / Battlement). */
+export function moneyOrganForSoftBeat(
+  kind: "lookout" | "ledger" | "umbrella" | "battlement",
+): MoneyOrgan {
+  if (kind === "lookout") return MONEY_ORGANS.coin;
+  if (kind === "umbrella") return MONEY_ORGANS.clock;
+  if (kind === "battlement") return MONEY_ORGANS.spiral;
+  return MONEY_ORGANS.memory;
+}

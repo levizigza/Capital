@@ -769,17 +769,16 @@ export function HomeHubView({
   const finishBankEnter = useCallback(() => {
     setEnteringBank(false);
     setBankOpen(true);
-    playCapitalSfx("plinth_hum");
   }, []);
 
   const onEnterBankPart = useCallback(
     (part: MoneyStructurePart) => {
-      if (part.softBeat === "ledger" || part.softBeat === "lookout") {
+      if (part.softBeat === "ledger") {
         setBankSoftBeat("ledger");
         return;
       }
       if (part.minigameId) {
-        playCapitalSfx("scar_chime");
+        playCapitalSfx("organ_memory");
         onPlayStructureMinigame?.(part.minigameId);
       }
     },
@@ -902,6 +901,7 @@ export function HomeHubView({
             <SoftBeatOverlay
               kind={bankSoftBeat}
               hushActive={plaques.length > 0}
+              scarLabel={latestPlaque?.label ?? null}
               onDone={() => setBankSoftBeat(null)}
             />
           ) : null}

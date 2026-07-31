@@ -9,6 +9,7 @@ import {
   type MusicCueId,
   type MusicPlace,
   cueForPlace,
+  gainScaleForPlace,
 } from "./soundtrackCatalog";
 
 const STORAGE_KEY = "capital_music_v1";
@@ -55,9 +56,11 @@ class CapitalMusic {
   private prefs: MusicPrefs = loadPrefs();
   private current: Howl | null = null;
   private currentCue: MusicCueId | null = null;
+  private currentGainScale = 1;
   private fadingOut: Howl | null = null;
   private unlocked = false;
   private pendingCue: MusicCueId | null = null;
+  private pendingGainScale = 1;
   private listeners = new Set<() => void>();
 
   constructor() {
@@ -107,7 +110,9 @@ class CapitalMusic {
     savePrefs(this.prefs);
     if (this.current && this.currentCue) {
       const track = SOUNDTRACK[this.currentCue];
-      this.current.volume(this.prefs.volume * (track.gain ?? 0.5));
+      this.current.volume(
+        this.prefs.volume * (track.gain ?? 0.5) * this.currentGainScale,
+      );
     }
     this.emit();
   }
@@ -117,8 +122,9 @@ class CapitalMusic {
     this.unlocked = true;
     if (this.pendingCue && this.prefs.enabled) {
       const cue = this.pendingCue;
+      const scale = this.pendingGainScale;
       this.pendingCue = null;
-      this.playCue(cue);
+      this.playCue(cue, scale);
     }
     this.emit();
   }
@@ -129,11 +135,12 @@ class CapitalMusic {
       this.stop(false);
       return;
     }
-    this.playCue(cue);
+    this.playCue(cue, gainScaleForPlace(place));
   }
 
-  playCue(cue: MusicCueId): void {
+  playCue(cue: MusicCueId, gainScale = 1): void {
     this.pendingCue = cue;
+    this.pendingGainScale = gainScale;
     if (!this.prefs.enabled) {
       this.emit();
       return;
@@ -142,11 +149,16 @@ class CapitalMusic {
       this.emit();
       return;
     }
-    if (this.currentCue === cue && this.current?.playing()) return;
-
     const track = SOUNDTRACK[cue];
+    const targetVol = this.prefs.volume * (track.gain ?? 0.5) * gainScale;
+    if (this.currentCue === cue && this.current?.playing()) {
+      this.currentGainScale = gainScale;
+      this.current.fade(this.current.volume(), targetVol, 500);
+      this.emit();
+      return;
+    }
+
     const url = assetUrl(track.file);
-    const targetVol = this.prefs.volume * (track.gain ?? 0.5);
 
     // Crossfade out previous
     if (this.current) {
@@ -176,6 +188,7 @@ class CapitalMusic {
     });
     this.current = howl;
     this.currentCue = cue;
+    this.currentGainScale = gainScale;
     howl.play();
     howl.fade(0, targetVol, 1100);
     this.emit();

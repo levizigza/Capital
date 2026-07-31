@@ -32,6 +32,8 @@ Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berm
 
 **Money Structure toys:** interiors use organ floor motifs + pokeable toys (coins, clocks, stamps, spirals); part pads answer when poked.
 
+**Organ audio:** Structure enter + Soft Beat + toys fire Memory/Coin/Clock/Spiral stingers; interior BGM ducks the organ bed via `MusicPlace` `{ kind: "structure" }`.
+
 **Share object:** after scar spectacle, “Harbor felt that” PNG preview + Share/download (organ-tinted) — default social object.
 
 **Mural thesis:** see [mural-thesis.md](./mural-thesis.md) — living money organs; if it cannot name organ + suit verb, it does not ship on the spine.

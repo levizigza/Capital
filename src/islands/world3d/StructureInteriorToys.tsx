@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { MoneyStructureTheme } from "../moneyStructures";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playOrganSfx } from "../audio/capitalSfx";
 
 function pokeCursor(on: boolean) {
   document.body.style.cursor = on ? "pointer" : "auto";
@@ -37,7 +37,7 @@ function ToyCoin({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(5);
-        playCapitalSfx("plinth_hum");
+        playOrganSfx("coin");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -69,7 +69,7 @@ function ToyClockFace({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setSpin(8);
-        playCapitalSfx("scar_chime");
+        playOrganSfx("clock");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -109,7 +109,7 @@ function ToySpiralBead({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(6);
-        playCapitalSfx("plinth_hum");
+        playOrganSfx("spiral");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -143,7 +143,7 @@ function ToyStamp({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setPress(1);
-        playCapitalSfx("scar_chime");
+        playOrganSfx("memory");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}

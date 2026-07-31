@@ -178,7 +178,6 @@ export function IslandShoreView({
   const finishStructureEnter = useCallback(() => {
     setEnteringJar(false);
     setStructureOpen(true);
-    playCapitalSfx("plinth_hum");
   }, []);
 
   const onEnterPart = useCallback(
@@ -255,6 +254,7 @@ export function IslandShoreView({
             <SoftBeatOverlay
               kind={softBeat}
               hushActive={chapterQuiet}
+              scarLabel={latestScar?.label ?? null}
               onDone={() => setSoftBeat(null)}
             />
           ) : null}

@@ -148,6 +148,8 @@ export function cueForIsland(islandId: string, genreId?: string | null): MusicCu
   return "solarpunk_cove";
 }
 
+export type StructureOrganPlace = "memory" | "coin" | "clock" | "spiral";
+
 export type MusicPlace =
   | { kind: "harbor" }
   | { kind: "map" }
@@ -155,7 +157,17 @@ export type MusicPlace =
   | { kind: "talk" }
   | { kind: "opening" }
   | { kind: "shore"; islandId: string; genreId?: string | null }
+  /** Inside a Money Structure — organ bed, ducked quieter than shore/plaza */
+  | { kind: "structure"; organ: StructureOrganPlace }
   | { kind: "silence" };
+
+/** Organ interior beds — same spine cues, ducked at play time. */
+const STRUCTURE_ORGAN_CUE: Record<StructureOrganPlace, MusicCueId> = {
+  memory: "harbor_haven",
+  coin: "solarpunk_cove",
+  clock: "ai_undercity",
+  spiral: "credit_ruins",
+};
 
 export function cueForPlace(place: MusicPlace): MusicCueId | null {
   switch (place.kind) {
@@ -172,7 +184,14 @@ export function cueForPlace(place: MusicPlace): MusicCueId | null {
       return "talk_soft";
     case "shore":
       return cueForIsland(place.islandId, place.genreId);
+    case "structure":
+      return STRUCTURE_ORGAN_CUE[place.organ];
     case "silence":
       return null;
   }
+}
+
+/** Structure interiors play quieter so Soft Beats / toys read as hush. */
+export function gainScaleForPlace(place: MusicPlace): number {
+  return place.kind === "structure" ? 0.58 : 1;
 }

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { cueForIsland, cueForPlace, SOUNDTRACK } from "./soundtrackCatalog";
+import {
+  cueForIsland,
+  cueForPlace,
+  gainScaleForPlace,
+  SOUNDTRACK,
+} from "./soundtrackCatalog";
 
 describe("Capital soundtrack catalog", () => {
   it("has a file for every cue", () => {
@@ -28,5 +33,14 @@ describe("Capital soundtrack catalog", () => {
     expect(cueForPlace({ kind: "talk" })).toBe("talk_soft");
     expect(cueForPlace({ kind: "silence" })).toBeNull();
     expect(cueForPlace({ kind: "shore", islandId: "digital_assets" })).toBe("ai_undercity");
+  });
+
+  it("maps Money Structure organs to ducked beds", () => {
+    expect(cueForPlace({ kind: "structure", organ: "memory" })).toBe("harbor_haven");
+    expect(cueForPlace({ kind: "structure", organ: "coin" })).toBe("solarpunk_cove");
+    expect(cueForPlace({ kind: "structure", organ: "clock" })).toBe("ai_undercity");
+    expect(cueForPlace({ kind: "structure", organ: "spiral" })).toBe("credit_ruins");
+    expect(gainScaleForPlace({ kind: "structure", organ: "coin" })).toBeLessThan(1);
+    expect(gainScaleForPlace({ kind: "shore", islandId: "coincraft_cove" })).toBe(1);
   });
 });

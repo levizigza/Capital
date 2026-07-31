@@ -4,6 +4,8 @@ import {
   MURAL_THESIS,
   isMoneyOrganIsland,
   moneyOrganForIsland,
+  moneyOrganForSoftBeat,
+  moneyOrganForStructureTheme,
 } from "./moneyOrgans";
 import {
   COVE_ISLAND_ID,
@@ -34,5 +36,16 @@ describe("money organs mural thesis", () => {
   it("names the mural in one line", () => {
     expect(MURAL_THESIS).toMatch(/living money/i);
     expect(MURAL_THESIS).toMatch(/Harbor remembers/i);
+  });
+
+  it("binds Structure themes and Soft Beats to organs", () => {
+    expect(moneyOrganForStructureTheme("jar").id).toBe("coin");
+    expect(moneyOrganForStructureTheme("bank").id).toBe("memory");
+    expect(moneyOrganForStructureTheme("tower").id).toBe("clock");
+    expect(moneyOrganForStructureTheme("keep").id).toBe("spiral");
+    expect(moneyOrganForSoftBeat("lookout").id).toBe("coin");
+    expect(moneyOrganForSoftBeat("ledger").id).toBe("memory");
+    expect(moneyOrganForSoftBeat("umbrella").id).toBe("clock");
+    expect(moneyOrganForSoftBeat("battlement").id).toBe("spiral");
   });
 });
