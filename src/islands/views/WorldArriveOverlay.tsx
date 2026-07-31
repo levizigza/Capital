@@ -13,6 +13,7 @@ import {
 import { moneyStructureForIsland } from "../moneyStructures";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForIsland } from "../moneyOrgans";
+import { cinemaTimeScale } from "../a11yMotion";
 
 export type WorldArriveKind = "carpet_land" | "structure_enter" | "painting_portal";
 
@@ -118,9 +119,10 @@ export function WorldArriveOverlay({
     } else {
       playCapitalSfx("plinth_hum");
     }
-    const tIn = window.setTimeout(() => setPhase("hold"), 280);
-    const tOut = window.setTimeout(() => setPhase("out"), Math.max(600, durationMs - 320));
-    const tDone = window.setTimeout(onDone, durationMs);
+    const dur = Math.round(durationMs * cinemaTimeScale());
+    const tIn = window.setTimeout(() => setPhase("hold"), Math.round(280 * cinemaTimeScale()));
+    const tOut = window.setTimeout(() => setPhase("out"), Math.max(400, dur - 280));
+    const tDone = window.setTimeout(onDone, dur);
     return () => {
       window.clearTimeout(tIn);
       window.clearTimeout(tOut);

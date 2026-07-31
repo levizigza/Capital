@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import {
   createFamilyRoom,
   exportFamilyRoomJson,
+  familyPlaqueMythLine,
   getActiveFamilyRoom,
   importFamilyRoomJson,
   joinFamilyRoom,
@@ -52,5 +53,12 @@ describe("familyRoom", () => {
     expect(() =>
       importFamilyRoomJson('{"__proto__":{"admin":true},"code":"ABCDEF","members":[]}'),
     ).toThrow();
+  });
+
+  it("names a plaque as local household myth", () => {
+    expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Jar before treat/);
+    expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Local myth/i);
+    expect(familyPlaqueMythLine(null)).toBeNull();
+    expect(familyPlaqueMythLine("  ")).toBeNull();
   });
 });

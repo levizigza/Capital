@@ -67,6 +67,7 @@ import {
   exportFamilyRoomJson,
   pinLevelToRoom,
   roomPinnedLevels,
+  familyPlaqueMythLine,
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
@@ -322,6 +323,7 @@ export function HomeHubView({
   const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
 
   const latestPlaque = plaques[plaques.length - 1] ?? null;
+  const familyMyth = familyPlaqueMythLine(latestPlaque?.label);
   const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
   const scarEcho =
     latestPlaque != null
@@ -1600,10 +1602,22 @@ export function HomeHubView({
         showCloseButton
         title="Family Room"
       >
-        <div className="space-y-3 text-left">
+        <div className="space-y-3 text-left" data-testid="family-room-modal">
           <p className="text-sm text-muted-foreground text-center">
             Local household / classroom room — invite code stays on-device. Share JSON to join on another device. Never pay-to-win.
           </p>
+          {familyMyth ? (
+            <p
+              className="rounded-xl border border-amber-200/60 bg-amber-50 px-3 py-2 text-center text-sm text-amber-950"
+              data-testid="family-plaque-myth"
+            >
+              {familyMyth}
+            </p>
+          ) : (
+            <p className="text-center text-xs text-muted-foreground">
+              After a Cove Take, this room will name your plaque — still local, still myth.
+            </p>
+          )}
           {familyRoom ? (
             <>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">

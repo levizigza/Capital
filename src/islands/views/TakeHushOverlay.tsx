@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { GameButton } from "@/game-ui";
 import { signatureTiming } from "@/qa/signatureLoop";
+import { systemPrefersReducedMotion } from "../a11yMotion";
 
 type Props = {
   scarLabel: string;
@@ -22,10 +23,7 @@ export function TakeHushOverlay({
   const [phase, setPhase] = useState<"hush" | "line">("hush");
 
   useEffect(() => {
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const t = signatureTiming(Boolean(reduced));
+    const t = signatureTiming(systemPrefersReducedMotion());
     playCapitalSfx("scar_chime");
     const t0 = window.setTimeout(() => setPhase("line"), t.hushMs);
     const t1 = window.setTimeout(onDone, t.holdEndMs);

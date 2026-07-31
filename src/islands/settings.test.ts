@@ -27,6 +27,19 @@ beforeEach(() => {
     get length() { return Object.keys(store).length; },
     key: (i: number) => Object.keys(store)[i] ?? null,
   });
+
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  );
 });
 
 /* ── Accessibility Settings ─────────────────────────────────────────── */
@@ -42,6 +55,22 @@ describe("Accessibility settings", () => {
       musicEnabled: true,
       musicVolume: 0.42,
     });
+  });
+
+  it("seeds reducedMotion from OS preference on first run", () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    );
+    expect(loadAccessibilitySettings().reducedMotion).toBe(true);
   });
 
   it("round-trips through persist → load", () => {

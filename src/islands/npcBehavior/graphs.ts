@@ -70,7 +70,14 @@ export function buildHarborNpcGraph(rng: () => number): BehaviorNode {
     new NavigateToLocation(),
     new RandomOne(
       "IdleEmote",
-      [new SetPose("stand"), new SetPose("nod"), new SetPose("talk")],
+      [
+        new SetPose("stand"),
+        new SetPose("stand"),
+        new SetPose("nod"),
+        new SetPose("talk"),
+        new SetPose("wave"),
+        new SetPose("cheer"),
+      ],
       rng,
     ),
     new WaitRange(1.8, 4.2, rng),

@@ -36,11 +36,13 @@ import {
   CoinEyePath,
   ShoreBerms,
   HarborBanners,
+  HarborFlags,
   UtilityQuay,
   EastUtilityLedge,
   PlazaToyCoins,
   PierMouthFrame,
 } from "./HarborPlazaCraft";
+import { plazaLifeAmp } from "../a11yMotion";
 import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
@@ -306,10 +308,17 @@ function emoteToPose(emote: NpcEmote): "stand" | "wave" | "talk" | "nod" | "chee
 
 function Fountain() {
   const water = useRef<THREE.Mesh>(null);
+  const jet = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
-    if (!water.current) return;
-    const mat = water.current.material as THREE.MeshStandardMaterial;
-    mat.opacity = 0.72 + Math.sin(clock.elapsedTime * 2.2) * 0.06;
+    const amp = plazaLifeAmp();
+    if (water.current) {
+      const mat = water.current.material as THREE.MeshStandardMaterial;
+      mat.opacity = 0.72 + Math.sin(clock.elapsedTime * 2.2) * 0.06 * amp;
+    }
+    if (jet.current) {
+      jet.current.position.y = 2.15 + Math.sin(clock.elapsedTime * 3.1) * 0.12 * amp;
+      jet.current.scale.setScalar(1 + Math.sin(clock.elapsedTime * 4.2) * 0.08 * amp);
+    }
   });
   return (
     <group>
@@ -333,6 +342,16 @@ function Fountain() {
         <sphereGeometry args={[0.42, 16, 14]} />
         <meshStandardMaterial color="#f4a629" roughness={0.28} metalness={0.45} emissive="#b45309" emissiveIntensity={0.15} />
       </mesh>
+      <group ref={jet} position={[0, 2.15, 0]}>
+        <mesh>
+          <sphereGeometry args={[0.18, 10, 8]} />
+          <meshStandardMaterial color="#7dd3fc" transparent opacity={0.65} roughness={0.1} />
+        </mesh>
+        <mesh position={[0, 0.28, 0]}>
+          <sphereGeometry args={[0.12, 8, 6]} />
+          <meshStandardMaterial color="#bae6fd" transparent opacity={0.55} roughness={0.12} />
+        </mesh>
+      </group>
       <mesh ref={water} position={[0, 0.68, 0]}>
         <cylinderGeometry args={[1.4, 1.4, 0.12, 28]} />
         <meshStandardMaterial color="#38bdf8" roughness={0.12} metalness={0.45} transparent opacity={0.78} />
@@ -505,6 +524,7 @@ function PlazaScene({
       <CoinEyePath />
       <PlazaToyCoins />
       <HarborBanners />
+      <HarborFlags />
       <UtilityQuay />
       <EastUtilityLedge />
       {/* Memory organ — ledger lines appear when Harbor carries a scar */}

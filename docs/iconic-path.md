@@ -87,6 +87,12 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Phone cold-play: on-screen **Walk** pad on Harbor / shores (coarse pointer).  
 - Signature trailer: mute-friendly captions + Piggy/Coin Bag silhouettes.
 
+## Lasting craft (Wave 5)
+
+- Harbor always-on micro-life: fountain jet, pennants, **Fortune flags**, idle wave/cheer, Coin Bag bob, contact shadows (quieter under reduced motion).  
+- Family Room names the latest plaque as a **local myth** (device-only — no fake MMO).  
+- First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with the OS.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

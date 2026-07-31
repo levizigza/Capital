@@ -11,6 +11,7 @@ import {
   cueForPlace,
   gainScaleForPlace,
 } from "./soundtrackCatalog";
+import { systemPrefersReducedMotion } from "../a11yMotion";
 
 const STORAGE_KEY = "capital_music_v1";
 
@@ -150,9 +151,11 @@ class CapitalMusic {
       return;
     }
     const track = SOUNDTRACK[cue];
-    const targetVol = this.prefs.volume * (track.gain ?? 0.5) * gainScale;
+    const quietScale = systemPrefersReducedMotion() ? 0.55 : 1;
+    const effectiveScale = gainScale * quietScale;
+    const targetVol = this.prefs.volume * (track.gain ?? 0.5) * effectiveScale;
     if (this.currentCue === cue && this.current?.playing()) {
-      this.currentGainScale = gainScale;
+      this.currentGainScale = effectiveScale;
       this.current.fade(this.current.volume(), targetVol, 500);
       this.emit();
       return;
@@ -188,7 +191,7 @@ class CapitalMusic {
     });
     this.current = howl;
     this.currentCue = cue;
-    this.currentGainScale = gainScale;
+    this.currentGainScale = effectiveScale;
     howl.play();
     howl.fade(0, targetVol, 1100);
     this.emit();

@@ -12,6 +12,7 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { plazaLifeAmp } from "../a11yMotion";
 
 /** Raised plaza ring + stepped lip — breaks the pancake silhouette. */
 export function PlazaTier() {
@@ -125,6 +126,59 @@ export function HarborBanners() {
   );
 }
 
+/**
+ * Tall Fortune flags — distinct from pennant banners (Wave 5 micro-life).
+ * Pier mouth + bank approach so the plaza always has fabric verticals.
+ */
+export function HarborFlags() {
+  const flags: [number, number, number, string][] = [
+    [-2.8, 0, 10.2, "#0ea5e9"],
+    [2.8, 0, 10.2, "#f59e0b"],
+    [7.4, 0, -1.2, "#f8fafc"],
+  ];
+  return (
+    <group>
+      {flags.map(([x, , z, color], i) => (
+        <FlagPole key={i} position={[x, 0, z]} color={color} phase={i * 1.1} />
+      ))}
+    </group>
+  );
+}
+
+function FlagPole({
+  position,
+  color,
+  phase,
+}: {
+  position: [number, number, number];
+  color: string;
+  phase: number;
+}) {
+  const cloth = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (!cloth.current) return;
+    const amp = plazaLifeAmp();
+    cloth.current.rotation.y = Math.sin(clock.elapsedTime * 1.8 + phase) * 0.35 * amp;
+    cloth.current.rotation.z = Math.sin(clock.elapsedTime * 2.4 + phase) * 0.08 * amp;
+  });
+  return (
+    <group position={position}>
+      <mesh castShadow position={[0, 2.2, 0]}>
+        <cylinderGeometry args={[0.06, 0.08, 4.4, 6]} />
+        <meshStandardMaterial color="#44403c" roughness={0.65} metalness={0.3} />
+      </mesh>
+      <mesh ref={cloth} castShadow position={[0.7, 3.55, 0]}>
+        <planeGeometry args={[1.35, 0.85]} />
+        <meshStandardMaterial color={color} side={THREE.DoubleSide} roughness={0.5} />
+      </mesh>
+      <mesh position={[0, 4.45, 0]}>
+        <sphereGeometry args={[0.12, 8, 6]} />
+        <meshStandardMaterial color="#fde68a" emissive="#d97706" emissiveIntensity={0.4} metalness={0.45} />
+      </mesh>
+    </group>
+  );
+}
+
 function BannerPole({
   position,
   color,
@@ -137,7 +191,8 @@ function BannerPole({
   const cloth = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (!cloth.current) return;
-    cloth.current.rotation.y = Math.sin(clock.elapsedTime * 1.4 + phase) * 0.25;
+    const amp = plazaLifeAmp();
+    cloth.current.rotation.y = Math.sin(clock.elapsedTime * 1.4 + phase) * 0.25 * amp;
   });
   return (
     <group position={position}>
@@ -232,9 +287,10 @@ function BobCoin({ position, phase }: { position: [number, number, number]; phas
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (!ref.current) return;
+    const amp = plazaLifeAmp();
     const t = clock.elapsedTime + phase;
-    ref.current.position.y = position[1] + Math.sin(t * 2.2) * 0.12;
-    ref.current.rotation.y = t * 1.5;
+    ref.current.position.y = position[1] + Math.sin(t * 2.2) * 0.12 * amp;
+    ref.current.rotation.y = t * 1.5 * Math.max(0.25, amp);
   });
   return (
     <mesh ref={ref} castShadow position={position}>

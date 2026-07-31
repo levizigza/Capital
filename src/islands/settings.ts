@@ -3,6 +3,8 @@
  * Persisted to localStorage for cross-session survival.
  */
 
+import { systemPrefersReducedMotion } from "./a11yMotion";
+
 const SETTINGS_KEY = "island_settings_v1";
 const PERF_KEY = "island_performance_v1";
 
@@ -39,7 +41,11 @@ export function loadAccessibilitySettings(): AccessibilitySettings {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) return { ...DEFAULT_A11Y, ...JSON.parse(raw) };
   } catch { /* ignore */ }
-  return { ...DEFAULT_A11Y };
+  // First run: mirror OS reduced-motion so spine cinema stays quiet without a settings visit
+  return {
+    ...DEFAULT_A11Y,
+    reducedMotion: systemPrefersReducedMotion(),
+  };
 }
 
 export function persistAccessibilitySettings(s: AccessibilitySettings): void {

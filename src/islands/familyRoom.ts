@@ -2,6 +2,7 @@
  * Family Room — local-first social for households / classrooms.
  * No server: invite codes live in encrypted local storage; share via copy/paste JSON.
  * Never pay-to-win. Imports are Zod-validated + re-keyed (never trust foreign hostIds).
+ * Wave 5: device-local myth lines name Harbor plaques (no multiplayer sync).
  */
 
 import { loadCommunityLevels } from "./studio/communityStorage";
@@ -164,4 +165,13 @@ export function importFamilyRoomJson(text: string): FamilyRoom {
   saveIndex(index);
   setActiveFamilyRoom(room.code);
   return room;
+}
+
+/**
+ * Local myth line for Family Room — names a Harbor plaque without inventing multiplayer sync.
+ */
+export function familyPlaqueMythLine(scarLabel: string | null | undefined): string | null {
+  const label = (scarLabel ?? "").trim();
+  if (!label) return null;
+  return `This household still tips jars about “${label}.” Local myth — the Plinth remembered, and so do you.`;
 }
