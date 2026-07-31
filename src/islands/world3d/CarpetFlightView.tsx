@@ -33,6 +33,15 @@ import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { useInputAction } from "@/input";
 import { WorldArriveOverlay } from "../views/WorldArriveOverlay";
+import {
+  CARPET_ARRIVE_RADIUS,
+  RAIL_MAX_MS,
+  RAIL_SPEED,
+  distance2d,
+  isRailVoyage,
+  isWithinArrive,
+  railStartPose,
+} from "./carpetVoyageRail";
 
 type Props = {
   userProfile: UserProfile;
@@ -51,9 +60,7 @@ type WorldIsle = {
   pos: THREE.Vector3;
 };
 
-/** Arrival radius — land when you fly into the island. */
-const ARRIVE = 16;
-/** Cruise / soar / rush speeds (world units per second). */
+/** Cruise / soar / rush speeds (world units per second). Free-flight only. */
 const SPEED_N = 48;
 const SPEED_F = 78;
 const SPEED_RUSH = 140;
@@ -99,33 +106,49 @@ function FlightRig({
   const keys = useRef({ l: false, r: false, up: false, down: false, boost: false });
   const rush = useRef(false);
   const rushingRef = useRef(false);
+  const rail = isRailVoyage(targetId);
   const state = useRef({
     x: 0,
     z: START_Z,
     y: 4.2,
     heading: 0,
-    speed: SPEED_N,
+    speed: rail ? RAIL_SPEED : SPEED_N,
     arrived: false,
   });
   const lastMorph = useRef({ blend: -1, styleId: "" });
   const { camera } = useThree();
-  const [hud, setHud] = useState({ knots: 0, hint: "Steer toward an island", rushing: false });
+  const [hud, setHud] = useState({
+    knots: 0,
+    hint: rail ? "Money Carpet rail — landing ahead" : "Steer toward an island",
+    rushing: rail,
+  });
   const [riderStyle, setRiderStyle] = useState<AnimationStyleId | string>(homeStyleId);
 
-  // Aim initial heading at the voyage target (or nearest island).
+  // Rail: park on a short approach and lock rush. Free flight: aim at preferred isle.
   useEffect(() => {
     const s = state.current;
     const preferred =
       (targetId && world.find((w) => w.node.island.id === targetId)) || world[0];
-    if (preferred) {
+    if (!preferred) return;
+    if (rail && targetId) {
+      const pose = railStartPose(preferred.pos.x, preferred.pos.z);
+      s.x = pose.x;
+      s.z = pose.z;
+      s.y = pose.y;
+      s.heading = pose.heading;
+      s.speed = RAIL_SPEED;
+      rush.current = true;
+      keys.current.boost = true;
+    } else {
       s.heading = Math.atan2(preferred.pos.x - s.x, preferred.pos.z - s.z);
     }
-  }, [targetId, world]);
+  }, [targetId, world, rail]);
 
   useEffect(() => {
     boostApi.current = {
       setBoost: (on) => {
         keys.current.boost = on;
+        if (rail && on) rush.current = true;
       },
       rushToTarget: () => {
         rush.current = true;
@@ -135,7 +158,7 @@ function FlightRig({
     return () => {
       boostApi.current = null;
     };
-  }, [boostApi]);
+  }, [boostApi, rail]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -146,6 +169,7 @@ function FlightRig({
       if (e.key === "Shift" || e.code === "Space") {
         e.preventDefault();
         keys.current.boost = true;
+        if (rail) rush.current = true;
       }
     };
     const up = (e: KeyboardEvent) => {
@@ -163,31 +187,32 @@ function FlightRig({
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, []);
+  }, [rail]);
 
   useFrame((_, dt) => {
     const s = state.current;
     if (s.arrived) return;
+    const step = Math.min(dt, 0.05);
 
     let nearest: WorldIsle | null = null;
     let nearestDist = Infinity;
     for (const wi of world) {
-      const d = Math.hypot(wi.pos.x - s.x, wi.pos.z - s.z);
+      const d = distance2d(wi.pos.x, wi.pos.z, s.x, s.z);
       if (d < nearestDist) {
         nearestDist = d;
         nearest = wi;
       }
     }
-    const target =
-      (targetId && world.find((w) => w.node.island.id === targetId)) || nearest;
+    const voyageTarget =
+      (targetId && world.find((w) => w.node.island.id === targetId)) || null;
+    const target = voyageTarget || nearest;
 
     // Approach morph targets the voyage destination when set, else nearest land.
     const morphIsle = target ?? nearest;
     if (morphIsle) {
-      const morphDist =
-        target && targetId
-          ? Math.hypot(target.pos.x - s.x, target.pos.z - s.z)
-          : nearestDist;
+      const morphDist = voyageTarget
+        ? distance2d(voyageTarget.pos.x, voyageTarget.pos.z, s.x, s.z)
+        : nearestDist;
       const blend = approachBlend(morphDist);
       const blended = lerpEraLook3D(homeLook, morphIsle.look, blend);
       // Character / UI style snaps toward destination after halfway.
@@ -209,32 +234,42 @@ function FlightRig({
       }
     }
 
-    // Rush / boost auto-steers toward the destination island.
-    if ((keys.current.boost || rush.current) && target) {
+    // Rail always homes on the voyage target; free flight steers on rush/boost.
+    if (rail && voyageTarget) {
+      const want = Math.atan2(voyageTarget.pos.x - s.x, voyageTarget.pos.z - s.z);
+      let delta = want - s.heading;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+      while (delta < -Math.PI) delta += Math.PI * 2;
+      s.heading += delta * Math.min(1, step * 8);
+      rush.current = true;
+      keys.current.boost = true;
+    } else if ((keys.current.boost || rush.current) && target) {
       const want = Math.atan2(target.pos.x - s.x, target.pos.z - s.z);
       let delta = want - s.heading;
       while (delta > Math.PI) delta -= Math.PI * 2;
       while (delta < -Math.PI) delta += Math.PI * 2;
-      s.heading += delta * Math.min(1, dt * 3.2);
+      s.heading += delta * Math.min(1, step * 3.2);
     } else {
       const steer = (keys.current.l ? 1 : 0) + (keys.current.r ? -1 : 0);
-      s.heading += steer * TURN * dt;
+      s.heading += steer * TURN * step;
     }
 
-    const max = keys.current.boost || rush.current
-      ? SPEED_RUSH
-      : keys.current.up
-        ? SPEED_F
-        : keys.current.down
-          ? SPEED_N * 0.45
-          : SPEED_N;
-    s.speed += (max - s.speed) * Math.min(1, dt * 3.4);
-    s.x += Math.sin(s.heading) * s.speed * dt;
-    s.z += Math.cos(s.heading) * s.speed * dt;
+    const max = rail
+      ? RAIL_SPEED
+      : keys.current.boost || rush.current
+        ? SPEED_RUSH
+        : keys.current.up
+          ? SPEED_F
+          : keys.current.down
+            ? SPEED_N * 0.45
+            : SPEED_N;
+    s.speed += (max - s.speed) * Math.min(1, step * 3.4);
+    s.x += Math.sin(s.heading) * s.speed * step;
+    s.z += Math.cos(s.heading) * s.speed * step;
     s.y =
       4.2 +
       Math.sin(performance.now() / 450) * 0.28 +
-      (keys.current.up || keys.current.boost ? 1.1 : 0);
+      (keys.current.up || keys.current.boost || rail ? 1.1 : 0);
 
     if (carpet.current) {
       carpet.current.position.set(s.x, s.y, s.z);
@@ -249,25 +284,36 @@ function FlightRig({
       const horizon = new THREE.Vector3(0, 1.35, 42).applyMatrix4(carpet.current.matrixWorld);
       const carpetHint = new THREE.Vector3(0, 0.02, 3.4).applyMatrix4(carpet.current.matrixWorld);
       horizon.lerp(carpetHint, 0.1);
-      camera.position.lerp(eye, 1 - Math.pow(0.0004, dt));
+      camera.position.lerp(eye, 1 - Math.pow(0.0004, step));
       camera.lookAt(horizon);
       camera.fov = 68;
       camera.updateProjectionMatrix();
     }
 
-    const rushing = keys.current.boost || rush.current;
+    const rushing = rail || keys.current.boost || rush.current;
     rushingRef.current = rushing;
 
-    if (nearest) {
-      const marked = targetId && nearest.node.island.id === targetId ? "🎯 " : "";
+    // Targeted voyage: land on the chosen island. Free flight: nearest shore.
+    if (voyageTarget && targetId) {
+      const targetDist = distance2d(voyageTarget.pos.x, voyageTarget.pos.z, s.x, s.z);
+      setHud({
+        knots: Math.round((s.speed / RAIL_SPEED) * 90),
+        hint: `🎯 ${voyageTarget.node.island.name} · ${rail ? "carpet rail" : "rushing in"} · ${Math.round(targetDist)}m`,
+        rushing,
+      });
+      if (isWithinArrive(s.x, s.z, voyageTarget.pos.x, voyageTarget.pos.z)) {
+        s.arrived = true;
+        onArrive(targetId);
+      }
+    } else if (nearest) {
       setHud({
         knots: Math.round((s.speed / SPEED_RUSH) * 90),
         hint: rushing
-          ? `${marked}${nearest.node.island.name} · rushing in · ${Math.round(nearestDist)}m`
-          : `${marked}${nearest.node.island.name} · ${Math.round(nearestDist)}m — fly closer to land`,
+          ? `${nearest.node.island.name} · rushing in · ${Math.round(nearestDist)}m`
+          : `${nearest.node.island.name} · ${Math.round(nearestDist)}m — fly closer to land`,
         rushing,
       });
-      if (nearestDist < ARRIVE) {
+      if (nearestDist < CARPET_ARRIVE_RADIUS) {
         s.arrived = true;
         onArrive(nearest.node.island.id);
       }
@@ -381,7 +427,7 @@ export function CarpetFlightView({
 }: Props) {
   const [phase, setPhase] = useState<"dock" | "fly">(() => (voyageTargetId ? "fly" : "dock"));
   const [arriving, setArriving] = useState<string | null>(null);
-  const [boostHeld, setBoostHeld] = useState(false);
+  const [boostHeld, setBoostHeld] = useState(() => Boolean(voyageTargetId));
   const boostApi = useRef<BoostApi | null>(null);
   const boatTier = getEffectiveBoatTier(userProfile.totalCoins, save);
   const archipelago = useMemo(() => buildArchipelagoLayout(islands), [islands]);
@@ -424,8 +470,13 @@ export function CarpetFlightView({
     const cx = currentNode.worldX * WORLD_SCALE;
     const cz = currentNode.worldY * WORLD_SCALE;
     return archipelago.all
-      .filter((n) => n.island.id !== currentIsland.id)
-      .filter((n) => !isIslandLocked(n.island, save.inventory, save))
+      // Keep the voyage target even if it matches current (retry) or is progress-locked.
+      .filter(
+        (n) =>
+          n.island.id === voyageTargetId ||
+          (n.island.id !== currentIsland.id &&
+            !isIslandLocked(n.island, save.inventory, save)),
+      )
       .map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
         const look = getIslandLook3D(node.island.id, theme.animationStyle);
@@ -440,7 +491,25 @@ export function CarpetFlightView({
           ),
         };
       });
-  }, [archipelago.all, currentIsland.id, currentNode.worldX, currentNode.worldY, save]);
+  }, [
+    archipelago.all,
+    currentIsland.id,
+    currentNode.worldX,
+    currentNode.worldY,
+    save,
+    voyageTargetId,
+  ]);
+
+  const railMode = isRailVoyage(voyageTargetId);
+
+  // Failsafe: if frames stall, still land the chosen island within the iconic budget.
+  useEffect(() => {
+    if (!railMode || !voyageTargetId || arriving) return;
+    const t = window.setTimeout(() => {
+      setArriving((prev) => prev ?? voyageTargetId);
+    }, RAIL_MAX_MS);
+    return () => window.clearTimeout(t);
+  }, [railMode, voyageTargetId, arriving]);
 
   const targetEra = useMemo(() => {
     if (!voyageTargetId) return null;
@@ -604,35 +673,43 @@ export function CarpetFlightView({
       </button>
 
       <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
-        <button
-          type="button"
-          className={`rounded-full border-2 px-4 py-2 text-sm font-extrabold shadow-lg transition ${
-            boostHeld
-              ? "border-amber-200 bg-amber-400 text-[#16283b]"
-              : "border-white/35 bg-black/55 text-white hover:bg-black/70"
-          }`}
-          onPointerDown={(e) => {
-            e.preventDefault();
-            setBoost(true);
-          }}
-          onPointerUp={() => setBoost(false)}
-          onPointerLeave={() => setBoost(false)}
-          onPointerCancel={() => setBoost(false)}
-        >
-          {boostHeld ? "Rushing…" : "Hold to speed up"}
-        </button>
-        {voyageTargetId && targetName ? (
-          <button
-            type="button"
-            className="rounded-full border-2 border-[#16283b] bg-[#f4a629] px-4 py-2 text-sm font-extrabold text-[#16283b] shadow-lg"
-            onClick={() => {
-              setBoostHeld(true);
-              boostApi.current?.rushToTarget();
-            }}
-          >
-            Rush to {targetName} →
-          </button>
-        ) : null}
+        {railMode && targetName ? (
+          <div className="rounded-full border-2 border-[#16283b] bg-[#f4a629] px-4 py-2 text-sm font-extrabold text-[#16283b] shadow-lg">
+            Carpet rail → {targetName}
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              className={`rounded-full border-2 px-4 py-2 text-sm font-extrabold shadow-lg transition ${
+                boostHeld
+                  ? "border-amber-200 bg-amber-400 text-[#16283b]"
+                  : "border-white/35 bg-black/55 text-white hover:bg-black/70"
+              }`}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                setBoost(true);
+              }}
+              onPointerUp={() => setBoost(false)}
+              onPointerLeave={() => setBoost(false)}
+              onPointerCancel={() => setBoost(false)}
+            >
+              {boostHeld ? "Rushing…" : "Hold to speed up"}
+            </button>
+            {voyageTargetId && targetName ? (
+              <button
+                type="button"
+                className="rounded-full border-2 border-[#16283b] bg-[#f4a629] px-4 py-2 text-sm font-extrabold text-[#16283b] shadow-lg"
+                onClick={() => {
+                  setBoostHeld(true);
+                  boostApi.current?.rushToTarget();
+                }}
+              >
+                Rush to {targetName} →
+              </button>
+            ) : null}
+          </>
+        )}
       </div>
 
       {morphHud.blend > 0.12 && morphHud.decadeLabel ? (
@@ -664,7 +741,9 @@ export function CarpetFlightView({
           </div>
         </div>
         <div className="text-[10px] font-bold uppercase tracking-widest text-white/55">
-          A/D turn · W soar · S glide · Shift / hold button to rush · land on an island
+          {railMode
+            ? "Carpet rail — short hop to your island · Esc docks"
+            : "A/D turn · W soar · S glide · Shift / hold button to rush · land on an island"}
         </div>
       </div>
 
