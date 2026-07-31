@@ -329,13 +329,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         kind: "shore",
         islandId: activeIslandId,
         genreId: genre?.id ?? null,
+        hush: Boolean(save?.chapterQuietPending),
       });
       return;
     }
     if (view === "arcade" || view === "studio") {
       capitalMusic.playPlace({ kind: "harbor" });
     }
-  }, [view, activeIslandId, dialogueState.open]);
+  }, [view, activeIslandId, dialogueState.open, save?.chapterQuietPending]);
 
   useEffect(() => {
     if (!save || analyticsSessionReady) return;

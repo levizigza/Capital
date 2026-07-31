@@ -1,10 +1,12 @@
 /**
  * Signature Take beat — fires on the island the moment the choice sticks.
- * Cove → hush → carpet home → Harbor felt that.
+ * Cove / Paycheck / Credit → organ hush → carpet home → Harbor felt that.
  */
 
 import { useEffect, useState } from "react";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
+import { capitalMusic } from "../audio/capitalMusic";
+import type { MoneyOrganId } from "../moneyOrgans";
 import { GameButton } from "@/game-ui";
 import { signatureTiming } from "@/qa/signatureLoop";
 import { systemPrefersReducedMotion } from "../a11yMotion";
@@ -12,12 +14,17 @@ import { systemPrefersReducedMotion } from "../a11yMotion";
 type Props = {
   scarLabel: string;
   organLine?: string;
+  /** Wave 6 — which organ bed ducks during the hush */
+  organId?: MoneyOrganId;
+  islandId?: string;
   onDone: () => void;
 };
 
 export function TakeHushOverlay({
   scarLabel,
   organLine = "The Coin holds. Harbor is already listening.",
+  organId = "coin",
+  islandId = "coincraft_cove",
   onDone,
 }: Props) {
   const [phase, setPhase] = useState<"hush" | "line">("hush");
@@ -25,13 +32,19 @@ export function TakeHushOverlay({
   useEffect(() => {
     const t = signatureTiming(systemPrefersReducedMotion());
     playCapitalSfx("scar_chime");
+    playOrganSfx(organId);
+    capitalMusic.playPlace({
+      kind: "shore",
+      islandId,
+      hush: true,
+    });
     const t0 = window.setTimeout(() => setPhase("line"), t.hushMs);
     const t1 = window.setTimeout(onDone, t.holdEndMs);
     return () => {
       window.clearTimeout(t0);
       window.clearTimeout(t1);
     };
-  }, [onDone]);
+  }, [onDone, organId, islandId]);
 
   return (
     <div

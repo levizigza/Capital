@@ -43,4 +43,25 @@ describe("Capital soundtrack catalog", () => {
     expect(gainScaleForPlace({ kind: "structure", organ: "coin" })).toBeLessThan(1);
     expect(gainScaleForPlace({ kind: "shore", islandId: "coincraft_cove" })).toBe(1);
   });
+
+  it("Wave 6 — spine titles speak organ language", () => {
+    expect(SOUNDTRACK.harbor_haven.title).toMatch(/Memory/i);
+    expect(SOUNDTRACK.solarpunk_cove.title).toMatch(/Coin/i);
+    expect(SOUNDTRACK.ai_undercity.title).toMatch(/Clock/i);
+    expect(SOUNDTRACK.credit_ruins.title).toMatch(/Spiral/i);
+    expect(cueForIsland("paycheck_peninsula")).toBe("ai_undercity");
+    expect(cueForIsland("coincraft_cove")).toBe("solarpunk_cove");
+    expect(cueForIsland("credit_kingdom")).toBe("credit_ruins");
+  });
+
+  it("Wave 6 — post-Take shore hush ducks the organ bed", () => {
+    const hush = gainScaleForPlace({
+      kind: "shore",
+      islandId: "coincraft_cove",
+      hush: true,
+    });
+    const open = gainScaleForPlace({ kind: "shore", islandId: "coincraft_cove" });
+    expect(hush).toBeLessThan(open);
+    expect(hush).toBeLessThan(0.4);
+  });
 });

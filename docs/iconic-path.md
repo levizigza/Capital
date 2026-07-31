@@ -93,6 +93,13 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Family Room names the latest plaque as a **local myth** (device-only — no fake MMO).  
 - First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with the OS.
 
+## Organ score (Wave 6)
+
+- Spine beds speak the mural: **Memory Courtyard · Coin Jar Morning · Clock Stamp Shift · Spiral Interest Keep**.  
+- Post-Take hush ducks the shore organ bed (`MusicPlace.shore.hush`) while Take cinema plays the matching organ stinger.  
+- Settings copy names organs, not leftover genre-city labels.  
+- Off-spine genre cues stay available; the frozen triangle leads with organ language.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

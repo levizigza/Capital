@@ -1,7 +1,10 @@
 /**
  * Capital Soundtrack — Fortune Archipelago score cues.
  *
- * Emotion first: warm Harbor courtyard, whimsical map, genre shores,
+ * Wave 6 — Organ Score: spine beds speak Memory · Coin · Clock · Spiral.
+ * Genre-city cues remain for off-spine packs; player titles prefer organ language.
+ *
+ * Emotion first: warm Harbor courtyard, whimsical map, organ shores,
  * soft Talk Battle. Inspired by classic adventure-game *feel* only —
  * no Nintendo (or other franchise) audio is used.
  *
@@ -36,71 +39,71 @@ export type SoundtrackTrack = {
 export const SOUNDTRACK: Record<MusicCueId, SoundtrackTrack> = {
   harbor_haven: {
     id: "harbor_haven",
-    title: "Harbor Courtyard",
-    mood: "Warm Ordinary World — safe plaza, Coin Bag beside you",
+    title: "Memory Courtyard",
+    mood: "Memory organ — warm Ordinary World; plaza remembers what you did",
     file: "audio/soundtrack/harbor_haven.ogg",
     gain: 0.55,
   },
   archipelago_map: {
     id: "archipelago_map",
     title: "Fortune Thread Map",
-    mood: "Whimsical chart room — islands wait like paintings",
+    mood: "Whimsical chart room — Harbor · Cove · Paycheck · Credit wait like paintings",
     file: "audio/soundtrack/archipelago_map.ogg",
     gain: 0.5,
   },
   voyage_carpet: {
     id: "voyage_carpet",
     title: "Carpet Over the Ledger Sea",
-    mood: "Crossing — wind, wonder, the threshold hum",
+    mood: "Crossing — wind, wonder, the threshold hum between organs",
     file: "audio/soundtrack/voyage_carpet.ogg",
     gain: 0.52,
   },
   solarpunk_cove: {
     id: "solarpunk_cove",
-    title: "Canopy Craft Morning",
-    mood: "Solarpunk lagoon — earn, share, gardens awake",
+    title: "Coin Jar Morning",
+    mood: "Coin organ — hold, Take, hush; gardens awake around the jar",
     file: "audio/soundtrack/solarpunk_cove.ogg",
     gain: 0.5,
   },
   neon_sprawl: {
     id: "neon_sprawl",
     title: "Wage-Neon Night",
-    mood: "Cyber sprawl pulse — debt lights, chrome rush",
+    mood: "Off-spine pulse — chrome rush (not the Clock organ bed)",
     file: "audio/soundtrack/neon_sprawl.ogg",
     gain: 0.42,
   },
   ai_undercity: {
     id: "ai_undercity",
-    title: "Terminal Undercurrent",
-    mood: "AI undercity hush — rights for silicon, quiet servers",
+    title: "Clock Stamp Shift",
+    mood: "Clock organ — earn, stamp, shelter; payday rhythm under the tower",
     file: "audio/soundtrack/ai_undercity.ogg",
     gain: 0.48,
   },
   scrap_coast: {
     id: "scrap_coast",
     title: "Salvage Budget Coast",
-    mood: "Post-apoc workshop — patched bots, thrifty grit",
+    mood: "Off-spine workshop — patched grit",
     file: "audio/soundtrack/scrap_coast.ogg",
     gain: 0.48,
   },
   orbital_keep: {
     id: "orbital_keep",
     title: "Colony Deed Horizon",
-    mood: "Orbital keep — portfolios in vacuum dust",
+    mood: "Off-spine keep — portfolios in vacuum dust",
     file: "audio/soundtrack/orbital_keep.ogg",
     gain: 0.5,
   },
   credit_ruins: {
     id: "credit_ruins",
-    title: "Temple of Scarce Trust",
-    mood: "Credit ruins — still air, careful steps",
+    title: "Spiral Interest Keep",
+    mood: "Spiral organ — borrow, weigh, withstand; interest as gravity",
     file: "audio/soundtrack/credit_ruins.ogg",
     gain: 0.46,
   },
   nocturne_void: {
     id: "nocturne_void",
     title: "Mindcliff Nocturne",
-    mood: "Posthuman void — patents, uploaded selves",
+    mood: "Off-spine void — patents, uploaded selves",
     file: "audio/soundtrack/nocturne_void.ogg",
     gain: 0.4,
   },
@@ -156,7 +159,13 @@ export type MusicPlace =
   | { kind: "voyage" }
   | { kind: "talk" }
   | { kind: "opening" }
-  | { kind: "shore"; islandId: string; genreId?: string | null }
+  | {
+      kind: "shore";
+      islandId: string;
+      genreId?: string | null;
+      /** After irreversible Take — organ bed ducks into hush */
+      hush?: boolean;
+    }
   /** Inside a Money Structure — organ bed, ducked quieter than shore/plaza */
   | { kind: "structure"; organ: StructureOrganPlace }
   | { kind: "silence" };
@@ -167,6 +176,11 @@ const STRUCTURE_ORGAN_CUE: Record<StructureOrganPlace, MusicCueId> = {
   coin: "solarpunk_cove",
   clock: "ai_undercity",
   spiral: "credit_ruins",
+};
+
+/** Player-facing organ bed titles for the frozen spine (Wave 6). */
+export const SPINE_ORGAN_CUE: Record<StructureOrganPlace, MusicCueId> = {
+  ...STRUCTURE_ORGAN_CUE,
 };
 
 export function cueForPlace(place: MusicPlace): MusicCueId | null {
@@ -191,7 +205,9 @@ export function cueForPlace(place: MusicPlace): MusicCueId | null {
   }
 }
 
-/** Structure interiors play quieter so Soft Beats / toys read as hush. */
+/** Structure interiors + post-Take hush duck so Soft Beats / scars read. */
 export function gainScaleForPlace(place: MusicPlace): number {
-  return place.kind === "structure" ? 0.58 : 1;
+  if (place.kind === "structure") return 0.58;
+  if (place.kind === "shore" && place.hush) return 0.32;
+  return 1;
 }

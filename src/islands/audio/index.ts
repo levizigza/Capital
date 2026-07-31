@@ -1,5 +1,6 @@
 export {
   SOUNDTRACK,
+  SPINE_ORGAN_CUE,
   cueForIsland,
   cueForPlace,
   gainScaleForPlace,

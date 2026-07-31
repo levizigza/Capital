@@ -177,7 +177,7 @@ export default function SettingsPanel({
             <div>
               <div className="text-sm font-medium">Fortune soundtrack</div>
               <div className="text-xs text-gray-600">
-                Distinct CC0 themes for Harbor, map, and each genre shore
+                Organ beds for Memory · Coin · Clock · Spiral — plus map and carpet
               </div>
             </div>
           </label>

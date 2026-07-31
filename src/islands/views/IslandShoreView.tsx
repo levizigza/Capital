@@ -42,6 +42,7 @@ import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
 import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
 import { harborScarPlaques } from "../worldMemory";
+import { moneyOrganForIsland } from "../moneyOrgans";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -91,6 +92,7 @@ export function IslandShoreView({
   const era = getAnimationStyle(theme.animationStyle);
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
+  const organ = useMemo(() => moneyOrganForIsland(island.id), [island.id]);
   const [near, setNear] = useState<{ id: string; label: string } | null>(null);
   const [journalOpen, setJournalOpen] = useState(false);
   const [structureOpen, setStructureOpen] = useState(false);
@@ -300,12 +302,12 @@ export function IslandShoreView({
             {takeHushOpen && latestScar ? (
               <TakeHushOverlay
                 scarLabel={latestScar.label}
+                organId={organ?.id ?? "coin"}
+                islandId={island.id}
                 organLine={
-                  island.id === "paycheck_peninsula"
-                    ? "The Clock holds. Harbor is already listening."
-                    : island.id === "credit_kingdom"
-                      ? "The Spiral holds. Harbor is already listening."
-                      : "The Coin holds. Harbor is already listening."
+                  organ
+                    ? `The ${organ.name} holds. Harbor is already listening.`
+                    : "The Coin holds. Harbor is already listening."
                 }
                 onDone={dismissTakeHush}
               />
