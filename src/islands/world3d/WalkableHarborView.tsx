@@ -826,39 +826,53 @@ export function WalkableHarborView({
 
   const [ready, setReady] = useState(false);
   const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
-  const [showSkip3d, setShowSkip3d] = useState(false);
-  const [force2d, setForce2d] = useState(false);
+  const [force2d, setForce2d] = useState(() => {
+    try {
+      return sessionStorage.getItem("capital_harbor3d_fail") === "1";
+    } catch {
+      return false;
+    }
+  });
+  /** Defer WebGL so the loading veil + Continue paint before createContext can hitch. */
+  const [allowCanvas, setAllowCanvas] = useState(false);
   const readyRef = useRef(false);
+  const force2dRef = useRef(force2d);
   readyRef.current = ready;
+  force2dRef.current = force2d;
 
   const escapeToMyth = useCallback(() => {
     try {
-      // Clear sticky "3D ok" so a bad context can't trap the next visit either
       sessionStorage.removeItem("capital_harbor3d_ok");
+      sessionStorage.setItem("capital_harbor3d_fail", "1");
     } catch {
       /* ignore */
     }
+    setAllowCanvas(false);
     setForce2d(true);
     setReady(true);
   }, []);
 
   useEffect(() => {
-    if (ready) return;
-    // Offer an escape hatch before the hard failsafe — never leave players on a veil
+    if (ready || force2d) return;
+    setLoadHint("Loading Harbor Haven…");
+    // Paint Continue immediately — never wait 2.5s behind a hung WebGL thread.
+    const mount = window.setTimeout(() => {
+      if (!force2dRef.current) setAllowCanvas(true);
+    }, 100);
     const hint = window.setTimeout(() => {
       setLoadHint("Harbor is taking a while…");
-      setShowSkip3d(true);
     }, 2_500);
     // Always escape — previously we skipped failsafe when sessionStorage said 3D
     // worked earlier, which left remounts/hung WebGL stuck on Loading forever.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) escapeToMyth();
-    }, 6_000);
+    }, 5_000);
     return () => {
+      window.clearTimeout(mount);
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
     };
-  }, [ready, escapeToMyth]);
+  }, [ready, force2d, escapeToMyth]);
 
   useEffect(() => {
     if (ready) reportHarborReady();
@@ -894,18 +908,17 @@ export function WalkableHarborView({
           <p className="text-sm font-bold text-[#16283b]/80" data-testid="harbor-loading">
             {loadHint}
           </p>
-          {showSkip3d ? (
-            <button
-              type="button"
-              data-testid="harbor-skip-3d"
-              className="pointer-events-auto rounded-full bg-[#16283b] px-4 py-2 text-xs font-bold text-white shadow-md"
-              onClick={escapeToMyth}
-            >
-              Continue to Harbor
-            </button>
-          ) : null}
+          <button
+            type="button"
+            data-testid="harbor-skip-3d"
+            className="pointer-events-auto rounded-full bg-[#16283b] px-4 py-2 text-xs font-bold text-white shadow-md"
+            onClick={escapeToMyth}
+          >
+            Continue to Harbor
+          </button>
         </div>
       ) : null}
+      {allowCanvas ? (
       <Canvas
         shadows={!perfSoft}
         dpr={perfSoft ? [1, 1] : [1, 1.25]}
@@ -917,6 +930,7 @@ export function WalkableHarborView({
           setReady(true);
           try {
             sessionStorage.setItem("capital_harbor3d_ok", "1");
+            sessionStorage.removeItem("capital_harbor3d_fail");
           } catch {
             /* ignore */
           }
@@ -971,6 +985,7 @@ export function WalkableHarborView({
           />
         </Suspense>
       </Canvas>
+      ) : null}
     </div>
   );
 }

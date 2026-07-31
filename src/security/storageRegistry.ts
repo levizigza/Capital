@@ -63,6 +63,8 @@ const SESSION_KEYS = [
   "capital_intro_done_for_boot",
   "capital_boot_land_hub",
   "capital_stale_chunk_recover",
+  "capital_harbor3d_ok",
+  "capital_harbor3d_fail",
   "capital:perf-overlay",
 ] as const;
 

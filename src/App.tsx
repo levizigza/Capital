@@ -17,7 +17,10 @@ import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
 import type { ArchetypeId } from '@/data/archetype-questions'
 
-// Lazy load heavy components
+// Lazy load legacy / rare surfaces only. Islands is the product — eager import so a
+// nested Suspense retry can never replace Harbor with the purple App LoadingFallback
+// (React hides the committed tree with display:none !important while fallback shows).
+import IslandsApp from '@/islands/IslandsApp'
 const EnhancedGameHub = React.lazy(() => import('@/components/EnhancedGameHub'))
 const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
 const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
@@ -25,15 +28,6 @@ const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
 const DebugPanel = import.meta.env.DEV
   ? React.lazy(() => import('@/components/DebugPanel').then(m => ({ default: m.DebugPanel })))
   : null
-const IslandsApp = React.lazy(() =>
-  import('@/islands/IslandsApp').catch((err: unknown) => {
-    const message = err instanceof Error ? err.message : String(err)
-    void import('@/lib/hardRecover').then(({ autoRecoverStaleChunkOnce }) => {
-      autoRecoverStaleChunkOnce(message || 'Failed to fetch dynamically imported module')
-    })
-    throw err instanceof Error ? err : new Error(message)
-  }),
-)
 const IPLintScreen = React.lazy(() => import('@/components/IPLintScreen'))
 const ScenarioDeckSimulator = React.lazy(() => import('@/components/ScenarioDeckSimulator'))
 
@@ -540,7 +534,7 @@ function App() {
     )
   }
 
-  // Islands is the product.
+  // Islands is the product — no App-level Suspense (see eager IslandsApp import).
   if (currentMode === "islands" && ISLANDS_ENABLED) {
     return (
       <>
@@ -549,59 +543,59 @@ function App() {
         <div className="fixed top-4 right-4 z-50">
           <MusicPlayer />
         </div>
-        <Suspense fallback={<LoadingFallback />}>
-          {DebugPanel ? (
+        {DebugPanel ? (
+          <Suspense fallback={null}>
             <DebugPanel
               userProfile={userProfile}
               currentMode={currentMode}
               isInitialized={isInitialized}
               gameScores={gameScores || []}
             />
-          ) : null}
-          {import.meta.env.DEV && (
-            <>
-              <button
-                onClick={() => setShowIPLint(true)}
-                className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
-                title="IP Lint Scanner"
-              >
-                IP
-              </button>
-              {showIPLint && (
-                <Suspense fallback={null}>
-                  <IPLintScreen onClose={() => setShowIPLint(false)} />
-                </Suspense>
-              )}
-              <button
-                onClick={() => setShowDeckSim(true)}
-                className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
-                title="Scenario Deck Simulator"
-              >
-                🎲
-              </button>
-              {showDeckSim && (
-                <Suspense fallback={null}>
-                  <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
-                </Suspense>
-              )}
-            </>
-          )}
-          <IslandsApp
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            onExit={handleModeSwitch}
-            onReplayIntro={() => {
-              try {
-                sessionStorage.removeItem("capital_intro_done_for_boot")
-                sessionStorage.removeItem("capital_intro_seen_v1")
-              } catch {
-                /* ignore */
-              }
-              setBootPhase("title")
-              setShowCapitalIntro(true)
-            }}
-          />
-        </Suspense>
+          </Suspense>
+        ) : null}
+        {import.meta.env.DEV && (
+          <>
+            <button
+              onClick={() => setShowIPLint(true)}
+              className="fixed bottom-4 left-4 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="IP Lint Scanner"
+            >
+              IP
+            </button>
+            {showIPLint && (
+              <Suspense fallback={null}>
+                <IPLintScreen onClose={() => setShowIPLint(false)} />
+              </Suspense>
+            )}
+            <button
+              onClick={() => setShowDeckSim(true)}
+              className="fixed bottom-4 left-18 z-50 rounded-full w-12 h-12 p-0 shadow-lg bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center text-lg transition-colors"
+              title="Scenario Deck Simulator"
+            >
+              🎲
+            </button>
+            {showDeckSim && (
+              <Suspense fallback={null}>
+                <ScenarioDeckSimulator onClose={() => setShowDeckSim(false)} />
+              </Suspense>
+            )}
+          </>
+        )}
+        <IslandsApp
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
+          onExit={handleModeSwitch}
+          onReplayIntro={() => {
+            try {
+              sessionStorage.removeItem("capital_intro_done_for_boot")
+              sessionStorage.removeItem("capital_intro_seen_v1")
+            } catch {
+              /* ignore */
+            }
+            setBootPhase("title")
+            setShowCapitalIntro(true)
+          }}
+        />
       </>
     )
   }
