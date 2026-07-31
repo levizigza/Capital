@@ -44,7 +44,13 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
-import { harborScarPlaques, stanceGreetingHint, groupScarsByChapter, scarChapterTitle } from "../worldMemory";
+import {
+  harborScarPlaques,
+  stanceGreetingHint,
+  groupScarsByChapter,
+  scarChapterTitle,
+  scarOrganId,
+} from "../worldMemory";
 import {
   dailyRumorText,
   ritualNeedsAttention,
@@ -322,7 +328,8 @@ export function HomeHubView({
   const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
 
   const latestPlaque = plaques[plaques.length - 1] ?? null;
-  const familyMyth = familyPlaqueMythLine(latestPlaque?.label);
+  const latestOrgan = latestPlaque ? scarOrganId(latestPlaque) : null;
+  const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
   const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
   const scarEcho =
     latestPlaque != null
@@ -331,6 +338,7 @@ export function HomeHubView({
           dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
             | "same"
             | "later",
+          organ: scarOrganId(latestPlaque),
         }
       : null;
 
@@ -1024,6 +1032,7 @@ export function HomeHubView({
                 {echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen ? (
                   <Day2EchoOverlay
                     scarLabel={latestPlaque?.label ?? "your Take"}
+                    organId={latestOrgan ?? "memory"}
                     onVisitPlinth={() => {
                       setEchoSurpriseOpen(false);
                       onMarkEchoSurprise?.();

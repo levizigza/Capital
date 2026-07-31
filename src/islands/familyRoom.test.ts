@@ -58,6 +58,8 @@ describe("familyRoom", () => {
   it("names a plaque as local household myth", () => {
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Local myth/i);
+    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Coin/);
+    expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/Clock/);
     expect(familyPlaqueMythLine(null)).toBeNull();
     expect(familyPlaqueMythLine("  ")).toBeNull();
   });

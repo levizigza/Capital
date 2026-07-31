@@ -100,6 +100,21 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Settings copy names organs, not leftover genre-city labels.  
 - Off-spine genre cues stay available; the frozen triangle leads with organ language.
 
+## Cold retell (Wave 7) — iconic path capstone
+
+A cold player (or a kid watching) should be able to say one sentence per organ after Harbor return:
+
+| Organ | Shore Take | Harbor proof |
+|-------|------------|--------------|
+| Coin | Cove hush | Plaque + share seal says COIN |
+| Clock | Paycheck hush | Plaque + day-2 / Piggy name Clock |
+| Spiral | Credit hush | Plaque + Family myth name Spiral |
+| Memory | Home plaza | Plinth + locals keep naming yesterday |
+
+- Plaza echo, Piggy, day-2 cinema, Family Room myth, and share PNG all carry the **organ word**.  
+- Day-2 audit accepts Cove **or** Paycheck **or** Credit scars.  
+- After Wave 7: freeze the iconic path — open map width only when the cold retell test passes.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

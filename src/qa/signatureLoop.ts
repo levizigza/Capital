@@ -178,8 +178,12 @@ export function auditSignatureLoop(save: IslandSaveV1, dayKey = localDayKey()): 
   }
 
   const rumor = pickDailyRumor(save, dayKey);
-  if (rumor.id.startsWith("scar_echo_") && coveScar) {
-    notes.push("Day-2 plaza should surprise without a tutorial");
+  const spineScar =
+    Boolean(coveScar) ||
+    Boolean(latest?.id.startsWith("pp_")) ||
+    Boolean(latest?.id.startsWith("credit_"));
+  if (rumor.id.startsWith("scar_echo_") && spineScar) {
+    notes.push("Day-2 plaza should surprise without a tutorial — organ scar still named");
     return { ok: true, phase: "day2_echo", notes };
   }
 
@@ -188,13 +192,17 @@ export function auditSignatureLoop(save: IslandSaveV1, dayKey = localDayKey()): 
     return { ok: true, phase: "share_ready", notes };
   }
 
-  return { ok: false, phase: "unknown", notes: ["No Cove scar yet — play Take first"] };
+  return {
+    ok: false,
+    phase: "unknown",
+    notes: ["No spine scar yet — play a Cove / Paycheck / Credit Take first"],
+  };
 }
 
-/** Trailer shot list (captions) — ~24s mute-friendly. */
+/** Trailer shot list (captions) — ~24s mute-friendly. Wave 7 names organs. */
 export const SIGNATURE_TRAILER_SHOTS = [
   { atMs: 0, caption: "A choice you can't undo" },
-  { atMs: 3500, caption: "The island goes quiet" },
+  { atMs: 3500, caption: "Coin · Clock · Spiral go quiet" },
   { atMs: 7000, caption: "Harbor felt that" },
   { atMs: 12_000, caption: "Memory Plinth remembers" },
   { atMs: 16_500, caption: "Piggy noticed" },

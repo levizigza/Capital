@@ -114,8 +114,12 @@ type Props = {
   weatherFog?: { near: number; far: number } | null;
   /** Per-NPC Talk Battle memory for ambient greetings */
   npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
-  /** Latest plaque echo so plaza locals name the scar (day-2 memory) */
-  scarEcho?: { label: string; dayOffset: "same" | "later" } | null;
+  /** Latest plaque echo so plaza locals name the scar (day-2 / organ memory) */
+  scarEcho?: {
+    label: string;
+    dayOffset: "same" | "later";
+    organ?: import("../moneyOrgans").MoneyOrganId;
+  } | null;
   /** Slow-device composition — myth first, never a hotspot dashboard */
   fallbackMode?: HarborFallbackMode;
   onFallbackTalkPiggy?: () => void;
@@ -445,7 +449,11 @@ function PlazaScene({
   playerPos: MutableRefObject<THREE.Vector3>;
   npcBodies: MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
   look: ReturnType<typeof getEraLook3D>;
-  scarEcho?: { label: string; dayOffset: "same" | "later" } | null;
+  scarEcho?: {
+    label: string;
+    dayOffset: "same" | "later";
+    organ?: import("../moneyOrgans").MoneyOrganId;
+  } | null;
 }) {
   const memoryLit = Boolean(scarEcho);
   // Distill: vegetation in 3 outer clusters — never a full prop ring.

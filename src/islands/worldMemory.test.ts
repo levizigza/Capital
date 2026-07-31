@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   addHarborScar,
   applyStanceDelta,
+  coldRetellLine,
   dominantStance,
   groupScarsByChapter,
   hasIrreversible,
   recordIrreversible,
   recordNpcTalk,
   scarChapterTitle,
+  scarOrganId,
   scarTriggersChapterQuiet,
   stanceGreetingHint,
 } from "./worldMemory";
@@ -106,5 +108,39 @@ describe("worldMemory", () => {
     expect(scarTriggersChapterQuiet("pp_protector_plaque")).toBe(true);
     expect(scarTriggersChapterQuiet("cove_saver_plaque")).toBe(true);
     expect(scarTriggersChapterQuiet("credit_haste_plaque")).toBe(true);
+  });
+
+  it("Wave 7 — cold retell names organ + plaque for each spine scar", () => {
+    const cove = {
+      id: "cove_saver_plaque",
+      islandId: "coincraft_cove",
+      choiceId: "save",
+      label: "Jar before treat",
+      kind: "plaque" as const,
+      createdAt: "1",
+    };
+    const pay = {
+      id: "pp_protector_plaque",
+      islandId: "paycheck_peninsula",
+      choiceId: "protect",
+      label: "Umbrella before glitter",
+      kind: "plaque" as const,
+      createdAt: "2",
+    };
+    const credit = {
+      id: "credit_patience_plaque",
+      islandId: "credit_kingdom",
+      choiceId: "wait",
+      label: "Waited the spiral",
+      kind: "plaque" as const,
+      createdAt: "3",
+    };
+    expect(scarOrganId(cove)).toBe("coin");
+    expect(scarOrganId(pay)).toBe("clock");
+    expect(scarOrganId(credit)).toBe("spiral");
+    expect(coldRetellLine(cove)).toMatch(/Coin/);
+    expect(coldRetellLine(cove)).toMatch(/Jar before treat/);
+    expect(coldRetellLine(pay)).toMatch(/Clock/);
+    expect(coldRetellLine(credit)).toMatch(/Spiral/);
   });
 });

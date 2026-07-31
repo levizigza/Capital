@@ -169,9 +169,21 @@ export function importFamilyRoomJson(text: string): FamilyRoom {
 
 /**
  * Local myth line for Family Room — names a Harbor plaque without inventing multiplayer sync.
+ * Wave 7 — organ word so cold retell stays true at home.
  */
-export function familyPlaqueMythLine(scarLabel: string | null | undefined): string | null {
+export function familyPlaqueMythLine(
+  scarLabel: string | null | undefined,
+  organId?: import("./moneyOrgans").MoneyOrganId | null,
+): string | null {
   const label = (scarLabel ?? "").trim();
   if (!label) return null;
-  return `This household still tips jars about “${label}.” Local myth — the Plinth remembered, and so do you.`;
+  const organ =
+    organId === "coin"
+      ? "Coin"
+      : organId === "clock"
+        ? "Clock"
+        : organId === "spiral"
+          ? "Spiral"
+          : "Memory";
+  return `This household still tips jars about the ${organ} — “${label}.” Local myth — the Plinth remembered, and so do you.`;
 }

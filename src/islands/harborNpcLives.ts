@@ -98,16 +98,21 @@ export function harborNpcPose(
   life: HarborNpcLife,
   hour: HarborHour = currentHarborHour(),
   memory?: { talks?: number; lastChoiceIds?: string[] } | null,
-  scarEcho?: { label: string; dayOffset: "same" | "later" } | null,
+  scarEcho?: {
+    label: string;
+    dayOffset: "same" | "later";
+    organ?: import("./moneyOrgans").MoneyOrganId;
+  } | null,
 ): { position: [number, number, number]; yaw: number; line: string; name: string } {
   const mascot = getMascot(life.mascotId);
   let line = life.lines[hour];
   // Cast-as-memory: plaza locals + Piggy name the scar so Harbor feels haunted by choice
   if (scarEcho?.label && localNamesScarEcho(life.mascotId, hour)) {
+    const organ = scarEcho.organ ?? "memory";
     line =
       life.mascotId === "piggy_penny"
-        ? piggyScarMemoryLine(scarEcho.label, scarEcho.dayOffset)
-        : scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset);
+        ? piggyScarMemoryLine(scarEcho.label, scarEcho.dayOffset, organ)
+        : scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset, organ);
   } else if (memory && (memory.talks ?? 0) >= 1) {
     const last = memory.lastChoiceIds?.at(-1);
     if (last) {

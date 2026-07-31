@@ -1,9 +1,11 @@
 /**
  * World memory — irreversible choices, Harbor scars, stance, light NPC recall.
  * Additive on IslandSaveV1 (version stays "1").
+ * Wave 7 — cold retell: every plaque names its money organ.
  */
 
 import type { IslandSaveV1 } from "./types";
+import type { MoneyOrganId } from "./moneyOrgans";
 
 export type HarborScarKind = "plaque" | "npc_tone" | "plaza_prop";
 
@@ -138,6 +140,28 @@ export function scarChapterTitle(scar: HarborScar): string {
   return "Harbor memory";
 }
 
+/** Wave 7 — which organ a plaque belongs to (cold retell). */
+export function scarOrganId(scar: Pick<HarborScar, "id" | "islandId">): MoneyOrganId {
+  const ch = scarChapterTitle(scar as HarborScar);
+  if (ch === "Paycheck Peninsula") return "clock";
+  if (ch === "Credit Kingdom") return "spiral";
+  if (ch === "Coincraft Cove") return "coin";
+  return "memory";
+}
+
+export function scarOrganName(organ: MoneyOrganId): string {
+  if (organ === "coin") return "Coin";
+  if (organ === "clock") return "Clock";
+  if (organ === "spiral") return "Spiral";
+  return "Memory";
+}
+
+/** One kid-facing sentence after a cold play — organ + plaque. */
+export function coldRetellLine(scar: HarborScar): string {
+  const organ = scarOrganName(scarOrganId(scar));
+  return `Harbor remembered the ${organ}: “${scar.label}.”`;
+}
+
 export function groupScarsByChapter(
   scars: HarborScar[],
 ): { chapter: string; scars: HarborScar[] }[] {
@@ -168,22 +192,26 @@ export function scarEchoAmbientLine(
   mascotName: string,
   scarLabel: string,
   dayOffset: "same" | "later",
+  organ: MoneyOrganId = "memory",
 ): string {
+  const organWord = scarOrganName(organ);
   if (dayOffset === "later") {
-    return `${mascotName}: Still thinking about “${scarLabel}” on the Plinth. Money left footprints.`;
+    return `${mascotName}: Still thinking about the ${organWord} plaque — “${scarLabel}.” Money left footprints.`;
   }
-  return `${mascotName}: The Plinth just got “${scarLabel}”. Harbor felt that.`;
+  return `${mascotName}: The Plinth just got a ${organWord} mark — “${scarLabel}.” Harbor felt that.`;
 }
 
 /** Piggy always names the scar — living conscience, not a prop. */
 export function piggyScarMemoryLine(
   scarLabel: string,
   dayOffset: "same" | "later",
+  organ: MoneyOrganId = "memory",
 ): string {
+  const organWord = scarOrganName(organ);
   if (dayOffset === "later") {
-    return `Piggy Penny: Still here — “${scarLabel}” did not wash out with the tide.`;
+    return `Piggy Penny: Still here — the ${organWord} did not wash out. “${scarLabel}.”`;
   }
-  return `Piggy Penny: Harbor felt “${scarLabel}”. I’m proud you came home changed.`;
+  return `Piggy Penny: Harbor felt the ${organWord} — “${scarLabel}.” I’m proud you came home changed.`;
 }
 
 /** True when this local should name the scar (dense plaza memory, not sparse). */

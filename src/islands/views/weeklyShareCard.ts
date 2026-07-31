@@ -155,9 +155,18 @@ async function paintCard(opts: {
     ctx.arc(900, 280, 70, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillStyle = "#fef3c7";
-    ctx.font = "800 28px system-ui, sans-serif";
+    ctx.font = "800 26px system-ui, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("PLINTH", 900, 288);
+    // Wave 7 — seal names the organ a kid can retell
+    const seal =
+      opts.organ === "coin"
+        ? "COIN"
+        : opts.organ === "clock"
+          ? "CLOCK"
+          : opts.organ === "spiral"
+            ? "SPIRAL"
+            : "PLINTH";
+    ctx.fillText(seal, 900, 288);
     ctx.textAlign = "left";
   }
 
