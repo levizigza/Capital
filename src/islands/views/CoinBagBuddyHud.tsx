@@ -20,9 +20,11 @@ export function CoinBagBuddyHud({
   onToggleGuide,
   track,
 }: Props) {
+  // Quieter plaza: tip wins; coach detail stays collapsed unless it adds a new fact.
   const showDetail =
     Boolean(detail) &&
     detail!.trim().length > 0 &&
+    detail!.trim().length <= 72 &&
     !tip.toLowerCase().includes(detail!.toLowerCase().slice(0, 18));
 
   return (

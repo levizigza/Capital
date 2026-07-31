@@ -48,3 +48,12 @@ See [island-design-process.md](./island-design-process.md): **W2 one hero per ar
 ## Freeze
 
 No new outer islands. Deepen Harbor + existing triangle shores only ([iconic-path.md](./iconic-path.md)).
+
+## Playtest gate (ship checklist)
+
+- Cold Harbor vista: name Fountain · Ledger Bank · Money Carpet Gate without HUD
+- Squint: no ring of identical yellow-roof shops
+- Archipelago map is diegetic at the Carpet Gate (not a permanent bottom chrome stack)
+- Cove / Paycheck / Credit painting portals + map pins preview Jar / Tower / Keep
+- Each spine shore has pokeable toys (coin · bell · organ motif)
+- Signature loop + Money Structures still function

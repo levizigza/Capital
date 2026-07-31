@@ -458,7 +458,7 @@ function PlazaScene({
     ];
     return t.props
       .filter((p) => p.kind !== "hut")
-      .slice(0, 9)
+      .slice(0, 6)
       .map((p, i) => {
         const [cx, cz] = clusters[i % clusters.length]!;
         const jig = ((i * 37) % 10) * 0.12;
@@ -560,10 +560,11 @@ function PlazaScene({
       <PierMouthFrame />
       <WoodenPier position={[0, 0.05, 14.2]} />
 
-      {/* Seawall — denser near districts, open at pier mouth */}
-      {Array.from({ length: 16 }).map((_, i) => {
-        if (i === 4 || i === 5) return null;
-        const ang = (i / 16) * Math.PI * 2 + Math.PI * 0.06;
+      {/* Seawall — ~11 segments with intentional gaps (pier mouth + vista windows) */}
+      {Array.from({ length: 14 }).map((_, i) => {
+        // Open pier mouth (south) and two side vistas for negative space
+        if (i === 3 || i === 4 || i === 10) return null;
+        const ang = (i / 14) * Math.PI * 2 + Math.PI * 0.08;
         const r = 14.6;
         return (
           <group key={i}>
@@ -572,7 +573,7 @@ function PlazaScene({
               position={[Math.cos(ang) * r, 0.4, Math.sin(ang) * r]}
               rotation={[0, -ang, 0]}
             >
-              <boxGeometry args={[2.9, 0.85, 0.55]} />
+              <boxGeometry args={[3.1, 0.85, 0.55]} />
               <meshStandardMaterial color="#a8a29e" roughness={0.82} />
             </mesh>
             <mesh
@@ -580,10 +581,10 @@ function PlazaScene({
               position={[Math.cos(ang) * r, 0.88, Math.sin(ang) * r]}
               rotation={[0, -ang, 0]}
             >
-              <boxGeometry args={[2.7, 0.14, 0.6]} />
+              <boxGeometry args={[2.9, 0.14, 0.6]} />
               <meshStandardMaterial color="#78716c" roughness={0.75} />
             </mesh>
-            {i % 2 === 0 ? (
+            {i % 3 === 0 ? (
               <PlazaLantern
                 position={[Math.cos(ang) * (r - 0.6), 0.05, Math.sin(ang) * (r - 0.6)]}
               />

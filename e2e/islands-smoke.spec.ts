@@ -56,9 +56,12 @@ test.describe("Islands smoke", () => {
       await hearThem.click();
     }
 
-    await expect(page.getByTestId("hub-travel-map")).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByTestId("hub-leave-islands")).toBeVisible();
-    await page.getByTestId("hub-travel-map").click();
+    // Free-roam Harbor: Archipelago map is diegetic at Money Carpet (no always-on chip)
+    await expect(page.getByTestId("hub-leave-islands")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("hub-travel-map")).toHaveCount(0);
+    await page.evaluate(() => {
+      window.__QA__!.openTravel();
+    });
 
     // Fortune spine only — genre packs stay off the strip (Wave 4 freeze)
     await expect(page.getByTestId("island-pin-harbor_haven")).toBeVisible();

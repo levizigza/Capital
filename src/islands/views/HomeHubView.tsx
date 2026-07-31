@@ -273,12 +273,11 @@ export function HomeHubView({
       guidedStep?.highlight === "outfitter" ||
       guidedStep?.id === "walk_outfitter" ||
       guidedStep?.id === "become_you");
+  /** Map chrome only when guided to dock / first voyage — free roam uses diegetic Money Carpet. */
   const showTravelChip =
     !quietHarbor &&
-    (!castleMode ||
-      guidedStep?.id === "practice_optional" ||
-      guidedStep?.id === "to_dock" ||
-      guidedStep?.id === "first_island");
+    Boolean(castleMode) &&
+    (guidedStep?.id === "to_dock" || guidedStep?.id === "first_island");
   const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
@@ -1194,11 +1193,11 @@ export function HomeHubView({
                 }}
                 className="rounded-full bg-black/35 px-3 py-1.5 text-[11px] font-semibold text-white/85 backdrop-blur-sm hover:bg-black/50"
               >
-                Archipelago map · or walk to Money Carpet
+                Walk to Money Carpet · open map
               </button>
             ) : (
               <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
-                Walk pad or WASD · E talk when near · follow Coin Bag
+                Walk pad or WASD · E talk · map at Money Carpet
               </p>
             )}
             <p className="cap-hint-whisper sr-only md:not-sr-only">

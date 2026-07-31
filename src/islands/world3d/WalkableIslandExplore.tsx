@@ -35,7 +35,7 @@ import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { moneyStructureForIsland } from "../moneyStructures";
-import { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
+import { ShoreSpinCoin, ShoreBell, ShoreClockToy, ShoreSpiralToy } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
 import { moneyOrganForIsland } from "../moneyOrgans";
 
@@ -483,6 +483,51 @@ function PadMarker({
               depthWrite={false}
             />
           </mesh>
+          {/* Destination hero silhouette inside the painting */}
+          {(() => {
+            const theme = moneyStructureForIsland(islandId)?.theme;
+            if (theme === "tower") {
+              return (
+                <mesh position={[0, 1.4, 0.18]} castShadow>
+                  <boxGeometry args={[0.28, 0.7, 0.12]} />
+                  <meshStandardMaterial
+                    color="#e2e8f0"
+                    emissive={look.accent}
+                    emissiveIntensity={0.35}
+                    wireframe={wire}
+                  />
+                </mesh>
+              );
+            }
+            if (theme === "keep") {
+              return (
+                <mesh position={[0, 1.45, 0.18]} castShadow>
+                  <coneGeometry args={[0.32, 0.65, 5]} />
+                  <meshStandardMaterial
+                    color="#cbd5e1"
+                    emissive={look.accent}
+                    emissiveIntensity={0.3}
+                    flatShading
+                    wireframe={wire}
+                  />
+                </mesh>
+              );
+            }
+            if (theme === "jar") {
+              return (
+                <mesh position={[0, 1.35, 0.18]} castShadow>
+                  <cylinderGeometry args={[0.26, 0.32, 0.55, 12]} />
+                  <meshStandardMaterial
+                    color="#fde68a"
+                    emissive={look.accent}
+                    emissiveIntensity={0.4}
+                    wireframe={wire}
+                  />
+                </mesh>
+              );
+            }
+            return null;
+          })()}
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.7]}>
             <ringGeometry args={[0.55, 0.9, 24]} />
             <meshStandardMaterial
@@ -878,17 +923,28 @@ function ShoreScene({
       <WoodenPier position={anchors.pier} />
       {wire ? <WireNature look={look} /> : <NatureProps props={props} look={look} />}
 
-      {/* Toy culture — denser micro-delights on every shore */}
+      {/* Toy culture — 1–2 shared delights + one organ-true poke per shore */}
       <ShoreSpinCoin
         position={[shoreScale(1.6), 0.02, shoreScale(-1.2)]}
         accent={chapterQuiet ? "#94a3b8" : look.accent}
       />
-      <ShoreSpinCoin
-        position={[shoreScale(-2.8), 0.02, shoreScale(1.4)]}
-        accent={chapterQuiet ? "#64748b" : look.accent}
-      />
       <ShoreBell position={[shoreScale(-2.2), 0, shoreScale(anchors.pier[2] * 0.35)]} />
-      <ShoreBell position={[shoreScale(3.4), 0, shoreScale(-3.2)]} />
+      {organ?.pathMotif === "tick" ? (
+        <ShoreClockToy
+          position={[shoreScale(2.6), 0, shoreScale(-2.4)]}
+          accent={chapterQuiet ? "#64748b" : organ.accentHint}
+        />
+      ) : organ?.pathMotif === "spiral" ? (
+        <ShoreSpiralToy
+          position={[shoreScale(2.6), 0, shoreScale(-2.4)]}
+          accent={chapterQuiet ? "#64748b" : organ.accentHint}
+        />
+      ) : (
+        <ShoreSpinCoin
+          position={[shoreScale(-2.8), 0.02, shoreScale(1.4)]}
+          accent={chapterQuiet ? "#64748b" : look.accent}
+        />
+      )}
 
       <IslandTitle
         title={island.name}

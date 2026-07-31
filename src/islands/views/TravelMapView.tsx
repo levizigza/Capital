@@ -15,6 +15,17 @@ import { FORTUNE_ARCHIPELAGO_NAME, islandsForSpineTravel } from "../spineArchipe
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
+import { moneyStructureForIsland } from "../moneyStructures";
+
+/** Compact structure label for the strip — Jar / Tower / Keep / Bank. */
+function structurePinGlyph(islandId: string): string {
+  const theme = moneyStructureForIsland(islandId)?.theme;
+  if (theme === "jar") return "Jar";
+  if (theme === "tower") return "Tower";
+  if (theme === "keep") return "Keep";
+  if (theme === "bank") return "Bank";
+  return "Shore";
+}
 
 export type TravelMapViewProps = {
   userProfile: UserProfile;
@@ -107,10 +118,17 @@ export function TravelMapView({
                   style={{ borderLeft: `4px solid ${theme.accent}` }}
                   data-ghost={locked ? "1" : "0"}
                 >
-                  <div>
-                    <span className="mr-1">{locked ? "◌" : island.icon}</span>
-                    {island.name}
-                    {here ? " · here" : locked ? " · ghost" : ""}
+                  <div className="flex items-baseline gap-1.5">
+                    <span
+                      className="rounded bg-black/10 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide opacity-80"
+                      aria-hidden
+                    >
+                      {locked ? "···" : structurePinGlyph(island.id)}
+                    </span>
+                    <span>
+                      {island.name}
+                      {here ? " · here" : locked ? " · ghost" : ""}
+                    </span>
                   </div>
                   {lockWhy ? (
                     <div className="mt-0.5 text-[10px] font-semibold opacity-80">{lockWhy}</div>
