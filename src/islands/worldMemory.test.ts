@@ -49,7 +49,7 @@ describe("worldMemory", () => {
       id: "cove_saver_plaque",
       islandId: "coincraft_cove",
       choiceId: "save",
-      label: "Cove: jar before glitter",
+      label: "Jar before treat",
       kind: "plaque",
       createdAt: "2026-01-01",
     });

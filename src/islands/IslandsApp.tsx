@@ -1989,6 +1989,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               }));
             }}
             onMarkEchoSurprise={onMarkEchoSurprise}
+            onClearChapterQuiet={() =>
+              updateSave((prev) =>
+                prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
+              )
+            }
             onPlayStructureMinigame={(minigameId) => {
               const host =
                 content.islands.find((i) => i.minigames?.some((m) => m.id === minigameId))?.id ??
@@ -2102,18 +2107,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
               onCollectItem={(itemId) => void collectItem(itemId)}
               onStartQuest={(questId) => void startQuest(questId)}
-              onOpenTravel={() => {
-                updateSave((prev) =>
-                  prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
-                );
-                setView("travel");
-              }}
-              onOpenHub={() => {
-                updateSave((prev) =>
-                  prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
-                );
-                setView("home");
-              }}
+              onOpenTravel={() => setView("travel")}
+              onOpenHub={() => setView("home")}
               onOpenStudio={() => setView("studio")}
               onPlayMinigame={(minigameId) => {
                 setMinigameSource("dialogue");

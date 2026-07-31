@@ -500,26 +500,16 @@ export function IslandPlayView({
             </GameButton>
           ) : null}
           {!chapterQuiet ? (
-            <GameButton
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                onClearChapterQuiet?.();
-                onOpenTravel();
-              }}
-            >
+            <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
               Map
             </GameButton>
           ) : null}
           <GameButton
             variant="primary"
             size="sm"
-            onClick={() => {
-              onClearChapterQuiet?.();
-              onOpenHub();
-            }}
+            onClick={chapterQuiet ? onOpenTravel : onOpenHub}
           >
-            {chapterQuiet ? "Fly home changed" : "Hub"}
+            {chapterQuiet ? "Carpet home — Harbor felt that" : "Hub"}
           </GameButton>
         </div>
       }

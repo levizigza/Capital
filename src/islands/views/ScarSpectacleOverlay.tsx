@@ -82,17 +82,17 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
           }`}
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
-            Money is alive
+            Harbor felt that
           </p>
           <h2 className="mt-2 text-xl font-black leading-snug sm:text-2xl">
             {headline}
           </h2>
           <p className="mt-2 text-sm text-white/85">
             {chapter}
-            {latest ? ` · ${latest.label}` : ""}
+            {latest ? ` · “${latest.label}”` : ""}
           </p>
           <p className="mt-3 text-xs text-white/60">
-            Memory Plinth glowing · Piggy cheering · tap to continue
+            Memory Plinth glowing · share card next · tap to continue
           </p>
         </div>
       ) : (

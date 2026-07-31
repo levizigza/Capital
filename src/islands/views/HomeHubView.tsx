@@ -72,6 +72,8 @@ import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harbor
 import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
+import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
+import { Day2EchoOverlay } from "./Day2EchoOverlay";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import {
   harborFallbackMode,
@@ -154,6 +156,8 @@ export type HomeHubViewProps = {
   onMarkScarSpectacle?: (scarCount: number) => void;
   /** Day-2 scar echo surprise acknowledged */
   onMarkEchoSurprise?: () => void;
+  /** Clear Cove hush once Harbor mounts (hush rides the carpet home) */
+  onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
 };
@@ -199,6 +203,7 @@ export function HomeHubView({
   onStudioGalleryOpened,
   onMarkScarSpectacle,
   onMarkEchoSurprise,
+  onClearChapterQuiet,
   onPlayStructureMinigame,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
@@ -332,6 +337,10 @@ export function HomeHubView({
     gameEvents.emit("world.entered", { place: "harbor", ecosystemMotion: "mixed" });
     onSyncHarborRitual?.();
   }, [onSyncHarborRitual]);
+
+  useEffect(() => {
+    if (save.chapterQuietPending) onClearChapterQuiet?.();
+  }, [save.chapterQuietPending, onClearChapterQuiet]);
 
   useEffect(() => {
     const count = plaques.length;
@@ -987,6 +996,44 @@ export function HomeHubView({
                 />
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
+                ) : null}
+                {feltShareOpen && !spectacleOpen && latestPlaque ? (
+                  <HarborFeltShareOverlay
+                    scarLabel={latestPlaque.label}
+                    chapter={scarChapterTitle(latestPlaque)}
+                    previewUrl={feltPreviewUrl}
+                    onShare={async () => {
+                      try {
+                        const result = await shareHarborFeltCard({
+                          voyagerName: voyager.name || "Voyager",
+                          scarLabel: latestPlaque.label,
+                          chapter: scarChapterTitle(latestPlaque),
+                        });
+                        toast.message(result === "shared" ? "Shared" : "Share card downloaded");
+                      } catch (err) {
+                        if (err instanceof DOMException && err.name === "AbortError") return;
+                        toast.error("Couldn’t build share card");
+                      }
+                      setFeltShareOpen(false);
+                    }}
+                    onKeepWalking={() => setFeltShareOpen(false)}
+                  />
+                ) : null}
+                {echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen ? (
+                  <Day2EchoOverlay
+                    scarLabel={latestPlaque?.label ?? "your Take"}
+                    onVisitPlinth={() => {
+                      setEchoSurpriseOpen(false);
+                      onMarkEchoSurprise?.();
+                      playCapitalSfx("plinth_hum");
+                      setPlinthGlow(true);
+                      setHubModal("memory");
+                    }}
+                    onDismiss={() => {
+                      setEchoSurpriseOpen(false);
+                      onMarkEchoSurprise?.();
+                    }}
+                  />
                 ) : null}
                 <SignatureTrailerOverlay
                   open={trailerOpen}
@@ -1668,112 +1715,6 @@ export function HomeHubView({
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
-          </GameButton>
-        </div>
-      </GameModal>
-
-      <GameModal
-        open={feltShareOpen && !spectacleOpen}
-        onClose={() => setFeltShareOpen(false)}
-        maxWidth="sm"
-        usePortal
-        showCloseButton
-        title="Harbor felt that"
-      >
-        <div className="space-y-3 text-center" data-testid="harbor-felt-share">
-          <p className="text-sm text-muted-foreground">
-            {latestPlaque
-              ? `“${latestPlaque.label}” lives on the Memory Plinth. This is the card people remember.`
-              : "Your choice stuck. Share the moment."}
-          </p>
-          {feltPreviewUrl ? (
-            <img
-              src={feltPreviewUrl}
-              alt="Harbor felt that share card"
-              className="mx-auto max-h-56 w-auto rounded-xl border border-amber-200/40 shadow-lg"
-              data-testid="harbor-felt-preview"
-            />
-          ) : (
-            <div className="mx-auto flex h-40 max-w-[12rem] items-center justify-center rounded-xl bg-slate-900/40 text-xs text-muted-foreground">
-              Painting the Plinth…
-            </div>
-          )}
-          <GameButton
-            variant="primary"
-            className="w-full"
-            data-testid="harbor-felt-download"
-            onClick={async () => {
-              if (!latestPlaque) {
-                setFeltShareOpen(false);
-                return;
-              }
-              try {
-                const result = await shareHarborFeltCard({
-                  voyagerName: voyager.name || "Voyager",
-                  scarLabel: latestPlaque.label,
-                  chapter: scarChapterTitle(latestPlaque),
-                });
-                toast.message(result === "shared" ? "Shared" : "Share card downloaded");
-              } catch (err) {
-                if (err instanceof DOMException && err.name === "AbortError") return;
-                toast.error("Couldn’t build share card");
-              }
-              setFeltShareOpen(false);
-            }}
-            autoFocus
-          >
-            Share “Harbor felt that”
-          </GameButton>
-          <GameButton
-            variant="outline"
-            className="w-full"
-            onClick={() => setFeltShareOpen(false)}
-          >
-            Keep walking
-          </GameButton>
-        </div>
-      </GameModal>
-
-      <GameModal
-        open={echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen}
-        onClose={() => {
-          setEchoSurpriseOpen(false);
-          onMarkEchoSurprise?.();
-        }}
-        maxWidth="sm"
-        usePortal
-        showCloseButton
-        title="Still here"
-      >
-        <div className="space-y-3 text-center" data-testid="day2-echo-surprise">
-          <p className="text-sm text-muted-foreground">
-            {latestPlaque
-              ? `Locals still tip their jars about “${latestPlaque.label}.” The Plinth did not forget overnight.`
-              : rumor}
-          </p>
-          <GameButton
-            variant="primary"
-            className="w-full"
-            onClick={() => {
-              setEchoSurpriseOpen(false);
-              onMarkEchoSurprise?.();
-              playCapitalSfx("plinth_hum");
-              setPlinthGlow(true);
-              setHubModal("memory");
-            }}
-            autoFocus
-          >
-            Visit the Plinth
-          </GameButton>
-          <GameButton
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              setEchoSurpriseOpen(false);
-              onMarkEchoSurprise?.();
-            }}
-          >
-            I hear them
           </GameButton>
         </div>
       </GameModal>

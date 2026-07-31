@@ -230,11 +230,11 @@
             {
               "id": "kk1",
               "speaker": "Keeper Kira",
-              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This choice sticks — put some in the jar forever, or treat yourself at Shelly's stall first?",
+              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This is a Take — it sticks forever. Jar first, or treat yourself at Shelly's stall first?",
               "choices": [
                 {
                   "id": "kk1_a",
-                  "text": "Jar first — I'll save.",
+                  "text": "Jar first — a Take that sticks.",
                   "nextNodeId": "kk2",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -247,7 +247,7 @@
                     {
                       "type": "addScar",
                       "id": "cove_saver_plaque",
-                      "label": "Cove: jar before glitter",
+                      "label": "Jar before treat",
                       "kind": "plaque",
                       "stance": "saver",
                       "stanceDelta": 2
@@ -256,7 +256,7 @@
                 },
                 {
                   "id": "kk1_spend",
-                  "text": "Treat first — then I'll jar what's left.",
+                  "text": "Treat first — a Take that sticks.",
                   "nextNodeId": "kk2_spend",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -269,7 +269,7 @@
                     {
                       "type": "addScar",
                       "id": "cove_spender_plaque",
-                      "label": "Cove: glitter before jar",
+                      "label": "Treat before jar",
                       "kind": "plaque",
                       "stance": "spender",
                       "stanceDelta": 2
@@ -282,13 +282,13 @@
             {
               "id": "kk2",
               "speaker": "Keeper Kira",
-              "text": "Here's your Savings Jar! Harbor will remember you put the jar first. Every time you earn, try adding a little more.",
+              "text": "Here's your Savings Jar. Harbor already felt that — board the carpet home when the hush settles.",
               "end": true
             },
             {
               "id": "kk2_spend",
               "speaker": "Keeper Kira",
-              "text": "You still get a jar — and Harbor will remember the treat came first. Wants aren't wrong; knowing the order is the Change.",
+              "text": "You still get a jar — and Harbor already felt the treat came first. Board the carpet home when the hush settles.",
               "end": true
             },
             {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import {
   GameHudLayout,
   GameButton,
@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { TakeHushOverlay } from "./TakeHushOverlay";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
@@ -39,6 +40,7 @@ import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
 import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
+import { harborScarPlaques } from "../worldMemory";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -93,7 +95,21 @@ export function IslandShoreView({
   const [structureOpen, setStructureOpen] = useState(false);
   const [enteringJar, setEnteringJar] = useState(false);
   const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
+  const [takeHushOpen, setTakeHushOpen] = useState(false);
+  const takeHushSeenRef = useRef(false);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
+  const chapterQuiet = Boolean(save.chapterQuietPending);
+  const latestScar = harborScarPlaques(save).at(-1) ?? null;
+
+  useEffect(() => {
+    if (chapterQuiet && !takeHushSeenRef.current) {
+      takeHushSeenRef.current = true;
+      setTakeHushOpen(true);
+    }
+    if (!chapterQuiet) takeHushSeenRef.current = false;
+  }, [chapterQuiet]);
+
+  const dismissTakeHush = useCallback(() => setTakeHushOpen(false), []);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
     [island, save, hotspots],
@@ -235,10 +251,10 @@ export function IslandShoreView({
             onEnterPart={onEnterPart}
             inputFrozen={Boolean(softBeat)}
           />
-          {softBeat ? (
+            {softBeat ? (
             <SoftBeatOverlay
               kind={softBeat}
-              hushActive={Boolean(save.chapterQuietPending)}
+              hushActive={chapterQuiet}
               onDone={() => setSoftBeat(null)}
             />
           ) : null}
@@ -272,17 +288,50 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
-              inputFrozen={talkOpen || enteringJar || structureOpen}
-              chapterQuiet={Boolean(save.chapterQuietPending)}
+              inputFrozen={talkOpen || enteringJar || structureOpen || takeHushOpen}
+              chapterQuiet={chapterQuiet}
             />
             <GuideEdgeCue
               projection={guideProjection}
-              enabled={guideArrows}
+              enabled={guideArrows && !chapterQuiet}
               label={buddy.tip}
             />
+            {takeHushOpen && latestScar ? (
+              <TakeHushOverlay
+                scarLabel={latestScar.label}
+                organLine={
+                  island.id === "paycheck_peninsula"
+                    ? "The Clock holds. Harbor is already listening."
+                    : island.id === "credit_kingdom"
+                      ? "The Spiral holds. Harbor is already listening."
+                      : "The Coin holds. Harbor is already listening."
+                }
+                onDone={dismissTakeHush}
+              />
+            ) : null}
           </div>
         }
         topLeft={
+          chapterQuiet ? (
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-2xl">{island.icon}</span>
+                <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
+              </div>
+              <HudBadge className="mt-1 bg-slate-900/80 text-white" data-testid="shore-take-hush">
+                {island.id === "paycheck_peninsula"
+                  ? "Quiet after the rainy-day Take"
+                  : island.id === "credit_kingdom"
+                    ? "Quiet after the interest Take"
+                    : "Quiet after the Take"}
+              </HudBadge>
+              {latestScar ? (
+                <p className="max-w-xs text-[11px] text-white/75 drop-shadow">
+                  “{latestScar.label}” · Harbor felt that
+                </p>
+              ) : null}
+            </div>
+          ) : (
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-2xl">{island.icon}</span>
@@ -324,21 +373,15 @@ export function IslandShoreView({
             ) : (
               <div className="mt-1 text-[11px] font-bold text-emerald-200">Main course clear — explore freely</div>
             )}
-            {save.chapterQuietPending ? (
-              <HudBadge className="mt-1 bg-slate-900/80 text-white">
-                {island.id === "paycheck_peninsula"
-                  ? "Quiet after the rainy-day Take · fly home changed"
-                  : island.id === "credit_kingdom"
-                    ? "Quiet after the interest Take · fly home changed"
-                    : "Quiet after the Take · fly home changed"}
-              </HudBadge>
-            ) : null}
           </div>
+          )
         }
         topRight={
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <WealthHud totalCoins={userProfile.totalCoins} compact />
-            {character ? (
+            {!chapterQuiet ? (
+              <WealthHud totalCoins={userProfile.totalCoins} compact />
+            ) : null}
+            {!chapterQuiet && character ? (
               <CharacterAvatar
                 character={character}
                 size={40}
@@ -346,17 +389,40 @@ export function IslandShoreView({
                 morphFromHome
               />
             ) : null}
-            <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
-              🪄 Float
-            </GameButton>
-            <GameButton variant="primary" size="sm" onClick={onOpenHub}>
-              🏠 Hub
-            </GameButton>
+            {!chapterQuiet ? (
+              <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
+                🪄 Float
+              </GameButton>
+            ) : null}
+            {chapterQuiet ? (
+              <GameButton
+                variant="primary"
+                size="sm"
+                data-testid="shore-carpet-home"
+                onClick={onOpenTravel}
+              >
+                Carpet home — Harbor felt that
+              </GameButton>
+            ) : (
+              <GameButton variant="primary" size="sm" onClick={onOpenHub}>
+                🏠 Hub
+              </GameButton>
+            )}
           </div>
         }
         bottom={
           <div className="flex w-full flex-col items-center gap-2 pb-2">
-            {near ? (
+            {chapterQuiet && !near ? (
+              <GameButton
+                variant="primary"
+                size="lg"
+                data-testid="shore-carpet-home-cta"
+                onClick={onOpenTravel}
+                className="shadow-lg"
+              >
+                Board the carpet home
+              </GameButton>
+            ) : near ? (
               <GameButton
                 variant="primary"
                 size="lg"
@@ -380,10 +446,10 @@ export function IslandShoreView({
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
           tip={buddy.tip}
-          detail={buddy.coach}
+          detail={chapterQuiet ? undefined : buddy.coach}
           track={buddy.track}
-          guideArrows={guideArrows}
-          onToggleGuide={onA11yChange ? toggleGuide : undefined}
+          guideArrows={guideArrows && !chapterQuiet}
+          onToggleGuide={onA11yChange && !chapterQuiet ? toggleGuide : undefined}
         />
         </div>
       </GameHudLayout>

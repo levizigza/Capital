@@ -13,11 +13,11 @@ import { COVE_CHANGE_QUEST_ID, COVE_ISLAND_ID } from "@/islands/islandIds";
 
 /** Trailer-grade beat timings (ms). Reduced-motion scales by REDUCED_MOTION_MULT. */
 export const SIGNATURE_TIMING = {
-  hushMs: 700,
-  revealMs: 1200,
-  holdEndMs: 4200,
-  doneMs: 5200,
-  plinthGlowMs: 12000,
+  hushMs: 850,
+  revealMs: 1400,
+  holdEndMs: 4600,
+  doneMs: 5600,
+  plinthGlowMs: 14000,
   trailerBeatMs: 24_000,
   reducedMotionMult: 0.55,
 } as const;

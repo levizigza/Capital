@@ -12,6 +12,7 @@ import { coinBagHarborTip } from "./coinBagBuddy";
 import { piggyHomecomingGraph } from "./harborTalks";
 import { pickDailyRumor, localDayKey } from "../harborRitual";
 import { scarTriggersChapterQuiet, scarEchoAmbientLine } from "../worldMemory";
+import { loadIslandsContent } from "../content/loader";
 import type { IslandSaveV1 } from "../types";
 
 describe("iconic craft — first 20 min path", () => {
@@ -89,6 +90,20 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     const line = scarEchoAmbientLine("Spendy Sue", "Saver plaque", "later");
     expect(line).toMatch(/Saver plaque/);
     expect(line).toMatch(/footprints|Plinth/i);
+  });
+
+  it("Cove Take plaques use signature retell labels", () => {
+    const content = loadIslandsContent();
+    const cove = content.islands.find((i) => i.id === "coincraft_cove");
+    const dlg = cove?.dialogues?.find((d) => d.id === "dlg_keeper_kira");
+    const take = dlg?.nodes.find((n) => n.id === "kk1");
+    const labels = (take?.choices ?? [])
+      .flatMap((c) => c.effects ?? [])
+      .filter((e) => e.type === "addScar")
+      .map((e) => (e.type === "addScar" ? e.label : ""));
+    expect(labels).toContain("Jar before treat");
+    expect(labels).toContain("Treat before jar");
+    expect(take?.text).toMatch(/Take/i);
   });
 
   it("uses day-after echo rumor when scar is from a prior day", () => {

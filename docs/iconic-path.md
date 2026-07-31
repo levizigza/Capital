@@ -44,7 +44,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
 | Step | Pass look / feel |
 |------|------------------|
-| Cove Take | Soft HUD, “Quiet after the Take”, Coin Bag hush tip |
+| Cove Take | Irreversible Take verb → Take hush overlay → soft HUD + “Carpet home — Harbor felt that” |
 | Carpet to Cove | Targeted flight is a short **carpet rail** (≤12s) — never a stuck free-flight | 
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
@@ -53,9 +53,9 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → “Harbor felt…” → Plinth pulse |
-| Share | PNG prompt immediately; card readable at thumbnail size |
+| Share | Full-bleed “Harbor felt that” card (not a settings modal); readable at thumbnail size |
 | Piggy | Quiet Harbor until Talk Battle |
-| Day 2 | Soft “Still here” surprise — no tutorial tone |
+| Day 2 | Soft Beat–style “Still here” cinema — no tutorial modal |
 | Soft Beat | Lid / Loft / Battlement / Teller — hush overlay, not a toast |
 | Trailer | Memory Plinth → Replay signature beat (~24s, mute-friendly) |
 
