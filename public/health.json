@@ -2,9 +2,9 @@
   "status": "ok",
   "service": "capital",
   "version": "0.0.0",
-  "buildId": "03d64ee",
-  "commit": "03d64ee",
-  "generatedAt": "2026-07-31T21:52:00.302Z",
+  "buildId": "ecb0ff2",
+  "commit": "ecb0ff2",
+  "generatedAt": "2026-07-31T21:56:33.373Z",
   "capacity": {
     "mode": "static_spa",
     "notes": "Client-side SRE ring buffer; optional VITE_TELEMETRY_URL for remote."

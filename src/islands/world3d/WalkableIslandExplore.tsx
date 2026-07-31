@@ -972,6 +972,8 @@ export function WalkableIslandExplore({
 
   const [ready, setReady] = useState(false);
   const [loadHint, setLoadHint] = useState(`Landing on ${island.name}…`);
+  const readyRef = useRef(false);
+  readyRef.current = ready;
 
   useEffect(() => {
     setLoadHint(`Landing on ${island.name}…`);
@@ -980,10 +982,17 @@ export function WalkableIslandExplore({
 
   useEffect(() => {
     if (ready) return;
-    const t = window.setTimeout(() => {
-      setLoadHint("Still landing… if this hangs, refresh the page.");
-    }, 8000);
-    return () => window.clearTimeout(t);
+    const hint = window.setTimeout(() => {
+      setLoadHint("Still landing… finishing without waiting on 3D.");
+    }, 5_000);
+    // Never leave shore on an infinite loading veil
+    const failsafe = window.setTimeout(() => {
+      if (!readyRef.current) setReady(true);
+    }, 9_000);
+    return () => {
+      window.clearTimeout(hint);
+      window.clearTimeout(failsafe);
+    };
   }, [ready]);
 
   useEffect(() => {
