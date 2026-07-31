@@ -11,7 +11,7 @@ import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getEffectiveBoatTier, nextBoatTier } from "../boats";
 import { HUB_ISLAND_ID, isIslandLocked } from "../worldMapLayout";
-import { GALAPAGOS_ARCHIPELAGO_NAME } from "../galapagosIslands";
+import { FORTUNE_ARCHIPELAGO_NAME, islandsForSpineTravel } from "../spineArchipelago";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
@@ -49,7 +49,7 @@ export function TravelMapView({
     [currentId, onStartVoyage],
   );
 
-  const islandList = useMemo(() => islands, [islands]);
+  const islandList = useMemo(() => islandsForSpineTravel(islands), [islands]);
 
   return (
     <GameHudLayout
@@ -65,10 +65,12 @@ export function TravelMapView({
         </div>
       }
       topLeft={
-        <HudChip
-          title={GALAPAGOS_ARCHIPELAGO_NAME}
-          subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins}`}
-        />
+        <div data-testid="fortune-archipelago-chip">
+          <HudChip
+            title={FORTUNE_ARCHIPELAGO_NAME}
+            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins}`}
+          />
+        </div>
       }
       topRight={
         <GameButton variant="outline" size="sm" onClick={onBack} data-testid="travel-map-back">
@@ -99,15 +101,16 @@ export function TravelMapView({
                     here
                       ? "bg-amber-200 text-amber-950 ring-amber-400"
                       : locked
-                        ? "cursor-not-allowed bg-slate-700/70 text-white/45 ring-white/10"
+                        ? "cursor-not-allowed bg-slate-800/55 text-white/40 ring-white/10 opacity-70"
                         : "bg-white/90 text-slate-900 ring-white/40 hover:bg-white"
                   }`}
                   style={{ borderLeft: `4px solid ${theme.accent}` }}
+                  data-ghost={locked ? "1" : "0"}
                 >
                   <div>
-                    <span className="mr-1">{locked ? "🔒" : island.icon}</span>
+                    <span className="mr-1">{locked ? "◌" : island.icon}</span>
                     {island.name}
-                    {here ? " · here" : ""}
+                    {here ? " · here" : locked ? " · ghost" : ""}
                   </div>
                   {lockWhy ? (
                     <div className="mt-0.5 text-[10px] font-semibold opacity-80">{lockWhy}</div>

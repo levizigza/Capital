@@ -179,5 +179,6 @@ export function getGalapagosProfile(islandId: string): GalapagosProfile {
   return GALAPAGOS_PROFILES[islandId] ?? { ...DEFAULT_PROFILE, galapagosName: islandId.replace(/_/g, " ") };
 }
 
-export const GALAPAGOS_ARCHIPELAGO_NAME = "Galápagos Archipelago";
-export const GALAPAGOS_HUB_LABEL = "Santa Cruz · Main Island";
+/** @deprecated Wave 4 — use FORTUNE_ARCHIPELAGO_NAME from spineArchipelago */
+export const GALAPAGOS_ARCHIPELAGO_NAME = "Fortune Archipelago";
+export const GALAPAGOS_HUB_LABEL = "Harbor Haven · Home";

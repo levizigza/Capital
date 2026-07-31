@@ -74,6 +74,7 @@ import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
 import { Day2EchoOverlay } from "./Day2EchoOverlay";
+import { TouchWalkPad } from "./TouchWalkPad";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import {
   harborFallbackMode,
@@ -1195,15 +1196,15 @@ export function HomeHubView({
               </button>
             ) : (
               <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
-                WASD walk · E talk when near · follow Coin Bag
+                Walk pad or WASD · E talk when near · follow Coin Bag
               </p>
             )}
             <p className="cap-hint-whisper sr-only md:not-sr-only">
               {nearStore
                 ? "E enter · Esc leaves shops"
                 : nearNpc
-                  ? "E talk · WASD walk"
-                  : "WASD walk · E talk · M map"}
+                  ? "E talk · walk pad or WASD"
+                  : "Walk pad or WASD · E talk · M map"}
             </p>
           </div>
         }
@@ -1222,6 +1223,16 @@ export function HomeHubView({
           ) : null}
         </div>
       </GameHudLayout>
+      <TouchWalkPad
+        enabled={
+          !talkOpen &&
+          !spectacleOpen &&
+          !feltShareOpen &&
+          !trailerOpen &&
+          !echoSurpriseOpen &&
+          !hubModal
+        }
+      />
       </div>
 
       {hubModal === "outfitter" ? (

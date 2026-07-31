@@ -23,6 +23,7 @@ import {
   isIslandLocked,
   type ArchipelagoNode,
 } from "../worldMapLayout";
+import { islandsForSpineTravel } from "../spineArchipelago";
 import type { CapitalCharacter } from "../character";
 import { getEraLook3D, lerpEraLook3D, type EraLook3D } from "./eraLooks";
 import { getIslandLook3D } from "./islandBiomes";
@@ -430,10 +431,14 @@ export function CarpetFlightView({
   const [boostHeld, setBoostHeld] = useState(() => Boolean(voyageTargetId));
   const boostApi = useRef<BoostApi | null>(null);
   const boatTier = getEffectiveBoatTier(userProfile.totalCoins, save);
-  const archipelago = useMemo(() => buildArchipelagoLayout(islands), [islands]);
+  const spineIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
+  const archipelago = useMemo(() => buildArchipelagoLayout(spineIslands), [spineIslands]);
   const currentIsland = useMemo(
-    () => islands.find((i) => i.id === save.currentIslandId) ?? archipelago.hub.island,
-    [islands, save.currentIslandId, archipelago.hub.island],
+    () =>
+      spineIslands.find((i) => i.id === save.currentIslandId) ??
+      islands.find((i) => i.id === save.currentIslandId) ??
+      archipelago.hub.island,
+    [spineIslands, islands, save.currentIslandId, archipelago.hub.island],
   );
   const currentNode = useMemo(
     () => getArchipelagoNode(archipelago, currentIsland.id) ?? archipelago.hub,

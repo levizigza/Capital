@@ -33,6 +33,7 @@ import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { TakeHushOverlay } from "./TakeHushOverlay";
+import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
@@ -438,7 +439,7 @@ export function IslandShoreView({
                     : `Go · ${near.label}`}
               </GameButton>
             ) : (
-              <p className="cap-hint-whisper">WASD walk · E interact when near</p>
+              <p className="cap-hint-whisper">Walk pad or WASD · E interact when near</p>
             )}
           </div>
         }
@@ -453,6 +454,7 @@ export function IslandShoreView({
         />
         </div>
       </GameHudLayout>
+      <TouchWalkPad enabled={!talkOpen && !takeHushOpen && !enteringJar} />
       </div>
 
       <GameModal

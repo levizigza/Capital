@@ -43,6 +43,7 @@ import {
 } from "./HarborPlazaCraft";
 import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
+import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -171,6 +172,7 @@ function Player({
   useEffect(() => {
     if (inputFrozen) {
       keys.current = { f: false, b: false, l: false, r: false };
+      clearTouchWalkIntent();
       moving.current = false;
     }
   }, [inputFrozen]);
@@ -192,7 +194,7 @@ function Player({
       camera.lookAt(p.x, 1.25, p.z);
       return;
     }
-    const k = keys.current;
+    const k = mergeWalkIntent(keys.current);
     const turn = (Number(k.l) - Number(k.r)) * 2.2 * dt;
     camYaw.current += turn;
 

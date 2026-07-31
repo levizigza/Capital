@@ -33,6 +33,7 @@ import { MoneyBagGuide } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
+import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
@@ -113,6 +114,7 @@ function Player({
   useEffect(() => {
     if (inputFrozen) {
       keys.current = { f: false, b: false, l: false, r: false };
+      clearTouchWalkIntent();
       moving.current = false;
     }
   }, [inputFrozen]);
@@ -133,7 +135,7 @@ function Player({
       camera.lookAt(p.x, 1.2, p.z);
       return;
     }
-    const k = keys.current;
+    const k = mergeWalkIntent(keys.current);
     const turn = (Number(k.l) - Number(k.r)) * 2.2 * dt;
     camYaw.current += turn;
 

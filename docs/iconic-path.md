@@ -80,6 +80,13 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - **No BMO / CBE / Nathan Project** content merged into Capital.  
 - Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
 
+## Identity freeze (Wave 4)
+
+- Player-facing world name: **Fortune Archipelago** (Capital = product brand).  
+- Travel map + carpet show **Harbor · Cove · Paycheck · Credit** only — locked spine chips read as ghosts; genre/asset packs stay off the strip.  
+- Phone cold-play: on-screen **Walk** pad on Harbor / shores (coarse pointer).  
+- Signature trailer: mute-friendly captions + Piggy/Coin Bag silhouettes.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

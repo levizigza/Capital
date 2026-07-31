@@ -1,10 +1,11 @@
 /**
- * Signature trailer cut — ~24s mute-friendly captions over Harbor.
+ * Signature trailer cut — ~24s mute-friendly captions + cast silhouettes over Harbor.
  * Replay from Memory Plinth; QA can force via __QA__.playSignatureTrailer().
  */
 
 import { useEffect, useState } from "react";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { capitalMusic } from "../audio/capitalMusic";
 import {
   SIGNATURE_TRAILER_SHOTS,
   signatureTiming,
@@ -16,6 +17,30 @@ type Props = {
   scarLabel?: string | null;
 };
 
+function TrailerCastSilhouettes() {
+  return (
+    <div
+      className="pointer-events-none mb-4 flex items-end justify-center gap-6"
+      aria-hidden
+      data-testid="signature-trailer-cast"
+    >
+      {/* Piggy silhouette */}
+      <div className="relative h-16 w-14">
+        <div className="absolute bottom-0 left-1/2 h-10 w-12 -translate-x-1/2 rounded-[45%] bg-rose-300/85" />
+        <div className="absolute bottom-8 left-1/2 h-7 w-8 -translate-x-1/2 rounded-full bg-rose-200/90" />
+        <div className="absolute bottom-10 left-[18%] h-2.5 w-2.5 rounded-full bg-rose-100/90" />
+        <div className="absolute bottom-10 right-[18%] h-2.5 w-2.5 rounded-full bg-rose-100/90" />
+      </div>
+      {/* Coin Bag silhouette */}
+      <div className="relative h-14 w-12">
+        <div className="absolute bottom-0 left-1/2 h-10 w-11 -translate-x-1/2 rounded-[40%] bg-amber-300/85" />
+        <div className="absolute bottom-8 left-1/2 h-3 w-6 -translate-x-1/2 rounded-full bg-amber-200/90" />
+        <div className="absolute bottom-3 left-1/2 h-4 w-4 -translate-x-1/2 rounded-full bg-amber-100/70" />
+      </div>
+    </div>
+  );
+}
+
 export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
   const [caption, setCaption] = useState(SIGNATURE_TRAILER_SHOTS[0]!.caption);
   const [progress, setProgress] = useState(0);
@@ -25,8 +50,11 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const musicOn = capitalMusic.isEnabled();
     const timing = signatureTiming(Boolean(reduced));
-    playCapitalSfx("scar_chime");
+    // Mute-friendly: captions carry the story; SFX only when music is on and motion is full
+    const sfxOk = musicOn && !reduced;
+    if (sfxOk) playCapitalSfx("scar_chime");
 
     const timers: number[] = [];
     const scale = timing.trailerBeatMs / 24_000;
@@ -39,8 +67,8 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
               ? `Harbor felt that — “${scarLabel}”`
               : shot.caption,
           );
-          if (shot.atMs >= 7000) playCapitalSfx("plinth_hum");
-          if (shot.atMs >= 12_000) playCapitalSfx("harbor_cheer");
+          if (sfxOk && shot.atMs >= 7000) playCapitalSfx("plinth_hum");
+          if (sfxOk && shot.atMs >= 12_000) playCapitalSfx("harbor_cheer");
         }, Math.round(shot.atMs * scale)),
       );
     }
@@ -75,6 +103,7 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
       }}
     >
       <div className="mx-4 max-w-lg text-center">
+        <TrailerCastSilhouettes />
         <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-amber-200/80">
           Capital · Signature beat
         </p>
@@ -85,7 +114,7 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
         >
           {caption}
         </h2>
-        <p className="mt-3 text-xs text-white/55">Tap to skip · mute-friendly</p>
+        <p className="mt-3 text-xs text-white/55">Tap to skip · mute-friendly captions</p>
       </div>
       <div className="absolute inset-x-8 bottom-6 h-1 overflow-hidden rounded-full bg-white/15">
         <div
