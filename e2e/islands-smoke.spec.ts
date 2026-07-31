@@ -5,6 +5,7 @@ import { test, expect } from "@playwright/test";
  * Requires VITE_ISLANDS=1 and VITE_QA=1 (set in playwright.config.ts webServer.env).
  *
  * Post-v37: Harbor Haven is the hub; islands dock into walkable shore explore.
+ * Wave 4: travel strip is Fortune spine only (Harbor · Cove · Paycheck · Credit).
  */
 test.describe("Islands smoke", () => {
   test.setTimeout(120_000);
@@ -39,18 +40,33 @@ test.describe("Islands smoke", () => {
   test("launch → hub → map → Cove shore explore → journal → save/load", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
 
-    // Harbor Haven visible once save loads
-    await expect(page.getByTestId("hub-travel-map")).toBeVisible({ timeout: 60_000 });
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
-      timeout: 15_000,
-    }).toBe(true);
+    await expect
+      .poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
+        timeout: 60_000,
+      })
+      .toBe(true);
+
+    // Past Castle Grounds + Piggy quiet chrome so map / leave are available
+    await page.evaluate(async () => {
+      await window.__QA__!.seedSignatureLoop("day2_echo");
+    });
+    // Day-2 cinema may open — dismiss without blocking the smoke path
+    const hearThem = page.getByRole("button", { name: /I hear them/i });
+    if (await hearThem.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await hearThem.click();
+    }
+
+    await expect(page.getByTestId("hub-travel-map")).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId("hub-leave-islands")).toBeVisible();
     await page.getByTestId("hub-travel-map").click();
 
-    // Archipelago map — Harbor hub + Cove as first painting
+    // Fortune spine only — genre packs stay off the strip (Wave 4 freeze)
     await expect(page.getByTestId("island-pin-harbor_haven")).toBeVisible();
     await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
-    await expect(page.getByTestId("island-pin-financial_assets")).toBeVisible();
+    await expect(page.getByTestId("island-pin-paycheck_peninsula")).toBeVisible();
+    await expect(page.getByTestId("island-pin-credit_kingdom")).toBeVisible();
+    await expect(page.getByTestId("island-pin-financial_assets")).toHaveCount(0);
+    await expect(page.getByTestId("fortune-archipelago-chip")).toBeVisible();
 
     // Enter Cove via QA — instant dock onto walkable shore (not chapter menu)
     await page.evaluate(async () => {

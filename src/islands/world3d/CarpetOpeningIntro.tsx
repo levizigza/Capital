@@ -158,6 +158,8 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
   const [rushing, setRushing] = useState(false);
   const speedRef = useRef(1);
   const finishing = useRef(false);
+  const readyRef = useRef(false);
+  readyRef.current = ready;
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -165,6 +167,24 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
     return () => {
       document.body.style.overflow = prev;
     };
+  }, []);
+
+  // Never leave players on “Unfolding the Money Carpet…” if WebGL stalls
+  useEffect(() => {
+    if (ready) return;
+    const t = window.setTimeout(() => {
+      if (!readyRef.current) setReady(true);
+    }, 6_000);
+    return () => window.clearTimeout(t);
+  }, [ready]);
+
+  // Hard land / enter Harbor if the fly loop never reports onLanded
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      if (finishing.current) return;
+      setPhase((p) => (p === "fly" ? "land" : p));
+    }, 14_000);
+    return () => window.clearTimeout(t);
   }, []);
 
   useEffect(() => {

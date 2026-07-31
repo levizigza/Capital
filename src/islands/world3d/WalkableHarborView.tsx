@@ -848,12 +848,12 @@ export function WalkableHarborView({
     const hint = window.setTimeout(() => {
       setLoadHint("Harbor is taking a while…");
       setShowSkip3d(true);
-    }, 4_500);
+    }, 2_500);
     // Always escape — previously we skipped failsafe when sessionStorage said 3D
     // worked earlier, which left remounts/hung WebGL stuck on Loading forever.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) escapeToMyth();
-    }, 9_000);
+    }, 6_000);
     return () => {
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
