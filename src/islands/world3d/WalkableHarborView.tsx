@@ -50,6 +50,8 @@ import type { GuideProjection } from "../views/GuideWayfinder";
 import type { NpcEmote } from "../story/dialogueActionSync";
 import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
+import { HarborMythFallback } from "../views/HarborMythFallback";
+import type { HarborFallbackMode } from "../harborFirstMeet";
 
 export type HarborLandmarkKind =
   | "building"
@@ -103,6 +105,10 @@ type Props = {
   npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
   /** Latest plaque echo so plaza locals name the scar (day-2 memory) */
   scarEcho?: { label: string; dayOffset: "same" | "later" } | null;
+  /** Slow-device composition — myth first, never a hotspot dashboard */
+  fallbackMode?: HarborFallbackMode;
+  onFallbackTalkPiggy?: () => void;
+  onFallbackEnterBank?: () => void;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -713,6 +719,9 @@ export function WalkableHarborView({
   weatherFog = null,
   npcMemory = null,
   scarEcho = null,
+  fallbackMode = "utility",
+  onFallbackTalkPiggy,
+  onFallbackEnterBank,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -822,35 +831,20 @@ export function WalkableHarborView({
 
   if (kill3d || force2d) {
     return (
-      <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 overflow-hidden bg-gradient-to-b from-[#7dd3fc] to-[#bae6fd] px-6 text-center">
-        <p className="text-lg font-bold text-[#16283b]">
-          {force2d && !kill3d ? "Harbor Haven (quick map)" : "Harbor Haven (safe mode)"}
-        </p>
-        <p className="max-w-md text-sm text-[#16283b]/80">
-          {force2d && !kill3d
-            ? "3D is slow on this device — tap a place below. Ledger Bank is the money machine."
-            : "3D Harbor is temporarily disabled for reliability. Use Travel, Settings, or hotspots below when available."}
-        </p>
-        <div className="flex max-w-lg flex-wrap justify-center gap-2">
-          {hotspots.map((h) => (
-            <button
-              key={h.id}
-              type="button"
-              className="rounded-lg bg-white/80 px-3 py-2 text-sm font-semibold text-[#16283b] shadow"
-              onClick={() => onHotspot(h.id)}
-            >
-              {h.icon} {h.label}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="rounded-lg bg-[#f4a629] px-3 py-2 text-sm font-bold text-[#16283b] shadow"
-            onClick={onOpenTravel}
-          >
-            🗺️ Archipelago map
-          </button>
-        </div>
-      </div>
+      <HarborMythFallback
+        mode={fallbackMode}
+        killSwitch={kill3d}
+        onTalkPiggy={() => {
+          if (onFallbackTalkPiggy) onFallbackTalkPiggy();
+          else onHotspot("guide");
+        }}
+        onBoardCarpet={onOpenTravel}
+        onEnterBank={
+          onFallbackEnterBank
+            ? onFallbackEnterBank
+            : () => onHotspot("ledger_bank")
+        }
+      />
     );
   }
 

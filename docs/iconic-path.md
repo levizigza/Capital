@@ -49,6 +49,8 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
 | Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
+| Quiet chrome | Until Piggy talk: no CASH / Leave / Apprentice / stall grid |
+| Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → “Harbor felt…” → Plinth pulse |
 | Share | PNG prompt immediately; card readable at thumbnail size |

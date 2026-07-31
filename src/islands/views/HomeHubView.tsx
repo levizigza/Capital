@@ -73,6 +73,11 @@ import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
+import {
+  harborFallbackMode,
+  isFirstMeetStep,
+  resolvePulseHotspotId,
+} from "../harborFirstMeet";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
@@ -250,6 +255,11 @@ export function HomeHubView({
   const earlyCastle =
     Boolean(castleMode && guidedStep) &&
     !["practice_optional", "to_dock", "first_island", "done"].includes(guidedStep!.id);
+  const firstMeet = isFirstMeetStep(guidedStep?.id);
+  const fallbackMode = harborFallbackMode({
+    firstMeet,
+    castleActive: Boolean(castleMode && guidedStep && guidedStep.id !== "done"),
+  });
   const showOutfitterChrome =
     !quietHarbor &&
     (!castleMode ||
@@ -302,8 +312,8 @@ export function HomeHubView({
     castleMode || homecomingActive || spectacleOpen || plinthGlow
       ? visualBeats.keeperBubbleWhenNear || null
       : null;
-  const pulseHotspotId =
-    visualBeats.pulseHotspot === "guide" ? null : (visualBeats.pulseHotspot ?? null);
+  // Keep "guide" — Piggy’s ring lights when pulseHotspotId === "guide"
+  const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
 
   const latestPlaque = plaques[plaques.length - 1] ?? null;
   const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
@@ -459,7 +469,10 @@ export function HomeHubView({
   const marketOpen = isRoomUnlocked(save, "market");
 
   const harborHotspots = useMemo<HarborHotspot[]>(
-    () => [
+    () => {
+      // First meet: no stalls — only Piggy. E cannot steal Talk.
+      if (firstMeet) return [];
+      return [
       // —— Plaza heroes (unique meshes) ——
       {
         id: "arcade",
@@ -634,8 +647,10 @@ export function HomeHubView({
             } satisfies HarborHotspot,
           ]
         : []),
-    ],
+    ];
+    },
     [
+      firstMeet,
       onOpenEditor,
       pavilionOpen,
       marketOpen,
@@ -951,6 +966,20 @@ export function HomeHubView({
                   }
                   npcMemory={save.npcMemory ?? null}
                   scarEcho={scarEcho}
+                  fallbackMode={fallbackMode}
+                  onFallbackTalkPiggy={
+                    onTalkNpc
+                      ? () => onTalkNpc(HARBOR_KEEPER_MASCOT_ID)
+                      : undefined
+                  }
+                  onFallbackEnterBank={
+                    ledgerBank
+                      ? () => {
+                          if (enteringBank || bankOpen) return;
+                          setEnteringBank(true);
+                        }
+                      : undefined
+                  }
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
@@ -969,10 +998,10 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          quietHarbor ? (
+          quietHarbor || firstMeet ? (
             <div className="cap-play-hud-left">
               <p className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90">
-                Harbor is quiet — find Piggy
+                {firstMeet ? "Harbor Haven" : "Harbor is quiet — find Piggy"}
               </p>
             </div>
           ) : earlyCastle && !showOutfitterChrome ? (
@@ -1001,7 +1030,7 @@ export function HomeHubView({
           )
         }
         topRight={
-          quietHarbor || earlyCastle ? null : (
+          quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -1025,9 +1054,11 @@ export function HomeHubView({
         }
         bottom={
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
-            {quietHarbor ? (
+            {quietHarbor || firstMeet ? (
               <p className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow">
-                No ledger. No glitter. Just the walk home — talk to Piggy when you are ready.
+                {firstMeet
+                  ? "One job: talk to Piggy Penny — she’s waving."
+                  : "No ledger. No glitter. Just the walk home — talk to Piggy when you are ready."}
               </p>
             ) : (
             <CoinBagBuddyHud
@@ -1038,7 +1069,7 @@ export function HomeHubView({
             />
             )}
             {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
-            {quietHarbor ? (
+            {quietHarbor || firstMeet ? (
               nearNpc && onTalkNpc ? (
                 <GameButton
                   variant="primary"
