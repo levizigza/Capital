@@ -3,6 +3,7 @@ import {
   auditSignatureLoop,
   buildSignatureLoopSave,
   signatureTiming,
+  takeCinemaPhaseAt,
   SIGNATURE_TRAILER_SHOTS,
   SIGNATURE_TIMING,
 } from "./signatureLoop";
@@ -34,6 +35,16 @@ describe("signature loop QA", () => {
     const soft = signatureTiming(true);
     expect(soft.doneMs).toBeLessThan(full.doneMs);
     expect(full.doneMs).toBeLessThanOrEqual(6000);
+  });
+
+  it("Take cinema phases: hush → mark → line", () => {
+    const t = signatureTiming(false);
+    expect(takeCinemaPhaseAt(0, t)).toBe("hush");
+    expect(takeCinemaPhaseAt(t.hushMs - 1, t)).toBe("hush");
+    expect(takeCinemaPhaseAt(t.hushMs, t)).toBe("mark");
+    expect(takeCinemaPhaseAt(t.revealMs - 1, t)).toBe("mark");
+    expect(takeCinemaPhaseAt(t.revealMs, t)).toBe("line");
+    expect(t.revealMs).toBeLessThan(t.holdEndMs);
   });
 
   it("flags cove_quiet when chapter hush is pending", () => {

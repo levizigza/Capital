@@ -46,7 +46,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
 | Step | Pass look / feel |
 |------|------------------|
-| Cove Take | Irreversible Take verb → Take hush overlay → soft HUD + “Carpet home — Harbor felt that” |
+| Cove Take | Irreversible Take verb → dismiss Talk → **world cinema** (jar/shore visible, captions not a modal card) → soft HUD + “Carpet home — Harbor felt that” |
 | Carpet to Cove | Targeted flight is a short **carpet rail** (≤12s) — never a stuck free-flight | 
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
@@ -150,6 +150,8 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 - Always present on Harbor (empty shelf → scar-lit after Take).  
 - Share PNG + signature trailer draw the same ledger-plinth silhouette.  
 - Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
+
+**Take world cinema (deepen, not widen):** after Kira’s irreversible Take and Talk dismiss, the shore owns the climax — organ landmark mark flash + captions (no dark modal card). Carpet CTAs return when cinema ends.
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 

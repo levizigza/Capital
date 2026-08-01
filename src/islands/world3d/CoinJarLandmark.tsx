@@ -1,6 +1,7 @@
 /**
  * Giant Coin Jar landmark — Coin organ silhouette.
  * After irreversible Take (hush), the jar dims — shore remembers before Harbor does.
+ * Take cinema phases: hush → mark flash → lid settle.
  */
 
 import { useRef } from "react";
@@ -9,6 +10,8 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
+type CinemaPhase = "hush" | "mark" | "line";
+
 type Props = {
   position: [number, number, number];
   active?: boolean;
@@ -16,6 +19,8 @@ type Props = {
   label?: string;
   /** Quiet after the Take — diegetic hush on the Coin organ */
   hushActive?: boolean;
+  /** World-cinema beat — mark flash / lid settle */
+  cinemaPhase?: CinemaPhase | null;
 };
 
 export function CoinJarLandmark({
@@ -24,26 +29,51 @@ export function CoinJarLandmark({
   guided = false,
   label = "Giant Coin Jar",
   hushActive = false,
+  cinemaPhase = null,
 }: Props) {
   const glow = useRef<THREE.Mesh>(null);
   const lid = useRef<THREE.Group>(null);
   const pile = useRef<THREE.Mesh>(null);
+  const scar = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
+    const mark = cinemaPhase === "mark";
+    const settle = cinemaPhase === "line" || (hushActive && !cinemaPhase);
+
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
-      const base = hushActive ? 0.12 : active ? 0.85 : guided ? 0.55 : 0.28;
-      mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.1 : 3)) * (hushActive ? 0.03 : 0.08);
+      if (mark) {
+        mat.emissiveIntensity = 0.95 + Math.sin(t * 10) * 0.25;
+      } else if (hushActive) {
+        const base = settle ? 0.1 : 0.12;
+        mat.emissiveIntensity = base + Math.sin(t * 1.1) * 0.03;
+      } else {
+        const base = active ? 0.85 : guided ? 0.55 : 0.28;
+        mat.emissiveIntensity = base + Math.sin(t * 3) * 0.08;
+      }
     }
     if (lid.current) {
-      const speed = hushActive ? 0.2 : 0.6;
-      lid.current.rotation.y = Math.sin(t * speed) * (hushActive ? 0.02 : 0.08);
-      lid.current.position.y = 3.35 + Math.sin(t * (hushActive ? 0.4 : 1.2)) * (hushActive ? 0.01 : 0.04);
+      if (mark) {
+        lid.current.rotation.y = Math.sin(t * 6) * 0.04;
+        lid.current.position.y = 3.28 + Math.sin(t * 8) * 0.02;
+      } else if (settle || hushActive) {
+        const speed = settle ? 0.08 : 0.2;
+        lid.current.rotation.y = Math.sin(t * speed) * (settle ? 0.008 : 0.02);
+        lid.current.position.y = 3.32 + Math.sin(t * (settle ? 0.25 : 0.4)) * (settle ? 0.004 : 0.01);
+      } else {
+        lid.current.rotation.y = Math.sin(t * 0.6) * 0.08;
+        lid.current.position.y = 3.35 + Math.sin(t * 1.2) * 0.04;
+      }
     }
     if (pile.current) {
       const mat = pile.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = hushActive ? 0.08 : 0.35;
+      mat.emissiveIntensity = mark ? 0.55 : hushActive ? 0.08 : 0.35;
+    }
+    if (scar.current) {
+      const mat = scar.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = mark ? 0.85 + Math.sin(t * 12) * 0.2 : hushActive ? 0.25 : 0;
+      mat.opacity = mark ? 0.95 : hushActive ? 0.7 : 0;
     }
   });
 
@@ -54,8 +84,10 @@ export function CoinJarLandmark({
         <ringGeometry args={[2.2, 2.8, 32]} />
         <meshStandardMaterial
           color={hushActive ? "#64748b" : "#fbbf24"}
-          emissive={hushActive ? "#334155" : "#f59e0b"}
-          emissiveIntensity={hushActive ? 0.08 : active ? 0.5 : 0.22}
+          emissive={hushActive ? (cinemaPhase === "mark" ? "#b45309" : "#334155") : "#f59e0b"}
+          emissiveIntensity={
+            cinemaPhase === "mark" ? 0.55 : hushActive ? 0.08 : active ? 0.5 : 0.22
+          }
           transparent
           opacity={hushActive ? 0.55 : 0.75}
           depthWrite={false}
@@ -64,7 +96,7 @@ export function CoinJarLandmark({
 
       {/* Scar tick on the ground when hush — irreversible mark */}
       {hushActive ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0.4]} position={[0.9, 0.08, 0.6]}>
+        <mesh ref={scar} rotation={[-Math.PI / 2, 0, 0.4]} position={[0.9, 0.08, 0.6]}>
           <planeGeometry args={[1.4, 0.12]} />
           <meshStandardMaterial
             color="#78350f"
@@ -148,7 +180,13 @@ export function CoinJarLandmark({
           outlineWidth={0.03}
           outlineColor="#0f172a"
         >
-          {hushActive ? "Quiet after the Take" : active ? "Enter · coin slot" : label}
+          {cinemaPhase === "mark"
+            ? "The mark holds"
+            : hushActive
+              ? "Quiet after the Take"
+              : active
+                ? "Enter · coin slot"
+                : label}
         </SafeText>
       </Billboard>
     </group>

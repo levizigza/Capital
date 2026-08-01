@@ -34,6 +34,18 @@ export function signatureTiming(reducedMotion: boolean) {
   };
 }
 
+/** Cove / Paycheck / Credit Take cinema — captions over the organ landmark. */
+export type TakeCinemaPhase = "hush" | "mark" | "line";
+
+export function takeCinemaPhaseAt(
+  elapsedMs: number,
+  timing: ReturnType<typeof signatureTiming>,
+): TakeCinemaPhase {
+  if (elapsedMs < timing.hushMs) return "hush";
+  if (elapsedMs < timing.revealMs) return "mark";
+  return "line";
+}
+
 export type SignaturePhase =
   | "cove_quiet"
   | "spectacle_ready"

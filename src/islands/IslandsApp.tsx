@@ -25,7 +25,12 @@ import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
 import { islandHasChapterContent, buildCoveChangeReplayTimeline, buildPaycheckChangeReplayTimeline } from "./chapterLoop";
-import { COVE_CHANGE_QUEST_ID, CREDIT_ORDEAL_QUEST_ID, PAYCHECK_CHANGE_QUEST_ID } from "./islandIds";
+import {
+  COVE_CHANGE_QUEST_ID,
+  COVE_ISLAND_ID,
+  CREDIT_ORDEAL_QUEST_ID,
+  PAYCHECK_CHANGE_QUEST_ID,
+} from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
@@ -827,12 +832,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         await persistIslandSave(fresh);
       },
       seedSignatureLoop: async (phase?: SignaturePhase) => {
-        const seeded = buildSignatureLoopSave(phase ?? "spectacle_ready");
+        const resolved = phase ?? "spectacle_ready";
+        const seeded = buildSignatureLoopSave(resolved);
         setSave(seeded);
-        setActiveIslandId(null);
-        setView("home");
         setHubModal(null);
         await persistIslandSave(seeded);
+        // Take cinema lives on the shore — land Cove quiet on the organ landmark.
+        if (resolved === "cove_quiet") {
+          await enterIsland(COVE_ISLAND_ID, { instant: true });
+          return;
+        }
+        setActiveIslandId(null);
+        setView("home");
       },
       playSignatureTrailer: () => {
         setView("home");

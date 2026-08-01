@@ -32,7 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
-import { TakeHushOverlay } from "./TakeHushOverlay";
+import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
@@ -109,20 +109,32 @@ export function IslandShoreView({
   const [enteringJar, setEnteringJar] = useState(false);
   const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
   const [takeHushOpen, setTakeHushOpen] = useState(false);
+  const [takeCinemaPhase, setTakeCinemaPhase] = useState<TakeCinemaPhase | null>(null);
   const takeHushSeenRef = useRef(false);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const chapterQuiet = Boolean(save.chapterQuietPending);
   const latestScar = harborScarPlaques(save).at(-1) ?? null;
 
+  // World cinema after Talk dismisses — never under the Talk Battle card.
   useEffect(() => {
-    if (chapterQuiet && !takeHushSeenRef.current) {
+    if (!chapterQuiet) {
+      takeHushSeenRef.current = false;
+      setTakeHushOpen(false);
+      setTakeCinemaPhase(null);
+      return;
+    }
+    if (talkOpen) return;
+    if (!takeHushSeenRef.current) {
       takeHushSeenRef.current = true;
+      setTakeCinemaPhase("hush");
       setTakeHushOpen(true);
     }
-    if (!chapterQuiet) takeHushSeenRef.current = false;
-  }, [chapterQuiet]);
+  }, [chapterQuiet, talkOpen]);
 
-  const dismissTakeHush = useCallback(() => setTakeHushOpen(false), []);
+  const dismissTakeHush = useCallback(() => {
+    setTakeHushOpen(false);
+    setTakeCinemaPhase(null);
+  }, []);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
     [island, save, hotspots],
@@ -303,10 +315,11 @@ export function IslandShoreView({
               onGuideProject={setGuideProjection}
               inputFrozen={talkOpen || enteringJar || structureOpen || takeHushOpen}
               chapterQuiet={chapterQuiet}
+              hushCinemaPhase={takeCinemaPhase}
             />
             <GuideEdgeCue
               projection={guideProjection}
-              enabled={guideArrows && !chapterQuiet}
+              enabled={guideArrows && !chapterQuiet && !takeHushOpen}
               label={buddy.tip}
             />
             {takeHushOpen && latestScar ? (
@@ -319,13 +332,14 @@ export function IslandShoreView({
                     ? organTakeHushLine(organ.id)
                     : organTakeHushLine("coin")
                 }
+                onPhaseChange={setTakeCinemaPhase}
                 onDone={dismissTakeHush}
               />
             ) : null}
           </div>
         }
         topLeft={
-          chapterQuiet ? (
+          takeHushOpen ? null : chapterQuiet ? (
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-2xl">{island.icon}</span>
@@ -386,6 +400,7 @@ export function IslandShoreView({
           )
         }
         topRight={
+          takeHushOpen ? null : (
           <div className="flex flex-wrap items-center justify-end gap-2">
             {!chapterQuiet ? (
               <WealthHud totalCoins={userProfile.totalCoins} compact />
@@ -418,8 +433,10 @@ export function IslandShoreView({
               </GameButton>
             )}
           </div>
+          )
         }
         bottom={
+          takeHushOpen ? null : (
           <div className="flex w-full flex-col items-center gap-2 pb-2">
             {chapterQuiet && !near ? (
               <GameButton
@@ -453,8 +470,10 @@ export function IslandShoreView({
               <p className="cap-hint-whisper">Walk pad or WASD · E interact when near</p>
             )}
           </div>
+          )
         }
       >
+        {takeHushOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
           tip={buddy.tip}
@@ -464,6 +483,7 @@ export function IslandShoreView({
           onToggleGuide={onA11yChange && !chapterQuiet ? toggleGuide : undefined}
         />
         </div>
+        )}
       </GameHudLayout>
       <TouchWalkPad enabled={!talkOpen && !takeHushOpen && !enteringJar} />
       </div>

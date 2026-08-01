@@ -9,12 +9,15 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
+type CinemaPhase = "hush" | "mark" | "line";
+
 type Props = {
   position: [number, number, number];
   active?: boolean;
   guided?: boolean;
   label?: string;
   hushActive?: boolean;
+  cinemaPhase?: CinemaPhase | null;
 };
 
 export function InterestKeepLandmark({
@@ -23,17 +26,29 @@ export function InterestKeepLandmark({
   guided = false,
   label = "Interest Keep",
   hushActive = false,
+  cinemaPhase = null,
 }: Props) {
   const spiral = useRef<THREE.Group>(null);
   const gateGlow = useRef<THREE.Mesh>(null);
+  const scar = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
-    if (spiral.current) spiral.current.rotation.y = t * (hushActive ? 0.12 : 0.55);
+    const mark = cinemaPhase === "mark";
+    if (spiral.current) spiral.current.rotation.y = t * (mark ? 0.04 : hushActive ? 0.12 : 0.55);
     if (gateGlow.current) {
       const mat = gateGlow.current.material as THREE.MeshStandardMaterial;
-      const base = hushActive ? 0.12 : active ? 0.85 : guided ? 0.5 : 0.28;
-      mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.1 : 3.0)) * (hushActive ? 0.03 : 0.08);
+      if (mark) {
+        mat.emissiveIntensity = 0.9 + Math.sin(t * 10) * 0.2;
+      } else {
+        const base = hushActive ? 0.12 : active ? 0.85 : guided ? 0.5 : 0.28;
+        mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.1 : 3.0)) * (hushActive ? 0.03 : 0.08);
+      }
+    }
+    if (scar.current) {
+      const mat = scar.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = mark ? 0.75 + Math.sin(t * 12) * 0.2 : 0.2;
+      mat.opacity = mark ? 0.9 : 0.65;
     }
   });
 
@@ -52,7 +67,7 @@ export function InterestKeepLandmark({
       </mesh>
 
       {hushActive ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0.5]} position={[0.7, 0.08, -0.5]}>
+        <mesh ref={scar} rotation={[-Math.PI / 2, 0, 0.5]} position={[0.7, 0.08, -0.5]}>
           <ringGeometry args={[0.35, 0.55, 20]} />
           <meshStandardMaterial
             color="#57534e"
@@ -129,7 +144,13 @@ export function InterestKeepLandmark({
           outlineWidth={0.028}
           outlineColor="#450a0a"
         >
-          {hushActive ? "Quiet after the Take" : active ? "Enter · interest spiral" : label}
+          {cinemaPhase === "mark"
+            ? "The mark holds"
+            : hushActive
+              ? "Quiet after the Take"
+              : active
+                ? "Enter · interest spiral"
+                : label}
         </SafeText>
       </Billboard>
     </group>
