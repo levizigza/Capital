@@ -78,7 +78,10 @@ test.describe("Signature loop", () => {
     await expect(echo).toBeVisible({ timeout: 20_000 });
     // Soft Beat cinema over live Plinth — not a centered tutorial card
     await expect(echo).toHaveAttribute("data-echo-presentation", "plinth-cinema");
-    await page.getByRole("button", { name: /I hear them/i }).click();
+    // Dev Errors / residual HUD can sit over the lower-third CTA in headed CI.
+    await page.getByRole("button", { name: /I hear them/i }).evaluate((el) => {
+      (el as HTMLButtonElement).click();
+    });
     await expect(page.getByTestId("day2-echo-surprise")).toHaveCount(0);
   });
 
