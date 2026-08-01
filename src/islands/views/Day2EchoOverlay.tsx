@@ -6,7 +6,7 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
-import { scarOrganName } from "../worldMemory";
+import { day2EchoBody, scarOrganName } from "../worldMemory";
 import { GameButton } from "@/game-ui";
 
 type Props = {
@@ -62,9 +62,8 @@ export function Day2EchoOverlay({
           Still here · {organWord}
         </p>
         <h2 className="mt-2 text-xl font-black sm:text-2xl">The Plinth did not forget</h2>
-        <p className="mt-3 text-sm text-white/85">
-          Locals still tip their jars about the {organWord} — “{scarLabel}.” Yesterday’s Take is
-          today’s weather.
+        <p className="mt-3 text-sm text-white/85" data-testid="day2-echo-retell">
+          {day2EchoBody(scarLabel, organId)}
         </p>
         <GameButton variant="primary" className="mt-4 w-full" onClick={onVisitPlinth} autoFocus>
           Visit the Plinth

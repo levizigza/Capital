@@ -265,7 +265,7 @@
                     {
                       "type": "addScar",
                       "id": "pp_protector_plaque",
-                      "label": "Peninsula: rainy-day before glitter",
+                      "label": "Umbrella before glitter",
                       "kind": "plaque",
                       "stance": "saver",
                       "stanceDelta": 2
@@ -287,7 +287,7 @@
                     {
                       "type": "addScar",
                       "id": "pp_spender_plaque",
-                      "label": "Peninsula: glitter ate the umbrella",
+                      "label": "Glitter ate the umbrella",
                       "kind": "plaza_prop",
                       "stance": "spender",
                       "stanceDelta": 2

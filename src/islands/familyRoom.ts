@@ -185,5 +185,13 @@ export function familyPlaqueMythLine(
         : organId === "spiral"
           ? "Spiral"
           : "Memory";
-  return `This household still tips jars about the ${organ} — “${label}.” Local myth — the Plinth remembered, and so do you.`;
+  const habit =
+    organId === "clock"
+      ? "still stamps about"
+      : organId === "spiral"
+        ? "still weighs"
+        : organId === "memory"
+          ? "still names"
+          : "still tips jars about";
+  return `This household ${habit} the ${organ} — “${label}.” Local myth — the Plinth remembered, and so do you.`;
 }

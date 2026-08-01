@@ -1,12 +1,19 @@
 /**
  * Scar spectacle — Harbor reacts when money choices leave plaques.
  * Signature loop beat: hush → chime → “Harbor felt that” → Plinth glow.
+ * Cold-retell polish: organ-first headline + one kid sentence.
  */
 
 import { useEffect, useState } from "react";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
-import { scarChapterTitle } from "../worldMemory";
+import {
+  coldRetellLine,
+  coldSpectacleHeadline,
+  plaqueShelfLine,
+  scarOrganName,
+  scarOrganId,
+} from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
 
 type Props = {
@@ -17,21 +24,10 @@ type Props = {
 export function ScarSpectacleOverlay({ scars, onDone }: Props) {
   const [phase, setPhase] = useState<"hush" | "in" | "hold" | "out">("hush");
   const latest = scars[scars.length - 1];
-  const chapter = latest ? scarChapterTitle(latest) : "Harbor";
-  const isCove = Boolean(latest?.id.startsWith("cove_"));
-  const isClock = Boolean(
-    latest?.id.startsWith("pp_") || latest?.islandId === "paycheck_peninsula",
-  );
-  const isSpiral = Boolean(
-    latest?.id.startsWith("credit_") || latest?.islandId === "credit_kingdom",
-  );
-  const headline = isCove
-    ? "Harbor felt your first Change"
-    : isClock
-      ? "Harbor felt the rainy-day Take"
-      : isSpiral
-        ? "Harbor felt the interest spiral"
-        : "Harbor felt that choice";
+  const organWord = latest ? scarOrganName(scarOrganId(latest)) : "Memory";
+  const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
+  const retell = latest ? coldRetellLine(latest) : null;
+  const shelf = latest ? plaqueShelfLine(latest) : null;
 
   useEffect(() => {
     const reduced =
@@ -82,17 +78,16 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
           }`}
         >
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
-            Harbor felt that
+            Harbor felt that · {organWord}
           </p>
           <h2 className="mt-2 text-xl font-black leading-snug sm:text-2xl">
             {headline}
           </h2>
-          <p className="mt-2 text-sm text-white/85">
-            {chapter}
-            {latest ? ` · “${latest.label}”` : ""}
+          <p className="mt-2 text-sm text-white/85" data-testid="scar-spectacle-retell">
+            {retell ?? shelf}
           </p>
           <p className="mt-3 text-xs text-white/60">
-            Memory Plinth glowing · share card next · tap to continue
+            {organWord} Plinth glowing · share card next · tap to continue
           </p>
         </div>
       ) : (

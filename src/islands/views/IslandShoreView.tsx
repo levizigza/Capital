@@ -41,7 +41,12 @@ import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
 import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
-import { harborScarPlaques } from "../worldMemory";
+import {
+  harborScarPlaques,
+  organQuietBadge,
+  organTakeHushLine,
+  plaqueShelfLine,
+} from "../worldMemory";
 import { moneyOrganForIsland } from "../moneyOrgans";
 
 export type IslandShoreViewProps = {
@@ -306,8 +311,8 @@ export function IslandShoreView({
                 islandId={island.id}
                 organLine={
                   organ
-                    ? `The ${organ.name} holds. Harbor is already listening.`
-                    : "The Coin holds. Harbor is already listening."
+                    ? organTakeHushLine(organ.id)
+                    : organTakeHushLine("coin")
                 }
                 onDone={dismissTakeHush}
               />
@@ -322,15 +327,11 @@ export function IslandShoreView({
                 <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
               </div>
               <HudBadge className="mt-1 bg-slate-900/80 text-white" data-testid="shore-take-hush">
-                {island.id === "paycheck_peninsula"
-                  ? "Quiet after the rainy-day Take"
-                  : island.id === "credit_kingdom"
-                    ? "Quiet after the interest Take"
-                    : "Quiet after the Take"}
+                {organQuietBadge(organ?.id ?? "coin")}
               </HudBadge>
               {latestScar ? (
                 <p className="max-w-xs text-[11px] text-white/75 drop-shadow">
-                  “{latestScar.label}” · Harbor felt that
+                  {plaqueShelfLine(latestScar)} · Harbor felt that
                 </p>
               ) : null}
             </div>

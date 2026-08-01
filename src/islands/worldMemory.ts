@@ -157,9 +157,66 @@ export function scarOrganName(organ: MoneyOrganId): string {
 }
 
 /** One kid-facing sentence after a cold play — organ + plaque. */
-export function coldRetellLine(scar: HarborScar): string {
+export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganName(scarOrganId(scar));
   return `Harbor remembered the ${organ}: “${scar.label}.”`;
+}
+
+/** Plinth billboard / modal row — organ first so the word sticks. */
+export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
+  return `${scarOrganName(scarOrganId(scar))} · ${scar.label}`;
+}
+
+/** Spectacle headline — organ-first Harbor proof. */
+export function coldSpectacleHeadline(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
+  const organ = scarOrganId(scar);
+  if (organ === "coin") return "Harbor felt the Coin Change";
+  if (organ === "clock") return "Harbor felt the Clock Take";
+  if (organ === "spiral") return "Harbor felt the Spiral";
+  return "Harbor felt that choice";
+}
+
+/** Suit-verb hush after Take — Coin holds · Clock shelters · Spiral withstands. */
+export function organTakeHushLine(organ: MoneyOrganId): string {
+  if (organ === "clock") return "The Clock shelters. Harbor is already listening.";
+  if (organ === "spiral") return "The Spiral withstands. Harbor is already listening.";
+  if (organ === "memory") return "Memory keeps the mark. Harbor is already listening.";
+  return "The Coin holds. Harbor is already listening.";
+}
+
+/** Shore quiet badge after irreversible Take. */
+export function organQuietBadge(organ: MoneyOrganId): string {
+  if (organ === "clock") return "Quiet after the Clock Take";
+  if (organ === "spiral") return "Quiet after the Spiral Take";
+  if (organ === "memory") return "Quiet after Memory";
+  return "Quiet after the Coin Take";
+}
+
+/** Day-2 cinema body — organ-true metaphor (not always jars). */
+export function day2EchoBody(scarLabel: string, organ: MoneyOrganId): string {
+  const organWord = scarOrganName(organ);
+  if (organ === "clock") {
+    return `Locals still stamp about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+  }
+  if (organ === "spiral") {
+    return `Locals still weigh the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+  }
+  if (organ === "memory") {
+    return `Locals still name the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+  }
+  return `Locals still tip their jars about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+}
+
+/** Daily Harbor rumor that carries the organ word. */
+export function scarRumorLine(
+  scar: Pick<HarborScar, "id" | "islandId" | "label">,
+  kind: "same" | "later",
+): string {
+  const organ = scarOrganName(scarOrganId(scar));
+  if (kind === "later") {
+    return `Day-after echo: the ${organ} still names “${scar.label}.” The Plinth did not forget overnight.`;
+  }
+  return `Memory Plinth rumor: the ${organ} — “${scar.label}” — still shapes how locals greet you.`;
 }
 
 export function groupScarsByChapter(
@@ -196,7 +253,7 @@ export function scarEchoAmbientLine(
 ): string {
   const organWord = scarOrganName(organ);
   if (dayOffset === "later") {
-    return `${mascotName}: Still thinking about the ${organWord} plaque — “${scarLabel}.” Money left footprints.`;
+    return `${mascotName}: Still thinking about the ${organWord} — “${scarLabel}.” Money left footprints.`;
   }
   return `${mascotName}: The Plinth just got a ${organWord} mark — “${scarLabel}.” Harbor felt that.`;
 }

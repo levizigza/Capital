@@ -115,6 +115,20 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 - Day-2 audit accepts Cove **or** Paycheck **or** Credit scars.  
 - After Wave 7: freeze the iconic path — open map width only when the cold retell test passes.
 
+### Cold-retell polish
+
+Canonical kid sentence (spectacle, share, Plinth modal):
+
+`Harbor remembered the {Coin|Clock|Spiral}: “{plaque}.”`
+
+| Organ | Plaque labels | Suit hush verb |
+|-------|---------------|----------------|
+| Coin | Jar before treat / Treat before jar | holds |
+| Clock | Umbrella before glitter / Glitter ate the umbrella | shelters |
+| Spiral | Waited the spiral / Haste fed the spiral | withstands |
+
+Next: **title voice on every threshold** → one Harbor icon → stop.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

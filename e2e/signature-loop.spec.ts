@@ -37,8 +37,11 @@ test.describe("Signature loop", () => {
     });
 
     await expect(page.getByTestId("scar-spectacle")).toBeVisible({ timeout: 20_000 });
+    // Cold-retell polish — organ word in the kid sentence
+    await expect(page.getByTestId("scar-spectacle-retell")).toContainText(/Coin|Clock|Spiral|Memory/);
     await page.getByTestId("scar-spectacle").click();
     await expect(page.getByTestId("harbor-felt-share")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
     await page.getByRole("button", { name: /Keep walking/i }).click();
     await expect(page.getByTestId("harbor-felt-share")).toHaveCount(0);
