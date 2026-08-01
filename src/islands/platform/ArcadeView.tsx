@@ -106,7 +106,7 @@ export function ArcadeView({
     >
       <div className="mx-auto w-full max-w-[var(--game-content-max)] space-y-4 pb-8">
         <div className="text-center">
-          <h1 className="text-3xl font-black text-white drop-shadow-lg">🕹️ FinanceQuest Arcade</h1>
+          <h1 className="text-3xl font-black text-white drop-shadow-lg">Harbor Arcade</h1>
           <p className="text-sm text-white/80 mt-1">
             Every island has different worlds and games — pick what sounds fun!
           </p>

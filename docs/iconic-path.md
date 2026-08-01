@@ -137,7 +137,13 @@ Canonical kid sentence (spectacle, share, Plinth modal):
 | Clock | Umbrella before glitter / Glitter ate the umbrella | shelters |
 | Spiral | Waited the spiral / Haste fed the spiral | withstands |
 
-Next: **title voice on every threshold** → one Harbor icon → stop.
+### Title voice on every threshold
+
+Brand kit in [`titleVoice.ts`](../src/islands/titleVoice.ts): **Capital** → **Fortune Archipelago** → organ/place → diegetic verb.
+
+At carpet dock, World Arrive, Harbor load, shore HUD, structure enter/exit, Soft Beat, Leave, travel map, Take hush, spectacle, and share — the player should still hear Capital / Fortune / Money is alive after stripping chrome.
+
+Next: **one Harbor icon** → stop. No map widening.
 
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 

@@ -9,6 +9,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForSoftBeat } from "../moneyOrgans";
 import { cinemaTimeScale, systemPrefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
+import { softBeatEyebrow } from "../titleVoice";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -98,7 +99,7 @@ export function SoftBeatOverlay({
           className="text-xs font-bold uppercase tracking-[0.2em]"
           style={{ color: beat.accent }}
         >
-          Soft Beat · {organ.name}
+          {softBeatEyebrow(organ.id)}
         </p>
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
@@ -107,7 +108,13 @@ export function SoftBeatOverlay({
           {organ.suit} · {organ.metaphor}
         </p>
         <GameButton variant="primary" className="mt-4" onClick={onDone}>
-          Keep walking
+          {organ.id === "coin"
+            ? "Back into the Jar"
+            : organ.id === "clock"
+              ? "Back to the Clock loft"
+              : organ.id === "spiral"
+                ? "Back to the Spiral"
+                : "Back to the ledger"}
         </GameButton>
       </div>
     </div>

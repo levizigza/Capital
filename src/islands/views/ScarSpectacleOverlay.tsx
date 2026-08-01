@@ -87,7 +87,7 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
             {retell ?? shelf}
           </p>
           <p className="mt-3 text-xs text-white/60">
-            {organWord} Plinth glowing · share card next · tap to continue
+            {organWord} Plinth glowing · Money is alive
           </p>
         </div>
       ) : (

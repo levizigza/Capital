@@ -48,6 +48,11 @@ import {
   plaqueShelfLine,
 } from "../worldMemory";
 import { moneyOrganForIsland } from "../moneyOrgans";
+import {
+  SHORE_MONEY_CARPET,
+  SHORE_TO_HARBOR,
+  structureEnterCta,
+} from "../titleVoice";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -395,7 +400,7 @@ export function IslandShoreView({
             ) : null}
             {!chapterQuiet ? (
               <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
-                🪄 Float
+                {SHORE_MONEY_CARPET}
               </GameButton>
             ) : null}
             {chapterQuiet ? (
@@ -409,7 +414,7 @@ export function IslandShoreView({
               </GameButton>
             ) : (
               <GameButton variant="primary" size="sm" onClick={onOpenHub}>
-                🏠 Hub
+                {SHORE_TO_HARBOR}
               </GameButton>
             )}
           </div>
@@ -438,7 +443,10 @@ export function IslandShoreView({
                 {hotspots.find((h) => h.id === near.id)?.kind === "npc"
                   ? `Talk · ${near.label}`
                   : hotspots.find((h) => h.id === near.id)?.kind === "money_structure"
-                    ? `Enter · ${near.label}`
+                    ? structureEnterCta(
+                        structure?.entryVerb ?? "",
+                        near.label,
+                      )
                     : `Go · ${near.label}`}
               </GameButton>
             ) : (

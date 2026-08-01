@@ -63,6 +63,11 @@ import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
 import { HarborMythFallback } from "../views/HarborMythFallback";
 import type { HarborFallbackMode } from "../harborFirstMeet";
+import {
+  ENTER_HARBOR_HAVEN,
+  HARBOR_LOADING_HINT,
+  HARBOR_LOADING_SLOW,
+} from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
@@ -841,7 +846,7 @@ export function WalkableHarborView({
   }, [near, hotspots, onNearChange]);
 
   const [ready, setReady] = useState(false);
-  const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
+  const [loadHint, setLoadHint] = useState(HARBOR_LOADING_HINT);
   const [force2d, setForce2d] = useState(() => {
     try {
       return sessionStorage.getItem("capital_harbor3d_fail") === "1";
@@ -877,7 +882,7 @@ export function WalkableHarborView({
 
   useEffect(() => {
     if (ready || force2d || kill3d) return;
-    setLoadHint("Loading Harbor Haven…");
+    setLoadHint(HARBOR_LOADING_HINT);
     let cancelled = false;
     let idleId: number | undefined;
     let mountTimer: number | undefined;
@@ -907,7 +912,7 @@ export function WalkableHarborView({
       setAllowCanvas(true);
     };
 
-    // Double-rAF + idle: Continue paints and stays tappable before WebGL hitch.
+    // Double-rAF + idle: Enter Harbor paints and stays tappable before WebGL hitch.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (cancelled) return;
@@ -927,7 +932,7 @@ export function WalkableHarborView({
     });
 
     const hint = window.setTimeout(() => {
-      setLoadHint("Harbor is taking a while — Continue anytime");
+      setLoadHint(HARBOR_LOADING_SLOW);
     }, 1_200);
     // Hard myth escape — iconic reliability gate: playable Harbor < ~3s.
     const failsafe = window.setTimeout(() => {
@@ -999,7 +1004,7 @@ export function WalkableHarborView({
               escapeToMyth();
             }}
           >
-            Continue to Harbor
+            {ENTER_HARBOR_HAVEN}
           </button>
         </div>
       ) : null}

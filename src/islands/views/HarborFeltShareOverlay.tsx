@@ -35,10 +35,10 @@ export function HarborFeltShareOverlay({
     >
       <div className="relative mx-4 flex max-w-md flex-col items-center gap-3 rounded-2xl border border-amber-200/55 bg-[#0f172a]/94 px-5 py-5 text-center text-white">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200">
-          Harbor felt that · {organWord}
+          Capital · Harbor felt that · {organWord}
         </p>
         <h2 className="text-xl font-black leading-snug sm:text-2xl">
-          This is the card people remember
+          Money left footprints
         </h2>
         <p className="text-sm text-white/80" data-testid="harbor-felt-retell">
           Harbor remembered the {organWord}: “{scarLabel}.”
