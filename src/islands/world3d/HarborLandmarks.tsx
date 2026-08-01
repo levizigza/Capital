@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
+import { organMaterialTint, type MoneyOrganId } from "../moneyOrgans";
 import { SafeText } from "./SafeText";
 
 type AccentProps = {
@@ -358,17 +359,21 @@ export function MemoryPlinthMesh({
   guided = false,
   scarRemembered = false,
   spectacleActive = false,
+  scarOrgan = null,
   scarLabel,
 }: AccentProps & {
   scarRemembered?: boolean;
   /** Scar spectacle camera lock — lamp peaks */
   spectacleActive?: boolean;
+  /** Scar organ tint — Coin gold / Clock sky / Spiral violet on Memory ledger */
+  scarOrgan?: MoneyOrganId | null;
   scarLabel?: string;
 }) {
   const glow = useRef<THREE.Mesh>(null);
   const pages = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Mesh>(null);
   const lit = active || guided || scarRemembered || spectacleActive;
+  const tint = organMaterialTint(scarOrgan);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -413,8 +418,8 @@ export function MemoryPlinthMesh({
         <mesh ref={ring} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.4, 0]}>
           <ringGeometry args={[0.95, 1.35, 28]} />
           <meshStandardMaterial
-            color="#fbbf24"
-            emissive="#f59e0b"
+            color={tint.accent}
+            emissive={tint.emissive}
             emissiveIntensity={0.55}
             transparent
             opacity={0.75}
@@ -464,8 +469,8 @@ export function MemoryPlinthMesh({
       <mesh ref={glow} position={[0, 2.42, 0]}>
         <sphereGeometry args={[scarRemembered || spectacleActive ? 0.42 : 0.3, 16, 14]} />
         <meshStandardMaterial
-          color={scarRemembered || spectacleActive ? "#fde68a" : "#f5f5f4"}
-          emissive="#f59e0b"
+          color={scarRemembered || spectacleActive ? tint.lamp : "#f5f5f4"}
+          emissive={tint.emissive}
           emissiveIntensity={
             spectacleActive ? 1.2 : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
           }
@@ -475,7 +480,7 @@ export function MemoryPlinthMesh({
       {scarRemembered || spectacleActive ? (
         <pointLight
           position={[0, 2.5, 0.4]}
-          color="#fbbf24"
+          color={tint.accent}
           intensity={spectacleActive ? 2.4 : 1.4}
           distance={spectacleActive ? 11 : 8}
           decay={2}

@@ -157,6 +157,8 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 
 **Piggy presence:** after share, Harbor stays quiet — stall grid hidden, Coin Bag points Piggy, diegetic bubble (not emoji shorthand), no “Piggy Penny noticed” tutorial modal. One job: walk to her when ready.
 
+**Leitmotif + material:** spectacle reveal and share open speak the scar organ stinger over Memory `plinth_hum`. Plinth lamp/ring tint follows the scar organ. Money Structure floors, exit rings, pads, and fill lights use organ-true shells (`structureShell` / `organMaterialTint`) — Coin gold · Clock sky · Spiral violet · Memory amber, never one cyan kit. Shore motif / toy pokes fire the matching organ SFX.
+
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.

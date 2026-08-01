@@ -1,10 +1,12 @@
 /**
  * Organ-true shore motifs — each spine island must squint as a different mural piece.
+ * Pokes fire the organ leitmotif so shore toys match interior toys.
  */
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrgan } from "../moneyOrgans";
 import { shoreScale } from "./ledgerlight";
 
@@ -49,6 +51,7 @@ function CoinStack({
           onClick={(e) => {
             e.stopPropagation();
             if (g.current) g.current.rotation.y += 0.8;
+            playOrganSfx("coin");
           }}
         >
           <cylinderGeometry args={[shoreScale(0.28 - i * 0.02), shoreScale(0.28 - i * 0.02), 0.08, 16]} />
@@ -71,9 +74,13 @@ export function OrganClockField({ accent = "#38bdf8" }: { accent?: string }) {
   useFrame(({ clock }) => {
     if (hand.current) hand.current.rotation.z = -clock.elapsedTime * 0.6;
   });
+  const poke = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
+    playOrganSfx("clock");
+  };
   return (
     <group>
-      <group position={[shoreScale(0), 0.15, shoreScale(-4.5)]}>
+      <group position={[shoreScale(0), 0.15, shoreScale(-4.5)]} onClick={poke}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
           <ringGeometry args={[shoreScale(1.1), shoreScale(1.35), 32]} />
           <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.2} />
@@ -91,6 +98,7 @@ export function OrganClockField({ accent = "#38bdf8" }: { accent?: string }) {
             key={i}
             castShadow
             position={[Math.cos(ang) * r, 0.35, Math.sin(ang) * r]}
+            onClick={poke}
           >
             <boxGeometry args={[shoreScale(0.15), shoreScale(0.7), shoreScale(0.15)]} />
             <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.15} />
@@ -108,7 +116,14 @@ export function OrganSpiralRunes({ accent = "#a78bfa" }: { accent?: string }) {
     if (g.current) g.current.rotation.y = clock.elapsedTime * 0.12;
   });
   return (
-    <group ref={g} position={[0, 0.11, 0]}>
+    <group
+      ref={g}
+      position={[0, 0.11, 0]}
+      onClick={(e) => {
+        e.stopPropagation();
+        playOrganSfx("spiral");
+      }}
+    >
       {[0, 1, 2].map((ring) => (
         <mesh key={ring} rotation={[-Math.PI / 2, 0, ring * 0.4]}>
           <ringGeometry

@@ -130,3 +130,15 @@ export function moneyOrganForSoftBeat(
   if (kind === "battlement") return MONEY_ORGANS.spiral;
   return MONEY_ORGANS.memory;
 }
+
+/** Lamp / ring / pad colors so Coin · Clock · Spiral · Memory never share one cyan kit. */
+export function organMaterialTint(organ: MoneyOrganId | null | undefined): {
+  accent: string;
+  emissive: string;
+  lamp: string;
+} {
+  if (organ === "coin") return { accent: "#fbbf24", emissive: "#f59e0b", lamp: "#fde68a" };
+  if (organ === "clock") return { accent: "#38bdf8", emissive: "#0284c7", lamp: "#e0f2fe" };
+  if (organ === "spiral") return { accent: "#a78bfa", emissive: "#7c3aed", lamp: "#ede9fe" };
+  return { accent: "#f59e0b", emissive: "#d97706", lamp: "#fde68a" };
+}

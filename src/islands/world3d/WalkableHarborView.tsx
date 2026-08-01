@@ -700,6 +700,7 @@ function PlazaScene({
                   guided={pulsing}
                   scarRemembered={memoryLit}
                   spectacleActive={plinthSpectacleActive}
+                  scarOrgan={scarEcho?.organ ?? null}
                   scarLabel={
                     scarEcho?.label
                       ? scarEcho.organ

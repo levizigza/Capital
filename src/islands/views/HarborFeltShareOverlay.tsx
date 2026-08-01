@@ -4,7 +4,9 @@
  * not a settings modal card.
  */
 
+import { useEffect } from "react";
 import { GameButton } from "@/game-ui";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
@@ -27,6 +29,12 @@ export function HarborFeltShareOverlay({
   onKeepWalking,
 }: Props) {
   const organWord = scarOrganName(organId ?? "memory");
+  const organ = organId ?? "memory";
+
+  useEffect(() => {
+    playOrganSfx(organ);
+    playCapitalSfx("plinth_hum");
+  }, [organ]);
 
   return (
     <div

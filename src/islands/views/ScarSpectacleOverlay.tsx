@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
 import {
   coldRetellLine,
@@ -27,7 +27,8 @@ type Props = {
 export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   const [phase, setPhase] = useState<SpectacleCinemaPhase>("hush");
   const latest = scars[scars.length - 1];
-  const organWord = latest ? scarOrganName(scarOrganId(latest)) : "Memory";
+  const organId = latest ? scarOrganId(latest) : "memory";
+  const organWord = scarOrganName(organId);
   const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
   const retell = latest ? coldRetellLine(latest) : null;
   const shelf = latest ? plaqueShelfLine(latest) : null;
@@ -35,6 +36,8 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   onDoneRef.current = onDone;
   const onPhaseChangeRef = useRef(onPhaseChange);
   onPhaseChangeRef.current = onPhaseChange;
+  const organIdRef = useRef(organId);
+  organIdRef.current = organId;
 
   useEffect(() => {
     const reduced =
@@ -48,6 +51,8 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       setPhase("in");
       onPhaseChangeRef.current?.("in");
       playCapitalSfx("harbor_cheer");
+      // Leitmotif: scar organ speaks; plinth_hum stays Memory underlayer.
+      playOrganSfx(organIdRef.current);
       playCapitalSfx("plinth_hum");
     }, t.hushMs);
     const t1 = window.setTimeout(() => {

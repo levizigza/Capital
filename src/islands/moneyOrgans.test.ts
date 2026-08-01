@@ -6,6 +6,7 @@ import {
   moneyOrganForIsland,
   moneyOrganForSoftBeat,
   moneyOrganForStructureTheme,
+  organMaterialTint,
 } from "./moneyOrgans";
 import {
   COVE_ISLAND_ID,
@@ -47,5 +48,17 @@ describe("money organs mural thesis", () => {
     expect(moneyOrganForSoftBeat("ledger").id).toBe("memory");
     expect(moneyOrganForSoftBeat("umbrella").id).toBe("clock");
     expect(moneyOrganForSoftBeat("battlement").id).toBe("spiral");
+  });
+
+  it("keeps organ material tints distinct (no shared cyan kit)", () => {
+    const coin = organMaterialTint("coin");
+    const clock = organMaterialTint("clock");
+    const spiral = organMaterialTint("spiral");
+    const memory = organMaterialTint("memory");
+    const accents = [coin.accent, clock.accent, spiral.accent, memory.accent];
+    expect(new Set(accents).size).toBe(4);
+    expect(clock.accent).not.toBe(coin.accent);
+    expect(spiral.lamp).not.toBe(coin.lamp);
+    expect(organMaterialTint(null).accent).toBe(memory.accent);
   });
 });
