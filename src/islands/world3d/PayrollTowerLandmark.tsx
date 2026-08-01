@@ -9,12 +9,15 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import * as THREE from "three";
 
+type CinemaPhase = "hush" | "mark" | "line";
+
 type Props = {
   position: [number, number, number];
   active?: boolean;
   guided?: boolean;
   label?: string;
   hushActive?: boolean;
+  cinemaPhase?: CinemaPhase | null;
 };
 
 export function PayrollTowerLandmark({
@@ -23,19 +26,31 @@ export function PayrollTowerLandmark({
   guided = false,
   label = "Payroll Tower",
   hushActive = false,
+  cinemaPhase = null,
 }: Props) {
   const chute = useRef<THREE.Mesh>(null);
   const clockHand = useRef<THREE.Mesh>(null);
+  const scar = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
+    const mark = cinemaPhase === "mark";
     if (chute.current) {
       const mat = chute.current.material as THREE.MeshStandardMaterial;
-      const base = hushActive ? 0.1 : active ? 0.8 : guided ? 0.5 : 0.25;
-      mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.2 : 3.2)) * (hushActive ? 0.03 : 0.08);
+      if (mark) {
+        mat.emissiveIntensity = 0.9 + Math.sin(t * 10) * 0.2;
+      } else {
+        const base = hushActive ? 0.1 : active ? 0.8 : guided ? 0.5 : 0.25;
+        mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.2 : 3.2)) * (hushActive ? 0.03 : 0.08);
+      }
     }
     if (clockHand.current) {
-      clockHand.current.rotation.z = -t * (hushActive ? 0.15 : 0.8);
+      clockHand.current.rotation.z = -t * (mark ? 0.05 : hushActive ? 0.15 : 0.8);
+    }
+    if (scar.current) {
+      const mat = scar.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = mark ? 0.8 + Math.sin(t * 12) * 0.2 : 0.2;
+      mat.opacity = mark ? 0.95 : 0.7;
     }
   });
 
@@ -54,7 +69,7 @@ export function PayrollTowerLandmark({
       </mesh>
 
       {hushActive ? (
-        <mesh rotation={[-Math.PI / 2, 0, -0.3]} position={[-0.8, 0.08, 0.7]}>
+        <mesh ref={scar} rotation={[-Math.PI / 2, 0, -0.3]} position={[-0.8, 0.08, 0.7]}>
           <planeGeometry args={[1.3, 0.12]} />
           <meshStandardMaterial
             color="#0c4a6e"
@@ -125,7 +140,13 @@ export function PayrollTowerLandmark({
           outlineWidth={0.028}
           outlineColor="#0c4a6e"
         >
-          {hushActive ? "Quiet after the Take" : active ? "Enter · paycheck chute" : label}
+          {cinemaPhase === "mark"
+            ? "The mark holds"
+            : hushActive
+              ? "Quiet after the Take"
+              : active
+                ? "Enter · paycheck chute"
+                : label}
         </SafeText>
       </Billboard>
     </group>

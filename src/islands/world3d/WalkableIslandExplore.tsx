@@ -57,6 +57,8 @@ type Props = {
   inputFrozen?: boolean;
   /** Quiet after irreversible Take — Coin organ hush in-world */
   chapterQuiet?: boolean;
+  /** Take cinema phase — landmark mark flash + soft camera bias */
+  hushCinemaPhase?: "hush" | "mark" | "line" | null;
 };
 
 const SPEED = 8.4;
@@ -71,6 +73,7 @@ function Player({
   onNear,
   playerPosOut,
   inputFrozen = false,
+  cinemaFocus = null,
 }: {
   character?: CapitalCharacter | null;
   animationStyle?: string;
@@ -78,6 +81,8 @@ function Player({
   onNear: (id: string | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
   inputFrozen?: boolean;
+  /** Soft look-at bias during Take cinema (Money Structure) */
+  cinemaFocus?: [number, number, number] | null;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
@@ -88,6 +93,8 @@ function Player({
   const moving = useRef(false);
   const frozenRef = useRef(inputFrozen);
   frozenRef.current = inputFrozen;
+  const cinemaFocusRef = useRef(cinemaFocus);
+  cinemaFocusRef.current = cinemaFocus;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -124,6 +131,21 @@ function Player({
     const p = group.current.position;
     if (frozenRef.current) {
       playerPosOut.current.set(p.x, p.y, p.z);
+      const focus = cinemaFocusRef.current;
+      if (focus) {
+        const back = shoreScale(11.5);
+        const camH = shoreScale(5.6);
+        const midX = (p.x + focus[0]) * 0.5;
+        const midZ = (p.z + focus[2]) * 0.5;
+        const ideal = new THREE.Vector3(
+          midX - Math.sin(camYaw.current) * back * 0.55,
+          camH,
+          midZ - Math.cos(camYaw.current) * back * 0.55,
+        );
+        camera.position.lerp(ideal, 1 - Math.pow(0.0008, dt));
+        camera.lookAt(focus[0], 1.85, focus[2]);
+        return;
+      }
       const back = shoreScale(8.2);
       const camH = shoreScale(4.7);
       const ideal = new THREE.Vector3(
@@ -345,6 +367,7 @@ function PadMarker({
   animationStyle,
   islandId,
   hushActive = false,
+  cinemaPhase = null,
 }: {
   hotspot: ShoreHotspot;
   look: EraLook3D;
@@ -355,6 +378,7 @@ function PadMarker({
   animationStyle: string;
   islandId: string;
   hushActive?: boolean;
+  cinemaPhase?: "hush" | "mark" | "line" | null;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const lit = active || !!guided;
@@ -383,6 +407,7 @@ function PadMarker({
           guided={guided}
           label={hotspot.label}
           hushActive={hushActive}
+          cinemaPhase={cinemaPhase}
         />
       );
     }
@@ -394,6 +419,7 @@ function PadMarker({
           guided={guided}
           label={hotspot.label}
           hushActive={hushActive}
+          cinemaPhase={cinemaPhase}
         />
       );
     }
@@ -404,6 +430,7 @@ function PadMarker({
         guided={guided}
         label={hotspot.label}
         hushActive={hushActive}
+        cinemaPhase={cinemaPhase}
       />
     );
   }
@@ -783,6 +810,7 @@ function ShoreScene({
   guideArrows,
   inputFrozen = false,
   chapterQuiet = false,
+  hushCinemaPhase = null,
 }: {
   island: IslandDefinition;
   look: EraLook3D;
@@ -798,6 +826,7 @@ function ShoreScene({
   guideArrows?: boolean;
   inputFrozen?: boolean;
   chapterQuiet?: boolean;
+  hushCinemaPhase?: "hush" | "mark" | "line" | null;
 }) {
   const wire = look.shading === "vector" || look.shading === "wire";
   const culture = useMemo(() => getIslandCulture(island), [island]);
@@ -817,6 +846,12 @@ function ShoreScene({
     }
     return best;
   }, [guideArrows, guideLookAt, hotspots]);
+
+  const cinemaFocus = useMemo((): [number, number, number] | null => {
+    if (!hushCinemaPhase) return null;
+    const structure = hotspots.find((h) => h.kind === "money_structure");
+    return structure ? structure.position : null;
+  }, [hushCinemaPhase, hotspots]);
 
   const props = useMemo(() => {
     const t = buildIslandTerrain(islandSeedFromId(`${island.id}-shore`), look, "near", biome);
@@ -982,6 +1017,7 @@ function ShoreScene({
           animationStyle={animationStyle}
           islandId={island.id}
           hushActive={chapterQuiet}
+          cinemaPhase={h.kind === "money_structure" ? hushCinemaPhase : null}
         />
       ))}
 
@@ -994,6 +1030,7 @@ function ShoreScene({
         onNear={onNear}
         playerPosOut={playerPosOut}
         inputFrozen={inputFrozen}
+        cinemaFocus={cinemaFocus}
       />
     </>
   );
@@ -1016,6 +1053,7 @@ export function WalkableIslandExplore({
   onGuideProject,
   inputFrozen = false,
   chapterQuiet = false,
+  hushCinemaPhase = null,
 }: Props) {
   const theme = getIslandTheme(island.id, island.themeId);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
@@ -1105,6 +1143,7 @@ export function WalkableIslandExplore({
           guideArrows={guideArrows}
           inputFrozen={inputFrozen}
           chapterQuiet={chapterQuiet}
+          hushCinemaPhase={hushCinemaPhase}
         />
         <Suspense fallback={null}>
           <MoneyBagGuide
@@ -1112,11 +1151,11 @@ export function WalkableIslandExplore({
             playerPos={playerPos}
             tip={guideTip ?? "Stay with me — I’ll point the next step!"}
             reducedMotion={reduced}
-            pointingEnabled={guideArrows}
+            pointingEnabled={guideArrows && !hushCinemaPhase}
           />
           <GuideProjector
             lookAt={guideLookAt}
-            enabled={guideArrows}
+            enabled={guideArrows && !hushCinemaPhase}
             onProject={onGuideProject ?? (() => {})}
           />
         </Suspense>
