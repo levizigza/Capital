@@ -380,7 +380,8 @@ export function MemoryPlinthMesh({
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
       if (spectacleActive) {
-        mat.emissiveIntensity = 1.55 + Math.sin(t * 5.2) * 0.35;
+        // Peak must read clearly over always-on scarRemembered baseline.
+        mat.emissiveIntensity = 2.05 + Math.sin(t * 5.4) * 0.45;
       } else {
         const base = scarRemembered ? 1.05 : lit ? 0.7 : 0.22;
         mat.emissiveIntensity = base + Math.sin(t * (scarRemembered ? 2.6 : 1.8)) * 0.14;
@@ -467,12 +468,12 @@ export function MemoryPlinthMesh({
         <meshStandardMaterial color="#92400e" metalness={0.35} roughness={0.45} />
       </mesh>
       <mesh ref={glow} position={[0, 2.42, 0]}>
-        <sphereGeometry args={[scarRemembered || spectacleActive ? 0.42 : 0.3, 16, 14]} />
+        <sphereGeometry args={[spectacleActive ? 0.52 : scarRemembered ? 0.42 : 0.3, 16, 14]} />
         <meshStandardMaterial
           color={scarRemembered || spectacleActive ? tint.lamp : "#f5f5f4"}
           emissive={tint.emissive}
           emissiveIntensity={
-            spectacleActive ? 1.2 : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
+            spectacleActive ? 1.65 : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
           }
           metalness={0.35}
         />
@@ -481,8 +482,8 @@ export function MemoryPlinthMesh({
         <pointLight
           position={[0, 2.5, 0.4]}
           color={tint.accent}
-          intensity={spectacleActive ? 2.4 : 1.4}
-          distance={spectacleActive ? 11 : 8}
+          intensity={spectacleActive ? 3.4 : 1.4}
+          distance={spectacleActive ? 14 : 8}
           decay={2}
         />
       ) : null}

@@ -1,5 +1,5 @@
 /**
- * Day-2 scar echo — Soft Beat tone, not a tutorial modal.
+ * Day-2 scar echo — Soft Beat cinema over the live Plinth, not a tutorial modal.
  * Wave 7 — organ-tinted so Coin / Clock / Spiral each cold-retell.
  */
 
@@ -14,13 +14,6 @@ type Props = {
   organId?: MoneyOrganId;
   onVisitPlinth: () => void;
   onDismiss: () => void;
-};
-
-const ORGAN_BORDER: Record<MoneyOrganId, string> = {
-  memory: "border-amber-200/40",
-  coin: "border-amber-300/50",
-  clock: "border-sky-300/50",
-  spiral: "border-violet-300/50",
 };
 
 const ORGAN_EYEBROW: Record<MoneyOrganId, string> = {
@@ -45,24 +38,32 @@ export function Day2EchoOverlay({
 
   return (
     <div
-      className="pointer-events-auto absolute inset-0 z-[42] flex items-center justify-center bg-[#0f172a]/72 backdrop-blur-[1px]"
+      className="pointer-events-auto absolute inset-0 z-[42] flex flex-col justify-end"
       role="dialog"
       aria-label="Still here"
       data-testid="day2-echo-surprise"
+      data-echo-presentation="plinth-cinema"
       onClick={onDismiss}
       onKeyDown={(e) => {
         if (e.key === "Escape") onDismiss();
       }}
+      style={{
+        // Same Plinth aperture as spectacle / share — live lamp stays visible.
+        background:
+          "radial-gradient(ellipse 60% 50% at 62% 34%, transparent 0%, transparent 44%, rgba(15,23,42,0.28) 72%, rgba(15,23,42,0.62) 100%)",
+      }}
     >
       <div
-        className={`relative mx-4 max-w-md rounded-2xl border ${ORGAN_BORDER[organId]} bg-[#0f172a]/92 px-6 py-5 text-center text-white`}
+        className="relative z-10 mx-auto w-full max-w-lg px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <p className={`text-xs font-bold uppercase tracking-[0.2em] ${ORGAN_EYEBROW[organId]}`}>
           Still here · {organWord}
         </p>
-        <h2 className="mt-2 text-xl font-black sm:text-2xl">The Plinth did not forget</h2>
-        <p className="mt-3 text-sm text-white/85" data-testid="day2-echo-retell">
+        <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
+          The Plinth did not forget
+        </h2>
+        <p className="mt-3 text-sm text-white/85 drop-shadow" data-testid="day2-echo-retell">
           {day2EchoBody(scarLabel, organId)}
         </p>
         <GameButton variant="primary" className="mt-4 w-full" onClick={onVisitPlinth} autoFocus>

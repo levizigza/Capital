@@ -83,7 +83,10 @@ import {
   familyPlaqueMythLine,
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
-import { ScarSpectacleOverlay } from "./ScarSpectacleOverlay";
+import {
+  ScarSpectacleOverlay,
+  type SpectacleCinemaPhase,
+} from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
@@ -312,6 +315,8 @@ export function HomeHubView({
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
   const [spectacleOpen, setSpectacleOpen] = useState(false);
+  /** Lamp peaks after hush — not under the dark beat. */
+  const [spectaclePhase, setSpectaclePhase] = useState<SpectacleCinemaPhase | null>(null);
   const [plinthGlow, setPlinthGlow] = useState(false);
   const [feltShareOpen, setFeltShareOpen] = useState(false);
   const [feltPreviewUrl, setFeltPreviewUrl] = useState<string | null>(null);
@@ -415,10 +420,15 @@ export function HomeHubView({
 
   useEffect(() => {
     // Hold glow through the share freeze-frame so the lamp doesn't die mid-PNG.
-    if (!plinthGlow || feltShareOpen) return;
+    // Day-2 cinema also holds the peak until the echo closes.
+    if (!plinthGlow || feltShareOpen || echoSurpriseOpen) return;
     const t = window.setTimeout(() => setPlinthGlow(false), SIGNATURE_TIMING.plinthGlowMs);
     return () => window.clearTimeout(t);
-  }, [plinthGlow, feltShareOpen]);
+  }, [plinthGlow, feltShareOpen, echoSurpriseOpen]);
+
+  useEffect(() => {
+    if (!spectacleOpen) setSpectaclePhase(null);
+  }, [spectacleOpen]);
 
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;
@@ -428,6 +438,8 @@ export function HomeHubView({
     if (guided && !isHubGuidedComplete(guided)) return;
     if (save.harborHomecoming?.pending) return;
     setEchoSurpriseOpen(true);
+    // Lamp peaks for day-2 Soft Beat cinema — prove the Plinth before any modal.
+    setPlinthGlow(true);
   }, [
     save.harborRitual?.today.rumorId,
     save.harborRitual?.today.echoSurpriseSeen,
@@ -720,7 +732,14 @@ export function HomeHubView({
     ],
   );
 
-  const plinthCinemaLock = spectacleOpen || feltShareOpen;
+  // Hold Plinth framing through share + afterglow + day-2 so the kid can see the lamp.
+  const plinthCinemaLock =
+    spectacleOpen || feltShareOpen || plinthGlow || echoSurpriseOpen;
+  const plinthLampPeak =
+    feltShareOpen ||
+    plinthGlow ||
+    echoSurpriseOpen ||
+    (spectacleOpen && spectaclePhase != null && spectaclePhase !== "hush");
 
   const openOutfitter = () => {
     setDraft(voyager);
@@ -985,9 +1004,13 @@ export function HomeHubView({
                   }
                   cinemaFocus={plinthCinemaLock ? MEMORY_PLINTH_LOOK_AT : null}
                   cinemaEye={plinthCinemaLock ? MEMORY_PLINTH_CINEMA_EYE : null}
-                  plinthSpectacleActive={plinthShareBeat}
+                  plinthSpectacleActive={plinthLampPeak}
                   weatherFog={
-                    spectacleOpen || feltShareOpen || trailerOpen
+                    spectacleOpen ||
+                    feltShareOpen ||
+                    plinthGlow ||
+                    echoSurpriseOpen ||
+                    trailerOpen
                       ? { near: 8, far: 42 }
                       : weatherFogParams(harborWeatherMood(save))
                   }
@@ -1013,7 +1036,11 @@ export function HomeHubView({
                   enabled={guideArrows && !spectacleOpen && !feltShareOpen}
                 />
                 {spectacleOpen ? (
-                  <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
+                  <ScarSpectacleOverlay
+                    scars={plaques}
+                    onDone={closeSpectacle}
+                    onPhaseChange={setSpectaclePhase}
+                  />
                 ) : null}
                 {feltShareOpen && !spectacleOpen && latestPlaque ? (
                   <HarborFeltShareOverlay
@@ -1046,12 +1073,14 @@ export function HomeHubView({
                       setEchoSurpriseOpen(false);
                       onMarkEchoSurprise?.();
                       playCapitalSfx("plinth_hum");
+                      // Live lamp peak first — plaque modal after a short hold so glow reads.
                       setPlinthGlow(true);
-                      setHubModal("memory");
+                      window.setTimeout(() => setHubModal("memory"), 1400);
                     }}
                     onDismiss={() => {
                       setEchoSurpriseOpen(false);
                       onMarkEchoSurprise?.();
+                      setPlinthGlow(true);
                     }}
                   />
                 ) : null}

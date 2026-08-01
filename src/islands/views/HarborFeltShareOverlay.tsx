@@ -1,7 +1,7 @@
 /**
  * Default social object after scar spectacle — Plinth freeze-frame.
- * Live Harbor stays visible under a light vignette; the PNG is the freeze,
- * not a settings modal card.
+ * Live Harbor (and the peaked lamp) stay visible in the upper aperture;
+ * the PNG freezes in the lower band — not a centered settings card.
  */
 
 import { useEffect } from "react";
@@ -43,23 +43,28 @@ export function HarborFeltShareOverlay({
       aria-label="Harbor felt that share card"
       data-testid="harbor-felt-share"
       data-share-presentation="plinth-freeze"
+      data-plinth-aperture="live"
       style={{
+        // Punch a clear hole over MEMORY_PLINTH_CINEMA_EYE framing (~62% / 36%).
         background:
-          "radial-gradient(ellipse 72% 58% at 62% 36%, transparent 0%, transparent 38%, rgba(15,23,42,0.22) 68%, rgba(15,23,42,0.58) 100%)",
+          "radial-gradient(ellipse 58% 48% at 62% 34%, transparent 0%, transparent 46%, rgba(15,23,42,0.18) 70%, rgba(15,23,42,0.62) 100%)",
       }}
     >
-      {/* Freeze plane — Plinth PNG reads as the frozen proof, not an inset card */}
-      <div className="pointer-events-none relative flex min-h-0 flex-1 items-center justify-center px-3 pt-6 sm:px-6">
+      {/* Live Plinth aperture — keep the peaked lamp readable above the freeze */}
+      <div className="pointer-events-none relative min-h-[28vh] flex-1" aria-hidden data-testid="harbor-felt-plinth-aperture" />
+
+      {/* Freeze plane — lower band so it never covers the live lamp */}
+      <div className="pointer-events-none relative z-[1] flex shrink-0 justify-center px-3 pb-1 pt-0">
         {previewUrl ? (
           <img
             src={previewUrl}
             alt="Harbor felt that — Memory Plinth freeze"
-            className="max-h-[min(52vh,480px)] w-auto max-w-[min(92vw,480px)] object-contain drop-shadow-[0_12px_40px_rgba(15,23,42,0.55)]"
+            className="max-h-[min(32vh,280px)] w-auto max-w-[min(88vw,400px)] object-contain drop-shadow-[0_12px_40px_rgba(15,23,42,0.55)]"
             data-testid="harbor-felt-preview"
           />
         ) : (
           <div
-            className="flex h-48 w-48 items-center justify-center text-center text-xs text-white/55"
+            className="flex h-28 w-48 items-center justify-center text-center text-xs text-white/55"
             data-testid="harbor-felt-preview-loading"
           >
             Freezing the Plinth…
@@ -67,7 +72,7 @@ export function HarborFeltShareOverlay({
         )}
       </div>
 
-      {/* Lower-third cinema chrome — retell + share actions (above freeze plane) */}
+      {/* Lower-third cinema chrome — retell + share actions */}
       <div className="relative z-10 mx-auto w-full max-w-lg px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
           {capitalOrganEyebrow(organId)} · Harbor felt that

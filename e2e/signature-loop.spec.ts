@@ -48,8 +48,10 @@ test.describe("Signature loop", () => {
     }
     const share = page.getByTestId("harbor-felt-share");
     await expect(share).toBeVisible({ timeout: 12_000 });
-    // Plinth freeze-frame — not a settings modal card
+    // Plinth freeze-frame — not a settings modal card; live lamp aperture stays open
     await expect(share).toHaveAttribute("data-share-presentation", "plinth-freeze");
+    await expect(share).toHaveAttribute("data-plinth-aperture", "live");
+    await expect(page.getByTestId("harbor-felt-plinth-aperture")).toBeAttached();
     await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
     await expect(page.getByTestId("harbor-felt-preview")).toBeVisible({ timeout: 10_000 });
@@ -72,7 +74,10 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
     });
 
-    await expect(page.getByTestId("day2-echo-surprise")).toBeVisible({ timeout: 20_000 });
+    const echo = page.getByTestId("day2-echo-surprise");
+    await expect(echo).toBeVisible({ timeout: 20_000 });
+    // Soft Beat cinema over live Plinth — not a centered tutorial card
+    await expect(echo).toHaveAttribute("data-echo-presentation", "plinth-cinema");
     await page.getByRole("button", { name: /I hear them/i }).click();
     await expect(page.getByTestId("day2-echo-surprise")).toHaveCount(0);
   });

@@ -151,17 +151,17 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 - Share PNG + signature trailer draw the same ledger-plinth silhouette.  
 - Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
 
-<<<<<<< HEAD
 **Take world cinema (deepen, not widen):** after Kira’s irreversible Take and Talk dismiss, the shore owns the climax — organ landmark mark flash + captions (no dark modal card). Carpet CTAs return when cinema ends.
-=======
+
 **Spectacle world cinema:** after carpet home from a Take, Harbor locks the camera on the Memory Plinth — captions at the edge, scar lamp peaks, Coin Bag points at memory before Piggy welcome.
 
-**Share freeze-frame:** after spectacle, the same Plinth lock holds while the felt PNG (ledger silhouette + organ seal) freezes as the social object — lower-third retell + Share / Keep walking, not a centered settings card.
+**Share freeze-frame:** after spectacle, the same Plinth lock holds while the felt PNG sits in a lower band — live lamp stays visible through the vignette aperture; lower-third retell + Share / Keep walking.
 
 **Piggy presence:** after share, Harbor stays quiet — stall grid hidden, Coin Bag points Piggy, diegetic bubble (not emoji shorthand), no “Piggy Penny noticed” tutorial modal. One job: walk to her when ready.
 
 **Leitmotif + material:** spectacle reveal and share open speak the scar organ stinger over Memory `plinth_hum`. Plinth lamp/ring tint follows the scar organ. Money Structure floors, exit rings, pads, and fill lights use organ-true shells (`structureShell` / `organMaterialTint`) — Coin gold · Clock sky · Spiral violet · Memory amber, never one cyan kit. Shore motif / toy pokes fire the matching organ SFX.
->>>>>>> origin/cursor/leitmotif-material-2fc5
+
+**Plinth glow truth:** cinema lock holds through share and afterglow (`plinthGlow`); lamp peaks after hush (not under the dark beat); day-2 echo is Soft Beat cinema over the live Plinth, and Visit/dismiss pulses the lamp before any plaque modal.
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 
