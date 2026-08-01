@@ -133,6 +133,29 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     const rumor = pickDailyRumor(save, localDayKey(new Date(2026, 6, 28)));
     expect(rumor.id).toMatch(/^scar_echo_/);
     expect(rumor.text).toMatch(/Day-after echo|did not forget|Jar before treat/i);
+    expect(rumor.text).toMatch(/Coin/);
+  });
+
+  it("Paycheck and Credit plaques use short organ-retell labels", () => {
+    const content = loadIslandsContent();
+    const pay = content.islands.find((i) => i.id === "paycheck_peninsula");
+    const credit = content.islands.find((i) => i.id === "credit_kingdom");
+    const payLabels = (pay?.dialogues ?? [])
+      .flatMap((d) => d.nodes)
+      .flatMap((n) => n.choices ?? [])
+      .flatMap((c) => c.effects ?? [])
+      .filter((e) => e.type === "addScar")
+      .map((e) => (e.type === "addScar" ? e.label : ""));
+    const creditLabels = (credit?.dialogues ?? [])
+      .flatMap((d) => d.nodes)
+      .flatMap((n) => n.choices ?? [])
+      .flatMap((c) => c.effects ?? [])
+      .filter((e) => e.type === "addScar")
+      .map((e) => (e.type === "addScar" ? e.label : ""));
+    expect(payLabels).toContain("Umbrella before glitter");
+    expect(payLabels).toContain("Glitter ate the umbrella");
+    expect(creditLabels).toContain("Waited the spiral");
+    expect(creditLabels).toContain("Haste fed the spiral");
   });
 
   it("ships one Harbor icon — Memory Plinth ledger silhouette always placeable", () => {

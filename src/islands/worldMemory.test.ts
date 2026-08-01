@@ -3,13 +3,19 @@ import {
   addHarborScar,
   applyStanceDelta,
   coldRetellLine,
+  coldSpectacleHeadline,
+  day2EchoBody,
   dominantStance,
   groupScarsByChapter,
   hasIrreversible,
+  organQuietBadge,
+  organTakeHushLine,
+  plaqueShelfLine,
   recordIrreversible,
   recordNpcTalk,
   scarChapterTitle,
   scarOrganId,
+  scarRumorLine,
   scarTriggersChapterQuiet,
   stanceGreetingHint,
 } from "./worldMemory";
@@ -138,9 +144,20 @@ describe("worldMemory", () => {
     expect(scarOrganId(cove)).toBe("coin");
     expect(scarOrganId(pay)).toBe("clock");
     expect(scarOrganId(credit)).toBe("spiral");
-    expect(coldRetellLine(cove)).toMatch(/Coin/);
-    expect(coldRetellLine(cove)).toMatch(/Jar before treat/);
-    expect(coldRetellLine(pay)).toMatch(/Clock/);
-    expect(coldRetellLine(credit)).toMatch(/Spiral/);
+    expect(coldRetellLine(cove)).toBe('Harbor remembered the Coin: “Jar before treat.”');
+    expect(coldRetellLine(pay)).toBe('Harbor remembered the Clock: “Umbrella before glitter.”');
+    expect(coldRetellLine(credit)).toBe('Harbor remembered the Spiral: “Waited the spiral.”');
+    expect(plaqueShelfLine(cove)).toBe("Coin · Jar before treat");
+    expect(coldSpectacleHeadline(cove)).toMatch(/Coin/);
+    expect(coldSpectacleHeadline(pay)).toMatch(/Clock/);
+    expect(coldSpectacleHeadline(credit)).toMatch(/Spiral/);
+    expect(organTakeHushLine("coin")).toMatch(/holds/);
+    expect(organTakeHushLine("clock")).toMatch(/shelters/);
+    expect(organTakeHushLine("spiral")).toMatch(/withstands/);
+    expect(organQuietBadge("clock")).toMatch(/Clock/);
+    expect(day2EchoBody("Umbrella before glitter", "clock")).toMatch(/Clock/);
+    expect(day2EchoBody("Umbrella before glitter", "clock")).not.toMatch(/jars/);
+    expect(scarRumorLine(cove, "later")).toMatch(/Coin/);
+    expect(scarRumorLine(pay, "same")).toMatch(/Clock/);
   });
 });

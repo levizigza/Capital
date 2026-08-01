@@ -594,24 +594,28 @@ export function CarpetFlightView({
           className="absolute left-4 top-4 z-20 rounded-full border-2 border-white/30 bg-black/50 px-4 py-2 text-sm font-bold text-white"
           onClick={onBack}
         >
-          ← Back
+          Harbor Haven
         </button>
         <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col items-center gap-3 bg-gradient-to-t from-black/80 to-transparent pb-10 pt-24 text-center">
           <div className="text-4xl">{boatTier.emoji}</div>
-          <h1 className="text-2xl font-black text-white drop-shadow">Board your money magic carpet</h1>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
+            Capital · Fortune Archipelago
+          </p>
+          <h1 className="text-2xl font-black text-white drop-shadow">Board the Money Carpet</h1>
           <p className="max-w-md px-4 text-sm text-white/80">
-            Ride the open horizon — steer with A/D, soar with W, hold Shift to rush.
+            Money is alive on the Fortune Thread — steer with A/D, soar with W, hold Shift to rush.
             {voyageTargetId && targetEra
               ? ` Course set for ${targetEra.decade} · ${targetEra.eraLabel} — the world will morph as you approach.`
-              : " Islands ahead each wear a different decade of play."}
+              : " Harbor · Cove · Paycheck · Credit wait on the horizon."}
           </p>
           <button
             type="button"
             className="rounded-full border-3 border-[#16283b] bg-[#f4a629] px-8 py-3 text-base font-extrabold text-[#16283b] shadow-lg"
             onClick={() => setPhase("fly")}
             autoFocus
+            data-testid="carpet-board-cta"
           >
-            Launch carpet →
+            Board the Money Carpet
           </button>
         </div>
       </div>
@@ -674,7 +678,7 @@ export function CarpetFlightView({
         className="absolute left-4 top-4 z-20 rounded-full border-2 border-white/30 bg-black/50 px-4 py-2 text-sm font-bold text-white"
         onClick={onBack}
       >
-        ← Dock
+        Dock · Harbor
       </button>
 
       <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
@@ -724,10 +728,10 @@ export function CarpetFlightView({
           style={{ opacity: Math.min(1, morphHud.blend * 1.2) }}
         >
           <div className="text-[10px] font-bold uppercase tracking-widest text-amber-200">
-            Era morph · {Math.round(morphHud.blend * 100)}%
+            Approaching · {morphHud.islandName}
           </div>
           <div className="text-sm font-black">
-            {morphHud.islandName} · {morphHud.decadeLabel}
+            {morphHud.decadeLabel || "Money is alive"}
           </div>
         </div>
       ) : null}

@@ -51,6 +51,8 @@ import {
   groupScarsByChapter,
   scarChapterTitle,
   scarOrganId,
+  coldRetellLine,
+  plaqueShelfLine,
 } from "../worldMemory";
 import {
   dailyRumorText,
@@ -1005,6 +1007,7 @@ export function HomeHubView({
                   <HarborFeltShareOverlay
                     scarLabel={latestPlaque.label}
                     chapter={scarChapterTitle(latestPlaque)}
+                    organId={latestOrgan}
                     previewUrl={feltPreviewUrl}
                     onShare={async () => {
                       try {
@@ -1096,9 +1099,9 @@ export function HomeHubView({
                 onClick={onExit}
                 className="bg-black/35 text-white"
                 data-testid="hub-leave-islands"
-                title="Leave Islands"
+                title="Leave Fortune Archipelago"
               >
-                Leave
+                Leave Fortune Archipelago
               </GameButton>
             ) : null}
           </div>
@@ -1327,8 +1330,16 @@ export function HomeHubView({
       >
         <div className="space-y-4 text-left">
           <p className="text-sm text-muted-foreground text-center">
-            Harbor remembers the choices that changed you — by chapter.
+            Harbor remembers by organ — Coin · Clock · Spiral · Memory.
           </p>
+          {latestPlaque ? (
+            <p
+              className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-950"
+              data-testid="memory-plinth-retell"
+            >
+              {coldRetellLine(latestPlaque)}
+            </p>
+          ) : null}
           {stanceLine ? (
             <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-950">
               {stanceLine}
@@ -1345,8 +1356,9 @@ export function HomeHubView({
                     <li
                       key={p.id}
                       className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-900"
+                      data-testid={`plinth-plaque-${p.id}`}
                     >
-                      {p.label}
+                      {plaqueShelfLine(p)}
                     </li>
                   ))}
                 </ul>
@@ -1752,14 +1764,14 @@ export function HomeHubView({
         maxWidth="md"
         usePortal
         showCloseButton
-        title="Welcome home"
+        title="Capital · Harbor Haven"
       >
         <div className="space-y-4 text-center">
           <div className="text-5xl">🐷</div>
           <h2 className="text-xl font-black">Piggy Penny noticed</h2>
           <p className="text-sm text-muted-foreground">
             {homecoming?.message ||
-              "You earned, you chose, and you came back different. That’s the Change beat."}
+              "You earned, you chose, and you came home changed. Money is alive here."}
           </p>
           {pavilionOpen ? (
             <p className="text-sm font-semibold text-emerald-800">

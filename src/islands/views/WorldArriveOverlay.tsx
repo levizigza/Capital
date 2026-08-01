@@ -14,6 +14,7 @@ import { moneyStructureForIsland } from "../moneyStructures";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForIsland } from "../moneyOrgans";
 import { cinemaTimeScale } from "../a11yMotion";
+import { arriveEyebrow } from "../titleVoice";
 
 export type WorldArriveKind = "carpet_land" | "structure_enter" | "painting_portal";
 
@@ -39,53 +40,55 @@ type ArriveTheme = {
 
 function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
   const structure = moneyStructureForIsland(islandId);
+  const organ = moneyOrganForIsland(islandId);
+  const eyebrow = arriveEyebrow(islandId, kind, organ?.id);
   if (islandId === COVE_ISLAND_ID || structure?.theme === "jar") {
     return {
       id: "cove",
-      eyebrow: kind === "structure_enter" ? "Money is a machine" : "World opening",
+      eyebrow,
       verb: kind === "structure_enter" ? "Squeezing through the coin slot…" : "Diving through the coin slot…",
       accent: "#fbbf24",
       accent2: "#fde68a",
       motif: "slot",
-      blurb: "Coincraft Cove blooms around you — save a little, the jar still holds.",
+      blurb: "Coin holds — Coincraft Cove blooms; save a little, the jar still waits.",
     };
   }
   if (islandId === PAYCHECK_PENINSULA_ID || structure?.theme === "tower") {
     return {
       id: "paycheck",
-      eyebrow: kind === "structure_enter" ? "Money is a machine" : "World opening",
+      eyebrow,
       verb: kind === "structure_enter" ? "Riding the paycheck chute…" : "Sucked up the payroll chute…",
       accent: "#38bdf8",
       accent2: "#e2e8f0",
       motif: "chute",
-      blurb: "Paycheck Peninsula locks into place — clock, stamp, umbrella loft.",
+      blurb: "Clock stamps — Paycheck Peninsula locks; umbrella loft ahead.",
     };
   }
   if (islandId === CREDIT_KINGDOM_ID || structure?.theme === "keep") {
     return {
       id: "credit",
-      eyebrow: kind === "structure_enter" ? "Money is a machine" : "World opening",
+      eyebrow,
       verb: kind === "structure_enter" ? "Spiraling the interest keep…" : "Twisting into the Interest Keep…",
       accent: "#a78bfa",
       accent2: "#c4b5fd",
       motif: "spiral",
-      blurb: "Credit Kingdom steadies — debt anvil and score battlement wait.",
+      blurb: "Spiral weighs — Credit Kingdom steadies; score battlement waits.",
     };
   }
   if (islandId === HARBOR_HAVEN_ID || structure?.theme === "bank") {
     return {
       id: "harbor",
-      eyebrow: kind === "structure_enter" ? "Money is a machine" : "Home opening",
+      eyebrow,
       verb: kind === "structure_enter" ? "Vault door swinging open…" : "Carpet soft-landing on Harbor…",
       accent: "#f59e0b",
       accent2: "#94a3b8",
       motif: "vault",
-      blurb: "Harbor Haven — fountain, ledger, and the Money Carpet remember you.",
+      blurb: "Memory keeps — Harbor Haven fountain, ledger, and Money Carpet remember you.",
     };
   }
   return {
     id: "default",
-    eyebrow: "World opening",
+    eyebrow,
     verb: "Stepping through the painting…",
     accent: "#34d399",
     accent2: "#6ee7b7",

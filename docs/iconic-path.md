@@ -100,6 +100,16 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Settings copy names organs, not leftover genre-city labels.  
 - Off-spine genre cues stay available; the frozen triangle leads with organ language.
 
+## Reliability gate (before more iconic polish)
+
+Cold play is blocked if Harbor never becomes playable. Ship this before Wave-8 content:
+
+1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s; sticky `capital_harbor3d_fail` skips Canvas next visit.  
+2. **CSP allows audio** — `media-src 'self' data: blob:` so Howler / data beds are not blocked on Pages.  
+3. **E2E stays green** — skip SW under `navigator.webdriver` + kill-switch init so `controllerchange` reloads do not flake `__QA__.ready`.
+
+Only after a phone hard-refresh shows Board carpet → Harbor (3D or myth) within ~3s: cold-retell polish → title voice on thresholds → one Harbor icon → stop.
+
 ## Cold retell (Wave 7) — iconic path capstone
 
 A cold player (or a kid watching) should be able to say one sentence per organ after Harbor return:
@@ -114,6 +124,24 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 - Plaza echo, Piggy, day-2 cinema, Family Room myth, and share PNG all carry the **organ word**.  
 - Day-2 audit accepts Cove **or** Paycheck **or** Credit scars.  
 - After Wave 7: freeze the iconic path — open map width only when the cold retell test passes.
+
+### Cold-retell polish
+
+Canonical kid sentence (spectacle, share, Plinth modal):
+
+`Harbor remembered the {Coin|Clock|Spiral}: “{plaque}.”`
+
+| Organ | Plaque labels | Suit hush verb |
+|-------|---------------|----------------|
+| Coin | Jar before treat / Treat before jar | holds |
+| Clock | Umbrella before glitter / Glitter ate the umbrella | shelters |
+| Spiral | Waited the spiral / Haste fed the spiral | withstands |
+
+### Title voice on every threshold
+
+Brand kit in [`titleVoice.ts`](../src/islands/titleVoice.ts): **Capital** → **Fortune Archipelago** → organ/place → diegetic verb.
+
+At carpet dock, World Arrive, Harbor load, shore HUD, structure enter/exit, Soft Beat, Leave, travel map, Take hush, spectacle, and share — the player should still hear Capital / Fortune / Money is alive after stripping chrome.
 
 ### One Harbor icon — Memory Plinth
 
