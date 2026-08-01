@@ -1,10 +1,12 @@
 /**
  * Shore toy props — Asobi "toy culture": pokeable, not decoration.
+ * Pokes speak the shore organ leitmotif (Coin / Clock / Spiral).
  */
 
 import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { playOrganSfx } from "../audio/capitalSfx";
 
 /** Spinning coin you can click — tiny delight on every shore. */
 export function ShoreSpinCoin({
@@ -32,6 +34,7 @@ export function ShoreSpinCoin({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(4);
+        playOrganSfx("coin");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -112,6 +115,7 @@ export function ShoreClockToy({
       onClick={(e) => {
         e.stopPropagation();
         setSpin(5);
+        playOrganSfx("clock");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -160,6 +164,7 @@ export function ShoreSpiralToy({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(4);
+        playOrganSfx("spiral");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";

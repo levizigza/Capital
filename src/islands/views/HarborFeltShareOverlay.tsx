@@ -1,11 +1,14 @@
 /**
- * Default social object after scar spectacle — organ-tinted share card.
- * Full-bleed cinema, not a settings modal.
- * Cold-retell polish: organ word in the kid-facing sentence.
+ * Default social object after scar spectacle — Plinth freeze-frame.
+ * Live Harbor stays visible under a light vignette; the PNG is the freeze,
+ * not a settings modal card.
  */
 
+import { useEffect } from "react";
 import { GameButton } from "@/game-ui";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
+import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 
 type Props = {
@@ -26,48 +29,75 @@ export function HarborFeltShareOverlay({
   onKeepWalking,
 }: Props) {
   const organWord = scarOrganName(organId ?? "memory");
+  const organ = organId ?? "memory";
+
+  useEffect(() => {
+    playOrganSfx(organ);
+    playCapitalSfx("plinth_hum");
+  }, [organ]);
+
   return (
     <div
-      className="pointer-events-auto absolute inset-0 z-[45] flex items-center justify-center bg-[#0f172a]/78 backdrop-blur-[2px]"
+      className="pointer-events-auto absolute inset-0 z-[45] flex flex-col"
       role="dialog"
       aria-label="Harbor felt that share card"
       data-testid="harbor-felt-share"
+      data-share-presentation="plinth-freeze"
+      style={{
+        background:
+          "radial-gradient(ellipse 72% 58% at 62% 36%, transparent 0%, transparent 38%, rgba(15,23,42,0.22) 68%, rgba(15,23,42,0.58) 100%)",
+      }}
     >
-      <div className="relative mx-4 flex max-w-md flex-col items-center gap-3 rounded-2xl border border-amber-200/55 bg-[#0f172a]/94 px-5 py-5 text-center text-white">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200">
-          Capital · Harbor felt that · {organWord}
-        </p>
-        <h2 className="text-xl font-black leading-snug sm:text-2xl">
-          Money left footprints
-        </h2>
-        <p className="text-sm text-white/80" data-testid="harbor-felt-retell">
-          Harbor remembered the {organWord}: “{scarLabel}.”
-          {chapter ? ` (${chapter})` : ""}
-        </p>
+      {/* Freeze plane — Plinth PNG reads as the frozen proof, not an inset card */}
+      <div className="pointer-events-none relative flex min-h-0 flex-1 items-center justify-center px-3 pt-6 sm:px-6">
         {previewUrl ? (
           <img
             src={previewUrl}
-            alt="Harbor felt that share card"
-            className="mx-auto max-h-52 w-auto rounded-xl border border-amber-200/35"
+            alt="Harbor felt that — Memory Plinth freeze"
+            className="max-h-[min(52vh,480px)] w-auto max-w-[min(92vw,480px)] object-contain drop-shadow-[0_12px_40px_rgba(15,23,42,0.55)]"
             data-testid="harbor-felt-preview"
           />
         ) : (
-          <div className="flex h-40 w-40 items-center justify-center rounded-xl bg-slate-800/80 text-xs text-white/50">
-            Painting the Plinth…
+          <div
+            className="flex h-48 w-48 items-center justify-center text-center text-xs text-white/55"
+            data-testid="harbor-felt-preview-loading"
+          >
+            Freezing the Plinth…
           </div>
         )}
-        <GameButton
-          variant="primary"
-          className="w-full"
-          data-testid="harbor-felt-download"
-          onClick={onShare}
-          autoFocus
-        >
-          Share “Harbor felt that”
-        </GameButton>
-        <GameButton variant="outline" className="w-full bg-white/10" onClick={onKeepWalking}>
-          Keep walking — find Piggy
-        </GameButton>
+      </div>
+
+      {/* Lower-third cinema chrome — retell + share actions (above freeze plane) */}
+      <div className="relative z-10 mx-auto w-full max-w-lg px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
+          {capitalOrganEyebrow(organId)} · Harbor felt that
+        </p>
+        <h2 className="cap-display mt-1.5 text-xl text-white drop-shadow sm:text-2xl">
+          Money left footprints
+        </h2>
+        <p className="mt-1.5 text-sm text-white/85 drop-shadow" data-testid="harbor-felt-retell">
+          Harbor remembered the {organWord}: “{scarLabel}.”
+          {chapter ? ` (${chapter})` : ""}
+        </p>
+        <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
+          <GameButton
+            variant="primary"
+            className="w-full sm:min-w-[12rem] sm:flex-1"
+            data-testid="harbor-felt-download"
+            onClick={onShare}
+            autoFocus
+          >
+            Share “Harbor felt that”
+          </GameButton>
+          <GameButton
+            variant="outline"
+            className="w-full bg-white/10 sm:min-w-[12rem] sm:flex-1"
+            data-testid="harbor-felt-keep-walking"
+            onClick={onKeepWalking}
+          >
+            Keep walking — find Piggy
+          </GameButton>
+        </div>
       </div>
     </div>
   );

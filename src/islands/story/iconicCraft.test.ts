@@ -7,6 +7,7 @@ import {
   resolveHarborVisualBeats,
   SCAR_SPECTACLE_VISUAL_BEATS,
   PLINTH_GLOW_VISUAL_BEATS,
+  HOMECOMING_VISUAL_BEATS,
 } from "./dialogueActionSync";
 import { coinBagHarborTip } from "./coinBagBuddy";
 import { piggyHomecomingGraph } from "./harborTalks";
@@ -56,6 +57,20 @@ describe("iconic craft — Piggy / Coin Bag bond", () => {
     const tip = coinBagHarborTip(null, { bondStrain: true });
     expect(tip.tip.toLowerCase()).toMatch(/quiet|care/);
     expect(tip.coach.toLowerCase()).toMatch(/repair|plaque/);
+  });
+
+  it("homecoming is Piggy presence, not a tutorial checklist tip", () => {
+    const beats = resolveHarborVisualBeats({ homecomingPending: true });
+    expect(beats).toEqual(HOMECOMING_VISUAL_BEATS);
+    expect(beats.pulseHotspot).toBe("guide");
+    expect(beats.bagTip.toLowerCase()).toMatch(/waiting|fountain|piggy/);
+    expect(beats.bagTip.toLowerCase()).not.toMatch(/talk to piggy —/);
+    const tip = coinBagHarborTip(null, {
+      homecomingPending: true,
+      homecomingMessage: "You earned coins and made a real choice.",
+    });
+    expect(tip.tip.toLowerCase()).toMatch(/waiting|fountain/);
+    expect(tip.coach).toMatch(/You earned coins|changed/i);
   });
 
   it("points at Plinth memory when a scar exists", () => {

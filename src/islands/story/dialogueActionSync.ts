@@ -81,8 +81,9 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
 export const HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   keeperEmote: "cheer",
   keeperBubbleWhenNear:
-    "Piggy Penny: You came home different! Talk to me — I noticed your choice!",
-  bagTip: "Talk to Piggy — she’s cheering!",
+    "Piggy Penny: You came home different. I’m here by the fountain — when you’re ready.",
+  // Presence, not a checklist objective strip.
+  bagTip: "Piggy’s waiting by the fountain",
   pulseHotspot: "guide",
 };
 

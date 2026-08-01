@@ -36,15 +36,32 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("spectacle_ready");
     });
 
-    await expect(page.getByTestId("scar-spectacle")).toBeVisible({ timeout: 20_000 });
-    // Cold-retell polish — organ word in the kid sentence
+    const spectacle = page.getByTestId("scar-spectacle");
+    await expect(spectacle).toBeVisible({ timeout: 20_000 });
+    // World cinema — captions over Plinth (not a modal card).
+    await expect(spectacle).toHaveAttribute("data-cinema-phase", /.+/);
+    // Cold-retell polish — organ word in the kid sentence (present even during hush).
     await expect(page.getByTestId("scar-spectacle-retell")).toContainText(/Coin|Clock|Spiral|Memory/);
-    await page.getByTestId("scar-spectacle").click();
-    await expect(page.getByTestId("harbor-felt-share")).toBeVisible({ timeout: 10_000 });
+    // Dismiss early if still up; otherwise cinema auto-advances to share (~5.6s).
+    if (await spectacle.isVisible()) {
+      await spectacle.click({ timeout: 2_000 }).catch(() => {});
+    }
+    const share = page.getByTestId("harbor-felt-share");
+    await expect(share).toBeVisible({ timeout: 12_000 });
+    // Plinth freeze-frame — not a settings modal card
+    await expect(share).toHaveAttribute("data-share-presentation", "plinth-freeze");
     await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
-    await page.getByRole("button", { name: /Keep walking/i }).click();
+    await expect(page.getByTestId("harbor-felt-preview")).toBeVisible({ timeout: 10_000 });
+    // Dev Errors / PERF chrome can sit over the lower-third CTA in headed CI viewports.
+    await page.getByTestId("harbor-felt-keep-walking").evaluate((el) => {
+      (el as HTMLButtonElement).click();
+    });
     await expect(page.getByTestId("harbor-felt-share")).toHaveCount(0);
+    // Piggy presence — quiet Harbor, not a “Piggy Penny noticed” checklist modal
+    await expect(page.getByTestId("harbor-quiet-chip")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId("harbor-piggy-presence")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Piggy Penny noticed/i })).toHaveCount(0);
   });
 
   test("day-2 echo surprise without tutorial", async ({ page }) => {

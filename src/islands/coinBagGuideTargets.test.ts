@@ -90,6 +90,7 @@ describe("resolveHarborGuideLookAt", () => {
     { id: "outfitter", position: [0, 0, -8] as [number, number, number] },
     { id: "pavilion", position: [-4.5, 0, -9.5] as [number, number, number] },
     { id: "ledger_bank", position: [2.4, 0, -1.2] as [number, number, number] },
+    { id: "memory", position: [4.0, 0, 1.6] as [number, number, number] },
   ];
 
   it("uses guided highlight first", () => {
@@ -120,5 +121,15 @@ describe("resolveHarborGuideLookAt", () => {
     expect(
       resolveHarborGuideLookAt({ hotspots: spots, pointNextPainting: true }),
     ).toEqual([0, 0, 13]);
+  });
+
+  it("points Memory Plinth during spectacle before Piggy homecoming", () => {
+    expect(
+      resolveHarborGuideLookAt({
+        hotspots: spots,
+        homecomingPending: true,
+        pointMemoryPlinth: true,
+      }),
+    ).toEqual([4.0, 0, 1.6]);
   });
 });

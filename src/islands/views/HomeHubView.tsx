@@ -27,7 +27,11 @@ import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
-import { harborMemoryPlinthHotspot } from "../harborIcon";
+import {
+  harborMemoryPlinthHotspot,
+  MEMORY_PLINTH_CINEMA_EYE,
+  MEMORY_PLINTH_LOOK_AT,
+} from "../harborIcon";
 import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
@@ -89,6 +93,7 @@ import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorVie
 import {
   harborFallbackMode,
   isFirstMeetStep,
+  isPiggyPresenceBeat,
   resolvePulseHotspotId,
 } from "../harborFirstMeet";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
@@ -202,7 +207,7 @@ export function HomeHubView({
   updateA11y,
   updateLearningProfile,
   highlightOutfitter = false,
-  onClearHomecoming,
+  onClearHomecoming: _onClearHomecoming,
   onExit,
   onTalkNpc,
   talkOpen = false,
@@ -272,8 +277,14 @@ export function HomeHubView({
     Boolean(castleMode && guidedStep) &&
     !["practice_optional", "to_dock", "first_island", "done"].includes(guidedStep!.id);
   const firstMeet = isFirstMeetStep(guidedStep?.id);
+  /** First meet or quiet homecoming — Piggy owns the plaza, not a stall checklist. */
+  const piggyPresence = isPiggyPresenceBeat({
+    firstMeet,
+    quietHomecoming: quietHarbor,
+  });
   const fallbackMode = harborFallbackMode({
     firstMeet,
+    quietHomecoming: quietHarbor,
     castleActive: Boolean(castleMode && guidedStep && guidedStep.id !== "done"),
   });
   const showOutfitterChrome =
@@ -316,15 +327,17 @@ export function HomeHubView({
     homecomingPending: needsPiggyWelcome,
     pointNextPainting,
     scarSpectacleActive: spectacleOpen,
-    plinthGlowActive: plinthGlow && !spectacleOpen,
+    // Share freeze keeps Plinth pulse alive even after the 14s glow timer.
+    plinthGlowActive: (plinthGlow || feltShareOpen) && !spectacleOpen,
   });
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
   /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
   const keeperEmote =
     nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
   const homecomingActive = needsPiggyWelcome || pointNextPainting;
+  const plinthShareBeat = spectacleOpen || plinthGlow || feltShareOpen;
   const keeperSpeech =
-    castleMode || homecomingActive || spectacleOpen || plinthGlow
+    castleMode || homecomingActive || plinthShareBeat
       ? visualBeats.keeperBubbleWhenNear || null
       : null;
   // Keep "guide" — Piggy’s ring lights when pulseHotspotId === "guide"
@@ -401,10 +414,11 @@ export function HomeHubView({
   }, [feltShareOpen, latestPlaque, voyager.name]);
 
   useEffect(() => {
-    if (!plinthGlow) return;
+    // Hold glow through the share freeze-frame so the lamp doesn't die mid-PNG.
+    if (!plinthGlow || feltShareOpen) return;
     const t = window.setTimeout(() => setPlinthGlow(false), SIGNATURE_TIMING.plinthGlowMs);
     return () => window.clearTimeout(t);
-  }, [plinthGlow]);
+  }, [plinthGlow, feltShareOpen]);
 
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;
@@ -479,7 +493,7 @@ export function HomeHubView({
     structuralTip: structuralBuddy,
   });
   const bagGuideTip =
-    castleMode || homecomingActive || spectacleOpen || plinthGlow
+    castleMode || homecomingActive || plinthShareBeat
       ? visualBeats.bagTip
       : buddyTip.tip;
 
@@ -492,8 +506,9 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => {
-      // First meet: no stalls — only Piggy + Memory Plinth (Harbor icon, empty shelf).
-      if (firstMeet) {
+      // Piggy presence (first meet + quiet homecoming): no stall checklist —
+      // Memory Plinth only; Piggy is the walk-up Talk, not a hotspot grid.
+      if (piggyPresence) {
         return [harborMemoryPlinthHotspot({ scarCount: plaques.length })];
       }
       return [
@@ -665,7 +680,7 @@ export function HomeHubView({
     ];
     },
     [
-      firstMeet,
+      piggyPresence,
       onOpenEditor,
       pavilionOpen,
       marketOpen,
@@ -687,6 +702,8 @@ export function HomeHubView({
         pointNextPainting,
         nearStoreId: nearStore?.id ?? null,
         pointPavilion: coinBagShouldPointPavilion(save),
+        // Spectacle / afterglow — Coin Bag points at Plinth before Piggy welcome.
+        pointMemoryPlinth: spectacleOpen || plinthGlow || feltShareOpen,
         defaultId: "travel",
       }),
     [
@@ -697,8 +714,13 @@ export function HomeHubView({
       pointNextPainting,
       nearStore?.id,
       save,
+      spectacleOpen,
+      plinthGlow,
+      feltShareOpen,
     ],
   );
+
+  const plinthCinemaLock = spectacleOpen || feltShareOpen;
 
   const openOutfitter = () => {
     setDraft(voyager);
@@ -828,9 +850,10 @@ export function HomeHubView({
       return;
     }
     if (bankOpen) return;
-    // First meet: Piggy talk always wins over bank / stalls (coach is selling Talk).
+    // Piggy presence: Talk always wins over bank / stalls (first meet + quiet homecoming).
     const meetingPiggy =
-      guidedStep?.id === "meet_guide" && nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
+      nearNpc?.id === HARBOR_KEEPER_MASCOT_ID &&
+      (guidedStep?.id === "meet_guide" || needsPiggyWelcome);
     if (meetingPiggy && onTalkNpc && nearNpc) {
       onTalkNpc(nearNpc.id);
       return;
@@ -851,6 +874,7 @@ export function HomeHubView({
     echoSurpriseOpen,
     bankOpen,
     guidedStep?.id,
+    needsPiggyWelcome,
     nearStore,
     nearNpc,
     onTalkNpc,
@@ -863,23 +887,8 @@ export function HomeHubView({
   const canResume =
     !!save.currentIslandId && !isHubIslandId(save.currentIslandId);
 
-  const homecoming =
-    save.harborHomecoming?.pending && !spectacleOpen && !feltShareOpen
-      ? save.harborHomecoming
-      : null;
-
-  const coachText =
-    homecoming?.message ||
-    (nearNpc && !nearStore
-      ? nearNpc.line
-      : guidedStep?.coach ??
-        (showOutfitterHighlight
-          ? "Walk to the Outfitter (front center)"
-          : freed
-            ? pavilionOpen
-              ? "Freedom Pavilion unlocked — walk left of the Outfitter"
-              : "Freedom seal · carpet upgraded"
-            : null));
+  // Presence over tutorial checklist: no “Piggy Penny noticed” modal interrupt.
+  // Quiet HUD + pulsing Piggy + diegetic bubble carry the welcome-back.
 
   return (
     <>
@@ -947,17 +956,17 @@ export function HomeHubView({
                   guideLookAt={harborGuideLookAt}
                   guideTip={bagGuideTip}
                   keeperEmote={
-                    castleMode || homecomingActive || spectacleOpen || plinthGlow
+                    castleMode || homecomingActive || plinthShareBeat
                       ? keeperEmote
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || spectacleOpen || plinthGlow
+                    castleMode || homecomingActive || plinthShareBeat
                       ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
                       : null
                   }
                   pulseHotspotId={
-                    castleMode || spectacleOpen || plinthGlow || homecomingActive
+                    castleMode || plinthShareBeat || homecomingActive
                       ? pulseHotspotId
                       : showOutfitterHighlight
                         ? "outfitter"
@@ -974,8 +983,11 @@ export function HomeHubView({
                     enteringBank ||
                     bankOpen
                   }
+                  cinemaFocus={plinthCinemaLock ? MEMORY_PLINTH_LOOK_AT : null}
+                  cinemaEye={plinthCinemaLock ? MEMORY_PLINTH_CINEMA_EYE : null}
+                  plinthSpectacleActive={plinthShareBeat}
                   weatherFog={
-                    spectacleOpen || trailerOpen
+                    spectacleOpen || feltShareOpen || trailerOpen
                       ? { near: 8, far: 42 }
                       : weatherFogParams(harborWeatherMood(save))
                   }
@@ -998,7 +1010,7 @@ export function HomeHubView({
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
-                  enabled={guideArrows}
+                  enabled={guideArrows && !spectacleOpen && !feltShareOpen}
                 />
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
@@ -1053,10 +1065,13 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          quietHarbor || firstMeet ? (
+          spectacleOpen || feltShareOpen ? null : piggyPresence ? (
             <div className="cap-play-hud-left">
-              <p className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90">
-                {firstMeet ? "Harbor Haven" : "Harbor is quiet — find Piggy"}
+              <p
+                className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90"
+                data-testid="harbor-quiet-chip"
+              >
+                {firstMeet ? "Harbor Haven" : "Harbor is quiet — Piggy’s here"}
               </p>
             </div>
           ) : earlyCastle && !showOutfitterChrome ? (
@@ -1085,7 +1100,7 @@ export function HomeHubView({
           )
         }
         topRight={
-          quietHarbor || earlyCastle || firstMeet ? null : (
+          spectacleOpen || feltShareOpen || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -1108,12 +1123,16 @@ export function HomeHubView({
           )
         }
         bottom={
+          spectacleOpen || feltShareOpen ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
-            {quietHarbor || firstMeet ? (
-              <p className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow">
+            {piggyPresence ? (
+              <p
+                className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow"
+                data-testid="harbor-piggy-presence"
+              >
                 {firstMeet
                   ? "One job: talk to Piggy Penny — she’s waving."
-                  : "No ledger. No glitter. Just the walk home — talk to Piggy when you are ready."}
+                  : "Harbor is quiet. Piggy’s by the fountain — walk to her when you’re ready."}
               </p>
             ) : (
             <CoinBagBuddyHud
@@ -1124,7 +1143,7 @@ export function HomeHubView({
             />
             )}
             {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
-            {quietHarbor || firstMeet ? (
+            {piggyPresence ? (
               nearNpc && onTalkNpc ? (
                 <GameButton
                   variant="primary"
@@ -1214,9 +1233,11 @@ export function HomeHubView({
                   : "Walk pad or WASD · E talk · M map"}
             </p>
           </div>
+          )
         }
       >
         {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
+        {spectacleOpen || feltShareOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode ? (
@@ -1229,6 +1250,7 @@ export function HomeHubView({
             </div>
           ) : null}
         </div>
+        )}
       </GameHudLayout>
       <TouchWalkPad
         enabled={
@@ -1754,41 +1776,6 @@ export function HomeHubView({
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
-          </GameButton>
-        </div>
-      </GameModal>
-
-      <GameModal
-        open={Boolean(homecoming)}
-        onClose={() => onClearHomecoming?.()}
-        maxWidth="md"
-        usePortal
-        showCloseButton
-        title="Capital · Harbor Haven"
-      >
-        <div className="space-y-4 text-center">
-          <div className="text-5xl">🐷</div>
-          <h2 className="text-xl font-black">Piggy Penny noticed</h2>
-          <p className="text-sm text-muted-foreground">
-            {homecoming?.message ||
-              "You earned, you chose, and you came home changed. Money is alive here."}
-          </p>
-          {pavilionOpen ? (
-            <p className="text-sm font-semibold text-emerald-800">
-              Freedom Pavilion is open on the plaza — Coin Bag will point the way.
-            </p>
-          ) : (
-            <p className="text-sm font-semibold text-sky-900">
-              Keep practicing Harbor cashflow for a Freedom Seal — or float to your next painting.
-            </p>
-          )}
-          <GameButton
-            variant="primary"
-            className="w-full"
-            onClick={() => onClearHomecoming?.()}
-            autoFocus
-          >
-            Thanks, Piggy →
           </GameButton>
         </div>
       </GameModal>

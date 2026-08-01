@@ -51,12 +51,12 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
 | Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
-| Quiet chrome | Until Piggy talk: no CASH / Leave / Apprentice / stall grid |
+| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
-| Spectacle | Hush → chime → “Harbor felt…” → Plinth pulse |
-| Share | Full-bleed “Harbor felt that” card (not a settings modal); readable at thumbnail size |
-| Piggy | Quiet Harbor until Talk Battle |
+| Spectacle | Hush → chime → captions over **Plinth camera lock** (not a modal card) → Plinth pulse |
+| Share | Plinth **freeze-frame** over locked Harbor (PNG hero + lower-third retell — not a settings modal); readable at thumbnail size |
+| Piggy | Quiet Harbor presence (no stall grid / no “noticed” modal checklist) until Talk Battle |
 | Day 2 | Soft Beat–style “Still here” cinema — no tutorial modal |
 | Soft Beat | Lid / Loft / Battlement / Teller — hush overlay, not a toast |
 | Trailer | Memory Plinth → Replay signature beat (~24s, mute-friendly) |
@@ -151,7 +151,17 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 - Share PNG + signature trailer draw the same ledger-plinth silhouette.  
 - Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
 
+<<<<<<< HEAD
 **Take world cinema (deepen, not widen):** after Kira’s irreversible Take and Talk dismiss, the shore owns the climax — organ landmark mark flash + captions (no dark modal card). Carpet CTAs return when cinema ends.
+=======
+**Spectacle world cinema:** after carpet home from a Take, Harbor locks the camera on the Memory Plinth — captions at the edge, scar lamp peaks, Coin Bag points at memory before Piggy welcome.
+
+**Share freeze-frame:** after spectacle, the same Plinth lock holds while the felt PNG (ledger silhouette + organ seal) freezes as the social object — lower-third retell + Share / Keep walking, not a centered settings card.
+
+**Piggy presence:** after share, Harbor stays quiet — stall grid hidden, Coin Bag points Piggy, diegetic bubble (not emoji shorthand), no “Piggy Penny noticed” tutorial modal. One job: walk to her when ready.
+
+**Leitmotif + material:** spectacle reveal and share open speak the scar organ stinger over Memory `plinth_hum`. Plinth lamp/ring tint follows the scar organ. Money Structure floors, exit rings, pads, and fill lights use organ-true shells (`structureShell` / `organMaterialTint`) — Coin gold · Clock sky · Spiral violet · Memory amber, never one cyan kit. Shore motif / toy pokes fire the matching organ SFX.
+>>>>>>> origin/cursor/leitmotif-material-2fc5
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 

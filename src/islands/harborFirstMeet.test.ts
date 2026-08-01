@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   harborFallbackMode,
   isFirstMeetStep,
+  isPiggyPresenceBeat,
+  isQuietHomecoming,
   mythFallbackActions,
   resolvePulseHotspotId,
 } from "./harborFirstMeet";
@@ -23,6 +25,9 @@ describe("harbor first meet (Wave 1)", () => {
     expect(harborFallbackMode({ firstMeet: true, castleActive: true })).toBe("myth_meet");
     expect(harborFallbackMode({ firstMeet: false, castleActive: true })).toBe("myth_travel");
     expect(harborFallbackMode({ firstMeet: false, castleActive: false })).toBe("utility");
+    expect(
+      harborFallbackMode({ firstMeet: false, castleActive: false, quietHomecoming: true }),
+    ).toBe("myth_meet");
   });
 
   it("myth_meet only offers Talk — no carpet/bank detour", () => {
@@ -31,5 +36,13 @@ describe("harbor first meet (Wave 1)", () => {
       carpet: false,
       bank: false,
     });
+  });
+
+  it("treats quiet homecoming as the same Piggy presence beat", () => {
+    expect(isQuietHomecoming({ needsPiggyWelcome: true, quietPending: true })).toBe(true);
+    expect(isQuietHomecoming({ needsPiggyWelcome: true, quietPending: false })).toBe(false);
+    expect(isPiggyPresenceBeat({ firstMeet: true })).toBe(true);
+    expect(isPiggyPresenceBeat({ quietHomecoming: true })).toBe(true);
+    expect(isPiggyPresenceBeat({})).toBe(false);
   });
 });

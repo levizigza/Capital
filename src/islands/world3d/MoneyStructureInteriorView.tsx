@@ -124,10 +124,12 @@ function PartPad({
   part,
   active,
   theme,
+  accent = "#fbbf24",
 }: {
   part: MoneyStructurePart;
   active: boolean;
   theme: MoneyStructureDef["theme"];
+  accent?: string;
 }) {
   const bounce = useRef(0);
   const poke = useRef(0);
@@ -159,8 +161,8 @@ function PartPad({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
         <circleGeometry args={[active ? 1.4 : 1.15, 24]} />
         <meshStandardMaterial
-          color="#fbbf24"
-          emissive="#f59e0b"
+          color={accent}
+          emissive={accent}
           emissiveIntensity={active ? 0.55 : 0.25}
           transparent
           opacity={0.85}
@@ -271,7 +273,11 @@ function InteriorWorld({
 
   return (
     <>
-      <StructureInteriorLights bg={shell.bg} accent={shell.accent} />
+      <StructureInteriorLights
+        bg={shell.bg}
+        accent={shell.accent}
+        fillLight={shell.fillLight}
+      />
       {/* Structure shell walls — toy interior */}
       <mesh position={[0, 4, 0]}>
         <cylinderGeometry args={[10.5, 11, 10, 32, 1, true]} />
@@ -285,27 +291,33 @@ function InteriorWorld({
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[11, 48]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.75} metalness={0.08} />
+        <meshStandardMaterial color={shell.floor} roughness={0.75} metalness={0.08} />
       </mesh>
       <StructureFloorMotif theme={structure.theme} />
       <StructureToyCulture theme={structure.theme} />
 
       {structure.parts.map((p) => (
-        <PartPad key={p.id} part={p} active={nearId === p.id} theme={structure.theme} />
+        <PartPad
+          key={p.id}
+          part={p}
+          active={nearId === p.id}
+          theme={structure.theme}
+          accent={shell.accent}
+        />
       ))}
 
-      {/* Exit mouth */}
+      {/* Exit mouth — organ-true ring (not shared cyan) */}
       <group position={structure.exitPosition}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
           <ringGeometry args={[1.0, 1.45, 24]} />
           <meshStandardMaterial
-            color="#38bdf8"
-            emissive="#0ea5e9"
+            color={shell.exit}
+            emissive={shell.exitEmissive}
             emissiveIntensity={nearId === "exit" ? 0.55 : 0.25}
           />
         </mesh>
         <Billboard position={[0, 1.8, 0]} follow>
-          <Text fontSize={0.28} color="#e0f2fe" outlineWidth={0.02} outlineColor="#0f172a">
+          <Text fontSize={0.28} color={shell.accent} outlineWidth={0.02} outlineColor="#0f172a">
             {themeExitHint(structure.theme, nearId === "exit")}
           </Text>
         </Billboard>

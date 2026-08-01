@@ -73,17 +73,19 @@ export function HarborBehaviorNpc({
     });
   });
 
-  const bubble = nearPlayer
-    ? guidedEmote === "wave"
-      ? "👋 Hi! Come talk!"
-      : guidedEmote === "cheer"
-        ? "🎉 You got this!"
-        : guidedEmote === "nod"
-          ? "🙂 *nod nod*"
-          : guidedEmote === "point"
-            ? "👉 That way!"
-            : guidedEmote === "talk" && keeperSpeech
-              ? keeperSpeech
+  // Prefer diegetic keeperSpeech (homecoming / spectacle) over emoji shorthand —
+  // Piggy presence must match what dialogueActionSync claims.
+  const bubble = nearPlayer || showPulse
+    ? keeperSpeech
+      ? keeperSpeech
+      : guidedEmote === "wave"
+        ? "👋 Hi! Come talk!"
+        : guidedEmote === "cheer"
+          ? "🎉 You got this!"
+          : guidedEmote === "nod"
+            ? "🙂 *nod nod*"
+            : guidedEmote === "point"
+              ? "👉 That way!"
               : null
     : null;
 
