@@ -59,7 +59,11 @@ describe("familyRoom", () => {
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Local myth/i);
     expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Coin/);
+    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/tips jars/i);
     expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/Clock/);
+    expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/stamps/i);
+    expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/Spiral/);
+    expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/weighs/i);
     expect(familyPlaqueMythLine(null)).toBeNull();
     expect(familyPlaqueMythLine("  ")).toBeNull();
   });

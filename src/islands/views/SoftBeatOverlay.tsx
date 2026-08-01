@@ -19,25 +19,25 @@ const BEATS: Record<
   lookout: {
     title: "Lid Lookout",
     line: "Cove looks tiny from up here — save a little, the jar still holds.",
-    hushLine: "After the Take, even the lid is quiet. Harbor is already listening.",
+    hushLine: "After the Coin Take, even the lid is quiet. Harbor is already listening.",
     accent: "#fbbf24",
   },
   umbrella: {
     title: "Umbrella Loft",
     line: "Rainy-day loft — Main Street looks small. Keep a little dry for later.",
-    hushLine: "The loft remembers your Take. Fly home when you’re ready — Harbor felt it.",
+    hushLine: "The Clock loft remembers your Take. Fly home — Harbor felt the Clock.",
     accent: "#38bdf8",
   },
   battlement: {
     title: "Score Battlement",
     line: "On-time history beats haste — interest feeds on rushing.",
-    hushLine: "The spiral slowed after your choice. Interest leaves footprints on the Plinth.",
+    hushLine: "The Spiral slowed after your choice. Interest leaves footprints on the Plinth.",
     accent: "#a78bfa",
   },
   ledger: {
     title: "Teller Window",
     line: "Marble cool under your hands — the ledger remembers every jar and stamp.",
-    hushLine: "The ledger already carries your latest plaque. Money is alive here.",
+    hushLine: "Memory already carries your latest plaque. Money is alive here.",
     accent: "#f59e0b",
   },
 };

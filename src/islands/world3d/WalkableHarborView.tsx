@@ -63,6 +63,7 @@ import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
 import { HarborMythFallback } from "../views/HarborMythFallback";
 import type { HarborFallbackMode } from "../harborFirstMeet";
+import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
   | "building"
@@ -665,7 +666,13 @@ function PlazaScene({
                   active={nearby}
                   guided={pulsing}
                   scarRemembered={memoryLit}
-                  scarLabel={scarEcho?.label}
+                  scarLabel={
+                    scarEcho?.label
+                      ? scarEcho.organ
+                        ? `${scarOrganName(scarEcho.organ)} · ${scarEcho.label}`
+                        : scarEcho.label
+                      : undefined
+                  }
                 />
               ) : (
                 <HarborSignpost accent={h.accent ?? LOOK.accent} active={nearby || pulsing} />

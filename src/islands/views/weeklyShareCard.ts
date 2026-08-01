@@ -27,11 +27,16 @@ export async function downloadWeeklyShareCard(opts: {
 /** Build Harbor-felt PNG as blob (for preview + download + Web Share). */
 export async function buildHarborFeltCardBlob(opts: HarborFeltCardOpts): Promise<Blob> {
   const organ = organFromChapter(opts.chapter);
+  const organWord =
+    organ === "coin" ? "Coin" : organ === "clock" ? "Clock" : organ === "spiral" ? "Spiral" : "Memory";
   return paintCard({
     mode: "felt",
     voyagerName: opts.voyagerName,
     title: "Harbor felt that",
-    lines: [opts.chapter || "Coincraft Cove", `“${opts.scarLabel}”`],
+    lines: [
+      opts.chapter || "Harbor Haven",
+      `Harbor remembered the ${organWord}: “${opts.scarLabel}.”`,
+    ],
     accent: organTagline(organ),
     organ,
     scarLabel: opts.scarLabel,
@@ -59,7 +64,18 @@ export async function shareHarborFeltCard(opts: HarborFeltCardOpts): Promise<"sh
       await nav.share({
         files: [file],
         title: "Harbor felt that",
-        text: `Capital · ${opts.chapter || "Harbor"} — “${opts.scarLabel}”`,
+        text: (() => {
+          const organ = organFromChapter(opts.chapter);
+          const word =
+            organ === "coin"
+              ? "Coin"
+              : organ === "clock"
+                ? "Clock"
+                : organ === "spiral"
+                  ? "Spiral"
+                  : "Memory";
+          return `Capital · Harbor remembered the ${word}: “${opts.scarLabel}.”`;
+        })(),
       });
       return "shared";
     } catch (err) {

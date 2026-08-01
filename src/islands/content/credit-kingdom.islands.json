@@ -126,7 +126,7 @@
                     {
                       "type": "addScar",
                       "id": "credit_patience_plaque",
-                      "label": "Kingdom: waited out the interest storm",
+                      "label": "Waited the spiral",
                       "kind": "plaque",
                       "stance": "saver",
                       "stanceDelta": 2
@@ -147,7 +147,7 @@
                     {
                       "type": "addScar",
                       "id": "credit_haste_plaque",
-                      "label": "Kingdom: haste fed the Debt Cloud",
+                      "label": "Haste fed the spiral",
                       "kind": "plaza_prop",
                       "stance": "risk",
                       "stanceDelta": 2
