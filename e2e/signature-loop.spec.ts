@@ -36,11 +36,17 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("spectacle_ready");
     });
 
-    await expect(page.getByTestId("scar-spectacle")).toBeVisible({ timeout: 20_000 });
-    // Cold-retell polish — organ word in the kid sentence
+    const spectacle = page.getByTestId("scar-spectacle");
+    await expect(spectacle).toBeVisible({ timeout: 20_000 });
+    // World cinema — captions over Plinth (not a modal card).
+    await expect(spectacle).toHaveAttribute("data-cinema-phase", /.+/);
+    // Cold-retell polish — organ word in the kid sentence (present even during hush).
     await expect(page.getByTestId("scar-spectacle-retell")).toContainText(/Coin|Clock|Spiral|Memory/);
-    await page.getByTestId("scar-spectacle").click();
-    await expect(page.getByTestId("harbor-felt-share")).toBeVisible({ timeout: 10_000 });
+    // Dismiss early if still up; otherwise cinema auto-advances to share (~5.6s).
+    if (await spectacle.isVisible()) {
+      await spectacle.click({ timeout: 2_000 }).catch(() => {});
+    }
+    await expect(page.getByTestId("harbor-felt-share")).toBeVisible({ timeout: 12_000 });
     await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
     await page.getByRole("button", { name: /Keep walking/i }).click();

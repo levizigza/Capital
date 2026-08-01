@@ -4,7 +4,7 @@
  * World cinema: captions over the Memory Plinth (camera locks in Harbor view).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
 import {
@@ -31,6 +31,10 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
   const retell = latest ? coldRetellLine(latest) : null;
   const shelf = latest ? plaqueShelfLine(latest) : null;
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+  const onPhaseChangeRef = useRef(onPhaseChange);
+  onPhaseChangeRef.current = onPhaseChange;
 
   useEffect(() => {
     const reduced =
@@ -38,30 +42,32 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const t = signatureTiming(Boolean(reduced));
     playCapitalSfx("scar_chime");
-    onPhaseChange?.("hush");
+    onPhaseChangeRef.current?.("hush");
 
     const t0 = window.setTimeout(() => {
       setPhase("in");
-      onPhaseChange?.("in");
+      onPhaseChangeRef.current?.("in");
       playCapitalSfx("harbor_cheer");
       playCapitalSfx("plinth_hum");
     }, t.hushMs);
     const t1 = window.setTimeout(() => {
       setPhase("hold");
-      onPhaseChange?.("hold");
+      onPhaseChangeRef.current?.("hold");
     }, t.revealMs);
     const t2 = window.setTimeout(() => {
       setPhase("out");
-      onPhaseChange?.("out");
+      onPhaseChangeRef.current?.("out");
     }, t.holdEndMs);
-    const t3 = window.setTimeout(onDone, t.doneMs);
+    const t3 = window.setTimeout(() => onDoneRef.current(), t.doneMs);
     return () => {
       window.clearTimeout(t0);
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.clearTimeout(t3);
     };
-  }, [onDone, onPhaseChange]);
+  }, []);
+
+  const showLine = phase !== "hush";
 
   return (
     <div
@@ -73,9 +79,9 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       data-testid="scar-spectacle"
       data-cinema-phase={phase}
       tabIndex={0}
-      onClick={onDone}
+      onClick={() => onDoneRef.current()}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
+        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDoneRef.current();
       }}
       style={{
         background:
@@ -85,31 +91,35 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       }}
     >
       <div className="pointer-events-none mx-auto w-full max-w-xl px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-8 text-center">
-        {phase === "hush" ? (
+        {!showLine ? (
           <p className="cap-display text-sm tracking-[0.35em] text-white/55">…</p>
-        ) : (
-          <div
-            className={`transition-transform duration-500 ${
-              phase === "in" ? "translate-y-1 opacity-95" : "translate-y-0 opacity-100"
-            }`}
+        ) : null}
+        <div
+          className={`transition-all duration-500 ${
+            showLine
+              ? phase === "in"
+                ? "translate-y-1 opacity-95"
+                : "translate-y-0 opacity-100"
+              : "sr-only"
+          }`}
+          aria-hidden={!showLine}
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
+            Harbor felt that · {organWord}
+          </p>
+          <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
+            {headline}
+          </h2>
+          <p
+            className="mt-2 text-sm text-white/85 drop-shadow"
+            data-testid="scar-spectacle-retell"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
-              Harbor felt that · {organWord}
-            </p>
-            <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
-              {headline}
-            </h2>
-            <p
-              className="mt-2 text-sm text-white/85 drop-shadow"
-              data-testid="scar-spectacle-retell"
-            >
-              {retell ?? shelf}
-            </p>
-            <p className="mt-3 text-[11px] tracking-wide text-white/50">
-              {organWord} Plinth · Money is alive · Click or Esc
-            </p>
-          </div>
-        )}
+            {retell ?? shelf}
+          </p>
+          <p className="mt-3 text-[11px] tracking-wide text-white/50">
+            {organWord} Plinth · Money is alive · Click or Esc
+          </p>
+        </div>
       </div>
     </div>
   );
