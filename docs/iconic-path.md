@@ -100,6 +100,16 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - Settings copy names organs, not leftover genre-city labels.  
 - Off-spine genre cues stay available; the frozen triangle leads with organ language.
 
+## Reliability gate (before more iconic polish)
+
+Cold play is blocked if Harbor never becomes playable. Ship this before Wave-8 content:
+
+1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s; sticky `capital_harbor3d_fail` skips Canvas next visit.  
+2. **CSP allows audio** — `media-src 'self' data: blob:` so Howler / data beds are not blocked on Pages.  
+3. **E2E stays green** — skip SW under `navigator.webdriver` + kill-switch init so `controllerchange` reloads do not flake `__QA__.ready`.
+
+Only after a phone hard-refresh shows Board carpet → Harbor (3D or myth) within ~3s: cold-retell polish → title voice on thresholds → one Harbor icon → stop.
+
 ## Cold retell (Wave 7) — iconic path capstone
 
 A cold player (or a kid watching) should be able to say one sentence per organ after Harbor return:

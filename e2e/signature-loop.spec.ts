@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { killServiceWorkerForE2e, waitForQaReady } from "./helpers";
 
 /**
  * Cold signature loop — Harbor felt that.
@@ -8,6 +9,7 @@ test.describe("Signature loop", () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
+    await killServiceWorkerForE2e(page);
     await page.addInitScript(() => {
       const defaults = {
         name: "QA Voyager",
@@ -28,9 +30,7 @@ test.describe("Signature loop", () => {
 
   test("spectacle → felt share after seeded Cove Change", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
-      timeout: 60_000,
-    }).toBe(true);
+    await waitForQaReady(page);
 
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("spectacle_ready");
@@ -46,9 +46,7 @@ test.describe("Signature loop", () => {
 
   test("day-2 echo surprise without tutorial", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
-      timeout: 60_000,
-    }).toBe(true);
+    await waitForQaReady(page);
 
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
@@ -61,9 +59,7 @@ test.describe("Signature loop", () => {
 
   test("signature trailer captions play", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
-    await expect.poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
-      timeout: 60_000,
-    }).toBe(true);
+    await waitForQaReady(page);
 
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("piggy_ready");

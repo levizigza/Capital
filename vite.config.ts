@@ -77,6 +77,8 @@ function capitalCspPlugin(): Plugin {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://unpkg.com data:",
     "img-src 'self' data: blob: https:",
+    // Howler / HTMLAudio + any data:/blob: beds — default-src alone blocks media data URIs.
+    "media-src 'self' data: blob:",
     // drei/troika Text fetches webfonts — without this Harbor Suspense never resolves on Pages.
     "connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://fonts.gstatic.com https://fonts.googleapis.com",
     "worker-src 'self' blob:",

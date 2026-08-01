@@ -64,6 +64,9 @@ const vite = readFileSync(join(root, "vite.config.ts"), "utf8");
 if (!vite.includes("capitalCspPlugin") || !vite.includes("Content-Security-Policy")) {
   failures.push("vite.config.ts must inject production CSP via capitalCspPlugin");
 }
+if (!vite.includes("media-src 'self' data: blob:")) {
+  failures.push("vite.config.ts CSP must allow media-src 'self' data: blob: (audio beds)");
+}
 
 if (failures.length) {
   console.error("Security checks failed:\n" + failures.map((f) => ` - ${f}`).join("\n"));
