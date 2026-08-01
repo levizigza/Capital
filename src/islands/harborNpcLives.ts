@@ -92,12 +92,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
               afternoon: "Cashmere: She invests with precision. Memory Courtyard never forgets.",
               evening: "Cashmere: Fortunes flourish around taste. Tip yourself first, darling.",
             }
-          : {
-              morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-              midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-              afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-              evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-            };
+          : slot.mascotId === "peso_pedro"
+            ? {
+                morning: "Peso Pedro: Golden charisma — the Plinth already heard yesterday’s fiesta.",
+                midday: "Peso Pedro: Small symbol, massive impact. Piggy keeps the Harbor verbs.",
+                afternoon: "Peso Pedro: Opportunities into celebrations. Memory Courtyard never forgets.",
+                evening: "Peso Pedro: Always in circulation. Tip yourself first — then dance.",
+              }
+            : {
+                morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+              };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

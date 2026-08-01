@@ -140,6 +140,21 @@ const ROLE_TIPS: Record<
       strategist: "The room adjusts. Your ledger should too.",
     },
   },
+  peso_pedro: {
+    tip: {
+      explorer:
+        "¡Peso Pedro! Small symbol, massive impact — and that Plinth remembers every fiesta of a choice!",
+      apprentice:
+        "Money moves, wealth grows. I turn opportunities into celebrations — Piggy still keeps Harbor’s verbs. Check the Plinth.",
+      strategist:
+        "Always in circulation, never Harbor Keeper. Calculated charm; Memory Plinth files the peso after every Take.",
+    },
+    bye: {
+      explorer: "Fiesta of fortune — go make a smart move!",
+      apprentice: "Smooth operator tip: pay yourself first, then celebrate.",
+      strategist: "Stay liquid. Stay charming. Stay ledger-true.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
