@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { killServiceWorkerForE2e, waitForQaReady } from "./helpers";
 
 /**
  * Islands smoke test — full navigation path + save/load persistence.
@@ -11,6 +12,7 @@ test.describe("Islands smoke", () => {
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page }) => {
+    await killServiceWorkerForE2e(page);
     await page.addInitScript(() => {
       const defaults = {
         name: "QA Tester",
@@ -39,12 +41,7 @@ test.describe("Islands smoke", () => {
 
   test("launch → hub → map → Cove shore explore → journal → save/load", async ({ page }) => {
     await page.goto("/?mode=islands&skipIntro=1");
-
-    await expect
-      .poll(async () => page.evaluate(() => window.__QA__?.ready ?? false), {
-        timeout: 60_000,
-      })
-      .toBe(true);
+    await waitForQaReady(page);
 
     // Past Castle Grounds + Piggy quiet chrome so map / leave are available
     await page.evaluate(async () => {

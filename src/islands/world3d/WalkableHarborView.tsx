@@ -68,6 +68,7 @@ import {
   HARBOR_LOADING_HINT,
   HARBOR_LOADING_SLOW,
 } from "../titleVoice";
+import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
   | "building"
@@ -670,7 +671,13 @@ function PlazaScene({
                   active={nearby}
                   guided={pulsing}
                   scarRemembered={memoryLit}
-                  scarLabel={scarEcho?.label}
+                  scarLabel={
+                    scarEcho?.label
+                      ? scarEcho.organ
+                        ? `${scarOrganName(scarEcho.organ)} · ${scarEcho.label}`
+                        : scarEcho.label
+                      : undefined
+                  }
                 />
               ) : (
                 <HarborSignpost accent={h.accent ?? LOOK.accent} active={nearby || pulsing} />
@@ -847,14 +854,21 @@ export function WalkableHarborView({
       return false;
     }
   });
-  /** Defer WebGL so the loading veil + Continue paint before createContext can hitch. */
+  /**
+   * Reliability gate: never mount R3F until Continue has painted and a cheap
+   * WebGL probe passes. createContext on a hung GPU can freeze the main thread
+   * so Continue never receives clicks — defer + probe + hard myth escape.
+   */
   const [allowCanvas, setAllowCanvas] = useState(false);
   const readyRef = useRef(false);
   const force2dRef = useRef(force2d);
+  const escapedRef = useRef(false);
   readyRef.current = ready;
   force2dRef.current = force2d;
 
   const escapeToMyth = useCallback(() => {
+    if (escapedRef.current) return;
+    escapedRef.current = true;
     try {
       sessionStorage.removeItem("capital_harbor3d_ok");
       sessionStorage.setItem("capital_harbor3d_fail", "1");
@@ -867,26 +881,76 @@ export function WalkableHarborView({
   }, []);
 
   useEffect(() => {
-    if (ready || force2d) return;
+    if (ready || force2d || kill3d) return;
     setLoadHint(HARBOR_LOADING_HINT);
-    // Paint Continue immediately — never wait 2.5s behind a hung WebGL thread.
-    const mount = window.setTimeout(() => {
-      if (!force2dRef.current) setAllowCanvas(true);
-    }, 100);
+    let cancelled = false;
+    let idleId: number | undefined;
+    let mountTimer: number | undefined;
+
+    const probeWebGL = (): boolean => {
+      try {
+        const c = document.createElement("canvas");
+        const gl =
+          c.getContext("webgl2", { failIfMajorPerformanceCaveat: false }) ||
+          c.getContext("webgl", { failIfMajorPerformanceCaveat: false });
+        if (!gl) return false;
+        // Free the probe context so R3F can claim a real one.
+        const lose = gl.getExtension("WEBGL_lose_context");
+        lose?.loseContext();
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const scheduleCanvas = () => {
+      if (cancelled || force2dRef.current || readyRef.current) return;
+      if (!probeWebGL()) {
+        escapeToMyth();
+        return;
+      }
+      setAllowCanvas(true);
+    };
+
+    // Double-rAF + idle: Enter Harbor paints and stays tappable before WebGL hitch.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled) return;
+        const ric = (
+          window as Window & {
+            requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+          }
+        ).requestIdleCallback;
+        if (typeof ric === "function") {
+          idleId = ric(() => {
+            mountTimer = window.setTimeout(scheduleCanvas, 120);
+          }, { timeout: 700 });
+        } else {
+          mountTimer = window.setTimeout(scheduleCanvas, 450);
+        }
+      });
+    });
+
     const hint = window.setTimeout(() => {
       setLoadHint(HARBOR_LOADING_SLOW);
-    }, 2_500);
-    // Always escape — previously we skipped failsafe when sessionStorage said 3D
-    // worked earlier, which left remounts/hung WebGL stuck on Loading forever.
+    }, 1_200);
+    // Hard myth escape — iconic reliability gate: playable Harbor < ~3s.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) escapeToMyth();
-    }, 5_000);
+    }, 2_800);
     return () => {
-      window.clearTimeout(mount);
+      cancelled = true;
+      if (idleId !== undefined) {
+        const cic = (
+          window as Window & { cancelIdleCallback?: (id: number) => void }
+        ).cancelIdleCallback;
+        cic?.(idleId);
+      }
+      if (mountTimer !== undefined) window.clearTimeout(mountTimer);
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
     };
-  }, [ready, force2d, escapeToMyth]);
+  }, [ready, force2d, kill3d, escapeToMyth]);
 
   useEffect(() => {
     if (ready) reportHarborReady();
@@ -918,15 +982,27 @@ export function WalkableHarborView({
   return (
     <div className="relative h-full w-full overflow-hidden" data-testid="harbor-3d-shell">
       {!ready ? (
-        <div className="absolute inset-0 z-[3] flex flex-col items-center justify-center gap-3 bg-[#7dd3fc] px-4 text-center">
+        <div
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[#7dd3fc] px-4 text-center"
+          style={{ pointerEvents: "auto", touchAction: "manipulation" }}
+        >
           <p className="text-sm font-bold text-[#16283b]/80" data-testid="harbor-loading">
             {loadHint}
           </p>
           <button
             type="button"
             data-testid="harbor-skip-3d"
-            className="pointer-events-auto rounded-full bg-[#16283b] px-4 py-2 text-xs font-bold text-white shadow-md"
-            onClick={escapeToMyth}
+            className="pointer-events-auto relative z-50 min-h-11 min-w-[12rem] rounded-full bg-[#16283b] px-5 py-3 text-sm font-bold text-white shadow-md"
+            style={{ touchAction: "manipulation" }}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              escapeToMyth();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              escapeToMyth();
+            }}
           >
             {ENTER_HARBOR_HAVEN}
           </button>
@@ -940,6 +1016,14 @@ export function WalkableHarborView({
         className="absolute inset-0 z-[2]"
         gl={{ antialias: !perfSoft, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
+          if (force2dRef.current || escapedRef.current) {
+            try {
+              gl.dispose();
+            } catch {
+              /* ignore */
+            }
+            return;
+          }
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
           try {

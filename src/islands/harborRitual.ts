@@ -4,7 +4,7 @@
  */
 
 import type { IslandSaveV1 } from "./types";
-import { harborScarPlaques } from "./worldMemory";
+import { harborScarPlaques, scarRumorLine } from "./worldMemory";
 
 export type HarborRitualToday = {
   paydayDone?: boolean;
@@ -108,12 +108,12 @@ export function pickDailyRumor(save: IslandSaveV1, dayKey: string): { id: string
     if (scarDay && scarDay < dayKey) {
       return {
         id: `scar_echo_${p.id}`,
-        text: `Day-after echo: locals still tip their jars about “${p.label}.” The Plinth did not forget overnight.`,
+        text: scarRumorLine(p, "later"),
       };
     }
     return {
       id: `scar_${p.id}`,
-      text: `Memory Plinth rumor: “${p.label}” still shapes how locals greet you.`,
+      text: scarRumorLine(p, "same"),
     };
   }
   const idx =

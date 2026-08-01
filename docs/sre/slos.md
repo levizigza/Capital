@@ -14,7 +14,7 @@ Capital is a client-rendered SPA on GitHub Pages today. Reliability is still a p
 ## SLOs (session window → remote later)
 
 1. **Availability (client):** 99% of sessions complete boot without an uncaught error.
-2. **Harbor readiness:** 95% of Harbor mounts report `harbor_ready` under 4000 ms.
+2. **Harbor readiness:** 95% of Harbor mounts report `harbor_ready` under 4000 ms (product gate: myth/Continue playable under 3000 ms even when WebGL hangs).
 3. **Deploy health:** `public/health.json` returns `status: ok` after every Pages deploy.
 
 ## Error budget

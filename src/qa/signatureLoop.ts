@@ -199,12 +199,12 @@ export function auditSignatureLoop(save: IslandSaveV1, dayKey = localDayKey()): 
   };
 }
 
-/** Trailer shot list (captions) — ~24s mute-friendly. Wave 7 names organs. */
+/** Trailer shot list (captions) — ~24s mute-friendly. Cold-retell names organs. */
 export const SIGNATURE_TRAILER_SHOTS = [
   { atMs: 0, caption: "A choice you can't undo" },
   { atMs: 3500, caption: "Coin · Clock · Spiral go quiet" },
-  { atMs: 7000, caption: "Harbor felt that" },
-  { atMs: 12_000, caption: "Memory Plinth remembers" },
-  { atMs: 16_500, caption: "Piggy noticed" },
+  { atMs: 7000, caption: "Harbor felt that · Coin · Clock · Spiral" },
+  { atMs: 12_000, caption: "Memory Plinth remembers yesterday" },
+  { atMs: 16_500, caption: "Piggy names the organ" },
   { atMs: 20_500, caption: "Money is alive" },
 ] as const;

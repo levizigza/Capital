@@ -68,7 +68,16 @@ if (import.meta.env.PROD) {
 // Production (incl. GitHub Pages): register SW under BASE_URL so /Capital/ works.
 // On activate / controller change, reload once so stale Vite chunks never stick.
 // Kill switch VITE_KILL_SW / capital_kill_serviceWorker skips registration during incidents.
-if (import.meta.env.PROD && "serviceWorker" in navigator && !shouldSkipServiceWorker()) {
+// Playwright sets navigator.webdriver — skip SW so controllerchange reloads do not
+// destroy the execution context mid __QA__.ready poll (e2e flake / false CI red).
+const isAutomatedBrowser =
+  typeof navigator !== "undefined" && Boolean(navigator.webdriver);
+if (
+  import.meta.env.PROD &&
+  "serviceWorker" in navigator &&
+  !shouldSkipServiceWorker() &&
+  !isAutomatedBrowser
+) {
   let reloading = false;
   const reloadOnce = () => {
     if (reloading) return;

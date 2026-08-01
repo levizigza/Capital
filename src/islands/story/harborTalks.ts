@@ -6,6 +6,7 @@
 import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
 import type { HubGuidedStepId } from "./storyBible";
+import { scarOrganId, scarOrganName } from "../worldMemory";
 
 export const HARBOR_NPCS: IslandNpc[] = HARBOR_LOCAL_CAST.map((slot) => {
   const m = getMascot(slot.mascotId);
@@ -391,7 +392,16 @@ export function piggyMemoryGraph(
   opts?: { stanceHint?: string | null },
 ): DialogueGraph {
   const shelf = formatScarShelf(scars);
-  const latest = scars[scars.length - 1]?.label ?? "your choice";
+  const latestScar = scars[scars.length - 1];
+  const latest = latestScar?.label ?? "your choice";
+  const organ = latestScar
+    ? scarOrganName(
+        scarOrganId({
+          id: latestScar.id ?? "",
+          islandId: latestScar.islandId ?? "",
+        }),
+      )
+    : "Memory";
   const stance = opts?.stanceHint ? ` ${opts.stanceHint}` : "";
   return {
     id: "dlg_harbor_piggy_penny_memory",
@@ -400,7 +410,7 @@ export function piggyMemoryGraph(
       {
         id: "m1",
         speaker: "Piggy Penny",
-        text: `The Plinth still holds “${latest}.”${stance} Harbor doesn’t forget — and neither do I.`,
+        text: `The Plinth still holds the ${organ} — “${latest}.”${stance} Harbor doesn’t forget — and neither do I.`,
         choices: [{ id: "m1_ok", text: "I see it too", nextNodeId: "m2" }],
       },
       {
@@ -425,10 +435,27 @@ function scarMemoryLocalGraph(
 ): DialogueGraph {
   const base = localGraph(mascotId);
   const m = getMascot(mascotId);
-  const latest = scars[scars.length - 1]?.label ?? "that choice";
+  const latestScar = scars[scars.length - 1];
+  const latest = latestScar?.label ?? "that choice";
+  const organ = latestScar
+    ? scarOrganName(
+        scarOrganId({
+          id: latestScar.id ?? "",
+          islandId: latestScar.islandId ?? "",
+        }),
+      )
+    : "Memory";
   const talks =
     (opts.npcTalks ?? 0) >= 2 ? ` We’ve talked ${opts.npcTalks} times —` : "";
   const stanceBit = opts.stanceHint ? ` ${opts.stanceHint}` : "";
+  const habit =
+    organ === "Clock"
+      ? "still stamp about"
+      : organ === "Spiral"
+        ? "still weigh"
+        : organ === "Memory"
+          ? "still name"
+          : "still tip jars about";
   return {
     ...base,
     id: `dlg_harbor_${mascotId}_scar_memory`,
@@ -437,7 +464,7 @@ function scarMemoryLocalGraph(
       {
         id: "s0",
         speaker: m.name,
-        text: `${talks} Folks still tip jars about “${latest}” on the Plinth.${stanceBit} Money left footprints.`,
+        text: `${talks} Folks ${habit} the ${organ} — “${latest}” — on the Plinth.${stanceBit} Money left footprints.`,
         choices: [{ id: "s0_ok", text: "Harbor felt that", nextNodeId: "n1" }],
       },
       ...base.nodes,

@@ -24,7 +24,7 @@ type Props = {
 
 export function TakeHushOverlay({
   scarLabel,
-  organLine = "The Coin holds. Harbor is already listening.",
+  organLine = "The Coin holds. Harbor is already listening.", // prefer organTakeHushLine(organId) from caller
   organId = "coin",
   islandId = "coincraft_cove",
   onDone,
