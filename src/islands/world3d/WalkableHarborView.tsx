@@ -13,7 +13,7 @@ import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
-import { getMascot, varyMascot } from "../moneyCast";
+import { getMascot, SERIES_LEAD_MASCOT_ID, varyMascot } from "../moneyCast";
 import { colorHex, type MoneyForm } from "../character";
 import { SafeText } from "./SafeText";
 import {
@@ -138,6 +138,11 @@ type Props = {
   fallbackMode?: HarborFallbackMode;
   onFallbackTalkPiggy?: () => void;
   onFallbackEnterBank?: () => void;
+  /**
+   * First meet / quiet homecoming — hide series lead (Cashwell) so Piggy
+   * owns the one-job plaza beat.
+   */
+  piggyPresenceBeat?: boolean;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -806,6 +811,7 @@ export function WalkableHarborView({
   fallbackMode = "utility",
   onFallbackTalkPiggy,
   onFallbackEnterBank,
+  piggyPresenceBeat = false,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -823,7 +829,12 @@ export function WalkableHarborView({
   const perfSoft = reduced || lowMem || budgetDegrade;
 
   const hour = currentHarborHour();
-  const lives = useMemo(() => buildHarborNpcLives(), []);
+  const lives = useMemo(() => {
+    const all = buildHarborNpcLives();
+    if (!piggyPresenceBeat) return all;
+    // Cashwell waits offstage until Piggy presence clears.
+    return all.filter((l) => l.mascotId !== SERIES_LEAD_MASCOT_ID);
+  }, [piggyPresenceBeat]);
   const look = useMemo(() => {
     const base = { ...LOOK };
     if (weatherFog) {

@@ -1032,6 +1032,7 @@ export function HomeHubView({
                         }
                       : undefined
                   }
+                  piggyPresenceBeat={piggyPresence}
                 />
                 <GuideEdgeCue
                   projection={guideProjection}

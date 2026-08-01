@@ -1,14 +1,18 @@
 /**
- * The People of Capital — 30 Money Mascots.
+ * The People of Capital — Money Mascots (+ series leads).
  *
  * These anthropomorphic money characters are the world's population:
  * Harbor locals, island NPCs, rivals, and Outfitter body choices.
  * Variations = same archetype + color / accessory / companion tweaks.
  *
+ * Series leads (Cashwell first) are mythically central but never steal
+ * Piggy / Coin Bag ownership of the signature Harbor loop.
+ *
  * Note: keep this file free of imports from `character.ts` to avoid cycles.
  */
 
 export type MoneyMascotId =
+  | "cashwell"
   | "dollar_dash"
   | "euro_ella"
   | "pound_pal"
@@ -40,6 +44,9 @@ export type MoneyMascotId =
   | "trade_buddy"
   | "future_fund";
 
+/** Series face of Cashwell Capital — Memory Courtyard dandy, not Harbor Keeper. */
+export const SERIES_LEAD_MASCOT_ID: MoneyMascotId = "cashwell";
+
 /** Silhouette id — must match MoneyForm in character.ts */
 export type MascotFormId = string;
 
@@ -62,6 +69,17 @@ export type MoneyMascot = {
 
 /** Canonical roster — the people of Fortune Archipelago. */
 export const MONEY_CAST: MoneyMascot[] = [
+  {
+    id: "cashwell",
+    name: "Cashwell",
+    emoji: "🎩",
+    tagline: "Always up. Always ahead. Growth is his signature.",
+    form: "coin",
+    glyph: "$",
+    color: "cashwell",
+    accessory: "cap",
+    role: "invest",
+  },
   {
     id: "dollar_dash",
     name: "Dollar Dash",
@@ -427,6 +445,15 @@ export function mascotToCharacter(
  */
 export function varyMascot(mascotId: string, seed: string): MascotCharacterLook {
   const mascot = getMascot(mascotId);
+  // Series lead keeps the sheet look — never random top-hat / coat swaps.
+  if (mascot.id === SERIES_LEAD_MASCOT_ID) {
+    return mascotToCharacter(mascot, {
+      name: mascot.name,
+      color: mascot.color,
+      accessory: mascot.accessory,
+      companion: "none",
+    });
+  }
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   const colors = ["tide", "marigold", "seafoam", "ink", "coral", "ledger"];
@@ -451,10 +478,13 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
 }
 
 /** Harbor plaza sample — readable crowd without spawning all 30.
- *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide). */
+ *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide).
+ *  Cashwell stands Memory-Courtyard side (near Plinth / bank) — never Piggy's fountain slot. */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
   // Front-and-center for first meet (player spawns ~[0,0,3] facing -Z)
   { mascotId: "piggy_penny", pos: [1.4, 0, 0.6], yaw: 0.15 },
+  // Series lead — terrace by the Memory Plinth, readable after the loop settles
+  { mascotId: "cashwell", pos: [5.6, 0, 0.4], yaw: -0.85 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },

@@ -110,6 +110,21 @@ const ROLE_TIPS: Record<
       strategist: "Appreciate the dwell time.",
     },
   },
+  cashwell: {
+    tip: {
+      explorer:
+        "I’m Cashwell — money with a mustache. Harbor remembers every choice on that glowing Plinth!",
+      apprentice:
+        "Cashwell Capital, at your service. Growth is style — but Piggy keeps the verbs. Check the Plinth when Harbor feels different.",
+      strategist:
+        "Series lead, not Harbor Keeper. Markets move; Memory Plinth files the receipt. Always up — after you face the Take.",
+    },
+    bye: {
+      explorer: "Tip the hat — and tip yourself first!",
+      apprentice: "Extra tall. Extra flash. Extra patience with your jar.",
+      strategist: "Time is money. I own the smile — you own the choice.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {

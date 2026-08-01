@@ -4,7 +4,7 @@
  * On Harbor Haven and while sailing, this home look is always shown.
  * Landing on an era island remaps the same Voyager into that decade's art language.
  *
- * Cast is the 30 Money Mascots — bills, coins, vaults, rockets, and friends —
+ * Cast is the Money Mascots — bills, coins, vaults, rockets, series leads —
  * not humans. Built for a kids financial-literacy game: wacky, readable, original.
  */
 
@@ -36,6 +36,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "ink", hex: "#1e3a5f", label: "Deep Ink" },
   { id: "coral", hex: "#fb7185", label: "Coral" },
   { id: "ledger", hex: "#a78bfa", label: "Ledger Violet" },
+  /** Cashwell Capital series green — frock-coat forest */
+  { id: "cashwell", hex: "#14532d", label: "Cashwell Green" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

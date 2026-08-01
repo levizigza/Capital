@@ -52,6 +52,8 @@ export function currentHarborHour(): HarborHour {
  */
 function harborMotionForIndex(i: number, mascotId: MoneyMascotId): HarborMotion {
   if (mascotId === "piggy_penny") return "static";
+  // Series lead holds the Memory Courtyard terrace — readable silhouette.
+  if (mascotId === "cashwell") return "static";
   return i % 2 === 0 ? "static" : "dynamic";
 }
 
@@ -70,12 +72,20 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
       [x - 1.2, y, z + (i % 3 === 0 ? 2.5 : -1.8)],
       [x + 0.8, y, z - 2.0],
     ];
-    const defaultLines: Record<HarborHour, string> = {
-      morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-      midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-      afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-      evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-    };
+    const defaultLines: Record<HarborHour, string> =
+      slot.mascotId === "cashwell"
+        ? {
+            morning: "Cashwell: Extra tall. Extra flash. The Plinth already knows yesterday.",
+            midday: "Cashwell: Always up — after you face the Take. Piggy keeps the verbs.",
+            afternoon: "Cashwell: Wealth in every detail. Memory Courtyard never forgets a choice.",
+            evening: "Cashwell: Time is money. Tip the hat — then tip yourself first.",
+          }
+        : {
+            morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+            midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+            afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+            evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+          };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,
