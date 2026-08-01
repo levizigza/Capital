@@ -20,7 +20,7 @@ type Props = {
 function TrailerCastSilhouettes() {
   return (
     <div
-      className="pointer-events-none mb-4 flex items-end justify-center gap-6"
+      className="pointer-events-none mb-4 flex items-end justify-center gap-5"
       aria-hidden
       data-testid="signature-trailer-cast"
     >
@@ -30,6 +30,17 @@ function TrailerCastSilhouettes() {
         <div className="absolute bottom-8 left-1/2 h-7 w-8 -translate-x-1/2 rounded-full bg-rose-200/90" />
         <div className="absolute bottom-10 left-[18%] h-2.5 w-2.5 rounded-full bg-rose-100/90" />
         <div className="absolute bottom-10 right-[18%] h-2.5 w-2.5 rounded-full bg-rose-100/90" />
+      </div>
+      {/* Memory Plinth — one Harbor icon (open ledger + scar lamp) */}
+      <div
+        className="relative h-[4.5rem] w-16"
+        data-testid="trailer-plinth-icon"
+      >
+        <div className="absolute bottom-0 left-1/2 h-2 w-14 -translate-x-1/2 rounded-sm bg-stone-400/90" />
+        <div className="absolute bottom-2 left-[18%] h-12 w-[1.35rem] -skew-y-6 rounded-sm bg-amber-50/95" />
+        <div className="absolute bottom-2 right-[18%] h-12 w-[1.35rem] skew-y-6 rounded-sm bg-amber-50/95" />
+        <div className="absolute bottom-2 left-1/2 h-12 w-1 -translate-x-1/2 bg-amber-900/70" />
+        <div className="absolute bottom-[3.35rem] left-1/2 h-4 w-4 -translate-x-1/2 rounded-full bg-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.85)]" />
       </div>
       {/* Coin Bag silhouette */}
       <div className="relative h-14 w-12">

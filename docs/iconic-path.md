@@ -143,7 +143,15 @@ Brand kit in [`titleVoice.ts`](../src/islands/titleVoice.ts): **Capital** → **
 
 At carpet dock, World Arrive, Harbor load, shore HUD, structure enter/exit, Soft Beat, Leave, travel map, Take hush, spectacle, and share — the player should still hear Capital / Fortune / Money is alive after stripping chrome.
 
-Next: **one Harbor icon** → stop. No map widening.
+### One Harbor icon — Memory Plinth
+
+The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a terrace + scar lamp (`harborIcon.ts` · `MemoryPlinthMesh`).
+
+- Always present on Harbor (empty shelf → scar-lit after Take).  
+- Share PNG + signature trailer draw the same ledger-plinth silhouette.  
+- Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
+
+**Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 

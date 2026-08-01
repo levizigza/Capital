@@ -14,6 +14,11 @@ import { pickDailyRumor, localDayKey } from "../harborRitual";
 import { scarTriggersChapterQuiet, scarEchoAmbientLine } from "../worldMemory";
 import { loadIslandsContent } from "../content/loader";
 import type { IslandSaveV1 } from "../types";
+import {
+  MEMORY_PLINTH_ICON,
+  MEMORY_PLINTH_SILHOUETTE_PARTS,
+  harborMemoryPlinthHotspot,
+} from "../harborIcon";
 
 describe("iconic craft — first 20 min path", () => {
   it("skips optional practice after capsule visit (trailer critical path)", () => {
@@ -151,5 +156,13 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(payLabels).toContain("Glitter ate the umbrella");
     expect(creditLabels).toContain("Waited the spiral");
     expect(creditLabels).toContain("Haste fed the spiral");
+  });
+
+  it("ships one Harbor icon — Memory Plinth ledger silhouette always placeable", () => {
+    const hotspot = harborMemoryPlinthHotspot({ scarCount: 0 });
+    expect(hotspot.kind).toBe("plinth");
+    expect(hotspot.icon).toBe(MEMORY_PLINTH_ICON);
+    expect(MEMORY_PLINTH_SILHOUETTE_PARTS.join(" ")).toMatch(/ledger/);
+    expect(PLINTH_GLOW_VISUAL_BEATS.pulseHotspot).toBe("memory");
   });
 });

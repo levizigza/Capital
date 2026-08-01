@@ -1,5 +1,7 @@
 /** Share cards — weekly ritual + iconic “Harbor felt that” social object. */
 
+import { drawMemoryPlinthSilhouette } from "../harborIcon";
+
 export type HarborFeltCardOpts = {
   voyagerName: string;
   scarLabel: string;
@@ -161,17 +163,19 @@ async function paintCard(opts: {
   ctx.fillText("Harbor Haven", 110, 285);
 
   if (opts.mode === "felt") {
+    // One Harbor icon — ledger plinth silhouette (kid-drawable at thumbnail size)
+    drawMemoryPlinthSilhouette(ctx, 900, 300, 1.05, true);
     ctx.fillStyle = `${tone.seal}33`;
     ctx.beginPath();
-    ctx.arc(900, 280, 70, 0, Math.PI * 2);
+    ctx.arc(900, 160, 52, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = tone.seal;
     ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(900, 280, 70, 0, Math.PI * 2);
+    ctx.arc(900, 160, 52, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillStyle = "#fef3c7";
-    ctx.font = "800 26px system-ui, sans-serif";
+    ctx.font = "800 22px system-ui, sans-serif";
     ctx.textAlign = "center";
     // Wave 7 — seal names the organ a kid can retell
     const seal =
@@ -182,7 +186,7 @@ async function paintCard(opts: {
           : opts.organ === "spiral"
             ? "SPIRAL"
             : "PLINTH";
-    ctx.fillText(seal, 900, 288);
+    ctx.fillText(seal, 900, 168);
     ctx.textAlign = "left";
   }
 

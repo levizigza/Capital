@@ -71,6 +71,8 @@ test.describe("Signature loop", () => {
 
     await expect(page.getByTestId("signature-trailer")).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("signature-trailer-caption")).toBeVisible();
+    // One Harbor icon — Memory Plinth silhouette in the mute-friendly trailer
+    await expect(page.getByTestId("trailer-plinth-icon")).toBeVisible();
     await page.getByTestId("signature-trailer").click();
     await expect(page.getByTestId("signature-trailer")).toHaveCount(0);
   });
