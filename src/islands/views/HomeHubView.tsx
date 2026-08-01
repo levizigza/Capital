@@ -740,6 +740,8 @@ export function HomeHubView({
     plinthGlow ||
     echoSurpriseOpen ||
     (spectacleOpen && spectaclePhase != null && spectaclePhase !== "hush");
+  /** Hide chrome that steals clicks from Soft Beat / share lower-thirds. */
+  const hideHudForCinema = spectacleOpen || feltShareOpen || echoSurpriseOpen || trailerOpen;
 
   const openOutfitter = () => {
     setDraft(voyager);
