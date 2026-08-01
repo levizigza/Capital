@@ -9,6 +9,7 @@ import {
   type MoneyForm,
 } from "../character";
 import { EXTENDED_MASCOT_FORMS, MascotBody } from "./MascotBody";
+import { SafeText } from "./SafeText";
 import { getEraLook3D } from "./eraLooks";
 import type { AnimationStyleId } from "../animationStyles";
 
@@ -279,7 +280,8 @@ export function VoyagerMesh({
   const classic = isBill || isCoin || isPiggy || isBook;
   const isCashwell = character?.base === "cashwell";
   const isCashmere = character?.base === "cashmere";
-  const isSeriesLeadFace = isCashwell || isCashmere;
+  const isPesoPedro = character?.base === "peso_pedro";
+  const isSeriesLeadFace = isCashwell || isCashmere || isPesoPedro;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -424,6 +426,47 @@ export function VoyagerMesh({
                 <mesh position={[0, -0.12, 0.11]} material={materials.paper}>
                   <boxGeometry args={[0.16, 0.04, 0.02]} />
                 </mesh>
+              </>
+            ) : null}
+            {/* Peso Pedro — green eyes, mustache, forehead P */}
+            {isPesoPedro ? (
+              <>
+                <mesh position={[-0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.4} />
+                </mesh>
+                <mesh position={[0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.4} />
+                </mesh>
+                <mesh
+                  position={[-0.1, -0.04, 0.12]}
+                  rotation={[0, 0, 0.4]}
+                  material={materials.dark}
+                >
+                  <capsuleGeometry args={[0.022, 0.11, 4, 6]} />
+                </mesh>
+                <mesh
+                  position={[0.1, -0.04, 0.12]}
+                  rotation={[0, 0, -0.4]}
+                  material={materials.dark}
+                >
+                  <capsuleGeometry args={[0.022, 0.11, 4, 6]} />
+                </mesh>
+                <mesh position={[0, -0.14, 0.11]} material={materials.paper}>
+                  <boxGeometry args={[0.18, 0.045, 0.02]} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.28, 0.12]}
+                  fontSize={0.22}
+                  color="#166534"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.015}
+                  outlineColor="#fde68a"
+                >
+                  P
+                </SafeText>
               </>
             ) : null}
             {/* Cashmere Couture — lashes, blonde waves, cocktail hat, pearls */}
@@ -602,12 +645,15 @@ export function VoyagerMesh({
             accessory={accessory}
             form={bodyForm}
             materials={materials}
-            seriesLead={isCashwell ? "cashwell" : isCashmere ? "cashmere" : null}
+            seriesLead={
+              isCashwell ? "cashwell" : isCashmere ? "cashmere" : isPesoPedro ? "peso_pedro" : null
+            }
           />
         ) : null}
 
         {isCashwell ? <CashwellCane materials={materials} /> : null}
         {isCashmere ? <CashmereStaff materials={materials} /> : null}
+        {isPesoPedro ? <PesoPedroCane materials={materials} /> : null}
 
         {companion !== "none" ? (
           <CompanionAttach companion={companion} form={bodyForm} materials={materials} />
@@ -751,6 +797,31 @@ function CashmereStaff({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Peso Pedro’s P-topped cane — fiesta of fortune. */
+function PesoPedroCane({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.52, 0.52, 0.12]} rotation={[0.14, 0, 0.1]}>
+      <mesh castShadow position={[0, 0.38, 0]} material={materials.dark}>
+        <cylinderGeometry args={[0.026, 0.03, 0.95, 8]} />
+      </mesh>
+      <mesh castShadow position={[0, 0.92, 0]} material={materials.gold}>
+        <sphereGeometry args={[0.09, 12, 10]} />
+      </mesh>
+      <SafeText
+        position={[0, 0.92, 0.08]}
+        fontSize={0.14}
+        color="#14532d"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.01}
+        outlineColor="#fde68a"
+      >
+        P
+      </SafeText>
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -761,16 +832,48 @@ function GearAttach({
   accessory: string;
   form: MoneyForm;
   materials: GearMats;
-  /** Series lead accents — Cashwell tall hat / Cashmere couture cape */
-  seriesLead?: "cashwell" | "cashmere" | null;
+  /** Series lead accents — Cashwell hat / Cashmere cape / Pedro sombrero */
+  seriesLead?: "cashwell" | "cashmere" | "peso_pedro" | null;
 }) {
   const L = gearLandmarks(form);
   const monocleR = Math.max(0.08, L.headR * 0.26);
   const cupR = Math.max(0.1, L.headR * 0.36);
   const cashwellHat = seriesLead === "cashwell";
+  const pedroSombrero = seriesLead === "peso_pedro";
 
-  // Top Hat — tall crown seated on the head, brim at crown line
+  // Top Hat / Sombrero — seated on the head, brim at crown line
   if (accessory === "cap") {
+    if (pedroSombrero) {
+      const brim = L.headR * 1.55;
+      return (
+        <group position={[0, L.crownY + 0.02, 0]}>
+          <mesh castShadow position={[0, 0.02, 0]}>
+            <cylinderGeometry args={[brim, brim * 0.92, 0.06, 24]} />
+            <meshStandardMaterial color="#166534" roughness={0.55} />
+          </mesh>
+          <mesh castShadow position={[0, 0.14, 0]}>
+            <cylinderGeometry args={[L.headR * 0.5, L.headR * 0.62, 0.22, 16]} />
+            <meshStandardMaterial color="#166534" roughness={0.55} />
+          </mesh>
+          <mesh castShadow position={[0, 0.06, 0]} material={materials.gold}>
+            <torusGeometry args={[L.headR * 0.7, 0.03, 8, 20]} />
+          </mesh>
+          {[0, 1, 2, 3, 4, 5].map((i) => {
+            const a = (i / 6) * Math.PI * 2;
+            return (
+              <mesh
+                key={i}
+                castShadow
+                position={[Math.cos(a) * brim * 0.72, 0.05, Math.sin(a) * brim * 0.72]}
+                material={materials.gold}
+              >
+                <sphereGeometry args={[0.035, 8, 6]} />
+              </mesh>
+            );
+          })}
+        </group>
+      );
+    }
     const brim = L.headR * (cashwellHat ? 1.05 : 0.95);
     const crown = L.headR * (cashwellHat ? 0.58 : 0.55);
     const crownH = cashwellHat ? 0.72 : 0.36;

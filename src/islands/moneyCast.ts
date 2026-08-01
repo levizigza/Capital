@@ -14,6 +14,7 @@
 export type MoneyMascotId =
   | "cashwell"
   | "cashmere"
+  | "peso_pedro"
   | "dollar_dash"
   | "euro_ella"
   | "pound_pal"
@@ -52,10 +53,11 @@ export const SERIES_LEAD_MASCOT_ID: MoneyMascotId = "cashwell";
 export const SERIES_LEAD_MASCOT_IDS: readonly MoneyMascotId[] = [
   "cashwell",
   "cashmere",
+  "peso_pedro",
 ] as const;
 
 export function isSeriesLeadMascot(id: string | null | undefined): boolean {
-  return id === "cashwell" || id === "cashmere";
+  return Boolean(id && (SERIES_LEAD_MASCOT_IDS as readonly string[]).includes(id));
 }
 
 /** Silhouette id — must match MoneyForm in character.ts */
@@ -101,6 +103,17 @@ export const MONEY_CAST: MoneyMascot[] = [
     color: "cashmere",
     accessory: "cape",
     role: "invest",
+  },
+  {
+    id: "peso_pedro",
+    name: "Peso Pedro",
+    emoji: "🪅",
+    tagline: "He leads with charm. Wealth follows. Always in circulation.",
+    form: "coin",
+    glyph: "P",
+    color: "peso",
+    accessory: "cap",
+    role: "currency",
   },
   {
     id: "dollar_dash",
@@ -508,6 +521,7 @@ export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number,
   // Series leads — terrace by the Memory Plinth, readable after the loop settles
   { mascotId: "cashwell", pos: [5.6, 0, 0.4], yaw: -0.85 },
   { mascotId: "cashmere", pos: [6.4, 0, -1.6], yaw: -1.1 },
+  { mascotId: "peso_pedro", pos: [7.0, 0, 1.4], yaw: -1.35 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },

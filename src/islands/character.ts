@@ -40,6 +40,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "cashwell", hex: "#14532d", label: "Cashwell Green" },
   /** Cashmere Couture — black couture coat */
   { id: "cashmere", hex: "#0a0a0a", label: "Cashmere Black" },
+  /** Peso Pedro — charro green */
+  { id: "peso", hex: "#166534", label: "Peso Green" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */
