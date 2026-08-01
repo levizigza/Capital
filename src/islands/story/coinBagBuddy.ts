@@ -86,8 +86,10 @@ export function coinBagHarborTip(
 
   if (opts?.homecomingPending) {
     return {
-      tip: opts.homecomingMessage || "Talk to Piggy — she noticed!",
-      coach: "You came home changed. Piggy has a welcome-back for you.",
+      tip: "Piggy’s waiting by the fountain",
+      coach:
+        opts.homecomingMessage ||
+        "You came home changed. Walk to her when you’re ready — no checklist.",
     };
   }
 

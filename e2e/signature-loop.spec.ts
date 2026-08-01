@@ -58,6 +58,10 @@ test.describe("Signature loop", () => {
       (el as HTMLButtonElement).click();
     });
     await expect(page.getByTestId("harbor-felt-share")).toHaveCount(0);
+    // Piggy presence — quiet Harbor, not a “Piggy Penny noticed” checklist modal
+    await expect(page.getByTestId("harbor-quiet-chip")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId("harbor-piggy-presence")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Piggy Penny noticed/i })).toHaveCount(0);
   });
 
   test("day-2 echo surprise without tutorial", async ({ page }) => {

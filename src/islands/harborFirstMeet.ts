@@ -1,6 +1,8 @@
 /**
  * Wave 1 — first-meet Harbor law.
  * Until Piggy is talked to, chrome and fallback must sell one verb: Talk.
+ * Deepen: quiet homecoming after a Take uses the same Piggy-presence law
+ * (not a tutorial checklist / stall dashboard).
  */
 
 export type HarborFallbackMode = "myth_meet" | "myth_travel" | "utility";
@@ -8,6 +10,25 @@ export type HarborFallbackMode = "myth_meet" | "myth_travel" | "utility";
 /** Castle Grounds step where Piggy is the only job. */
 export function isFirstMeetStep(stepId?: string | null): boolean {
   return stepId === "meet_guide";
+}
+
+/**
+ * Quiet Harbor after carpet home — Piggy presence beat, not stall grid.
+ * Mirror first-meet chrome until Talk Battle with Piggy.
+ */
+export function isQuietHomecoming(opts: {
+  needsPiggyWelcome?: boolean;
+  quietPending?: boolean;
+}): boolean {
+  return Boolean(opts.needsPiggyWelcome && opts.quietPending);
+}
+
+/** One job on the plaza: Piggy (first meet or quiet homecoming). */
+export function isPiggyPresenceBeat(opts: {
+  firstMeet?: boolean;
+  quietHomecoming?: boolean;
+}): boolean {
+  return Boolean(opts.firstMeet || opts.quietHomecoming);
 }
 
 /**
@@ -24,8 +45,9 @@ export function resolvePulseHotspotId(
 export function harborFallbackMode(opts: {
   firstMeet: boolean;
   castleActive: boolean;
+  quietHomecoming?: boolean;
 }): HarborFallbackMode {
-  if (opts.firstMeet) return "myth_meet";
+  if (opts.firstMeet || opts.quietHomecoming) return "myth_meet";
   if (opts.castleActive) return "myth_travel";
   return "utility";
 }
