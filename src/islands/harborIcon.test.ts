@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  MEMORY_PLINTH_CINEMA_EYE,
   MEMORY_PLINTH_ICON,
   MEMORY_PLINTH_ID,
   MEMORY_PLINTH_LABEL,
+  MEMORY_PLINTH_LOOK_AT,
+  MEMORY_PLINTH_POSITION,
   MEMORY_PLINTH_SILHOUETTE_PARTS,
   drawMemoryPlinthSilhouette,
   harborMemoryPlinthHotspot,
@@ -27,6 +30,13 @@ describe("one Harbor icon — Memory Plinth", () => {
     expect(MEMORY_PLINTH_SILHOUETTE_PARTS).toContain("terrace");
     expect(MEMORY_PLINTH_SILHOUETTE_PARTS).toContain("open ledger");
     expect(MEMORY_PLINTH_SILHOUETTE_PARTS).toContain("scar lamp");
+  });
+
+  it("exports a Plinth cinema eye + look-at above the terrace", () => {
+    expect(MEMORY_PLINTH_LOOK_AT[0]).toBe(MEMORY_PLINTH_POSITION[0]);
+    expect(MEMORY_PLINTH_LOOK_AT[2]).toBe(MEMORY_PLINTH_POSITION[2]);
+    expect(MEMORY_PLINTH_LOOK_AT[1]).toBeGreaterThan(MEMORY_PLINTH_POSITION[1]);
+    expect(MEMORY_PLINTH_CINEMA_EYE[1]).toBeGreaterThan(MEMORY_PLINTH_LOOK_AT[1]);
   });
 
   it("draws a plinth silhouette into a canvas context", () => {

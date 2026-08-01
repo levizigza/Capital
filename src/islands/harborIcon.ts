@@ -8,6 +8,10 @@ export const MEMORY_PLINTH_LABEL = "Memory Plinth";
 /** Ledger glyph — money that remembers (not a rock). */
 export const MEMORY_PLINTH_ICON = "📒";
 export const MEMORY_PLINTH_POSITION: [number, number, number] = [4.0, 0, 1.6];
+/** Spectacle cinema look-at — ledger lamp height (not ground). */
+export const MEMORY_PLINTH_LOOK_AT: [number, number, number] = [4.0, 1.95, 1.6];
+/** Three-quarter hero eye for Plinth camera lock. */
+export const MEMORY_PLINTH_CINEMA_EYE: [number, number, number] = [1.2, 3.7, 6.8];
 
 export type MemoryPlinthHotspot = {
   id: typeof MEMORY_PLINTH_ID;

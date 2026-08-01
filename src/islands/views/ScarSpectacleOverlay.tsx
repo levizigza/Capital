@@ -1,7 +1,7 @@
 /**
  * Scar spectacle — Harbor reacts when money choices leave plaques.
  * Signature loop beat: hush → chime → “Harbor felt that” → Plinth glow.
- * Cold-retell polish: organ-first headline + one kid sentence.
+ * World cinema: captions over the Memory Plinth (camera locks in Harbor view).
  */
 
 import { useEffect, useState } from "react";
@@ -16,13 +16,16 @@ import {
 } from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
 
+export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
+
 type Props = {
   scars: HarborScar[];
   onDone: () => void;
+  onPhaseChange?: (phase: SpectacleCinemaPhase) => void;
 };
 
-export function ScarSpectacleOverlay({ scars, onDone }: Props) {
-  const [phase, setPhase] = useState<"hush" | "in" | "hold" | "out">("hush");
+export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
+  const [phase, setPhase] = useState<SpectacleCinemaPhase>("hush");
   const latest = scars[scars.length - 1];
   const organWord = latest ? scarOrganName(scarOrganId(latest)) : "Memory";
   const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
@@ -35,13 +38,22 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const t = signatureTiming(Boolean(reduced));
     playCapitalSfx("scar_chime");
+    onPhaseChange?.("hush");
+
     const t0 = window.setTimeout(() => {
       setPhase("in");
+      onPhaseChange?.("in");
       playCapitalSfx("harbor_cheer");
       playCapitalSfx("plinth_hum");
     }, t.hushMs);
-    const t1 = window.setTimeout(() => setPhase("hold"), t.revealMs);
-    const t2 = window.setTimeout(() => setPhase("out"), t.holdEndMs);
+    const t1 = window.setTimeout(() => {
+      setPhase("hold");
+      onPhaseChange?.("hold");
+    }, t.revealMs);
+    const t2 = window.setTimeout(() => {
+      setPhase("out");
+      onPhaseChange?.("out");
+    }, t.holdEndMs);
     const t3 = window.setTimeout(onDone, t.doneMs);
     return () => {
       window.clearTimeout(t0);
@@ -49,50 +61,56 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
       window.clearTimeout(t2);
       window.clearTimeout(t3);
     };
-  }, [onDone]);
+  }, [onDone, onPhaseChange]);
 
   return (
     <div
-      className={`pointer-events-auto absolute inset-0 z-[40] flex items-center justify-center transition-opacity duration-500 ${
+      className={`pointer-events-auto absolute inset-0 z-[40] flex flex-col justify-end transition-opacity duration-500 ${
         phase === "out" ? "opacity-0" : "opacity-100"
       }`}
       role="dialog"
       aria-label="Harbor remembers your choice"
       data-testid="scar-spectacle"
+      data-cinema-phase={phase}
+      tabIndex={0}
       onClick={onDone}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
       }}
-    >
-      <div
-        className={`absolute inset-0 transition-all duration-700 ${
+      style={{
+        background:
           phase === "hush"
-            ? "bg-[#0f172a]/88 backdrop-blur-[1px]"
-            : "bg-gradient-to-b from-[#0f172a]/75 via-[#1e3a5f]/55 to-[#7dd3fc]/35 backdrop-blur-[2px]"
-        }`}
-      />
-      {phase !== "hush" ? (
-        <div
-          className={`relative mx-4 max-w-md rounded-2xl border border-amber-200/60 bg-[#0f172a]/90 px-6 py-5 text-center text-white shadow-2xl transition-transform duration-500 ${
-            phase === "in" ? "scale-95" : "scale-100"
-          }`}
-        >
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
-            Harbor felt that · {organWord}
-          </p>
-          <h2 className="mt-2 text-xl font-black leading-snug sm:text-2xl">
-            {headline}
-          </h2>
-          <p className="mt-2 text-sm text-white/85" data-testid="scar-spectacle-retell">
-            {retell ?? shelf}
-          </p>
-          <p className="mt-3 text-xs text-white/60">
-            {organWord} Plinth glowing · Money is alive
-          </p>
-        </div>
-      ) : (
-        <p className="relative text-sm font-semibold tracking-wide text-white/70">…</p>
-      )}
+            ? "radial-gradient(ellipse 65% 50% at 62% 38%, transparent 0%, transparent 40%, rgba(15,23,42,0.45) 78%, rgba(15,23,42,0.72) 100%)"
+            : "radial-gradient(ellipse 70% 55% at 62% 36%, transparent 0%, transparent 42%, rgba(15,23,42,0.28) 72%, rgba(15,23,42,0.55) 100%)",
+      }}
+    >
+      <div className="pointer-events-none mx-auto w-full max-w-xl px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-8 text-center">
+        {phase === "hush" ? (
+          <p className="cap-display text-sm tracking-[0.35em] text-white/55">…</p>
+        ) : (
+          <div
+            className={`transition-transform duration-500 ${
+              phase === "in" ? "translate-y-1 opacity-95" : "translate-y-0 opacity-100"
+            }`}
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
+              Harbor felt that · {organWord}
+            </p>
+            <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
+              {headline}
+            </h2>
+            <p
+              className="mt-2 text-sm text-white/85 drop-shadow"
+              data-testid="scar-spectacle-retell"
+            >
+              {retell ?? shelf}
+            </p>
+            <p className="mt-3 text-[11px] tracking-wide text-white/50">
+              {organWord} Plinth · Money is alive · Click or Esc
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

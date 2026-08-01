@@ -116,6 +116,14 @@ type Props = {
   onGuideProject?: (p: GuideProjection | null) => void;
   /** Freeze WASD / Enter / M while Talk Battle owns the screen */
   inputFrozen?: boolean;
+  /**
+   * Scar spectacle / Plinth afterglow — lock camera on Memory Plinth
+   * (look-at + optional dedicated eye). World cinema, not player follow.
+   */
+  cinemaFocus?: [number, number, number] | null;
+  cinemaEye?: [number, number, number] | null;
+  /** Stronger Plinth scar lamp during spectacle lock */
+  plinthSpectacleActive?: boolean;
   /** Cashflow weather — soft fog density */
   weatherFog?: { near: number; far: number } | null;
   /** Per-NPC Talk Battle memory for ambient greetings */
@@ -145,6 +153,8 @@ function Player({
   onNearNpc,
   playerPosOut,
   inputFrozen = false,
+  cinemaFocus = null,
+  cinemaEye = null,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
@@ -154,6 +164,8 @@ function Player({
   onNearNpc: (npc: { id: string; name: string; line: string } | null) => void;
   playerPosOut: MutableRefObject<THREE.Vector3>;
   inputFrozen?: boolean;
+  cinemaFocus?: [number, number, number] | null;
+  cinemaEye?: [number, number, number] | null;
 }) {
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
@@ -166,6 +178,10 @@ function Player({
   const nearNpcRef = useRef<string | null>(null);
   const frozenRef = useRef(inputFrozen);
   frozenRef.current = inputFrozen;
+  const cinemaFocusRef = useRef(cinemaFocus);
+  cinemaFocusRef.current = cinemaFocus;
+  const cinemaEyeRef = useRef(cinemaEye);
+  cinemaEyeRef.current = cinemaEye;
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -202,6 +218,16 @@ function Player({
     const p = group.current.position;
     if (frozenRef.current) {
       playerPosOut.current.set(p.x, p.y, p.z);
+      const focus = cinemaFocusRef.current;
+      if (focus) {
+        const eye = cinemaEyeRef.current;
+        const ideal = eye
+          ? new THREE.Vector3(eye[0], eye[1], eye[2])
+          : new THREE.Vector3(focus[0] - 2.8, 3.6, focus[2] + 5.0);
+        camera.position.lerp(ideal, 1 - Math.pow(0.00055, dt));
+        camera.lookAt(focus[0], focus[1], focus[2]);
+        return;
+      }
       // Keep camera framing while frozen
       const back = 8.5;
       const camH = 4.9;
@@ -433,6 +459,7 @@ function PlazaScene({
   npcBodies,
   look,
   scarEcho = null,
+  plinthSpectacleActive = false,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -460,6 +487,7 @@ function PlazaScene({
     dayOffset: "same" | "later";
     organ?: import("../moneyOrgans").MoneyOrganId;
   } | null;
+  plinthSpectacleActive?: boolean;
 }) {
   const memoryLit = Boolean(scarEcho);
   // Distill: vegetation in 3 outer clusters — never a full prop ring.
@@ -671,6 +699,7 @@ function PlazaScene({
                   active={nearby}
                   guided={pulsing}
                   scarRemembered={memoryLit}
+                  spectacleActive={plinthSpectacleActive}
                   scarLabel={
                     scarEcho?.label
                       ? scarEcho.organ
@@ -767,6 +796,9 @@ export function WalkableHarborView({
   guideArrows = true,
   onGuideProject,
   inputFrozen = false,
+  cinemaFocus = null,
+  cinemaEye = null,
+  plinthSpectacleActive = false,
   weatherFog = null,
   npcMemory = null,
   scarEcho = null,
@@ -1055,6 +1087,7 @@ export function WalkableHarborView({
           npcBodies={npcBodies}
           look={look}
           scarEcho={scarEcho}
+          plinthSpectacleActive={plinthSpectacleActive}
         />
         <Player
           character={character}
@@ -1067,6 +1100,8 @@ export function WalkableHarborView({
           }}
           playerPosOut={playerPos}
           inputFrozen={inputFrozen}
+          cinemaFocus={cinemaFocus}
+          cinemaEye={cinemaEye}
         />
         <Suspense fallback={null}>
           <MoneyBagGuide
@@ -1074,11 +1109,11 @@ export function WalkableHarborView({
             playerPos={playerPos}
             tip={guideTip ?? "Stay with me!"}
             reducedMotion={reduced}
-            pointingEnabled={guideArrows}
+            pointingEnabled={guideArrows && !plinthSpectacleActive}
           />
           <GuideProjector
             lookAt={guideTarget}
-            enabled={guideArrows}
+            enabled={guideArrows && !plinthSpectacleActive}
             onProject={onGuideProject ?? (() => {})}
           />
         </Suspense>

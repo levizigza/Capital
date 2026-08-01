@@ -54,7 +54,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Quiet chrome | Until Piggy talk: no CASH / Leave / Apprentice / stall grid |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
-| Spectacle | Hush → chime → “Harbor felt…” → Plinth pulse |
+| Spectacle | Hush → chime → captions over **Plinth camera lock** (not a modal card) → Plinth pulse |
 | Share | Full-bleed “Harbor felt that” card (not a settings modal); readable at thumbnail size |
 | Piggy | Quiet Harbor until Talk Battle |
 | Day 2 | Soft Beat–style “Still here” cinema — no tutorial modal |
@@ -150,6 +150,8 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 - Always present on Harbor (empty shelf → scar-lit after Take).  
 - Share PNG + signature trailer draw the same ledger-plinth silhouette.  
 - Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
+
+**Spectacle world cinema:** after carpet home from a Take, Harbor locks the camera on the Memory Plinth — captions at the edge, scar lamp peaks, Coin Bag points at memory before Piggy welcome.
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 

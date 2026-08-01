@@ -357,21 +357,41 @@ export function MemoryPlinthMesh({
   active = false,
   guided = false,
   scarRemembered = false,
+  spectacleActive = false,
   scarLabel,
-}: AccentProps & { scarRemembered?: boolean; scarLabel?: string }) {
+}: AccentProps & {
+  scarRemembered?: boolean;
+  /** Scar spectacle camera lock — lamp peaks */
+  spectacleActive?: boolean;
+  scarLabel?: string;
+}) {
   const glow = useRef<THREE.Mesh>(null);
   const pages = useRef<THREE.Group>(null);
-  const lit = active || guided || scarRemembered;
+  const ring = useRef<THREE.Mesh>(null);
+  const lit = active || guided || scarRemembered || spectacleActive;
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
-      const base = scarRemembered ? 1.05 : lit ? 0.7 : 0.22;
-      mat.emissiveIntensity = base + Math.sin(t * (scarRemembered ? 2.6 : 1.8)) * 0.14;
+      if (spectacleActive) {
+        mat.emissiveIntensity = 1.55 + Math.sin(t * 5.2) * 0.35;
+      } else {
+        const base = scarRemembered ? 1.05 : lit ? 0.7 : 0.22;
+        mat.emissiveIntensity = base + Math.sin(t * (scarRemembered ? 2.6 : 1.8)) * 0.14;
+      }
     }
-    if (pages.current && scarRemembered) {
-      pages.current.rotation.y = Math.sin(t * 0.7) * 0.04;
+    if (pages.current && (scarRemembered || spectacleActive)) {
+      pages.current.rotation.y = Math.sin(t * (spectacleActive ? 1.4 : 0.7)) * (spectacleActive ? 0.07 : 0.04);
+    }
+    if (ring.current) {
+      const mat = ring.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = spectacleActive
+        ? 0.95 + Math.sin(t * 6) * 0.25
+        : scarRemembered
+          ? 0.55
+          : 0.2;
+      mat.opacity = spectacleActive ? 0.92 : scarRemembered ? 0.75 : 0.5;
     }
   });
 
@@ -389,8 +409,8 @@ export function MemoryPlinthMesh({
         <boxGeometry args={[2.0, 0.16, 1.35]} />
         <meshStandardMaterial color="#a8a29e" roughness={0.88} flatShading />
       </mesh>
-      {scarRemembered ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.4, 0]}>
+      {scarRemembered || spectacleActive ? (
+        <mesh ref={ring} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.4, 0]}>
           <ringGeometry args={[0.95, 1.35, 28]} />
           <meshStandardMaterial
             color="#fbbf24"
@@ -442,20 +462,22 @@ export function MemoryPlinthMesh({
         <meshStandardMaterial color="#92400e" metalness={0.35} roughness={0.45} />
       </mesh>
       <mesh ref={glow} position={[0, 2.42, 0]}>
-        <sphereGeometry args={[scarRemembered ? 0.42 : 0.3, 16, 14]} />
+        <sphereGeometry args={[scarRemembered || spectacleActive ? 0.42 : 0.3, 16, 14]} />
         <meshStandardMaterial
-          color={scarRemembered ? "#fde68a" : "#f5f5f4"}
+          color={scarRemembered || spectacleActive ? "#fde68a" : "#f5f5f4"}
           emissive="#f59e0b"
-          emissiveIntensity={scarRemembered ? 0.65 : lit ? 0.35 : 0.12}
+          emissiveIntensity={
+            spectacleActive ? 1.2 : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
+          }
           metalness={0.35}
         />
       </mesh>
-      {scarRemembered ? (
+      {scarRemembered || spectacleActive ? (
         <pointLight
           position={[0, 2.5, 0.4]}
           color="#fbbf24"
-          intensity={1.4}
-          distance={8}
+          intensity={spectacleActive ? 2.4 : 1.4}
+          distance={spectacleActive ? 11 : 8}
           decay={2}
         />
       ) : null}

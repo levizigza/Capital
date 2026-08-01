@@ -27,7 +27,11 @@ import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
-import { harborMemoryPlinthHotspot } from "../harborIcon";
+import {
+  harborMemoryPlinthHotspot,
+  MEMORY_PLINTH_CINEMA_EYE,
+  MEMORY_PLINTH_LOOK_AT,
+} from "../harborIcon";
 import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
@@ -687,6 +691,8 @@ export function HomeHubView({
         pointNextPainting,
         nearStoreId: nearStore?.id ?? null,
         pointPavilion: coinBagShouldPointPavilion(save),
+        // Spectacle / afterglow — Coin Bag points at Plinth before Piggy welcome.
+        pointMemoryPlinth: spectacleOpen || plinthGlow || feltShareOpen,
         defaultId: "travel",
       }),
     [
@@ -697,8 +703,13 @@ export function HomeHubView({
       pointNextPainting,
       nearStore?.id,
       save,
+      spectacleOpen,
+      plinthGlow,
+      feltShareOpen,
     ],
   );
+
+  const plinthCinemaLock = spectacleOpen || feltShareOpen;
 
   const openOutfitter = () => {
     setDraft(voyager);
@@ -974,6 +985,9 @@ export function HomeHubView({
                     enteringBank ||
                     bankOpen
                   }
+                  cinemaFocus={plinthCinemaLock ? MEMORY_PLINTH_LOOK_AT : null}
+                  cinemaEye={plinthCinemaLock ? MEMORY_PLINTH_CINEMA_EYE : null}
+                  plinthSpectacleActive={spectacleOpen || plinthGlow}
                   weatherFog={
                     spectacleOpen || trailerOpen
                       ? { near: 8, far: 42 }
@@ -998,7 +1012,7 @@ export function HomeHubView({
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
-                  enabled={guideArrows}
+                  enabled={guideArrows && !spectacleOpen}
                 />
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
@@ -1053,7 +1067,7 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          quietHarbor || firstMeet ? (
+          spectacleOpen ? null : quietHarbor || firstMeet ? (
             <div className="cap-play-hud-left">
               <p className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90">
                 {firstMeet ? "Harbor Haven" : "Harbor is quiet — find Piggy"}
@@ -1085,7 +1099,7 @@ export function HomeHubView({
           )
         }
         topRight={
-          quietHarbor || earlyCastle || firstMeet ? null : (
+          spectacleOpen || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -1108,6 +1122,7 @@ export function HomeHubView({
           )
         }
         bottom={
+          spectacleOpen ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
             {quietHarbor || firstMeet ? (
               <p className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow">
@@ -1214,9 +1229,11 @@ export function HomeHubView({
                   : "Walk pad or WASD · E talk · M map"}
             </p>
           </div>
+          )
         }
       >
         {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
+        {spectacleOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode ? (
@@ -1229,6 +1246,7 @@ export function HomeHubView({
             </div>
           ) : null}
         </div>
+        )}
       </GameHudLayout>
       <TouchWalkPad
         enabled={

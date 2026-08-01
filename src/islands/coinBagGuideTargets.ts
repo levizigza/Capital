@@ -73,6 +73,8 @@ export function resolveHarborGuideLookAt(opts: {
   pointNextPainting?: boolean;
   nearStoreId?: string | null;
   pointPavilion?: boolean;
+  /** Scar spectacle / Plinth afterglow — point Memory before Piggy welcome */
+  pointMemoryPlinth?: boolean;
   defaultId?: string;
 }): GuideLookAt | null {
   const piggy = opts.piggyPos ?? ([1.4, 0, 0.6] as GuideLookAt);
@@ -86,6 +88,10 @@ export function resolveHarborGuideLookAt(opts: {
     return find(opts.highlight) ?? ([0, 0, -6] as GuideLookAt);
   }
 
+  // Spectacle owns the plaza — Plinth before homecoming Piggy.
+  if (opts.pointMemoryPlinth) {
+    return find("memory") ?? ([4.0, 0, 1.6] as GuideLookAt);
+  }
   if (opts.homecomingPending) return piggy;
   if (opts.pointNextPainting) return find("travel") ?? ([0, 0, 13] as GuideLookAt);
   if (opts.nearStoreId) return find(opts.nearStoreId);
