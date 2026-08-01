@@ -49,8 +49,8 @@ export function TakeHushOverlay({
     const tMark = window.setTimeout(() => {
       setPhase("mark");
       onPhaseChange?.("mark");
+      // Soft settle only — organ already spoke on open (avoid Howler pool thrash).
       playCapitalSfx("soft_beat");
-      playOrganSfx(organId);
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {
