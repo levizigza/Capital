@@ -38,6 +38,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "ledger", hex: "#a78bfa", label: "Ledger Violet" },
   /** Cashwell Capital series green — frock-coat forest */
   { id: "cashwell", hex: "#14532d", label: "Cashwell Green" },
+  /** Cashmere Couture — black couture coat */
+  { id: "cashmere", hex: "#0a0a0a", label: "Cashmere Black" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

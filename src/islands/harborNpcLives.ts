@@ -4,7 +4,12 @@
  * Motion mix: some locals hold a stall/post (static), others roam (dynamic).
  */
 
-import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "./moneyCast";
+import {
+  HARBOR_LOCAL_CAST,
+  getMascot,
+  isSeriesLeadMascot,
+  type MoneyMascotId,
+} from "./moneyCast";
 import { PLAZA_POP_CAMEOS } from "./moneyPopCulture";
 import {
   localNamesScarEcho,
@@ -52,8 +57,8 @@ export function currentHarborHour(): HarborHour {
  */
 function harborMotionForIndex(i: number, mascotId: MoneyMascotId): HarborMotion {
   if (mascotId === "piggy_penny") return "static";
-  // Series lead holds the Memory Courtyard terrace — readable silhouette.
-  if (mascotId === "cashwell") return "static";
+  // Series leads hold the Memory Courtyard terrace — readable silhouettes.
+  if (isSeriesLeadMascot(mascotId)) return "static";
   return i % 2 === 0 ? "static" : "dynamic";
 }
 
@@ -80,12 +85,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
             afternoon: "Cashwell: Wealth in every detail. Memory Courtyard never forgets a choice.",
             evening: "Cashwell: Time is money. Tip the hat — then tip yourself first.",
           }
-        : {
-            morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-            midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-            afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-            evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-          };
+        : slot.mascotId === "cashmere"
+          ? {
+              morning: "Cashmere Couture: Luxury with lineage. The Plinth keeps yesterday tailored.",
+              midday: "Cashmere: Style is strategy — Piggy keeps the Harbor verbs.",
+              afternoon: "Cashmere: She invests with precision. Memory Courtyard never forgets.",
+              evening: "Cashmere: Fortunes flourish around taste. Tip yourself first, darling.",
+            }
+          : {
+              morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+              midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+              afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+              evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+            };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

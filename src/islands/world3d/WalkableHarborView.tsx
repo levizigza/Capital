@@ -13,7 +13,7 @@ import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh, HarborNpcMesh } from "./VoyagerMesh";
-import { getMascot, SERIES_LEAD_MASCOT_ID, varyMascot } from "../moneyCast";
+import { getMascot, isSeriesLeadMascot, varyMascot } from "../moneyCast";
 import { colorHex, type MoneyForm } from "../character";
 import { SafeText } from "./SafeText";
 import {
@@ -832,8 +832,8 @@ export function WalkableHarborView({
   const lives = useMemo(() => {
     const all = buildHarborNpcLives();
     if (!piggyPresenceBeat) return all;
-    // Cashwell waits offstage until Piggy presence clears.
-    return all.filter((l) => l.mascotId !== SERIES_LEAD_MASCOT_ID);
+    // Series leads wait offstage until Piggy presence clears.
+    return all.filter((l) => !isSeriesLeadMascot(l.mascotId));
   }, [piggyPresenceBeat]);
   const look = useMemo(() => {
     const base = { ...LOOK };

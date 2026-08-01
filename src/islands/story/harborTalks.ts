@@ -125,6 +125,21 @@ const ROLE_TIPS: Record<
       strategist: "Time is money. I own the smile — you own the choice.",
     },
   },
+  cashmere: {
+    tip: {
+      explorer:
+        "Cashmere Couture — capital is my couture. That glowing Plinth? Harbor’s memory, tailored.",
+      apprentice:
+        "Style is strategy. Invest with precision — then let Piggy keep the Harbor verbs. Visit the Plinth when a choice lands.",
+      strategist:
+        "Boardroom royalty, not Harbor Keeper. Fortunes follow taste; Memory Plinth files the receipt after every Take.",
+    },
+    bye: {
+      explorer: "Inherited. Intelligent. Iconic — go count your coins!",
+      apprentice: "Grace with power. Pay yourself first, darling.",
+      strategist: "The room adjusts. Your ledger should too.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
