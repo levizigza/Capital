@@ -46,10 +46,17 @@ test.describe("Signature loop", () => {
     if (await spectacle.isVisible()) {
       await spectacle.click({ timeout: 2_000 }).catch(() => {});
     }
-    await expect(page.getByTestId("harbor-felt-share")).toBeVisible({ timeout: 12_000 });
+    const share = page.getByTestId("harbor-felt-share");
+    await expect(share).toBeVisible({ timeout: 12_000 });
+    // Plinth freeze-frame — not a settings modal card
+    await expect(share).toHaveAttribute("data-share-presentation", "plinth-freeze");
     await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
-    await page.getByRole("button", { name: /Keep walking/i }).click();
+    await expect(page.getByTestId("harbor-felt-preview")).toBeVisible({ timeout: 10_000 });
+    // Dev Errors / PERF chrome can sit over the lower-third CTA in headed CI viewports.
+    await page.getByTestId("harbor-felt-keep-walking").evaluate((el) => {
+      (el as HTMLButtonElement).click();
+    });
     await expect(page.getByTestId("harbor-felt-share")).toHaveCount(0);
   });
 

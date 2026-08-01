@@ -139,45 +139,25 @@ async function paintCard(opts: {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
 
-  ctx.fillStyle = "rgba(253, 224, 71, 0.35)";
-  ctx.beginPath();
-  ctx.arc(820, 220, 140, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
-  ctx.fillRect(0, 720, w, 360);
-
-  ctx.fillStyle = "rgba(8, 15, 28, 0.72)";
-  roundRect(ctx, 64, 160, w - 128, 640, 36);
-  ctx.fill();
-  ctx.strokeStyle = tone.glow;
-  ctx.lineWidth = 3;
-  roundRect(ctx, 64, 160, w - 128, 640, 36);
-  ctx.stroke();
-
-  ctx.fillStyle = tone.glow;
-  ctx.font = "700 36px Georgia, 'Times New Roman', serif";
-  ctx.fillText("CAPITAL", 110, 240);
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
-  ctx.font = "600 28px system-ui, sans-serif";
-  ctx.fillText("Harbor Haven", 110, 285);
-
   if (opts.mode === "felt") {
-    // One Harbor icon — ledger plinth silhouette (kid-drawable at thumbnail size)
-    drawMemoryPlinthSilhouette(ctx, 900, 300, 1.05, true);
-    ctx.fillStyle = `${tone.seal}33`;
+    // Plinth freeze-frame — silhouette owns the square; text rides the lower third.
+    ctx.fillStyle = "rgba(15, 23, 42, 0.28)";
+    ctx.fillRect(0, 720, w, 360);
+
+    drawMemoryPlinthSilhouette(ctx, w / 2, 390, 2.15, true);
+
+    ctx.fillStyle = `${tone.seal}40`;
     ctx.beginPath();
-    ctx.arc(900, 160, 52, 0, Math.PI * 2);
+    ctx.arc(w / 2 + 210, 210, 58, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = tone.seal;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.arc(900, 160, 52, 0, Math.PI * 2);
+    ctx.arc(w / 2 + 210, 210, 58, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillStyle = "#fef3c7";
-    ctx.font = "800 22px system-ui, sans-serif";
+    ctx.font = "800 24px system-ui, sans-serif";
     ctx.textAlign = "center";
-    // Wave 7 — seal names the organ a kid can retell
     const seal =
       opts.organ === "coin"
         ? "COIN"
@@ -186,35 +166,81 @@ async function paintCard(opts: {
           : opts.organ === "spiral"
             ? "SPIRAL"
             : "PLINTH";
-    ctx.fillText(seal, 900, 168);
+    ctx.fillText(seal, w / 2 + 210, 218);
     ctx.textAlign = "left";
-  }
 
-  ctx.fillStyle = "#fff";
-  ctx.font = "800 72px system-ui, sans-serif";
-  wrapText(ctx, opts.title, 110, 380, w - 240, 78);
-
-  ctx.fillStyle = "#bae6fd";
-  ctx.font = "600 36px system-ui, sans-serif";
-  ctx.fillText(opts.voyagerName, 110, 500);
-
-  ctx.fillStyle = "#e0f2fe";
-  ctx.font = "600 40px Georgia, serif";
-  let y = 570;
-  for (const line of opts.lines) {
-    wrapText(ctx, line, 110, y, w - 240, 48);
-    y += 58;
-  }
-
-  if (opts.accent) {
     ctx.fillStyle = tone.glow;
-    ctx.font = "500 30px system-ui, sans-serif";
-    wrapText(ctx, opts.accent, 110, 720, w - 240, 38);
-  }
+    ctx.font = "700 34px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CAPITAL", 72, 780);
+    ctx.fillStyle = "rgba(255,255,255,0.72)";
+    ctx.font = "600 26px system-ui, sans-serif";
+    ctx.fillText("Harbor Haven · Memory Plinth", 72, 818);
 
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.font = "600 32px Georgia, serif";
-  ctx.fillText("Money is alive — choices stick.", 110, 980);
+    ctx.fillStyle = "#fff";
+    ctx.font = "800 64px system-ui, sans-serif";
+    wrapText(ctx, opts.title, 72, 890, w - 144, 70);
+
+    ctx.fillStyle = "#e0f2fe";
+    ctx.font = "600 34px Georgia, serif";
+    let y = 960;
+    for (const line of opts.lines) {
+      wrapText(ctx, line, 72, y, w - 144, 42);
+      y += 48;
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.font = "600 28px Georgia, serif";
+    ctx.fillText("Money is alive — choices stick.", 72, 1048);
+  } else {
+    ctx.fillStyle = "rgba(253, 224, 71, 0.35)";
+    ctx.beginPath();
+    ctx.arc(820, 220, 140, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
+    ctx.fillRect(0, 720, w, 360);
+
+    ctx.fillStyle = "rgba(8, 15, 28, 0.72)";
+    roundRect(ctx, 64, 160, w - 128, 640, 36);
+    ctx.fill();
+    ctx.strokeStyle = tone.glow;
+    ctx.lineWidth = 3;
+    roundRect(ctx, 64, 160, w - 128, 640, 36);
+    ctx.stroke();
+
+    ctx.fillStyle = tone.glow;
+    ctx.font = "700 36px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CAPITAL", 110, 240);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.font = "600 28px system-ui, sans-serif";
+    ctx.fillText("Harbor Haven", 110, 285);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "800 72px system-ui, sans-serif";
+    wrapText(ctx, opts.title, 110, 380, w - 240, 78);
+
+    ctx.fillStyle = "#bae6fd";
+    ctx.font = "600 36px system-ui, sans-serif";
+    ctx.fillText(opts.voyagerName, 110, 500);
+
+    ctx.fillStyle = "#e0f2fe";
+    ctx.font = "600 40px Georgia, serif";
+    let y = 570;
+    for (const line of opts.lines) {
+      wrapText(ctx, line, 110, y, w - 240, 48);
+      y += 58;
+    }
+
+    if (opts.accent) {
+      ctx.fillStyle = tone.glow;
+      ctx.font = "500 30px system-ui, sans-serif";
+      wrapText(ctx, opts.accent, 110, 720, w - 240, 38);
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = "600 32px Georgia, serif";
+    ctx.fillText("Money is alive — choices stick.", 110, 980);
+  }
 
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob((b) => resolve(b), "image/png"),

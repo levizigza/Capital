@@ -320,15 +320,17 @@ export function HomeHubView({
     homecomingPending: needsPiggyWelcome,
     pointNextPainting,
     scarSpectacleActive: spectacleOpen,
-    plinthGlowActive: plinthGlow && !spectacleOpen,
+    // Share freeze keeps Plinth pulse alive even after the 14s glow timer.
+    plinthGlowActive: (plinthGlow || feltShareOpen) && !spectacleOpen,
   });
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
   /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
   const keeperEmote =
     nearKeeper && visualBeats.keeperEmote === "wave" ? "talk" : visualBeats.keeperEmote;
   const homecomingActive = needsPiggyWelcome || pointNextPainting;
+  const plinthShareBeat = spectacleOpen || plinthGlow || feltShareOpen;
   const keeperSpeech =
-    castleMode || homecomingActive || spectacleOpen || plinthGlow
+    castleMode || homecomingActive || plinthShareBeat
       ? visualBeats.keeperBubbleWhenNear || null
       : null;
   // Keep "guide" — Piggy’s ring lights when pulseHotspotId === "guide"
@@ -405,10 +407,11 @@ export function HomeHubView({
   }, [feltShareOpen, latestPlaque, voyager.name]);
 
   useEffect(() => {
-    if (!plinthGlow) return;
+    // Hold glow through the share freeze-frame so the lamp doesn't die mid-PNG.
+    if (!plinthGlow || feltShareOpen) return;
     const t = window.setTimeout(() => setPlinthGlow(false), SIGNATURE_TIMING.plinthGlowMs);
     return () => window.clearTimeout(t);
-  }, [plinthGlow]);
+  }, [plinthGlow, feltShareOpen]);
 
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;
@@ -483,7 +486,7 @@ export function HomeHubView({
     structuralTip: structuralBuddy,
   });
   const bagGuideTip =
-    castleMode || homecomingActive || spectacleOpen || plinthGlow
+    castleMode || homecomingActive || plinthShareBeat
       ? visualBeats.bagTip
       : buddyTip.tip;
 
@@ -958,17 +961,17 @@ export function HomeHubView({
                   guideLookAt={harborGuideLookAt}
                   guideTip={bagGuideTip}
                   keeperEmote={
-                    castleMode || homecomingActive || spectacleOpen || plinthGlow
+                    castleMode || homecomingActive || plinthShareBeat
                       ? keeperEmote
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || spectacleOpen || plinthGlow
+                    castleMode || homecomingActive || plinthShareBeat
                       ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
                       : null
                   }
                   pulseHotspotId={
-                    castleMode || spectacleOpen || plinthGlow || homecomingActive
+                    castleMode || plinthShareBeat || homecomingActive
                       ? pulseHotspotId
                       : showOutfitterHighlight
                         ? "outfitter"
@@ -987,9 +990,9 @@ export function HomeHubView({
                   }
                   cinemaFocus={plinthCinemaLock ? MEMORY_PLINTH_LOOK_AT : null}
                   cinemaEye={plinthCinemaLock ? MEMORY_PLINTH_CINEMA_EYE : null}
-                  plinthSpectacleActive={spectacleOpen || plinthGlow}
+                  plinthSpectacleActive={plinthShareBeat}
                   weatherFog={
-                    spectacleOpen || trailerOpen
+                    spectacleOpen || feltShareOpen || trailerOpen
                       ? { near: 8, far: 42 }
                       : weatherFogParams(harborWeatherMood(save))
                   }
@@ -1012,7 +1015,7 @@ export function HomeHubView({
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
-                  enabled={guideArrows && !spectacleOpen}
+                  enabled={guideArrows && !spectacleOpen && !feltShareOpen}
                 />
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay scars={plaques} onDone={closeSpectacle} />
@@ -1067,7 +1070,7 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          spectacleOpen ? null : quietHarbor || firstMeet ? (
+          spectacleOpen || feltShareOpen ? null : quietHarbor || firstMeet ? (
             <div className="cap-play-hud-left">
               <p className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90">
                 {firstMeet ? "Harbor Haven" : "Harbor is quiet — find Piggy"}
@@ -1099,7 +1102,7 @@ export function HomeHubView({
           )
         }
         topRight={
-          spectacleOpen || quietHarbor || earlyCastle || firstMeet ? null : (
+          spectacleOpen || feltShareOpen || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -1122,7 +1125,7 @@ export function HomeHubView({
           )
         }
         bottom={
-          spectacleOpen ? null : (
+          spectacleOpen || feltShareOpen ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
             {quietHarbor || firstMeet ? (
               <p className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow">
@@ -1233,7 +1236,7 @@ export function HomeHubView({
         }
       >
         {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
-        {spectacleOpen ? null : (
+        {spectacleOpen || feltShareOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode ? (
