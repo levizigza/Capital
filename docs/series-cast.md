@@ -7,7 +7,7 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 
 | Role | Who | Owns |
 |------|-----|------|
-| **Series lead** | Cashwell (1 of ~13) | Brand face, Memory Courtyard presence, style of living money |
+| **Series leads** | Cashwell + Cashmere Couture (2 of ~13) | Brand face pair, Memory Courtyard presence, style of living money |
 | **Harbor Keeper** | Piggy Penny | First meet, quiet homecoming, Return verbs |
 | **Path buddy** | Coin Bag | Pointing, carpet seat, next-good-action |
 
@@ -25,6 +25,7 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 | # | Name | Status |
 |---|------|--------|
 | 1 | **Cashwell** | In Harbor (Memory Courtyard terrace) |
-| 2–13 | TBD | Wait for sheets |
+| 2 | **Cashmere Couture** | In Harbor (Memory Courtyard terrace, Plinth flank) |
+| 3–13 | TBD | Wait for sheets |
 
-When in doubt: Cashwell tips the hat; Piggy keeps the verbs.
+When in doubt: Cashwell tips the hat, Cashmere adjusts the room — Piggy keeps the verbs.
