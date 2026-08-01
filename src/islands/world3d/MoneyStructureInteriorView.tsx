@@ -25,10 +25,10 @@ import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
 import { structureShell } from "./structureInteriorTheme";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
-  if (theme === "bank") return near ? "Exit · vault door" : "Back to Harbor";
-  if (theme === "tower") return near ? "Exit · paycheck chute" : "Back to Peninsula";
-  if (theme === "keep") return near ? "Exit · interest spiral" : "Back to Credit";
-  return near ? "Exit · coin slot" : "Back to Cove";
+  if (theme === "bank") return near ? "Close the vault" : "Return · Memory plaza";
+  if (theme === "tower") return near ? "Down the paycheck chute" : "Return · Clock shore";
+  if (theme === "keep") return near ? "Out the interest spiral" : "Return · Spiral shore";
+  return near ? "Out the coin slot" : "Return · Coin shore";
 }
 
 type Props = {
@@ -418,7 +418,7 @@ export function MoneyStructureInteriorView({
         topLeft={
           <div className="rounded-xl bg-black/40 px-3 py-2 text-white">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
-              {organ.name} organ
+              Capital · {organ.name}
             </p>
             <h1 className="text-lg font-black">{structure.name}</h1>
             {!nearPart && nearId !== "exit" ? (
@@ -446,7 +446,7 @@ export function MoneyStructureInteriorView({
                 data-testid="money-structure-enter-part"
                 onClick={() => onEnterPart(nearPart)}
               >
-                Enter {nearPart.label}
+                Open · {nearPart.label}
               </GameButton>
             </div>
           ) : nearId === "exit" ? (

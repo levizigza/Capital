@@ -115,6 +115,14 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 - Day-2 audit accepts Cove **or** Paycheck **or** Credit scars.  
 - After Wave 7: freeze the iconic path — open map width only when the cold retell test passes.
 
+### Title voice on every threshold
+
+Brand kit in [`titleVoice.ts`](../src/islands/titleVoice.ts): **Capital** → **Fortune Archipelago** → organ/place → diegetic verb.
+
+At carpet dock, World Arrive, Harbor load, shore HUD, structure enter/exit, Soft Beat, Leave, travel map, Take hush, spectacle, and share — the player should still hear Capital / Fortune / Money is alive after stripping chrome.
+
+Next: **one Harbor icon** → stop. No map widening.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

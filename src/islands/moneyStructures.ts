@@ -10,6 +10,10 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import { shoreXZ } from "./world3d/ledgerlight";
+import {
+  titleStructureExitLabel,
+  titleStructureReturnLabel,
+} from "./titleVoice";
 
 export type MoneyStructureTheme = "jar" | "bank" | "tower" | "keep";
 
@@ -245,16 +249,11 @@ export function hostIslandForStructureMinigame(minigameId: string): string | nul
   return COVE_ISLAND_ID;
 }
 
+/** Title-voice exit — diegetic organ verb, not “Exit Jar”. */
 export function structureExitLabel(theme: MoneyStructureTheme): string {
-  if (theme === "bank") return "Exit Bank";
-  if (theme === "tower") return "Exit Tower";
-  if (theme === "keep") return "Exit Keep";
-  return "Exit Jar";
+  return titleStructureExitLabel(theme);
 }
 
 export function structureReturnLabel(theme: MoneyStructureTheme): string {
-  if (theme === "bank") return "Step back to Harbor";
-  if (theme === "tower") return "Slide back to Peninsula";
-  if (theme === "keep") return "Climb back to Credit";
-  return "Squeeze back to Cove";
+  return titleStructureReturnLabel(theme);
 }

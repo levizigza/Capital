@@ -92,7 +92,7 @@ export function ScarSpectacleOverlay({ scars, onDone }: Props) {
             {latest ? ` · “${latest.label}”` : ""}
           </p>
           <p className="mt-3 text-xs text-white/60">
-            Memory Plinth glowing · share card next · tap to continue
+            Plinth glowing · Money is alive
           </p>
         </div>
       ) : (

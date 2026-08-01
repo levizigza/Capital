@@ -1102,9 +1102,9 @@ export function HomeHubView({
                 onClick={onExit}
                 className="bg-black/35 text-white"
                 data-testid="hub-leave-islands"
-                title="Leave Islands"
+                title="Leave Fortune Archipelago"
               >
-                Leave
+                Leave Fortune Archipelago
               </GameButton>
             ) : null}
           </div>
@@ -1758,14 +1758,14 @@ export function HomeHubView({
         maxWidth="md"
         usePortal
         showCloseButton
-        title="Welcome home"
+        title="Capital · Harbor Haven"
       >
         <div className="space-y-4 text-center">
           <div className="text-5xl">🐷</div>
           <h2 className="text-xl font-black">Piggy Penny noticed</h2>
           <p className="text-sm text-muted-foreground">
             {homecoming?.message ||
-              "You earned, you chose, and you came back different. That’s the Change beat."}
+              "You earned, you chose, and you came home changed. Money is alive here."}
           </p>
           {pavilionOpen ? (
             <p className="text-sm font-semibold text-emerald-800">

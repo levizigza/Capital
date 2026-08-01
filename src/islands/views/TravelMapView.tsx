@@ -85,7 +85,7 @@ export function TravelMapView({
       }
       topRight={
         <GameButton variant="outline" size="sm" onClick={onBack} data-testid="travel-map-back">
-          Back
+          Harbor
         </GameButton>
       }
       bottom={
@@ -105,7 +105,12 @@ export function TravelMapView({
                   type="button"
                   data-testid={`island-pin-${island.id}`}
                   data-locked={locked ? "1" : "0"}
-                  title={lockWhy ?? (here ? "You are here" : `Fly to ${island.name}`)}
+                  title={
+                    lockWhy ??
+                    (here
+                      ? "You are here · Harbor"
+                      : `Board carpet · ${island.name}`)
+                  }
                   disabled={locked || here}
                   onClick={() => beginVoyage(island.id)}
                   className={`shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${

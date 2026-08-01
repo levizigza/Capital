@@ -10,6 +10,8 @@ import type { MoneyOrganId } from "../moneyOrgans";
 import { GameButton } from "@/game-ui";
 import { signatureTiming } from "@/qa/signatureLoop";
 import { systemPrefersReducedMotion } from "../a11yMotion";
+import { capitalOrganEyebrow } from "../titleVoice";
+import { scarOrganName } from "../worldMemory";
 
 type Props = {
   scarLabel: string;
@@ -62,9 +64,11 @@ export function TakeHushOverlay({
       ) : (
         <div className="relative mx-4 max-w-md rounded-2xl border border-amber-200/50 bg-[#0f172a]/92 px-6 py-5 text-center text-white">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200">
-            Quiet after the Take
+            {capitalOrganEyebrow(organId)} · Quiet after the Take
           </p>
-          <h2 className="mt-2 text-xl font-black sm:text-2xl">A choice you can’t undo</h2>
+          <h2 className="mt-2 text-xl font-black sm:text-2xl">
+            A {scarOrganName(organId)} choice you can’t undo
+          </h2>
           <p className="mt-2 text-sm text-white/85">“{scarLabel}”</p>
           <p className="mt-3 text-xs text-white/65">{organLine}</p>
           <GameButton variant="primary" className="mt-4" onClick={onDone}>

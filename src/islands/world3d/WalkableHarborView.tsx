@@ -63,6 +63,11 @@ import { HARBOR_KEEPER_MASCOT_ID } from "../story/hubGuidedIntro";
 import { isKilled, reportHarborReady, shouldDegradeForBudget } from "@/sre";
 import { HarborMythFallback } from "../views/HarborMythFallback";
 import type { HarborFallbackMode } from "../harborFirstMeet";
+import {
+  ENTER_HARBOR_HAVEN,
+  HARBOR_LOADING_HINT,
+  HARBOR_LOADING_SLOW,
+} from "../titleVoice";
 
 export type HarborLandmarkKind =
   | "building"
@@ -834,7 +839,7 @@ export function WalkableHarborView({
   }, [near, hotspots, onNearChange]);
 
   const [ready, setReady] = useState(false);
-  const [loadHint, setLoadHint] = useState("Loading Harbor Haven…");
+  const [loadHint, setLoadHint] = useState(HARBOR_LOADING_HINT);
   const [force2d, setForce2d] = useState(() => {
     try {
       return sessionStorage.getItem("capital_harbor3d_fail") === "1";
@@ -863,13 +868,13 @@ export function WalkableHarborView({
 
   useEffect(() => {
     if (ready || force2d) return;
-    setLoadHint("Loading Harbor Haven…");
+    setLoadHint(HARBOR_LOADING_HINT);
     // Paint Continue immediately — never wait 2.5s behind a hung WebGL thread.
     const mount = window.setTimeout(() => {
       if (!force2dRef.current) setAllowCanvas(true);
     }, 100);
     const hint = window.setTimeout(() => {
-      setLoadHint("Harbor is taking a while…");
+      setLoadHint(HARBOR_LOADING_SLOW);
     }, 2_500);
     // Always escape — previously we skipped failsafe when sessionStorage said 3D
     // worked earlier, which left remounts/hung WebGL stuck on Loading forever.
@@ -923,7 +928,7 @@ export function WalkableHarborView({
             className="pointer-events-auto rounded-full bg-[#16283b] px-4 py-2 text-xs font-bold text-white shadow-md"
             onClick={escapeToMyth}
           >
-            Continue to Harbor
+            {ENTER_HARBOR_HAVEN}
           </button>
         </div>
       ) : null}
