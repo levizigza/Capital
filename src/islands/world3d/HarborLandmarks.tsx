@@ -348,7 +348,11 @@ export function HarborNoticeBoard({ active = false, guided = false }: AccentProp
   );
 }
 
-/** Memory Plinth — scar monument; brighter when Harbor carries a plaque. */
+/**
+ * Memory Plinth — the one Harbor icon.
+ * Kid-drawable: open ledger on a terrace + scar lamp (not a RPG rock).
+ * Empty shelf until a Take; scar-lit when Harbor remembers.
+ */
 export function MemoryPlinthMesh({
   active = false,
   guided = false,
@@ -356,61 +360,123 @@ export function MemoryPlinthMesh({
   scarLabel,
 }: AccentProps & { scarRemembered?: boolean; scarLabel?: string }) {
   const glow = useRef<THREE.Mesh>(null);
+  const pages = useRef<THREE.Group>(null);
   const lit = active || guided || scarRemembered;
 
   useFrame(({ clock }) => {
-    if (!glow.current) return;
-    const mat = glow.current.material as THREE.MeshStandardMaterial;
-    const base = scarRemembered ? 0.95 : lit ? 0.75 : 0.28;
-    mat.emissiveIntensity = base + Math.sin(clock.elapsedTime * (scarRemembered ? 2.4 : 2)) * 0.12;
+    const t = clock.elapsedTime;
+    if (glow.current) {
+      const mat = glow.current.material as THREE.MeshStandardMaterial;
+      const base = scarRemembered ? 1.05 : lit ? 0.7 : 0.22;
+      mat.emissiveIntensity = base + Math.sin(t * (scarRemembered ? 2.6 : 1.8)) * 0.14;
+    }
+    if (pages.current && scarRemembered) {
+      pages.current.rotation.y = Math.sin(t * 0.7) * 0.04;
+    }
   });
+
+  const pageColor = scarRemembered ? "#fffbeb" : lit ? "#f5f5f4" : "#e7e5e4";
+  const spineColor = scarRemembered ? "#92400e" : "#57534e";
 
   return (
     <group>
-      <mesh castShadow receiveShadow position={[0, 0.12, 0]}>
-        <cylinderGeometry args={[1.15, 1.35, 0.24, 8]} />
-        <meshStandardMaterial color="#78716c" roughness={0.9} flatShading />
+      {/* Terrace — wide readable base */}
+      <mesh castShadow receiveShadow position={[0, 0.1, 0]}>
+        <boxGeometry args={[2.4, 0.2, 1.7]} />
+        <meshStandardMaterial color="#78716c" roughness={0.92} flatShading />
       </mesh>
-      <mesh castShadow receiveShadow position={[0, 0.35, 0]}>
-        <cylinderGeometry args={[0.95, 1.1, 0.28, 8]} />
-        <meshStandardMaterial color="#a8a29e" roughness={0.85} flatShading />
+      <mesh castShadow receiveShadow position={[0, 0.28, 0]}>
+        <boxGeometry args={[2.0, 0.16, 1.35]} />
+        <meshStandardMaterial color="#a8a29e" roughness={0.88} flatShading />
       </mesh>
       {scarRemembered ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.52, 0]}>
-          <ringGeometry args={[1.05, 1.45, 24]} />
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.4, 0]}>
+          <ringGeometry args={[0.95, 1.35, 28]} />
           <meshStandardMaterial
             color="#fbbf24"
             emissive="#f59e0b"
-            emissiveIntensity={0.45}
+            emissiveIntensity={0.55}
             transparent
-            opacity={0.7}
+            opacity={0.75}
             depthWrite={false}
           />
         </mesh>
       ) : null}
-      <mesh castShadow position={[0, 1.05, 0]}>
-        <boxGeometry args={[1.05, 1.25, 0.6]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.7} />
+
+      {/* Open ledger — two pages a kid can crayon */}
+      <group ref={pages} position={[0, 1.05, 0]}>
+        <mesh castShadow position={[-0.42, 0.15, 0]} rotation={[0, 0.22, -0.08]}>
+          <boxGeometry args={[0.85, 1.35, 0.08]} />
+          <meshStandardMaterial color={pageColor} roughness={0.55} />
+        </mesh>
+        <mesh castShadow position={[0.42, 0.15, 0]} rotation={[0, -0.22, 0.08]}>
+          <boxGeometry args={[0.85, 1.35, 0.08]} />
+          <meshStandardMaterial color={pageColor} roughness={0.55} />
+        </mesh>
+        {/* Spine */}
+        <mesh castShadow position={[0, 0.1, -0.02]}>
+          <boxGeometry args={[0.14, 1.4, 0.18]} />
+          <meshStandardMaterial color={spineColor} roughness={0.7} />
+        </mesh>
+        {/* Ledger lines */}
+        {([-0.42, 0.42] as const).map((x, side) =>
+          [0.35, 0.05, -0.25, -0.55].map((y, i) => (
+            <mesh
+              key={`${side}-${i}`}
+              position={[x + (side === 0 ? 0.08 : -0.08), y, 0.05]}
+              rotation={[0, side === 0 ? 0.22 : -0.22, 0]}
+            >
+              <boxGeometry args={[0.55, 0.03, 0.02]} />
+              <meshStandardMaterial
+                color={scarRemembered ? "#b45309" : "#a8a29e"}
+                roughness={0.8}
+              />
+            </mesh>
+          )),
+        )}
+      </group>
+
+      {/* Scar lamp — Harbor’s memory light */}
+      <mesh castShadow position={[0, 2.05, 0]}>
+        <cylinderGeometry args={[0.12, 0.16, 0.22, 8]} />
+        <meshStandardMaterial color="#92400e" metalness={0.35} roughness={0.45} />
       </mesh>
-      <mesh castShadow position={[0, 1.75, 0]}>
-        <boxGeometry args={[1.2, 0.18, 0.7]} />
-        <meshStandardMaterial color="#94a3b8" roughness={0.65} />
-      </mesh>
-      <mesh ref={glow} position={[0, 2.15, 0]}>
-        <sphereGeometry args={[scarRemembered ? 0.38 : 0.32, 14, 12]} />
+      <mesh ref={glow} position={[0, 2.42, 0]}>
+        <sphereGeometry args={[scarRemembered ? 0.42 : 0.3, 16, 14]} />
         <meshStandardMaterial
-          color="#fde68a"
+          color={scarRemembered ? "#fde68a" : "#f5f5f4"}
           emissive="#f59e0b"
-          emissiveIntensity={scarRemembered ? 0.55 : 0.35}
-          metalness={0.4}
+          emissiveIntensity={scarRemembered ? 0.65 : lit ? 0.35 : 0.12}
+          metalness={0.35}
         />
       </mesh>
-      <mesh position={[0, 1.1, 0.32]}>
-        <planeGeometry args={[0.7, 0.55]} />
-        <meshStandardMaterial color="#78350f" roughness={0.6} />
-      </mesh>
+      {scarRemembered ? (
+        <pointLight
+          position={[0, 2.5, 0.4]}
+          color="#fbbf24"
+          intensity={1.4}
+          distance={8}
+          decay={2}
+        />
+      ) : null}
+
+      {/* Empty-shelf plaque face vs scar label */}
+      {!scarRemembered ? (
+        <Billboard follow position={[0, 2.95, 0]}>
+          <SafeText
+            fontSize={0.2}
+            color="#57534e"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.015}
+            outlineColor="#fafaf9"
+          >
+            Memory
+          </SafeText>
+        </Billboard>
+      ) : null}
       {scarRemembered && scarLabel ? (
-        <Billboard follow position={[0, 2.85, 0]}>
+        <Billboard follow position={[0, 3.05, 0]}>
           <SafeText
             fontSize={0.22}
             color="#78350f"

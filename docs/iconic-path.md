@@ -115,6 +115,16 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 - Day-2 audit accepts Cove **or** Paycheck **or** Credit scars.  
 - After Wave 7: freeze the iconic path — open map width only when the cold retell test passes.
 
+### One Harbor icon — Memory Plinth
+
+The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a terrace + scar lamp (`harborIcon.ts` · `MemoryPlinthMesh`).
+
+- Always present on Harbor (empty shelf → scar-lit after Take).  
+- Share PNG + signature trailer draw the same ledger-plinth silhouette.  
+- Ledger Bank stays the enterable Money Structure; fountain / carpet stay wayfinding — Plinth is the Memory proof.
+
+**Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Cast as memory

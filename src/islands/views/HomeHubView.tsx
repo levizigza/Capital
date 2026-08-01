@@ -27,6 +27,7 @@ import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
 import { WalkableHarborView, type HarborHotspot } from "../world3d";
+import { harborMemoryPlinthHotspot } from "../harborIcon";
 import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
@@ -489,8 +490,10 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => {
-      // First meet: no stalls — only Piggy. E cannot steal Talk.
-      if (firstMeet) return [];
+      // First meet: no stalls — only Piggy + Memory Plinth (Harbor icon, empty shelf).
+      if (firstMeet) {
+        return [harborMemoryPlinthHotspot({ scarCount: plaques.length })];
+      }
       return [
       // —— Plaza heroes (unique meshes) ——
       {
@@ -533,17 +536,8 @@ export function HomeHubView({
               kind: "notice_board" as const,
             } satisfies HarborHotspot,
           ]),
-      ...(plaques.length > 0
-        ? [
-            {
-              id: "memory",
-              label: "Memory Plinth",
-              icon: "🪨",
-              position: [4.0, 0, 1.6] as [number, number, number],
-              kind: "plinth" as const,
-            } satisfies HarborHotspot,
-          ]
-        : []),
+      // One Harbor icon — always present (empty shelf → scar-lit after Take)
+      harborMemoryPlinthHotspot({ scarCount: plaques.length }),
       // Hide vault during first Piggy meet — E must not steal Talk.
       ...(ledgerBank && guidedStep?.id !== "meet_guide"
         ? [

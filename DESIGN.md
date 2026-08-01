@@ -8,11 +8,11 @@
 ## Visual hierarchy (Harbor)
 
 1. Fountain + stone plaza (center read)  
-2. Ledger Bank (hero silhouette, always labeled)  
+2. Ledger Bank (enterable Money Structure — brass vault)  
 3. Money Carpet Gate on the pier axis (exit / travel)  
-4. Outfitter + Arcade pavilions (unique meshes)  
-5. Notice board + Memory Plinth (scar-lit when Harbor remembers)  
-6. Signpost cluster for utilities (never clone shops)
+4. **Memory Plinth — one Harbor icon** (open ledger + scar lamp; always present; scar-lit after Take)  
+5. Outfitter + Arcade pavilions (unique meshes)  
+6. Notice board + signpost cluster for utilities (never clone shops)
 
 ## Anti-references
 
