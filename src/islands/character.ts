@@ -56,6 +56,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "mansa", hex: "#1b4332", label: "Mansa Emerald" },
   /** Kandake Kash — onyx gown with forest cape */
   { id: "kandake", hex: "#0f1412", label: "Kandake Onyx" },
+  /** Moneybagg Bro — street-empire black */
+  { id: "moneybagg", hex: "#171717", label: "Moneybagg Black" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

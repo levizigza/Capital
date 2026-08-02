@@ -288,6 +288,7 @@ export function VoyagerMesh({
   const isDinarDahlia = character?.base === "dinar_dahlia";
   const isMansaMoneybaggs = character?.base === "mansa_moneybaggs";
   const isKandakeKash = character?.base === "kandake_kash";
+  const isMoneybaggBro = character?.base === "moneybagg_bro";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -298,7 +299,8 @@ export function VoyagerMesh({
     isSultanStacks ||
     isDinarDahlia ||
     isMansaMoneybaggs ||
-    isKandakeKash;
+    isKandakeKash ||
+    isMoneybaggBro;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -483,6 +485,65 @@ export function VoyagerMesh({
                   outlineColor="#fde68a"
                 >
                   P
+                </SafeText>
+              </>
+            ) : null}
+            {/* Moneybagg Bro — green eyes, wide grin, durag, mini $ crown */}
+            {isMoneybaggBro ? (
+              <>
+                <mesh position={[-0.14, 0.12, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.45} />
+                </mesh>
+                <mesh position={[0.14, 0.12, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.45} />
+                </mesh>
+                <mesh position={[-0.14, 0.19, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.09, 0.02, 0.01]} />
+                </mesh>
+                <mesh position={[0.14, 0.19, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.09, 0.02, 0.01]} />
+                </mesh>
+                {/* Wide mischievous grin */}
+                <mesh position={[0, -0.1, 0.12]} material={materials.dark}>
+                  <boxGeometry args={[0.22, 0.04, 0.02]} />
+                </mesh>
+                <mesh position={[0, -0.1, 0.13]} material={materials.paper}>
+                  <boxGeometry args={[0.16, 0.025, 0.015]} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.3, 0.12]}
+                  fontSize={0.13}
+                  color="#14532d"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.012}
+                  outlineColor="#fde68a"
+                >
+                  MB
+                </SafeText>
+                {/* Black durag */}
+                <mesh castShadow position={[0, 0.38, -0.05]}>
+                  <sphereGeometry args={[0.28, 14, 12]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+                </mesh>
+                <mesh castShadow position={[0, 0.2, -0.35]} rotation={[0.6, 0, 0]}>
+                  <boxGeometry args={[0.12, 0.2, 0.05]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+                </mesh>
+                {/* Mini $ crown on forehead */}
+                <mesh castShadow position={[0, 0.42, 0.18]} material={materials.gold}>
+                  <cylinderGeometry args={[0.08, 0.1, 0.06, 8]} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.42, 0.22]}
+                  fontSize={0.08}
+                  color="#14532d"
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  $
                 </SafeText>
               </>
             ) : null}
@@ -1078,7 +1139,9 @@ export function VoyagerMesh({
                                 ? "mansa_moneybaggs"
                                 : isKandakeKash
                                   ? "kandake_kash"
-                                  : null
+                                  : isMoneybaggBro
+                                    ? "moneybagg_bro"
+                                    : null
             }
           />
         ) : null}
@@ -1121,6 +1184,13 @@ export function VoyagerMesh({
           <>
             <KandakeDollarStaff materials={materials} />
             <KandakeCashClutch materials={materials} />
+          </>
+        ) : null}
+        {isMoneybaggBro ? (
+          <>
+            <MoneybaggDollarCane materials={materials} />
+            <MoneybaggCashPhone materials={materials} />
+            <MoneybaggChain materials={materials} />
           </>
         ) : null}
 
@@ -1680,6 +1750,93 @@ function KandakeCashClutch({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Moneybagg Bro’s $-topper cane — executive style. */
+function MoneybaggDollarCane({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.5, 0.42, 0.1]} rotation={[0.15, 0, 0.08]}>
+      <mesh castShadow position={[0, 0.36, 0]}>
+        <cylinderGeometry args={[0.028, 0.032, 0.95, 8]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.45} />
+      </mesh>
+      <mesh castShadow position={[0, 0.9, 0]} material={materials.gold}>
+        <sphereGeometry args={[0.08, 12, 10]} />
+      </mesh>
+      <SafeText
+        position={[0, 0.9, 0.06]}
+        fontSize={0.14}
+        color="#14532d"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.01}
+        outlineColor="#fde68a"
+      >
+        $
+      </SafeText>
+    </group>
+  );
+}
+
+/** Cash stack held like a phone — cash flow. */
+function MoneybaggCashPhone({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.45, 1.0, 0.15]} rotation={[0.3, 0.5, -0.2]}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[0, i * 0.012, 0]}
+        >
+          <boxGeometry args={[0.14, 0.01, 0.07]} />
+          <meshStandardMaterial color="#166534" roughness={0.55} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, 0.03, 0]} material={materials.gold}>
+        <boxGeometry args={[0.05, 0.02, 0.08]} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Heavy $ pendant chain — swagger always. */
+function MoneybaggChain({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0, 0.95, 0.12]}>
+      <mesh castShadow rotation={[0.35, 0, 0]} material={materials.gold}>
+        <torusGeometry args={[0.22, 0.025, 8, 18]} />
+      </mesh>
+      <mesh castShadow position={[0, -0.28, 0.06]} material={materials.gold}>
+        <cylinderGeometry args={[0.08, 0.08, 0.04, 16]} />
+      </mesh>
+      <SafeText
+        position={[0, -0.28, 0.09]}
+        fontSize={0.12}
+        color="#14532d"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+      {/* $ belt buckle hint */}
+      <mesh castShadow position={[0, -0.55, 0.1]}>
+        <boxGeometry args={[0.5, 0.08, 0.05]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0, -0.55, 0.14]} material={materials.gold}>
+        <cylinderGeometry args={[0.07, 0.07, 0.03, 12]} />
+      </mesh>
+      <SafeText
+        position={[0, -0.55, 0.16]}
+        fontSize={0.08}
+        color="#14532d"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -1702,6 +1859,7 @@ function GearAttach({
     | "dinar_dahlia"
     | "mansa_moneybaggs"
     | "kandake_kash"
+    | "moneybagg_bro"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -2101,12 +2259,19 @@ function GearAttach({
   // Market Vest — torso plate with open front notch
   if (accessory === "vest") {
     const bao = seriesLead === "billionaire_bao";
+    const moneybagg = seriesLead === "moneybagg_bro";
     return (
       <group position={[0, L.torsoY, L.neckZ * 0.25]}>
         {bao ? (
           <mesh castShadow position={[0, 0.02, -0.02]}>
             <boxGeometry args={[L.torsoW * 1.15, L.torsoH * 1.05, L.torsoD * 0.9]} />
             <meshStandardMaterial color="#052e16" roughness={0.45} metalness={0.15} />
+          </mesh>
+        ) : null}
+        {moneybagg ? (
+          <mesh castShadow position={[0, 0.02, -0.02]}>
+            <boxGeometry args={[L.torsoW * 1.2, L.torsoH * 1.1, L.torsoD * 0.95]} />
+            <meshStandardMaterial color="#171717" roughness={0.45} metalness={0.2} />
           </mesh>
         ) : null}
         <mesh castShadow material={materials.dark}>
@@ -2135,6 +2300,32 @@ function GearAttach({
           <mesh castShadow position={[L.torsoW * 0.32, L.torsoH * 0.2, L.torsoD * 0.4]} material={materials.gold}>
             <boxGeometry args={[0.1, 0.08, 0.03]} />
           </mesh>
+        ) : null}
+        {moneybagg ? (
+          <>
+            {/* Green/gold ribbed collar */}
+            <mesh castShadow position={[0, L.torsoH * 0.42, L.torsoD * 0.2]}>
+              <boxGeometry args={[L.torsoW * 0.9, 0.06, 0.08]} />
+              <meshStandardMaterial color="#14532d" roughness={0.5} />
+            </mesh>
+            <mesh castShadow position={[0, L.torsoH * 0.42, L.torsoD * 0.25]} material={materials.gold}>
+              <boxGeometry args={[L.torsoW * 0.85, 0.02, 0.02]} />
+            </mesh>
+            {/* MB breast patch */}
+            <mesh castShadow position={[-L.torsoW * 0.25, L.torsoH * 0.15, L.torsoD * 0.42]}>
+              <cylinderGeometry args={[0.07, 0.07, 0.03, 14]} />
+              <meshStandardMaterial color="#14532d" roughness={0.4} />
+            </mesh>
+            <SafeText
+              position={[-L.torsoW * 0.25, L.torsoH * 0.15, L.torsoD * 0.44]}
+              fontSize={0.06}
+              color="#fde68a"
+              anchorX="center"
+              anchorY="middle"
+            >
+              MB
+            </SafeText>
+          </>
         ) : null}
       </group>
     );

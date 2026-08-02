@@ -148,12 +148,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                               afternoon: "Kandake: Riches feel richer shared. Memory Courtyard never forgets a Take.",
                               evening: "Kandake: Treasure in motion. Tip yourself first — then multiply people.",
                             }
-                          : {
-                              morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                              midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                              afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                              evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                            };
+                          : slot.mascotId === "moneybagg_bro"
+                            ? {
+                                morning: "Moneybagg Bro: Swagger always — the Plinth keeps yesterday’s big play.",
+                                midday: "Moneybagg: Business moves. Piggy keeps the Harbor verbs.",
+                                afternoon: "Moneybagg: Cash flow 24/7. Memory Courtyard never forgets a Take.",
+                                evening: "Moneybagg: Hustle everyday. Tip yourself first — then build the empire.",
+                              }
+                            : {
+                                morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                                midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                                afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                                evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                              };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

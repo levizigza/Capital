@@ -260,6 +260,21 @@ const ROLE_TIPS: Record<
       strategist: "Every move builds abundance. Treasure in motion.",
     },
   },
+  moneybagg_bro: {
+    tip: {
+      explorer:
+        "Moneybagg Bro — swagger always! That Plinth remembers every big play you make on Harbor.",
+      apprentice:
+        "Business moves: strategic mind, real results. Piggy keeps Harbor’s verbs; cash flow works 24/7. Visit the Plinth.",
+      strategist:
+        "Executive style, not Harbor Keeper. Discipline today, freedom tomorrow; Memory Plinth files the bag after every Take.",
+    },
+    bye: {
+      explorer: "Walk in confidence — leave a legacy!",
+      apprentice: "Pay yourself first. Then let multiple streams hustle.",
+      strategist: "Building empires. Inspiring dreams. That’s the way.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
