@@ -85,6 +85,8 @@ Content = Money Mascots + islands + capsules. Presentation must stay readable (l
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.
 
+**Shipped (Pillar 13 — onboarding):** First Piggy Talk (`meet_guide`) teaches Walk · Talk only — Outfitter waits for `walk_outfitter`. Capsule coach no longer pitches Carpet / Cove ahead of `to_dock`.
+
 ## 14–15. Plumbing & accessibility
 
 Save, Esc, settings, reduced motion, text size already exist — **navigability law** below is mandatory plumbing.

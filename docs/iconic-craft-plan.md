@@ -257,6 +257,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Fresh profile, no coach reading ahead. Note first confusion; teach that one thing earlier or clearer. |
 
+**Shipped (Pillar 13):** `meet_guide` Piggy Talk teaches Walk · Talk only (cut Outfitter pitch); `tiny_spend` coach stays on Capsule (Carpet / Cove wait for dock). One concept → practice → combine. Guarded by `onboardingNoAhead.test.ts` + harbor-tutorial e2e.
+
 ---
 
 ### 14. Technical systems
@@ -322,7 +324,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` mute-test stingers; Harbor bed ducks on spectacle/share. Next: Piggy homecoming reward sting |
 | 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
-| 13 | Onboarding | | | |
+| 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; tiny_spend Capsule-only (no coach reading ahead). Next: boot cast-select Cancel parity on look stage |
 | 14 | Technical | | | |
 | 15 | Accessibility | | | |
 | 16 | Testing | | | |
@@ -339,6 +341,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **12 — Story, world, and context** (`coldOrganKidSentence` + unified spectacle/Family cold retell; Story Bible only).  
+**Last shipped:** Pillar **13 — Onboarding** (meet_guide Talk-only; tiny_spend Capsule-only; no coach reading ahead).  
 
-**Start next:** Pillar **13 — Onboarding and tutorials** (fresh profile; one verb → practice → combine).
+**Start next:** Pillar **14 — Technical systems** (WebGL kill → myth path; corrupt save fallback).

@@ -369,14 +369,18 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
 
 /** Guided Piggy conversations — one short turn-based beat per Castle Grounds step */
 export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
-  const lines: Record<string, { text: string; next?: string; choice?: string }> = {
+  // One concept per step — never pitch Outfitter / Carpet / Cove before that verb.
+  const lines: Record<string, { text: string; next?: string; choice?: string; follow?: string }> = {
     meet_guide: {
-      text: "Welcome to Harbor Haven! I'm Piggy Penny. Move with WASD or the walk pad, talk with E — Coin Bag sticks with you. First stop: make YOU at the Outfitter.",
-      choice: "Let's go!",
+      text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with WASD or the walk pad, talk with E. Coin Bag sticks with you.",
+      choice: "Nice to meet you!",
       next: "meet_b",
+      // Celebrate Talk only — Outfitter waits for walk_outfitter.
+      follow:
+        "You just practiced Talk. Coin Bag stays beside you — look at me when you're stuck.",
     },
     walk_outfitter: {
-      text: "See that Outfitter door? Walk over and press Enter. Become the Voyager you want to be!",
+      text: "See that Outfitter door? Walk over with Coin Bag and press Enter. Become the Voyager you want to be!",
       choice: "On my way!",
     },
     become_you: {
@@ -428,7 +432,9 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
             {
               id: beat.next,
               speaker: "Piggy Penny",
-              text: "Coin Bag stays beside you the whole journey. Wave if you get stuck!",
+              text:
+                beat.follow ??
+                "Coin Bag stays beside you the whole journey. Wave if you get stuck!",
               end: true,
             },
           ]

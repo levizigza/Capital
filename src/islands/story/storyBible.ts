@@ -101,8 +101,9 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "tiny_spend",
     storyBeat: "need",
-    coach: "Capsule Stall peek — then Coin Bag points to the Carpet Dock.",
-    guideLine: "Piggy Penny: Peek the Capsule Stall — then we sail to Coincraft Cove!",
+    // Capsule only — Carpet / Cove wait for to_dock (no coach reading ahead).
+    coach: "Peek the Capsule Stall — a tiny spend is still a choice.",
+    guideLine: "Piggy Penny: Peek the Capsule Stall with Coin Bag — coins can buy help.",
     verb: "Spend (or peek)",
     highlight: "capsule",
   },

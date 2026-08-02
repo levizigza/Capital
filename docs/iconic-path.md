@@ -52,6 +52,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Structure pads | Unique part silhouettes (`StructurePartSilhouette`) + Soft Beat lookout beacon — readable without HUD text on Pages |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
 | Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
+| No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove; each Castle Grounds coach stays on its own verb |
 | Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |

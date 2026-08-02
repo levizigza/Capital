@@ -125,10 +125,12 @@ test.describe("Harbor Haven tutorial opening", () => {
     // Piggy Talk Battle — not Memory Plinth stealing the beat
     await expect(page.getByTestId("harbor-memory-modal")).toHaveCount(0);
     await expect(page.getByTestId("talk-battle-screen")).toBeVisible({ timeout: 15_000 });
-    // meet_guide beat — not the static "done" graph that used to steal Talk Battle
+    // meet_guide — Teach Talk only (one verb). Outfitter waits for the next step.
     await expect(page.getByTestId("talk-battle-screen")).toContainText(
-      /Welcome to Harbor Haven|WASD|walk pad|Outfitter/i,
+      /Welcome to Harbor Haven/i,
     );
+    await expect(page.getByTestId("talk-battle-screen")).toContainText(/WASD|walk pad/i);
+    await expect(page.getByTestId("talk-battle-screen")).not.toContainText(/Outfitter/i);
     await expect(page.getByTestId("talk-battle-screen")).not.toContainText(
       /Harbor is yours\. Talk to locals/i,
     );
