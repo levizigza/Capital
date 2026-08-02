@@ -11,8 +11,8 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell through Kandake Kash", () => {
-  it("registers ten leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Moneybagg Bro", () => {
+  it("registers eleven leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
@@ -25,17 +25,18 @@ describe("series leads — Cashwell through Kandake Kash", () => {
       "dinar_dahlia",
       "mansa_moneybaggs",
       "kandake_kash",
+      "moneybagg_bro",
     ]);
-    expect(isSeriesLeadMascot("kandake_kash")).toBe(true);
+    expect(isSeriesLeadMascot("moneybagg_bro")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const kandake = getMascot("kandake_kash");
-    expect(kandake.name).toBe("Kandake Kash");
-    expect(kandake.form).toBe("coin");
-    expect(kandake.glyph).toBe("KK");
-    expect(kandake.accessory).toBe("cape");
-    expect(colorHex(kandake.color)).toBe("#0f1412");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(10);
+    const bro = getMascot("moneybagg_bro");
+    expect(bro.name).toBe("Moneybagg Bro");
+    expect(bro.form).toBe("coin");
+    expect(bro.glyph).toBe("MB");
+    expect(bro.accessory).toBe("vest");
+    expect(colorHex(bro.color)).toBe("#171717");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(11);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
