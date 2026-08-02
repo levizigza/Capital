@@ -290,6 +290,7 @@ export function VoyagerMesh({
   const isKandakeKash = character?.base === "kandake_kash";
   const isMoneybaggBro = character?.base === "moneybagg_bro";
   const isMulaMami = character?.base === "mula_mami";
+  const isDebtCollector = character?.base === "debt_collector";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -1173,7 +1174,9 @@ export function VoyagerMesh({
           </group>
         ) : null}
 
-        {useExtended && !classic ? (
+        {isDebtCollector ? (
+          <DebtCollectorBody materials={materials} />
+        ) : useExtended && !classic ? (
           <MascotBody form={bodyForm} materials={materials} glyph={faceGlyph} />
         ) : null}
 
@@ -1225,7 +1228,9 @@ export function VoyagerMesh({
                                     ? "moneybagg_bro"
                                     : isMulaMami
                                       ? "mula_mami"
-                                      : null
+                                      : isDebtCollector
+                                        ? "debt_collector"
+                                        : null
             }
           />
         ) : null}
@@ -1282,6 +1287,13 @@ export function VoyagerMesh({
             <MulaCashFan materials={materials} />
             <MulaQuiltedBag materials={materials} />
             <MulaChainBelt materials={materials} />
+          </>
+        ) : null}
+        {isDebtCollector ? (
+          <>
+            <DebtCollectorStaff materials={materials} />
+            <DebtCollectorLedger materials={materials} />
+            <DebtCollectorChains materials={materials} />
           </>
         ) : null}
 
@@ -2010,6 +2022,208 @@ function MulaChainBelt({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Bank-of-Obligation body — pediment skull, vault heart, fee arches. */
+function DebtCollectorBody({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0, 0.95, 0]}>
+      {/* Pediment roof */}
+      <mesh castShadow position={[0, 0.55, 0]} material={materials.body}>
+        <coneGeometry args={[0.55, 0.28, 3]} />
+      </mesh>
+      <mesh castShadow position={[0, 0.72, 0]} material={materials.gold}>
+        <torusGeometry args={[0.08, 0.025, 8, 14]} />
+      </mesh>
+      <SafeText
+        position={[0, 0.72, 0.04]}
+        fontSize={0.1}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+      <SafeText
+        position={[0, 0.42, 0.2]}
+        fontSize={0.045}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        BANK OF OBLIGATION
+      </SafeText>
+      {/* Menacing stone face */}
+      <mesh castShadow position={[0, 0.15, 0]} material={materials.body}>
+        <boxGeometry args={[0.85, 0.55, 0.35]} />
+      </mesh>
+      <mesh position={[-0.18, 0.22, 0.19]}>
+        <sphereGeometry args={[0.07, 10, 8]} />
+        <meshStandardMaterial color="#854d0e" emissive="#facc15" emissiveIntensity={0.7} />
+      </mesh>
+      <mesh position={[0.18, 0.22, 0.19]}>
+        <sphereGeometry args={[0.07, 10, 8]} />
+        <meshStandardMaterial color="#854d0e" emissive="#facc15" emissiveIntensity={0.7} />
+      </mesh>
+      <mesh position={[0, 0.02, 0.2]} material={materials.dark}>
+        <boxGeometry args={[0.35, 0.08, 0.04]} />
+      </mesh>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <mesh
+          key={i}
+          position={[(i - 2) * 0.06, 0.02, 0.23]}
+          material={materials.paper}
+        >
+          <boxGeometry args={[0.04, 0.1, 0.02]} />
+        </mesh>
+      ))}
+      {/* Pay plaque */}
+      <mesh castShadow position={[0, -0.2, 0.18]} material={materials.gold}>
+        <boxGeometry args={[0.7, 0.1, 0.04]} />
+      </mesh>
+      <SafeText
+        position={[0, -0.2, 0.21]}
+        fontSize={0.04}
+        color="#3f3f46"
+        anchorX="center"
+        anchorY="middle"
+      >
+        PAY IN FULL. OR ELSE.
+      </SafeText>
+      {/* Vault door heart */}
+      <mesh castShadow position={[0, -0.55, 0.05]} material={materials.gold}>
+        <cylinderGeometry args={[0.28, 0.28, 0.12, 24]} />
+      </mesh>
+      <mesh position={[0, -0.55, 0.12]} material={materials.dark}>
+        <circleGeometry args={[0.18, 20]} />
+      </mesh>
+      <mesh position={[0, -0.55, 0.13]} material={materials.gold}>
+        <torusGeometry args={[0.1, 0.025, 8, 16]} />
+      </mesh>
+      <SafeText
+        position={[0, -0.55, 0.14]}
+        fontSize={0.12}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+      {/* Fee / Penalties / Interest arches */}
+      {(["FEES", "PENALTIES", "INTEREST"] as const).map((label, i) => (
+        <group key={label} position={[(i - 1) * 0.28, -0.95, 0.1]}>
+          <mesh castShadow material={materials.body}>
+            <boxGeometry args={[0.22, 0.28, 0.12]} />
+          </mesh>
+          <mesh position={[0, 0.02, 0.07]} material={materials.dark}>
+            <boxGeometry args={[0.12, 0.18, 0.02]} />
+          </mesh>
+          <SafeText
+            position={[0, 0.18, 0.08]}
+            fontSize={0.035}
+            color="#fde68a"
+            anchorX="center"
+            anchorY="middle"
+          >
+            {label}
+          </SafeText>
+        </group>
+      ))}
+      {/* Stair base */}
+      <mesh castShadow position={[0, -1.25, 0.15]} material={materials.body}>
+        <boxGeometry args={[0.9, 0.12, 0.4]} />
+      </mesh>
+      <mesh castShadow position={[0, -1.38, 0.25]} material={materials.body}>
+        <boxGeometry args={[1.0, 0.1, 0.35]} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Bank-building staff — foreclosure grip. */
+function DebtCollectorStaff({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.55, 0.4, 0.12]} rotation={[0.08, 0, 0.12]}>
+      <mesh castShadow position={[0, 0.45, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.032, 0.038, 1.2, 8]} />
+      </mesh>
+      <mesh castShadow position={[0, 1.12, 0]} material={materials.gold}>
+        <boxGeometry args={[0.22, 0.14, 0.08]} />
+      </mesh>
+      <mesh castShadow position={[0, 1.22, 0]} material={materials.gold}>
+        <coneGeometry args={[0.14, 0.12, 3]} />
+      </mesh>
+      <SafeText
+        position={[0, 1.12, 0.05]}
+        fontSize={0.08}
+        color="#3f3f46"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+    </group>
+  );
+}
+
+/** Ledger of Liability + final notice. */
+function DebtCollectorLedger({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.5, 0.7, 0.15]} rotation={[0.2, 0.5, -0.15]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.22, 0.3, 0.08]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+      </mesh>
+      <mesh castShadow position={[0, 0.08, 0.045]} material={materials.gold}>
+        <boxGeometry args={[0.16, 0.04, 0.01]} />
+      </mesh>
+      <SafeText
+        position={[0, 0.02, 0.05]}
+        fontSize={0.04}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        LEDGER
+      </SafeText>
+      <mesh castShadow position={[0.12, -0.2, 0.02]} rotation={[0.3, 0, 0.2]}>
+        <boxGeometry args={[0.12, 0.16, 0.01]} />
+        <meshStandardMaterial color="#fef3c7" roughness={0.7} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Chains, padlocks, seized-asset sack. */
+function DebtCollectorChains({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0, 0.5, 0]}>
+      <mesh castShadow position={[0.2, -0.1, 0.25]} rotation={[0.4, 0.2, 0.3]} material={materials.gold}>
+        <torusGeometry args={[0.15, 0.025, 6, 12]} />
+      </mesh>
+      <mesh castShadow position={[-0.15, -0.3, 0.22]} rotation={[0.2, -0.3, 0]} material={materials.gold}>
+        <torusGeometry args={[0.12, 0.02, 6, 12]} />
+      </mesh>
+      <mesh castShadow position={[0.25, -0.35, 0.2]} material={materials.dark}>
+        <boxGeometry args={[0.08, 0.1, 0.05]} />
+      </mesh>
+      <group position={[-0.35, -0.55, 0.2]}>
+        <mesh castShadow>
+          <sphereGeometry args={[0.12, 10, 8]} />
+          <meshStandardMaterial color="#78716c" roughness={0.7} />
+        </mesh>
+        <SafeText
+          position={[0, 0, 0.12]}
+          fontSize={0.08}
+          color="#fde68a"
+          anchorX="center"
+          anchorY="middle"
+        >
+          $
+        </SafeText>
+      </group>
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -2034,6 +2248,7 @@ function GearAttach({
     | "kandake_kash"
     | "moneybagg_bro"
     | "mula_mami"
+    | "debt_collector"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -2311,7 +2526,8 @@ function GearAttach({
     const jade = seriesLead === "jade_fortune";
     const dahlia = seriesLead === "dinar_dahlia";
     const kandake = seriesLead === "kandake_kash";
-    const dramatic = couture || fortuna || jade || dahlia || kandake;
+    const debt = seriesLead === "debt_collector";
+    const dramatic = couture || fortuna || jade || dahlia || kandake || debt;
     return (
       <group position={[0, L.neckY - 0.05, L.backZ]}>
         <mesh
@@ -2330,9 +2546,11 @@ function GearAttach({
                   ? "#0b3d2e"
                   : kandake
                     ? "#1b4332"
-                    : jade
-                      ? "#0a0a0a"
-                      : "#0a0a0a"
+                    : debt
+                      ? "#14532d"
+                      : jade
+                        ? "#0a0a0a"
+                        : "#0a0a0a"
             }
             roughness={0.55}
           />

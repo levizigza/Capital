@@ -172,6 +172,8 @@ When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 Illustrated series leads enter **one by one** — see [`series-cast.md`](./series-cast.md).  
 **Cashwell**, **Cashmere Couture**, **Peso Pedro**, **Fortuna Fernanda**, **Billionaire Bao**, **Jade Fortune**, **Sultan Stacks**, **Dinar Dahlia**, **Mansa Moneybaggs**, **Kandake Kash**, **Moneybagg Bro**, and **Mula Mami** are the series faces (Memory Courtyard terrace). They do **not** replace Piggy or Coin Bag on the signature loop, and they stay offstage during Piggy presence beats.
 
+**The Debt Collector** is the Credit Kingdom Ordeal villain (Bank of Obligation) — never a Harbor terrace lead.
+
 ## Cast as memory
 
 Piggy, Coin Bag, and plaza locals are **living receipts** — not props:

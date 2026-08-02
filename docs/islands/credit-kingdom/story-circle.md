@@ -1,9 +1,10 @@
 # Credit Kingdom — Story Circle (Ordeal)
 
 **Island ID:** `credit_kingdom`  
-**Role:** Late-game **Ordeal** chapter — Debt Cloud country; mastery required to open the door  
+**Role:** Late-game **Ordeal** chapter — The Debt Collector’s storm; mastery required to open the door  
 **Learning kernel:** Credit score · on-time payments · APR · utilization · emergency fund vs haste  
-**Island Ally:** Cleo the Archivist · Rex the Collector  
+**Island Ally:** Cleo the Archivist · Rex the Collector (payment-plan ally)  
+**Endgame villain:** **The Debt Collector** — Bank of Obligation; looms in Debt Canyon  
 **Canon:** [story-bible.md](../../story-bible.md) — boss arc compresses beats 4–6 into a storm; Return still lands on Harbor with Change visible.
 
 Display name is **Credit Kingdom**. Ruined temples are the *flavor* (place), not a competing product name.
@@ -17,7 +18,7 @@ Display name is **Credit Kingdom**. Ruined temples are the *flavor* (place), not
 | 1 | **You** | Pass the Ruined Gate as a Voyager who already escaped paycheck-to-paycheck | area `ck_gate` | “This place remembers mistakes.” |
 | 2 | **Need** | Cleo: recover trust — scores, shards, on-time history | `npc_credit_cleo_ruins`, `dlg_cleo_ruins` | “I need to rebuild credit.” |
 | 3 | **Go** | Enter Score Vault / party board | `ck_score_vault`, startQuest `q_ck_first_recovery` | “Into the vault.” |
-| 4 | **Search** | Inbox dispatches, then Debt Canyon with Rex | `mg_ck_inbox_credit`, `npc_collector_rex`, `mg_ck_budget_balancer` | “I try, learn, try again.” |
+| 4 | **Search** | Inbox dispatches, then Debt Canyon under The Debt Collector — Rex teaches the plan | `mg_ck_inbox_credit`, `npc_debt_collector`, `npc_collector_rex`, `mg_ck_budget_balancer` | “I try, learn, try again.” |
 | 5 | **Find** | Canyon Seal + credit shard path | `ck_canyon_seal`, `ck_credit_shard` | “I earned trust back!” |
 | 6 | **Take** | Borrow-vs-wait fork with Cleo (stains Harbor) | `credit_borrow_vs_wait` | “Interest feeds on rushing.” |
 | 7 | **Return** | Quiet Harbor homecoming | travel / Piggy | “Back to Harbor.” |

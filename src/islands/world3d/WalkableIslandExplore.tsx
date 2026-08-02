@@ -589,11 +589,15 @@ function PadMarker({
           islandId={islandId}
           animationStyle={animationStyle}
           pose={active ? "wave" : "stand"}
+          scale={hotspot.mascotId === "debt_collector" ? 1.35 : 1}
         />
       )}
       {/* Name / label only when this hotspot is the active interact target */}
       {active ? (
-        <Billboard position={[0, hotspot.kind === "npc" ? 2.15 : 1.55, 0]} follow>
+        <Billboard
+          position={[0, hotspot.kind === "npc" ? (hotspot.mascotId === "debt_collector" ? 2.85 : 2.15) : 1.55, 0]}
+          follow
+        >
           <SafeText
             fontSize={0.22}
             color="#ffffff"

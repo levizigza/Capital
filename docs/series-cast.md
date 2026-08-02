@@ -7,7 +7,8 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 
 | Role | Who | Owns |
 |------|-----|------|
-| **Series leads** | Cashwell · Cashmere · Pedro · Fernanda · Bao · Jade · Sultan · Dahlia · Mansa · Kandake · Moneybagg · Mula (12 of ~13) | Brand faces, Memory Courtyard presence, style of living money |
+| **Series leads** | Cashwell · Cashmere · Pedro · Fernanda · Bao · Jade · Sultan · Dahlia · Mansa · Kandake · Moneybagg · Mula (12) | Brand faces, Memory Courtyard presence, style of living money |
+| **Endgame villain** | **The Debt Collector** | Credit Kingdom Ordeal boss face — never Harbor terrace |
 | **Harbor Keeper** | Piggy Penny | First meet, quiet homecoming, Return verbs |
 | **Path buddy** | Coin Bag | Pointing, carpet seat, next-good-action |
 
@@ -36,6 +37,7 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 | 10 | **Kandake Kash** | In Harbor (Memory Courtyard terrace) |
 | 11 | **Moneybagg Bro** | In Harbor (Memory Courtyard terrace) |
 | 12 | **Mula Mami** | In Harbor (Memory Courtyard terrace) |
-| 13 | TBD | Wait for sheets |
+| 13 | **The Debt Collector** | Credit Kingdom (Debt Canyon) — ultimate Ordeal villain |
 
-When in doubt: the series leads tip hats and celebrate — **Piggy keeps the verbs**.
+Series leads tip hats and celebrate — **Piggy keeps the verbs**.  
+The Debt Collector never stands on Harbor’s terrace; he owns the late-game storm.
