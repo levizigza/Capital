@@ -122,12 +122,15 @@ test.describe("Harbor Haven tutorial opening", () => {
       await mythTalk.click({ force: true });
     }
 
-    // Piggy dialogue opens
-    await expect
-      .poll(async () => {
-        const body = await page.locator("body").innerText();
-        return /Piggy Penny|Harbor Haven|Outfitter|Coin Bag/i.test(body);
-      }, { timeout: 15_000 })
-      .toBe(true);
+    // Piggy Talk Battle — not Memory Plinth stealing the beat
+    await expect(page.getByTestId("harbor-memory-modal")).toHaveCount(0);
+    await expect(page.getByTestId("talk-battle-screen")).toBeVisible({ timeout: 15_000 });
+    // meet_guide beat — not the static "done" graph that used to steal Talk Battle
+    await expect(page.getByTestId("talk-battle-screen")).toContainText(
+      /Welcome to Harbor Haven|WASD|walk pad|Outfitter/i,
+    );
+    await expect(page.getByTestId("talk-battle-screen")).not.toContainText(
+      /Harbor is yours\. Talk to locals/i,
+    );
   });
 });

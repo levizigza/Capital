@@ -77,7 +77,7 @@ export const HUB_GUIDED_STEPS: Array<{
     storyBeat: "you",
     coach: "Talk to Piggy Penny — tap Talk, or walk over and press E. Coin Bag sticks with you.",
     guideLine:
-      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag stays by your side — talk to me first!",
+      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag stays by your side — talk to me first (tap Talk or press E)!",
     verb: "Walk · Talk",
     highlight: "guide",
   },

@@ -774,13 +774,15 @@ export function HomeHubView({
   };
 
   const onHarborHotspot = (id: string) => {
+    // First meet / quiet homecoming: Piggy owns the plaza — never open Plinth/stalls.
+    if (piggyPresence) return;
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
       if (guidedStep?.id === "walk_outfitter" || guidedStep?.id === "become_you") {
         onHubGuidedEvent("near_outfitter");
       }
       openOutfitter();
-    }     else if (id === "studio") onOpenStudio();
+    } else if (id === "studio") onOpenStudio();
     else if (id === "gallery") {
       onStudioGalleryOpened?.();
       setHubModal("gallery");
@@ -797,7 +799,7 @@ export function HomeHubView({
     else if (id === "capsule") {
       onHubGuidedEvent("capsule_visit");
       setHubModal("capsule");
-    }     else if (id === "pavilion") {
+    } else if (id === "pavilion") {
       setHubModal("pavilion");
     } else if (id === "market") {
       setHubModal("market");
@@ -871,12 +873,9 @@ export function HomeHubView({
       return;
     }
     if (bankOpen) return;
-    // Piggy presence: Talk always wins over bank / stalls (first meet + quiet homecoming).
-    const meetingPiggy =
-      nearNpc?.id === HARBOR_KEEPER_MASCOT_ID &&
-      (guidedStep?.id === "meet_guide" || needsPiggyWelcome);
-    if (meetingPiggy && onTalkNpc && nearNpc) {
-      onTalkNpc(nearNpc.id);
+    // Piggy presence: Talk always wins — never Memory Plinth / stalls.
+    if (piggyPresence && onTalkNpc) {
+      onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
       return;
     }
     if (nearStore) {
@@ -894,8 +893,7 @@ export function HomeHubView({
     trailerOpen,
     echoSurpriseOpen,
     bankOpen,
-    guidedStep?.id,
-    needsPiggyWelcome,
+    piggyPresence,
     nearStore,
     nearNpc,
     onTalkNpc,
@@ -1397,7 +1395,7 @@ export function HomeHubView({
         showCloseButton
         title="Memory Plinth"
       >
-        <div className="space-y-4 text-left">
+        <div className="space-y-4 text-left" data-testid="harbor-memory-modal">
           <p className="text-sm text-muted-foreground text-center">
             Harbor remembers by organ — Coin · Clock · Spiral · Memory.
           </p>

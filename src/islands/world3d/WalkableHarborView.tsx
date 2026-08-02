@@ -150,8 +150,8 @@ const SPEED = 6.5;
 const INTERACT_R = 2.85;
 const PLAZA_R = 16;
 
-/** Soft first-meet spawn — close enough to see Piggy wave without a long hunt. */
-const FIRST_MEET_SPAWN: [number, number, number] = [1.05, 0.02, 2.15];
+/** Soft first-meet spawn — near Piggy, west of Memory Plinth so E never opens the shelf. */
+const FIRST_MEET_SPAWN: [number, number, number] = [-0.35, 0.02, 0.55];
 const DEFAULT_SPAWN: [number, number, number] = [0, 0.02, 3];
 
 function Player({
@@ -472,6 +472,7 @@ function PlazaScene({
   look,
   scarEcho = null,
   plinthSpectacleActive = false,
+  piggyPresenceBeat = false,
 }: {
   hotspots: HarborHotspot[];
   onHotspot: (id: string) => void;
@@ -500,6 +501,7 @@ function PlazaScene({
     organ?: import("../moneyOrgans").MoneyOrganId;
   } | null;
   plinthSpectacleActive?: boolean;
+  piggyPresenceBeat?: boolean;
 }) {
   const memoryLit = Boolean(scarEcho);
   // Distill: vegetation in 3 outer clusters — never a full prop ring.
@@ -664,7 +666,9 @@ function PlazaScene({
         const kind = h.kind ?? "building";
         const hero =
           kind === "money_structure" || kind === "carpet_gate" || kind === "plinth";
-        const showLabel = pulsing || nearby || hero;
+        // First-meet plaza: hide hero labels (Plinth etc.) — coach + Talk own the read.
+        const showLabel =
+          !piggyPresenceBeat && (pulsing || nearby || hero);
         const labelY =
           kind === "money_structure"
             ? 5.2
@@ -727,17 +731,20 @@ function PlazaScene({
             </group>
             {showLabel ? (
               <Billboard follow position={[0, labelY, 0]}>
-                <SafeText
-                  fontSize={hero ? 0.34 : 0.26}
-                  color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
-                  anchorX="center"
-                  anchorY="middle"
-                  outlineWidth={0.02}
-                  outlineColor="#ffffff"
-                  depthOffset={-1}
-                >
-                  {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-                </SafeText>
+                {/* Troika + Billboard often reads mirrored in local/dev — flip X. */}
+                <group scale={[-1, 1, 1]}>
+                  <SafeText
+                    fontSize={hero ? 0.34 : 0.26}
+                    color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
+                    anchorX="center"
+                    anchorY="middle"
+                    outlineWidth={0.02}
+                    outlineColor="#ffffff"
+                    depthOffset={-1}
+                  >
+                    {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
+                  </SafeText>
+                </group>
               </Billboard>
             ) : null}
           </group>
@@ -1131,6 +1138,7 @@ export function WalkableHarborView({
           look={look}
           scarEcho={scarEcho}
           plinthSpectacleActive={plinthSpectacleActive}
+          piggyPresenceBeat={piggyPresenceBeat}
         />
         <Player
           character={character}

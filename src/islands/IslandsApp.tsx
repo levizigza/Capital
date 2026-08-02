@@ -40,6 +40,7 @@ import {
   findHarborNpc,
   resolveHarborDialogue,
   HARBOR_DIALOGUES,
+  piggyGuidedGraph,
   piggyHomecomingGraph,
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
@@ -1305,9 +1306,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         bondBeat: Math.max(upcoming, 1),
       });
     }
+    // Guided Piggy graphs share one id — never use the static "done" mint from HARBOR_DIALOGUES.
+    if (dialogueState.graphId === "dlg_harbor_piggy_penny_guided") {
+      const guided =
+        save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
+          ? getHubGuidedStep(save.hubGuidedIntro)?.id
+          : "done";
+      return piggyGuidedGraph(guided);
+    }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
     if (fromHarbor) return fromHarbor;
-    // Guided / homecoming Piggy graphs are minted and may not be in the static list
+    // Homecoming / memory Piggy graphs are minted and may not be in the static list
     if (dialogueState.npcId) {
       const guided =
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
