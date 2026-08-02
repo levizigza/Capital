@@ -268,30 +268,43 @@ export function MoneyCarpet({
         <meshStandardMaterial color="#c9a227" roughness={0.4} metalness={0.35} />
       </mesh>
 
-      {/* 3D coin medallion on the nose — reinforces “money” in POV */}
-      <group ref={medallion} position={[0, 0.08, seatZ + (povRide ? 1.15 : 0.55)]}>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} castShadow>
-          <cylinderGeometry args={[povRide ? 0.22 : 0.2, povRide ? 0.22 : 0.2, 0.04, 28]} />
-          <meshStandardMaterial color="#eab308" roughness={0.28} metalness={0.65} />
-        </mesh>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
-          <cylinderGeometry args={[povRide ? 0.14 : 0.12, povRide ? 0.14 : 0.12, 0.02, 24]} />
-          <meshStandardMaterial color="#14532d" roughness={0.5} />
-        </mesh>
-        {/* Simple extruded $ bars */}
-        <mesh position={[0, 0.04, 0]}>
-          <boxGeometry args={[0.04, 0.02, povRide ? 0.2 : 0.16]} />
-          <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
-        </mesh>
-        <mesh position={[0, 0.04, 0]} rotation={[0, 0, 0.35]}>
-          <torusGeometry args={[0.07, 0.018, 8, 16, Math.PI * 1.15]} />
-          <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
-        </mesh>
-        <mesh position={[0, 0.04, 0]} rotation={[0, 0, Math.PI + 0.35]}>
-          <torusGeometry args={[0.07, 0.018, 8, 16, Math.PI * 1.15]} />
-          <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
-        </mesh>
-      </group>
+      {/* 3D coin medallions — geometry $, not texture, so POV always reads “money” */}
+      {(
+        povRide
+          ? ([
+              [0, seatZ + 1.05, 0.24],
+              [-0.42, seatZ + 0.55, 0.16],
+              [0.42, seatZ + 0.55, 0.16],
+            ] as const)
+          : ([[0, seatZ + 0.55, 0.2]] as const)
+      ).map(([x, z, r], i) => (
+        <group
+          key={`seal-${i}`}
+          ref={i === 0 ? medallion : undefined}
+          position={[x, 0.09, z]}
+        >
+          <mesh rotation={[-Math.PI / 2, 0, 0]} castShadow>
+            <cylinderGeometry args={[r, r, 0.045, 28]} />
+            <meshStandardMaterial color="#eab308" roughness={0.28} metalness={0.65} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.028, 0]}>
+            <cylinderGeometry args={[r * 0.62, r * 0.62, 0.02, 24]} />
+            <meshStandardMaterial color="#14532d" roughness={0.5} />
+          </mesh>
+          <mesh position={[0, 0.045, 0]}>
+            <boxGeometry args={[r * 0.18, 0.02, r * 0.9]} />
+            <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
+          </mesh>
+          <mesh position={[0, 0.045, 0]} rotation={[0, 0, 0.35]}>
+            <torusGeometry args={[r * 0.32, r * 0.08, 8, 16, Math.PI * 1.15]} />
+            <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
+          </mesh>
+          <mesh position={[0, 0.045, 0]} rotation={[0, 0, Math.PI + 0.35]}>
+            <torusGeometry args={[r * 0.32, r * 0.08, 8, 16, Math.PI * 1.15]} />
+            <meshStandardMaterial color="#f5e6c8" roughness={0.35} metalness={0.4} />
+          </mesh>
+        </group>
+      ))}
 
       {/* Gold tassels on nose + tail — the magic-carpet cue */}
       {fringe.map((f, i) => (
