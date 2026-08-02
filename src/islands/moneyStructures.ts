@@ -190,11 +190,11 @@ export const CREDIT_INTEREST_KEEP: MoneyStructureDef = {
     {
       id: "debt_anvil",
       label: "Debt Anvil",
-      icon: "⚖️",
-      blurb: "Hammer payments across debts before interest compounds.",
-      entryPiece: "Glowing debt anvil",
+      icon: "📡",
+      blurb: "Weigh on-time history vs utilization spikes — spiral skill, not another needs/wants sort.",
+      entryPiece: "Glowing signal anvil",
       position: [-4.2, 0, -2.5],
-      minigameId: "mg_ck_budget_balancer",
+      minigameId: "mg_ck_signal",
     },
     {
       id: "dispatch_hatch",

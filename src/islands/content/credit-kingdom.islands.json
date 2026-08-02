@@ -87,12 +87,12 @@
           "id": "q_ck_first_recovery",
           "track": "main",
           "title": "First Recovery",
-          "description": "Archivist Cleo stains your path. Clear Credit Inbox, then enter Debt Canyon under The Debt Collector’s shadow — Rex teaches the plan that shrinks his grip before interest compounds.",
+          "description": "Archivist Cleo opens the Ordeal. Clear Credit Inbox, then weigh signals in Debt Canyon with Rex — the wait-vs-haste Take comes after you practice, not before.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_credit_cleo_ruins" },
             { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" },
             { "type": "talkToNpc", "npcId": "npc_collector_rex" },
-            { "type": "completeMinigame", "minigameId": "mg_ck_budget_balancer" },
+            { "type": "completeMinigame", "minigameId": "mg_ck_signal" },
             { "type": "collectItem", "itemId": "ck_canyon_seal" }
           ],
           "rewards": { "coins": 40, "xp": 30, "items": ["ck_credit_shard"] }
@@ -111,71 +111,16 @@
                 {
                   "id": "c1a",
                   "text": "Teach me credit recovery.",
-                  "nextNodeId": "c_fork",
+                  "nextNodeId": "c2",
                   "effects": [{ "type": "startQuest", "questId": "q_ck_first_recovery" }]
                 },
                 { "id": "c1b", "text": "I'll explore the board.", "nextNodeId": "c3" }
               ]
             },
             {
-              "id": "c_fork",
-              "speaker": "Cleo the Archivist",
-              "text": "First Ordeal choice — it stains Harbor. Wait and rebuild with on-time shards, or rush a high-APR loan for speed?",
-              "choices": [
-                {
-                  "id": "c_wait",
-                  "text": "Wait and rebuild — no rush loan.",
-                  "nextNodeId": "c2",
-                  "effects": [
-                    {
-                      "type": "setIrreversible",
-                      "key": "credit_borrow_vs_wait",
-                      "choiceId": "wait",
-                      "label": "Waited instead of rushing a loan"
-                    },
-                    {
-                      "type": "addScar",
-                      "id": "credit_patience_plaque",
-                      "label": "Waited the spiral",
-                      "kind": "plaque",
-                      "stance": "saver",
-                      "stanceDelta": 2
-                    }
-                  ]
-                },
-                {
-                  "id": "c_borrow",
-                  "text": "Rush the loan — I need speed.",
-                  "nextNodeId": "c2_rush",
-                  "effects": [
-                    {
-                      "type": "setIrreversible",
-                      "key": "credit_borrow_vs_wait",
-                      "choiceId": "borrow",
-                      "label": "Rushed a high-APR loan"
-                    },
-                    {
-                      "type": "addScar",
-                      "id": "credit_haste_plaque",
-                      "label": "Haste fed the spiral",
-                      "kind": "plaza_prop",
-                      "stance": "risk",
-                      "stanceDelta": 2
-                    }
-                  ]
-                }
-              ]
-            },
-            {
               "id": "c2",
               "speaker": "Cleo the Archivist",
-              "text": "Patience is a credit signal. Clear the Credit Inbox, then descend Debt Canyon — The Debt Collector looms, and Rex waits with a payment plan, not a panic button.",
-              "end": true
-            },
-            {
-              "id": "c2_rush",
-              "speaker": "Cleo the Archivist",
-              "text": "Speed has a price. The Inbox still teaches recovery — then face Rex. Fog will follow you home either way; prove you can rebuild.",
+              "text": "Practice first — Clear the Credit Inbox, then weigh signals with Rex in Debt Canyon. The wait-vs-haste Ordeal that stains Harbor comes after you can read the spiral — not as an opening quiz.",
               "end": true
             },
             {
@@ -193,34 +138,102 @@
             {
               "id": "r1",
               "speaker": "Rex the Collector",
-              "text": "The Debt Collector owns these ledges. Interest doesn't yell — it compounds. Balance a payment. Panic spends; a plan shrinks his grip.",
+              "text": "The Debt Collector owns these ledges. Interest doesn't yell — it compounds. Weigh on-time history against utilization spikes. Panic sorts bills; a signal read shrinks his grip.",
               "choices": [
                 {
                   "id": "r1_plan",
-                  "text": "I'll run Debt Loadout — a plan, not panic.",
-                  "nextNodeId": "r2",
+                  "text": "I'll run Score Scanner — weigh the spiral.",
+                  "nextNodeId": "r_scan_go",
                   "effects": [
-                    { "type": "startMinigame", "minigameId": "mg_ck_budget_balancer" },
-                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                    { "type": "startMinigame", "minigameId": "mg_ck_signal" }
                   ]
                 },
                 {
                   "id": "r1_later",
                   "text": "Not yet.",
-                  "nextNodeId": "r3"
+                  "nextNodeId": "r_later"
                 }
               ]
             },
             {
-              "id": "r2",
+              "id": "r_scan_go",
               "speaker": "Rex the Collector",
-              "text": "Good. Harbor will keep your Cleo fork on the Memory Plinth — patience or haste — and this seal proves you faced his canyon without feeding the storm.",
+              "text": "Score Scanner opens on the Debt Anvil. Weigh the signals — then talk to me again. The Ordeal choice that stains Harbor waits until after practice.",
               "end": true
             },
             {
-              "id": "r3",
+              "id": "r_fork",
               "speaker": "Rex the Collector",
-              "text": "The Bank of Obligation waits. Come back when you're ready to choose a plan.",
+              "text": "You felt the signals. Now the Ordeal choice — it stains Harbor. Wait and rebuild with on-time shards, or rush a high-APR loan for speed?",
+              "choices": [
+                {
+                  "id": "r_wait",
+                  "text": "Wait and rebuild — no rush loan.",
+                  "nextNodeId": "r_done",
+                  "effects": [
+                    {
+                      "type": "setIrreversible",
+                      "key": "credit_borrow_vs_wait",
+                      "choiceId": "wait",
+                      "label": "Waited instead of rushing a loan"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "credit_patience_plaque",
+                      "label": "Waited the spiral",
+                      "kind": "plaque",
+                      "stance": "saver",
+                      "stanceDelta": 2
+                    },
+                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                  ]
+                },
+                {
+                  "id": "r_borrow",
+                  "text": "Rush the loan — I need speed.",
+                  "nextNodeId": "r_done_rush",
+                  "effects": [
+                    {
+                      "type": "setIrreversible",
+                      "key": "credit_borrow_vs_wait",
+                      "choiceId": "borrow",
+                      "label": "Rushed a high-APR loan"
+                    },
+                    {
+                      "type": "addScar",
+                      "id": "credit_haste_plaque",
+                      "label": "Haste fed the spiral",
+                      "kind": "plaza_prop",
+                      "stance": "risk",
+                      "stanceDelta": 2
+                    },
+                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "r_done",
+              "speaker": "Rex the Collector",
+              "text": "Patience is a credit signal. Harbor will keep “Waited the spiral” on the Memory Plinth — and this seal proves you faced the canyon without feeding the storm.",
+              "end": true
+            },
+            {
+              "id": "r_done_rush",
+              "speaker": "Rex the Collector",
+              "text": "Speed has a price. Harbor will keep the haste mark — fog follows you home. The seal still proves you entered his canyon; rebuild starts now.",
+              "end": true
+            },
+            {
+              "id": "r_remember",
+              "speaker": "Rex the Collector",
+              "text": "Your Ordeal already stains the Plinth. Interest still compounds — keep reading signals before you rush.",
+              "end": true
+            },
+            {
+              "id": "r_later",
+              "speaker": "Rex the Collector",
+              "text": "The Bank of Obligation waits. Come back when you're ready to weigh the spiral — then choose.",
               "end": true
             }
           ]
@@ -295,10 +308,10 @@
         {
           "id": "mg_ck_signal",
           "name": "Score Scanner",
-          "description": "Read credit signals in the ruins — on-time history vs utilization spikes.",
+          "description": "Debt Anvil skill test — weigh on-time history vs utilization spikes before the Ordeal Take.",
           "icon": "📡",
           "componentId": "SignalScannerGame",
-          "areaId": "ck_gate",
+          "areaId": "ck_debt_canyon",
           "genre": "quiz",
           "complexity": "medium"
         }

@@ -63,6 +63,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 
 **Shipped (Pillar 5 — progression):** After Cove Take, Harbor can answer “what’s newly true?” — `Coin holds` on Plinth retell/shelf/share + Piggy homecoming names **Paycheck Peninsula** newly open on the Carpet (Clock → Credit).
 
+**Shipped (Pillar 6 — encounters):** Credit’s three tests are spiral-true — Inbox → Score Scanner (Debt Anvil) → earned wait/haste Take. Cut “Debt Loadout” categorize clone of Paycheck Budget Split.
+
 ## 7–12. Content → audio → story
 
 Content = Money Mascots + islands + capsules. Presentation must stay readable (labels, one coach sentence). Story = Story Bible only.

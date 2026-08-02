@@ -292,7 +292,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Minigame miss → dignity overlay + Retry / stay-put; no Harbor dump on structure fail; ModularMinigame “Round over” (not fake Complete). Next: bad-take Spend soft-fail copy parity |
 | 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
 | 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
-| 6 | Encounters | | | |
+| 6 | Encounters | playable → iconic | 2026-08-02 | Credit canyon: Score Scanner (not Paycheck categorize); wait/haste Take after practice. Next: Cove Alma vs Paycheck categorize overlap |
 | 7 | Content | | | |
 | 8 | Balance | | | |
 | 9 | UI / comms | | | |
@@ -316,6 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **5 — Progression** (suit verb survives Take → Harbor; share/Piggy name newly boardable painting — Paycheck after Cove, Credit after Paycheck).  
+**Last shipped:** Pillar **6 — Levels & encounters** (Credit Debt Anvil → Score Scanner; Ordeal Take earned after spiral practice; Cove/Paycheck/Credit skill tests stay organ-distinct).  
 
-**Start next:** Pillar **6 — Levels & encounters** (per spine island: 3 distinct skill tests; cut “same fight, more HP”).
+**Start next:** Pillar **7 — Content** (inventory vs mural thesis; tag organ · verb · cold-retell; park orphans).

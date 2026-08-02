@@ -118,7 +118,8 @@ describe("money structures", () => {
     expect(s?.id).toBe(CREDIT_INTEREST_KEEP.id);
     expect(s?.theme).toBe("keep");
     expect(s?.entryVerb.toLowerCase()).toMatch(/spiral|interest/);
-    expect(s?.parts.some((p) => p.minigameId === "mg_ck_budget_balancer")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_signal")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_budget_balancer")).toBe(false);
     expect(s?.parts.some((p) => p.minigameId === "mg_ck_inbox_credit")).toBe(true);
     expect(s?.parts.some((p) => p.softBeat === "battlement")).toBe(true);
   });

@@ -61,6 +61,7 @@ import {
   recordNpcTalk,
   scarTriggersChapterQuiet,
 } from "./worldMemory";
+import { CREDIT_REX_GRAPH_ID, creditRexStartNodeId } from "./creditEncounter";
 import {
   syncHarborRitual,
   markRitualGreeted,
@@ -1176,8 +1177,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
+      // Credit canyon — open Rex on the earned Ordeal fork after Score Scanner.
+      const nodeId =
+        graphId === CREDIT_REX_GRAPH_ID ? creditRexStartNodeId(save) : undefined;
 
-      setDialogueState({ open: true, graphId, nodeId: undefined, npcId });
+      setDialogueState({ open: true, graphId, nodeId, npcId });
 
       void trackScreenEnter(`dialogue:${npcId}`, {
         islandId: island?.id ?? HUB_ISLAND_ID,
@@ -1193,6 +1197,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       completeObjective,
       content,
       dialogueState.open,
+      save,
       save?.hubGuidedIntro,
       save?.harborHomecoming,
       save?.piggyBondHomecomings,
