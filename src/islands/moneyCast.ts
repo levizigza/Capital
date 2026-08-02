@@ -15,6 +15,7 @@ export type MoneyMascotId =
   | "cashwell"
   | "cashmere"
   | "peso_pedro"
+  | "fortuna_fernanda"
   | "dollar_dash"
   | "euro_ella"
   | "pound_pal"
@@ -54,6 +55,7 @@ export const SERIES_LEAD_MASCOT_IDS: readonly MoneyMascotId[] = [
   "cashwell",
   "cashmere",
   "peso_pedro",
+  "fortuna_fernanda",
 ] as const;
 
 export function isSeriesLeadMascot(id: string | null | undefined): boolean {
@@ -113,6 +115,17 @@ export const MONEY_CAST: MoneyMascot[] = [
     glyph: "P",
     color: "peso",
     accessory: "cap",
+    role: "currency",
+  },
+  {
+    id: "fortuna_fernanda",
+    name: "Fortuna Fernanda",
+    emoji: "🌹",
+    tagline: "Bold. Brilliant. Blessed. Fortune loves Fernanda.",
+    form: "coin",
+    glyph: "P",
+    color: "fortuna",
+    accessory: "cape",
     role: "currency",
   },
   {
@@ -522,6 +535,7 @@ export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number,
   { mascotId: "cashwell", pos: [5.6, 0, 0.4], yaw: -0.85 },
   { mascotId: "cashmere", pos: [6.4, 0, -1.6], yaw: -1.1 },
   { mascotId: "peso_pedro", pos: [7.0, 0, 1.4], yaw: -1.35 },
+  { mascotId: "fortuna_fernanda", pos: [7.6, 0, -0.8], yaw: -1.5 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },

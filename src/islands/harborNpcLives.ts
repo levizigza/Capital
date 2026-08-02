@@ -99,12 +99,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                 afternoon: "Peso Pedro: Opportunities into celebrations. Memory Courtyard never forgets.",
                 evening: "Peso Pedro: Always in circulation. Tip yourself first — then dance.",
               }
-            : {
-                morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-              };
+            : slot.mascotId === "fortuna_fernanda"
+              ? {
+                  morning: "Fortuna Fernanda: Joy follows her glow — the Plinth keeps yesterday’s roses.",
+                  midday: "Fortuna: Charm is currency. Piggy keeps the Harbor verbs.",
+                  afternoon: "Fortuna: Style with sparkle. Memory Courtyard never forgets a Take.",
+                  evening: "Fortuna: Queen of celebration. Tip yourself first — then arrive.",
+                }
+              : {
+                  morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                  midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                  afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                  evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

@@ -155,6 +155,21 @@ const ROLE_TIPS: Record<
       strategist: "Stay liquid. Stay charming. Stay ledger-true.",
     },
   },
+  fortuna_fernanda: {
+    tip: {
+      explorer:
+        "Fortuna Fernanda — I arrive like abundance! That glowing Plinth? Harbor’s memory, dressed for the fiesta!",
+      apprentice:
+        "Charm is currency, confidence is capital. Celebrate smart choices — Piggy keeps Harbor’s verbs. Visit the Plinth.",
+      strategist:
+        "Queen of celebration, not Harbor Keeper. Glamour with edge; Memory Plinth files every Take in gold.",
+    },
+    bye: {
+      explorer: "Bold. Brilliant. Blessed — go glow!",
+      apprentice: "Flair of the bag: pay yourself first, then sparkle.",
+      strategist: "Every entrance an occasion. Every ledger line a rose.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
