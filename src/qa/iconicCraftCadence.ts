@@ -263,4 +263,5 @@ export const ICONIC_E2E_SPECS = [
   "e2e/signature-loop.spec.ts",
   "e2e/harbor-tutorial.spec.ts",
   "e2e/harbor-3d-failsafe.spec.ts",
+  "e2e/cast-select.spec.ts",
 ] as const;

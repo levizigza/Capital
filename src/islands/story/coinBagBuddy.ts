@@ -194,15 +194,15 @@ export function coinBagIslandTip(
   if (island && typeof island === "object") {
     if (save.chapterQuietPending) {
       return {
-        tip: "Breathe — that choice sticks",
+        tip: "Carpet home — Harbor felt that",
         coach:
           island.id === "coincraft_cove"
-            ? "Harbor is already listening. Soft HUD. When you're ready, carpet home — Piggy will feel it."
+            ? "One verb left: board the Money Carpet. Piggy will feel the Take."
             : island.id === "paycheck_peninsula"
-            ? "No glitter HUD. Walk Main Street, then fly home when you're ready — Harbor is listening."
+            ? "One verb left: carpet home. Harbor is listening for the Clock Take."
             : island.id === "credit_kingdom"
-              ? "Interest is quiet. So are we. Finish the canyon, then carpet home."
-              : "The island got quieter after your Take. When you're ready, fly home changed.",
+              ? "One verb left: carpet home. Interest stays quiet until Harbor."
+              : "One verb left: carpet home — Harbor felt that.",
         track: "main",
       };
     }

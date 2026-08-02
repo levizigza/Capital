@@ -191,6 +191,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               saveLabel={busy ? "Boarding…" : "Board the Money Carpet →"}
               cancelLabel="← Back to coin faces"
               saveTestId="boot-board-carpet"
+              cancelTestId="boot-cancel-look"
               onDraftChange={setDraft}
               onChangeFighter={() => setStage("select")}
               onCancel={() => {

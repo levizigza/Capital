@@ -43,6 +43,9 @@ export function resolveShoreGuideLookAt(
   const journal = hotspots.find((h) => h.kind === "journal")?.position ?? null;
   const moneyMachine = hotspots.find((h) => h.kind === "money_structure")?.position ?? null;
 
+  // After an irreversible Take — only one verb: carpet home.
+  if (save.chapterQuietPending && pier) return pier;
+
   const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
   if (!anyStarted && moneyMachine) return moneyMachine;
 

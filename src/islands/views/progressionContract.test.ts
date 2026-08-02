@@ -38,6 +38,7 @@ describe("Harbor progression contract", () => {
     const hub = readFileSync(join(__dirname, "HomeHubView.tsx"), "utf8");
     const bag = readFileSync(join(__dirname, "../story/coinBagBuddy.ts"), "utf8");
     expect(hub).toMatch(/harbor-freedom-chip/);
+    expect(hub).toMatch(/freedomPlazaChip/);
     expect(hub).toMatch(/Freedom Seal/);
     expect(bag).toMatch(/carpetTierLabel/);
     expect(bag).toMatch(/Freedom Seal ·/);

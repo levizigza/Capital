@@ -13,11 +13,17 @@ import { COVE_CHANGE_QUEST_ID, COVE_ISLAND_ID } from "@/islands/islandIds";
 
 /** Trailer-grade beat timings (ms). Reduced-motion scales by REDUCED_MOTION_MULT. */
 export const SIGNATURE_TIMING = {
-  hushMs: 700,
-  revealMs: 1200,
-  holdEndMs: 4000,
-  /** Cold unseeded Take — snappier than a 5.6s modal wait. */
-  doneMs: 4800,
+  /** Quiet breath before the organ mark. */
+  hushMs: 550,
+  /** Mark flash ends here — keep mark readable (~850ms). */
+  revealMs: 1400,
+  /** Spectacle hold (ScarSpectacleOverlay may still use doneMs). */
+  holdEndMs: 3600,
+  /**
+   * Cold unseeded Take auto-dismiss — line + “Carpet home” CTA must land
+   * before the shore quiet HUD (pier guide + bottom CTA).
+   */
+  doneMs: 4200,
   plinthGlowMs: 14000,
   trailerBeatMs: 24_000,
   reducedMotionMult: 0.55,

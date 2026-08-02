@@ -17,6 +17,7 @@ import {
   HARBOR_ESCAPE_TARGET,
   applyPayday,
   createDefaultVoyagerLedger,
+  freedomPlazaChip,
   netCashflow,
 } from "./voyagerLedger";
 import coincraft from "./content/coincraft-cove.islands.json";
@@ -123,5 +124,36 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     const next = nextPurchasableCarpet(0, save);
     expect(next?.tier.id).toBe("coin_carpet");
     expect(next?.price).toBe(50);
+  });
+
+  it("plaza Seal chase chip stays readable after pouch dips into deals", () => {
+    const base = createDefaultVoyagerLedger();
+    expect(
+      freedomPlazaChip({ freed: false, boatLabel: "Threadbare rug", ledger: base }),
+    ).toBeNull();
+
+    const afterDeals = {
+      ...base,
+      holdings: [
+        HARBOR_DEALS.find((d) => d.id === "asset_savings_jar")!,
+        HARBOR_DEALS.find((d) => d.id === "asset_shell_booth")!,
+      ],
+    };
+    expect(netCashflow(afterDeals)).toBe(30);
+    const chase = freedomPlazaChip({
+      freed: false,
+      boatLabel: "Threadbare rug",
+      ledger: afterDeals,
+    });
+    expect(chase).toMatch(/Seal chase/i);
+    expect(chase).toMatch(/0\/3/);
+
+    expect(
+      freedomPlazaChip({
+        freed: true,
+        boatLabel: "Fortune flyer",
+        ledger: { ...afterDeals, harborEscaped: true },
+      }),
+    ).toBe("Freedom Seal · Fortune flyer");
   });
 });

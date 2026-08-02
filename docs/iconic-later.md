@@ -50,16 +50,16 @@ These are **allowed later** as spine depth — not new islands:
 | From | Parked polish |
 |------|----------------|
 | Fantasy / Story / UI | (iterated) Talk Battle Leave + plaza profile chip removed (Settings only) |
-| Core loop | (iterated) Snappier Take cinema + “Carpet home — Harbor felt that” CTA |
+| Core loop | (iterated) Cold Take `doneMs` + pier guide + Carpet CTA after hush |
 | Goals | (iterated) Bad-take Spend soft-fail copy parity |
 | Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |
-| Progression | (iterated) Freedom Seal chip + Coin Bag names carpet tier |
+| Progression | (iterated) Freedom Seal + Seal chase chip after pouch dips |
 | Encounters | (iterated) Alma craft-bench ≠ Paycheck payday buckets |
 | Content | (done) PARKED banners on outer island docs |
-| Balance | First seal plaza readability after pouch dips |
+| Balance | (iterated) First seal plaza readability after pouch dips |
 | Art | (iterated) Shore Coin Jar distance + parked pads off shore |
 | Audio | (done) Piggy homecoming reward sting |
-| Onboarding | Boot cast Board CTA / warmer copy shipped; Cancel parity polish |
+| Onboarding | (iterated) Boot Board CTA + look-stage Cancel parity |
 | Technical | (iterated) Kill-switch e2e for harbor3d sticky fail |
 | A11y | (done) High-contrast share lower-third panel |
 | Testing | Keep status board honest after every fix |

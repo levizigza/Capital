@@ -102,6 +102,26 @@ export function harborEscapeProgress(ledger: VoyagerLedger): {
   };
 }
 
+/**
+ * Plaza Freedom chip — still readable after pouch dips into deals.
+ * Freed → seal + carpet tier; chasing → Pay Day streak / cashflow goal.
+ */
+export function freedomPlazaChip(opts: {
+  freed: boolean;
+  boatLabel: string;
+  ledger: VoyagerLedger;
+}): string | null {
+  if (opts.freed) return `Freedom Seal · ${opts.boatLabel}`;
+  const p = harborEscapeProgress(opts.ledger);
+  const hasAssets = opts.ledger.holdings.some((h) => h.kind === "asset");
+  const chasing = p.cashflow >= HARBOR_ESCAPE_TARGET || p.streak > 0 || hasAssets;
+  if (!chasing) return null;
+  if (p.cashflow >= HARBOR_ESCAPE_TARGET) {
+    return `Seal chase · ${p.streak}/${p.needed} Pay Days`;
+  }
+  return `Seal chase · +${p.cashflow}/mo (need $${HARBOR_ESCAPE_TARGET})`;
+}
+
 export function dealPurchaseCost(holding: LedgerHolding): number {
   if (holding.purchaseCost != null) return holding.purchaseCost;
   if (holding.kind === "liability") return 0;

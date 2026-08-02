@@ -85,8 +85,14 @@ If not, that surface is not iconic yet.
 - Spend Take soft-fail copy parity (dignity, no lecture)
 - `e2e/harbor-3d-failsafe.spec.ts` — sticky fail + kill switch skip Canvas
 
+## Iteration 4 (shipped)
+
+- Cold Take: snappier hush/mark, `doneMs` dismiss, pier guide + Carpet CTA after hush
+- Seal chase plaza chip after pouch dips into deals (before Freedom earned)
+- Boot look-stage Cancel hit parity with Board Carpet (`boot-cancel-look`)
+
 ## Still deepen (from iconic-later)
 
-First seal plaza after pouch dips · boot Cancel parity · cold unseeded Cove Take timing  
+Cold kid retell (Coin · Clock · Spiral · Memory) · Soft Beat shore beacons · Talk Battle living-money polish  
 
 Iterate those next — never new islands first.

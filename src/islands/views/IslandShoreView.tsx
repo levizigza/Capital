@@ -319,8 +319,10 @@ export function IslandShoreView({
             />
             <GuideEdgeCue
               projection={guideProjection}
-              enabled={guideArrows && !chapterQuiet && !takeHushOpen}
-              label={buddy.tip}
+              enabled={guideArrows && !takeHushOpen}
+              label={
+                chapterQuiet ? "Carpet home — Harbor felt that" : buddy.tip
+              }
             />
             {takeHushOpen && latestScar ? (
               <TakeHushOverlay
@@ -438,7 +440,7 @@ export function IslandShoreView({
         bottom={
           takeHushOpen ? null : (
           <div className="flex w-full flex-col items-center gap-2 pb-2">
-            {chapterQuiet && !near ? (
+            {chapterQuiet ? (
               <GameButton
                 variant="primary"
                 size="lg"
@@ -446,7 +448,9 @@ export function IslandShoreView({
                 onClick={onOpenTravel}
                 className="shadow-lg"
               >
-                Board the carpet home
+                {near?.id === "pier"
+                  ? "Board the carpet home"
+                  : "Carpet home — Harbor felt that"}
               </GameButton>
             ) : near ? (
               <GameButton
@@ -476,11 +480,13 @@ export function IslandShoreView({
         {takeHushOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
-          tip={buddy.tip}
+          tip={
+            chapterQuiet ? "Carpet home — Harbor felt that" : buddy.tip
+          }
           detail={chapterQuiet ? undefined : buddy.coach}
           track={buddy.track}
-          guideArrows={guideArrows && !chapterQuiet}
-          onToggleGuide={onA11yChange && !chapterQuiet ? toggleGuide : undefined}
+          guideArrows={guideArrows}
+          onToggleGuide={onA11yChange ? toggleGuide : undefined}
         />
         </div>
         )}

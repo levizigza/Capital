@@ -21,7 +21,7 @@ import {
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
-import { ensureLedger } from "../voyagerLedger";
+import { ensureLedger, freedomPlazaChip } from "../voyagerLedger";
 import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
@@ -261,7 +261,11 @@ export function HomeHubView({
   const simplified = profile.hudMode === "simplified";
   const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
   const freed = hasHarborFreedom(save);
-  const freedomPlazaLine = freed ? `Freedom Seal · ${boat.label}` : null;
+  const freedomPlazaLine = freedomPlazaChip({
+    freed,
+    boatLabel: boat.label,
+    ledger: ensureLedger(save.voyagerLedger),
+  });
   const guided = guidedFromSave(save);
   const guidedStep = guided ? getHubGuidedStep(guided) : null;
   const castleMode = !!guidedStep;
@@ -1186,9 +1190,17 @@ export function HomeHubView({
             ) : null}
             {freedomPlazaLine && !castleMode && !piggyPresence ? (
               <p
-                className="rounded-full bg-emerald-900/55 px-3 py-1.5 text-[11px] font-bold text-emerald-50 ring-1 ring-emerald-200/35"
+                className={`rounded-full px-3 py-1.5 text-[11px] font-bold ring-1 ${
+                  freed
+                    ? "bg-emerald-900/55 text-emerald-50 ring-emerald-200/35"
+                    : "bg-amber-950/60 text-amber-50 ring-amber-200/35"
+                }`}
                 data-testid="harbor-freedom-chip"
-                title="Harbor Freedom Seal — Pavilion + carpet tier"
+                title={
+                  freed
+                    ? "Harbor Freedom Seal — Pavilion + carpet tier"
+                    : "Freedom Seal chase — keep cashflow strong after pouch dips"
+                }
               >
                 {freedomPlazaLine}
               </p>
