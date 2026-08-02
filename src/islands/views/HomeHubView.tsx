@@ -49,6 +49,7 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
+import { canOpenSignatureCinema } from "../signatureCinemaGate";
 import {
   harborScarPlaques,
   stanceGreetingHint,
@@ -319,6 +320,9 @@ export function HomeHubView({
   const [spectaclePhase, setSpectaclePhase] = useState<SpectacleCinemaPhase | null>(null);
   const [plinthGlow, setPlinthGlow] = useState(false);
   const [feltShareOpen, setFeltShareOpen] = useState(false);
+  /** Plaza playable (3D or myth) — signature cinema must wait for this. */
+  const [plazaReady, setPlazaReady] = useState(false);
+  const markPlazaReady = useCallback(() => setPlazaReady(true), []);
   const [feltPreviewUrl, setFeltPreviewUrl] = useState<string | null>(null);
   const [trailerOpen, setTrailerOpen] = useState(false);
   const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
@@ -376,10 +380,18 @@ export function HomeHubView({
   useEffect(() => {
     const count = plaques.length;
     if (count < 1) return;
-    if (hubModal) return;
-    if (talkOpen) return;
-    if (spectacleOpen || feltShareOpen) return;
-    if (guided && !isHubGuidedComplete(guided)) return;
+    if (
+      !canOpenSignatureCinema({
+        plazaReady,
+        talkOpen,
+        hubModal: Boolean(hubModal),
+        spectacleOpen,
+        feltShareOpen,
+        guidedComplete: !guided || isHubGuidedComplete(guided),
+      })
+    ) {
+      return;
+    }
     const shown = save.scarSpectacle?.shownForCount ?? 0;
     if (count > shown) setSpectacleOpen(true);
   }, [
@@ -390,6 +402,7 @@ export function HomeHubView({
     talkOpen,
     spectacleOpen,
     feltShareOpen,
+    plazaReady,
   ]);
 
   const closeSpectacle = useCallback(() => {
@@ -434,9 +447,22 @@ export function HomeHubView({
     const rumorId = save.harborRitual?.today.rumorId;
     if (!rumorId?.startsWith("scar_echo_")) return;
     if (save.harborRitual?.today.echoSurpriseSeen) return;
-    if (hubModal || talkOpen || spectacleOpen || feltShareOpen || trailerOpen) return;
-    if (guided && !isHubGuidedComplete(guided)) return;
+    if (trailerOpen) return;
+    // Micro-loop order: Piggy homecoming before day-2 echo — never stack.
     if (save.harborHomecoming?.pending) return;
+    if (save.harborHomecoming && !save.harborHomecoming.piggyTalked) return;
+    if (
+      !canOpenSignatureCinema({
+        plazaReady,
+        talkOpen,
+        hubModal: Boolean(hubModal),
+        spectacleOpen,
+        feltShareOpen,
+        guidedComplete: !guided || isHubGuidedComplete(guided),
+      })
+    ) {
+      return;
+    }
     setEchoSurpriseOpen(true);
     // Lamp peaks for day-2 Soft Beat cinema — prove the Plinth before any modal.
     setPlinthGlow(true);
@@ -444,12 +470,14 @@ export function HomeHubView({
     save.harborRitual?.today.rumorId,
     save.harborRitual?.today.echoSurpriseSeen,
     save.harborHomecoming?.pending,
+    save.harborHomecoming?.piggyTalked,
     hubModal,
     talkOpen,
     spectacleOpen,
     feltShareOpen,
     trailerOpen,
     guided,
+    plazaReady,
   ]);
 
   useEffect(() => {
@@ -1031,10 +1059,12 @@ export function HomeHubView({
                       : undefined
                   }
                   piggyPresenceBeat={piggyPresence}
+                  cinemaActive={hideHudForCinema}
+                  onPlazaReady={markPlazaReady}
                 />
                 <GuideEdgeCue
                   projection={guideProjection}
-                  enabled={guideArrows && !spectacleOpen && !feltShareOpen}
+                  enabled={guideArrows && !hideHudForCinema}
                 />
                 {spectacleOpen ? (
                   <ScarSpectacleOverlay
@@ -1095,7 +1125,7 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          spectacleOpen || feltShareOpen ? null : piggyPresence ? (
+          hideHudForCinema ? null : piggyPresence ? (
             <div className="cap-play-hud-left">
               <p
                 className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90"
@@ -1130,7 +1160,7 @@ export function HomeHubView({
           )
         }
         topRight={
-          spectacleOpen || feltShareOpen || quietHarbor || earlyCastle || firstMeet ? null : (
+          hideHudForCinema || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {!castleMode ? (
               <HudBadge>
@@ -1153,7 +1183,7 @@ export function HomeHubView({
           )
         }
         bottom={
-          spectacleOpen || feltShareOpen ? null : (
+          hideHudForCinema ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
             {piggyPresence ? (
               <p
@@ -1277,7 +1307,7 @@ export function HomeHubView({
         }
       >
         {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
-        {spectacleOpen || feltShareOpen ? null : (
+        {hideHudForCinema ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode && guidedStep ? (

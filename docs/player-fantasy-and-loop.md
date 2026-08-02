@@ -24,6 +24,8 @@ Every UI/mechanic decision asks: *Does this make me feel like a Voyager among Mo
 
 **Shipped (Pillar 1):** Talk Battle stage paints place sky + soft plaza (Harbor Memory courtyard); combat HP strips removed; PERF overlay defaults off (backtick to toggle).
 
+**Shipped (Pillar 2 — core loop):** Signature cinema (spectacle → share → day-2) waits until Harbor plaza is ready; Piggy HUD stays hidden for the whole cinema chain; myth path uses a quiet Memory stage under Plinth cinema (not “Piggy is waving”); day-2 echo waits until Piggy has been talked to.
+
 ## 2. Core loop
 
 ```
