@@ -7,7 +7,7 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForSoftBeat } from "../moneyOrgans";
-import { cinemaTimeScale, systemPrefersReducedMotion } from "../a11yMotion";
+import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
 import { useOverlayEscape } from "./useOverlayEscape";
@@ -64,7 +64,7 @@ export function SoftBeatOverlay({
 
   useEffect(() => {
     playOrganSfx(organ.id);
-    if (!systemPrefersReducedMotion() || hushActive) {
+    if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
     const scale = cinemaTimeScale();

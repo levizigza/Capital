@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
+import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
 
 type CinemaPhase = "hush" | "mark" | "line";
@@ -35,10 +36,11 @@ export function PayrollTowerLandmark({
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     const mark = cinemaPhase === "mark";
+    const flash = cinemaFlashAmp();
     if (chute.current) {
       const mat = chute.current.material as THREE.MeshStandardMaterial;
       if (mark) {
-        mat.emissiveIntensity = 0.9 + Math.sin(t * 10) * 0.2;
+        mat.emissiveIntensity = 0.5 + flash * (0.4 + Math.sin(t * 10) * 0.2);
       } else {
         const base = hushActive ? 0.1 : active ? 0.8 : guided ? 0.5 : 0.25;
         mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.2 : 3.2)) * (hushActive ? 0.03 : 0.08);
@@ -49,8 +51,8 @@ export function PayrollTowerLandmark({
     }
     if (scar.current) {
       const mat = scar.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = mark ? 0.8 + Math.sin(t * 12) * 0.2 : 0.2;
-      mat.opacity = mark ? 0.95 : 0.7;
+      mat.emissiveIntensity = mark ? 0.4 + flash * (0.4 + Math.sin(t * 12) * 0.2) : 0.2;
+      mat.opacity = mark ? 0.85 + 0.1 * flash : 0.7;
     }
   });
 

@@ -4,6 +4,7 @@
  * Organ stingers: Memory / Coin / Clock / Spiral.
  */
 
+import { prefersReducedMotion } from "../a11yMotion";
 import type { MoneyOrganId } from "../moneyOrgans";
 
 export type CapitalSfxId =
@@ -75,15 +76,10 @@ export function playOrganSfx(organ: MoneyOrganId): void {
 
 export function playCapitalSfx(id: CapitalSfxId): void {
   try {
-    if (typeof window !== "undefined") {
-      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-      // Keep scar + organ identity under reduced motion (quieter path via shorter tones below)
-      if (reduced && id === "harbor_cheer") return;
-    }
-    const soft =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const g = soft ? 0.55 : 1;
+    const reduced = prefersReducedMotion();
+    // Keep scar + organ identity under reduced motion (quieter path via shorter tones below)
+    if (reduced && id === "harbor_cheer") return;
+    const g = reduced ? 0.55 : 1;
 
     switch (id) {
       case "harbor_cheer":

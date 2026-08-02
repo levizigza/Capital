@@ -16,6 +16,7 @@ import {
 } from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
 import { triggerJuice } from "@/juice";
+import { prefersReducedMotion } from "../a11yMotion";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
@@ -42,10 +43,7 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   organIdRef.current = organId;
 
   useEffect(() => {
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const t = signatureTiming(Boolean(reduced));
+    const t = signatureTiming(prefersReducedMotion());
     playCapitalSfx("scar_chime");
     onPhaseChangeRef.current?.("hush");
 

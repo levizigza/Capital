@@ -3,23 +3,13 @@
  * Signature cinema (Take → Plinth → share) and fail chrome call this.
  */
 
+import { prefersReducedMotion } from "@/islands/a11yMotion";
 import { juiceSfx } from "./juiceSfx";
 import { loadJuiceSettings } from "./settings";
 import type { JuiceEvent, JuiceLevel, JuiceTriggerOptions } from "./types";
 
 const VIEWPORT_SEL = ".game-viewport, .juice-viewport";
 const BURST_EMOJIS = ["✦", "★", "🪙", "✧"];
-
-function prefersReducedMotion(): boolean {
-  try {
-    return Boolean(
-      typeof window !== "undefined" &&
-        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
-    );
-  } catch {
-    return false;
-  }
-}
 
 function effectiveLevel(): JuiceLevel {
   const level = loadJuiceSettings().level;
@@ -67,7 +57,7 @@ function spawnBurst(opts: JuiceTriggerOptions, level: JuiceLevel) {
 }
 
 function bounceTarget(target?: HTMLElement | null) {
-  if (!target) return;
+  if (!target || prefersReducedMotion()) return;
   target.classList.remove("juice-ui-bounce");
   void target.offsetWidth;
   target.classList.add("juice-ui-bounce");

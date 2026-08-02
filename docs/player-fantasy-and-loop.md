@@ -89,6 +89,8 @@ Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**
 
 **Shipped (Pillar 14 — technical):** Corrupt `island_save_v1` blobs sanitize to playable Harbor defaults (`sanitizeIslandSave`). WebGL kill / hung Canvas escapes to myth under 3s via shared `harborLoadFailsafe` timers; sticky probe fail skips Canvas next visit.
 
+**Shipped (Pillar 15 — accessibility):** `prefersReducedMotion()` = Settings OR OS. Signature cinema timings, juice bounce/burst, and Capital SFX honor it. Take mark / Plinth spectacle strobes damp via `cinemaFlashAmp()` so flashes never blind the beat.
+
 ## 14–15. Plumbing & accessibility
 
 Save, Esc, settings, reduced motion, text size already exist — **navigability law** below is mandatory plumbing.

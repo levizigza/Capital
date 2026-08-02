@@ -76,6 +76,7 @@ import {
   HARBOR_HARD_FAILSAFE_MS,
   HARBOR_LOAD_HINT_MS,
 } from "./harborLoadFailsafe";
+import { prefersReducedMotion } from "../a11yMotion";
 import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
@@ -844,9 +845,7 @@ export function WalkableHarborView({
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduced = prefersReducedMotion();
   /** Mid-phone budget: also soften when deviceMemory is low */
   const lowMem =
     typeof navigator !== "undefined" &&

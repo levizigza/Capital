@@ -11,6 +11,7 @@ import {
   signatureTiming,
 } from "@/qa/signatureLoop";
 import { GameButton } from "@/game-ui";
+import { prefersReducedMotion } from "../a11yMotion";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 type Props = {
@@ -60,11 +61,9 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
     const musicOn = capitalMusic.isEnabled();
-    const timing = signatureTiming(Boolean(reduced));
+    const timing = signatureTiming(reduced);
     // Mute-friendly: captions carry the story; SFX only when music is on and motion is full
     const sfxOk = musicOn && !reduced;
     if (sfxOk) playCapitalSfx("scar_chime");

@@ -8,7 +8,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { capitalMusic } from "../audio/capitalMusic";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { signatureTiming, type TakeCinemaPhase } from "@/qa/signatureLoop";
-import { systemPrefersReducedMotion } from "../a11yMotion";
+import { prefersReducedMotion } from "../a11yMotion";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
@@ -39,7 +39,7 @@ export function TakeHushOverlay({
   useOverlayEscape(onDone);
 
   useEffect(() => {
-    const t = signatureTiming(systemPrefersReducedMotion());
+    const t = signatureTiming(prefersReducedMotion());
     playCapitalSfx("scar_chime");
     playOrganSfx(organId);
     capitalMusic.playPlace({

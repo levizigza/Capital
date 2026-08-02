@@ -93,7 +93,8 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 
 - Harbor always-on micro-life: fountain jet, pennants, **Fortune flags**, idle wave/cheer, Coin Bag bob, contact shadows (quieter under reduced motion).  
 - Family Room names the latest plaque as a **local myth** (device-only — no fake MMO).  
-- First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with the OS.
+- First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with Settings OR OS (`prefersReducedMotion`).  
+- Take mark / Plinth spectacle strobes damp under reduce (`cinemaFlashAmp`) — steady organ read, no blinding flash.
 
 ## Organ score (Wave 6)
 

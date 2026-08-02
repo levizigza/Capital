@@ -282,6 +282,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | Must keep | Reduced motion · text size · volume split · hold/toggle where relevant · no soft-lock on color alone |
 | Pass work | `prefers-reduced-motion` full signature loop. List any shake/flash that still blinds the beat. |
 
+**Shipped (Pillar 15):** `prefersReducedMotion()` = Settings OR OS (synced from accessibility load/persist). Signature cinema timings, juice bounce/burst, Capital SFX, and music duck all honor it. Take mark / Plinth spectacle strobes damp via `cinemaFlashAmp()` (Coin Jar · Payroll Tower · Interest Keep · Memory Plinth). Guarded by `signatureA11y.test.ts`.
+
 ---
 
 ### 16. Testing and iteration
@@ -328,7 +330,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
 | 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; tiny_spend Capsule-only (no coach reading ahead). Next: boot cast-select Cancel parity on look stage |
 | 14 | Technical | playable → iconic | 2026-08-02 | Corrupt-save sanitize + Harbor failsafe constants wired (myth <3s). Next: kill-switch e2e for harbor3d sticky fail |
-| 15 | Accessibility | | | |
+| 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; juice bounce off under reduce. Next: high-contrast pass on share lower-third |
 | 16 | Testing | | | |
 | 17 | Scope | | | |
 
@@ -343,6 +345,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **14 — Technical systems** (`sanitizeIslandSave` + Harbor myth failsafe constants under 3s).  
+**Last shipped:** Pillar **15 — Accessibility** (`prefersReducedMotion` Settings OR OS; cinemaFlashAmp damps Take/Plinth strobes).  
 
-**Start next:** Pillar **15 — Accessibility** (`prefers-reduced-motion` full signature loop).
+**Start next:** Pillar **16 — Testing and iteration** (cold run checklist + status table cadence).
