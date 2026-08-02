@@ -375,9 +375,9 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
       text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with WASD or the walk pad, talk with E. Coin Bag sticks with you.",
       choice: "Nice to meet you!",
       next: "meet_b",
-      // Celebrate Talk only — Outfitter waits for walk_outfitter.
+      // Celebrate Talk only — voyage coach names the carpet next (no Outfitter pitch).
       follow:
-        "You just practiced Talk. Coin Bag stays beside you — look at me when you're stuck.",
+        "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
     },
     walk_outfitter: {
       text: "See that Outfitter door? Walk over with Coin Bag and press Enter. Become the Voyager you want to be!",

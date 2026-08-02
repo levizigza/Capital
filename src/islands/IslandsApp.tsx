@@ -157,6 +157,7 @@ import {
   isHubGuidedComplete,
 } from "./story/hubGuidedIntro";
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
+import { normalizeHubGuidedIntro } from "./harborAshore";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -512,7 +513,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     (event: Parameters<typeof advanceHubGuided>[1]) => {
       updateSave((prev) => {
         if (isHubGuidedComplete(prev.hubGuidedIntro)) return prev;
-        const guided = prev.hubGuidedIntro ?? createDefaultHubGuidedIntro();
+        const guided = normalizeHubGuidedIntro(
+          prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+        );
         return { ...prev, hubGuidedIntro: advanceHubGuided(guided, event) };
       });
     },
@@ -597,10 +600,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         currentIslandId: HUB_ISLAND_ID,
         currentAreaId: defaultArea ?? prev.currentAreaId,
         hubGuidedIntro,
+        // Opening ceremony owns first-meet — do not let a leftover homecoming steal Piggy.
         harborHomecoming: clearQuietPending
           ? {
               ...(prev.harborHomecoming ?? {}),
               quietPending: false,
+              pending: false,
             }
           : prev.harborHomecoming,
         discovered: {

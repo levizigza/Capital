@@ -28,8 +28,7 @@ export type GuidedVisualBeats = {
 export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   meet_guide: {
     keeperEmote: "wave",
-    keeperBubbleWhenNear:
-      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag stays by your side — walk with him to me!",
+    keeperBubbleWhenNear: "Piggy Penny: Welcome ashore!",
     bagTip: "Talk to Piggy Penny — she’s waving!",
     pulseHotspot: "guide",
   },
@@ -60,8 +59,9 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   },
   to_dock: {
     keeperEmote: "point",
-    keeperBubbleWhenNear: "Piggy Penny: The Fortune Thread starts at the Carpet Dock!",
-    bagTip: "Carpet Dock this way",
+    keeperBubbleWhenNear:
+      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+    bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   first_island: {

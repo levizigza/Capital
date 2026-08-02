@@ -3,34 +3,25 @@
  * Until Piggy is talked to, chrome and fallback must sell one verb: Talk.
  * Deepen: quiet homecoming after a Take uses the same Piggy-presence law
  * (not a tutorial checklist / stall dashboard).
+ *
+ * Ashore redesign: see harborAshore.ts / docs/harbor-ashore.md.
  */
 
-import {
-  createDefaultHubGuidedIntro,
-  isHubGuidedComplete,
-  type HubGuidedIntroState,
-} from "./story/storyBible";
+import type { HubGuidedIntroState } from "./story/storyBible";
+import { resolveAshoreCarpetBoot } from "./harborAshore";
 
 export type HarborFallbackMode = "myth_meet" | "myth_travel" | "utility";
 
 /**
  * Carpet opening ceremony → Harbor plaza.
- * Keep only an in-progress Castle Grounds lap; never reopen on a finished
- * tutorial or let quiet homecoming steal first-meet.
+ * Mid-lap → keep (normalized). Else → meet_guide and clear quiet homecoming
+ * so it cannot steal first-meet.
  */
 export function resolveCarpetBootGuidedIntro(prev: {
   hubGuidedIntro?: HubGuidedIntroState | null;
   harborHomecoming?: { quietPending?: boolean } | null;
 }): { hubGuidedIntro: HubGuidedIntroState; clearQuietPending: boolean } {
-  const midTutorial =
-    Boolean(prev.hubGuidedIntro?.step) && !isHubGuidedComplete(prev.hubGuidedIntro);
-  const hubGuidedIntro = midTutorial
-    ? (prev.hubGuidedIntro as HubGuidedIntroState)
-    : createDefaultHubGuidedIntro();
-  const clearQuietPending =
-    hubGuidedIntro.step === "meet_guide" &&
-    Boolean(prev.harborHomecoming?.quietPending);
-  return { hubGuidedIntro, clearQuietPending };
+  return resolveAshoreCarpetBoot(prev);
 }
 
 /** Castle Grounds step where Piggy is the only job. */

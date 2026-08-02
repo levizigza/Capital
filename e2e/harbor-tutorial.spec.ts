@@ -100,21 +100,30 @@ test.describe("Harbor Haven tutorial opening", () => {
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
 
-    // Either 3D plaza with coach, or myth_meet fallback — both teach Talk
+    // Ashore redesign: first-meet hides Castle coach (Talk CTA is the only surface).
+    // Myth fallback still teaches Talk.
     await expect
       .poll(async () => {
-        const coachOk = await coach.isVisible().catch(() => false);
+        const talkOk = await talk.isVisible().catch(() => false);
+        const mythTalkOk = await mythTalk.isVisible().catch(() => false);
+        const presence = await page
+          .getByTestId("harbor-piggy-presence")
+          .isVisible()
+          .catch(() => false);
         const mythOk = await myth.isVisible().catch(() => false);
-        return coachOk || mythOk;
+        return (talkOk || mythTalkOk) && (presence || mythOk);
       }, { timeout: 25_000 })
       .toBe(true);
 
-    if (await coach.isVisible().catch(() => false)) {
-      await expect(coach).toHaveAttribute("data-guided-step", "meet_guide");
-      await expect(coach).toContainText(/Walk · Talk|Castle Grounds/i);
-      await expect(page.getByTestId("harbor-piggy-presence")).toBeVisible();
+    // Daily Ritual must not steal first-meet (Memory organ waits for Cove Change).
+    await expect(page.getByRole("heading", { name: /Harbor Daily Ritual/i })).toHaveCount(0);
+
+    if (await talk.isVisible().catch(() => false)) {
+      await expect(coach).toHaveCount(0);
+      await expect(page.getByTestId("harbor-piggy-presence")).toContainText(
+        /Talk to Piggy|Piggy’s by the fountain/i,
+      );
       await expect(page.getByTestId("harbor-controls-whisper")).toBeVisible();
-      await expect(talk).toBeVisible();
       await talk.click({ force: true });
     } else {
       await expect(myth).toHaveAttribute("data-fallback-mode", "myth_meet");

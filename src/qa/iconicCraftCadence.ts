@@ -68,6 +68,7 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
     step: "Piggy first meet",
     modes: ["unit", "e2e", "human"],
     guards: [
+      "src/islands/harborAshore.test.ts",
       "src/islands/harborFirstMeet.test.ts",
       "src/islands/story/onboardingNoAhead.test.ts",
       "e2e/harbor-tutorial.spec.ts",

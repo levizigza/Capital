@@ -104,6 +104,8 @@ If not, cut content before adding systems.
 
 **Shipped (Pillar 17 — scope):** Freeze reaffirmed — travel spine stays Harbor · Cove · Paycheck · Credit (`iconicScopeFreeze`). Parked creep sink: [iconic-later.md](./iconic-later.md). Outer island docs carry **PARKED** banners. New island ideas go on the later list; deepen Take / feel / Plinth first.
 
+**Shipped (Harbor Ashore redesign):** Opening tutorial follows iconic organic patterns (Portal one-verb · HL2 learn-by-doing). Critical path Talk Piggy → Money Carpet → Cove; no Outfitter/Capsule/Daily Ritual gates ashore. Single coach surface; ritual waits until Cove Change. See [harbor-ashore.md](./harbor-ashore.md).
+
 ---
 
 ## Navigability law (non-negotiable)

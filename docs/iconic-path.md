@@ -53,9 +53,10 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure pads | Unique part silhouettes (`StructurePartSilhouette`) + Soft Beat lookout beacon — readable without HUD text on Pages |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
-| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
-| No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove; each Castle Grounds coach stays on its own verb |
-| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid |
+| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide`; **no stacked Castle coach** (Talk CTA is the only surface) |
+| Ashore voyage | After Talk → Money Carpet → Coincraft Cove (Outfitter / Capsule / Daily Ritual are discoveries, not gates) |
+| No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove |
+| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid / Daily Ritual auto-open |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → captions over **Plinth camera lock** (not a modal card) → Plinth pulse |
@@ -78,7 +79,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 5. Did the player get lost (place or goal)?  
 6. Did the moment feel fun, or only functional?
 
-**Harbor tutorial chrome:** early Castle Grounds hides Leave, Archipelago chip, and Outfitter avatar until those steps matter — Coin Bag + Piggy only.
+**Harbor Ashore (redesign):** see [harbor-ashore.md](./harbor-ashore.md) — Talk → Carpet → Cove; Daily Ritual only after Cove Change. Early chrome hides Leave / CASH / stall grid until Talk is done.
 
 **QA seeds (dev / `VITE_QA=1`):**
 

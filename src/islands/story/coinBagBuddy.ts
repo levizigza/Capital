@@ -44,8 +44,8 @@ const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
     coach: "Your call. I’ll point at practice — or we head to the carpet.",
   },
   to_dock: {
-    tip: "Money Carpet this way",
-    coach: "The Fortune Thread starts at the dock. Stick with me.",
+    tip: "Money Carpet → Coincraft Cove",
+    coach: "Board the carpet with me. First painting!",
   },
   first_island: {
     tip: "Open the map → Coincraft Cove",
