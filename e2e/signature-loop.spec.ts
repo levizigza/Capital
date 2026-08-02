@@ -52,7 +52,13 @@ test.describe("Signature loop", () => {
     await expect(share).toHaveAttribute("data-share-presentation", "plinth-freeze");
     await expect(share).toHaveAttribute("data-plinth-aperture", "live");
     await expect(page.getByTestId("harbor-felt-plinth-aperture")).toBeAttached();
-    await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
+    await expect(page.getByTestId("harbor-felt-retell")).toContainText(
+      /Coin holds|Clock shelters|Spiral withstands|Memory keeps/,
+    );
+    await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered/);
+    await expect(page.getByTestId("harbor-felt-newly-true")).toContainText(
+      /Paycheck Peninsula|Credit Kingdom|on the Plinth/,
+    );
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
     await expect(page.getByTestId("harbor-felt-preview")).toBeVisible({ timeout: 10_000 });
     // Dev Errors / PERF chrome can sit over the lower-third CTA in headed CI viewports.
