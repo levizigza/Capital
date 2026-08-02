@@ -286,6 +286,7 @@ export function VoyagerMesh({
   const isJadeFortune = character?.base === "jade_fortune";
   const isSultanStacks = character?.base === "sultan_stacks";
   const isDinarDahlia = character?.base === "dinar_dahlia";
+  const isMansaMoneybaggs = character?.base === "mansa_moneybaggs";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -294,7 +295,8 @@ export function VoyagerMesh({
     isBillionaireBao ||
     isJadeFortune ||
     isSultanStacks ||
-    isDinarDahlia;
+    isDinarDahlia ||
+    isMansaMoneybaggs;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -479,6 +481,53 @@ export function VoyagerMesh({
                   outlineColor="#fde68a"
                 >
                   P
+                </SafeText>
+              </>
+            ) : null}
+            {/* Mansa Moneybaggs — gold mask, full beard, M crest */}
+            {isMansaMoneybaggs ? (
+              <>
+                <mesh position={[-0.14, 0.12, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#1b4332" emissive="#22c55e" emissiveIntensity={0.35} />
+                </mesh>
+                <mesh position={[0.14, 0.12, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#1b4332" emissive="#22c55e" emissiveIntensity={0.35} />
+                </mesh>
+                {/* Golden upper-face mask */}
+                <mesh castShadow position={[0, 0.14, 0.1]} material={materials.gold}>
+                  <boxGeometry args={[0.42, 0.22, 0.04]} />
+                </mesh>
+                <mesh position={[-0.14, 0.12, 0.13]} material={materials.gold}>
+                  <torusGeometry args={[0.055, 0.012, 6, 12]} />
+                </mesh>
+                <mesh position={[0.14, 0.12, 0.13]} material={materials.gold}>
+                  <torusGeometry args={[0.055, 0.012, 6, 12]} />
+                </mesh>
+                {/* Full black beard */}
+                <mesh castShadow position={[0, -0.18, 0.08]}>
+                  <sphereGeometry args={[0.2, 12, 10]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.7} />
+                </mesh>
+                <mesh castShadow position={[-0.12, -0.28, 0.06]}>
+                  <capsuleGeometry args={[0.06, 0.12, 4, 6]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.7} />
+                </mesh>
+                <mesh castShadow position={[0.12, -0.28, 0.06]}>
+                  <capsuleGeometry args={[0.06, 0.12, 4, 6]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.7} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.32, 0.12]}
+                  fontSize={0.2}
+                  color="#1b4332"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.014}
+                  outlineColor="#fde68a"
+                >
+                  M
                 </SafeText>
               </>
             ) : null}
@@ -949,7 +998,9 @@ export function VoyagerMesh({
                             ? "sultan_stacks"
                             : isDinarDahlia
                               ? "dinar_dahlia"
-                              : null
+                              : isMansaMoneybaggs
+                                ? "mansa_moneybaggs"
+                                : null
             }
           />
         ) : null}
@@ -980,6 +1031,12 @@ export function VoyagerMesh({
           <>
             <DinarDahliaStaff materials={materials} />
             <DinarCoinClutch materials={materials} />
+          </>
+        ) : null}
+        {isMansaMoneybaggs ? (
+          <>
+            <MansaSunburstStaff materials={materials} />
+            <MansaMoneyBag materials={materials} />
           </>
         ) : null}
 
@@ -1379,6 +1436,88 @@ function DinarCoinClutch({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Mansa’s sunburst staff — golden legacy. */
+function MansaSunburstStaff({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.52, 0.45, 0.12]} rotation={[0.08, 0, 0.1]}>
+      <mesh castShadow position={[0, 0.42, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.03, 0.035, 1.1, 8]} />
+      </mesh>
+      <mesh castShadow position={[0, 1.02, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.12, 0.12, 0.05, 16]} />
+      </mesh>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const a = (i / 8) * Math.PI * 2;
+        return (
+          <mesh
+            key={i}
+            castShadow
+            position={[Math.cos(a) * 0.14, 1.02, Math.sin(a) * 0.14]}
+            rotation={[0, 0, a]}
+            material={materials.gold}
+          >
+            <coneGeometry args={[0.025, 0.1, 4]} />
+          </mesh>
+        );
+      })}
+      <mesh position={[0, 1.02, 0.04]}>
+        <circleGeometry args={[0.08, 16]} />
+        <meshStandardMaterial color="#1b4332" roughness={0.4} metalness={0.25} />
+      </mesh>
+      <SafeText
+        position={[0, 1.02, 0.05]}
+        fontSize={0.12}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        M
+      </SafeText>
+    </group>
+  );
+}
+
+/** Mansa’s overflowing moneybag — legendary abundance. */
+function MansaMoneyBag({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.42, 0.7, 0.05]} rotation={[0.2, 0.4, -0.15]}>
+      <mesh castShadow position={[0, 0.08, 0]} material={materials.gold}>
+        <capsuleGeometry args={[0.02, 0.35, 3, 5]} />
+      </mesh>
+      <mesh castShadow position={[0, -0.12, 0.08]}>
+        <sphereGeometry args={[0.16, 12, 10]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+      </mesh>
+      <mesh castShadow position={[0, 0.02, 0.08]}>
+        <cylinderGeometry args={[0.08, 0.12, 0.1, 12]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+      </mesh>
+      <mesh position={[0, -0.08, 0.22]} material={materials.gold}>
+        <circleGeometry args={[0.07, 14]} />
+      </mesh>
+      <SafeText
+        position={[0, -0.08, 0.23]}
+        fontSize={0.1}
+        color="#1b4332"
+        anchorX="center"
+        anchorY="middle"
+      >
+        M
+      </SafeText>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[(i % 3) * 0.05 - 0.05, 0.08 + Math.floor(i / 3) * 0.04, 0.12]}
+          material={materials.gold}
+        >
+          <cylinderGeometry args={[0.03, 0.03, 0.018, 10]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -1399,6 +1538,7 @@ function GearAttach({
     | "jade_fortune"
     | "sultan_stacks"
     | "dinar_dahlia"
+    | "mansa_moneybaggs"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -1407,9 +1547,66 @@ function GearAttach({
   const cashwellHat = seriesLead === "cashwell";
   const pedroSombrero = seriesLead === "peso_pedro";
   const sultanTurban = seriesLead === "sultan_stacks";
+  const mansaTurban = seriesLead === "mansa_moneybaggs";
 
   // Top Hat / Sombrero / Turban — seated on the head, brim at crown line
   if (accessory === "cap") {
+    if (mansaTurban) {
+      const wrap = L.headR * 1.05;
+      return (
+        <group position={[0, L.crownY + 0.06, 0]}>
+          <mesh castShadow position={[0, 0.1, 0]}>
+            <sphereGeometry args={[wrap * 0.9, 16, 12]} />
+            <meshStandardMaterial color="#f5f0e1" roughness={0.7} />
+          </mesh>
+          <mesh castShadow position={[0, 0.22, 0]}>
+            <torusGeometry args={[wrap * 0.58, 0.12, 10, 20]} />
+            <meshStandardMaterial color="#f5f0e1" roughness={0.65} />
+          </mesh>
+          <mesh castShadow position={[0, 0.32, 0]} material={materials.gold}>
+            <torusGeometry args={[wrap * 0.45, 0.05, 8, 18]} />
+          </mesh>
+          {/* M emblem on turban */}
+          <mesh castShadow position={[0, 0.22, wrap * 0.7]} material={materials.gold}>
+            <cylinderGeometry args={[0.09, 0.09, 0.04, 16]} />
+          </mesh>
+          <mesh position={[0, 0.22, wrap * 0.73]}>
+            <circleGeometry args={[0.07, 14]} />
+            <meshStandardMaterial color="#1b4332" roughness={0.4} />
+          </mesh>
+          <SafeText
+            position={[0, 0.22, wrap * 0.74]}
+            fontSize={0.1}
+            color="#fde68a"
+            anchorX="center"
+            anchorY="middle"
+          >
+            M
+          </SafeText>
+          {/* Small crown atop turban */}
+          <mesh castShadow position={[0, 0.48, 0]} material={materials.gold}>
+            <cylinderGeometry args={[0.1, 0.14, 0.08, 10]} />
+          </mesh>
+          {[0, 1, 2, 3].map((i) => {
+            const a = (i / 4) * Math.PI * 2 - Math.PI / 2;
+            return (
+              <mesh
+                key={i}
+                castShadow
+                position={[Math.cos(a) * 0.1, 0.56, Math.sin(a) * 0.1]}
+                material={materials.gold}
+              >
+                <coneGeometry args={[0.025, 0.08, 4]} />
+              </mesh>
+            );
+          })}
+          {/* Gold bead necklaces hint at collar */}
+          <mesh castShadow position={[0, -0.08, wrap * 0.2]} rotation={[0.5, 0, 0]} material={materials.gold}>
+            <torusGeometry args={[wrap * 0.55, 0.02, 6, 16, Math.PI]} />
+          </mesh>
+        </group>
+      );
+    }
     if (sultanTurban) {
       const wrap = L.headR * 0.95;
       return (

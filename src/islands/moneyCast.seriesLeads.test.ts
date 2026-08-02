@@ -11,8 +11,8 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell through Dinar Dahlia", () => {
-  it("registers eight leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Mansa Moneybaggs", () => {
+  it("registers nine leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
@@ -23,17 +23,18 @@ describe("series leads — Cashwell through Dinar Dahlia", () => {
       "jade_fortune",
       "sultan_stacks",
       "dinar_dahlia",
+      "mansa_moneybaggs",
     ]);
-    expect(isSeriesLeadMascot("dinar_dahlia")).toBe(true);
+    expect(isSeriesLeadMascot("mansa_moneybaggs")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const dahlia = getMascot("dinar_dahlia");
-    expect(dahlia.name).toBe("Dinar Dahlia");
-    expect(dahlia.form).toBe("coin");
-    expect(dahlia.glyph).toBe("DD");
-    expect(dahlia.accessory).toBe("cape");
-    expect(colorHex(dahlia.color)).toBe("#0b3d2e");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(8);
+    const mansa = getMascot("mansa_moneybaggs");
+    expect(mansa.name).toBe("Mansa Moneybaggs");
+    expect(mansa.form).toBe("coin");
+    expect(mansa.glyph).toBe("M");
+    expect(mansa.accessory).toBe("cap");
+    expect(colorHex(mansa.color)).toBe("#1b4332");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(9);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
