@@ -171,6 +171,21 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | One balance sheet for Cove Take + carpet price + first seal. Adjust numbers that stall or trivialise. |
 
+**Balance sheet (Pillar 8 — guarded by `balanceSheet.test.ts`):**
+
+| Beat | Earn / spend | Note |
+|------|----------------|------|
+| Cove quests | +80 coins | First Coins 30 + Save/Spend 50 |
+| `mg_coin_sort` first clear | ~25–40 | Thresholds 20 / 35 / 55 |
+| Cove Take | 0 pouch | Scar / irreversible only |
+| Post-Cove pouch | ~105–120 | Typical |
+| Carpet travel | 0 | Scrap rug free |
+| Carpet polish → Coin | 50 | Soft upgrade after Cove |
+| Carpet polish → Fortune | 175 | Not auto-bought by Cove earn |
+| First Ledger Seal | 20 | Soft board sink |
+| Escape deals (jar+shell) | 60 | CF 15 → 30 |
+| Freedom Seal | CF ≥30 for **3** Pay Days | Was 2 — trivialised polish skip |
+
 ---
 
 ### 9. UI and player communication
