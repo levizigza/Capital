@@ -3,10 +3,9 @@ import { GameButton } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
 import { CharacterCreator } from "../views/CharacterCreator";
-import { CastSelectGrid } from "../views/CastSelectGrid";
 import { OutfitterStudio3D } from "./OutfitterStudio3D";
 import { ownsCompanion, companionPrice, STARTER_COMPANION_ID } from "../harborShop";
-import { sheetLookForBase } from "../castLooks";
+import { PLAYABLE_SELECT_CAST, sheetLookForBase } from "../castLooks";
 import { getMascot } from "../moneyCast";
 import type { IslandSaveV1 } from "../types";
 
@@ -87,7 +86,15 @@ export function OutfitterStudioOverlay({
       aria-modal="true"
       aria-label="Outfitter fitting room"
     >
-      <OutfitterStudio3D character={draft} className="absolute inset-0" />
+      <OutfitterStudio3D
+        character={draft}
+        className="absolute inset-0"
+        mode={stage === "select" ? "lineup" : "solo"}
+        lineupIds={PLAYABLE_SELECT_CAST}
+        onPickFighter={(id) => {
+          setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
+        }}
+      />
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
 
@@ -101,7 +108,7 @@ export function OutfitterStudioOverlay({
           </h2>
           <p className="max-w-md text-xs text-white/80 sm:text-sm">
             {stage === "select"
-              ? "Street Fighter pick — then customize Looks · Shirt · Pants · Accessories · Electronics."
+              ? "Tap a live 3D Money Mascot on the floor — then Snapchat-customize Looks · Shirt · Pants · Accessories · Electronics."
               : "Snapchat layers on the live mirror. Esc or Save & leave keeps your look on the plaza."}
           </p>
         </div>
@@ -120,19 +127,11 @@ export function OutfitterStudioOverlay({
           {stage === "select" ? (
             <div className="flex min-h-0 flex-col gap-3 text-center text-white">
               <div>
-                <div className="text-lg font-black">Cast select</div>
+                <div className="text-lg font-black">{getMascot(draft.base).name}</div>
                 <p className="text-sm text-white/75">
-                  Pick a series lead or Harbor classic — then tailor their looks on the mirror.
+                  Tap any 3D fighter in the room — then tailor them on the mirror.
                 </p>
               </div>
-              <CastSelectGrid
-                selectedId={draft.base}
-                onPick={(id) => {
-                  setDraft((d) =>
-                    sheetLookForBase(id, d.name || defaultName || getMascot(id).name),
-                  );
-                }}
-              />
               <div className="flex gap-2">
                 <GameButton
                   variant="outline"
@@ -147,7 +146,7 @@ export function OutfitterStudioOverlay({
                   onClick={() => setStage("look")}
                   data-testid="outfitter-confirm-fighter"
                 >
-                  Customize look →
+                  Customize on mirror →
                 </GameButton>
               </div>
             </div>

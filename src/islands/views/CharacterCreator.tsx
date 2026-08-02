@@ -34,6 +34,8 @@ type Props = {
   onDraftChange?: (draft: CapitalCharacter) => void;
   /** Show “Change fighter” to return to Street Fighter select. */
   onChangeFighter?: () => void;
+  cancelLabel?: string;
+  saveTestId?: string;
 };
 
 type Chip = { id: string; label: string; sub: string; node: ReactNode };
@@ -170,6 +172,8 @@ export function CharacterCreator({
   chrome,
   onDraftChange,
   onChangeFighter,
+  cancelLabel,
+  saveTestId = "character-creator-save",
 }: Props) {
   const [draft, setDraft] = useState<CapitalCharacter>(
     () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" },
@@ -380,14 +384,14 @@ export function CharacterCreator({
             className={dark ? "flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50" : "flex-1"}
             onClick={onCancel}
           >
-            {dark ? "Save look & leave" : "Leave"}
+            {cancelLabel ?? (dark ? (onChangeFighter ? "← Fighters" : "Save look & leave") : "Leave")}
           </GameButton>
         ) : null}
         <GameButton
           variant="primary"
           className="flex-1"
           onClick={commit}
-          data-testid="character-creator-save"
+          data-testid={saveTestId}
         >
           {saveLabel}
         </GameButton>
