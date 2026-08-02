@@ -106,6 +106,8 @@ If not, cut content before adding systems.
 
 **Shipped (Harbor Ashore redesign):** Opening tutorial follows iconic organic patterns (Portal one-verb · HL2 learn-by-doing). Critical path Talk Piggy → Money Carpet → Cove; no Outfitter/Capsule/Daily Ritual gates ashore. Single coach surface; ritual waits until Cove Change. See [harbor-ashore.md](./harbor-ashore.md).
 
+**Shipped (whole-game craft pass):** Talk Battle plaza **Leave** (not SaaS Skip); share lower-third high-contrast panel; Piggy `piggy_homecoming` sting; warmer boot cast Board CTA. Systems map: [whole-game-craft.md](./whole-game-craft.md).
+
 ---
 
 ## Navigability law (non-negotiable)

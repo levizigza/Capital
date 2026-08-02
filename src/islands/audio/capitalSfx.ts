@@ -19,7 +19,9 @@ export type CapitalSfxId =
   /** Irreversible Take mark — not Soft Beat lookout */
   | "take_mark"
   /** Spectacle / share — “Harbor felt that” Memory resolve */
-  | "harbor_felt";
+  | "harbor_felt"
+  /** Quiet homecoming — Piggy welcomes you back (bond, not checklist) */
+  | "piggy_homecoming";
 
 let ctx: AudioContext | null = null;
 
@@ -137,6 +139,13 @@ export function playCapitalSfx(id: CapitalSfxId): void {
         tone(277.18, 320, "sine", 0.034 * g, 0.1);
         tone(329.63, 380, "triangle", 0.03 * g, 0.2);
         tone(440, 420, "sine", 0.026 * g, 0.32);
+        break;
+      case "piggy_homecoming":
+        // Soft cheer — shorter and brighter than harbor_felt (presence, not spectacle)
+        tone(392, 140, "sine", 0.036 * g, 0);
+        tone(523.25, 180, "triangle", 0.032 * g, 0.08);
+        tone(659.25, 220, "sine", 0.028 * g, 0.18);
+        tone(784, 260, "triangle", 0.022 * g, 0.28);
         break;
       default:
         break;

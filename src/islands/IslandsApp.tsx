@@ -51,6 +51,7 @@ import {
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
+import { playCapitalSfx } from "./audio/capitalSfx";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
@@ -1187,6 +1188,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         graphId === CREDIT_REX_GRAPH_ID ? creditRexStartNodeId(save) : undefined;
 
       setDialogueState({ open: true, graphId, nodeId, npcId });
+      // Quiet homecoming reward sting — Piggy presence, not a checklist modal.
+      if (graphId === "dlg_harbor_piggy_penny_homecoming") {
+        playCapitalSfx("piggy_homecoming");
+      }
 
       void trackScreenEnter(`dialogue:${npcId}`, {
         islandId: island?.id ?? HUB_ISLAND_ID,

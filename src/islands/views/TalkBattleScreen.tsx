@@ -1,6 +1,6 @@
 /**
  * Talk Battle — conversation stage among living money.
- * Full-screen: just you and them until the turn-based convo ends (or you Skip).
+ * Full-screen: just you and them until the turn-based convo ends (or you Leave).
  * Fantasy law: Voyager among Money Mascots — never combat HP bars or a sterile void.
  */
 
@@ -65,7 +65,7 @@ function stageSky(placeId?: string | null): string {
  * Turn-based talk:
  * 1) Listen — NPC line fills the box (Continue)
  * 2) Choose — your reply options (or auto-continue if none)
- * Skip abandons the whole encounter.
+ * Leave (Esc) abandons the whole encounter — plaza courtesy, not SaaS Skip.
  */
 export function TalkBattleScreen({
   open,
@@ -156,24 +156,24 @@ export function TalkBattleScreen({
       />
 
       {/* Brand + place — title voice, not RPG duel chrome */}
-      <div className="relative z-10 flex items-start justify-between px-4 pt-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/80 drop-shadow">
+      <div className="relative z-10 flex items-start justify-between gap-3 px-4 pt-4">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/90 drop-shadow">
             {CAPITAL_BRAND} · {place}
           </p>
-          <p className="mt-0.5 text-[11px] font-semibold text-white/70 drop-shadow">
+          <p className="mt-0.5 text-[11px] font-semibold text-white/80 drop-shadow">
             {MONEY_IS_ALIVE_HERE}
           </p>
         </div>
-        <GameButton
-          variant="ghost"
-          size="sm"
+        <button
+          type="button"
           onClick={onSkip}
-          className="bg-black/35 text-white hover:bg-black/50"
+          className="shrink-0 rounded-full border border-white/35 bg-black/45 px-3.5 py-1.5 text-xs font-bold text-white shadow-md backdrop-blur-sm hover:bg-black/60"
           data-testid="talk-battle-skip"
+          title="Leave talk (Esc)"
         >
-          Skip ▸
-        </GameButton>
+          Leave
+        </button>
       </div>
 
       {/* Arena: NPC top-right, player bottom-left — faces only, no fake HP */}
@@ -253,8 +253,8 @@ export function TalkBattleScreen({
             </div>
           )}
         </div>
-        <p className="mt-2 text-center text-[10px] font-semibold text-white/80 drop-shadow">
-          Enter continue · Esc skip
+        <p className="mt-2 text-center text-[11px] font-semibold text-white/90 drop-shadow">
+          Enter continue · Esc · Leave
         </p>
       </div>
     </div>

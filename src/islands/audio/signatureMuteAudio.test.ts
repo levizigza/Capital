@@ -10,9 +10,16 @@ describe("Signature mute-test audio", () => {
   const views = join(__dirname, "../views");
   const sfx = readFileSync(join(__dirname, "capitalSfx.ts"), "utf8");
 
-  it("defines take_mark and harbor_felt stingers", () => {
+  it("defines take_mark, harbor_felt, and piggy_homecoming stingers", () => {
     expect(sfx).toMatch(/case "take_mark"/);
     expect(sfx).toMatch(/case "harbor_felt"/);
+    expect(sfx).toMatch(/case "piggy_homecoming"/);
+  });
+
+  it("homecoming Talk fires piggy_homecoming", () => {
+    const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
+    expect(app).toMatch(/piggy_homecoming/);
+    expect(app).toMatch(/dlg_harbor_piggy_penny_homecoming/);
   });
 
   it("Take mark fires take_mark (not soft_beat)", () => {

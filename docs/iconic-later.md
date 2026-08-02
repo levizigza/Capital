@@ -49,20 +49,21 @@ These are **allowed later** as spine depth — not new islands:
 
 | From | Parked polish |
 |------|----------------|
-| Fantasy / Story / UI | Talk Battle Leave / Apprentice chrome still SaaS-y after tutorial |
+| Fantasy / Story / UI | Talk Battle Leave shipped (whole-game craft pass); Apprentice chrome after tutorial still soft |
 | Core loop | Cold unseeded Cove Take timing |
 | Goals | Bad-take Spend soft-fail copy parity |
 | Feel | WASD stop readability + carpet rail juice |
 | Progression | Freedom seal / carpet tier plaza reads |
 | Encounters | Cove Alma vs Paycheck categorize overlap |
-| Content | (done) PARKED banners on outer island docs — this pass |
+| Content | (done) PARKED banners on outer island docs |
 | Balance | First seal plaza readability after pouch dips |
 | Art | Shore Coin Jar vs painting gate distance read |
-| Audio | Piggy homecoming reward sting |
-| Onboarding | Boot cast-select Cancel parity on look stage |
+| Audio | (done) Piggy homecoming reward sting |
+| Onboarding | Boot cast Board CTA / warmer copy shipped; Cancel parity polish |
 | Technical | Kill-switch e2e for harbor3d sticky fail |
-| A11y | High-contrast pass on share lower-third |
+| A11y | (done) High-contrast share lower-third panel |
 | Testing | Keep status board honest after every fix |
+| Whole-game | See [whole-game-craft.md](./whole-game-craft.md) — parts + whole craft law |
 
 ---
 

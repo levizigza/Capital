@@ -21,4 +21,10 @@ describe("Talk Battle fantasy contract", () => {
     expect(src).toMatch(/Listening among living money/);
     expect(src).toMatch(/data-place/);
   });
+
+  it("uses plaza Leave chrome — not SaaS Skip", () => {
+    expect(src).toMatch(/>\s*Leave\s*</);
+    expect(src).toMatch(/Esc · Leave/);
+    expect(src).not.toMatch(/Skip ▸/);
+  });
 });

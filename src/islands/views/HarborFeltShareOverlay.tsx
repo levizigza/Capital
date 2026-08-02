@@ -99,65 +99,73 @@ export function HarborFeltShareOverlay({
         )}
       </div>
 
-      {/* Sticky lower-third — retell + Complete / Leave always in reach */}
-      <div className="relative z-10 mx-auto w-full max-w-lg shrink-0 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
-          {capitalOrganEyebrow(organId)} · Harbor felt that
-        </p>
-        <h2 className="cap-display mt-1.5 text-xl text-white drop-shadow sm:text-2xl">
-          Money left footprints
-        </h2>
-        <p className="mt-1.5 text-sm text-white/85 drop-shadow" data-testid="harbor-felt-retell">
-          {retell}
-          {chapter ? ` (${chapter})` : ""}
-        </p>
-        {nextPainting ? (
-          <p
-            className="mt-1.5 text-[12px] font-semibold tracking-wide text-amber-100/85"
-            data-testid="harbor-felt-newly-true"
-          >
-            Newly true: {organVerbChip(organ)} on the Plinth · {nextPainting} open on the Carpet
+      {/* Sticky lower-third — high-contrast panel so organ retell reads at thumbnail size */}
+      <div className="relative z-10 mx-auto w-full max-w-lg shrink-0 px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
+        <div
+          className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/92 px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md"
+          data-testid="harbor-felt-lower-third"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
+            {capitalOrganEyebrow(organId)} · Harbor felt that
           </p>
-        ) : (
+          <h2 className="cap-display mt-1.5 text-xl text-[#fffdf6] sm:text-2xl">
+            Money left footprints
+          </h2>
           <p
-            className="mt-1.5 text-[12px] font-semibold tracking-wide text-amber-100/85"
-            data-testid="harbor-felt-newly-true"
+            className="mt-1.5 text-sm font-semibold leading-snug text-[#fffdf6]"
+            data-testid="harbor-felt-retell"
           >
-            Newly true: {organVerbChip(organ)} on the Plinth
+            {retell}
+            {chapter ? ` (${chapter})` : ""}
           </p>
-        )}
-        <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
-          <GameButton
-            variant="primary"
-            className="w-full sm:min-w-[12rem] sm:flex-1"
-            data-testid="harbor-felt-download"
-            onClick={(e) => {
-              triggerJuice("accept", { target: e.currentTarget });
-              triggerJuice("reward", {
-                burst: true,
-                target: e.currentTarget,
-                x: typeof window !== "undefined" ? window.innerWidth * 0.5 : undefined,
-                y: typeof window !== "undefined" ? window.innerHeight * 0.72 : undefined,
-              });
-              onShare();
-            }}
-            autoFocus
-          >
-            Share “Harbor felt that”
-          </GameButton>
-          <GameButton
-            variant="outline"
-            className="w-full bg-white/10 sm:min-w-[12rem] sm:flex-1"
-            data-testid="harbor-felt-keep-walking"
-            onClick={(e) => {
-              triggerJuice("accept", { target: e.currentTarget });
-              onKeepWalking();
-            }}
-          >
-            Leave — find Piggy
-          </GameButton>
+          {nextPainting ? (
+            <p
+              className="mt-1.5 text-[12px] font-bold tracking-wide text-amber-100"
+              data-testid="harbor-felt-newly-true"
+            >
+              Newly true: {organVerbChip(organ)} on the Plinth · {nextPainting} open on the Carpet
+            </p>
+          ) : (
+            <p
+              className="mt-1.5 text-[12px] font-bold tracking-wide text-amber-100"
+              data-testid="harbor-felt-newly-true"
+            >
+              Newly true: {organVerbChip(organ)} on the Plinth
+            </p>
+          )}
+          <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
+            <GameButton
+              variant="primary"
+              className="w-full sm:min-w-[12rem] sm:flex-1"
+              data-testid="harbor-felt-download"
+              onClick={(e) => {
+                triggerJuice("accept", { target: e.currentTarget });
+                triggerJuice("reward", {
+                  burst: true,
+                  target: e.currentTarget,
+                  x: typeof window !== "undefined" ? window.innerWidth * 0.5 : undefined,
+                  y: typeof window !== "undefined" ? window.innerHeight * 0.72 : undefined,
+                });
+                onShare();
+              }}
+              autoFocus
+            >
+              Share “Harbor felt that”
+            </GameButton>
+            <GameButton
+              variant="outline"
+              className="w-full border-white/40 bg-white/15 text-white sm:min-w-[12rem] sm:flex-1"
+              data-testid="harbor-felt-keep-walking"
+              onClick={(e) => {
+                triggerJuice("accept", { target: e.currentTarget });
+                onKeepWalking();
+              }}
+            >
+              Leave — find Piggy
+            </GameButton>
+          </div>
+          <p className="mt-2 text-[11px] font-semibold tracking-wide text-white/80">Esc · Leave</p>
         </div>
-        <p className="mt-2 text-[11px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>
   );

@@ -238,6 +238,7 @@ export function iconicUnitTestPaths(): string[] {
     "src/islands/views/signatureJuiceContract.test.ts",
     "src/islands/views/minigameFailContract.test.ts",
     "src/islands/views/progressionContract.test.ts",
+    "src/islands/views/talkBattleFantasy.test.ts",
     "src/islands/creditEncounter.test.ts",
   ]);
   for (const row of ICONIC_COLD_CHECKLIST) {
