@@ -170,6 +170,21 @@ const ROLE_TIPS: Record<
       strategist: "Every entrance an occasion. Every ledger line a rose.",
     },
   },
+  billionaire_bao: {
+    tip: {
+      explorer:
+        "Billionaire Bao. Quiet luxury — that Plinth remembers every careful choice without shouting.",
+      apprentice:
+        "Strategy first: every move intentional. Piggy keeps Harbor’s verbs; I compound the outcome. Visit the Plinth.",
+      strategist:
+        "Legacy wealth, not Harbor Keeper. Connections open doors; Memory Plinth files the receipt after every Take.",
+    },
+    bye: {
+      explorer: "Respected without noise — go make a lasting move!",
+      apprentice: "Pay yourself first. Then let influence echo.",
+      strategist: "Subtle. Refined. Compounded.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {

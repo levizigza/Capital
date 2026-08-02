@@ -44,6 +44,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "peso", hex: "#166534", label: "Peso Green" },
   /** Fortuna Fernanda — emerald bolero */
   { id: "fortuna", hex: "#047857", label: "Fortuna Emerald" },
+  /** Billionaire Bao — quiet-luxury forest */
+  { id: "bao", hex: "#052e16", label: "Bao Forest" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

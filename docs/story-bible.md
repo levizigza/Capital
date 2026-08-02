@@ -126,7 +126,7 @@ Coincraft Cove is **Island 1 / first painting** — reference implementation.
 |-------|--------|----------------|
 | **Path buddy** | **Coin Bag** (bunny-eared money bag) | Stays beside the Voyager on Harbor, island shores, **and the money carpet** (chill side-seat with emotes: sleep Zzz, look-back faces, waves); points at next person/door/painting on foot. Soft **edge chevron** only when the goal is off-screen (mute via **Ignore arrow** / Settings → Guide arrows for sidequests). |
 | **Harbor Keeper** | Piggy Penny | Castle Grounds verbs; talk lines for Outfitter, Capsule, Dock |
-| **Series leads** | **Cashwell** · **Cashmere Couture** · **Peso Pedro** · **Fortuna Fernanda** | Faces of Cashwell Capital — Memory Courtyard cast by the Plinth (dandy + couture + peso pair). Name living money with style. Never steal Piggy presence / Coin Bag pointing on the signature loop. |
+| **Series leads** | **Cashwell** · **Cashmere** · **Peso Pedro** · **Fortuna Fernanda** · **Billionaire Bao** | Faces of Cashwell Capital — Memory Courtyard cast by the Plinth. Name living money with style. Never steal Piggy presence / Coin Bag pointing on the signature loop. |
 | **Island Ally** | Per-island (Cove: Captain Penny → remap to mascot cast over time) | Search / Find on that island |
 | **Return Witness** | Budget Bot or Vault Vince | Names the Change when you come home |
 

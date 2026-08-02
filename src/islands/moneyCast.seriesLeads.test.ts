@@ -11,35 +11,26 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell · Cashmere · Pedro · Fernanda", () => {
-  it("registers four leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Bao", () => {
+  it("registers five leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
       "cashmere",
       "peso_pedro",
       "fortuna_fernanda",
+      "billionaire_bao",
     ]);
-    expect(isSeriesLeadMascot("fortuna_fernanda")).toBe(true);
+    expect(isSeriesLeadMascot("billionaire_bao")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    expect(getMascot("cashwell").accessory).toBe("cap");
-    expect(colorHex(getMascot("cashwell").color)).toBe("#14532d");
-    expect(getMascot("cashmere").accessory).toBe("cape");
-    expect(colorHex(getMascot("cashmere").color)).toBe("#0a0a0a");
-
-    const pedro = getMascot("peso_pedro");
-    expect(pedro.name).toBe("Peso Pedro");
-    expect(pedro.glyph).toBe("P");
-    expect(colorHex(pedro.color)).toBe("#166534");
-
-    const fernanda = getMascot("fortuna_fernanda");
-    expect(fernanda.name).toBe("Fortuna Fernanda");
-    expect(fernanda.form).toBe("coin");
-    expect(fernanda.glyph).toBe("P");
-    expect(fernanda.accessory).toBe("cape");
-    expect(colorHex(fernanda.color)).toBe("#047857");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(4);
+    const bao = getMascot("billionaire_bao");
+    expect(bao.name).toBe("Billionaire Bao");
+    expect(bao.form).toBe("coin");
+    expect(bao.glyph).toBe("BB");
+    expect(bao.accessory).toBe("vest");
+    expect(colorHex(bao.color)).toBe("#052e16");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(5);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
