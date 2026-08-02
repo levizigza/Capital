@@ -230,6 +230,21 @@ const ROLE_TIPS: Record<
       strategist: "Luxury in every detail. Wonder in every ledger line.",
     },
   },
+  mansa_moneybaggs: {
+    tip: {
+      explorer:
+        "Mansa Moneybaggs — golden legacy! That Plinth remembers every generous choice across the trade route.",
+      apprentice:
+        "Wealth that protects, prosperity that uplifts. Piggy keeps Harbor’s verbs; I measure legacy in lives changed. Visit the Plinth.",
+      strategist:
+        "Kingdom wealth, not Harbor Keeper. Paths connect kingdoms; Memory Plinth files the gold after every Take.",
+    },
+    bye: {
+      explorer: "Giving is royalty — go inspire!",
+      apprentice: "Pay yourself first. Then let abundance uplift others.",
+      strategist: "Gold isn’t just wealth. It’s a responsibility. It’s a legacy.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
