@@ -48,6 +48,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "bao", hex: "#052e16", label: "Bao Forest" },
   /** Jade Fortune — deep jade gown */
   { id: "jade", hex: "#065f46", label: "Jade Green" },
+  /** Sultan Stacks — palace emerald kaftan */
+  { id: "sultan", hex: "#064e3b", label: "Sultan Emerald" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */
