@@ -74,7 +74,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
           Fortune Archipelago · Fighter Select
         </p>
-        <h1 className="cap-display text-2xl text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
+        <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
           {stage === "select" ? "Choose your Voyager" : "Become you"}
         </h1>
         <p className="max-w-lg text-sm text-white/80">
@@ -124,8 +124,16 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               </p>
               <button
                 type="button"
-                className="min-h-12 w-full rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                onClick={() => setStage("look")}
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                onPointerUp={(e) => {
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  setStage("look");
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setStage("look");
+                }}
                 data-testid="boot-customize-look"
               >
                 Customize {mascot.name} on the 3D mirror →

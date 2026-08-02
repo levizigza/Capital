@@ -29,7 +29,6 @@ export function StreetFighterCoinSelect({
   className,
 }: Props) {
   const boardIds = ids ?? LEAD_IDS;
-  const selected = getMascot(selectedId);
 
   return (
     <div
@@ -63,13 +62,22 @@ export function StreetFighterCoinSelect({
                 type="button"
                 role="option"
                 aria-selected={active}
-                onClick={() => onPick(id)}
+                onPointerUp={(e) => {
+                  // pointerup is more reliable than click when CSS 3D transforms are animating.
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  onPick(id);
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPick(id);
+                }}
                 onFocus={() => onFocus?.(id)}
                 onMouseEnter={() => onFocus?.(id)}
                 data-testid={`sf-coin-${id}`}
-                className={`group relative flex min-h-0 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-1 py-1.5 transition sm:gap-1 sm:p-2 ${
+                className={`relative flex min-h-0 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-1 py-1.5 touch-manipulation sm:gap-1 sm:p-2 ${
                   active
-                    ? "scale-[1.03] border-amber-300 bg-amber-200/20 shadow-[0_0_28px_rgba(251,191,36,0.4)]"
+                    ? "border-amber-300 bg-amber-200/20 shadow-[0_0_28px_rgba(251,191,36,0.4)]"
                     : "border-white/15 bg-black/40 hover:border-white/45 hover:bg-black/55"
                 }`}
               >
@@ -129,12 +137,6 @@ export function StreetFighterCoinSelect({
           })}
         </div>
 
-        <p className="pointer-events-none mt-1 shrink-0 text-center text-sm font-black text-white drop-shadow sm:text-base">
-          {selected.name}
-        </p>
-        <p className="pointer-events-none mx-auto max-w-md shrink-0 text-center text-[11px] text-white/75 sm:text-xs">
-          {selected.tagline}
-        </p>
       </div>
 
       <style>{`
