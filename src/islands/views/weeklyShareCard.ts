@@ -1,11 +1,15 @@
 /** Share cards — weekly ritual + iconic “Harbor felt that” social object. */
 
 import { drawMemoryPlinthSilhouette } from "../harborIcon";
+import type { MoneyOrganId } from "../moneyOrgans";
+import { coldRetellLine, organVerbChip } from "../worldMemory";
 
 export type HarborFeltCardOpts = {
   voyagerName: string;
   scarLabel: string;
   chapter?: string | null;
+  scarId?: string;
+  islandId?: string;
 };
 
 export async function downloadWeeklyShareCard(opts: {
@@ -29,16 +33,16 @@ export async function downloadWeeklyShareCard(opts: {
 /** Build Harbor-felt PNG as blob (for preview + download + Web Share). */
 export async function buildHarborFeltCardBlob(opts: HarborFeltCardOpts): Promise<Blob> {
   const organ = organFromChapter(opts.chapter);
-  const organWord =
-    organ === "coin" ? "Coin" : organ === "clock" ? "Clock" : organ === "spiral" ? "Spiral" : "Memory";
+  const retell = coldRetellLine({
+    id: opts.scarId ?? "",
+    islandId: opts.islandId ?? islandIdFromChapter(opts.chapter),
+    label: opts.scarLabel,
+  });
   return paintCard({
     mode: "felt",
     voyagerName: opts.voyagerName,
     title: "Harbor felt that",
-    lines: [
-      opts.chapter || "Harbor Haven",
-      `Harbor remembered the ${organWord}: “${opts.scarLabel}.”`,
-    ],
+    lines: [opts.chapter || "Harbor Haven", retell],
     accent: organTagline(organ),
     organ,
     scarLabel: opts.scarLabel,
@@ -68,15 +72,11 @@ export async function shareHarborFeltCard(opts: HarborFeltCardOpts): Promise<"sh
         title: "Harbor felt that",
         text: (() => {
           const organ = organFromChapter(opts.chapter);
-          const word =
-            organ === "coin"
-              ? "Coin"
-              : organ === "clock"
-                ? "Clock"
-                : organ === "spiral"
-                  ? "Spiral"
-                  : "Memory";
-          return `Capital · Harbor remembered the ${word}: “${opts.scarLabel}.”`;
+          return `Capital · ${coldRetellLine({
+            id: opts.scarId ?? "",
+            islandId: opts.islandId ?? islandIdFromChapter(opts.chapter),
+            label: opts.scarLabel,
+          })} · ${organVerbChip(organ as MoneyOrganId)}`;
         })(),
       });
       return "shared";
@@ -99,11 +99,19 @@ function organFromChapter(chapter?: string | null): OrganTone {
   return "memory";
 }
 
+function islandIdFromChapter(chapter?: string | null): string {
+  const c = (chapter || "").toLowerCase();
+  if (c.includes("paycheck")) return "paycheck_peninsula";
+  if (c.includes("credit")) return "credit_kingdom";
+  if (c.includes("cove")) return "coincraft_cove";
+  return "";
+}
+
 function organTagline(organ: OrganTone): string {
-  if (organ === "coin") return "Coin · Hold · Take · Hush";
-  if (organ === "clock") return "Clock · Earn · Stamp · Shelter";
-  if (organ === "spiral") return "Spiral · Borrow · Weigh · Withstand";
-  return "Memory Plinth · money is alive";
+  if (organ === "coin") return "Coin holds · Take · Hush";
+  if (organ === "clock") return "Clock shelters · Earn · Stamp";
+  if (organ === "spiral") return "Spiral withstands · Borrow · Weigh";
+  return "Memory keeps · money is alive";
 }
 
 function organAccent(organ: OrganTone): { seal: string; glow: string; wash: string } {

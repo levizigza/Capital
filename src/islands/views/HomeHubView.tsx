@@ -1078,6 +1078,7 @@ export function HomeHubView({
                     scarLabel={latestPlaque.label}
                     chapter={scarChapterTitle(latestPlaque)}
                     organId={latestOrgan}
+                    scarMeta={{ id: latestPlaque.id, islandId: latestPlaque.islandId }}
                     previewUrl={feltPreviewUrl}
                     onShare={async () => {
                       try {
@@ -1085,6 +1086,8 @@ export function HomeHubView({
                           voyagerName: voyager.name || "Voyager",
                           scarLabel: latestPlaque.label,
                           chapter: scarChapterTitle(latestPlaque),
+                          scarId: latestPlaque.id,
+                          islandId: latestPlaque.islandId,
                         });
                         toast.message(result === "shared" ? "Shared" : "Share card downloaded");
                       } catch (err) {

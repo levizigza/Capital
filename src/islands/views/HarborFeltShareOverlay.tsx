@@ -9,13 +9,20 @@ import { GameButton } from "@/game-ui";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { capitalOrganEyebrow } from "../titleVoice";
-import { scarOrganName } from "../worldMemory";
+import {
+  coldRetellLine,
+  nextPaintingAfterScar,
+  organVerbChip,
+  type HarborScar,
+} from "../worldMemory";
 import { triggerJuice } from "@/juice";
 
 type Props = {
   scarLabel: string;
   chapter?: string | null;
   organId?: MoneyOrganId | null;
+  /** Optional scar ids so share can name the newly open painting */
+  scarMeta?: Pick<HarborScar, "id" | "islandId"> | null;
   previewUrl: string | null;
   onShare: () => void;
   onKeepWalking: () => void;
@@ -25,12 +32,18 @@ export function HarborFeltShareOverlay({
   scarLabel,
   chapter,
   organId = "memory",
+  scarMeta = null,
   previewUrl,
   onShare,
   onKeepWalking,
 }: Props) {
-  const organWord = scarOrganName(organId ?? "memory");
   const organ = organId ?? "memory";
+  const retell = coldRetellLine({
+    id: scarMeta?.id ?? "",
+    islandId: scarMeta?.islandId ?? "",
+    label: scarLabel,
+  });
+  const nextPainting = scarMeta ? nextPaintingAfterScar(scarMeta) : null;
 
   useEffect(() => {
     playOrganSfx(organ);
@@ -82,9 +95,24 @@ export function HarborFeltShareOverlay({
           Money left footprints
         </h2>
         <p className="mt-1.5 text-sm text-white/85 drop-shadow" data-testid="harbor-felt-retell">
-          Harbor remembered the {organWord}: “{scarLabel}.”
+          {retell}
           {chapter ? ` (${chapter})` : ""}
         </p>
+        {nextPainting ? (
+          <p
+            className="mt-1.5 text-[12px] font-semibold tracking-wide text-amber-100/85"
+            data-testid="harbor-felt-newly-true"
+          >
+            Newly true: {organVerbChip(organ)} on the Plinth · {nextPainting} open on the Carpet
+          </p>
+        ) : (
+          <p
+            className="mt-1.5 text-[12px] font-semibold tracking-wide text-amber-100/85"
+            data-testid="harbor-felt-newly-true"
+          >
+            Newly true: {organVerbChip(organ)} on the Plinth
+          </p>
+        )}
         <div className="mt-3 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
           <GameButton
             variant="primary"

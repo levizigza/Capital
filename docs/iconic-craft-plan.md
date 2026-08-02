@@ -291,7 +291,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 2 | Core loop | playable → iconic | 2026-08-02 | Gate spectacle/echo on plaza ready; hide Piggy HUD during all cinema; myth cinema stage; Piggy before day-2. Next: cold unseeded Cove Take timing |
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Minigame miss → dignity overlay + Retry / stay-put; no Harbor dump on structure fail; ModularMinigame “Round over” (not fake Complete). Next: bad-take Spend soft-fail copy parity |
 | 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
-| 5 | Progression | | | |
+| 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
 | 6 | Encounters | | | |
 | 7 | Content | | | |
 | 8 | Balance | | | |
@@ -316,6 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **4 — Controls & feel** (`triggerJuice` on Take mark / Plinth spectacle / share; GameViewport hosts juice CSS; Settings → Game Feel; fail overlay shakes).  
+**Last shipped:** Pillar **5 — Progression** (suit verb survives Take → Harbor; share/Piggy name newly boardable painting — Paycheck after Cove, Credit after Paycheck).  
 
-**Start next:** Pillar **5 — Progression** (seals / carpet / organs — ability vs upgrade vs story vs space stays sharp).
+**Start next:** Pillar **6 — Levels & encounters** (per spine island: 3 distinct skill tests; cut “same fight, more HP”).

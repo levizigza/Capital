@@ -118,7 +118,7 @@ export function coinBagHarborTip(
   if (opts?.plinthGlow && opts?.latestScarLabel) {
     return {
       tip: `Plinth glows — “${opts.latestScarLabel}”`,
-      coach: "Harbor felt that. Share the card, then walk the Memory Plinth with me.",
+      coach: "Harbor felt that. Share the card, then find Piggy — she’ll name what’s newly open on the Carpet.",
     };
   }
 

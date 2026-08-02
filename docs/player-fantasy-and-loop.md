@@ -61,6 +61,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 
 **Shipped (Pillar 4 — controls & feel):** Signature Take mark / Plinth spectacle / share fire `triggerJuice` (SFX + nudge/burst); Settings → Game Feel; minigame fail shakes. Juice CSS mounts on `GameViewport`.
 
+**Shipped (Pillar 5 — progression):** After Cove Take, Harbor can answer “what’s newly true?” — `Coin holds` on Plinth retell/shelf/share + Piggy homecoming names **Paycheck Peninsula** newly open on the Carpet (Clock → Credit).
+
 ## 7–12. Content → audio → story
 
 Content = Money Mascots + islands + capsules. Presentation must stay readable (labels, one coach sentence). Story = Story Bible only.

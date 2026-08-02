@@ -8,8 +8,11 @@ import {
   dominantStance,
   groupScarsByChapter,
   hasIrreversible,
+  nextPaintingAfterScar,
   organQuietBadge,
+  organSuitVerb,
   organTakeHushLine,
+  organVerbChip,
   plaqueShelfLine,
   recordIrreversible,
   recordNpcTalk,
@@ -144,10 +147,15 @@ describe("worldMemory", () => {
     expect(scarOrganId(cove)).toBe("coin");
     expect(scarOrganId(pay)).toBe("clock");
     expect(scarOrganId(credit)).toBe("spiral");
-    expect(coldRetellLine(cove)).toBe('Harbor remembered the Coin: “Jar before treat.”');
-    expect(coldRetellLine(pay)).toBe('Harbor remembered the Clock: “Umbrella before glitter.”');
-    expect(coldRetellLine(credit)).toBe('Harbor remembered the Spiral: “Waited the spiral.”');
-    expect(plaqueShelfLine(cove)).toBe("Coin · Jar before treat");
+    expect(organSuitVerb("coin")).toBe("holds");
+    expect(organVerbChip("coin")).toBe("Coin holds");
+    expect(coldRetellLine(cove)).toBe('The Coin holds — Harbor remembered: “Jar before treat.”');
+    expect(coldRetellLine(pay)).toBe('The Clock shelters — Harbor remembered: “Umbrella before glitter.”');
+    expect(coldRetellLine(credit)).toBe('The Spiral withstands — Harbor remembered: “Waited the spiral.”');
+    expect(plaqueShelfLine(cove)).toBe("Coin holds · Jar before treat");
+    expect(nextPaintingAfterScar(cove)).toBe("Paycheck Peninsula");
+    expect(nextPaintingAfterScar(pay)).toBe("Credit Kingdom");
+    expect(nextPaintingAfterScar(credit)).toBeNull();
     expect(coldSpectacleHeadline(cove)).toMatch(/Coin/);
     expect(coldSpectacleHeadline(pay)).toMatch(/Clock/);
     expect(coldSpectacleHeadline(credit)).toMatch(/Spiral/);

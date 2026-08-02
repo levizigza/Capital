@@ -52,7 +52,15 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { getGenreWorld } from "./genreWorlds";
-import { harborScarPlaques, stanceGreetingHint, recordNpcTalk, scarTriggersChapterQuiet } from "./worldMemory";
+import {
+  harborScarPlaques,
+  nextPaintingAfterScar,
+  organVerbChip,
+  plaqueShelfLine,
+  stanceGreetingHint,
+  recordNpcTalk,
+  scarTriggersChapterQuiet,
+} from "./worldMemory";
 import {
   syncHarborRitual,
   markRitualGreeted,
@@ -974,8 +982,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` I already set a plaque: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
+          const next = lastScar ? nextPaintingAfterScar(lastScar) : "Paycheck Peninsula";
           return {
             ...prev,
             harborHomecoming: {
@@ -985,7 +994,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.${scarBit}`,
+              message: `Piggy Penny: The ${organVerbChip("coin")} — you came home changed.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1005,8 +1014,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` Dotgraph left a mark: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
+          const next = lastScar ? nextPaintingAfterScar(lastScar) : "Credit Kingdom";
           return {
             ...prev,
             harborHomecoming: {
@@ -1016,7 +1026,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: A paycheck isn't freedom until you face a surprise. You chose — and Harbor got quieter to listen.${scarBit}`,
+              message: `Piggy Penny: The ${organVerbChip("clock")} — a paycheck isn’t freedom until you face a surprise.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1038,7 +1048,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` The plaza still shows: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
           return {
             ...prev,
@@ -1049,7 +1059,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: You faced the interest storm and came home. That's Ordeal courage.${scarBit}`,
+              message: `Piggy Penny: The ${organVerbChip("spiral")} — you faced the interest storm and came home.${scarBit} Harbor keeps your Ordeal on the Plinth.`,
             },
           };
         });

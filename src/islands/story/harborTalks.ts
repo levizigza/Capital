@@ -6,7 +6,12 @@
 import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
 import type { HubGuidedStepId } from "./storyBible";
-import { scarOrganId, scarOrganName } from "../worldMemory";
+import {
+  nextPaintingAfterScar,
+  plaqueShelfLine,
+  scarOrganId,
+  scarOrganName,
+} from "../worldMemory";
 
 export const HARBOR_NPCS: IslandNpc[] = HARBOR_LOCAL_CAST.map((slot) => {
   const m = getMascot(slot.mascotId);
@@ -447,21 +452,27 @@ export function piggyHomecomingGraph(
 ): DialogueGraph {
   const opener =
     message?.replace(/^Piggy Penny:\s*/i, "").trim() ||
-    "You earned coins and made a real choice. Harbor feels different because YOU are.";
+    "You came home changed. The Plinth already knows — Harbor feels different because YOU are.";
 
-  const named = (opts?.scars ?? [])
-    .slice(-3)
-    .map((s) => {
-      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
-      if (id.includes("cove")) return `Cove — ${s.label}`;
-      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
-      if (id.includes("credit")) return `Kingdom — ${s.label}`;
-      return s.label;
-    });
+  const shelfScars = (opts?.scars ?? []).slice(-3);
+  const named = shelfScars.map((s) =>
+    plaqueShelfLine({
+      id: s.id ?? "",
+      islandId: s.islandId ?? "",
+      label: s.label,
+    }),
+  );
   const scarLine =
     named.length > 0
-      ? `Your Memory Plinth holds: ${named.join(" · ")}.`
+      ? `Your Memory Plinth: ${named.join(" · ")}.`
       : "Coin Bag and I watched you grow.";
+  const latestScar = shelfScars.at(-1);
+  const nextPainting = latestScar
+    ? nextPaintingAfterScar({
+        id: latestScar.id ?? "",
+        islandId: latestScar.islandId ?? "",
+      })
+    : null;
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
       ? "Three homecomings. Cove, Dotgraph, Kingdom — I trust your pouch, and you."
@@ -488,6 +499,10 @@ export function piggyHomecomingGraph(
         : phase === "trust"
           ? bond
           : bond;
+
+  const nextLine = nextPainting
+    ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Or wander and read your Memory Plinth; Harbor keeps your story.`
+    : "Coin Bag will point the Carpet Dock when a painting waits — or wander the plaza and read your Memory Plinth. Harbor keeps your story.";
 
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
@@ -520,7 +535,7 @@ export function piggyHomecomingGraph(
       {
         id: "h3",
         speaker: "Piggy Penny",
-        text: "Coin Bag will point the Carpet Dock when a painting waits — or wander the plaza and read your Memory Plinth. Harbor keeps your story.",
+        text: nextLine,
         choices: [
           {
             id: "h3_ok",
@@ -556,13 +571,13 @@ function formatScarShelf(
 ): string {
   return scars
     .slice(-3)
-    .map((s) => {
-      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
-      if (id.includes("cove")) return `Cove — ${s.label}`;
-      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
-      if (id.includes("credit")) return `Kingdom — ${s.label}`;
-      return s.label;
-    })
+    .map((s) =>
+      plaqueShelfLine({
+        id: s.id ?? "",
+        islandId: s.islandId ?? "",
+        label: s.label,
+      }),
+    )
     .join(" · ");
 }
 

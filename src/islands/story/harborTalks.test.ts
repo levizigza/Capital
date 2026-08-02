@@ -3,6 +3,7 @@ import {
   HARBOR_NPCS,
   HARBOR_DIALOGUES,
   piggyGuidedGraph,
+  piggyHomecomingGraph,
   resolveHarborDialogue,
   findHarborNpc,
   harborTipPreview,
@@ -45,6 +46,20 @@ describe("harborTalks", () => {
       homecoming: { pending: false, celebrated: true, piggyTalked: true },
     });
     expect(afterTalk?.id).toBe("dlg_harbor_piggy_penny");
+  });
+
+  it("names Coin holds + Paycheck unlock after Cove scar homecoming", () => {
+    const g = piggyHomecomingGraph("Piggy Penny: The Coin holds — you came home changed.", {
+      scars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          label: "Jar before treat",
+        },
+      ],
+    });
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Coin holds/);
+    expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Paycheck Peninsula/);
   });
 
   it("gives distinct tip beats per mascot role", () => {

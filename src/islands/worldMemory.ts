@@ -156,15 +156,45 @@ export function scarOrganName(organ: MoneyOrganId): string {
   return "Memory";
 }
 
-/** One kid-facing sentence after a cold play — organ + plaque. */
-export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
-  const organ = scarOrganName(scarOrganId(scar));
-  return `Harbor remembered the ${organ}: “${scar.label}.”`;
+/**
+ * Suit verb that must survive Take → Harbor (Pillar 5 progression).
+ * Coin holds · Clock shelters · Spiral withstands · Memory keeps.
+ */
+export function organSuitVerb(organ: MoneyOrganId): string {
+  if (organ === "clock") return "shelters";
+  if (organ === "spiral") return "withstands";
+  if (organ === "memory") return "keeps";
+  return "holds";
 }
 
-/** Plinth billboard / modal row — organ first so the word sticks. */
+/** Short organ+verb chip — “Coin holds”. */
+export function organVerbChip(organ: MoneyOrganId): string {
+  return `${scarOrganName(organ)} ${organSuitVerb(organ)}`;
+}
+
+/**
+ * After a spine Take lands at Harbor — what painting is newly boardable?
+ * Ability/story/space progression kids can point at without opening a ledger.
+ */
+export function nextPaintingAfterScar(
+  scar: Pick<HarborScar, "id" | "islandId">,
+): string | null {
+  const organ = scarOrganId(scar);
+  if (organ === "coin") return "Paycheck Peninsula";
+  if (organ === "clock") return "Credit Kingdom";
+  return null;
+}
+
+/** One kid-facing sentence after a cold play — organ verb + plaque. */
+export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
+  const organ = scarOrganId(scar);
+  return `The ${organVerbChip(organ)} — Harbor remembered: “${scar.label}.”`;
+}
+
+/** Plinth billboard / modal row — organ verb first so the suit sticks. */
 export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
-  return `${scarOrganName(scarOrganId(scar))} · ${scar.label}`;
+  const organ = scarOrganId(scar);
+  return `${organVerbChip(organ)} · ${scar.label}`;
 }
 
 /** Spectacle headline — organ-first Harbor proof. */
