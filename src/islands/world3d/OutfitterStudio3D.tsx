@@ -1,13 +1,38 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Component,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ErrorInfo,
+  type ReactNode,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { CapitalCharacter } from "../character";
 import { colorHex } from "../character";
 import { sheetLookForBase } from "../castLooks";
-import { getMascot } from "../moneyCast";
 import { VoyagerMesh } from "./VoyagerMesh";
+
+/** Keep troika/font workers out of the Outfitter — they flake on Pages CSP/hydration. */
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode; onError?: () => void },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(_e: Error, _info: ErrorInfo) {
+    this.props.onError?.();
+  }
+  render() {
+    if (this.state.failed) return null;
+    return this.props.children;
+  }
+}
 
 export type OutfitterStudioMode = "solo" | "lineup";
 
@@ -67,7 +92,6 @@ function LineupFighter({
 }) {
   const group = useRef<THREE.Group>(null);
   const look = useMemo(() => sheetLookForBase(id), [id]);
-  const mascot = getMascot(id);
   const accent = colorHex(look.color);
 
   // Arc / grid: up to 5 columns, rows fill backward
@@ -115,18 +139,7 @@ function LineupFighter({
           scale={selected ? 1.05 : 0.95}
         />
       </group>
-      <Billboard position={[0, selected ? 2.35 : 1.85, 0]} follow>
-        <Text
-          fontSize={selected ? 0.18 : 0.14}
-          color={selected ? "#fef3c7" : "#e7e5e4"}
-          anchorX="center"
-          outlineWidth={0.02}
-          outlineColor="#1c1917"
-          maxWidth={1.4}
-        >
-          {mascot.name}
-        </Text>
-      </Billboard>
+      {/* Name lives in HTML chrome — avoid drei Text workers on Pages */}
     </group>
   );
 }
@@ -190,12 +203,6 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
           <meshStandardMaterial color="#bae6fd" metalness={0.55} roughness={0.15} />
         </mesh>
       ) : null}
-
-      <Billboard position={[0, mode === "lineup" ? 4.2 : 3.55, mode === "lineup" ? -4.8 : -2.9]} follow>
-        <Text fontSize={0.26} color="#fff7ed" anchorX="center" outlineWidth={0.02} outlineColor="#1c1917">
-          {mode === "lineup" ? "Pick your fighter" : "Fitting mirror"}
-        </Text>
-      </Billboard>
 
       {mode === "lineup" ? (
         <group>
@@ -276,12 +283,16 @@ export function OutfitterStudio3D({
   onPickFighter,
 }: Props) {
   const [ready, setReady] = useState(false);
+  const [failed, setFailed] = useState(false);
   const reduced = useMemo(
     () =>
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
     [],
   );
+
+  // Lineup of every fighter is heavy — keep shadows off and cap DPR in lineup.
+  const lineup = mode === "lineup";
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -299,32 +310,45 @@ export function OutfitterStudio3D({
       data-mode={mode}
       aria-hidden={!ready}
     >
-      {!ready ? (
+      {!ready && !failed ? (
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#1c1917] text-sm font-bold text-amber-100/80">
           Opening the 3D Outfitter…
         </div>
       ) : null}
-      <Canvas
-        shadows={!reduced}
-        dpr={reduced ? [1, 1] : [1, 1.25]}
-        camera={{ position: [0, 2.1, 5.2], fov: 42 }}
-        className="absolute inset-0"
-        gl={{ antialias: !reduced, alpha: false, powerPreference: "high-performance" }}
-        onCreated={({ gl, camera }) => {
-          gl.setClearColor("#1c1917", 1);
-          camera.lookAt(0, 1.1, 0);
-          setReady(true);
-        }}
-      >
-        <Suspense fallback={null}>
-          <FittingRoom
-            character={character}
-            mode={mode}
-            lineupIds={lineupIds}
-            onPickFighter={onPickFighter}
-          />
-        </Suspense>
-      </Canvas>
+      {failed ? (
+        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#1c1917] px-6 text-center text-sm font-bold text-amber-100/90">
+          3D Outfitter couldn’t start on this device — use Customize to continue with your pick.
+        </div>
+      ) : (
+        <CanvasErrorBoundary onError={() => setFailed(true)}>
+          <Canvas
+            shadows={!reduced && !lineup}
+            dpr={reduced || lineup ? [1, 1] : [1, 1.25]}
+            camera={{ position: lineup ? [0, 3.4, 9.2] : [0, 2.1, 5.2], fov: lineup ? 38 : 42 }}
+            className="absolute inset-0"
+            gl={{
+              antialias: !reduced,
+              alpha: false,
+              powerPreference: "high-performance",
+              failIfMajorPerformanceCaveat: false,
+            }}
+            onCreated={({ gl, camera }) => {
+              gl.setClearColor("#1c1917", 1);
+              camera.lookAt(0, lineup ? 1.0 : 1.1, lineup ? -1.2 : 0);
+              setReady(true);
+            }}
+          >
+            <Suspense fallback={null}>
+              <FittingRoom
+                character={character}
+                mode={mode}
+                lineupIds={lineupIds}
+                onPickFighter={onPickFighter}
+              />
+            </Suspense>
+          </Canvas>
+        </CanvasErrorBoundary>
+      )}
     </div>
   );
 }
