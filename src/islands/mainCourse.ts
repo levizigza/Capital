@@ -80,7 +80,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
     id: "boss_ordeal",
     track: "main",
     title: "Credit Kingdom · Ordeal",
-    blurb: "Late-game storm. Clear First Recovery — interest feeds on haste.",
+    blurb: "Face The Debt Collector’s storm. Clear First Recovery — interest feeds on haste.",
     placeId: BOSS_ISLAND_ID,
     done: (s) => Boolean(s.questStatus[CREDIT_ORDEAL_QUEST_ID]?.completed),
   },

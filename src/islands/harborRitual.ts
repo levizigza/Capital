@@ -38,7 +38,7 @@ const RUMORS = [
   { id: "piggy_wave", text: "Piggy Penny says Coin Bag slept by the dock again — he dreams of carpets." },
   { id: "market_whisper", text: "Pasaran Lane whispers: needs before wants, even on glitter days." },
   { id: "thread_hum", text: "The Fortune Thread hums louder when someone jars before they treat." },
-  { id: "debt_fog", text: "Far islands talk of interest storms — haste feeds the Debt Cloud." },
+  { id: "debt_fog", text: "Far islands talk of interest storms — haste feeds The Debt Collector." },
   { id: "studio_spark", text: "Someone left a new painting idea in Vibe Studio — peek the gallery?" },
 ];
 

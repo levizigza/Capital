@@ -49,7 +49,7 @@ If a feature cannot answer *which beat it serves* and *how the Voyager returns c
 | 7 | **Return** | Road Back | Carpet home; Harbor looks familiar | “Back to Harbor.” |
 | 8 | **Change** | Master of Two Worlds | New plaza wing, carpet tier, guide acknowledges growth | “You’re different now.” |
 
-**Boss arc (late):** Credit Kingdom compresses beats 4–6 into a storm (Debt Cloud country). Return still lands on Harbor with Change visible.
+**Boss arc (late):** Credit Kingdom compresses beats 4–6 into a storm. **The Debt Collector** is the Ordeal’s named villain (Bank of Obligation); Debt Cloud is his weather. Return still lands on Harbor with Change visible.
 
 ---
 
@@ -137,7 +137,7 @@ Guides **point, wait, celebrate**. They never dump the whole myth at once.
 
 ## Money Mascots in the myth
 
-The cast is the population of the myth. Playable now for feel-testing; **canon end-state** = NPCs with lives. Temperaments map to lessons (Spendy Sue = Need/Want tension; Debt Cloud = Ordeal shadow; Future Fund = Change/Return).
+The cast is the population of the myth. Playable now for feel-testing; **canon end-state** = NPCs with lives. Temperaments map to lessons (Spendy Sue = Need/Want tension; **The Debt Collector** = Ordeal boss; Debt Cloud = his weather; Future Fund = Change/Return).
 
 ---
 

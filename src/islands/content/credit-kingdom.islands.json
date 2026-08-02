@@ -53,7 +53,17 @@
           "name": "Rex the Collector",
           "icon": "⛓️",
           "areaId": "ck_debt_canyon",
-          "dialogueGraphId": "dlg_collector_rex"
+          "dialogueGraphId": "dlg_collector_rex",
+          "tagline": "Payment plans vs panic — ally against the storm"
+        },
+        {
+          "id": "npc_debt_collector",
+          "name": "The Debt Collector",
+          "icon": "🏦",
+          "areaId": "ck_debt_canyon",
+          "dialogueGraphId": "dlg_debt_collector",
+          "tagline": "Ultimate Ordeal villain — Bank of Obligation",
+          "mascotId": "debt_collector"
         }
       ],
       "items": [
@@ -77,7 +87,7 @@
           "id": "q_ck_first_recovery",
           "track": "main",
           "title": "First Recovery",
-          "description": "Archivist Cleo stains your path. Clear Credit Inbox, then face Rex in Debt Canyon and balance a payment before interest compounds.",
+          "description": "Archivist Cleo stains your path. Clear Credit Inbox, then enter Debt Canyon under The Debt Collector’s shadow — Rex teaches the plan that shrinks his grip before interest compounds.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_credit_cleo_ruins" },
             { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" },
@@ -96,7 +106,7 @@
             {
               "id": "c1",
               "speaker": "Cleo the Archivist",
-              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Collector — interest feeds on haste.",
+              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Debt Collector — interest feeds on haste.",
               "choices": [
                 {
                   "id": "c1a",
@@ -159,7 +169,7 @@
             {
               "id": "c2",
               "speaker": "Cleo the Archivist",
-              "text": "Patience is a credit signal. Clear the Credit Inbox, then descend Debt Canyon — Rex the Collector waits with a payment plan, not a panic button.",
+              "text": "Patience is a credit signal. Clear the Credit Inbox, then descend Debt Canyon — The Debt Collector looms, and Rex waits with a payment plan, not a panic button.",
               "end": true
             },
             {
@@ -183,7 +193,7 @@
             {
               "id": "r1",
               "speaker": "Rex the Collector",
-              "text": "Interest doesn't yell — it compounds. Balance a payment in the canyon. Panic spends; a plan rebuilds trust.",
+              "text": "The Debt Collector owns these ledges. Interest doesn't yell — it compounds. Balance a payment. Panic spends; a plan shrinks his grip.",
               "choices": [
                 {
                   "id": "r1_plan",
@@ -204,13 +214,48 @@
             {
               "id": "r2",
               "speaker": "Rex the Collector",
-              "text": "Good. Harbor will keep your Cleo fork on the Memory Plinth — patience or haste — and this seal proves you faced the canyon.",
+              "text": "Good. Harbor will keep your Cleo fork on the Memory Plinth — patience or haste — and this seal proves you faced his canyon without feeding the storm.",
               "end": true
             },
             {
               "id": "r3",
               "speaker": "Rex the Collector",
-              "text": "Debt waits. Come back when you're ready to choose a plan.",
+              "text": "The Bank of Obligation waits. Come back when you're ready to choose a plan.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_debt_collector",
+          "startNodeId": "dc1",
+          "nodes": [
+            {
+              "id": "dc1",
+              "speaker": "The Debt Collector",
+              "text": "BANK OF OBLIGATION. Pay in full. Or else. Default is not an option.",
+              "choices": [
+                {
+                  "id": "dc1_defy",
+                  "text": "I rebuild trust — I don't feed interest haste.",
+                  "nextNodeId": "dc2"
+                },
+                {
+                  "id": "dc1_back",
+                  "text": "…Step back from the vault doors.",
+                  "nextNodeId": "dc3"
+                }
+              ]
+            },
+            {
+              "id": "dc2",
+              "speaker": "The Debt Collector",
+              "text": "Interest grows. Freedom shrinks. Rex teaches plans — I collect what panic leaves behind. Prove patience in the canyon, Voyager.",
+              "end": true
+            },
+            {
+              "id": "dc3",
+              "speaker": "The Debt Collector",
+              "text": "Hidden fees wait. Collateral keeps. One bad deal becomes a lifetime chain.",
               "end": true
             }
           ]

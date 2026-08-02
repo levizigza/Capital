@@ -7,6 +7,7 @@
  *
  * Series leads (Cashwell, Cashmere, …) are mythically central but never steal
  * Piggy / Coin Bag ownership of the signature Harbor loop.
+ * The Debt Collector is the Credit Kingdom Ordeal villain — never a terrace lead.
  *
  * Note: keep this file free of imports from `character.ts` to avoid cycles.
  */
@@ -24,6 +25,7 @@ export type MoneyMascotId =
   | "kandake_kash"
   | "moneybagg_bro"
   | "mula_mami"
+  | "debt_collector"
   | "dollar_dash"
   | "euro_ella"
   | "pound_pal"
@@ -76,6 +78,13 @@ export const SERIES_LEAD_MASCOT_IDS: readonly MoneyMascotId[] = [
 
 export function isSeriesLeadMascot(id: string | null | undefined): boolean {
   return Boolean(id && (SERIES_LEAD_MASCOT_IDS as readonly string[]).includes(id));
+}
+
+/** Ultimate Ordeal villain — Credit Kingdom boss face (never a Harbor terrace lead). */
+export const ENDGAME_VILLAIN_MASCOT_ID: MoneyMascotId = "debt_collector";
+
+export function isEndgameVillainMascot(id: string | null | undefined): boolean {
+  return id === ENDGAME_VILLAIN_MASCOT_ID;
 }
 
 /** Silhouette id — must match MoneyForm in character.ts */
@@ -231,6 +240,17 @@ export const MONEY_CAST: MoneyMascot[] = [
     color: "mula",
     accessory: "vest",
     role: "cash",
+  },
+  {
+    id: "debt_collector",
+    name: "The Debt Collector",
+    emoji: "🏦",
+    tagline: "Pay in full. Or else. Default is not an option.",
+    form: "vault",
+    glyph: "$",
+    color: "obligation",
+    accessory: "cape",
+    role: "credit",
   },
   {
     id: "dollar_dash",
@@ -390,7 +410,7 @@ export const MONEY_CAST: MoneyMascot[] = [
     id: "debt_cloud",
     name: "Debt Cloud",
     emoji: "⛈️",
-    tagline: "Burden of what you owe.",
+    tagline: "The Debt Collector’s weather — burden of what you owe.",
     form: "cloud",
     color: "ink",
     accessory: "none",
@@ -597,8 +617,8 @@ export function mascotToCharacter(
  */
 export function varyMascot(mascotId: string, seed: string): MascotCharacterLook {
   const mascot = getMascot(mascotId);
-  // Series leads keep the sheet look — never random coat / gear swaps.
-  if (isSeriesLeadMascot(mascot.id)) {
+  // Series leads + endgame villain keep the sheet look — never random coat / gear swaps.
+  if (isSeriesLeadMascot(mascot.id) || isEndgameVillainMascot(mascot.id)) {
     return mascotToCharacter(mascot, {
       name: mascot.name,
       color: mascot.color,

@@ -5,7 +5,14 @@
  */
 
 import type { MoneyMascotId, MoneyMascot } from "./moneyCast";
-import { MONEY_CAST, getMascot, mascotToCharacter, type MascotCharacterLook } from "./moneyCast";
+import {
+  MONEY_CAST,
+  getMascot,
+  isEndgameVillainMascot,
+  isSeriesLeadMascot,
+  mascotToCharacter,
+  type MascotCharacterLook,
+} from "./moneyCast";
 import type { GenreWorldId } from "./genreWorlds";
 import { GENRE_BY_ISLAND } from "./genreWorlds";
 
@@ -130,6 +137,15 @@ export function varyMascotForPersona(
   seed: string,
 ): MascotCharacterLook {
   const mascot = getMascot(mascotId);
+  // Series leads + endgame villain keep the sheet look on every shore.
+  if (isSeriesLeadMascot(mascot.id) || isEndgameVillainMascot(mascot.id)) {
+    return mascotToCharacter(mascot, {
+      name: mascot.name,
+      color: mascot.color,
+      accessory: mascot.accessory,
+      companion: "none",
+    });
+  }
   const kit = PERSONA_KITS[persona];
   const h = hashStr(seed);
   return mascotToCharacter(mascot, {
