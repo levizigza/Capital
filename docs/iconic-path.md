@@ -98,6 +98,7 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 
 - Spine beds speak the mural: **Memory Courtyard · Coin Jar Morning · Clock Stamp Shift · Spiral Interest Keep**.  
 - Post-Take hush ducks the shore organ bed (`MusicPlace.shore.hush`) while Take cinema plays the matching organ stinger.  
+- Mute-test chain: Take open `scar_chime`+organ → mark `take_mark` → Harbor spectacle hush `scar_chime` → reveal `harbor_felt`+organ+`plinth_hum` → share reprises `harbor_felt`. Harbor plaza bed ducks (`MusicPlace.harbor.hush`) so those stingers read.  
 - Settings copy names organs, not leftover genre-city labels.  
 - Off-spine genre cues stay available; the frozen triangle leads with organ language.
 

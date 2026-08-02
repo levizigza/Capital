@@ -154,7 +154,11 @@ export function cueForIsland(islandId: string, genreId?: string | null): MusicCu
 export type StructureOrganPlace = "memory" | "coin" | "clock" | "spiral";
 
 export type MusicPlace =
-  | { kind: "harbor" }
+  | {
+      kind: "harbor";
+      /** Spectacle / share — duck Memory bed so Harbor-felt stingers read */
+      hush?: boolean;
+    }
   | { kind: "map" }
   | { kind: "voyage" }
   | { kind: "talk" }
@@ -205,9 +209,10 @@ export function cueForPlace(place: MusicPlace): MusicCueId | null {
   }
 }
 
-/** Structure interiors + post-Take hush duck so Soft Beats / scars read. */
+/** Structure interiors + post-Take / spectacle hush duck so stingers read. */
 export function gainScaleForPlace(place: MusicPlace): number {
   if (place.kind === "structure") return 0.58;
   if (place.kind === "shore" && place.hush) return 0.32;
+  if (place.kind === "harbor" && place.hush) return 0.36;
   return 1;
 }

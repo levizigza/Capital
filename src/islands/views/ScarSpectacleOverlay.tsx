@@ -52,7 +52,8 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
     const t0 = window.setTimeout(() => {
       setPhase("in");
       onPhaseChangeRef.current?.("in");
-      playCapitalSfx("harbor_cheer");
+      // “Harbor felt that” — Memory resolve (not trailer cheer).
+      playCapitalSfx("harbor_felt");
       // Leitmotif: scar organ speaks; plinth_hum stays Memory underlayer.
       playOrganSfx(organIdRef.current);
       playCapitalSfx("plinth_hum");

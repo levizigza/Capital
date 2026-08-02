@@ -14,7 +14,11 @@ export type CapitalSfxId =
   | "organ_coin"
   | "organ_clock"
   | "organ_spiral"
-  | "soft_beat";
+  | "soft_beat"
+  /** Irreversible Take mark — not Soft Beat lookout */
+  | "take_mark"
+  /** Spectacle / share — “Harbor felt that” Memory resolve */
+  | "harbor_felt";
 
 let ctx: AudioContext | null = null;
 
@@ -120,8 +124,23 @@ export function playCapitalSfx(id: CapitalSfxId): void {
         tone(311, 300, "sine", 0.02 * g, 0.36);
         break;
       case "soft_beat":
+        // Quiet lookout settle — Soft Beat toys only
         tone(523.25, 160, "sine", 0.04 * g, 0);
         tone(392, 280, "triangle", 0.03 * g, 0.12);
+        break;
+      case "take_mark":
+        // Irreversible Take — low hold then bright organ pierce (mute-test beat)
+        tone(147, 200, "sine", 0.045 * g, 0);
+        tone(196, 240, "triangle", 0.035 * g, 0.08);
+        tone(784, 160, "square", 0.028 * g, 0.18);
+        tone(988, 220, "triangle", 0.022 * g, 0.28);
+        break;
+      case "harbor_felt":
+        // Memory resolve — warm ledger chord (not trailer cheer arpeggio)
+        tone(220, 280, "sine", 0.04 * g, 0);
+        tone(277.18, 320, "sine", 0.034 * g, 0.1);
+        tone(329.63, 380, "triangle", 0.03 * g, 0.2);
+        tone(440, 420, "sine", 0.026 * g, 0.32);
         break;
       default:
         break;

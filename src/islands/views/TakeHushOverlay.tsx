@@ -52,8 +52,8 @@ export function TakeHushOverlay({
     const tMark = window.setTimeout(() => {
       setPhase("mark");
       onPhaseChange?.("mark");
-      // Soft settle only — organ already spoke on open (avoid Howler pool thrash).
-      playCapitalSfx("soft_beat");
+      // Irreversible mark — distinct from Soft Beat lookout (mute-test Take beat).
+      playCapitalSfx("take_mark");
       // Hit-stop nudge when the organ mark flashes (juice checklist).
       triggerJuice("reward", { burst: true });
     }, t.hushMs);

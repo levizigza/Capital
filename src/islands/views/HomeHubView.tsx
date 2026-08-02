@@ -102,6 +102,7 @@ import {
 } from "../harborFirstMeet";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { capitalMusic } from "../audio/capitalMusic";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
 import { isKilled } from "@/sre";
@@ -442,6 +443,15 @@ export function HomeHubView({
   useEffect(() => {
     if (!spectacleOpen) setSpectaclePhase(null);
   }, [spectacleOpen]);
+
+  // Pillar 11 — duck Memory bed during spectacle / share so Harbor-felt stingers read.
+  useEffect(() => {
+    const hush = spectacleOpen || feltShareOpen;
+    capitalMusic.playPlace({ kind: "harbor", hush });
+    return () => {
+      if (hush) capitalMusic.playPlace({ kind: "harbor" });
+    };
+  }, [spectacleOpen, feltShareOpen]);
 
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;

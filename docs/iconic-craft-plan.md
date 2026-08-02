@@ -229,6 +229,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Mute test: can audio alone telegraph Take → hush → Harbor felt that? Patch missing stingers. |
 
+**Shipped (Pillar 11):** Mute-test stingers — Take mark → `take_mark` (was Soft Beat reuse); spectacle/share → `harbor_felt` Memory resolve (was trailer `harbor_cheer` on spectacle); Harbor plaza bed ducks during spectacle/share (`MusicPlace.harbor.hush`). Soft Beat keeps `soft_beat`. Guarded by `signatureMuteAudio.test.ts`.
+
 ---
 
 ### 12. Story, world, and context
@@ -316,7 +318,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 8 | Balance | playable → iconic | 2026-08-02 | Balance sheet for Cove earn → carpet → Freedom; Freedom Seal streak 2→3 (`HARBOR_ESCAPE_STREAK`); `balanceSheet.test.ts`. Next: first seal plaza readability after pouch dips |
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
 | 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
-| 11 | Audio | | | |
+| 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` mute-test stingers; Harbor bed ducks on spectacle/share. Next: Piggy homecoming reward sting |
 | 12 | Story | | | |
 | 13 | Onboarding | | | |
 | 14 | Technical | | | |
@@ -335,6 +337,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **10 — Art direction** (Money Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; Pages-safe labels).  
+**Last shipped:** Pillar **11 — Sound and music** (`take_mark` + `harbor_felt` mute-test stingers; Harbor hush duck on spectacle/share).  
 
-**Start next:** Pillar **11 — Sound and music** (mute test: Take → hush → Harbor felt that by audio alone).
+**Start next:** Pillar **12 — Story, world, and context** (cold player sentence per organ; Story Bible only).
