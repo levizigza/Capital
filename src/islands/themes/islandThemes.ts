@@ -91,19 +91,19 @@ export const ISLAND_THEMES: Record<string, IslandTheme> = {
   /** 1960s Vector Dawn — savings graphs */
   paycheck_peninsula: {
     id: "paycheck_peninsula",
-    name: "Dotgraph Atoll",
+    name: "Paycheck Peninsula",
     visualStyle: "vector-dawn",
     animationStyle: "era-1960s",
     skinClass: "island-theme-vector",
     background: "radial-gradient(circle at 50% 40%, #1a1a1a 0%, #000 70%)",
-    accent: "#e8e8e8",
-    accentMuted: "#888",
+    accent: "#38bdf8",
+    accentMuted: "#0284c7",
     fontFamily: "'Courier New', monospace",
-    mood: "⬛ AI Future · cognisphere · SCORE",
+    mood: "🕒 Clock · stamp · shelter",
     mapPinShape: "square",
     complexity: "easy",
     genre: "party",
-    fortuneBlurb: "AI Future floe — connect-the-dots savings graphs with companion minds.",
+    fortuneBlurb: "Clock organ — stamp a paycheck, shelter the umbrella loft, return changed.",
   },
   /** 1970s Wireframe — inflation navigation */
   signal_city: {

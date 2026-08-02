@@ -4,7 +4,10 @@
  * Genre families (cyberpunk, solarpunk, …) are *lenses*, not franchise remakes.
  * Shipped names, cast, and machines must stay Capital-original (see ip-safe-design.md).
  * Harbor Haven stays the Ordinary World (no genre overlay).
+ * Pillar 7: genre HUD is parked on the frozen spine — mural organs lead.
  */
+
+import { isSpineContentIslandId } from "./spineContentRegistry";
 
 export type GenreWorldId =
   | "cyberpunk"
@@ -300,6 +303,8 @@ export function getGenreDistrict(islandId: string): GenreDistrict | null {
 
 /** Shore / map subtitle — canon world + district when available. */
 export function genreHudLine(islandId: string): string | null {
+  // Pillar 7 — genre cities are not primary spine language (mural organs lead).
+  if (isSpineContentIslandId(islandId)) return null;
   const g = getGenreWorld(islandId);
   if (!g) return null;
   const d = getGenreDistrict(islandId);
@@ -309,6 +314,7 @@ export function genreHudLine(islandId: string): string | null {
 
 /** Longer coach blurb for shore HUD (IP-safe original copy only). */
 export function genreShoreBlurb(islandId: string): string | null {
+  if (isSpineContentIslandId(islandId)) return null;
   const g = getGenreWorld(islandId);
   const d = getGenreDistrict(islandId);
   if (!g) return null;

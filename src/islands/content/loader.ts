@@ -1,15 +1,19 @@
 import { IslandsContentSchema } from "../schemas";
 import type { IslandDefinition, IslandsContent } from "../types";
 import { enrichIslandWithPopCulture } from "../moneyPopCulture";
+import {
+  isParkedIslandId,
+  PARKED_CONTENT_PACK_PATHS,
+} from "../spineContentRegistry";
 
 // Auto-discover all *.islands.json files in this directory at build time
 const modules = import.meta.glob("./*.islands.json", { eager: true });
 
 /**
- * Demo / prototype packs kept on disk for schema tests but excluded from the
- * live Archipelago map so players only see the main-course first island.
+ * Pillar 7 — demo + genre/asset orphan packs stay on disk for schema tests
+ * but are parked out of live Arcade / enter / travel content.
  */
-const LIVE_PACK_DENYLIST = new Set(["./demo.islands.json"]);
+const LIVE_PACK_DENYLIST = PARKED_CONTENT_PACK_PATHS;
 
 let _cache: IslandsContent | null = null;
 
@@ -23,7 +27,11 @@ export function loadIslandsContent(): IslandsContent {
     try {
       const data = (raw as any).default ?? raw;
       const parsed = IslandsContentSchema.parse(data);
-      allIslands.push(...parsed.islands.map(enrichIslandWithPopCulture));
+      allIslands.push(
+        ...parsed.islands
+          .filter((island) => !isParkedIslandId(island.id))
+          .map(enrichIslandWithPopCulture),
+      );
     } catch (err) {
       console.error(`[islands][loader] Failed to validate ${path}:`, err);
     }

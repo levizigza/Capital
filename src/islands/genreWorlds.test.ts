@@ -41,12 +41,15 @@ describe("genreWorlds", () => {
     expect(skies?.genreId).toBe("solarpunk");
   });
 
-  it("exposes IP-safe HUD lines using canon + district", () => {
+  it("exposes IP-safe HUD lines using canon + district (parked packs only)", () => {
     const line = genreHudLine("venture_foundry");
     expect(line).toMatch(/Ledgerlight/);
     expect(line).toMatch(/Gridlock/);
     expect(textHasForbiddenGenreEcho(line!)).toBe(false);
     expect(textHasForbiddenGenreEcho(genreShoreBlurb("venture_foundry")!)).toBe(false);
+    // Pillar 7 — spine shores speak organs, not genre cities
+    expect(genreHudLine("paycheck_peninsula")).toBeNull();
+    expect(genreShoreBlurb("coincraft_cove")).toBeNull();
   });
 
   it("flags forbidden franchise echoes for hygiene", () => {

@@ -3,9 +3,9 @@
   "islands": [
     {
       "id": "paycheck_peninsula",
-      "name": "Dotgraph Atoll",
-      "description": "1960s vector dawn — white dots on black skies. Plot savings goals like connect-the-dots constellations while rival captains race for Ledger Seals.",
-      "icon": "⬛",
+      "name": "Paycheck Peninsula",
+      "description": "Clock organ shore — earn, stamp a paycheck into buckets, then face the rainy-day Take before Harbor remembers.",
+      "icon": "🕒",
       "provenance": {
         "learning_objectives": [
           "Create a basic monthly budget from a fixed income",

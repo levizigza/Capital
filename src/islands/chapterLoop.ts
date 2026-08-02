@@ -218,6 +218,6 @@ export function buildPaycheckChangeReplayTimeline(opts: {
       },
     ],
     storySummary:
-      "You turned a paycheck into a plan, faced a surprise Take, and Dotgraph left a mark on Harbor.",
+      "You turned a paycheck into a plan, faced a surprise Take, and Paycheck left a mark on Harbor.",
   };
 }

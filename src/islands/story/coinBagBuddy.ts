@@ -231,7 +231,7 @@ export function coinBagIslandTip(
       if (basics?.started && !basics.completed) {
         return {
           tip: "Budget Bureau — needs, wants, savings",
-          coach: "Dotgraph runs on buckets. Priya's whiteboard is waiting.",
+          coach: "Paycheck runs on buckets. Priya's whiteboard is waiting.",
           track: "main",
         };
       }

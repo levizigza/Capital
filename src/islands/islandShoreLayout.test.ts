@@ -37,7 +37,7 @@ describe("island shore + party play", () => {
   it("builds pier, board, journal, and play pads", () => {
     const island = fakeIsland({
       id: "paycheck_peninsula",
-      name: "Dotgraph Atoll",
+      name: "Paycheck Peninsula",
       minigames: [
         {
           id: "mg_budget_split",

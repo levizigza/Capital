@@ -475,7 +475,7 @@ export function piggyHomecomingGraph(
     : null;
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
-      ? "Three homecomings. Cove, Dotgraph, Kingdom — I trust your pouch, and you."
+      ? "Three homecomings. Cove, Paycheck, Kingdom — I trust your pouch, and you."
       : opts?.bondBeat && opts.bondBeat >= 2
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
         : "That's the Change beat — earn fair, then choose.";
