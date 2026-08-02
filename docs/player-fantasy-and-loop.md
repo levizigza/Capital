@@ -73,6 +73,8 @@ Content = Money Mascots + islands + capsules. Presentation must stay readable (l
 
 **Shipped (Pillar 8 — balance):** Post-Cove earn (~105–120) clears Coin carpet polish (50) and first seal (20) without buying Fortune polish (175). Freedom Seal needs **3** Pay Days at $30+/mo cashflow (was 2) so escape stays earned — not an instant free Fortune flyer.
 
+**Shipped (Pillar 9 — UI / comms):** Signature overlays use window-level `useOverlayEscape` (Esc works without focus) + visible Leave + “Esc · Leave” chrome — HarborFelt share, Take hush, Plinth spectacle, Soft Beat, trailer, day-2 echo, World Arrive. Share sticky lower-third; backdrop leave on freeze share.
+
 ## 13. Onboarding
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.

@@ -16,6 +16,7 @@ import {
   type HarborScar,
 } from "../worldMemory";
 import { triggerJuice } from "@/juice";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 type Props = {
   scarLabel: string;
@@ -45,6 +46,8 @@ export function HarborFeltShareOverlay({
   });
   const nextPainting = scarMeta ? nextPaintingAfterScar(scarMeta) : null;
 
+  useOverlayEscape(onKeepWalking);
+
   useEffect(() => {
     playOrganSfx(organ);
     playCapitalSfx("plinth_hum");
@@ -58,6 +61,10 @@ export function HarborFeltShareOverlay({
       data-testid="harbor-felt-share"
       data-share-presentation="plinth-freeze"
       data-plinth-aperture="live"
+      data-nav-escape="window"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onKeepWalking();
+      }}
       style={{
         // Punch a clear hole over MEMORY_PLINTH_CINEMA_EYE framing (~62% / 36%).
         background:
@@ -65,7 +72,11 @@ export function HarborFeltShareOverlay({
       }}
     >
       {/* Live Plinth aperture — keep the peaked lamp readable above the freeze */}
-      <div className="pointer-events-none relative min-h-[28vh] flex-1" aria-hidden data-testid="harbor-felt-plinth-aperture" />
+      <div
+        className="pointer-events-none relative min-h-[22vh] flex-1"
+        aria-hidden
+        data-testid="harbor-felt-plinth-aperture"
+      />
 
       {/* Freeze plane — lower band so it never covers the live lamp */}
       <div className="pointer-events-none relative z-[1] flex shrink-0 justify-center px-3 pb-1 pt-0">
@@ -73,7 +84,7 @@ export function HarborFeltShareOverlay({
           <img
             src={previewUrl}
             alt="Harbor felt that — Memory Plinth freeze"
-            className="max-h-[min(32vh,280px)] w-auto max-w-[min(88vw,400px)] object-contain drop-shadow-[0_12px_40px_rgba(15,23,42,0.55)]"
+            className="max-h-[min(28vh,240px)] w-auto max-w-[min(88vw,400px)] object-contain drop-shadow-[0_12px_40px_rgba(15,23,42,0.55)]"
             data-testid="harbor-felt-preview"
           />
         ) : (
@@ -86,8 +97,8 @@ export function HarborFeltShareOverlay({
         )}
       </div>
 
-      {/* Lower-third cinema chrome — retell + share actions */}
-      <div className="relative z-10 mx-auto w-full max-w-lg px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
+      {/* Sticky lower-third — retell + Complete / Leave always in reach */}
+      <div className="relative z-10 mx-auto w-full max-w-lg shrink-0 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
           {capitalOrganEyebrow(organId)} · Harbor felt that
         </p>
@@ -141,9 +152,10 @@ export function HarborFeltShareOverlay({
               onKeepWalking();
             }}
           >
-            Keep walking — find Piggy
+            Leave — find Piggy
           </GameButton>
         </div>
+        <p className="mt-2 text-[11px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>
   );

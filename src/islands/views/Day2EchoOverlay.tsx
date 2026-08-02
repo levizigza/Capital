@@ -8,6 +8,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { day2EchoBody, scarOrganName } from "../worldMemory";
 import { GameButton } from "@/game-ui";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 type Props = {
   scarLabel: string;
@@ -29,6 +30,8 @@ export function Day2EchoOverlay({
   onVisitPlinth,
   onDismiss,
 }: Props) {
+  useOverlayEscape(onDismiss);
+
   useEffect(() => {
     playCapitalSfx("plinth_hum");
     playOrganSfx(organId);
@@ -43,10 +46,8 @@ export function Day2EchoOverlay({
       aria-label="Still here"
       data-testid="day2-echo-surprise"
       data-echo-presentation="plinth-cinema"
+      data-nav-escape="window"
       onClick={onDismiss}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") onDismiss();
-      }}
       style={{
         // Same Plinth aperture as spectacle / share — live lamp stays visible.
         background:
@@ -69,9 +70,15 @@ export function Day2EchoOverlay({
         <GameButton variant="primary" className="mt-4 w-full" onClick={onVisitPlinth} autoFocus>
           Visit the Plinth
         </GameButton>
-        <GameButton variant="outline" className="mt-2 w-full bg-white/10" onClick={onDismiss}>
-          I hear them
+        <GameButton
+          variant="outline"
+          className="mt-2 w-full bg-white/10"
+          data-testid="day2-echo-leave"
+          onClick={onDismiss}
+        >
+          Leave — I hear them
         </GameButton>
+        <p className="mt-2 text-[11px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>
   );

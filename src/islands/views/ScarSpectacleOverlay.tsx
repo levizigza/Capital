@@ -16,6 +16,7 @@ import {
 } from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
 import { triggerJuice } from "@/juice";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
 
@@ -80,6 +81,7 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   }, []);
 
   const showLine = phase !== "hush";
+  useOverlayEscape(() => onDoneRef.current());
 
   return (
     <div
@@ -90,11 +92,9 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       aria-label="Harbor remembers your choice"
       data-testid="scar-spectacle"
       data-cinema-phase={phase}
+      data-nav-escape="window"
       tabIndex={0}
       onClick={() => onDoneRef.current()}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDoneRef.current();
-      }}
       style={{
         background:
           phase === "hush"
@@ -129,9 +129,12 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
             {retell ?? shelf}
           </p>
           <p className="mt-3 text-[11px] tracking-wide text-white/50">
-            {organWord} Plinth · Money is alive · Click or Esc
+            {organWord} Plinth · Money is alive · Esc · Leave
           </p>
         </div>
+        {!showLine ? (
+          <p className="mt-6 text-[11px] tracking-wide text-white/40">Esc · Leave</p>
+        ) : null}
       </div>
     </div>
   );

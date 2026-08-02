@@ -199,6 +199,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Navigability law audit (`player-fantasy-and-loop.md`). Every overlay: Esc + Leave + sticky Complete. |
 
+**Shipped (Pillar 9):** `useOverlayEscape` — window Esc on HarborFelt share · Take hush · Scar spectacle · Soft Beat · signature trailer · day-2 echo · World Arrive. Share sticky Complete/Leave + backdrop dismiss; Leave labels + Esc hint copy. Guarded by `useOverlayEscape.test.ts`.
+
 ---
 
 ### 10. Art direction and visual identity
@@ -309,8 +311,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
 | 6 | Encounters | playable → iconic | 2026-08-02 | Credit canyon: Score Scanner (not Paycheck categorize); wait/haste Take after practice. Next: Cove Alma vs Paycheck categorize overlap |
 | 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: park docs under docs/islands/{signal-city,…} with explicit PARKED banners |
-| 8 | Balance | | | |
-| 9 | UI / comms | | | |
+| 8 | Balance | playable → iconic | 2026-08-02 | Balance sheet for Cove earn → carpet → Freedom; Freedom Seal streak 2→3 (`HARBOR_ESCAPE_STREAK`); `balanceSheet.test.ts`. Next: first seal plaza readability after pouch dips |
+| 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
 | 10 | Art direction | | | |
 | 11 | Audio | | | |
 | 12 | Story | | | |
@@ -331,6 +333,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **7 — Content** (spine registry + parked packs/minigames from Arcade; Paycheck Clock identity; genre HUD off spine).  
+**Last shipped:** Pillar **9 — UI / player communication** (`useOverlayEscape` + Leave/Esc chrome on signature overlays; HarborFelt sticky leave).  
 
-**Start next:** Pillar **8 — Challenge and balance** (Cove Take + carpet price + first seal balance sheet).
+**Start next:** Pillar **10 — Art direction** (Harbor + one structure silhouette read without HUD).

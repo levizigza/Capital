@@ -12,6 +12,7 @@ import { systemPrefersReducedMotion } from "../a11yMotion";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type { TakeCinemaPhase };
 
@@ -35,6 +36,7 @@ export function TakeHushOverlay({
   onPhaseChange,
 }: Props) {
   const [phase, setPhase] = useState<TakeCinemaPhase>("hush");
+  useOverlayEscape(onDone);
 
   useEffect(() => {
     const t = signatureTiming(systemPrefersReducedMotion());
@@ -78,11 +80,9 @@ export function TakeHushOverlay({
       aria-label="Quiet after the Take"
       data-testid="take-hush-overlay"
       data-cinema-phase={phase}
+      data-nav-escape="window"
       tabIndex={0}
       onClick={onDone}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
-      }}
       style={{
         background:
           "radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, transparent 45%, rgba(15,23,42,0.35) 78%, rgba(15,23,42,0.62) 100%)",
@@ -119,10 +119,12 @@ export function TakeHushOverlay({
             </p>
             <p className="mt-2 text-sm text-white/80">{organLine}</p>
             <p className="mt-3 text-[11px] tracking-wide text-white/45">
-              Click or Esc · then board the carpet home
+              Esc · Leave · then board the carpet home
             </p>
           </div>
-        ) : null}
+        ) : (
+          <p className="mt-6 text-[11px] tracking-wide text-white/40">Esc · Leave</p>
+        )}
       </div>
     </div>
   );

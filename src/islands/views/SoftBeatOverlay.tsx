@@ -10,6 +10,7 @@ import { moneyOrganForSoftBeat } from "../moneyOrgans";
 import { cinemaTimeScale, systemPrefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -59,6 +60,7 @@ export function SoftBeatOverlay({
 }: Props) {
   const beat = BEATS[kind];
   const organ = moneyOrganForSoftBeat(kind);
+  useOverlayEscape(onDone);
 
   useEffect(() => {
     playOrganSfx(organ.id);
@@ -86,10 +88,8 @@ export function SoftBeatOverlay({
       data-testid="soft-beat-overlay"
       data-soft-beat={kind}
       data-organ={organ.id}
+      data-nav-escape="window"
       onClick={onDone}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
-      }}
     >
       <div
         className="relative mx-4 max-w-md rounded-2xl border px-6 py-5 text-center text-white shadow-2xl"
@@ -107,15 +107,16 @@ export function SoftBeatOverlay({
         <p className="mt-2 text-[10px] uppercase tracking-wider text-white/45">
           {organ.suit} · {organ.metaphor}
         </p>
-        <GameButton variant="primary" className="mt-4" onClick={onDone}>
+        <GameButton variant="primary" className="mt-4" onClick={onDone} data-testid="soft-beat-leave">
           {organ.id === "coin"
-            ? "Back into the Jar"
+            ? "Leave — back into the Jar"
             : organ.id === "clock"
-              ? "Back to the Clock loft"
+              ? "Leave — back to the Clock loft"
               : organ.id === "spiral"
-                ? "Back to the Spiral"
-                : "Back to the ledger"}
+                ? "Leave — back to the Spiral"
+                : "Leave — back to the ledger"}
         </GameButton>
+        <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>
   );
