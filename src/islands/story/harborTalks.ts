@@ -185,6 +185,21 @@ const ROLE_TIPS: Record<
       strategist: "Subtle. Refined. Compounded.",
     },
   },
+  jade_fortune: {
+    tip: {
+      explorer:
+        "Jade Fortune — I never chase attention. Value follows… and that Plinth keeps every graceful choice.",
+      apprentice:
+        "Heirloom wealth: legacy is language. Piggy keeps Harbor’s verbs; jade instinct guides the Take. Visit the Plinth.",
+      strategist:
+        "Social capital, not Harbor Keeper. Rooms remember her; Memory Plinth files prosperity after every Take.",
+    },
+    bye: {
+      explorer: "Polished. Poised. Prosperous — go bloom!",
+      apprentice: "Pay yourself first. Then let elegance multiply abundance.",
+      strategist: "Wisdom sharpens every move. Grace compounds.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
