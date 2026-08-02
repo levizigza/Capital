@@ -24,4 +24,14 @@ describe("Signature juice contract", () => {
     expect(viewport).toMatch(/juice\.css/);
     expect(fail).toMatch(/triggerJuice\("fail"/);
   });
+
+  it("juices carpet rail start + land", () => {
+    const carpet = readFileSync(
+      join(__dirname, "../world3d/CarpetFlightView.tsx"),
+      "utf8",
+    );
+    expect(carpet).toMatch(/triggerJuice\("accept"/);
+    expect(carpet).toMatch(/triggerJuice\("complete"/);
+    expect(carpet).toMatch(/playCapitalSfx\("harbor_cheer"\)/);
+  });
 });

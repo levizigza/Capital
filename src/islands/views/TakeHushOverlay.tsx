@@ -110,20 +110,29 @@ export function TakeHushOverlay({
         ) : null}
 
         {phase === "line" ? (
-          <div data-testid="take-cinema-line">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/70">
+          <div
+            className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/88 px-4 py-3 shadow-[0_12px_36px_rgba(0,0,0,0.45)] backdrop-blur-md"
+            data-testid="take-cinema-line"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
               Quiet after the Take
             </p>
-            <p className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
+            <p className="cap-display mt-2 text-xl text-[#fffdf6] sm:text-2xl">
               “{scarLabel}”
             </p>
-            <p className="mt-2 text-sm text-white/80">{organLine}</p>
-            <p className="mt-3 text-[11px] tracking-wide text-white/45">
-              Esc · Leave · then board the carpet home
+            <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90">{organLine}</p>
+            <p
+              className="mt-3 text-sm font-black tracking-wide text-amber-100"
+              data-testid="take-cinema-home-cta"
+            >
+              Carpet home — Harbor felt that
+            </p>
+            <p className="mt-1 text-[11px] font-semibold tracking-wide text-white/80">
+              Esc · Leave · board the Money Carpet
             </p>
           </div>
         ) : (
-          <p className="mt-6 text-[11px] tracking-wide text-white/40">Esc · Leave</p>
+          <p className="mt-6 text-[11px] tracking-wide text-white/55">Esc · Leave</p>
         )}
       </div>
     </div>

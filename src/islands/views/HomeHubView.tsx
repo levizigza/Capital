@@ -262,6 +262,7 @@ export function HomeHubView({
   const simplified = profile.hudMode === "simplified";
   const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
   const freed = hasHarborFreedom(save);
+  const freedomPlazaLine = freed ? `Freedom Seal · ${boat.label}` : null;
   const guided = guidedFromSave(save);
   const guidedStep = guided ? getHubGuidedStep(guided) : null;
   const castleMode = !!guidedStep;
@@ -548,6 +549,7 @@ export function HomeHubView({
     latestScarLabel: latestPlaque?.label ?? null,
     plinthGlow: plinthGlow || feltShareOpen,
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
+    carpetTierLabel: boat.label,
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1182,6 +1184,15 @@ export function HomeHubView({
             {!earlyCastle ? <WealthHud totalCoins={userProfile.totalCoins} compact /> : null}
             {!simplified && !castleMode ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
+            ) : null}
+            {freedomPlazaLine && !castleMode && !piggyPresence ? (
+              <p
+                className="rounded-full bg-emerald-900/55 px-3 py-1.5 text-[11px] font-bold text-emerald-50 ring-1 ring-emerald-200/35"
+                data-testid="harbor-freedom-chip"
+                title="Harbor Freedom Seal — Pavilion + carpet tier"
+              >
+                {freedomPlazaLine}
+              </p>
             ) : null}
           </div>
           )

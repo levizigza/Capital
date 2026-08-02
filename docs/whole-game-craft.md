@@ -70,8 +70,15 @@ If not, that surface is not iconic yet.
 - Boot cast: warmer copy + visible Board Carpet CTA
 - Harbor Ashore critical path already: Talk → Carpet → Cove
 
+## Iteration 2 (shipped)
+
+- Walk feel: short coast → readable stop (`walkFeel.ts`) on Harbor + shores
+- Carpet rail: juice + chime on hop, cheer on land
+- Cove Take: snappier cinema + high-contrast “Carpet home — Harbor felt that”
+- Freedom plaza: `harbor-freedom-chip` + Coin Bag names carpet tier
+
 ## Still deepen (from iconic-later)
 
-WASD stop feel · carpet rail juice · Freedom seal plaza reads · Alma↔Paycheck overlap · cold unseeded Cove timing · shore silhouette distance  
+Alma↔Paycheck overlap · shore silhouette distance · Apprentice chrome · bad-take Spend copy · harbor3d kill-switch e2e  
 
 Iterate those next — never new islands first.

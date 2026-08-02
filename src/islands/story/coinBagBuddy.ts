@@ -78,6 +78,8 @@ export function coinBagHarborTip(
     plinthGlow?: boolean;
     /** Day-2 rumor still naming the scar */
     day2Echo?: boolean;
+    /** Freedom Seal carpet tier label (plaza read) */
+    carpetTierLabel?: string | null;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -144,15 +146,21 @@ export function coinBagHarborTip(
   }
 
   if (opts?.hasFreedom && opts?.pavilionUnlocked !== false) {
+    const tier = opts.carpetTierLabel?.trim();
     return {
-      tip: "Freedom Pavilion is open — this way!",
-      coach: "Your seal unlocked a new wing. Let’s peek together.",
+      tip: tier
+        ? `Freedom Seal · ${tier} ready`
+        : "Freedom Pavilion is open — this way!",
+      coach: tier
+        ? `Your seal unlocked the Pavilion — and the ${tier} on the Carpet. Let’s peek together.`
+        : "Your seal unlocked a new wing. Let’s peek together.",
     };
   }
   if (opts?.hasFreedom) {
+    const tier = opts.carpetTierLabel?.trim();
     return {
-      tip: "Map’s open — pick your next island",
-      coach: "Freedom seal earned. Where should we sail?",
+      tip: tier ? `Freedom Seal · sail the ${tier}` : "Map’s open — pick your next island",
+      coach: "Freedom Seal earned. Carpet Dock is yours — where should we sail?",
     };
   }
   if (opts?.currentIslandId && !isHubIslandId(opts.currentIslandId)) {

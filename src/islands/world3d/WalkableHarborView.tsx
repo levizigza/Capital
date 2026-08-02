@@ -54,6 +54,7 @@ import { plazaLifeAmp } from "../a11yMotion";
 import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
+import { stepWalkVelocity } from "../input/walkFeel";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -270,18 +271,17 @@ function Player({
     camYaw.current += turn;
 
     const forward = Number(k.f) - Number(k.b);
-    moving.current = Math.abs(forward) > 0.01 || Math.abs(turn) > 0.001;
     if (Math.abs(forward) > 0.01) {
       facing.current = forward >= 0 ? camYaw.current : camYaw.current + Math.PI;
-      const spd = SPEED * (k.b && !k.f ? 0.65 : 1);
-      vel.current.set(
-        Math.sin(camYaw.current) * forward * spd,
-        0,
-        Math.cos(camYaw.current) * forward * spd,
-      );
-      p.x += vel.current.x * dt;
-      p.z += vel.current.z * dt;
     }
+    const stepped = stepWalkVelocity(
+      { x: vel.current.x, z: vel.current.z },
+      { forward, yaw: camYaw.current, dt, speed: SPEED },
+    );
+    vel.current.set(stepped.vel.x, 0, stepped.vel.z);
+    p.x += vel.current.x * dt;
+    p.z += vel.current.z * dt;
+    moving.current = stepped.moving || Math.abs(turn) > 0.001;
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 

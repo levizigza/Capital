@@ -33,4 +33,13 @@ describe("Harbor progression contract", () => {
     expect(app).toMatch(/newly open on the Carpet/);
     expect(app).toMatch(/organVerbChip\("coin"\)/);
   });
+
+  it("names Freedom Seal + carpet tier on the plaza", () => {
+    const hub = readFileSync(join(__dirname, "HomeHubView.tsx"), "utf8");
+    const bag = readFileSync(join(__dirname, "../story/coinBagBuddy.ts"), "utf8");
+    expect(hub).toMatch(/harbor-freedom-chip/);
+    expect(hub).toMatch(/Freedom Seal/);
+    expect(bag).toMatch(/carpetTierLabel/);
+    expect(bag).toMatch(/Freedom Seal ·/);
+  });
 });

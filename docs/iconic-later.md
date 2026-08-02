@@ -50,10 +50,10 @@ These are **allowed later** as spine depth — not new islands:
 | From | Parked polish |
 |------|----------------|
 | Fantasy / Story / UI | Talk Battle Leave shipped (whole-game craft pass); Apprentice chrome after tutorial still soft |
-| Core loop | Cold unseeded Cove Take timing |
+| Core loop | (iterated) Snappier Take cinema + “Carpet home — Harbor felt that” CTA |
 | Goals | Bad-take Spend soft-fail copy parity |
-| Feel | WASD stop readability + carpet rail juice |
-| Progression | Freedom seal / carpet tier plaza reads |
+| Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |
+| Progression | (iterated) Freedom Seal chip + Coin Bag names carpet tier |
 | Encounters | Cove Alma vs Paycheck categorize overlap |
 | Content | (done) PARKED banners on outer island docs |
 | Balance | First seal plaza readability after pouch dips |

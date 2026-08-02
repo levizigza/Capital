@@ -34,6 +34,7 @@ import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
+import { stepWalkVelocity } from "../input/walkFeel";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell, ShoreClockToy, ShoreSpiralToy } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
@@ -162,18 +163,17 @@ function Player({
     camYaw.current += turn;
 
     const forward = Number(k.f) - Number(k.b);
-    moving.current = Math.abs(forward) > 0.01 || Math.abs(turn) > 0.001;
     if (Math.abs(forward) > 0.01) {
       facing.current = forward >= 0 ? camYaw.current : camYaw.current + Math.PI;
-      const spd = SPEED * (k.b && !k.f ? 0.65 : 1);
-      vel.current.set(
-        Math.sin(camYaw.current) * forward * spd,
-        0,
-        Math.cos(camYaw.current) * forward * spd,
-      );
-      p.x += vel.current.x * dt;
-      p.z += vel.current.z * dt;
     }
+    const stepped = stepWalkVelocity(
+      { x: vel.current.x, z: vel.current.z },
+      { forward, yaw: camYaw.current, dt, speed: SPEED },
+    );
+    vel.current.set(stepped.vel.x, 0, stepped.vel.z);
+    p.x += vel.current.x * dt;
+    p.z += vel.current.z * dt;
+    moving.current = stepped.moving || Math.abs(turn) > 0.001;
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 

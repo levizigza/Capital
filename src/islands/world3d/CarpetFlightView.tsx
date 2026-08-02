@@ -43,6 +43,8 @@ import {
   isWithinArrive,
   railStartPose,
 } from "./carpetVoyageRail";
+import { triggerJuice } from "@/juice";
+import { playCapitalSfx } from "../audio/capitalSfx";
 
 type Props = {
   userProfile: UserProfile;
@@ -140,6 +142,9 @@ function FlightRig({
       s.speed = RAIL_SPEED;
       rush.current = true;
       keys.current.boost = true;
+      // Feel — rail hop reads as a ride, not a silent teleport.
+      triggerJuice("accept");
+      playCapitalSfx("scar_chime");
     } else {
       s.heading = Math.atan2(preferred.pos.x - s.x, preferred.pos.z - s.z);
     }
@@ -304,6 +309,8 @@ function FlightRig({
       });
       if (isWithinArrive(s.x, s.z, voyageTarget.pos.x, voyageTarget.pos.z)) {
         s.arrived = true;
+        triggerJuice("complete", { burst: true });
+        playCapitalSfx("harbor_cheer");
         onArrive(targetId);
       }
     } else if (nearest) {
