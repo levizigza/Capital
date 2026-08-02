@@ -727,20 +727,17 @@ function PlazaScene({
             </group>
             {showLabel ? (
               <Billboard follow position={[0, labelY, 0]}>
-                {/* Face camera; troika can mirror if the plane flips with parent scale. */}
-                <group scale={[-1, 1, 1]}>
-                  <SafeText
-                    fontSize={hero ? 0.34 : 0.26}
-                    color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
-                    anchorX="center"
-                    anchorY="middle"
-                    outlineWidth={0.02}
-                    outlineColor="#ffffff"
-                    depthOffset={-1}
-                  >
-                    {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-                  </SafeText>
-                </group>
+                <SafeText
+                  fontSize={hero ? 0.34 : 0.26}
+                  color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.02}
+                  outlineColor="#ffffff"
+                  depthOffset={-1}
+                >
+                  {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
+                </SafeText>
               </Billboard>
             ) : null}
           </group>

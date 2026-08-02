@@ -463,33 +463,38 @@ export function MemoryPlinthMesh({
         />
       ) : null}
 
-      {/* Empty-shelf plaque face vs scar label */}
+      {/* Empty-shelf plaque face vs scar label.
+          Parent hotspot yaw can leave troika mirrored — flip X so kids can read it. */}
       {!scarRemembered ? (
         <Billboard follow position={[0, 2.95, 0]}>
-          <SafeText
-            fontSize={0.2}
-            color="#57534e"
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.015}
-            outlineColor="#fafaf9"
-          >
-            Memory
-          </SafeText>
+          <group scale={[-1, 1, 1]}>
+            <SafeText
+              fontSize={0.2}
+              color="#57534e"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.015}
+              outlineColor="#fafaf9"
+            >
+              Memory
+            </SafeText>
+          </group>
         </Billboard>
       ) : null}
       {scarRemembered && scarLabel ? (
         <Billboard follow position={[0, 3.05, 0]}>
-          <SafeText
-            fontSize={0.22}
-            color="#78350f"
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.02}
-            outlineColor="#fffbeb"
-          >
-            {scarLabel}
-          </SafeText>
+          <group scale={[-1, 1, 1]}>
+            <SafeText
+              fontSize={0.22}
+              color="#78350f"
+              anchorX="center"
+              anchorY="middle"
+              outlineWidth={0.02}
+              outlineColor="#fffbeb"
+            >
+              {scarLabel}
+            </SafeText>
+          </group>
         </Billboard>
       ) : null}
     </group>
