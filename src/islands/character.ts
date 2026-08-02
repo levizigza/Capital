@@ -58,6 +58,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "kandake", hex: "#0f1412", label: "Kandake Onyx" },
   /** Moneybagg Bro — street-empire black */
   { id: "moneybagg", hex: "#171717", label: "Moneybagg Black" },
+  /** Mula Mami — street-glamour black */
+  { id: "mula", hex: "#1c1917", label: "Mula Black" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

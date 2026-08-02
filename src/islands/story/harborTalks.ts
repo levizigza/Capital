@@ -275,6 +275,21 @@ const ROLE_TIPS: Record<
       strategist: "Building empires. Inspiring dreams. That’s the way.",
     },
   },
+  mula_mami: {
+    tip: {
+      explorer:
+        "Mula Mami — boss babe energy! That Plinth keeps every move money follows.",
+      apprentice:
+        "Queen of the bag: stacks in hand, plans in motion. Piggy keeps Harbor’s verbs; I hustle loud and shine louder. Visit the Plinth.",
+      strategist:
+        "Street glamour, not Harbor Keeper. Built for profit, dressed for impact; Memory Plinth files the mula after every Take.",
+    },
+    bye: {
+      explorer: "Bold. Bossed up. Bankrolled — go shine!",
+      apprentice: "Pay yourself first. Then let cash confidence lead.",
+      strategist: "Luxury with edge. Style with status. Ledger with heels.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
