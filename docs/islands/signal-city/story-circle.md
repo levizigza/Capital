@@ -1,7 +1,9 @@
 ﻿# signal-city — Story Circle (draft)
 
+> **PARKED** — Outside the iconic freeze (Harbor · Cove → Paycheck → Credit). Not on the travel map or live loader. See [iconic-later.md](../../iconic-later.md). Do not deepen until the cold-retell MVP holds.
+
 **Island ID:** `signal_city`  
-**Status:** draft — outer chapter; fill before marketing as shipped  
+**Status:** PARKED — outer chapter; not live on Fortune Archipelago spine  
 **Canon:** [story-bible.md](../../story-bible.md)
 
 ---

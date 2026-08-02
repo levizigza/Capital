@@ -102,6 +102,8 @@ If not, cut content before adding systems.
 
 **Shipped (Pillar 16 — testing):** After each pillar fix run `npm run test:iconic` (and `test:iconic:e2e` when Harbor/Cove/carpet change), one cold checklist pass with the six iteration questions, then update the craft-plan status board. Coverage map: `src/qa/iconicCraftCadence.ts`.
 
+**Shipped (Pillar 17 — scope):** Freeze reaffirmed — travel spine stays Harbor · Cove · Paycheck · Credit (`iconicScopeFreeze`). Parked creep sink: [iconic-later.md](./iconic-later.md). Outer island docs carry **PARKED** banners. New island ideas go on the later list; deepen Take / feel / Plinth first.
+
 ---
 
 ## Navigability law (non-negotiable)

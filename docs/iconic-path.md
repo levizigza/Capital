@@ -97,6 +97,8 @@ Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cov
 - **No BMO / CBE / Nathan Project** content merged into Capital.  
 - Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
 
+**Parked “later” sink (Pillar 17):** [iconic-later.md](./iconic-later.md) — put new island ideas and deferred polish there; do not open the map. Guarded by `iconicScopeFreeze.test.ts`.
+
 ## Identity freeze (Wave 4)
 
 - Player-facing world name: **Fortune Archipelago** (Capital = product brand).  

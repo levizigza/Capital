@@ -173,7 +173,7 @@ export type PillarContract = {
   guards: string[];
 };
 
-/** Pillar contract suite for `npm run test:iconic` (8–15 + signature + cadence). */
+/** Pillar contract suite for `npm run test:iconic` (7–17 + signature + cadence). */
 export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
   { pillar: 7, name: "Content", guards: ["src/islands/spineContentRegistry.test.ts"] },
   { pillar: 8, name: "Balance", guards: ["src/islands/balanceSheet.test.ts"] },
@@ -219,6 +219,11 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
     pillar: 16,
     name: "Testing",
     guards: ["src/qa/iconicCraftCadence.test.ts", "src/qa/signatureLoop.test.ts"],
+  },
+  {
+    pillar: 17,
+    name: "Scope",
+    guards: ["src/islands/iconicScopeFreeze.test.ts", "src/islands/spineArchipelago.test.ts"],
   },
 ] as const;
 

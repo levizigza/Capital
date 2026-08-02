@@ -2,7 +2,7 @@
 
 **Purpose:** Bring Capital’s game design, logic, and mechanics to the same iconic bar as the signature Harbor loop — without widening the map.
 
-**Canon:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [iconic-path.md](./iconic-path.md) · [mural-thesis.md](./mural-thesis.md) · [game-pillars.md](./game-pillars.md) · [story-bible.md](./story-bible.md)
+**Canon:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [mural-thesis.md](./mural-thesis.md) · [game-pillars.md](./game-pillars.md) · [story-bible.md](./story-bible.md)
 
 **Freeze (still holds):** Cove → Paycheck → Credit + Harbor only · Family Room local · no Nathan/BMO/CBE merge · deepen organs, don’t add islands.
 
@@ -309,8 +309,11 @@ When two pillars fight, **fantasy + signature loop win**.
 | Cut before add | New island < deeper Take/feel |
 | Milestones | Per-pillar pass verdicts below |
 | Roles | Design truth in docs; code proof in `src/islands` + e2e |
+| Later sink | [iconic-later.md](./iconic-later.md) · `iconicScopeFreeze.ts` |
 
 | Pass work | Reaffirm freeze. Park a “later” list so feature creep doesn’t eat the loop. |
+
+**Shipped (Pillar 17):** Freeze reaffirmed in code (`assertSpineTravelFrozen` — Harbor · Cove · Paycheck · Credit only). Parked “later” list at `docs/iconic-later.md` (out-of-scope laws + parked content + deferred polish from status Next fixes). Outer island story-circles carry explicit **PARKED** banners. Guarded by `iconicScopeFreeze.test.ts`.
 
 ---
 
@@ -325,7 +328,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
 | 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
 | 6 | Encounters | playable → iconic | 2026-08-02 | Credit canyon: Score Scanner (not Paycheck categorize); wait/haste Take after practice. Next: Cove Alma vs Paycheck categorize overlap |
-| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: park docs under docs/islands/{signal-city,…} with explicit PARKED banners |
+| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
 | 8 | Balance | playable → iconic | 2026-08-02 | Balance sheet for Cove earn → carpet → Freedom; Freedom Seal streak 2→3 (`HARBOR_ESCAPE_STREAK`); `balanceSheet.test.ts`. Next: first seal plaza readability after pouch dips |
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
 | 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
@@ -335,7 +338,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 14 | Technical | playable → iconic | 2026-08-02 | Corrupt-save sanitize + Harbor failsafe constants wired (myth <3s). Next: kill-switch e2e for harbor3d sticky fail |
 | 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; juice bounce off under reduce. Next: high-contrast pass on share lower-third |
 | 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
-| 17 | Scope | | | |
+| 17 | Scope | playable → iconic | 2026-08-02 | Freeze in code + `docs/iconic-later.md` creep sink + PARKED banners on outer docs. Next: deepen spine from later-list polish only |
 
 ---
 
@@ -343,11 +346,11 @@ When two pillars fight, **fantasy + signature loop win**.
 
 1. Read the pillar row above (2 min)  
 2. Cold evidence (play or QA seed) (10–20 min)  
-3. Write gap list in the status board  
+3. Write gap list in the status board (or park on [iconic-later.md](./iconic-later.md))  
 4. Ship the single highest-leverage fix **or** mark defer with reason  
 5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **16 — Testing and iteration** (`test:iconic` cadence + cold checklist machine map).  
+**Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
 
-**Start next:** Pillar **17 — Scope and production** (reaffirm freeze; park a “later” list).
+**Craft sequence complete (0–17).** Next work: pick deferred polish from [iconic-later.md](./iconic-later.md) — deepen Harbor · Cove → Paycheck → Credit; do not widen the map.

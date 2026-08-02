@@ -19,13 +19,31 @@ Each island **must** include before ship:
 | `paycheck_peninsula` | [paycheck-peninsula/](./paycheck-peninsula/) | `src/islands/content/paycheck-peninsula.islands.json` |
 | `credit_kingdom` | [credit-kingdom/](./credit-kingdom/) | `src/islands/content/credit-kingdom.islands.json` |
 | `harbor_haven` | [harbor-haven/](./harbor-haven/) | `src/islands/content/harbor-haven.islands.json` |
-| Outer chapters (parked) | matching `docs/islands/<slug>/` | on-disk `*.islands.json` — **parked** from live loader (Pillar 7); story-circle still required for schema gate |
 
-**Gate:** `src/qa/contentValidation.test.ts` fails if a live island pack lacks `story-circle.md`.
+### Parked outer chapters (not live)
+
+> **PARKED** — Outside the iconic freeze. See [iconic-later.md](../iconic-later.md). Story-circles still validate schema; travel map + live loader ignore them.
+
+| Island ID | Docs folder |
+|-----------|-------------|
+| `signal_city` | [signal-city/](./signal-city/) |
+| `venture_foundry` | [venture-foundry/](./venture-foundry/) |
+| `financial_assets` | [financial-assets/](./financial-assets/) |
+| `digital_assets` | [digital-assets/](./digital-assets/) |
+| `business_assets` | [business-assets/](./business-assets/) |
+| `intangibles` | [intangibles/](./intangibles/) |
+| `future_shores` | [future-shores/](./future-shores/) |
+| `real_estate` | [real-estate/](./real-estate/) |
+| `starter_key_cove` | _(no docs folder — registry park only)_ |
+
+**Gate:** `src/qa/contentValidation.test.ts` fails if a live island pack lacks `story-circle.md`.  
+**Scope gate:** `src/islands/iconicScopeFreeze.test.ts` fails if parked story-circles lose their **PARKED** banner or the travel spine widens.
 
 ## Quick start (new island)
 
 ```bash
+# Prefer deepening Harbor · Cove → Paycheck → Credit (see docs/iconic-later.md).
+# If you must draft an outer chapter, mark story-circle.md PARKED immediately.
 mkdir docs/islands/my-island-id
 cp docs/islands/_template/layout-map.md docs/islands/my-island-id/
 cp docs/islands/_template/quest-pacing-chart.md docs/islands/my-island-id/

@@ -39,9 +39,9 @@ describe("Iconic craft cadence (Pillar 16)", () => {
     }
   });
 
-  it("keeps pillar 7–16 contracts on disk", () => {
+  it("keeps pillar 7–17 contracts on disk", () => {
     const pillars = ICONIC_PILLAR_CONTRACTS.map((p) => p.pillar);
-    for (let n = 7; n <= 16; n++) {
+    for (let n = 7; n <= 17; n++) {
       expect(pillars).toContain(n);
     }
     for (const p of ICONIC_PILLAR_CONTRACTS) {
