@@ -16,6 +16,20 @@ type Props = {
   onComplete: (character: CapitalCharacter) => void;
 };
 
+function resolvePickName(
+  nextId: string,
+  draft: CapitalCharacter,
+  defaultName: string,
+): string {
+  const prevName = getMascot(draft.base).name;
+  const custom =
+    draft.name &&
+    draft.name !== prevName &&
+    draft.name !== "Voyager" &&
+    draft.name.trim().length > 0;
+  return custom ? draft.name : defaultName || "";
+}
+
 /**
  * Boot cast select — Street Fighter coin board → full 3D body + Snapchat customize.
  * Stage and dock are flex siblings so WebGL/coins never cover the controls.
@@ -23,14 +37,14 @@ type Props = {
 export function BootCastSelect({ defaultName = "", onComplete }: Props) {
   const [stage, setStage] = useState<Stage>("select");
   const [draft, setDraft] = useState<CapitalCharacter>(() =>
-    sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || "Voyager"),
+    sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || ""),
   );
   const [busy, setBusy] = useState(false);
 
   const mascot = getMascot(draft.base);
 
   const pickFighter = (id: string) => {
-    setDraft(sheetLookForBase(id, draft.name || defaultName || getMascot(id).name));
+    setDraft(sheetLookForBase(id, resolvePickName(id, draft, defaultName)));
   };
 
   const pickAndCustomize = (id: string) => {
@@ -64,23 +78,30 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex flex-col bg-[#0c1622]"
+      className="fixed inset-0 z-[10000] flex flex-col bg-[#071018]"
       role="dialog"
       aria-label="Choose your Money Mascot"
       data-testid="boot-cast-select"
       data-stage={stage}
+      style={{ color: "#fff" }}
     >
-      <header className="relative z-10 shrink-0 px-3 pb-1 pt-3 sm:px-4 sm:pt-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
-          Fortune Archipelago · Fighter Select
+      <header className="relative z-10 shrink-0 px-3 pb-1 pt-3 sm:px-5 sm:pt-4">
+        <p
+          className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200"
+          style={{ color: "#fde68a" }}
+        >
+          Capital · Fortune Archipelago
         </p>
-        <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
-          {stage === "select" ? "Choose your Voyager" : "Become you"}
+        <h1
+          className="mt-0.5 text-3xl font-black tracking-tight sm:text-4xl"
+          style={{ color: "#fffdf6", textShadow: "0 2px 14px rgba(0,0,0,0.85)" }}
+        >
+          {stage === "select" ? "Choose your Voyager" : `${mascot.name}`}
         </h1>
-        <p className="max-w-lg text-sm text-white/80">
+        <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
           {stage === "select"
-            ? "All 12 series leads as spinning coin faces — tap one for the full 3D body, then customize."
-            : "Live 3D head + body — Looks · Shirt · Pants · Accessories · Electronics — then board the Money Carpet."}
+            ? "Twelve series leads. Tap a coin face for the full 3D body — then make the look yours."
+            : "Looks · Shirt · Pants · Accessories · Electronics on the live mirror."}
         </p>
       </header>
 
@@ -102,29 +123,30 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
           />
         )}
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/55"
           aria-hidden
         />
       </div>
 
       <div
-        className="relative z-20 max-h-[46vh] shrink-0 overflow-y-auto overscroll-contain border-t border-white/10 bg-black/92 px-3 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md sm:max-h-[42vh] sm:px-4 sm:py-4"
+        className="relative z-20 max-h-[44vh] shrink-0 overflow-y-auto overscroll-contain border-t border-amber-200/20 bg-[#050a10]/95 px-3 py-3 shadow-[0_-16px_48px_rgba(0,0,0,0.65)] backdrop-blur-md sm:max-h-[40vh] sm:px-5 sm:py-4"
         data-testid="boot-cast-dock"
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="mx-auto w-full max-w-xl">
           {stage === "select" ? (
-            <div className="flex flex-col gap-2 text-center text-white">
-              <div>
-                <div className="text-lg font-black">{mascot.name}</div>
-                <p className="text-sm text-white/75">{mascot.tagline}</p>
+            <div className="flex flex-col gap-2.5 text-center text-white">
+              <div className="rounded-2xl border border-amber-200/25 bg-black/35 px-3 py-2">
+                <div className="text-xl font-black tracking-tight" style={{ color: "#fffdf6" }}>
+                  {mascot.name}
+                </div>
+                <p className="text-sm" style={{ color: "rgba(253,230,138,0.9)" }}>
+                  {mascot.tagline}
+                </p>
               </div>
-              <p className="text-xs font-semibold text-amber-100/90">
-                Tap a coin to jump straight into their 3D body — or customize the highlighted fighter.
-              </p>
               <button
                 type="button"
-                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 onPointerUp={(e) => {
                   if (e.button !== 0) return;
                   e.preventDefault();
@@ -136,12 +158,13 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                 }}
                 data-testid="boot-customize-look"
               >
-                Customize {mascot.name} on the 3D mirror →
+                Customize {mascot.name} →
               </button>
               <button
                 type="button"
                 disabled={busy}
-                className="w-full text-center text-xs font-bold uppercase tracking-wide text-white/55 underline-offset-2 hover:text-white/90 hover:underline disabled:opacity-40"
+                className="w-full text-center text-xs font-bold uppercase tracking-wide underline-offset-2 hover:underline disabled:opacity-40"
+                style={{ color: "rgba(255,255,255,0.7)" }}
                 onClick={() => boardCarpet()}
                 data-testid="boot-board-carpet-now"
               >
