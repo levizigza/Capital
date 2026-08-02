@@ -46,6 +46,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "fortuna", hex: "#047857", label: "Fortuna Emerald" },
   /** Billionaire Bao — quiet-luxury forest */
   { id: "bao", hex: "#052e16", label: "Bao Forest" },
+  /** Jade Fortune — deep jade gown */
+  { id: "jade", hex: "#065f46", label: "Jade Green" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */
