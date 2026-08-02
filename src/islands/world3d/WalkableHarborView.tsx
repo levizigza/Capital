@@ -68,6 +68,14 @@ import {
   HARBOR_LOADING_HINT,
   HARBOR_LOADING_SLOW,
 } from "../titleVoice";
+import {
+  HARBOR_3D_FAIL_KEY,
+  HARBOR_3D_OK_KEY,
+  HARBOR_CANVAS_WATCHDOG_MS,
+  HARBOR_DEFER_BEFORE_PROBE_MS,
+  HARBOR_HARD_FAILSAFE_MS,
+  HARBOR_LOAD_HINT_MS,
+} from "./harborLoadFailsafe";
 import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
@@ -918,7 +926,7 @@ export function WalkableHarborView({
   const [loadHint, setLoadHint] = useState(HARBOR_LOADING_HINT);
   const [force2d, setForce2d] = useState(() => {
     try {
-      return sessionStorage.getItem("capital_harbor3d_fail") === "1";
+      return sessionStorage.getItem(HARBOR_3D_FAIL_KEY) === "1";
     } catch {
       return false;
     }
@@ -940,9 +948,9 @@ export function WalkableHarborView({
     if (escapedRef.current) return;
     escapedRef.current = true;
     try {
-      sessionStorage.removeItem("capital_harbor3d_ok");
+      sessionStorage.removeItem(HARBOR_3D_OK_KEY);
       if (mode === "sticky") {
-        sessionStorage.setItem("capital_harbor3d_fail", "1");
+        sessionStorage.setItem(HARBOR_3D_FAIL_KEY, "1");
       }
     } catch {
       /* ignore */
@@ -986,7 +994,7 @@ export function WalkableHarborView({
       // If R3F never reports onCreated, tear Canvas down and play myth — don't veil forever.
       canvasWatch = window.setTimeout(() => {
         if (!readyRef.current) escapeToMyth("soft");
-      }, 1_800);
+      }, HARBOR_CANVAS_WATCHDOG_MS);
     };
 
     // Double-rAF + idle: Enter Harbor paints and stays tappable before WebGL hitch.
@@ -1000,7 +1008,7 @@ export function WalkableHarborView({
         ).requestIdleCallback;
         if (typeof ric === "function") {
           idleId = ric(() => {
-            mountTimer = window.setTimeout(scheduleCanvas, 80);
+            mountTimer = window.setTimeout(scheduleCanvas, HARBOR_DEFER_BEFORE_PROBE_MS);
           }, { timeout: 400 });
         } else {
           mountTimer = window.setTimeout(scheduleCanvas, 280);
@@ -1010,11 +1018,11 @@ export function WalkableHarborView({
 
     const hint = window.setTimeout(() => {
       setLoadHint(HARBOR_LOADING_SLOW);
-    }, 900);
+    }, HARBOR_LOAD_HINT_MS);
     // Hard myth escape — iconic reliability gate: playable Harbor < ~2.5s.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) escapeToMyth("soft");
-    }, 2_400);
+    }, HARBOR_HARD_FAILSAFE_MS);
     return () => {
       cancelled = true;
       if (idleId !== undefined) {
@@ -1140,8 +1148,8 @@ export function WalkableHarborView({
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
           try {
-            sessionStorage.setItem("capital_harbor3d_ok", "1");
-            sessionStorage.removeItem("capital_harbor3d_fail");
+            sessionStorage.setItem(HARBOR_3D_OK_KEY, "1");
+            sessionStorage.removeItem(HARBOR_3D_FAIL_KEY);
           } catch {
             /* ignore */
           }

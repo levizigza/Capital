@@ -107,7 +107,8 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 
 Cold play is blocked if Harbor never becomes playable. Ship this before Wave-8 content:
 
-1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s; sticky `capital_harbor3d_fail` skips Canvas next visit.  
+1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s (`harborLoadFailsafe.ts`); sticky `capital_harbor3d_fail` skips Canvas next visit.  
+1b. **Corrupt save never bricks** — `sanitizeIslandSave` coerces poison version-1 shapes to Harbor-safe arrays/objects (or default save).  
 2. **CSP allows audio** — `media-src 'self' data: blob:` so Howler / data beds are not blocked on Pages.  
 3. **E2E stays green** — skip SW under `navigator.webdriver` + kill-switch init so `controllerchange` reloads do not flake `__QA__.ready`.
 

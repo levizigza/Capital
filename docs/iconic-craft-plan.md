@@ -273,6 +273,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Kill WebGL once; confirm myth path. Corrupt save once; confirm fallback. |
 
+**Shipped (Pillar 14):** `sanitizeIslandSave` — corrupt version-1 blobs (null discovered / string inventory) coerce to playable Harbor defaults instead of bricking boot. Harbor failsafe timers live in `harborLoadFailsafe.ts` and wire into WalkableHarborView (sticky probe fail → myth; hard escape <3s). Guarded by `save.test.ts` + `harborLoadFailsafe.test.ts`.
+
 ---
 
 ### 15. Accessibility
@@ -325,7 +327,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` mute-test stingers; Harbor bed ducks on spectacle/share. Next: Piggy homecoming reward sting |
 | 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
 | 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; tiny_spend Capsule-only (no coach reading ahead). Next: boot cast-select Cancel parity on look stage |
-| 14 | Technical | | | |
+| 14 | Technical | playable → iconic | 2026-08-02 | Corrupt-save sanitize + Harbor failsafe constants wired (myth <3s). Next: kill-switch e2e for harbor3d sticky fail |
 | 15 | Accessibility | | | |
 | 16 | Testing | | | |
 | 17 | Scope | | | |
@@ -341,6 +343,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **13 — Onboarding** (meet_guide Talk-only; tiny_spend Capsule-only; no coach reading ahead).  
+**Last shipped:** Pillar **14 — Technical systems** (`sanitizeIslandSave` + Harbor myth failsafe constants under 3s).  
 
-**Start next:** Pillar **14 — Technical systems** (WebGL kill → myth path; corrupt save fallback).
+**Start next:** Pillar **15 — Accessibility** (`prefers-reduced-motion` full signature loop).

@@ -1,17 +1,32 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import {
+  HARBOR_3D_FAIL_KEY,
+  HARBOR_3D_OK_KEY,
+  HARBOR_CANVAS_WATCHDOG_MS,
+  HARBOR_DEFER_BEFORE_PROBE_MS,
+  HARBOR_HARD_FAILSAFE_MS,
+} from "./harborLoadFailsafe";
 
 /**
- * Documents the Harbor load escape contract (reliability gate).
- * Regression: sessionStorage "capital_harbor3d_ok" must NEVER block failsafe escape.
- * Continue must paint before Canvas mount; hard myth escape under ~3s.
+ * Pillar 14 — Harbor WebGL → myth reliability gate.
+ * Regression: prior-visit ok must NEVER block failsafe escape.
+ * Continue paints before Canvas; hard myth escape under ~3s.
  */
 describe("Harbor load failsafe contract", () => {
+  it("exports timers under the iconic 3s playable gate", () => {
+    expect(HARBOR_DEFER_BEFORE_PROBE_MS).toBeGreaterThan(0);
+    expect(HARBOR_DEFER_BEFORE_PROBE_MS).toBeLessThan(500);
+    expect(HARBOR_CANVAS_WATCHDOG_MS).toBeLessThan(HARBOR_HARD_FAILSAFE_MS);
+    expect(HARBOR_HARD_FAILSAFE_MS).toBeLessThan(3_000);
+  });
+
   it("always escapes when WebGL never reports ready, even if 3D worked earlier", () => {
     const harborOkFromPriorVisit = true;
     const ready = false;
-    // Old buggy rule: if (!ready && !harborOk) escape — left users stuck when harborOk.
     const oldWouldEscape = !ready && !harborOkFromPriorVisit;
-    const newWouldEscape = !ready; // always escape
+    const newWouldEscape = !ready;
     expect(oldWouldEscape).toBe(false);
     expect(newWouldEscape).toBe(true);
   });
@@ -20,17 +35,18 @@ describe("Harbor load failsafe contract", () => {
     const priorFail = true;
     const mountCanvas = !priorFail;
     expect(mountCanvas).toBe(false);
+    expect(HARBOR_3D_FAIL_KEY).toBe("capital_harbor3d_fail");
+    expect(HARBOR_3D_OK_KEY).toBe("capital_harbor3d_ok");
   });
 
-  it("hard failsafe deadline is under the iconic 3s playable gate", () => {
-    const HARD_FAILSAFE_MS = 2_400;
-    expect(HARD_FAILSAFE_MS).toBeLessThan(3_000);
-  });
-
-  it("canvas watchdog tears down hung R3F before the hard failsafe", () => {
-    const CANVAS_WATCHDOG_MS = 1_800;
-    const HARD_FAILSAFE_MS = 2_400;
-    expect(CANVAS_WATCHDOG_MS).toBeLessThan(HARD_FAILSAFE_MS);
+  it("wires shared failsafe constants into WalkableHarborView", () => {
+    const src = readFileSync(join(__dirname, "WalkableHarborView.tsx"), "utf8");
+    expect(src).toMatch(/HARBOR_HARD_FAILSAFE_MS/);
+    expect(src).toMatch(/HARBOR_CANVAS_WATCHDOG_MS/);
+    expect(src).toMatch(/HARBOR_DEFER_BEFORE_PROBE_MS/);
+    expect(src).toMatch(/HARBOR_3D_FAIL_KEY/);
+    expect(src).toMatch(/escapeToMyth\("sticky"\)/);
+    expect(src).toMatch(/escapeToMyth\("soft"\)/);
   });
 
   it("timeout escape stays soft — sticky only on probe/context loss", () => {
@@ -38,12 +54,6 @@ describe("Harbor load failsafe contract", () => {
     const probeFailMode: "soft" | "sticky" = "sticky";
     expect(timeoutMode).toBe("soft");
     expect(probeFailMode).toBe("sticky");
-  });
-
-  it("defers Canvas until after Continue paint window", () => {
-    const DEFER_BEFORE_PROBE_MS = 80;
-    expect(DEFER_BEFORE_PROBE_MS).toBeGreaterThan(0);
-    expect(DEFER_BEFORE_PROBE_MS).toBeLessThan(500);
   });
 
   it("failed WebGL probe skips R3F Canvas entirely", () => {
