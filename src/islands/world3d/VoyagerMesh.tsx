@@ -285,6 +285,7 @@ export function VoyagerMesh({
   const isBillionaireBao = character?.base === "billionaire_bao";
   const isJadeFortune = character?.base === "jade_fortune";
   const isSultanStacks = character?.base === "sultan_stacks";
+  const isDinarDahlia = character?.base === "dinar_dahlia";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -292,7 +293,8 @@ export function VoyagerMesh({
     isFortunaFernanda ||
     isBillionaireBao ||
     isJadeFortune ||
-    isSultanStacks;
+    isSultanStacks ||
+    isDinarDahlia;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -478,6 +480,74 @@ export function VoyagerMesh({
                 >
                   P
                 </SafeText>
+              </>
+            ) : null}
+            {/* Dinar Dahlia — emerald eyes, dark waves, crown, DD crest */}
+            {isDinarDahlia ? (
+              <>
+                <mesh position={[-0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#0b3d2e" emissive="#10b981" emissiveIntensity={0.4} />
+                </mesh>
+                <mesh position={[0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#0b3d2e" emissive="#10b981" emissiveIntensity={0.4} />
+                </mesh>
+                <mesh position={[-0.14, 0.17, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.08, 0.018, 0.01]} />
+                </mesh>
+                <mesh position={[0.14, 0.17, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.08, 0.018, 0.01]} />
+                </mesh>
+                <mesh position={[0, -0.08, 0.11]}>
+                  <boxGeometry args={[0.1, 0.025, 0.01]} />
+                  <meshStandardMaterial color="#9f1239" roughness={0.45} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.28, 0.12]}
+                  fontSize={0.13}
+                  color="#0b3d2e"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.012}
+                  outlineColor="#fde68a"
+                >
+                  DD
+                </SafeText>
+                {/* Dark wavy hair */}
+                <mesh castShadow position={[0, 0.36, -0.1]}>
+                  <sphereGeometry args={[0.24, 12, 10]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.65} />
+                </mesh>
+                <mesh castShadow position={[-0.3, 0.15, -0.08]}>
+                  <capsuleGeometry args={[0.09, 0.28, 4, 6]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.65} />
+                </mesh>
+                <mesh castShadow position={[0.3, 0.15, -0.08]}>
+                  <capsuleGeometry args={[0.09, 0.28, 4, 6]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.65} />
+                </mesh>
+                {/* Emerald crown */}
+                <mesh castShadow position={[0, 0.52, 0]} material={materials.gold}>
+                  <cylinderGeometry args={[0.22, 0.26, 0.1, 12]} />
+                </mesh>
+                {[0, 1, 2, 3, 4].map((i) => {
+                  const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+                  return (
+                    <mesh
+                      key={i}
+                      castShadow
+                      position={[Math.cos(a) * 0.18, 0.6, Math.sin(a) * 0.18]}
+                      material={materials.gold}
+                    >
+                      <coneGeometry args={[0.035, 0.1, 5]} />
+                    </mesh>
+                  );
+                })}
+                <mesh castShadow position={[0, 0.58, 0.2]}>
+                  <octahedronGeometry args={[0.05, 0]} />
+                  <meshStandardMaterial color="#10b981" roughness={0.3} metalness={0.45} />
+                </mesh>
               </>
             ) : null}
             {/* Sultan Stacks — emerald eyes, handlebar mustache, goatee, $ crest */}
@@ -877,7 +947,9 @@ export function VoyagerMesh({
                           ? "jade_fortune"
                           : isSultanStacks
                             ? "sultan_stacks"
-                            : null
+                            : isDinarDahlia
+                              ? "dinar_dahlia"
+                              : null
             }
           />
         ) : null}
@@ -902,6 +974,12 @@ export function VoyagerMesh({
           <>
             <SultanCoinScepter materials={materials} />
             <SultanWealthSash materials={materials} />
+          </>
+        ) : null}
+        {isDinarDahlia ? (
+          <>
+            <DinarDahliaStaff materials={materials} />
+            <DinarCoinClutch materials={materials} />
           </>
         ) : null}
 
@@ -1239,6 +1317,68 @@ function SultanWealthSash({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Dinar Dahlia’s calligraphy medallion staff — dinar charm. */
+function DinarDahliaStaff({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.5, 0.48, 0.1]} rotation={[0.1, 0, 0.06]}>
+      <mesh castShadow position={[0, 0.42, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.026, 0.03, 1.1, 8]} />
+      </mesh>
+      <mesh castShadow position={[0, 1.02, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.13, 0.13, 0.06, 20]} />
+      </mesh>
+      <mesh position={[0, 1.02, 0.04]}>
+        <circleGeometry args={[0.1, 18]} />
+        <meshStandardMaterial color="#0b3d2e" roughness={0.4} metalness={0.25} />
+      </mesh>
+      <SafeText
+        position={[0, 1.02, 0.05]}
+        fontSize={0.09}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        DD
+      </SafeText>
+    </group>
+  );
+}
+
+/** Dahlia’s overflowing DD clutch — wealth with wonder. */
+function DinarCoinClutch({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.48, 0.55, 0.12]} rotation={[0.15, 0.3, -0.1]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.22, 0.16, 0.08]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.45} />
+      </mesh>
+      <mesh castShadow position={[0, 0, 0.045]}>
+        <boxGeometry args={[0.18, 0.12, 0.02]} />
+        <meshStandardMaterial color="#0b3d2e" roughness={0.45} />
+      </mesh>
+      <SafeText
+        position={[0, 0.01, 0.06]}
+        fontSize={0.07}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+      >
+        DD
+      </SafeText>
+      {[0, 1, 2, 3].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[(i % 2) * 0.05 - 0.02, 0.1 + (i > 1 ? 0.03 : 0), 0.02]}
+          material={materials.gold}
+        >
+          <cylinderGeometry args={[0.025, 0.025, 0.015, 10]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -1258,6 +1398,7 @@ function GearAttach({
     | "billionaire_bao"
     | "jade_fortune"
     | "sultan_stacks"
+    | "dinar_dahlia"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -1476,7 +1617,8 @@ function GearAttach({
     const couture = seriesLead === "cashmere";
     const fortuna = seriesLead === "fortuna_fernanda";
     const jade = seriesLead === "jade_fortune";
-    const dramatic = couture || fortuna || jade;
+    const dahlia = seriesLead === "dinar_dahlia";
+    const dramatic = couture || fortuna || jade || dahlia;
     return (
       <group position={[0, L.neckY - 0.05, L.backZ]}>
         <mesh
@@ -1488,7 +1630,7 @@ function GearAttach({
             args={[L.torsoW * (dramatic ? 1.35 : 1.15), L.torsoH * (dramatic ? 1.85 : 1.35), 0.06]}
           />
           <meshStandardMaterial
-            color={fortuna ? "#047857" : jade ? "#0a0a0a" : "#0a0a0a"}
+            color={fortuna ? "#047857" : dahlia ? "#0b3d2e" : jade ? "#0a0a0a" : "#0a0a0a"}
             roughness={0.55}
           />
         </mesh>
@@ -1528,6 +1670,20 @@ function GearAttach({
             </mesh>
             <mesh castShadow position={[-0.15, -0.4, 0.04]} material={materials.gold}>
               <torusGeometry args={[0.05, 0.015, 6, 12]} />
+            </mesh>
+          </>
+        ) : null}
+        {dahlia ? (
+          <>
+            <mesh castShadow position={[0.2, -0.22, 0.05]} material={materials.gold}>
+              <sphereGeometry args={[0.05, 8, 6]} />
+            </mesh>
+            <mesh castShadow position={[-0.18, -0.38, 0.04]}>
+              <octahedronGeometry args={[0.045, 0]} />
+              <meshStandardMaterial color="#10b981" roughness={0.3} metalness={0.4} />
+            </mesh>
+            <mesh castShadow position={[0, -L.torsoH * 0.85, 0]} material={materials.gold}>
+              <boxGeometry args={[L.torsoW * 0.9, 0.04, 0.04]} />
             </mesh>
           </>
         ) : null}
