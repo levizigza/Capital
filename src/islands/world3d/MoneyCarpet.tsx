@@ -59,7 +59,16 @@ export function MoneyCarpet({
 
   const texture = useMemo(() => {
     if (typeof document === "undefined") return null;
-    return getMoneyCarpetTexture();
+    // Clone so POV/third-person can orient the print independently of the cache.
+    const base = getMoneyCarpetTexture();
+    const map = base.clone();
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.RepeatWrapping;
+    // PlaneGeometry → rotateX(-π/2) leaves the print mirrored from the seat.
+    map.repeat.x = -1;
+    map.offset.x = 1;
+    map.needsUpdate = true;
+    return map;
   }, []);
 
   const geometry = useMemo(() => {
@@ -77,8 +86,9 @@ export function MoneyCarpet({
       const z = pos.getZ(i);
       const along = THREE.MathUtils.clamp((z - tailZ) / Math.max(0.001, noseTipZ - tailZ), 0, 1);
       const side = Math.abs(x) / (width * 0.5);
-      const noseCurl = along * along * (povRide ? 0.16 : 0.1);
-      const cornerDip = side * side * (1 - along) * 0.04;
+      // Gentle magic-carpet lift at the nose — keep POV readable as a rug, not a balloon.
+      const noseCurl = along * along * (povRide ? 0.07 : 0.1);
+      const cornerDip = side * side * (1 - along) * 0.03;
       pos.setY(i, noseCurl - cornerDip);
       // Slight taper at the short ends so it isn’t a hard rectangle
       if (along > 0.92 || along < 0.08) {
@@ -96,13 +106,15 @@ export function MoneyCarpet({
 
   const fringe = useMemo(() => {
     const items: { x: number; z: number; nose: boolean; len: number }[] = [];
-    const count = povRide ? 13 : 9;
+    const count = povRide ? 15 : 11;
     for (let i = 0; i < count; i++) {
       const t = count === 1 ? 0.5 : i / (count - 1);
-      const x = -width * 0.42 + t * width * 0.84;
-      const len = 0.28 + Math.abs(t - 0.5) * 0.15;
-      items.push({ x, z: noseTipZ + 0.06, nose: true, len: povRide ? len + 0.18 : len });
-      items.push({ x, z: tailZ - 0.06, nose: false, len: povRide ? len + 0.08 : len * 0.9 });
+      const x = -width * 0.44 + t * width * 0.88;
+      // Long nose tassels trail into the POV frame so the rug reads as a carpet.
+      const noseLen = (povRide ? 0.55 : 0.38) + Math.abs(t - 0.5) * 0.2;
+      const tailLen = (povRide ? 0.4 : 0.32) + Math.abs(t - 0.5) * 0.12;
+      items.push({ x, z: noseTipZ + 0.04, nose: true, len: noseLen });
+      items.push({ x, z: tailZ - 0.04, nose: false, len: tailLen });
     }
     return items;
   }, [povRide, width, noseTipZ, tailZ]);
@@ -141,8 +153,9 @@ export function MoneyCarpet({
         const seatFirm = povRide
           ? THREE.MathUtils.clamp(Math.abs(bz - seatZ) * 1.05, 0.22, 1)
           : 1;
+        // Keep flap gentle near the seat so POV never peeks at a mirrored underside.
         const flapAmp =
-          (0.045 + along * along * 0.26 + side * 0.1) * seatFirm * (povRide ? 1.2 : 0.85);
+          (0.03 + along * along * 0.2 + side * 0.08) * seatFirm * (povRide ? 0.85 : 0.75);
         const wave =
           Math.sin(bz * 3.1 - t * 8.5) * flapAmp +
           Math.sin(bx * 3.8 + t * 5.8) * flapAmp * 0.5 +
@@ -171,21 +184,23 @@ export function MoneyCarpet({
   });
 
   const mat = useMemo(() => {
+    // FrontSide only — DoubleSide mirrored the banknote when the camera
+    // grazed the underside during POV flap.
     if (texture) {
       return new THREE.MeshStandardMaterial({
         map: texture,
         roughness: 0.52,
         metalness: 0.08,
-        side: THREE.DoubleSide,
+        side: THREE.FrontSide,
         emissive: new THREE.Color(povRide ? "#0a2f1c" : "#000000"),
-        emissiveIntensity: povRide ? 0.12 : 0,
+        emissiveIntensity: povRide ? 0.14 : 0,
       });
     }
     return new THREE.MeshStandardMaterial({
       color: "#217a4a",
       roughness: 0.55,
       metalness: 0.08,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
     });
   }, [texture, povRide]);
 
@@ -205,14 +220,20 @@ export function MoneyCarpet({
       {/* Printed banknote cloth */}
       <mesh ref={cloth} geometry={geometry} material={mat} castShadow receiveShadow />
 
-      {/* Dark underside so the silhouette reads from below / side */}
+      {/* Dark underside — separate mesh so the printed face stays FrontSide-only */}
       <mesh
         rotation={[Math.PI / 2, 0, 0]}
-        position={[0, -0.012, seatZ + length * 0.12]}
+        position={[0, -0.014, seatZ + length * 0.12]}
         material={underMat}
         receiveShadow
       >
         <planeGeometry args={[width * 0.98, length * 0.98]} />
+      </mesh>
+
+      {/* Thick woven hem so the rug has volume, not paper-thin card stock */}
+      <mesh position={[0, -0.03, seatZ + length * 0.12]} castShadow>
+        <boxGeometry args={[width * 0.92, 0.045, length * 0.9]} />
+        <meshStandardMaterial color="#0f3d28" roughness={0.9} />
       </mesh>
 
       {/* Raised ivory + gold frame rails — “woven carpet border” */}
@@ -274,7 +295,11 @@ export function MoneyCarpet({
 
       {/* Gold tassels on nose + tail — the magic-carpet cue */}
       {fringe.map((f, i) => (
-        <group key={`tassel-${i}`} position={[f.x, 0.02, f.z]}>
+        <group
+          key={`tassel-${i}`}
+          position={[f.x, 0.04, f.z]}
+          rotation={[f.nose ? 1.15 : 0.35, 0, 0]}
+        >
           <mesh
             ref={(el) => {
               if (el) fringeRefs.current[i] = el;
@@ -282,30 +307,51 @@ export function MoneyCarpet({
             castShadow
             position={[0, -f.len * 0.5, 0]}
           >
-            <cylinderGeometry args={[0.018, 0.032, f.len, 6]} />
+            <cylinderGeometry args={[0.022, 0.04, f.len, 6]} />
             <meshStandardMaterial color="#c9a227" roughness={0.38} metalness={0.45} />
           </mesh>
           <mesh position={[0, -f.len - 0.02, 0]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
+            <sphereGeometry args={[0.048, 8, 8]} />
             <meshStandardMaterial color="#f5e6c8" roughness={0.4} metalness={0.35} />
           </mesh>
         </group>
       ))}
 
-      {/* Short side fringe so the silhouette reads from the flanks */}
+      {/* Side fringe — bright gold ribbons into the POV flanks */}
       {sideFringe.map((f, i) => (
         <mesh
           key={`side-tassel-${i}`}
           ref={(el) => {
             if (el) fringeRefs.current[fringe.length + i] = el;
           }}
-          position={[f.x + f.side * 0.04, -0.02, f.z]}
-          rotation={[0.2, 0, f.side * 0.55]}
+          position={[f.x + f.side * (povRide ? 0.12 : 0.06), 0.02, f.z]}
+          rotation={[0.15, 0, f.side * (povRide ? 0.9 : 0.55)]}
           castShadow
         >
-          <boxGeometry args={[0.22, 0.025, 0.04]} />
-          <meshStandardMaterial color="#a16207" roughness={0.42} metalness={0.4} />
+          <boxGeometry args={[povRide ? 0.38 : 0.24, 0.03, 0.05]} />
+          <meshStandardMaterial color="#eab308" roughness={0.35} metalness={0.5} />
         </mesh>
+      ))}
+
+      {/* Corner knotted tassels — classic flying-carpet silhouette */}
+      {(
+        [
+          [-width * 0.48, noseTipZ + 0.02],
+          [width * 0.48, noseTipZ + 0.02],
+          [-width * 0.48, tailZ - 0.02],
+          [width * 0.48, tailZ - 0.02],
+        ] as const
+      ).map(([x, z], i) => (
+        <group key={`corner-${i}`} position={[x, 0.05, z]}>
+          <mesh castShadow position={[0, -0.2, 0]}>
+            <cylinderGeometry args={[0.03, 0.055, 0.42, 8]} />
+            <meshStandardMaterial color="#c9a227" roughness={0.35} metalness={0.55} />
+          </mesh>
+          <mesh position={[0, -0.42, 0]}>
+            <sphereGeometry args={[0.07, 10, 10]} />
+            <meshStandardMaterial color="#fde68a" roughness={0.35} metalness={0.45} />
+          </mesh>
+        </group>
       ))}
 
       {!hideRider ? (

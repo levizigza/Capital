@@ -49,13 +49,20 @@ export function getMoneyCarpetTexture(): THREE.CanvasTexture {
   ctx.fillStyle = field;
   ctx.fillRect(0, 0, w, h);
 
-  // Fine vertical “security” lines
-  ctx.strokeStyle = "rgba(255,255,220,0.06)";
+  // Woven rug crosshatch — reads as carpet cloth, not plastic card stock
+  ctx.strokeStyle = "rgba(245,230,200,0.08)";
   ctx.lineWidth = 1;
-  for (let x = 24; x < w; x += 10) {
+  for (let x = 24; x < w; x += 8) {
     ctx.beginPath();
     ctx.moveTo(x, 18);
-    ctx.lineTo(x + 4, h - 18);
+    ctx.lineTo(x + 3, h - 18);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(15,61,40,0.18)";
+  for (let y = 30; y < h; y += 10) {
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(w - 30, y);
     ctx.stroke();
   }
 
