@@ -2202,6 +2202,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             }
             node={dialogueNode}
             learningProfile={learningProfile}
+            placeId={
+              view === "home"
+                ? HUB_ISLAND_ID
+                : (activeIsland?.id ?? save?.currentIslandId ?? HUB_ISLAND_ID)
+            }
             onChoice={(id) => void onDialogueChoice(id)}
             onContinue={onDialogueContinue}
             onSkip={closeDialogue}

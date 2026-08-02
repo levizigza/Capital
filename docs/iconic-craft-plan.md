@@ -286,9 +286,9 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|
-| 0 | Vision | | | |
-| 1 | Fantasy | | | |
-| 2 | Core loop | | | |
+| 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
+| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage + no HP bars; PERF default off. Next: Leave/Apprentice chrome still SaaS-y after tutorial |
+| 2 | Core loop | | | **Start next after fantasy re-smoke** |
 | 3 | Goals / failure | | | |
 | 4 | Feel | | | |
 | 5 | Progression | | | |
@@ -316,4 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Start next:** Pillar **1 — Player fantasy** (locks the taste filter for everything after).
+**Last shipped:** Pillar **1 — Player fantasy** (Talk Battle Memory courtyard stage; cut fake HP; PERF overlay opt-in only).  
+
+**Start next:** Pillar **2 — Core loop** (cold micro-loop timing; patch the first break).

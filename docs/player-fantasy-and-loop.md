@@ -13,6 +13,17 @@ Feel: curious explorer + careful chooser — not a spreadsheet operator, not a c
 
 Every UI/mechanic decision asks: *Does this make me feel like a Voyager among Money Mascots?*
 
+### Fantasy yes / no (Harbor + Cove — Pillar 1 pass)
+
+| Yes | No (patch or cut) |
+|-----|-------------------|
+| Piggy + Coin Bag on the plaza; Talk names living temperaments | Fake HP bars / duel chrome on Talk Battle |
+| Money Carpet map as floating myth islands | PERF / Dev Errors as default first-viewport chrome |
+| Quiet first-meet (no CASH / Leave / stall grid) | Sterile blue void behind Talk (reads as settings onboarding) |
+| Cove Take that Harbor can name later | Ledger dashboards as hero chrome before Change |
+
+**Shipped (Pillar 1):** Talk Battle stage paints place sky + soft plaza (Harbor Memory courtyard); combat HP strips removed; PERF overlay defaults off (backtick to toggle).
+
 ## 2. Core loop
 
 ```

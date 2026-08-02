@@ -16,7 +16,9 @@ export function usePerformanceMetrics(): PerfSnapshot {
 }
 
 export function usePerformanceOverlayVisible(): [boolean, () => void] {
-  const defaultVisible = import.meta.env.DEV;
+  // Fantasy law: cold Harbor must read as Voyager among mascots, not a perf dashboard.
+  // Opt in with backtick (`) — never default-on, even in DEV / VITE_QA.
+  const defaultVisible = false;
 
   const [visible, setVisible] = useState(() => {
     if (typeof sessionStorage === "undefined") return defaultVisible;
