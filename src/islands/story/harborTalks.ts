@@ -215,6 +215,21 @@ const ROLE_TIPS: Record<
       strategist: "Gold in every detail. Ledger in every step.",
     },
   },
+  dinar_dahlia: {
+    tip: {
+      explorer:
+        "Dinar Dahlia — I arrive like a treasure procession! That glowing Plinth keeps every radiant choice.",
+      apprentice:
+        "Elegance is currency, confidence is crown. Piggy keeps Harbor’s verbs; I turn prosperity into spectacle. Visit the Plinth.",
+      strategist:
+        "Palace presence, not Harbor Keeper. Every room feels richer; Memory Plinth files the dinar after every Take.",
+    },
+    bye: {
+      explorer: "Radiant. Regal. Rewarded — go glow!",
+      apprentice: "Pay yourself first. Then let grace travel with power.",
+      strategist: "Luxury in every detail. Wonder in every ledger line.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {

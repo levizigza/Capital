@@ -11,8 +11,8 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell through Sultan Stacks", () => {
-  it("registers seven leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Dinar Dahlia", () => {
+  it("registers eight leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
@@ -22,17 +22,18 @@ describe("series leads — Cashwell through Sultan Stacks", () => {
       "billionaire_bao",
       "jade_fortune",
       "sultan_stacks",
+      "dinar_dahlia",
     ]);
-    expect(isSeriesLeadMascot("sultan_stacks")).toBe(true);
+    expect(isSeriesLeadMascot("dinar_dahlia")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const sultan = getMascot("sultan_stacks");
-    expect(sultan.name).toBe("Sultan Stacks");
-    expect(sultan.form).toBe("coin");
-    expect(sultan.glyph).toBe("$");
-    expect(sultan.accessory).toBe("cap");
-    expect(colorHex(sultan.color)).toBe("#064e3b");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(7);
+    const dahlia = getMascot("dinar_dahlia");
+    expect(dahlia.name).toBe("Dinar Dahlia");
+    expect(dahlia.form).toBe("coin");
+    expect(dahlia.glyph).toBe("DD");
+    expect(dahlia.accessory).toBe("cape");
+    expect(colorHex(dahlia.color)).toBe("#0b3d2e");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(8);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {

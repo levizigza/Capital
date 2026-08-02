@@ -170,7 +170,7 @@ When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 ## Series cast (Cashwell Capital)
 
 Illustrated series leads enter **one by one** — see [`series-cast.md`](./series-cast.md).  
-**Cashwell**, **Cashmere Couture**, **Peso Pedro**, **Fortuna Fernanda**, **Billionaire Bao**, **Jade Fortune**, and **Sultan Stacks** are the series faces (Memory Courtyard terrace). They do **not** replace Piggy or Coin Bag on the signature loop, and they stay offstage during Piggy presence beats.
+**Cashwell**, **Cashmere Couture**, **Peso Pedro**, **Fortuna Fernanda**, **Billionaire Bao**, **Jade Fortune**, **Sultan Stacks**, and **Dinar Dahlia** are the series faces (Memory Courtyard terrace). They do **not** replace Piggy or Coin Bag on the signature loop, and they stay offstage during Piggy presence beats.
 
 ## Cast as memory
 

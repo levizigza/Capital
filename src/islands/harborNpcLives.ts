@@ -127,12 +127,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                         afternoon: "Sultan: Fortune favors foresight. Memory Courtyard never forgets a Take.",
                         evening: "Sultan: Big treasure, bigger legacy. Tip yourself first — then arrive.",
                       }
-                    : {
-                        morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                        midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                        afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                        evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                      };
+                    : slot.mascotId === "dinar_dahlia"
+                      ? {
+                          morning: "Dinar Dahlia: Fortune follows her — the Plinth keeps yesterday radiant.",
+                          midday: "Dahlia: Palace presence. Piggy keeps the Harbor verbs.",
+                          afternoon: "Dahlia: Elegance is currency. Memory Courtyard never forgets a Take.",
+                          evening: "Dahlia: Prosperity into spectacle. Tip yourself first — then arrive.",
+                        }
+                      : {
+                          morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                          midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                          afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                          evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                        };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,
