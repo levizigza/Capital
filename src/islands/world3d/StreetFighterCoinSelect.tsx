@@ -81,9 +81,10 @@ export function StreetFighterCoinSelect({
                     className="sf-coin-spin-inner absolute inset-0"
                     style={{
                       transformStyle: "preserve-3d",
-                      animation: `sf-coin-y ${active ? "2.2s" : "3.5s"} linear infinite`,
+                      animation: `sf-coin-rock ${active ? "2.4s" : "3.2s"} ease-in-out infinite`,
                     }}
                   >
+                    {/* Face on both sides — rock (not full spin) so fighters stay readable. */}
                     <div
                       className="absolute inset-0 overflow-hidden rounded-full border-[3px] shadow-lg"
                       style={{
@@ -106,16 +107,18 @@ export function StreetFighterCoinSelect({
                       )}
                     </div>
                     <div
-                      className="absolute inset-0 rounded-full border-[3px]"
+                      className="absolute inset-0 overflow-hidden rounded-full border-[3px]"
                       style={{
-                        borderColor: "#92400e",
-                        background:
-                          "radial-gradient(circle at 65% 40%, #fbbf24, #d97706 60%, #78350f)",
+                        borderColor: active ? "#fde68a" : spec?.accent ?? "#f4b942",
                         transform: "rotateY(180deg)",
                         backfaceVisibility: "hidden",
                       }}
                       aria-hidden
-                    />
+                    >
+                      {faceOk ? (
+                        <SeriesCoinFace id={id} title={m.name} className="h-full w-full" />
+                      ) : null}
+                    </div>
                   </div>
                 </div>
                 <span className="w-full truncate px-0.5 text-center text-[10px] font-bold leading-tight text-white sm:text-[11px]">
@@ -135,9 +138,10 @@ export function StreetFighterCoinSelect({
       </div>
 
       <style>{`
-        @keyframes sf-coin-y {
-          from { transform: rotateY(0deg); }
-          to { transform: rotateY(360deg); }
+        @keyframes sf-coin-rock {
+          0% { transform: rotateY(-32deg); }
+          50% { transform: rotateY(32deg); }
+          100% { transform: rotateY(-32deg); }
         }
         @media (prefers-reduced-motion: reduce) {
           .sf-coin-spin-inner { animation: none !important; }

@@ -108,7 +108,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
       </div>
 
       <div
-        className="relative z-20 shrink-0 border-t border-white/10 bg-black/90 px-3 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md sm:px-4 sm:py-4"
+        className="relative z-20 max-h-[46vh] shrink-0 overflow-y-auto overscroll-contain border-t border-white/10 bg-black/92 px-3 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md sm:max-h-[42vh] sm:px-4 sm:py-4"
         data-testid="boot-cast-dock"
         onPointerDown={(e) => e.stopPropagation()}
       >

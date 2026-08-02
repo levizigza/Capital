@@ -56,7 +56,7 @@ function ChipGrid({
     <div
       className={
         dark
-          ? "grid max-h-[28vh] grid-cols-3 gap-2 overflow-y-auto overscroll-contain py-1 sm:grid-cols-4"
+          ? "grid max-h-[18vh] grid-cols-3 gap-2 overflow-y-auto overscroll-contain py-1 sm:grid-cols-4"
           : "flex max-h-[28vh] flex-wrap justify-center gap-2 overflow-y-auto overscroll-contain rounded-xl border border-black/10 bg-white/70 p-2"
       }
       role="listbox"
@@ -134,13 +134,10 @@ export function CharacterCreator({
   }, [character?.base, character?.color, character?.accessory, character?.pants, character?.lookId]);
 
   const set = (patch: Partial<CapitalCharacter>) => {
-    setDraft((d) => {
-      const next = { ...d, ...patch };
-      onDraftChange?.(next);
-      return next;
-    });
+    setDraft((d) => ({ ...d, ...patch }));
   };
 
+  // Mirror outward in an effect — never call parent setters inside setState updaters.
   useEffect(() => {
     onDraftChange?.(draft);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mirror draft outward only
@@ -311,9 +308,7 @@ export function CharacterCreator({
             setDraft((d) => {
               const preset = lookPresetsForBase(d.base).find((p) => p.id === id);
               if (!preset) return d;
-              const next = applyLookPreset(d, preset);
-              onDraftChange?.(next);
-              return next;
+              return applyLookPreset(d, preset);
             });
             return;
           }
