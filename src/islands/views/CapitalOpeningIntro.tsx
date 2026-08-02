@@ -22,11 +22,12 @@ type Patch = {
 };
 
 /**
- * ONE mural of the same resort, painted seven times — once per decade of game
- * graphics (1960s vector → New Gen). Each vertical slice is a window onto the same
- * continuous panorama, so the pieces lock together into a single picture while
- * each renders that picture in its own era's art style. A real, clock-driven
- * sun/moon arcs across the whole mural and is re-drawn in each era as it crosses.
+ * ONE mural of Harbor Haven, painted seven times — once per decade of game
+ * graphics (1960s vector → New Gen). Same plaza composition (Plinth, bank,
+ * fountain, series cast, Piggy, Coin Bag) with The Debt Collector as a tiny
+ * easter egg. Each vertical slice is a window onto that continuous panorama
+ * while each era redraws it in its own art style. A clock-driven sun/moon arcs
+ * across the whole mural.
  */
 const PATCHES: Patch[] = [
   {
@@ -176,7 +177,7 @@ function PuzzleClipDefs() {
 
 function MuralScene({ era, cel }: { era: string; cel: Celestial }) {
   return (
-    <div className={`mural mural--${era}`} aria-hidden>
+    <div className={`mural mural--${era} mural--harbor`} aria-hidden>
       <div className="m-sky" />
       <div className="m-stars" />
       <div className="m-clouds" />
@@ -191,27 +192,46 @@ function MuralScene({ era, cel }: { era: string; cel: Celestial }) {
       </div>
 
       <div className="m-hills" />
+      {/* Debt Collector easter egg — faint Bank of Obligation silhouette in the far hills */}
+      <div className="m-debt-egg" title="The Debt Collector" />
       <div className="m-sea" />
       <div className="m-sea-glint" />
       <div className="m-beach" />
 
+      {/* Harbor palms flank the plaza */}
       <div className="m-palm m-palm--a">
         <div className="m-palm-trunk" />
         <div className="m-palm-crown" />
       </div>
-      <div className="m-hotel">
+      {/* Ledger Bank (era CSS still targets .m-hotel geometry) */}
+      <div className="m-hotel m-bank">
         <div className="m-hotel-roof" />
         <div className="m-hotel-windows" />
       </div>
-      <div className="m-pool" />
+      {/* Memory Plinth */}
+      <div className="m-plinth">
+        <div className="m-plinth-stem" />
+        <div className="m-plinth-top" />
+      </div>
+      {/* Piggy’s fountain (era CSS still targets .m-pool) */}
+      <div className="m-pool m-fountain" />
+      <div className="m-piggy" />
+      {/* Series leads on the Memory Courtyard terrace */}
+      <div className="m-cast" aria-hidden>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <span key={i} className={`m-cast-fig m-cast-fig--${i}`} />
+        ))}
+      </div>
       <div className="m-palm m-palm--b">
         <div className="m-palm-trunk" />
         <div className="m-palm-crown" />
       </div>
       <div className="m-dock" />
-      <div className="m-boat">
-        <div className="m-boat-sail" />
+      {/* Money Carpet at the pier (era CSS still targets .m-boat) */}
+      <div className="m-boat m-carpet">
+        <div className="m-boat-sail m-carpet-fold" />
       </div>
+      <div className="m-coinbag" />
 
       <div className="m-hud" aria-hidden />
       <div className="m-fx" />
@@ -329,8 +349,9 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
     if (entering) return;
     ensureOpeningAudio();
     setEntering(true);
-    playOpeningFoley("board_carpet");
-    window.setTimeout(finish, reduced ? 250 : 950);
+    // Fade into cast select — carpet boarding happens after the fighter pick.
+    playOpeningFoley("mural_settle");
+    window.setTimeout(finish, reduced ? 200 : 550);
   }, [entering, finish, reduced, ensureOpeningAudio]);
 
   const sweepMs = reduced ? 140 : 300;
@@ -433,20 +454,6 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
       <div className="cap-opening-vignette" />
 
       <AnimatePresence>
-        {entering && !reduced ? (
-          <motion.div
-            className="cap-sail-away cap-sail-away--carpet"
-            aria-hidden
-            initial={{ bottom: "14%", opacity: 1, scale: 1, rotate: -4 }}
-            animate={{ bottom: "58%", opacity: 0, scale: 0.4, rotate: 8 }}
-            transition={{ duration: 0.95, ease: "easeIn" }}
-          >
-            <span className="cap-sail-away__bill" />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {isReveal && !entering ? (
           <motion.div
             className="cap-opening-reveal"
@@ -463,7 +470,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
               <p className="cap-opening-tagline">
-                Money is alive here. Board the carpet to Harbor Haven.
+                Harbor Haven awaits. Choose your Voyager, then ride the Money Carpet.
               </p>
               <p className="cap-opening-time" aria-hidden>
                 {timeLabel}
@@ -477,9 +484,10 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                     enter();
                   }}
                   autoFocus
+                  data-testid="opening-choose-voyager"
                 >
                   <span className="cap-enter-boat__icon cap-enter-boat__icon--bill" aria-hidden />
-                  Board the Money Carpet
+                  Choose your Voyager
                 </button>
                 <span className="cap-enter-hint">Enter · Space</span>
               </div>

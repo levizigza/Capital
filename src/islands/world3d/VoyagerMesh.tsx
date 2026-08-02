@@ -101,6 +101,7 @@ export function VoyagerMesh({
   const hex = coatColor ?? colorHex(character?.color ?? "tide");
   const accessory = character?.accessory ?? "none";
   const companion = character?.companion ?? "none";
+  const resolvedPants = pantColor ?? (character?.pants ? colorHex(character.pants) : "#1e3a5f");
   const bodyForm = form ?? moneyFormFromBase(character?.base);
   const faceGlyph = glyph ?? moneyGlyphFromBase(character?.base);
   const useExtended = (EXTENDED_MASCOT_FORMS as string[]).includes(bodyForm);
@@ -111,7 +112,7 @@ export function VoyagerMesh({
     // Ledgerlight: coat color always wins — people must not dissolve into the decade land
     const bodyColor = hex;
     const inkColor =
-      look.shading === "vector" ? "#0f172a" : look.shading === "wire" ? "#052e16" : pantColor;
+      look.shading === "vector" ? "#0f172a" : look.shading === "wire" ? "#052e16" : resolvedPants;
     const paperColor =
       look.shading === "vector" || look.shading === "wire" ? "#fef3c7" : skinColor;
     const eyeColor = look.shading === "vector" || look.shading === "wire" ? "#0c1622" : "#16283b";
@@ -167,7 +168,7 @@ export function VoyagerMesh({
       blush: new THREE.MeshStandardMaterial({ color: "#fb7185", roughness: 0.6, wireframe: false }),
       pink: new THREE.MeshStandardMaterial({ color: "#fda4af", roughness: 0.55, wireframe: false }),
     };
-  }, [hex, pantColor, skinColor, bodyForm, animationStyle]);
+  }, [hex, resolvedPants, skinColor, bodyForm, animationStyle]);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;

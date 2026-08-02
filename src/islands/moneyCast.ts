@@ -585,9 +585,13 @@ export function getMascot(id?: string | null): MoneyMascot {
   return MONEY_CAST_BY_ID[resolveMascotId(id)] ?? MONEY_CAST[0];
 }
 
-/** Outfitter swatches — every mascot is a playable body. */
+/** Outfitter swatches — playable bodies (villain excluded from fighter select). */
 export function moneyCastAsBases(): { id: string; emoji: string; label: string }[] {
-  return MONEY_CAST.map((m) => ({ id: m.id, emoji: m.emoji, label: m.name }));
+  return MONEY_CAST.filter((m) => m.id !== "debt_collector").map((m) => ({
+    id: m.id,
+    emoji: m.emoji,
+    label: m.name,
+  }));
 }
 
 export type MascotCharacterLook = {

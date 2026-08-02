@@ -22,6 +22,10 @@ export type CapitalCharacter = {
   color: string;
   accessory: string;
   companion: string;
+  /** Lower-half tint (Outfitter pants layer). */
+  pants?: string;
+  /** Active look preset id from castLooks (optional). */
+  lookId?: string;
 };
 
 export type CharacterOption = { id: string; emoji: string; label: string };
@@ -78,13 +82,16 @@ export const CHARACTER_ACCESSORIES: CharacterOption[] = [
   { id: "sash", emoji: "🎗️", label: "Seal Sash" },
 ];
 
-/** Outfitter category rail — Snapchat-style layers over the live 3D body. */
-export type OutfitCategoryId = "body" | "coat" | "gear";
+/** Outfitter category rail — Snapchat-style layers over the live 3D body.
+ *  Body pick happens on the Street Fighter select grid; this rail customizes the pick. */
+export type OutfitCategoryId = "looks" | "coat" | "pants" | "gear" | "tech";
 
 export const OUTFIT_CATEGORIES: { id: OutfitCategoryId; label: string; hint: string }[] = [
-  { id: "body", label: "Body", hint: "Your Money Mascot shape — who you are" },
-  { id: "coat", label: "Coat", hint: "Color tint for that body" },
-  { id: "gear", label: "Gear", hint: "Things you wear: hat, Signal Phones, cape, scarf…" },
+  { id: "looks", label: "Looks", hint: "Signature outfits for this character" },
+  { id: "coat", label: "Shirt", hint: "Coat / shirt tint for the upper body" },
+  { id: "pants", label: "Pants", hint: "Lower-half color" },
+  { id: "gear", label: "Accessories", hint: "Hats, capes, vests, sashes…" },
+  { id: "tech", label: "Electronics", hint: "Signal Phones, monocle, sparkle stamp…" },
 ];
 
 export const CHARACTER_COMPANIONS: CharacterOption[] = [
@@ -102,6 +109,8 @@ export const DEFAULT_CHARACTER: CapitalCharacter = {
   color: "seafoam",
   accessory: "none",
   companion: "none",
+  pants: "ink",
+  lookId: "sheet",
 };
 
 /** Starter look before the Harbor shop — Dollar Dash, no gear, no pet. */
@@ -111,6 +120,8 @@ export const BASE_VOYAGER: CapitalCharacter = {
   color: "seafoam",
   accessory: "none",
   companion: "none",
+  pants: "ink",
+  lookId: "sheet",
 };
 
 export function baseEmoji(id: string): string {

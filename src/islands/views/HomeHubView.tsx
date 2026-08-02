@@ -257,7 +257,7 @@ export function HomeHubView({
   const guidedStep = guided ? getHubGuidedStep(guided) : null;
   const castleMode = !!guidedStep;
 
-  const [outfitterStage, setOutfitterStage] = useState<"look" | "pet">("look");
+  const [outfitterStage, setOutfitterStage] = useState<"select" | "look" | "pet">("select");
   const [draft, setDraft] = useState<CapitalCharacter>(voyager);
   const [nearStore, setNearStore] = useState<{ id: string; label: string } | null>(null);
   const [nearNpc, setNearNpc] = useState<{ id: string; name: string; line: string } | null>(null);
@@ -745,7 +745,7 @@ export function HomeHubView({
 
   const openOutfitter = () => {
     setDraft(voyager);
-    setOutfitterStage("look");
+    setOutfitterStage("select");
     setHubModal("outfitter");
   };
 

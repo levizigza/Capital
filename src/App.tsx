@@ -6,7 +6,10 @@ import { Sparkle } from '@phosphor-icons/react'
 import React from 'react'
 import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
 import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/views/CapitalOpeningIntro'
+import { BootCastSelect } from '@/islands/views/BootCastSelect'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
+import type { CapitalCharacter } from '@/islands/character'
+import { BASE_VOYAGER } from '@/islands/character'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -181,14 +184,16 @@ function App() {
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
   const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
-  /** Title mural first, then carpet POV flight into Harbor. */
-  const [bootPhase, setBootPhase] = useState<"title" | "carpet">("title")
+  /** Title mural → cast select → carpet POV flight into Harbor. */
+  const [bootPhase, setBootPhase] = useState<"title" | "cast" | "carpet">("title")
+  const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
 
-  // Every full page load: title mural → carpet flight (QA may opt out with skipIntro).
+  // Every full page load: title → cast select → carpet (QA may opt out with skipIntro).
   useEffect(() => {
     if (shouldPlayCapitalIntroOnBoot()) {
       setShowCapitalIntro(true)
       setBootPhase("title")
+      setBootCharacter(null)
       setCurrentMode("islands")
     }
   }, [])
@@ -453,7 +458,7 @@ function App() {
     }
   }
 
-  // Boot: Capital title mural → carpet POV flight to Harbor Haven.
+  // Boot: title mural → Street Fighter cast select → Money Carpet to Harbor.
   if (showCapitalIntro && ISLANDS_ENABLED) {
     return (
       <>
@@ -461,11 +466,24 @@ function App() {
         {bootPhase === "title" ? (
           <CapitalOpeningIntro
             key="capital-opening-boot"
-            onComplete={() => setBootPhase("carpet")}
+            onComplete={() => setBootPhase("cast")}
+          />
+        ) : bootPhase === "cast" ? (
+          <BootCastSelect
+            key="capital-cast-boot"
+            defaultName={userProfile?.name || ""}
+            onComplete={(character) => {
+              setBootCharacter(character)
+              if (character.name) {
+                setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
+              }
+              setBootPhase("carpet")
+            }}
           />
         ) : (
           <CarpetOpeningIntro
             key="capital-carpet-boot"
+            character={bootCharacter ?? BASE_VOYAGER}
             onComplete={() => {
               setShowCapitalIntro(false)
               setBootPhase("title")
