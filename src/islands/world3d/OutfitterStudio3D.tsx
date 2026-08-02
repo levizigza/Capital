@@ -82,12 +82,15 @@ function LineupFighter({
   index,
   total,
   selected,
+  detailed,
   onPick,
 }: {
   id: string;
   index: number;
   total: number;
   selected: boolean;
+  /** Full VoyagerMesh only for nearby / selected — keeps Pages WebGL alive. */
+  detailed: boolean;
   onPick?: (id: string) => void;
 }) {
   const group = useRef<THREE.Group>(null);
@@ -132,14 +135,27 @@ function LineupFighter({
     >
       <Pedestal active={selected} color={accent} />
       <group position={[0, 0.14, 0]}>
-        <VoyagerMesh
-          key={`${id}-${look.color}-${look.accessory}-${look.pants}`}
-          character={look}
-          pose="stand"
-          scale={selected ? 1.05 : 0.95}
-        />
+        {detailed ? (
+          <VoyagerMesh
+            key={`${id}-${look.color}-${look.accessory}-${look.pants}`}
+            character={look}
+            pose="stand"
+            scale={selected ? 1.05 : 0.95}
+          />
+        ) : (
+          // Lightweight 3D stand-in so every pedestal still reads as a fighter
+          <group>
+            <mesh castShadow position={[0, 0.55, 0]}>
+              <capsuleGeometry args={[0.28, 0.55, 6, 12]} />
+              <meshStandardMaterial color={accent} roughness={0.45} metalness={0.2} />
+            </mesh>
+            <mesh castShadow position={[0, 1.15, 0]}>
+              <sphereGeometry args={[0.22, 14, 12]} />
+              <meshStandardMaterial color={accent} roughness={0.4} metalness={0.25} />
+            </mesh>
+          </group>
+        )}
       </group>
-      {/* Name lives in HTML chrome — avoid drei Text workers on Pages */}
     </group>
   );
 }
@@ -174,13 +190,19 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
   });
 
   const ids = lineupIds ?? [];
+  const selectedIndex = Math.max(0, ids.indexOf(character.base));
 
   return (
     <>
       <color attach="background" args={["#1c1917"]} />
       <fog attach="fog" args={["#1c1917", 12, 22]} />
       <ambientLight intensity={0.75} />
-      <directionalLight position={[4, 9, 4]} intensity={1.25} castShadow shadow-mapSize={[512, 512]} />
+      <directionalLight
+        position={[4, 9, 4]}
+        intensity={1.25}
+        castShadow={mode === "solo"}
+        shadow-mapSize={[512, 512]}
+      />
       <pointLight position={[-2.4, 2.6, 1.4]} intensity={0.6} color="#fbbf24" />
       <pointLight position={[2.6, 2.4, -0.6]} intensity={0.45} color="#38bdf8" />
 
@@ -213,6 +235,7 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
               index={i}
               total={ids.length}
               selected={id === character.base}
+              detailed={Math.abs(i - selectedIndex) <= 2}
               onPick={onPickFighter}
             />
           ))}
