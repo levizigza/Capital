@@ -15,6 +15,7 @@ import {
   scarOrganId,
 } from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
+import { triggerJuice } from "@/juice";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
 
@@ -54,6 +55,12 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       // Leitmotif: scar organ speaks; plinth_hum stays Memory underlayer.
       playOrganSfx(organIdRef.current);
       playCapitalSfx("plinth_hum");
+      // Plinth peak — complete juice (nudge + burst) so the lamp hit reads in the body.
+      triggerJuice("complete", {
+        burst: true,
+        x: typeof window !== "undefined" ? window.innerWidth * 0.62 : undefined,
+        y: typeof window !== "undefined" ? window.innerHeight * 0.36 : undefined,
+      });
     }, t.hushMs);
     const t1 = window.setTimeout(() => {
       setPhase("hold");

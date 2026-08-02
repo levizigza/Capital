@@ -11,6 +11,7 @@ import { signatureTiming, type TakeCinemaPhase } from "@/qa/signatureLoop";
 import { systemPrefersReducedMotion } from "../a11yMotion";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
+import { triggerJuice } from "@/juice";
 
 export type { TakeCinemaPhase };
 
@@ -51,6 +52,8 @@ export function TakeHushOverlay({
       onPhaseChange?.("mark");
       // Soft settle only — organ already spoke on open (avoid Howler pool thrash).
       playCapitalSfx("soft_beat");
+      // Hit-stop nudge when the organ mark flashes (juice checklist).
+      triggerJuice("reward", { burst: true });
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {

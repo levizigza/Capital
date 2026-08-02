@@ -33,4 +33,9 @@ export function persistJuiceSettings(s: JuiceSettingsV1): void {
   } catch {
     /* ignore */
   }
+  try {
+    window.dispatchEvent(new Event("capital-juice-changed"));
+  } catch {
+    /* ignore */
+  }
 }

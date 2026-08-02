@@ -3,6 +3,12 @@ import { useState } from "react";
 import { GameButton, GamePanel } from "@/game-ui";
 import { ControlsSettingsPanel } from "@/input";
 import { CreditsAttributions } from "@/components/CreditsAttributions";
+import {
+  loadJuiceSettings,
+  persistJuiceSettings,
+  syncJuiceViewportLevel,
+  type JuiceLevel,
+} from "@/juice";
 
 import type { AccessibilitySettings, TextSize } from "./settings";
 import {
@@ -12,6 +18,12 @@ import {
   persistLearningProfile,
   type LearningProfileId,
 } from "./learningProfile";
+
+const JUICE_LEVELS: { value: JuiceLevel; label: string }[] = [
+  { value: "off", label: "Off" },
+  { value: "low", label: "Low" },
+  { value: "high", label: "High" },
+];
 
 type Props = {
   settings: AccessibilitySettings;
@@ -37,11 +49,18 @@ export default function SettingsPanel({
   onOpenAnalytics,
 }: Props) {
   const [localProfile, setLocalProfile] = useState<LearningProfileId>(() => propProfile ?? loadLearningProfile());
+  const [juiceLevel, setJuiceLevel] = useState<JuiceLevel>(() => loadJuiceSettings().level);
 
   const handleProfileChange = (id: LearningProfileId) => {
     setLocalProfile(id);
     persistLearningProfile(id);
     onProfileChange?.(id);
+  };
+
+  const handleJuiceLevel = (level: JuiceLevel) => {
+    setJuiceLevel(level);
+    persistJuiceSettings({ version: 1, level });
+    syncJuiceViewportLevel(level);
   };
 
   const toggle = (key: "reducedMotion" | "highContrast" | "guideArrows") =>
@@ -200,6 +219,29 @@ export default function SettingsPanel({
               }
               className="w-full accent-teal-600"
             />
+          </div>
+        </div>
+      </GamePanel>
+
+      <GamePanel title="Game Feel">
+        <div className="space-y-2">
+          <p className="text-xs text-gray-600">
+            Juice on Take mark, Plinth spectacle, share, and soft fails — SFX, nudge, bursts.
+          </p>
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Game Feel juice level">
+            {JUICE_LEVELS.map((opt) => (
+              <GameButton
+                key={opt.value}
+                size="sm"
+                variant={juiceLevel === opt.value ? "primary" : "outline"}
+                motionEnabled={false}
+                data-testid={`juice-level-${opt.value}`}
+                onClick={() => handleJuiceLevel(opt.value)}
+                aria-pressed={juiceLevel === opt.value}
+              >
+                {opt.label}
+              </GameButton>
+            ))}
           </div>
         </div>
       </GamePanel>

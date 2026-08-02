@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 
 import { FxOverlay, FxProvider } from "@/fx";
 import "@/fx/fx.css";
+import { loadJuiceSettings, syncJuiceViewportLevel } from "@/juice";
+import "@/juice/juice.css";
 import { PerformanceOverlay } from "@/perf";
 
 import { GameUiProvider } from "./GameUiContext";
@@ -64,6 +66,13 @@ export function GameViewport({
     };
   }, []);
 
+  useEffect(() => {
+    syncJuiceViewportLevel(loadJuiceSettings().level);
+    const onJuice = () => syncJuiceViewportLevel();
+    window.addEventListener("capital-juice-changed", onJuice);
+    return () => window.removeEventListener("capital-juice-changed", onJuice);
+  }, []);
+
   return (
     <GameUiProvider
       reducedMotion={reducedMotion}
@@ -75,12 +84,13 @@ export function GameViewport({
         <div
           ref={ref}
           className={cn(
-            "game-viewport fx-fallback-vignette relative isolate min-h-dvh min-h-screen w-full overflow-hidden",
+            "game-viewport juice-viewport fx-fallback-vignette relative isolate min-h-dvh min-h-screen w-full overflow-hidden",
             textSizeClass,
             className
           )}
           data-ui-scale={layout.scale}
           data-ui-aspect={layout.aspect}
+          data-juice-level={loadJuiceSettings().level}
           data-reduced-motion={reducedMotion ? "true" : "false"}
           data-high-contrast={highContrast ? "true" : "false"}
         >

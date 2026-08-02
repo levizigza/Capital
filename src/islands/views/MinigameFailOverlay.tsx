@@ -4,6 +4,7 @@
 
 import { useEffect } from "react";
 import { GameButton } from "@/game-ui";
+import { triggerJuice } from "@/juice";
 import { type MinigameFailCopy } from "../minigameFail";
 
 export type MinigameFailOverlayProps = {
@@ -13,6 +14,10 @@ export type MinigameFailOverlayProps = {
 };
 
 export function MinigameFailOverlay({ copy, onRetry, onKeepWalking }: MinigameFailOverlayProps) {
+  useEffect(() => {
+    triggerJuice("fail");
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {

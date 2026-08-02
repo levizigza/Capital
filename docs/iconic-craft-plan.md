@@ -290,7 +290,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage + no HP bars; PERF default off. Next: Leave/Apprentice chrome still SaaS-y after tutorial |
 | 2 | Core loop | playable → iconic | 2026-08-02 | Gate spectacle/echo on plaza ready; hide Piggy HUD during all cinema; myth cinema stage; Piggy before day-2. Next: cold unseeded Cove Take timing |
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Minigame miss → dignity overlay + Retry / stay-put; no Harbor dump on structure fail; ModularMinigame “Round over” (not fake Complete). Next: bad-take Spend soft-fail copy parity |
-| 4 | Feel | | | |
+| 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
 | 5 | Progression | | | |
 | 6 | Encounters | | | |
 | 7 | Content | | | |
@@ -316,6 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **3 — Goals / failure** (minigame miss shows dignity + threshold hint + Retry; stay on island/structure; ModularMinigame no longer celebrates before the clear is judged).  
+**Last shipped:** Pillar **4 — Controls & feel** (`triggerJuice` on Take mark / Plinth spectacle / share; GameViewport hosts juice CSS; Settings → Game Feel; fail overlay shakes).  
 
-**Start next:** Pillar **4 — Controls & feel** (juice checklist on Take → hush → Plinth → share).
+**Start next:** Pillar **5 — Progression** (seals / carpet / organs — ability vs upgrade vs story vs space stays sharp).

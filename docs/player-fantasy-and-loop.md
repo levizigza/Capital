@@ -59,6 +59,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 - **Progression:** carpet tiers, pets, plaza passes, Ledger Seals, Freedom Seal, boss mastery  
 - **Encounters:** island Story Circles + deepened board minigames — not bigger HP bars  
 
+**Shipped (Pillar 4 — controls & feel):** Signature Take mark / Plinth spectacle / share fire `triggerJuice` (SFX + nudge/burst); Settings → Game Feel; minigame fail shakes. Juice CSS mounts on `GameViewport`.
+
 ## 7–12. Content → audio → story
 
 Content = Money Mascots + islands + capsules. Presentation must stay readable (labels, one coach sentence). Story = Story Bible only.

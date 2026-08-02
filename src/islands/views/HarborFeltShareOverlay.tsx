@@ -10,6 +10,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
+import { triggerJuice } from "@/juice";
 
 type Props = {
   scarLabel: string;
@@ -89,7 +90,16 @@ export function HarborFeltShareOverlay({
             variant="primary"
             className="w-full sm:min-w-[12rem] sm:flex-1"
             data-testid="harbor-felt-download"
-            onClick={onShare}
+            onClick={(e) => {
+              triggerJuice("accept", { target: e.currentTarget });
+              triggerJuice("reward", {
+                burst: true,
+                target: e.currentTarget,
+                x: typeof window !== "undefined" ? window.innerWidth * 0.5 : undefined,
+                y: typeof window !== "undefined" ? window.innerHeight * 0.72 : undefined,
+              });
+              onShare();
+            }}
             autoFocus
           >
             Share “Harbor felt that”
@@ -98,7 +108,10 @@ export function HarborFeltShareOverlay({
             variant="outline"
             className="w-full bg-white/10 sm:min-w-[12rem] sm:flex-1"
             data-testid="harbor-felt-keep-walking"
-            onClick={onKeepWalking}
+            onClick={(e) => {
+              triggerJuice("accept", { target: e.currentTarget });
+              onKeepWalking();
+            }}
           >
             Keep walking — find Piggy
           </GameButton>
