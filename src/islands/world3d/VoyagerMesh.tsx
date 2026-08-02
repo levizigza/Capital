@@ -1481,10 +1481,10 @@ function SeriesLeadTorso({
   if (lead === "cashwell") {
     return (
       <group position={[0, y, 0]}>
-        {/* Forest frock coat */}
+        {/* Frock coat — follows Shirt color so Outfitter customize reads */}
         <mesh castShadow position={[0, 0.02, 0]}>
           <boxGeometry args={[0.72, 0.62, 0.38]} />
-          <meshStandardMaterial color="#14532d" roughness={0.5} />
+          <meshStandardMaterial color={coatHex} roughness={0.5} />
         </mesh>
         {/* Gold waistcoat */}
         <mesh castShadow position={[0, 0.06, 0.12]} material={materials.gold}>
@@ -1503,11 +1503,11 @@ function SeriesLeadTorso({
         {/* Coat tails */}
         <mesh castShadow position={[-0.18, -0.38, -0.06]} rotation={[0.25, 0.1, 0.15]}>
           <boxGeometry args={[0.28, 0.28, 0.08]} />
-          <meshStandardMaterial color="#14532d" roughness={0.5} />
+          <meshStandardMaterial color={coatHex} roughness={0.5} />
         </mesh>
         <mesh castShadow position={[0.18, -0.38, -0.06]} rotation={[0.25, -0.1, -0.15]}>
           <boxGeometry args={[0.28, 0.28, 0.08]} />
-          <meshStandardMaterial color="#14532d" roughness={0.5} />
+          <meshStandardMaterial color={coatHex} roughness={0.5} />
         </mesh>
       </group>
     );
@@ -1517,7 +1517,7 @@ function SeriesLeadTorso({
       <group position={[0, y, 0]}>
         <mesh castShadow>
           <boxGeometry args={[0.58, 0.5, 0.32]} />
-          <meshStandardMaterial color="#0a0a0a" roughness={0.4} metalness={0.15} />
+          <meshStandardMaterial color={coatHex} roughness={0.4} metalness={0.15} />
         </mesh>
         <mesh castShadow position={[0, -0.05, 0.1]} material={materials.gold}>
           <boxGeometry args={[0.2, 0.08, 0.04]} />
@@ -1537,7 +1537,7 @@ function SeriesLeadTorso({
       <group position={[0, y, 0]}>
         <mesh castShadow>
           <boxGeometry args={[0.7, 0.58, 0.36]} />
-          <meshStandardMaterial color="#166534" roughness={0.5} />
+          <meshStandardMaterial color={coatHex} roughness={0.5} />
         </mesh>
         <mesh castShadow position={[0, 0.05, 0.14]} material={materials.gold}>
           <boxGeometry args={[0.35, 0.35, 0.12]} />

@@ -4,9 +4,10 @@ import type { CapitalCharacter } from "../character";
 import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
 import { CharacterCreator } from "../views/CharacterCreator";
 import { OutfitterStudio3D } from "./OutfitterStudio3D";
+import { StreetFighterCoinSelect } from "./StreetFighterCoinSelect";
 import { ownsCompanion, companionPrice, STARTER_COMPANION_ID } from "../harborShop";
 import { PLAYABLE_SELECT_CAST, sheetLookForBase } from "../castLooks";
-import { getMascot } from "../moneyCast";
+import { getMascot, SERIES_LEAD_MASCOT_IDS } from "../moneyCast";
 import type { IslandSaveV1 } from "../types";
 
 type Stage = "select" | "look" | "pet";
@@ -86,15 +87,19 @@ export function OutfitterStudioOverlay({
       aria-modal="true"
       aria-label="Outfitter fitting room"
     >
-      <OutfitterStudio3D
-        character={draft}
-        className="absolute inset-0"
-        mode={stage === "select" ? "lineup" : "solo"}
-        lineupIds={PLAYABLE_SELECT_CAST}
-        onPickFighter={(id) => {
-          setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
-        }}
-      />
+      {stage === "select" ? (
+        <StreetFighterCoinSelect
+          selectedId={draft.base}
+          ids={[...SERIES_LEAD_MASCOT_IDS, ...PLAYABLE_SELECT_CAST.filter((id) => !(SERIES_LEAD_MASCOT_IDS as readonly string[]).includes(id))]}
+          onPick={(id) => {
+            setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
+            setStage("look");
+          }}
+          className="absolute inset-0"
+        />
+      ) : (
+        <OutfitterStudio3D character={draft} className="absolute inset-0" mode="solo" />
+      )}
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
 
@@ -108,7 +113,7 @@ export function OutfitterStudioOverlay({
           </h2>
           <p className="max-w-md text-xs text-white/80 sm:text-sm">
             {stage === "select"
-              ? "Tap a live 3D Money Mascot on the floor — then Snapchat-customize Looks · Shirt · Pants · Accessories · Electronics."
+              ? "Spinning coin faces — tap one for the full 3D body, then Snapchat-customize."
               : "Snapchat layers on the live mirror. Esc or Save & leave keeps your look on the plaza."}
           </p>
         </div>
@@ -122,14 +127,14 @@ export function OutfitterStudioOverlay({
         </button>
       </header>
 
-      <div className="relative z-[2] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
+      <div className="pointer-events-auto relative z-[20] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
         <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/50 p-3 shadow-2xl backdrop-blur-md sm:p-4">
           {stage === "select" ? (
             <div className="flex min-h-0 flex-col gap-3 text-center text-white">
               <div>
                 <div className="text-lg font-black">{getMascot(draft.base).name}</div>
                 <p className="text-sm text-white/75">
-                  Tap any 3D fighter in the room — then tailor them on the mirror.
+                  Tap a spinning coin above — full 3D body opens next.
                 </p>
               </div>
               <div className="flex gap-2">

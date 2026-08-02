@@ -270,7 +270,7 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
           </mesh>
           <group ref={spin} position={[0, 0.02, 0.15]}>
             <VoyagerMesh
-              key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.companion}`}
+              key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.lookId ?? "sheet"}-${character.companion}`}
               character={character}
               pantColor={character.pants ? undefined : "#1e3a5f"}
               pose="stand"

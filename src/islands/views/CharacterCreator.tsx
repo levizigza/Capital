@@ -296,10 +296,12 @@ export function CharacterCreator({
           aria-label="Character name"
           autoComplete="nickname"
           enterKeyHint="done"
+          data-testid="character-creator-name"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              commit();
+              // Blur only — never auto-save/board from the name field (easy mis-tap).
+              (e.target as HTMLInputElement).blur();
             }
           }}
         />
