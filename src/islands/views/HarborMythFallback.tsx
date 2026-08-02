@@ -96,39 +96,54 @@ export function HarborMythFallback({
         </>
       )}
 
-      <div className="relative flex w-full max-w-sm flex-col gap-2">
+      <div className="relative z-10 flex w-full max-w-sm flex-col gap-2">
         {actions.talkPiggy ? (
-          <GameButton
-            variant="primary"
-            size="lg"
-            className="w-full"
+          <button
+            type="button"
+            className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
             data-testid="fallback-talk-piggy"
-            onClick={onTalkPiggy}
+            onPointerUp={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              onTalkPiggy();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              onTalkPiggy();
+            }}
           >
             Talk to Piggy Penny
-          </GameButton>
+          </button>
         ) : null}
         {actions.carpet ? (
-          <GameButton
-            variant={mode === "myth_travel" ? "primary" : "outline"}
-            size="lg"
-            className="w-full bg-white/90"
+          <button
+            type="button"
+            className={`min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] px-4 py-3 text-base font-black shadow-[3px_3px_0_#1c1917] ${
+              mode === "myth_travel"
+                ? "bg-[#f4b942] text-[#1c1917]"
+                : "bg-white/95 text-[#16283b]"
+            }`}
             data-testid="fallback-board-carpet"
-            onClick={onBoardCarpet}
+            onClick={(e) => {
+              e.preventDefault();
+              onBoardCarpet();
+            }}
           >
             Board the Money Carpet
-          </GameButton>
+          </button>
         ) : null}
         {actions.bank && onEnterBank ? (
-          <GameButton
-            variant="outline"
-            size="lg"
-            className="w-full bg-white/80"
+          <button
+            type="button"
+            className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/50 bg-white/90 px-4 py-3 text-base font-bold text-[#16283b]"
             data-testid="fallback-ledger-bank"
-            onClick={onEnterBank}
+            onClick={(e) => {
+              e.preventDefault();
+              onEnterBank();
+            }}
           >
             Enter Ledger Bank
-          </GameButton>
+          </button>
         ) : null}
       </div>
     </div>

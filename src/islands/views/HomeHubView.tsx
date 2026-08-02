@@ -1163,7 +1163,7 @@ export function HomeHubView({
                 data-testid="harbor-piggy-presence"
               >
                 {firstMeet
-                  ? "One job: talk to Piggy Penny — she’s waving."
+                  ? "One job: Talk to Piggy Penny — she’s waving by the fountain."
                   : "Harbor is quiet. Piggy’s by the fountain — walk to her when you’re ready."}
               </p>
             ) : (
@@ -1176,16 +1176,23 @@ export function HomeHubView({
             )}
             {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
             {piggyPresence ? (
-              nearNpc && onTalkNpc ? (
-                <GameButton
-                  variant="primary"
-                  size="lg"
-                  onClick={() => onTalkNpc(nearNpc.id)}
-                  className="w-full shadow-lg"
+              onTalkNpc ? (
+                <button
+                  type="button"
+                  className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
                   data-testid="hub-talk-npc"
+                  onPointerUp={(e) => {
+                    if (e.button !== 0) return;
+                    e.preventDefault();
+                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
+                  }}
                 >
-                  Talk to {nearNpc.name}
-                </GameButton>
+                  Talk to {nearNpc?.name ?? "Piggy Penny"}
+                </button>
               ) : (
                 <p className="text-center text-xs font-medium text-white/80">
                   Walk toward Piggy Penny — press E when you’re ready to talk.
@@ -1257,12 +1264,15 @@ export function HomeHubView({
                 Walk pad or WASD · E talk · map at Money Carpet
               </p>
             )}
-            <p className="cap-hint-whisper sr-only md:not-sr-only">
+            <p
+              className="text-center text-[11px] font-semibold text-white/85 drop-shadow"
+              data-testid="harbor-controls-whisper"
+            >
               {nearStore
                 ? "E enter · Esc leaves shops"
-                : nearNpc
-                  ? "E talk · walk pad or WASD"
-                  : "Walk pad or WASD · E talk · M map"}
+                : piggyPresence || nearNpc
+                  ? "WASD / walk pad to move · E or Talk button"
+                  : "WASD / walk pad · E talk · map at Money Carpet"}
             </p>
           </div>
           )
@@ -1272,13 +1282,18 @@ export function HomeHubView({
         {spectacleOpen || feltShareOpen ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
-          {castleMode ? (
+          {castleMode && guidedStep ? (
             <div
-              className="sr-only"
+              className="pointer-events-none absolute inset-x-0 top-3 z-[5] flex justify-center px-3"
               data-testid="castle-grounds-coach"
-              data-guided-step={guidedStep?.id}
+              data-guided-step={guidedStep.id}
             >
-              {guidedStep?.coach}
+              <div className="max-w-md rounded-2xl border border-amber-200/35 bg-black/70 px-4 py-2.5 text-center shadow-lg backdrop-blur-md">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
+                  {guidedStep.verb} · Castle Grounds
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-white">{guidedStep.coach}</p>
+              </div>
             </div>
           ) : null}
         </div>

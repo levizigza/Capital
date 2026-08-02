@@ -366,7 +366,7 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
 export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
   const lines: Record<string, { text: string; next?: string; choice?: string }> = {
     meet_guide: {
-      text: "Welcome to Harbor Haven! I'm Piggy Penny. Stick with Coin Bag — first we'll make YOU at the Outfitter.",
+      text: "Welcome to Harbor Haven! I'm Piggy Penny. Move with WASD or the walk pad, talk with E — Coin Bag sticks with you. First stop: make YOU at the Outfitter.",
       choice: "Let's go!",
       next: "meet_b",
     },

@@ -5,7 +5,33 @@
  * (not a tutorial checklist / stall dashboard).
  */
 
+import {
+  createDefaultHubGuidedIntro,
+  isHubGuidedComplete,
+  type HubGuidedIntroState,
+} from "./story/storyBible";
+
 export type HarborFallbackMode = "myth_meet" | "myth_travel" | "utility";
+
+/**
+ * Carpet opening ceremony → Harbor plaza.
+ * Keep only an in-progress Castle Grounds lap; never reopen on a finished
+ * tutorial or let quiet homecoming steal first-meet.
+ */
+export function resolveCarpetBootGuidedIntro(prev: {
+  hubGuidedIntro?: HubGuidedIntroState | null;
+  harborHomecoming?: { quietPending?: boolean } | null;
+}): { hubGuidedIntro: HubGuidedIntroState; clearQuietPending: boolean } {
+  const midTutorial =
+    Boolean(prev.hubGuidedIntro?.step) && !isHubGuidedComplete(prev.hubGuidedIntro);
+  const hubGuidedIntro = midTutorial
+    ? (prev.hubGuidedIntro as HubGuidedIntroState)
+    : createDefaultHubGuidedIntro();
+  const clearQuietPending =
+    hubGuidedIntro.step === "meet_guide" &&
+    Boolean(prev.harborHomecoming?.quietPending);
+  return { hubGuidedIntro, clearQuietPending };
+}
 
 /** Castle Grounds step where Piggy is the only job. */
 export function isFirstMeetStep(stepId?: string | null): boolean {

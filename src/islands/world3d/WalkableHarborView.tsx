@@ -150,6 +150,10 @@ const SPEED = 6.5;
 const INTERACT_R = 2.85;
 const PLAZA_R = 16;
 
+/** Soft first-meet spawn — close enough to see Piggy wave without a long hunt. */
+const FIRST_MEET_SPAWN: [number, number, number] = [1.05, 0.02, 2.15];
+const DEFAULT_SPAWN: [number, number, number] = [0, 0.02, 3];
+
 function Player({
   character,
   hotspots,
@@ -160,6 +164,7 @@ function Player({
   inputFrozen = false,
   cinemaFocus = null,
   cinemaEye = null,
+  softMeetSpawn = false,
 }: {
   character?: CapitalCharacter | null;
   hotspots: HarborHotspot[];
@@ -171,7 +176,9 @@ function Player({
   inputFrozen?: boolean;
   cinemaFocus?: [number, number, number] | null;
   cinemaEye?: [number, number, number] | null;
+  softMeetSpawn?: boolean;
 }) {
+  const spawn = softMeetSpawn ? FIRST_MEET_SPAWN : DEFAULT_SPAWN;
   const group = useRef<THREE.Group>(null);
   const keys = useRef({ f: false, b: false, l: false, r: false });
   /** Stable orbit yaw — does not flip when walking backward. */
@@ -326,7 +333,7 @@ function Player({
   });
 
   return (
-    <group ref={group} position={[0, 0, 3]} rotation={[0, Math.PI, 0]}>
+    <group ref={group} position={spawn} rotation={[0, Math.PI, 0]}>
       <VoyagerMesh character={character} pose={moving.current ? "run" : "stand"} scale={1} />
     </group>
   );
@@ -720,16 +727,20 @@ function PlazaScene({
             </group>
             {showLabel ? (
               <Billboard follow position={[0, labelY, 0]}>
-                <SafeText
-                  fontSize={hero ? 0.34 : 0.26}
-                  color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
-                  anchorX="center"
-                  anchorY="middle"
-                  outlineWidth={0.02}
-                  outlineColor="#ffffff"
-                >
-                  {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-                </SafeText>
+                {/* Face camera; troika can mirror if the plane flips with parent scale. */}
+                <group scale={[-1, 1, 1]}>
+                  <SafeText
+                    fontSize={hero ? 0.34 : 0.26}
+                    color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
+                    anchorX="center"
+                    anchorY="middle"
+                    outlineWidth={0.02}
+                    outlineColor="#ffffff"
+                    depthOffset={-1}
+                  >
+                    {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
+                  </SafeText>
+                </group>
               </Billboard>
             ) : null}
           </group>
@@ -863,7 +874,11 @@ export function WalkableHarborView({
     [lives, hour, npcMemory, scarEcho],
   );
   const npcBodies = useRef(new Map<string, { position: Vec3; line: string; name: string }>());
-  const playerPos = useRef(new THREE.Vector3(0, 0, 3));
+  const playerPos = useRef(
+    new THREE.Vector3(
+      ...(piggyPresenceBeat ? FIRST_MEET_SPAWN : DEFAULT_SPAWN),
+    ),
+  );
 
   const guideTarget = useMemo(() => {
     if (guideLookAt) return guideLookAt;
@@ -1040,8 +1055,14 @@ export function WalkableHarborView({
           style={{ pointerEvents: "auto", touchAction: "manipulation" }}
           data-testid="harbor-loading-veil"
         >
-          <p className="text-sm font-bold text-[#16283b]/80" data-testid="harbor-loading">
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#16283b]/70">
+            Harbor Haven
+          </p>
+          <p className="max-w-sm text-base font-black text-[#16283b]" data-testid="harbor-loading">
             {loadHint}
+          </p>
+          <p className="max-w-xs text-sm font-medium text-[#16283b]/80">
+            How to play: Talk to Piggy · Become you at the Outfitter · Board the Money Carpet for Cove.
           </p>
           <button
             type="button"
@@ -1060,6 +1081,9 @@ export function WalkableHarborView({
           >
             {ENTER_HARBOR_HAVEN}
           </button>
+          <p className="max-w-xs text-[11px] font-medium text-[#16283b]/65">
+            Enter anytime — if the plaza is slow, you still get Talk · Carpet.
+          </p>
         </div>
       ) : null}
       {allowCanvas ? (
@@ -1124,6 +1148,7 @@ export function WalkableHarborView({
           inputFrozen={inputFrozen}
           cinemaFocus={cinemaFocus}
           cinemaEye={cinemaEye}
+          softMeetSpawn={piggyPresenceBeat}
         />
         <Suspense fallback={null}>
           <MoneyBagGuide
