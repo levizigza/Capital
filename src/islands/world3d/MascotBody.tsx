@@ -344,12 +344,15 @@ export function MascotBody({ form, materials, glyph }: Props) {
   if (form === "crypto") {
     return (
       <group position={[0, 0.95, 0]}>
-        <mesh castShadow material={materials.gold}>
-          <cylinderGeometry args={[0.48, 0.48, 0.16, 28]} />
+        {/* Face-forward coin — axis along Z so the round face (and glyph) read to camera */}
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]} material={materials.gold}>
+          <cylinderGeometry args={[0.5, 0.5, 0.18, 36]} />
+        </mesh>
+        <mesh position={[0, 0, 0.095]} material={materials.gold}>
+          <ringGeometry args={[0.38, 0.49, 36]} />
         </mesh>
         <SafeText
-          position={[0, 0.02, 0.1]}
-          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, 0.02, 0.12]}
           fontSize={0.42}
           color="#16283b"
           anchorX="center"
@@ -357,13 +360,13 @@ export function MascotBody({ form, materials, glyph }: Props) {
         >
           {g}
         </SafeText>
-        <mesh position={[-0.22, 0.12, 0.1]} material={materials.dark}>
+        <mesh position={[-0.22, 0.12, 0.12]} material={materials.dark}>
           <boxGeometry args={[0.18, 0.06, 0.04]} />
         </mesh>
-        <mesh position={[0.22, 0.12, 0.1]} material={materials.dark}>
+        <mesh position={[0.22, 0.12, 0.12]} material={materials.dark}>
           <boxGeometry args={[0.18, 0.06, 0.04]} />
         </mesh>
-        <Eyes materials={materials} y={-0.05} z={0.1} />
+        <Eyes materials={materials} y={-0.05} z={0.13} />
       </group>
     );
   }

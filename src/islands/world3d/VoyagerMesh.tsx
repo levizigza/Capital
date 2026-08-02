@@ -426,14 +426,27 @@ export function VoyagerMesh({
 
         {isCoin ? (
           <group position={[0, 0.95, 0]}>
-            <mesh castShadow material={isSeriesLeadFace ? materials.gold : materials.body}>
-              <cylinderGeometry args={[0.48, 0.48, 0.16, 28]} />
+            {/*
+              Face-forward coin disc: Three cylinder defaults to Y-up (edge-on to camera).
+              Rotate so the round faces sit in the XY plane — features read on the face.
+            */}
+            <mesh
+              castShadow
+              rotation={[Math.PI / 2, 0, 0]}
+              material={isSeriesLeadFace ? materials.gold : materials.body}
+            >
+              <cylinderGeometry args={[0.5, 0.5, 0.18, 36]} />
             </mesh>
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.09]} material={materials.gold}>
-              <ringGeometry args={[0.34, 0.44, 28]} />
+            {/* Back plate so the disc reads when spun */}
+            <mesh position={[0, 0, -0.095]} rotation={[0, Math.PI, 0]} material={materials.gold}>
+              <circleGeometry args={[0.48, 36]} />
             </mesh>
-            <mesh position={[0, 0, 0.09]} material={materials.gold}>
-              <circleGeometry args={[0.22, 24]} />
+            {/* Face rim + plate — Circle/Ring already face +Z */}
+            <mesh position={[0, 0, 0.095]} material={materials.gold}>
+              <ringGeometry args={[0.38, 0.49, 36]} />
+            </mesh>
+            <mesh position={[0, 0, 0.092]} material={isSeriesLeadFace ? materials.gold : materials.body}>
+              <circleGeometry args={[0.38, 36]} />
             </mesh>
             {bodyForm === "signal" ? (
               <>
@@ -446,7 +459,7 @@ export function VoyagerMesh({
               </>
             ) : null}
             {bodyForm === "ancient" ? (
-              <mesh position={[0, 0, 0.1]} material={materials.ink}>
+              <mesh position={[0, 0, 0.11]} material={materials.ink}>
                 <ringGeometry args={[0.12, 0.2, 3]} />
               </mesh>
             ) : null}
