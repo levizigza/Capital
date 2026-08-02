@@ -51,6 +51,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 | Lose? | Minigame fail / bad spend — retry with a hint, keep dignity |
 | After lose? | Same place, clearer next verb |
 
+**Shipped (Pillar 3 — goals / failure):** After a minigame miss (including score-below-threshold), Capital shows a dignity overlay with why + **Retry** / stay-put; structure fails no longer dump to Harbor; ModularMinigame ends as “Round over” until the parent judges the clear. Cove Take hush already names the next verb (board carpet home).
+
 ## 4–6. Feel, progression, encounters
 
 - **Feel:** WASD tank controls, near-prompt Enter, Esc leaves dialogs, juice on earn/spend  

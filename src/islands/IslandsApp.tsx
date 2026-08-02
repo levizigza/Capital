@@ -16,6 +16,7 @@ import { IslandBoardView } from "./views/IslandBoardView";
 import { IslandPlayView } from "./views/IslandPlayView";
 import { IslandShoreView } from "./views/IslandShoreView";
 import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
+import { MinigameFailOverlay } from "./views/MinigameFailOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
 import { IslandThemeProvider } from "./themes/IslandThemeProvider";
@@ -35,6 +36,11 @@ import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
 import { TalkBattleScreen } from "./views/TalkBattleScreen";
+import {
+  minigameFailCopy,
+  resolveMinigameFailReason,
+  type MinigameFailCopy,
+} from "./minigameFail";
 import { toast } from "sonner";
 import {
   findHarborNpc,
@@ -163,6 +169,12 @@ type PendingMasteryClear = {
   firstClear: boolean;
 };
 
+type PendingMinigameFail = {
+  mgId: MinigameId;
+  source: MinigameSource;
+  copy: MinigameFailCopy;
+};
+
 function uniq<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
@@ -246,6 +258,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const [pendingBoardReward, setPendingBoardReward] = useState<MinigameBoardReward | null>(null);
   const [pendingBoardMinigameName, setPendingBoardMinigameName] = useState<string | null>(null);
   const [pendingMastery, setPendingMastery] = useState<PendingMasteryClear | null>(null);
+  const [pendingMinigameFail, setPendingMinigameFail] = useState<PendingMinigameFail | null>(null);
   const [voyageTargetId, setVoyageTargetId] = useState<string | null>(null);
   const [voyageReturnView, setVoyageReturnView] = useState<VoyageReturn>("travel");
   const [showEditor, setShowEditor] = useState(
@@ -1603,15 +1616,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
         await finalizeSuccessfulClear(firstClear);
       } else {
+        const failReason = resolveMinigameFailReason({
+          reportedSuccess: success,
+          meetsThreshold,
+        });
+        const resolvedThreshold = thresholdObjective?.scoreThreshold
+          ? resolveProfileNumber(thresholdObjective.scoreThreshold, learningProfile)
+          : undefined;
+
         await analytics.track("fail_reason", {
           context: "minigame",
           minigameId: activeMinigameId,
           islandId: activeIsland.id,
-          reason: success && !meetsThreshold ? "score_below_threshold" : "objective_not_met",
+          reason: failReason,
           score,
-          scoreThreshold: thresholdObjective?.scoreThreshold
-            ? resolveProfileNumber(thresholdObjective.scoreThreshold, learningProfile)
-            : undefined,
+          scoreThreshold: resolvedThreshold,
           learningProfile,
           durationMs,
           difficulty,
@@ -1646,17 +1665,34 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
 
-        applyBoardReward(source, firstClear);
+        // Consolation for board attempts — quiet coins only; fail chrome owns the moment.
+        if (source === "board") {
+          const consolation = computeMinigameReward(false, score, firstClear, false);
+          setUserProfile((prev) => ({
+            ...prev,
+            totalCoins: prev.totalCoins + consolation.coins,
+            xp: prev.xp + consolation.xp,
+          }));
+        }
+
+        const mgName =
+          activeIsland.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
+        setPendingMinigameFail({
+          mgId,
+          source,
+          copy: minigameFailCopy({
+            reason: failReason,
+            minigameName: mgName,
+            score,
+            scoreThreshold: resolvedThreshold,
+            source,
+          }),
+        });
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
         setMinigameSource(null);
-        if (source === "structure") {
-          setView("home");
-          setActiveIslandId(HUB_ISLAND_ID);
-          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
-        } else {
-          void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
-        }
+        // Stay put — never soft-dump to Harbor after a miss.
+        void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
       }
     },
     [
@@ -1733,6 +1769,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(mgId);
     setMinigameStartedAt(Date.now());
   }, [pendingMastery]);
+
+  const handleMinigameFailRetry = useCallback(() => {
+    if (!pendingMinigameFail) return;
+    const { mgId, source } = pendingMinigameFail;
+    setPendingMinigameFail(null);
+    setMinigameSource(source);
+    setActiveMinigameId(mgId);
+    setMinigameStartedAt(Date.now());
+    void trackScreenEnter(`minigame:${mgId}`, {
+      islandId: activeIsland?.id,
+      minigameId: mgId,
+      source: source ?? "retry",
+    });
+  }, [activeIsland?.id, pendingMinigameFail]);
+
+  const handleMinigameFailWalk = useCallback(() => {
+    if (!pendingMinigameFail) return;
+    setPendingMinigameFail(null);
+    if (activeIsland) {
+      void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+    }
+  }, [activeIsland, pendingMinigameFail]);
 
   const activeMinigameDef = useMemo(() => {
     if (!activeMinigameId) return undefined;
@@ -2263,6 +2321,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onFailed={handleMasteryFailed}
             />
           </GameModal>
+        ) : null}
+
+        {pendingMinigameFail ? (
+          <MinigameFailOverlay
+            copy={pendingMinigameFail.copy}
+            onRetry={handleMinigameFailRetry}
+            onKeepWalking={handleMinigameFailWalk}
+          />
         ) : null}
 
         {pendingReplayTimeline ? (

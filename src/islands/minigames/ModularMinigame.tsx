@@ -297,18 +297,29 @@ export default function ModularMinigame({
         ))}
       </div>
 
-      {/* Game over overlay */}
+      {/* Round over — parent judges clear vs fail (Pillar 3: no fake celebration before threshold). */}
       {gameOver && (
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 text-center">
-          <h3 className="text-2xl font-bold text-green-800 mb-2">🎉 Game Complete!</h3>
-          <p className="text-green-700 mb-1">
-            Final Score: <span className="font-bold">{formatProfileNumber(session.game.score, learningProfile)}</span> pts
+        <div
+          className="rounded-xl border border-[var(--cap-ink)]/10 bg-[linear-gradient(165deg,#fffbeb_0%,#f8fafc_60%,#ecfeff_100%)] p-6 text-center"
+          data-testid="minigame-round-over"
+        >
+          <h3 className="cap-display text-2xl text-[var(--cap-ink)] mb-2">Round over</h3>
+          <p className="text-[var(--cap-ink)] mb-1">
+            Final Score:{" "}
+            <span className="font-bold">
+              {formatProfileNumber(session.game.score, learningProfile)}
+            </span>{" "}
+            pts
           </p>
-          <p className="text-green-700 mb-4">
-            Money Earned: <span className="font-bold">{formatProfileMoney(session.game.money, learningProfile)}</span>
+          <p className="text-[var(--cap-ink-soft)] mb-4 text-sm">
+            Money held:{" "}
+            <span className="font-semibold text-[var(--cap-ink)]">
+              {formatProfileMoney(session.game.money, learningProfile)}
+            </span>
+            {" · "}Harbor will say if this clears the goal.
           </p>
-          <GameButton variant="primary" onClick={handleComplete}>
-            Finish
+          <GameButton variant="primary" onClick={handleComplete} data-testid="minigame-finish">
+            See result
           </GameButton>
         </div>
       )}
