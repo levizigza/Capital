@@ -20,7 +20,8 @@ export type LedgerHolding = {
 
 /** Harbor escape: sustain strong cashflow for several Pay Days in a row */
 export const HARBOR_ESCAPE_TARGET = 30;
-export const HARBOR_ESCAPE_STREAK = 2;
+/** 3 keeps Freedom earned (not instant after first two deals + two board Pay Days). */
+export const HARBOR_ESCAPE_STREAK = 3;
 
 export type DealOffer = LedgerHolding & { purchaseCost: number };
 
