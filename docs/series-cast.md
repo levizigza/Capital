@@ -7,7 +7,7 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 
 | Role | Who | Owns |
 |------|-----|------|
-| **Series leads** | Cashwell · Cashmere · Pedro · Fernanda · Bao · Jade · Sultan · Dahlia · Mansa (9 of ~13) | Brand faces, Memory Courtyard presence, style of living money |
+| **Series leads** | Cashwell · Cashmere · Pedro · Fernanda · Bao · Jade · Sultan · Dahlia · Mansa · Kandake (10 of ~13) | Brand faces, Memory Courtyard presence, style of living money |
 | **Harbor Keeper** | Piggy Penny | First meet, quiet homecoming, Return verbs |
 | **Path buddy** | Coin Bag | Pointing, carpet seat, next-good-action |
 
@@ -33,6 +33,7 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 | 7 | **Sultan Stacks** | In Harbor (Memory Courtyard terrace) |
 | 8 | **Dinar Dahlia** | In Harbor (Memory Courtyard terrace) |
 | 9 | **Mansa Moneybaggs** | In Harbor (Memory Courtyard terrace) |
-| 10–13 | TBD | Wait for sheets |
+| 10 | **Kandake Kash** | In Harbor (Memory Courtyard terrace) |
+| 11–13 | TBD | Wait for sheets |
 
 When in doubt: the series leads tip hats and celebrate — **Piggy keeps the verbs**.

@@ -245,6 +245,21 @@ const ROLE_TIPS: Record<
       strategist: "Gold isn’t just wealth. It’s a responsibility. It’s a legacy.",
     },
   },
+  kandake_kash: {
+    tip: {
+      explorer:
+        "Kandake Kash — I carry history like a crown! That Plinth keeps every stride of greatness.",
+      apprentice:
+        "Crowned commerce: she leads with value. Piggy keeps Harbor’s verbs; prosperity moves through shared hands. Visit the Plinth.",
+      strategist:
+        "Queen of community, not Harbor Keeper. Riches feel richer when shared; Memory Plinth files the kash after every Take.",
+    },
+    bye: {
+      explorer: "Crowned. Cultured. Collected — go walk wealth!",
+      apprentice: "Pay yourself first. Then let influence travel with you.",
+      strategist: "Every move builds abundance. Treasure in motion.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {
