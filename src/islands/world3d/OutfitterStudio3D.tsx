@@ -235,7 +235,8 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
               index={i}
               total={ids.length}
               selected={id === character.base}
-              detailed={Math.abs(i - selectedIndex) <= 2}
+              // Troika off in prod — full cast meshes are safe again.
+              detailed
               onPick={onPickFighter}
             />
           ))}
