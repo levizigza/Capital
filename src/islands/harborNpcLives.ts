@@ -120,12 +120,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                       afternoon: "Jade: Wisdom sharpens every move. Memory Courtyard never forgets.",
                       evening: "Jade: Fortune in bloom. Tip yourself first — then enter the room.",
                     }
-                  : {
-                      morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                      midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                      afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                      evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                    };
+                  : slot.mascotId === "sultan_stacks"
+                    ? {
+                        morning: "Sultan Stacks: Wealth worn like a crown — the Plinth keeps yesterday stacked.",
+                        midday: "Sultan: Palace presence. Piggy keeps the Harbor verbs.",
+                        afternoon: "Sultan: Fortune favors foresight. Memory Courtyard never forgets a Take.",
+                        evening: "Sultan: Big treasure, bigger legacy. Tip yourself first — then arrive.",
+                      }
+                    : {
+                        morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                        midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                        afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                        evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                      };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

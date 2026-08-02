@@ -200,6 +200,21 @@ const ROLE_TIPS: Record<
       strategist: "Wisdom sharpens every move. Grace compounds.",
     },
   },
+  sultan_stacks: {
+    tip: {
+      explorer:
+        "Sultan Stacks — I enter like a celebration! That Plinth? Harbor’s treasure chest of every Take!",
+      apprentice:
+        "Trade-route wisdom: fortune favors foresight. Piggy keeps Harbor’s verbs; I stack the legacy. Visit the Plinth.",
+      strategist:
+        "Palace presence, not Harbor Keeper. Riches follow strategy; Memory Plinth files the dinar after every Take.",
+    },
+    bye: {
+      explorer: "Big treasure. Big vision. Bigger legacy — go stack!",
+      apprentice: "Pay yourself first. Then wear wealth like a crown.",
+      strategist: "Gold in every detail. Ledger in every step.",
+    },
+  },
 };
 
 function tipFor(mascotId: MoneyMascotId): { tip: ProfileText; bye: ProfileText } {

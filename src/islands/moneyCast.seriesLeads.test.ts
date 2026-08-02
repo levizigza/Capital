@@ -11,8 +11,8 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell through Jade Fortune", () => {
-  it("registers six leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Sultan Stacks", () => {
+  it("registers seven leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
@@ -21,17 +21,18 @@ describe("series leads — Cashwell through Jade Fortune", () => {
       "fortuna_fernanda",
       "billionaire_bao",
       "jade_fortune",
+      "sultan_stacks",
     ]);
-    expect(isSeriesLeadMascot("jade_fortune")).toBe(true);
+    expect(isSeriesLeadMascot("sultan_stacks")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const jade = getMascot("jade_fortune");
-    expect(jade.name).toBe("Jade Fortune");
-    expect(jade.form).toBe("coin");
-    expect(jade.glyph).toBe("JF");
-    expect(jade.accessory).toBe("cape");
-    expect(colorHex(jade.color)).toBe("#065f46");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(6);
+    const sultan = getMascot("sultan_stacks");
+    expect(sultan.name).toBe("Sultan Stacks");
+    expect(sultan.form).toBe("coin");
+    expect(sultan.glyph).toBe("$");
+    expect(sultan.accessory).toBe("cap");
+    expect(colorHex(sultan.color)).toBe("#064e3b");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(7);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
