@@ -143,6 +143,10 @@ type Props = {
    * owns the one-job plaza beat.
    */
   piggyPresenceBeat?: boolean;
+  /** Plaza playable flag (3D ready or myth) — gates signature cinema; false while veiled. */
+  onPlazaReady?: (ready: boolean) => void;
+  /** Spectacle / share / day-2 — myth path stays a quiet Memory stage, not Piggy meet. */
+  cinemaActive?: boolean;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -827,6 +831,8 @@ export function WalkableHarborView({
   onFallbackTalkPiggy,
   onFallbackEnterBank,
   piggyPresenceBeat = false,
+  onPlazaReady,
+  cinemaActive = false,
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
@@ -1029,10 +1035,35 @@ export function WalkableHarborView({
   }, [ready]);
 
   useEffect(() => {
+    onPlazaReady?.(ready);
+  }, [ready, onPlazaReady]);
+
+  useEffect(() => {
     if (kill3d || force2d) setReady(true);
   }, [kill3d, force2d]);
 
   if (kill3d || force2d) {
+    if (cinemaActive) {
+      // Quiet Memory stage under Plinth cinema — never “Piggy is waving” under share.
+      return (
+        <div
+          className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden"
+          data-testid="harbor-cinema-myth-stage"
+          aria-hidden
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% 40%, #bae6fd 0%, #7dd3fc 45%, #38bdf8 100%)",
+          }}
+        >
+          <div
+            className="absolute bottom-0 left-1/2 h-[30%] w-[120%] -translate-x-1/2 rounded-[100%] bg-[#86efac]/50"
+          />
+          <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[#0f172a]/55">
+            Harbor Haven · Memory
+          </p>
+        </div>
+      );
+    }
     return (
       <HarborMythFallback
         mode={fallbackMode}

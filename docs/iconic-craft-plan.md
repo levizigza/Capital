@@ -288,7 +288,7 @@ When two pillars fight, **fantasy + signature loop win**.
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
 | 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage + no HP bars; PERF default off. Next: Leave/Apprentice chrome still SaaS-y after tutorial |
-| 2 | Core loop | | | **Start next after fantasy re-smoke** |
+| 2 | Core loop | playable → iconic | 2026-08-02 | Gate spectacle/echo on plaza ready; hide Piggy HUD during all cinema; myth cinema stage; Piggy before day-2. Next: cold unseeded Cove Take timing |
 | 3 | Goals / failure | | | |
 | 4 | Feel | | | |
 | 5 | Progression | | | |
@@ -316,6 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **1 — Player fantasy** (Talk Battle Memory courtyard stage; cut fake HP; PERF overlay opt-in only).  
+**Last shipped:** Pillar **2 — Core loop** (signature cinema waits for plaza ready; no Piggy HUD under spectacle/share/echo; myth Memory stage under cinema; day-2 waits for Piggy talk).  
 
-**Start next:** Pillar **2 — Core loop** (cold micro-loop timing; patch the first break).
+**Start next:** Pillar **3 — Goals / rules / failure** (Cove Take + one minigame: goal / affordance / fail / retry screenshots).
