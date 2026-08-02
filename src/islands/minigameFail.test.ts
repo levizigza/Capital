@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { minigameFailCopy, resolveMinigameFailReason } from "./minigameFail";
+import {
+  minigameFailCopy,
+  resolveMinigameFailReason,
+  resolveTakeFailFlavor,
+} from "./minigameFail";
 
 describe("minigameFail — Pillar 3 dignity contract", () => {
   it("labels threshold misses separately from objective misses", () => {
@@ -34,5 +38,29 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
       source: "board",
     });
     expect(copy.walkLabel).toMatch(/board/i);
+  });
+
+  it("gives Spend Takes the same soft-fail dignity as saver (no lecture)", () => {
+    expect(
+      resolveTakeFailFlavor({
+        irreversibleChoices: {
+          cove_save_vs_spend: { choiceId: "spend" },
+        },
+      }),
+    ).toBe("spend");
+    const spend = minigameFailCopy({
+      reason: "objective_not_met",
+      minigameName: "Coin Catcher",
+      takeFlavor: "spend",
+    });
+    const save = minigameFailCopy({
+      reason: "objective_not_met",
+      minigameName: "Coin Catcher",
+      takeFlavor: "save",
+    });
+    expect(spend.title).toBe(save.title);
+    expect(spend.retryLabel).toBe(save.retryLabel);
+    expect(spend.body.toLowerCase()).toMatch(/soft miss|still teach|no shame/);
+    expect(spend.body.toLowerCase()).not.toMatch(/should have saved|bad spend|mistake/);
   });
 });

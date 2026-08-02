@@ -49,18 +49,18 @@ These are **allowed later** as spine depth — not new islands:
 
 | From | Parked polish |
 |------|----------------|
-| Fantasy / Story / UI | Talk Battle Leave shipped (whole-game craft pass); Apprentice chrome after tutorial still soft |
+| Fantasy / Story / UI | (iterated) Talk Battle Leave + plaza profile chip removed (Settings only) |
 | Core loop | (iterated) Snappier Take cinema + “Carpet home — Harbor felt that” CTA |
-| Goals | Bad-take Spend soft-fail copy parity |
+| Goals | (iterated) Bad-take Spend soft-fail copy parity |
 | Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |
 | Progression | (iterated) Freedom Seal chip + Coin Bag names carpet tier |
-| Encounters | Cove Alma vs Paycheck categorize overlap |
+| Encounters | (iterated) Alma craft-bench ≠ Paycheck payday buckets |
 | Content | (done) PARKED banners on outer island docs |
 | Balance | First seal plaza readability after pouch dips |
-| Art | Shore Coin Jar vs painting gate distance read |
+| Art | (iterated) Shore Coin Jar distance + parked pads off shore |
 | Audio | (done) Piggy homecoming reward sting |
 | Onboarding | Boot cast Board CTA / warmer copy shipped; Cancel parity polish |
-| Technical | Kill-switch e2e for harbor3d sticky fail |
+| Technical | (iterated) Kill-switch e2e for harbor3d sticky fail |
 | A11y | (done) High-contrast share lower-third panel |
 | Testing | Keep status board honest after every fix |
 | Whole-game | See [whole-game-craft.md](./whole-game-craft.md) — parts + whole craft law |

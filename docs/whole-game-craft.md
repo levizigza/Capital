@@ -77,8 +77,16 @@ If not, that surface is not iconic yet.
 - Cove Take: snappier cinema + high-contrast “Carpet home — Harbor felt that”
 - Freedom plaza: `harbor-freedom-chip` + Coin Bag names carpet tier
 
+## Iteration 3 (shipped)
+
+- Alma = craft-bench → jar Take (Coin Hold); Paycheck Priya owns three payday buckets (Clock)
+- Cove Coin Jar pushed back; parked digression paintings off live shore pads
+- Harbor Apprentice/profile HudBadge removed — Settings only
+- Spend Take soft-fail copy parity (dignity, no lecture)
+- `e2e/harbor-3d-failsafe.spec.ts` — sticky fail + kill switch skip Canvas
+
 ## Still deepen (from iconic-later)
 
-Alma↔Paycheck overlap · shore silhouette distance · Apprentice chrome · bad-take Spend copy · harbor3d kill-switch e2e  
+First seal plaza after pouch dips · boot Cancel parity · cold unseeded Cove Take timing  
 
 Iterate those next — never new islands first.

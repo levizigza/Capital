@@ -53,7 +53,8 @@ export const COVE_COIN_JAR: MoneyStructureDef = {
   entryVerb: "Squeeze through the coin slot",
   entryHint: "Walk into the glowing slot — the Jar opens like a toy world.",
   enterTransition: "Squeezing through the coin slot…",
-  shorePosition: shoreXZ(0, -2.2, 0),
+  /** Far plaza back — reads as landmark, not stacked on painting gates. */
+  shorePosition: shoreXZ(0, -7.2, 0),
   exitPosition: [0, 0, 8],
   parts: [
     {

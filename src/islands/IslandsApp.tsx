@@ -39,6 +39,7 @@ import { TalkBattleScreen } from "./views/TalkBattleScreen";
 import {
   minigameFailCopy,
   resolveMinigameFailReason,
+  resolveTakeFailFlavor,
   type MinigameFailCopy,
 } from "./minigameFail";
 import { toast } from "sonner";
@@ -1711,6 +1712,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             score,
             scoreThreshold: resolvedThreshold,
             source,
+            takeFlavor: resolveTakeFailFlavor({
+              irreversibleChoices: save?.irreversibleChoices,
+            }),
           }),
         });
         setActiveMinigameId(null);

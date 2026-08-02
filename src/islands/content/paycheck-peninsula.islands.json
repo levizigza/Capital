@@ -184,11 +184,11 @@
             {
               "id": "pri1",
               "speaker": "Planner Priya",
-              "text": "Welcome to the Budget Bureau! The golden rule: split your money into three buckets — needs, wants, and savings. Ready to try?",
+              "text": "Welcome to the Budget Bureau! On this Coast the Clock stamps three payday buckets — needs, wants, and savings — so shelter sticks after the stamp. Ready to try?",
               "choices": [
                 {
                   "id": "pri1_a",
-                  "text": "Let's do it!",
+                  "text": "Let's stamp the buckets!",
                   "nextNodeId": "pri2",
                   "effects": [{ "type": "startMinigame", "minigameId": "mg_budget_split" }]
                 },
@@ -198,13 +198,13 @@
             {
               "id": "pri2",
               "speaker": "Planner Priya",
-              "text": "Drag each expense into the right bucket. Rent and food are needs. Entertainment is a want. And always put something into savings!",
+              "text": "Drag each expense into the right payday bucket. Rent and food are needs. Entertainment is a want. Always stamp something into savings — that's Clock shelter, not Cove's jar Take.",
               "end": true
             },
             {
               "id": "pri3",
               "speaker": "Planner Priya",
-              "text": "Needs are things you must pay for — housing, food, transport. Wants are things you enjoy but could skip. Savings is money you set aside for the future. The trick is balancing all three!",
+              "text": "Needs are must-pays after a stamp — housing, food, transport. Wants are enjoy-but-skippable. Savings is future shelter. Cove taught Coin Hold; here we balance all three so rainy-day loft stays dry.",
               "end": true
             }
           ]

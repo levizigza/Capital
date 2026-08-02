@@ -209,6 +209,7 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
     guards: [
       "src/islands/save.test.ts",
       "src/islands/world3d/harborLoadFailsafe.test.ts",
+      "e2e/harbor-3d-failsafe.spec.ts",
     ],
   },
   {
@@ -237,6 +238,8 @@ export function iconicUnitTestPaths(): string[] {
     "src/islands/signatureCinemaGate.test.ts",
     "src/islands/views/signatureJuiceContract.test.ts",
     "src/islands/views/minigameFailContract.test.ts",
+    "src/islands/minigameFail.test.ts",
+    "src/islands/moneyStructures.test.ts",
     "src/islands/views/progressionContract.test.ts",
     "src/islands/views/talkBattleFantasy.test.ts",
     "src/islands/input/walkFeel.test.ts",
@@ -259,4 +262,5 @@ export function iconicUnitTestPaths(): string[] {
 export const ICONIC_E2E_SPECS = [
   "e2e/signature-loop.spec.ts",
   "e2e/harbor-tutorial.spec.ts",
+  "e2e/harbor-3d-failsafe.spec.ts",
 ] as const;

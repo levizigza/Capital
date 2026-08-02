@@ -322,21 +322,21 @@ When two pillars fight, **fantasy + signature loop win**.
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
-| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage + no HP bars; PERF default off. Next: Leave/Apprentice chrome still SaaS-y after tutorial |
+| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle Leave + plaza profile chip removed (Settings). Next: cold kid retell after Harbor return |
 | 2 | Core loop | playable → iconic | 2026-08-02 | Gate spectacle/echo on plaza ready; hide Piggy HUD during all cinema; myth cinema stage; Piggy before day-2. Next: cold unseeded Cove Take timing |
-| 3 | Goals / failure | playable → iconic | 2026-08-02 | Minigame miss → dignity overlay + Retry / stay-put; no Harbor dump on structure fail; ModularMinigame “Round over” (not fake Complete). Next: bad-take Spend soft-fail copy parity |
-| 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
-| 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
-| 6 | Encounters | playable → iconic | 2026-08-02 | Credit canyon: Score Scanner (not Paycheck categorize); wait/haste Take after practice. Next: Cove Alma vs Paycheck categorize overlap |
+| 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
+| 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: pouch-dip seal plaza readability |
+| 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open; Freedom chip + carpet tier. Next: first seal after pouch dips |
+| 6 | Encounters | playable → iconic | 2026-08-02 | Alma craft-bench → jar Take; Paycheck Priya owns payday buckets; Credit Score Scanner. Next: deepen organ vocabulary in Talk |
 | 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
 | 8 | Balance | playable → iconic | 2026-08-02 | Balance sheet for Cove earn → carpet → Freedom; Freedom Seal streak 2→3 (`HARBOR_ESCAPE_STREAK`); `balanceSheet.test.ts`. Next: first seal plaza readability after pouch dips |
-| 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
-| 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
-| 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` mute-test stingers; Harbor bed ducks on spectacle/share. Next: Piggy homecoming reward sting |
+| 9 | UI / comms | playable → iconic | 2026-08-02 | Esc · Leave on signature overlays + Talk Battle. Next: boot Cancel parity on look stage |
+| 10 | Art direction | playable → iconic | 2026-08-02 | Cove Jar distance read + parked digression pads off shore; structure silhouettes. Next: Soft Beat beacon polish on shores |
+| 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
 | 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
 | 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; tiny_spend Capsule-only (no coach reading ahead). Next: boot cast-select Cancel parity on look stage |
-| 14 | Technical | playable → iconic | 2026-08-02 | Corrupt-save sanitize + Harbor failsafe constants wired (myth <3s). Next: kill-switch e2e for harbor3d sticky fail |
-| 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; juice bounce off under reduce. Next: high-contrast pass on share lower-third |
+| 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
+| 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |
 | 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
 | 17 | Scope | playable → iconic | 2026-08-02 | Freeze in code + `docs/iconic-later.md` creep sink + PARKED banners on outer docs. Next: deepen spine from later-list polish only |
 

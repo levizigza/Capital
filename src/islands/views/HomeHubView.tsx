@@ -4,7 +4,6 @@ import {
   GameHudLayout,
   GameButton,
   GameModal,
-  HudBadge,
 } from "@/game-ui";
 import { useInputAction } from "@/input";
 
@@ -1200,11 +1199,7 @@ export function HomeHubView({
         topRight={
           hideHudForCinema || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
-            {!castleMode ? (
-              <HudBadge>
-                {profile.icon} {profile.label}
-              </HudBadge>
-            ) : null}
+            {/* Learning profile lives in Settings — plaza stays myth, not SaaS rank chip */}
             {showLeaveChrome ? (
               <GameButton
                 variant="outline"

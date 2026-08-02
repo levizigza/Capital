@@ -10,6 +10,7 @@ import {
   castForIslandNpc,
 } from "./islandCulture";
 import { moneyStructureForIsland } from "./moneyStructures";
+import { isParkedMinigameId } from "./spineContentRegistry";
 
 export type ShoreHotspotKind =
   | "pier"
@@ -95,7 +96,7 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     subtitle: "Quests, bag, and chapter notes",
   });
 
-  const games = island.minigames ?? [];
+  const games = (island.minigames ?? []).filter((g) => !isParkedMinigameId(g.id));
   const kinesthetic = games.filter((g) => isKinestheticComponent(g.componentId));
   const needsDash = kinesthetic.length === 0;
 

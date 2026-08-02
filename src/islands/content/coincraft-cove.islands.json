@@ -4,17 +4,17 @@
     {
       "id": "coincraft_cove",
       "name": "Coincraft Cove",
-      "description": "Your first painting — earn coins the fair way with Captain Penny, then choose save or spend before flying home changed.",
+      "description": "Your first painting — earn coins the fair way with Captain Penny, then face the jar-or-treat Take before flying home changed.",
       "icon": "⚓",
       "provenance": {
         "learning_objectives": [
           "Identify coins and bills by value",
           "Practice making change for purchases",
-          "Understand the difference between needs and wants",
+          "Feel Coin Hold: jar-first vs treat-first as an irreversible Take",
           "Learn that saving now lets you buy bigger things later"
         ],
         "mechanics_used": ["sorting-categorization", "npc-dialogue-tree", "speed-collection", "quiz-challenge"],
-        "originality_notes": "Theme: seaside craft village with artisan shops (not a bank or store sim). Verb: sort coins into craft-supply purchases and dialogue-driven saving decisions (not roll-and-collect). Structure: cooperative quest chain helping NPC villagers solve problems (not competitive accumulation). Blends sorting puzzles with NPC mentorship scenarios unique to this project.",
+        "originality_notes": "Theme: seaside craft village with artisan shops (not a bank or store sim). Verb: craft-bench triage then dialogue-driven jar Take (not payroll bucket categorize — that lives on Paycheck). Structure: cooperative quest chain helping NPC villagers solve problems (not competitive accumulation). Blends sorting puzzles with NPC mentorship scenarios unique to this project.",
         "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Lemonade Stand"]
       },
       "areas": [
@@ -128,8 +128,8 @@
           "id": "q_cc_save_or_spend",
           "track": "main",
           "title": "Save or Spend?",
-          "description": "Help Artisan Alma sort her supplies into needs and wants, then visit Keeper Kira to start saving.",
-          "hint": "Visit the Craft Market and talk to Alma, then head to the Savings Lighthouse.",
+          "description": "Clear Alma's craft bench (brushes stay, glitter waits), then visit Keeper Kira for the jar-or-treat Take.",
+          "hint": "Talk to Alma at the Craft Market, then walk to the Savings Lighthouse for the Take.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_artisan_alma" },
             { "type": "talkToNpc", "npcId": "npc_keeper_kira" },
@@ -198,11 +198,11 @@
             {
               "id": "aa1",
               "speaker": "Artisan Alma",
-              "text": "Oh, you have a Coin Pouch! I need help sorting my supplies. Some things I NEED for my art, and some things I just WANT. Can you help?",
+              "text": "Oh, you have a Coin Pouch! My craft bench is a mess — brushes that feed real work, and glitter that just sparkles. Help me clear a path to Keeper Kira?",
               "choices": [
                 {
                   "id": "aa1_a",
-                  "text": "Sure! What's the difference?",
+                  "text": "Sure — what stays on the bench?",
                   "nextNodeId": "aa2",
                   "effects": [{ "type": "startQuest", "questId": "q_cc_save_or_spend" }]
                 },
@@ -212,13 +212,13 @@
             {
               "id": "aa2",
               "speaker": "Artisan Alma",
-              "text": "Needs are things you can't do without — like paintbrushes for an artist. Wants are nice extras — like glitter. If you spend all your coins on wants, you might not have enough for needs!",
+              "text": "Keep the brushes. Glitter can wait. Then walk to the lighthouse — Kira's Take sticks forever: jar first, or treat first. That's Coin Hold. Paycheck Coast teaches the three payday buckets later.",
               "end": true
             },
             {
               "id": "aa3",
               "speaker": "Artisan Alma",
-              "text": "No problem! Come back when you're ready to sort.",
+              "text": "No rush. Come back when you're ready for the jar path.",
               "end": true
             }
           ]
