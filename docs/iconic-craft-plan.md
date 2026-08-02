@@ -214,6 +214,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | Pass work | Screenshot Harbor + one structure: can you spot next interactable without HUD? If not, strengthen silhouette/VFX. |
 | Refs | `docs/art-direction-bible.md` · `docs/islands-ui-style-guide.md` |
 
+**Shipped (Pillar 10):** Money Structure pads silhouette without HUD — `StructurePartSilhouette` for every part id; Cove **Lid Lookout** is a screw-top hatch (was flat cyan disc); Soft Beat pads get a lookout beacon; stamp / battlement / teller / anvil distinct; interior labels use `SafeText` (Pages = silhouette + glow). Guarded by `StructurePartSilhouette.test.ts`. Harbor Memory Plinth / Carpet gate already carry the plaza read when troika text is off.
+
 ---
 
 ### 11. Sound and music
@@ -313,7 +315,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: park docs under docs/islands/{signal-city,…} with explicit PARKED banners |
 | 8 | Balance | playable → iconic | 2026-08-02 | Balance sheet for Cove earn → carpet → Freedom; Freedom Seal streak 2→3 (`HARBOR_ESCAPE_STREAK`); `balanceSheet.test.ts`. Next: first seal plaza readability after pouch dips |
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
-| 10 | Art direction | | | |
+| 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
 | 11 | Audio | | | |
 | 12 | Story | | | |
 | 13 | Onboarding | | | |
@@ -333,6 +335,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **9 — UI / player communication** (`useOverlayEscape` + Leave/Esc chrome on signature overlays; HarborFelt sticky leave).  
+**Last shipped:** Pillar **10 — Art direction** (Money Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; Pages-safe labels).  
 
-**Start next:** Pillar **10 — Art direction** (Harbor + one structure silhouette read without HUD).
+**Start next:** Pillar **11 — Sound and music** (mute test: Take → hush → Harbor felt that by audio alone).

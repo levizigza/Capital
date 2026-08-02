@@ -75,6 +75,8 @@ Content = Money Mascots + islands + capsules. Presentation must stay readable (l
 
 **Shipped (Pillar 9 — UI / comms):** Signature overlays use window-level `useOverlayEscape` (Esc works without focus) + visible Leave + “Esc · Leave” chrome — HarborFelt share, Take hush, Plinth spectacle, Soft Beat, trailer, day-2 echo, World Arrive. Share sticky lower-third; backdrop leave on freeze share.
 
+**Shipped (Pillar 10 — art direction):** Money Structure interactables silhouette without HUD — every part id has a named mesh (`StructurePartSilhouette`); Cove Lid Lookout is a screw-top hatch + Soft Beat lookout beacon (was a flat cyan disc); interior Billboard labels use `SafeText` so Pages relies on silhouette + glow.
+
 ## 13. Onboarding
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.
