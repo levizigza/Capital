@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { GameButton } from "@/game-ui";
-import { getMascot } from "../moneyCast";
-import { PLAYABLE_SELECT_CAST, sheetLookForBase } from "../castLooks";
+import { getMascot, SERIES_LEAD_MASCOT_IDS } from "../moneyCast";
+import { sheetLookForBase } from "../castLooks";
 import type { CapitalCharacter } from "../character";
 import { loadIslandSave, persistIslandSave } from "../save";
 import { applyCompanionPurchase, STARTER_COMPANION_ID } from "../harborShop";
 import type { IslandSaveV1 } from "../types";
 import { OutfitterStudio3D } from "../world3d/OutfitterStudio3D";
+import { StreetFighterCoinSelect } from "../world3d/StreetFighterCoinSelect";
 import { CharacterCreator } from "./CharacterCreator";
 
 type Stage = "select" | "look";
@@ -17,13 +17,13 @@ type Props = {
 };
 
 /**
- * Boot cast select — full-bleed 3D Outfitter (Snapchat-style).
- * Live 3D fighter lineup → Looks · Shirt · Pants · Gear · Tech → Money Carpet.
+ * Boot cast select — Street Fighter coin board → full 3D body + Snapchat customize.
+ * Stage and dock are flex siblings so WebGL/coins never cover the controls.
  */
 export function BootCastSelect({ defaultName = "", onComplete }: Props) {
   const [stage, setStage] = useState<Stage>("select");
   const [draft, setDraft] = useState<CapitalCharacter>(() =>
-    sheetLookForBase(PLAYABLE_SELECT_CAST[0]!, defaultName || "Voyager"),
+    sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || "Voyager"),
   );
   const [busy, setBusy] = useState(false);
 
@@ -31,6 +31,11 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
 
   const pickFighter = (id: string) => {
     setDraft(sheetLookForBase(id, draft.name || defaultName || getMascot(id).name));
+  };
+
+  const pickAndCustomize = (id: string) => {
+    pickFighter(id);
+    setStage("look");
   };
 
   const boardCarpet = (from: CapitalCharacter = draft) => {
@@ -59,75 +64,89 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[10000] flex flex-col"
+      className="fixed inset-0 z-[10000] flex flex-col bg-[#0c1622]"
       role="dialog"
       aria-label="Choose your Money Mascot"
       data-testid="boot-cast-select"
       data-stage={stage}
     >
-      <OutfitterStudio3D
-        character={draft}
-        className="absolute inset-0"
-        mode={stage === "select" ? "lineup" : "solo"}
-        lineupIds={PLAYABLE_SELECT_CAST}
-        onPickFighter={pickFighter}
-      />
-
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
-
-      <header className="relative z-[2] flex items-start justify-between gap-3 p-3 sm:p-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
-            Fortune Archipelago · 3D Outfitter
-          </p>
-          <h1 className="cap-display text-2xl text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
-            {stage === "select" ? "Choose your Voyager" : "Become you"}
-          </h1>
-          <p className="max-w-lg text-sm text-white/80">
-            {stage === "select"
-              ? "Tap any 3D Money Mascot on the fitting-room floor, then customize on the live mirror."
-              : "Snapchat layers — Looks · Shirt · Pants · Accessories · Electronics — then board the Money Carpet."}
-          </p>
-        </div>
+      <header className="relative z-10 shrink-0 px-3 pb-1 pt-3 sm:px-4 sm:pt-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
+          Fortune Archipelago · Fighter Select
+        </p>
+        <h1 className="text-2xl font-black tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
+          {stage === "select" ? "Choose your Voyager" : "Become you"}
+        </h1>
+        <p className="max-w-lg text-sm text-white/80">
+          {stage === "select"
+            ? "All 12 series leads as spinning coin faces — tap one for the full 3D body, then customize."
+            : "Live 3D head + body — Looks · Shirt · Pants · Accessories · Electronics — then board the Money Carpet."}
+        </p>
       </header>
 
-      <div className="pointer-events-auto relative z-[20] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
-        <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/55 p-3 shadow-2xl backdrop-blur-md sm:p-4">
+      <div className="relative min-h-0 flex-1">
+        {stage === "select" ? (
+          <StreetFighterCoinSelect
+            selectedId={draft.base}
+            ids={SERIES_LEAD_MASCOT_IDS}
+            onFocus={pickFighter}
+            onPick={pickAndCustomize}
+            className="absolute inset-0"
+          />
+        ) : (
+          <OutfitterStudio3D
+            character={draft}
+            className="absolute inset-0"
+            mode="solo"
+            pointerEvents="none"
+          />
+        )}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50"
+          aria-hidden
+        />
+      </div>
+
+      <div
+        className="relative z-20 max-h-[46vh] shrink-0 overflow-y-auto overscroll-contain border-t border-white/10 bg-black/92 px-3 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md sm:max-h-[42vh] sm:px-4 sm:py-4"
+        data-testid="boot-cast-dock"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <div className="mx-auto w-full max-w-xl">
           {stage === "select" ? (
-            <div className="flex flex-col gap-3 text-center text-white">
+            <div className="flex flex-col gap-2 text-center text-white">
               <div>
                 <div className="text-lg font-black">{mascot.name}</div>
                 <p className="text-sm text-white/75">{mascot.tagline}</p>
               </div>
-              <label className="mx-auto w-full max-w-xs">
-                <span className="sr-only">Your name</span>
-                <input
-                  value={draft.name}
-                  onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value.slice(0, 18) }))}
-                  placeholder="Name your Voyager"
-                  className="w-full rounded-2xl border-2 border-white/30 bg-black/45 px-3 py-2 text-center text-lg font-bold text-white placeholder:text-white/45 focus:border-amber-300 focus:outline-none"
-                  aria-label="Character name"
-                  autoComplete="nickname"
-                  data-testid="boot-voyager-name"
-                />
-              </label>
-              <GameButton
-                variant="primary"
-                className="w-full"
-                onClick={() => setStage("look")}
+              <p className="text-xs font-semibold text-amber-100/90">
+                Tap a coin to jump straight into their 3D body — or customize the highlighted fighter.
+              </p>
+              <button
+                type="button"
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                onPointerUp={(e) => {
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  setStage("look");
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setStage("look");
+                }}
                 data-testid="boot-customize-look"
               >
-                Customize on the 3D mirror →
-              </GameButton>
-              <GameButton
-                variant="outline"
-                className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20"
+                Customize {mascot.name} on the 3D mirror →
+              </button>
+              <button
+                type="button"
                 disabled={busy}
+                className="w-full text-center text-xs font-bold uppercase tracking-wide text-white/55 underline-offset-2 hover:text-white/90 hover:underline disabled:opacity-40"
                 onClick={() => boardCarpet()}
                 data-testid="boot-board-carpet-now"
               >
-                {busy ? "Boarding…" : "Board the Money Carpet →"}
-              </GameButton>
+                {busy ? "Boarding…" : "Skip customize · Board carpet"}
+              </button>
             </div>
           ) : (
             <CharacterCreator
@@ -138,7 +157,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               preview="none"
               chrome="dark"
               saveLabel={busy ? "Boarding…" : "Board the Money Carpet →"}
-              cancelLabel="← 3D fighters"
+              cancelLabel="← Coin select"
               saveTestId="boot-board-carpet"
               onDraftChange={setDraft}
               onChangeFighter={() => setStage("select")}

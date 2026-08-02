@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { GameButton } from "@/game-ui";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { CharacterAvatar } from "./CharacterAvatar";
 import {
   type CapitalCharacter,
@@ -40,7 +39,7 @@ type Props = {
 
 type Chip = { id: string; label: string; sub: string; node: ReactNode };
 
-function ChipCarousel({
+function ChipGrid({
   chips,
   selectedId,
   dark,
@@ -53,105 +52,54 @@ function ChipCarousel({
   ariaLabel: string;
   onPick: (id: string) => void;
 }) {
-  const scroller = useRef<HTMLDivElement>(null);
-  const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(true);
-
-  const updateArrows = () => {
-    const el = scroller.current;
-    if (!el) return;
-    setCanLeft(el.scrollLeft > 4);
-    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-  };
-
-  useEffect(() => {
-    updateArrows();
-    const el = scroller.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateArrows, { passive: true });
-    const ro = new ResizeObserver(updateArrows);
-    ro.observe(el);
-    return () => {
-      el.removeEventListener("scroll", updateArrows);
-      ro.disconnect();
-    };
-  }, [chips]);
-
-  const scrollBy = (dir: -1 | 1) => {
-    const el = scroller.current;
-    if (!el) return;
-    el.scrollBy({ left: dir * Math.max(160, el.clientWidth * 0.65), behavior: "smooth" });
-  };
-
-  const arrowClass = dark
-    ? "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-white/40 bg-black/55 text-lg font-black text-white disabled:opacity-30"
-    : "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-lg font-black text-slate-800 disabled:opacity-30";
-
   return (
-    <div className="flex items-center gap-1.5" data-testid="outfit-chip-carousel">
-      <button
-        type="button"
-        className={arrowClass}
-        aria-label="Scroll options left"
-        disabled={!canLeft}
-        onClick={() => scrollBy(-1)}
-        data-testid="outfit-carousel-left"
-      >
-        ←
-      </button>
-      <div
-        ref={scroller}
-        className={
-          dark
-            ? "flex min-w-0 flex-1 gap-2 overflow-x-auto overscroll-contain scroll-smooth px-0.5 py-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            : "flex max-h-[28vh] min-w-0 flex-1 flex-wrap gap-2 overflow-y-auto overscroll-contain rounded-xl border border-black/10 bg-white/70 p-2"
-        }
-        role="listbox"
-        aria-label={ariaLabel}
-      >
-        {chips.map((chip) => {
-          const active = selectedId === chip.id;
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              role="option"
-              aria-selected={active}
-              aria-label={chip.label}
-              title={`${chip.label} — ${chip.sub}`}
-              onClick={() => onPick(chip.id)}
-              className={
-                dark
-                  ? `flex w-[5.1rem] shrink-0 flex-col items-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition ${
-                      active
-                        ? "scale-105 border-amber-300 bg-amber-200/90 text-[#1c1917]"
-                        : "border-white/20 bg-black/40 text-white hover:border-white/50"
-                    }`
-                  : `flex min-w-[4.5rem] flex-col items-center gap-1 rounded-2xl border-2 px-2 py-2 transition ${
-                      active
-                        ? "scale-105 border-indigo-500 bg-indigo-50"
-                        : "border-slate-200 bg-white hover:border-indigo-300"
-                    }`
-              }
-            >
-              {chip.node}
-              <span className="w-full px-0.5 text-center text-[10px] font-bold leading-tight">
-                {chip.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      <button
-        type="button"
-        className={arrowClass}
-        aria-label="Scroll options right"
-        disabled={!canRight}
-        onClick={() => scrollBy(1)}
-        data-testid="outfit-carousel-right"
-      >
-        →
-      </button>
+    <div
+      className={
+        dark
+          ? "grid max-h-[18vh] grid-cols-3 gap-2 overflow-y-auto overscroll-contain py-1 sm:grid-cols-4"
+          : "flex max-h-[28vh] flex-wrap justify-center gap-2 overflow-y-auto overscroll-contain rounded-xl border border-black/10 bg-white/70 p-2"
+      }
+      role="listbox"
+      aria-label={ariaLabel}
+      data-testid="outfit-chip-carousel"
+    >
+      {chips.map((chip) => {
+        const active = selectedId === chip.id;
+        return (
+          <button
+            key={chip.id}
+            type="button"
+            role="option"
+            aria-selected={active}
+            aria-label={chip.label}
+            title={`${chip.label} — ${chip.sub}`}
+            data-testid={`outfit-chip-${chip.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onPick(chip.id);
+            }}
+            className={
+              dark
+                ? `flex min-h-[4.5rem] flex-col items-center justify-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition ${
+                    active
+                      ? "scale-[1.02] border-amber-300 bg-amber-200/90 text-[#1c1917]"
+                      : "border-white/20 bg-black/45 text-white hover:border-white/55"
+                  }`
+                : `flex min-w-[4.5rem] flex-col items-center gap-1 rounded-2xl border-2 px-2 py-2 transition ${
+                    active
+                      ? "scale-105 border-indigo-500 bg-indigo-50"
+                      : "border-slate-200 bg-white hover:border-indigo-300"
+                  }`
+            }
+          >
+            {chip.node}
+            <span className="w-full px-0.5 text-center text-[10px] font-bold leading-tight">
+              {chip.label}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -186,13 +134,10 @@ export function CharacterCreator({
   }, [character?.base, character?.color, character?.accessory, character?.pants, character?.lookId]);
 
   const set = (patch: Partial<CapitalCharacter>) => {
-    setDraft((d) => {
-      const next = { ...d, ...patch };
-      onDraftChange?.(next);
-      return next;
-    });
+    setDraft((d) => ({ ...d, ...patch }));
   };
 
+  // Mirror outward in an effect — never call parent setters inside setState updaters.
   useEffect(() => {
     onDraftChange?.(draft);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mirror draft outward only
@@ -252,7 +197,11 @@ export function CharacterCreator({
   const catMeta = OUTFIT_CATEGORIES.find((c) => c.id === category)!;
 
   return (
-    <div className="flex min-h-0 flex-col gap-2" data-testid="character-creator-snap">
+    <div
+      className="relative z-10 flex min-h-0 flex-col gap-2"
+      data-testid="character-creator-snap"
+      onPointerDown={(e) => e.stopPropagation()}
+    >
       {preview === "emoji" ? (
         <div className="flex shrink-0 flex-col items-center gap-2 pt-1">
           <CharacterAvatar character={draft} size={96} animationStyle="capital-default" />
@@ -272,8 +221,12 @@ export function CharacterCreator({
           {onChangeFighter ? (
             <button
               type="button"
-              onClick={onChangeFighter}
-              className="mt-1 text-xs font-bold text-amber-200 underline-offset-2 hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onChangeFighter();
+              }}
+              className="mt-1 min-h-9 px-2 text-xs font-bold text-amber-200 underline underline-offset-2 hover:text-amber-100"
               data-testid="outfitter-change-fighter"
             >
               ← Change fighter
@@ -296,16 +249,21 @@ export function CharacterCreator({
           aria-label="Character name"
           autoComplete="nickname"
           enterKeyHint="done"
+          data-testid="character-creator-name"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              commit();
+              (e.target as HTMLInputElement).blur();
             }
           }}
         />
       </label>
 
-      <div className="flex shrink-0 justify-center gap-1 overflow-x-auto" role="tablist" aria-label="Outfit layers">
+      <div
+        className="flex shrink-0 flex-wrap justify-center gap-1.5"
+        role="tablist"
+        aria-label="Outfit layers"
+      >
         {OUTFIT_CATEGORIES.map((c) => {
           const active = category === c.id;
           return (
@@ -314,15 +272,20 @@ export function CharacterCreator({
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setCategory(c.id)}
+              data-testid={`outfit-tab-${c.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCategory(c.id);
+              }}
               className={
                 dark
-                  ? `shrink-0 rounded-full px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
+                  ? `min-h-10 shrink-0 rounded-xl px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
                       active
                         ? "bg-amber-300 text-[#1c1917] shadow-lg"
                         : "bg-white/15 text-white hover:bg-white/25"
                     }`
-                  : `shrink-0 rounded-full px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
+                  : `min-h-10 shrink-0 rounded-xl px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
                       active
                         ? "bg-indigo-600 text-white shadow"
                         : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -335,16 +298,21 @@ export function CharacterCreator({
         })}
       </div>
 
-      <ChipCarousel
+      <ChipGrid
         chips={chips}
         selectedId={selectedId}
         dark={dark}
         ariaLabel={catMeta.label}
         onPick={(id) => {
           if (category === "looks") {
-            const preset = lookPresetsForBase(draft.base).find((p) => p.id === id);
-            if (preset) set(applyLookPreset(draft, preset));
-          } else if (category === "coat") set({ color: id, lookId: "custom" });
+            setDraft((d) => {
+              const preset = lookPresetsForBase(d.base).find((p) => p.id === id);
+              if (!preset) return d;
+              return applyLookPreset(d, preset);
+            });
+            return;
+          }
+          if (category === "coat") set({ color: id, lookId: "custom" });
           else if (category === "pants") set({ pants: id, lookId: "custom" });
           else set({ accessory: id, lookId: "custom" });
         }}
@@ -371,30 +339,37 @@ export function CharacterCreator({
         </div>
       ) : null}
 
-      <div
-        className={
-          dark
-            ? "sticky bottom-0 z-10 flex gap-2 pt-2"
-            : "sticky bottom-0 z-10 -mx-1 flex gap-2 border-t border-black/10 bg-[color-mix(in_oklab,var(--cap-card,#fffdf6)_94%,transparent)] px-1 pb-1 pt-3"
-        }
-      >
+      <div className={dark ? "flex gap-2 pt-1" : "flex gap-2 border-t border-black/10 pt-3"}>
         {onCancel ? (
-          <GameButton
-            variant="outline"
-            className={dark ? "flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50" : "flex-1"}
-            onClick={onCancel}
+          <button
+            type="button"
+            className={
+              dark
+                ? "min-h-11 flex-1 rounded-2xl border-2 border-white/40 bg-black/45 px-3 text-sm font-bold text-white hover:bg-black/60"
+                : "min-h-11 flex-1 rounded-2xl border-2 border-slate-300 bg-white px-3 text-sm font-bold text-slate-800"
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onCancel();
+            }}
+            data-testid="character-creator-cancel"
           >
             {cancelLabel ?? (dark ? (onChangeFighter ? "← Fighters" : "Save look & leave") : "Leave")}
-          </GameButton>
+          </button>
         ) : null}
-        <GameButton
-          variant="primary"
-          className="flex-1"
-          onClick={commit}
+        <button
+          type="button"
+          className="min-h-11 flex-1 rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            commit();
+          }}
           data-testid={saveTestId}
         >
           {saveLabel}
-        </GameButton>
+        </button>
       </div>
     </div>
   );

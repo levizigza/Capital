@@ -270,9 +270,10 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
           </mesh>
           <group ref={spin} position={[0, 0.02, 0.15]}>
             <VoyagerMesh
-              key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.companion}`}
+              key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.lookId ?? "sheet"}-${character.companion}`}
               character={character}
-              pantColor={character.pants ? undefined : "#1e3a5f"}
+              coatColor={colorHex(character.color)}
+              pantColor={character.pants ? colorHex(character.pants) : "#1e3a5f"}
               pose="stand"
               scale={1.25}
             />
@@ -292,6 +293,8 @@ type Props = {
   mode?: OutfitterStudioMode;
   lineupIds?: readonly string[];
   onPickFighter?: (id: string) => void;
+  /** When "none", canvas never steals dock/UI taps (solo customize). */
+  pointerEvents?: "auto" | "none";
 };
 
 /**
@@ -304,6 +307,7 @@ export function OutfitterStudio3D({
   mode = "solo",
   lineupIds,
   onPickFighter,
+  pointerEvents = "auto",
 }: Props) {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -338,7 +342,9 @@ export function OutfitterStudio3D({
       className={className ?? "absolute inset-0"}
       data-testid="outfitter-studio-3d"
       data-mode={mode}
+      data-pointer={pointerEvents}
       aria-hidden={!ready}
+      style={{ pointerEvents }}
     >
       {!ready && !failed ? (
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#1c1917] text-sm font-bold text-amber-100/80">
@@ -356,6 +362,7 @@ export function OutfitterStudio3D({
             dpr={reduced || lineup ? [1, 1] : [1, 1.25]}
             camera={{ position: lineup ? [0, 3.4, 9.2] : [0, 2.1, 5.2], fov: lineup ? 38 : 42 }}
             className="absolute inset-0"
+            style={{ pointerEvents }}
             gl={{
               antialias: !reduced,
               alpha: false,
