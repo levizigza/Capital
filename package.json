@@ -18,6 +18,8 @@
         "test:e2e": "playwright test",
         "test:e2e:smoke": "playwright test e2e/islands-smoke.spec.ts",
         "test:qa": "vitest run src/qa",
+        "test:iconic": "node --experimental-strip-types scripts/test-iconic.mjs",
+        "test:iconic:e2e": "playwright test e2e/signature-loop.spec.ts e2e/harbor-tutorial.spec.ts",
         "content:validate": "node scripts/validate-content.mjs",
         "assets:xelu-prompts": "node scripts/sync-xelu-prompts.mjs",
         "assets:validate": "node scripts/validate-asset-registry.mjs",

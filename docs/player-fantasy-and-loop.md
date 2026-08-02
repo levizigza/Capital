@@ -100,6 +100,8 @@ Save, Esc, settings, reduced motion, text size already exist — **navigability 
 Playtest question: *Can a 5-year-old leave every screen and finish every form?*  
 If not, cut content before adding systems.
 
+**Shipped (Pillar 16 — testing):** After each pillar fix run `npm run test:iconic` (and `test:iconic:e2e` when Harbor/Cove/carpet change), one cold checklist pass with the six iteration questions, then update the craft-plan status board. Coverage map: `src/qa/iconicCraftCadence.ts`.
+
 ---
 
 ## Navigability law (non-negotiable)

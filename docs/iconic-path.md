@@ -44,6 +44,8 @@ This is **structure depth**, not map width — still no new outer islands.
 
 Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
+**Cadence (Pillar 16):** after each pillar fix → `npm run test:iconic` → (Harbor/Cove/carpet touch) `npm run test:iconic:e2e` → one cold run below → update [iconic-craft-plan.md](./iconic-craft-plan.md) status board. Machine map: `src/qa/iconicCraftCadence.ts`.
+
 | Step | Pass look / feel |
 |------|------------------|
 | Cove Take | Irreversible Take verb → dismiss Talk → **world cinema** (jar/shore visible, captions not a modal card) → soft HUD + “Carpet home — Harbor felt that” |
@@ -62,6 +64,19 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Day 2 | Soft Beat–style “Still here” cinema — no tutorial modal |
 | Soft Beat | Lid / Loft / Battlement / Teller — hush overlay, not a toast |
 | Trailer | Memory Plinth → Replay signature beat (~24s, mute-friendly) |
+| Mute-test stingers | Volume 0: Take mark + Harbor felt still *read* as beats (no silent empty flash) |
+| Esc · Leave overlays | Signature overlays dismiss with Esc and a sticky Leave — never trap |
+| Corrupt save never bricks | Poison `island_save_v1` still boots Harbor (sanitize → playable defaults) |
+| Reduced motion | Settings **or** OS reduce: softer cinema timings; Take/Plinth strobes damp (`cinemaFlashAmp`) |
+
+**After the loop — six questions (write answers in the PR / board):**
+
+1. Did the player misunderstand what to do?  
+2. Did anything feel unfair?  
+3. Did anything feel repetitive without a new beat?  
+4. Did the game ignore a clear ability the player already had?  
+5. Did the player get lost (place or goal)?  
+6. Did the moment feel fun, or only functional?
 
 **Harbor tutorial chrome:** early Castle Grounds hides Leave, Archipelago chip, and Outfitter avatar until those steps matter — Coin Bag + Piggy only.
 
@@ -73,7 +88,7 @@ await __QA__.seedSignatureLoop("day2_echo")
 __QA__.playSignatureTrailer()
 ```
 
-Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e2e/signature-loop.spec.ts`.
+Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cove smoke: `npm run test:iconic:e2e`.
 
 ## Freeze (do not ship yet)
 

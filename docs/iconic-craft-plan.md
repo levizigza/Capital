@@ -290,11 +290,14 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Cadence | |
 |---------|--|
-| Automated | `signatureLoop` unit + e2e; content validate |
-| Cold human | Fresh profile checklist in iconic-path |
+| Automated | `npm run test:iconic` (pillar contracts + `signatureLoop` + content validate); Harbor/Cove: `npm run test:iconic:e2e` |
+| Cold human | Fresh profile checklist in [iconic-path.md](./iconic-path.md) |
 | Questions | Misunderstand · unfair · repetitive · ignored ability · lost · fun vs functional |
+| Machine map | `src/qa/iconicCraftCadence.ts` — checklist rows ↔ guard files (rots → red) |
 
-| Pass work | After each pillar fix: one cold run + update this doc’s status table. |
+| Pass work | After each pillar fix: `test:iconic` → cold run + six questions → update this doc’s status table. |
+
+**Shipped (Pillar 16):** Durable cadence — `iconicCraftCadence` maps cold checklist + pillar 7–16 contracts to real tests; `npm run test:iconic` / `test:iconic:e2e` are the gate; iconic-path checklist adds mute / Esc / corrupt-save / reduce + six iteration questions.
 
 ---
 
@@ -331,7 +334,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; tiny_spend Capsule-only (no coach reading ahead). Next: boot cast-select Cancel parity on look stage |
 | 14 | Technical | playable → iconic | 2026-08-02 | Corrupt-save sanitize + Harbor failsafe constants wired (myth <3s). Next: kill-switch e2e for harbor3d sticky fail |
 | 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; juice bounce off under reduce. Next: high-contrast pass on share lower-third |
-| 16 | Testing | | | |
+| 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
 | 17 | Scope | | | |
 
 ---
@@ -342,9 +345,9 @@ When two pillars fight, **fantasy + signature loop win**.
 2. Cold evidence (play or QA seed) (10–20 min)  
 3. Write gap list in the status board  
 4. Ship the single highest-leverage fix **or** mark defer with reason  
-5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
+5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **15 — Accessibility** (`prefersReducedMotion` Settings OR OS; cinemaFlashAmp damps Take/Plinth strobes).  
+**Last shipped:** Pillar **16 — Testing and iteration** (`test:iconic` cadence + cold checklist machine map).  
 
-**Start next:** Pillar **16 — Testing and iteration** (cold run checklist + status table cadence).
+**Start next:** Pillar **17 — Scope and production** (reaffirm freeze; park a “later” list).
