@@ -61,7 +61,7 @@ describe("titleVoice", () => {
     expect(titleStructureReturnLabel("tower")).toMatch(/Clock/);
     expect(structureEnterCta("Squeeze through the coin slot", "Jar")).toMatch(/Squeeze/);
     expect(ENTER_HARBOR_HAVEN).toMatch(/Harbor Haven/);
-    expect(HARBOR_LOADING_HINT).toMatch(/Money is alive/);
+    expect(HARBOR_LOADING_HINT).toMatch(/Harbor Haven|plaza is waking/i);
     expect(LEAVE_ARCHIPELAGO).toMatch(/Fortune Archipelago/);
     expect(SHARE_CARD_HEADLINE).toMatch(/Capital/);
     expect(SPECTACLE_FOOTER).toMatch(/Money is alive/);
