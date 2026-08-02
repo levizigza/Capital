@@ -57,9 +57,10 @@ function FlightPov({
   const progress = useRef(0);
   const done = useRef(false);
   const { camera } = useThree();
-  const localEye = useMemo(() => new THREE.Vector3(0, 1.05, -0.55), []);
-  const localHorizon = useMemo(() => new THREE.Vector3(0, 1.35, 42), []);
-  const localCarpetHint = useMemo(() => new THREE.Vector3(0, 0.02, 3.4), []);
+  // Slightly lower eye + stronger carpet hint so the printed banknote rug reads underfoot.
+  const localEye = useMemo(() => new THREE.Vector3(0, 0.92, -0.48), []);
+  const localHorizon = useMemo(() => new THREE.Vector3(0, 1.2, 42), []);
+  const localCarpetHint = useMemo(() => new THREE.Vector3(0, 0.04, 2.6), []);
   const worldEye = useMemo(() => new THREE.Vector3(), []);
   const worldLook = useMemo(() => new THREE.Vector3(), []);
   const tmp = useMemo(() => new THREE.Vector3(), []);
@@ -91,7 +92,7 @@ function FlightPov({
       worldEye.copy(localEye).applyMatrix4(carpet.current.matrixWorld);
       worldLook.copy(localHorizon).applyMatrix4(carpet.current.matrixWorld);
       tmp.copy(localCarpetHint).applyMatrix4(carpet.current.matrixWorld);
-      worldLook.lerp(tmp, 0.1);
+      worldLook.lerp(tmp, 0.22);
       camera.position.copy(worldEye);
       camera.lookAt(worldLook);
       camera.fov = 68;
