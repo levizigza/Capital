@@ -108,7 +108,7 @@ Cold play is blocked if Harbor never becomes playable. Ship this before Wave-8 c
 2. **CSP allows audio** — `media-src 'self' data: blob:` so Howler / data beds are not blocked on Pages.  
 3. **E2E stays green** — skip SW under `navigator.webdriver` + kill-switch init so `controllerchange` reloads do not flake `__QA__.ready`.
 
-Only after a phone hard-refresh shows Board carpet → Harbor (3D or myth) within ~3s: cold-retell polish → title voice on thresholds → one Harbor icon → stop.
+Only after a phone hard-refresh shows title mural → cast select → Money Carpet → Harbor (3D or myth) within a few seconds: cold-retell polish → title voice on thresholds → one Harbor icon → stop.
 
 ## Cold retell (Wave 7) — iconic path capstone
 

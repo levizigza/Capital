@@ -15,7 +15,7 @@ import { getEraLook3D } from "./eraLooks";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { IslandTitle } from "./IslandTitle";
-import { BASE_VOYAGER } from "../character";
+import { BASE_VOYAGER, type CapitalCharacter } from "../character";
 import {
   hasSeenCapitalIntro,
   markCapitalIntroSeen,
@@ -28,6 +28,8 @@ export { hasSeenCapitalIntro, markCapitalIntroSeen, shouldPlayCapitalIntroOnBoot
 
 type Props = {
   onComplete: () => void;
+  /** Voyager chosen on cast select — rides the carpet into Harbor. */
+  character?: CapitalCharacter | null;
 };
 
 const LOOK = getEraLook3D("capital-default");
@@ -37,7 +39,7 @@ const RUSH_MULT = 3.2;
 
 /**
  * First-person money-carpet opening — you fly toward Harbor Haven (first island).
- * Plays after the Capital title mural.
+ * Plays after the title mural and Street Fighter cast select.
  *
  * Camera looks mostly at the island ahead; the flapping dollar bill stays a
  * clear strip underfoot / lower frame without covering the view.
@@ -45,9 +47,11 @@ const RUSH_MULT = 3.2;
 function FlightPov({
   onLanded,
   speedRef,
+  character,
 }: {
   onLanded: () => void;
   speedRef: MutableRefObject<number>;
+  character: CapitalCharacter;
 }) {
   const carpet = useRef<THREE.Group>(null);
   const progress = useRef(0);
@@ -102,7 +106,7 @@ function FlightPov({
 
   return (
     <group ref={carpet}>
-      <MoneyCarpet character={BASE_VOYAGER} flying hideRider={false} povRide showBuddy />
+      <MoneyCarpet character={character} flying hideRider={false} povRide showBuddy />
     </group>
   );
 }
@@ -110,9 +114,11 @@ function FlightPov({
 function OpeningWorld({
   onLanded,
   speedRef,
+  character,
 }: {
   onLanded: () => void;
   speedRef: MutableRefObject<number>;
+  character: CapitalCharacter;
 }) {
   return (
     <>
@@ -141,7 +147,7 @@ function OpeningWorld({
         detail="far"
       />
       <IslandTitle title="Harbor Haven" subtitle="Ordinary World" height={6.2} accent={LOOK.accent} />
-      <FlightPov onLanded={onLanded} speedRef={speedRef} />
+      <FlightPov onLanded={onLanded} speedRef={speedRef} character={character} />
     </>
   );
 }
@@ -149,7 +155,8 @@ function OpeningWorld({
 /**
  * Boot carpet ceremony — quieter chrome, iconic Harbor arrive.
  */
-export function CarpetOpeningIntro({ onComplete }: Props) {
+export function CarpetOpeningIntro({ onComplete, character }: Props) {
+  const rider = character ?? BASE_VOYAGER;
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -262,7 +269,7 @@ export function CarpetOpeningIntro({ onComplete }: Props) {
         }}
       >
         <Suspense fallback={null}>
-          <OpeningWorld onLanded={onLanded} speedRef={speedRef} />
+          <OpeningWorld onLanded={onLanded} speedRef={speedRef} character={rider} />
         </Suspense>
       </Canvas>
 

@@ -5,17 +5,21 @@ import {
   type CapitalCharacter,
   type OutfitCategoryId,
   DEFAULT_CHARACTER,
-  CHARACTER_BASES,
   CHARACTER_COLORS,
   CHARACTER_ACCESSORIES,
   CHARACTER_COMPANIONS,
   OUTFIT_CATEGORIES,
-  baseEmoji,
   colorHex,
   accessoryEmoji,
   companionEmoji,
 } from "../character";
 import { getMascot } from "../moneyCast";
+import {
+  GEAR_ACCESSORY_IDS,
+  TECH_ACCESSORY_IDS,
+  applyLookPreset,
+  lookPresetsForBase,
+} from "../castLooks";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -28,6 +32,8 @@ type Props = {
   preview?: "emoji" | "none";
   chrome?: "light" | "dark";
   onDraftChange?: (draft: CapitalCharacter) => void;
+  /** Show “Change fighter” to return to Street Fighter select. */
+  onChangeFighter?: () => void;
 };
 
 type Chip = { id: string; label: string; sub: string; node: ReactNode };
@@ -149,8 +155,8 @@ function ChipCarousel({
 }
 
 /**
- * Snapchat-style outfit bar — categories + carousel chips with arrows.
- * Live draft syncs to the 3D mannequin via onDraftChange.
+ * Snapchat-style outfit bar — Looks · Shirt · Pants · Accessories · Electronics.
+ * Fighter body is chosen on the Street Fighter select grid first.
  */
 export function CharacterCreator({
   character,
@@ -163,12 +169,17 @@ export function CharacterCreator({
   preview = "emoji",
   chrome,
   onDraftChange,
+  onChangeFighter,
 }: Props) {
   const [draft, setDraft] = useState<CapitalCharacter>(
     () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" },
   );
-  const [category, setCategory] = useState<OutfitCategoryId>("body");
+  const [category, setCategory] = useState<OutfitCategoryId>("looks");
   const dark = (chrome ?? (preview === "none" ? "dark" : "light")) === "dark";
+
+  useEffect(() => {
+    if (character) setDraft(character);
+  }, [character?.base, character?.color, character?.accessory, character?.pants, character?.lookId]);
 
   const set = (patch: Partial<CapitalCharacter>) => {
     setDraft((d) => {
@@ -178,34 +189,36 @@ export function CharacterCreator({
     });
   };
 
-  // Keep parent mannequin in sync if draft ever changes without set()
   useEffect(() => {
     onDraftChange?.(draft);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mirror draft outward only
-  }, [draft.base, draft.color, draft.accessory, draft.companion, draft.name]);
+  }, [draft.base, draft.color, draft.accessory, draft.pants, draft.lookId, draft.companion, draft.name]);
 
   const isShop = variant === "outfitter";
+  const mascot = getMascot(draft.base);
 
   const commit = () =>
-    onSave({ ...draft, name: draft.name.trim() || defaultName || "Adventurer" });
+    onSave({ ...draft, name: draft.name.trim() || defaultName || mascot.name || "Adventurer" });
 
   const chips = useMemo((): Chip[] => {
-    if (category === "body") {
-      return CHARACTER_BASES.map((o) => {
-        const m = getMascot(o.id);
-        return {
-          id: o.id,
-          label: o.label,
-          sub: m.tagline,
-          node: <span className="text-2xl leading-none">{baseEmoji(o.id)}</span>,
-        };
-      });
+    if (category === "looks") {
+      return lookPresetsForBase(draft.base).map((p) => ({
+        id: p.id,
+        label: p.label,
+        sub: "Signature look",
+        node: (
+          <span
+            className="h-8 w-8 rounded-full border-2 border-white shadow-inner"
+            style={{ background: colorHex(p.color) }}
+          />
+        ),
+      }));
     }
-    if (category === "coat") {
+    if (category === "coat" || category === "pants") {
       return CHARACTER_COLORS.map((o) => ({
         id: o.id,
         label: o.label,
-        sub: "Coat tint",
+        sub: category === "coat" ? "Shirt / coat" : "Pants",
         node: (
           <span
             className="h-8 w-8 rounded-full border-2 border-white shadow-inner"
@@ -214,16 +227,23 @@ export function CharacterCreator({
         ),
       }));
     }
-    return CHARACTER_ACCESSORIES.map((o) => ({
+    const ids = category === "tech" ? TECH_ACCESSORY_IDS : GEAR_ACCESSORY_IDS;
+    return CHARACTER_ACCESSORIES.filter((o) => (ids as readonly string[]).includes(o.id)).map((o) => ({
       id: o.id,
       label: o.label,
-      sub: o.id === "headset" ? "Headphones on your head" : o.id === "none" ? "No gear" : "Wearable gear",
+      sub: category === "tech" ? "Electronics" : "Wearable gear",
       node: <span className="text-2xl leading-none">{accessoryEmoji(o.id) || "·"}</span>,
     }));
-  }, [category]);
+  }, [category, draft.base]);
 
   const selectedId =
-    category === "body" ? draft.base : category === "coat" ? draft.color : draft.accessory;
+    category === "looks"
+      ? draft.lookId ?? "sheet"
+      : category === "coat"
+        ? draft.color
+        : category === "pants"
+          ? draft.pants ?? "ink"
+          : draft.accessory;
 
   const catMeta = OUTFIT_CATEGORIES.find((c) => c.id === category)!;
 
@@ -233,20 +253,28 @@ export function CharacterCreator({
         <div className="flex shrink-0 flex-col items-center gap-2 pt-1">
           <CharacterAvatar character={draft} size={96} animationStyle="capital-default" />
           <div className="text-center">
-            <div className="text-lg font-black">{isShop ? "Fitting mirror" : "Your money mascot"}</div>
+            <div className="text-lg font-black">{isShop ? mascot.name : "Your money mascot"}</div>
             <p className="text-xs text-muted-foreground">{catMeta.hint}</p>
           </div>
         </div>
       ) : (
         <div className="shrink-0 text-center">
+          <p className={`text-sm font-black drop-shadow ${dark ? "text-amber-100" : ""}`}>
+            {mascot.name}
+          </p>
           <p className={`text-xs font-semibold drop-shadow ${dark ? "text-amber-100/90" : "text-muted-foreground"}`}>
             {catMeta.hint}
-            {category === "gear" && draft.accessory !== "none" ? (
-              <span className="mt-0.5 block text-amber-200">
-                Wearing: {CHARACTER_ACCESSORIES.find((a) => a.id === draft.accessory)?.label}
-              </span>
-            ) : null}
           </p>
+          {onChangeFighter ? (
+            <button
+              type="button"
+              onClick={onChangeFighter}
+              className="mt-1 text-xs font-bold text-amber-200 underline-offset-2 hover:underline"
+              data-testid="outfitter-change-fighter"
+            >
+              ← Change fighter
+            </button>
+          ) : null}
         </div>
       )}
 
@@ -273,7 +301,7 @@ export function CharacterCreator({
         />
       </label>
 
-      <div className="flex shrink-0 justify-center gap-1.5" role="tablist" aria-label="Outfit layers">
+      <div className="flex shrink-0 justify-center gap-1 overflow-x-auto" role="tablist" aria-label="Outfit layers">
         {OUTFIT_CATEGORIES.map((c) => {
           const active = category === c.id;
           return (
@@ -285,12 +313,12 @@ export function CharacterCreator({
               onClick={() => setCategory(c.id)}
               className={
                 dark
-                  ? `rounded-full px-4 py-2 text-sm font-bold transition ${
+                  ? `shrink-0 rounded-full px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
                       active
                         ? "bg-amber-300 text-[#1c1917] shadow-lg"
                         : "bg-white/15 text-white hover:bg-white/25"
                     }`
-                  : `rounded-full px-4 py-2 text-sm font-bold transition ${
+                  : `shrink-0 rounded-full px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
                       active
                         ? "bg-indigo-600 text-white shadow"
                         : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -309,9 +337,12 @@ export function CharacterCreator({
         dark={dark}
         ariaLabel={catMeta.label}
         onPick={(id) => {
-          if (category === "body") set({ base: id });
-          else if (category === "coat") set({ color: id });
-          else set({ accessory: id });
+          if (category === "looks") {
+            const preset = lookPresetsForBase(draft.base).find((p) => p.id === id);
+            if (preset) set(applyLookPreset(draft, preset));
+          } else if (category === "coat") set({ color: id, lookId: "custom" });
+          else if (category === "pants") set({ pants: id, lookId: "custom" });
+          else set({ accessory: id, lookId: "custom" });
         }}
       />
 

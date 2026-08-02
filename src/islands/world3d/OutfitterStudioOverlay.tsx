@@ -3,11 +3,14 @@ import { GameButton } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
 import { CharacterCreator } from "../views/CharacterCreator";
+import { CastSelectGrid } from "../views/CastSelectGrid";
 import { OutfitterStudio3D } from "./OutfitterStudio3D";
 import { ownsCompanion, companionPrice, STARTER_COMPANION_ID } from "../harborShop";
+import { sheetLookForBase } from "../castLooks";
+import { getMascot } from "../moneyCast";
 import type { IslandSaveV1 } from "../types";
 
-type Stage = "look" | "pet";
+type Stage = "select" | "look" | "pet";
 
 type Props = {
   draft: CapitalCharacter;
@@ -93,9 +96,13 @@ export function OutfitterStudioOverlay({
           <div className="text-[10px] font-bold uppercase tracking-wide text-amber-200/90">
             Harbor Haven · 3D Outfitter
           </div>
-          <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">Become you</h2>
+          <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">
+            {stage === "select" ? "Choose your fighter" : "Become you"}
+          </h2>
           <p className="max-w-md text-xs text-white/80 sm:text-sm">
-            Body · Coat · Gear on the live mirror. Esc or Save & leave keeps your look on the plaza.
+            {stage === "select"
+              ? "Street Fighter pick — then customize Looks · Shirt · Pants · Accessories · Electronics."
+              : "Snapchat layers on the live mirror. Esc or Save & leave keeps your look on the plaza."}
           </p>
         </div>
         <button
@@ -110,7 +117,41 @@ export function OutfitterStudioOverlay({
 
       <div className="relative z-[2] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
         <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/50 p-3 shadow-2xl backdrop-blur-md sm:p-4">
-          {stage === "look" ? (
+          {stage === "select" ? (
+            <div className="flex min-h-0 flex-col gap-3 text-center text-white">
+              <div>
+                <div className="text-lg font-black">Cast select</div>
+                <p className="text-sm text-white/75">
+                  Pick a series lead or Harbor classic — then tailor their looks on the mirror.
+                </p>
+              </div>
+              <CastSelectGrid
+                selectedId={draft.base}
+                onPick={(id) => {
+                  setDraft((d) =>
+                    sheetLookForBase(id, d.name || defaultName || getMascot(id).name),
+                  );
+                }}
+              />
+              <div className="flex gap-2">
+                <GameButton
+                  variant="outline"
+                  className="flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50"
+                  onClick={commitAndLeave}
+                >
+                  Save & leave
+                </GameButton>
+                <GameButton
+                  variant="primary"
+                  className="flex-1"
+                  onClick={() => setStage("look")}
+                  data-testid="outfitter-confirm-fighter"
+                >
+                  Customize look →
+                </GameButton>
+              </div>
+            </div>
+          ) : stage === "look" ? (
             <CharacterCreator
               character={draft}
               defaultName={defaultName}
@@ -120,6 +161,7 @@ export function OutfitterStudioOverlay({
               saveLabel="Next: pick a pet →"
               onDraftChange={setDraft}
               onCancel={commitAndLeave}
+              onChangeFighter={() => setStage("select")}
               onSave={(c) => {
                 setDraft({ ...c, companion: draft.companion });
                 onSaveLook(c);

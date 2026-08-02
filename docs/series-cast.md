@@ -8,9 +8,17 @@ Iconic path freeze still holds: no map widening; Piggy + Coin Bag own the signat
 | Role | Who | Owns |
 |------|-----|------|
 | **Series leads** | Cashwell · Cashmere · Pedro · Fernanda · Bao · Jade · Sultan · Dahlia · Mansa · Kandake · Moneybagg · Mula (12) | Brand faces, Memory Courtyard presence, style of living money |
-| **Endgame villain** | **The Debt Collector** | Credit Kingdom Ordeal boss face — never Harbor terrace |
+| **Endgame villain** | **The Debt Collector** | Credit Kingdom Ordeal boss face — never Harbor terrace; title-mural easter egg only |
 | **Harbor Keeper** | Piggy Penny | First meet, quiet homecoming, Return verbs |
 | **Path buddy** | Coin Bag | Pointing, carpet seat, next-good-action |
+
+## Boot order
+
+1. **Title mural** — Harbor Haven painted across seven eras (Debt Collector = faint egg in the hills)  
+2. **Cast select** — Street Fighter pick of playable Voyagers + look presets (villain unplayable)  
+3. **Money Carpet** — chosen fighter rides into Harbor  
+
+Outfitter in Family Room / plaza reopens the same select → Looks · Shirt · Pants · Accessories · Electronics → pet flow.
 
 ## Cast pipeline (per character)
 

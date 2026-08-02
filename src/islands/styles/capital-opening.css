@@ -1,7 +1,7 @@
 /* =====================================================================
-   Capital opening — ONE mural of the same beach resort, painted six
-   times: once per generation of game graphics (1983 CGA → today). The
-   six puzzle pieces are windows onto the SAME continuous panorama, so
+   Capital opening — ONE mural of Harbor Haven, painted seven times:
+   once per generation of game graphics (1960s vector → New Gen). The
+   seven puzzle pieces are windows onto the SAME continuous panorama, so
    they interlock into a single picture while each renders that picture
    in its era's authentic art style. A real, clock-driven sun/moon arcs
    across the whole mural and is re-drawn in each era as it crosses.
@@ -307,6 +307,103 @@ html.capital-intro-active body {
 .m-dock { position: absolute; bottom: 20%; left: 80%; width: 14%; height: 4%; z-index: 3; }
 .m-boat { position: absolute; bottom: 12%; left: 87%; width: 8%; height: 8%; z-index: 3; }
 .m-boat-sail { position: absolute; bottom: 60%; left: 40%; width: 40%; height: 90%; }
+
+/* Harbor Haven cast mural — same panorama, richer plaza cast */
+.m-plinth {
+  position: absolute;
+  bottom: 30%;
+  left: 48%;
+  width: 6%;
+  height: 16%;
+  z-index: 4;
+  transform: translateX(-50%);
+}
+.m-plinth-stem {
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  width: 40%;
+  height: 70%;
+}
+.m-plinth-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 34%;
+}
+.m-cast {
+  position: absolute;
+  bottom: 31%;
+  left: 18%;
+  width: 54%;
+  height: 10%;
+  z-index: 5;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.m-cast-fig {
+  width: 6.5%;
+  height: 70%;
+  border-radius: 40% 40% 20% 20%;
+  flex-shrink: 0;
+}
+.m-piggy {
+  position: absolute;
+  bottom: 18%;
+  left: 49%;
+  width: 5%;
+  height: 8%;
+  z-index: 5;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.m-coinbag {
+  position: absolute;
+  bottom: 14%;
+  left: 78%;
+  width: 4.5%;
+  height: 7%;
+  z-index: 5;
+  border-radius: 40% 40% 30% 30%;
+}
+.m-debt-egg {
+  position: absolute;
+  bottom: 42%;
+  left: 4%;
+  width: 3.2%;
+  height: 7%;
+  z-index: 2;
+  opacity: 0.06;
+  clip-path: polygon(10% 100%, 10% 35%, 50% 0, 90% 35%, 90% 100%);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.mural--harbor:hover .m-debt-egg,
+.cap-opening-root[data-phase="night"] .m-debt-egg {
+  opacity: 0.42;
+}
+
+/* Default Harbor paints (color eras); vector / blank eras override below */
+.m-plinth-stem { background: #c4b08a; }
+.m-plinth-top { background: #f3e7c4; border-radius: 2px; box-shadow: 0 0 6px rgba(243, 231, 196, 0.35); }
+.m-piggy { background: #f4a4b8; box-shadow: inset 0 -2px 0 #d97890; }
+.m-coinbag { background: #e8c547; box-shadow: inset 0 -2px 0 #c9a62e; }
+.m-debt-egg { background: #1a1420; }
+.m-cast-fig--0 { background: #14532d; }
+.m-cast-fig--1 { background: #1c1917; }
+.m-cast-fig--2 { background: #15803d; }
+.m-cast-fig--3 { background: #047857; }
+.m-cast-fig--4 { background: #166534; }
+.m-cast-fig--5 { background: #0f766e; }
+.m-cast-fig--6 { background: #115e59; }
+.m-cast-fig--7 { background: #be123c; }
+.m-cast-fig--8 { background: #ca8a04; }
+.m-cast-fig--9 { background: #44403c; }
+.m-cast-fig--10 { background: #0f172a; }
+.m-cast-fig--11 { background: #1c1917; }
 
 .m-hud {
   position: absolute;
@@ -728,6 +825,86 @@ html.capital-intro-active body {
 }
 @keyframes cb-pulse { 0%,100% { border-color: #c9a94e; } 50% { border-color: #e6bf58; box-shadow: 0 0 0 3px rgba(230,191,88,0.18); } }
 @keyframes cb-doodle { 0%,100% { transform: rotate(24deg) translate(0,0); } 50% { transform: rotate(12deg) translate(-4px,4px); } }
+
+/* =====================================================================
+   Harbor plaza extras — era paints (plinth · cast · Piggy · Coin Bag · debt egg)
+   ===================================================================== */
+.mural--e1960s .m-plinth-stem,
+.mural--e1960s .m-plinth-top,
+.mural--e1960s .m-cast-fig,
+.mural--e1960s .m-piggy,
+.mural--e1960s .m-coinbag {
+  background: none !important;
+  border: 1px solid #fff;
+  box-shadow: none !important;
+  border-radius: 0;
+}
+.mural--e1960s .m-debt-egg {
+  background: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  opacity: 0.1;
+}
+
+.mural--e1970s .m-plinth-stem,
+.mural--e1970s .m-plinth-top,
+.mural--e1970s .m-cast-fig,
+.mural--e1970s .m-piggy,
+.mural--e1970s .m-coinbag {
+  background: none !important;
+  border: 1px solid #33ff66;
+  box-shadow: 0 0 6px #33ff6644 !important;
+  border-radius: 0;
+}
+.mural--e1970s .m-debt-egg {
+  background: none !important;
+  border: 1px solid #33ff6688;
+  opacity: 0.12;
+  box-shadow: 0 0 8px #33ff6622;
+}
+
+.mural--e1980s .m-plinth-stem { background: #a855f7; box-shadow: 0 0 8px #f0abfc88; }
+.mural--e1980s .m-plinth-top { background: #f0abfc; box-shadow: 0 0 10px #f0abfc; }
+.mural--e1980s .m-piggy { background: #f472b6; box-shadow: 0 0 10px #f472b688; }
+.mural--e1980s .m-coinbag { background: #facc15; box-shadow: 0 0 10px #facc1588; }
+.mural--e1980s .m-cast-fig { box-shadow: 0 0 6px currentColor; filter: saturate(1.35); }
+.mural--e1980s .m-debt-egg { background: #2e1065; box-shadow: 0 0 8px #c084fc44; }
+
+.mural--e1990s .m-plinth-stem { background: #78716c; border: 2px solid #1a1a2e; }
+.mural--e1990s .m-plinth-top { background: #fbbf24; border: 2px solid #1a1a2e; border-radius: 0; }
+.mural--e1990s .m-piggy { background: #fb7185; border: 2px solid #1a1a2e; border-radius: 0; }
+.mural--e1990s .m-coinbag { background: #f59e0b; border: 2px solid #1a1a2e; border-radius: 0; }
+.mural--e1990s .m-cast-fig { border: 2px solid #1a1a2e; border-radius: 0; }
+.mural--e1990s .m-debt-egg { background: #1a1a2e; border: 2px solid #444; }
+
+.mural--e2000s .m-plinth-stem { background: linear-gradient(180deg, #d6c4a0, #a89068); }
+.mural--e2000s .m-plinth-top { background: linear-gradient(180deg, #fff7d6, #e8c547); }
+.mural--e2000s .m-piggy { background: radial-gradient(circle at 35% 30%, #ffc0d0, #f4729b); }
+.mural--e2000s .m-coinbag { background: radial-gradient(circle at 40% 25%, #ffe08a, #d4a017); }
+.mural--e2000s .m-cast-fig { box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.mural--e2000s .m-debt-egg { background: linear-gradient(180deg, #3f3a48, #1a1420); }
+
+.mural--e2010s .m-plinth-stem { background: #78716c; }
+.mural--e2010s .m-plinth-top { background: #d6d3d1; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); }
+.mural--e2010s .m-piggy { background: #e7a0ae; filter: saturate(0.85); }
+.mural--e2010s .m-coinbag { background: #c4a035; filter: saturate(0.9); }
+.mural--e2010s .m-cast-fig { filter: saturate(0.8) contrast(1.05); }
+.mural--e2010s .m-debt-egg { background: #0c0a0f; opacity: 0.14; }
+
+.mural--blank .m-plinth-stem,
+.mural--blank .m-plinth-top,
+.mural--blank .m-cast-fig,
+.mural--blank .m-piggy,
+.mural--blank .m-coinbag {
+  background: none !important;
+  border: 2px dashed #c3b184;
+  box-shadow: none !important;
+  border-radius: 2px;
+}
+.mural--blank .m-debt-egg {
+  background: none !important;
+  border: 2px dashed #a89878;
+  opacity: 0.2;
+}
 
 /* shared celestial animations */
 @keyframes cel-pulse { 0%,100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.12); opacity: 1; } }
