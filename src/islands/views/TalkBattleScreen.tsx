@@ -1,6 +1,7 @@
 /**
- * Talk Battle — Pokémon-style conversation stage.
+ * Talk Battle — conversation stage among living money.
  * Full-screen: just you and them until the turn-based convo ends (or you Skip).
+ * Fantasy law: Voyager among Money Mascots — never combat HP bars or a sterile void.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -12,6 +13,17 @@ import type { DialogueChoice, DialogueNode } from "../types";
 import type { LearningProfileId } from "../learningProfile";
 import { resolveProfileText } from "../learningProfile";
 import { nextTalkPhase } from "./talkBattleRules";
+import {
+  CAPITAL_BRAND,
+  MONEY_IS_ALIVE_HERE,
+  spineShortName,
+} from "../titleVoice";
+import {
+  COVE_ISLAND_ID,
+  CREDIT_KINGDOM_ID,
+  HARBOR_HAVEN_ID,
+  PAYCHECK_PENINSULA_ID,
+} from "../islandIds";
 
 export type TalkBattleProps = {
   open: boolean;
@@ -21,12 +33,33 @@ export type TalkBattleProps = {
   player: CapitalCharacter;
   node: DialogueNode;
   learningProfile: LearningProfileId;
+  /** Island underfoot — paints Memory courtyard vs organ shores */
+  placeId?: string | null;
   onChoice: (choiceId: string) => void;
   onContinue: () => void;
   onSkip: () => void;
 };
 
 type Phase = "listen" | "choose";
+
+function stageSky(placeId?: string | null): string {
+  const place = placeId ?? HARBOR_HAVEN_ID;
+  if (place === HARBOR_HAVEN_ID) {
+    // Memory Courtyard — warm harbor day, not a dark duel void
+    return "radial-gradient(ellipse 90% 70% at 50% 18%, #7dd3fc 0%, #38bdf8 38%, #0ea5e9 72%, #0c4a6e 100%)";
+  }
+  if (place === PAYCHECK_PENINSULA_ID) {
+    return "radial-gradient(ellipse 90% 70% at 50% 20%, #bae6fd 0%, #38bdf8 45%, #0369a1 100%)";
+  }
+  if (place === CREDIT_KINGDOM_ID) {
+    return "radial-gradient(ellipse 90% 70% at 50% 20%, #ddd6fe 0%, #a78bfa 42%, #5b21b6 100%)";
+  }
+  if (place === COVE_ISLAND_ID) {
+    return "radial-gradient(ellipse 90% 70% at 50% 20%, #fde68a 0%, #fbbf24 40%, #b45309 100%)";
+  }
+  // Fallback — Memory courtyard
+  return "radial-gradient(ellipse 90% 70% at 50% 18%, #7dd3fc 0%, #38bdf8 38%, #0ea5e9 72%, #0c4a6e 100%)";
+}
 
 /**
  * Turn-based talk:
@@ -42,6 +75,7 @@ export function TalkBattleScreen({
   player,
   node,
   learningProfile,
+  placeId = HARBOR_HAVEN_ID,
   onChoice,
   onContinue,
   onSkip,
@@ -49,6 +83,8 @@ export function TalkBattleScreen({
   const [phase, setPhase] = useState<Phase>("listen");
   const choices = node.choices ?? [];
   const body = resolveProfileText(node.text, learningProfile);
+  const place = spineShortName(placeId);
+  const harbor = !placeId || placeId === HARBOR_HAVEN_ID;
 
   // Reset to listen whenever the dialogue node changes
   useEffect(() => {
@@ -84,31 +120,51 @@ export function TalkBattleScreen({
     <div
       className="fixed inset-0 z-[60] flex flex-col"
       data-testid="talk-battle-screen"
+      data-place={placeId ?? HARBOR_HAVEN_ID}
       role="dialog"
       aria-modal="true"
       aria-label={`Talk with ${npcName}`}
     >
-      {/* Stage backdrop — ocean ledger duel arena */}
+      {/* Living-money stage — place sky + soft plaza silhouette */}
       <div
         className="absolute inset-0"
+        style={{ background: stageSky(placeId) }}
+        aria-hidden
+      />
+      {/* Soft island / courtyard underfoot so talk never reads as a blank app void */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[42%]"
+        aria-hidden
         style={{
-          background:
-            "radial-gradient(ellipse at 50% 20%, #1d4f6e 0%, #0b2a3c 45%, #071820 100%)",
+          background: harbor
+            ? "radial-gradient(ellipse 120% 80% at 50% 100%, #86efac 0%, #4ade80 35%, #16a34a 70%, transparent 100%)"
+            : "radial-gradient(ellipse 120% 70% at 50% 100%, rgba(255,255,255,0.35) 0%, rgba(15,23,42,0.15) 55%, transparent 100%)",
         }}
       />
       <div
-        className="pointer-events-none absolute inset-0 opacity-30"
+        className="pointer-events-none absolute bottom-[14%] left-1/2 h-[18%] w-[118%] -translate-x-1/2 rounded-[100%]"
+        aria-hidden
         style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, transparent, transparent 11px, rgba(255,255,255,0.04) 12px)",
+          background: harbor ? "rgba(148,163,184,0.55)" : "rgba(255,255,255,0.22)",
         }}
       />
+      {/* Gentle sun / lamp — Memory glow without combat arena rings */}
+      <div
+        className="pointer-events-none absolute left-[18%] top-[12%] h-24 w-24 rounded-full opacity-40 blur-2xl"
+        aria-hidden
+        style={{ background: harbor ? "#fde68a" : "#fff7ed" }}
+      />
 
-      {/* Skip */}
+      {/* Brand + place — title voice, not RPG duel chrome */}
       <div className="relative z-10 flex items-start justify-between px-4 pt-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-100/70">
-          Talk Battle
-        </p>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/80 drop-shadow">
+            {CAPITAL_BRAND} · {place}
+          </p>
+          <p className="mt-0.5 text-[11px] font-semibold text-white/70 drop-shadow">
+            {MONEY_IS_ALIVE_HERE}
+          </p>
+        </div>
         <GameButton
           variant="ghost"
           size="sm"
@@ -120,7 +176,7 @@ export function TalkBattleScreen({
         </GameButton>
       </div>
 
-      {/* Arena: NPC top-right, player bottom-left */}
+      {/* Arena: NPC top-right, player bottom-left — faces only, no fake HP */}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between px-4 pb-2 pt-2 sm:px-8">
         <div className="flex items-start justify-end gap-3">
           <div className="max-w-[14rem] text-right">
@@ -129,13 +185,10 @@ export function TalkBattleScreen({
               {npcTagline ? (
                 <div className="text-[11px] font-medium text-[#4b5c6e]">{npcTagline}</div>
               ) : null}
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#dbe4ea]">
-                <div className="h-full w-[88%] rounded-full bg-[#2dd4bf]" />
-              </div>
             </div>
           </div>
           <div
-            className="flex h-28 w-28 items-center justify-center rounded-full bg-[#0ea5e9]/25 text-6xl shadow-[0_0_40px_rgba(14,165,233,0.35)] ring-4 ring-white/25 sm:h-36 sm:w-36 sm:text-7xl"
+            className="flex h-28 w-28 items-center justify-center rounded-full bg-white/25 text-6xl shadow-[0_8px_32px_rgba(15,23,42,0.25)] ring-4 ring-white/40 sm:h-36 sm:w-36 sm:text-7xl"
             aria-hidden
           >
             {npcIcon}
@@ -144,17 +197,14 @@ export function TalkBattleScreen({
 
         <div className="flex items-end justify-start gap-3">
           <div className="relative">
-            <div className="rounded-full bg-[#f4a629]/25 p-2 ring-4 ring-white/20 shadow-[0_0_36px_rgba(244,166,41,0.3)]">
+            <div className="rounded-full bg-white/30 p-2 ring-4 ring-white/35 shadow-[0_8px_28px_rgba(15,23,42,0.2)]">
               <CharacterAvatar character={player} size={112} />
             </div>
           </div>
           <div className="max-w-[14rem]">
-            <div className="rounded-2xl bg-[#e8f6ff]/95 px-3 py-2 shadow-lg ring-1 ring-black/10">
+            <div className="rounded-2xl bg-[#fffdf6]/95 px-3 py-2 shadow-lg ring-1 ring-black/10">
               <div className="text-sm font-black text-[#16283b]">{player.name || "Voyager"}</div>
-              <div className="text-[11px] font-medium text-[#4b5c6e]">Ready to listen</div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#dbe4ea]">
-                <div className="h-full w-full rounded-full bg-[#f4a629]" />
-              </div>
+              <div className="text-[11px] font-medium text-[#4b5c6e]">Listening among living money</div>
             </div>
           </div>
         </div>
@@ -162,12 +212,12 @@ export function TalkBattleScreen({
 
       {/* Dialogue box */}
       <div className="relative z-10 mx-auto w-full max-w-3xl px-3 pb-4 sm:px-6">
-        <div className="overflow-hidden rounded-2xl border-2 border-[#0f766e] bg-[#f8fafc] shadow-2xl">
-          <div className="flex items-center justify-between border-b border-[#cce3e0] bg-[#ecfdf5] px-4 py-2">
-            <span className="text-xs font-black uppercase tracking-wide text-[#0f766e]">
+        <div className="overflow-hidden rounded-2xl border-2 border-[#1c1917]/80 bg-[#fffdf6] shadow-[4px_4px_0_rgba(28,25,23,0.35)]">
+          <div className="flex items-center justify-between border-b border-[#e7e5e4] bg-[#fef3c7]/70 px-4 py-2">
+            <span className="text-xs font-black uppercase tracking-wide text-[#78350f]">
               {phase === "listen" ? node.speaker || npcName : "Your turn"}
             </span>
-            <span className="text-[10px] font-semibold text-[#5b7a78]">
+            <span className="text-[10px] font-semibold text-[#92400e]/80">
               {phase === "listen" ? "Listening…" : "Choose a reply"}
             </span>
           </div>
@@ -203,7 +253,7 @@ export function TalkBattleScreen({
             </div>
           )}
         </div>
-        <p className="mt-2 text-center text-[10px] font-semibold text-white/55">
+        <p className="mt-2 text-center text-[10px] font-semibold text-white/80 drop-shadow">
           Enter continue · Esc skip
         </p>
       </div>
