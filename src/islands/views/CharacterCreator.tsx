@@ -316,7 +316,15 @@ export function CharacterCreator({
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => setCategory(c.id)}
+              data-testid={`outfit-tab-${c.id}`}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCategory(c.id);
+              }}
               className={
                 dark
                   ? `shrink-0 rounded-full px-3 py-2 text-xs font-bold transition sm:px-4 sm:text-sm ${
@@ -344,9 +352,16 @@ export function CharacterCreator({
         ariaLabel={catMeta.label}
         onPick={(id) => {
           if (category === "looks") {
-            const preset = lookPresetsForBase(draft.base).find((p) => p.id === id);
-            if (preset) set(applyLookPreset(draft, preset));
-          } else if (category === "coat") set({ color: id, lookId: "custom" });
+            setDraft((d) => {
+              const preset = lookPresetsForBase(d.base).find((p) => p.id === id);
+              if (!preset) return d;
+              const next = applyLookPreset(d, preset);
+              onDraftChange?.(next);
+              return next;
+            });
+            return;
+          }
+          if (category === "coat") set({ color: id, lookId: "custom" });
           else if (category === "pants") set({ pants: id, lookId: "custom" });
           else set({ accessory: id, lookId: "custom" });
         }}

@@ -61,21 +61,27 @@ function CoinCell({
   const spacingY = 1.55;
   const x = (col - (cols - 1) / 2) * spacingX;
   const y = ((rows - 1) / 2 - row) * spacingY;
+  const r = selected ? 0.52 : 0.44;
   return (
-    <group
-      position={[x, y, 0]}
-      onClick={(e) => {
-        e.stopPropagation();
-        onPick(id);
-      }}
-      onPointerOver={() => {
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={() => {
-        document.body.style.cursor = "auto";
-      }}
-    >
-      <SeriesCoinFace id={id} radius={selected ? 0.52 : 0.44} spin selected={selected} />
+    <group position={[x, y, 0]}>
+      {/* Stable hit target — spinning mesh alone is edge-on half the time and misses clicks */}
+      <mesh
+        position={[0, 0, 0.35]}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPick(id);
+        }}
+        onPointerOver={() => {
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = "auto";
+        }}
+      >
+        <circleGeometry args={[r * 1.15, 28]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <SeriesCoinFace id={id} radius={r} spin selected={selected} />
     </group>
   );
 }
@@ -155,7 +161,7 @@ export function StreetFighterCoinSelect({
 
   return (
     <div
-      className={className ?? "absolute inset-0"}
+      className={`${className ?? "absolute inset-0"} z-0`}
       data-testid="sf-coin-select"
       data-selected={selectedId}
     >

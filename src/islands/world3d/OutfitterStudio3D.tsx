@@ -272,7 +272,8 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
             <VoyagerMesh
               key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.lookId ?? "sheet"}-${character.companion}`}
               character={character}
-              pantColor={character.pants ? undefined : "#1e3a5f"}
+              coatColor={colorHex(character.color)}
+              pantColor={character.pants ? colorHex(character.pants) : "#1e3a5f"}
               pose="stand"
               scale={1.25}
             />

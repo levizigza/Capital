@@ -105,8 +105,8 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         </div>
       </header>
 
-      <div className="pointer-events-auto relative z-[20] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
-        <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/55 p-3 shadow-2xl backdrop-blur-md sm:p-4">
+      <div className="pointer-events-auto relative z-50 mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/80 p-3 shadow-2xl backdrop-blur-md sm:p-4">
           {stage === "select" ? (
             <div className="flex flex-col gap-2 text-center text-white">
               <div>
@@ -119,20 +119,30 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               <GameButton
                 variant="primary"
                 className="w-full"
-                onClick={() => setStage("look")}
+                type="button"
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setStage("look");
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setStage("look");
+                }}
                 data-testid="boot-customize-look"
               >
                 Customize {mascot.name} on the 3D mirror →
               </GameButton>
-              <GameButton
-                variant="outline"
-                className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20"
+              <button
+                type="button"
                 disabled={busy}
+                className="w-full text-center text-xs font-bold uppercase tracking-wide text-white/55 underline-offset-2 hover:text-white/90 hover:underline disabled:opacity-40"
                 onClick={() => boardCarpet()}
                 data-testid="boot-board-carpet-now"
               >
-                {busy ? "Boarding…" : "Board the Money Carpet →"}
-              </GameButton>
+                {busy ? "Boarding…" : "Skip customize · Board carpet"}
+              </button>
             </div>
           ) : (
             <CharacterCreator
