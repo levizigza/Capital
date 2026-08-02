@@ -155,12 +155,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                                 afternoon: "Moneybagg: Cash flow 24/7. Memory Courtyard never forgets a Take.",
                                 evening: "Moneybagg: Hustle everyday. Tip yourself first — then build the empire.",
                               }
-                            : {
-                                morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                                midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                                afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                                evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                              };
+                            : slot.mascotId === "mula_mami"
+                              ? {
+                                  morning: "Mula Mami: Boss babe energy — the Plinth keeps yesterday’s shine.",
+                                  midday: "Mula: Cash confidence. Piggy keeps the Harbor verbs.",
+                                  afternoon: "Mula: Stacks in hand, plans in motion. Memory Courtyard never forgets a Take.",
+                                  evening: "Mula: Hustle and heels. Tip yourself first — then dress for impact.",
+                                }
+                              : {
+                                  morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                                  midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                                  afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                                  evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                                };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,

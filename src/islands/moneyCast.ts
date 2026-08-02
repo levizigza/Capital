@@ -23,6 +23,7 @@ export type MoneyMascotId =
   | "mansa_moneybaggs"
   | "kandake_kash"
   | "moneybagg_bro"
+  | "mula_mami"
   | "dollar_dash"
   | "euro_ella"
   | "pound_pal"
@@ -70,6 +71,7 @@ export const SERIES_LEAD_MASCOT_IDS: readonly MoneyMascotId[] = [
   "mansa_moneybaggs",
   "kandake_kash",
   "moneybagg_bro",
+  "mula_mami",
 ] as const;
 
 export function isSeriesLeadMascot(id: string | null | undefined): boolean {
@@ -216,6 +218,17 @@ export const MONEY_CAST: MoneyMascot[] = [
     form: "coin",
     glyph: "MB",
     color: "moneybagg",
+    accessory: "vest",
+    role: "cash",
+  },
+  {
+    id: "mula_mami",
+    name: "Mula Mami",
+    emoji: "👠",
+    tagline: "Bold. Bossed up. Bankrolled.",
+    form: "coin",
+    glyph: "MM",
+    color: "mula",
     accessory: "vest",
     role: "cash",
   },
@@ -634,6 +647,7 @@ export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number,
   { mascotId: "mansa_moneybaggs", pos: [10.6, 0, 2.0], yaw: -2.1 },
   { mascotId: "kandake_kash", pos: [11.2, 0, -1.0], yaw: -2.2 },
   { mascotId: "moneybagg_bro", pos: [11.8, 0, 1.4], yaw: -2.3 },
+  { mascotId: "mula_mami", pos: [12.4, 0, -0.2], yaw: -2.4 },
   { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },

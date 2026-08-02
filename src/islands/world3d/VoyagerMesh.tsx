@@ -289,6 +289,7 @@ export function VoyagerMesh({
   const isMansaMoneybaggs = character?.base === "mansa_moneybaggs";
   const isKandakeKash = character?.base === "kandake_kash";
   const isMoneybaggBro = character?.base === "moneybagg_bro";
+  const isMulaMami = character?.base === "mula_mami";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -300,7 +301,8 @@ export function VoyagerMesh({
     isDinarDahlia ||
     isMansaMoneybaggs ||
     isKandakeKash ||
-    isMoneybaggBro;
+    isMoneybaggBro ||
+    isMulaMami;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -486,6 +488,86 @@ export function VoyagerMesh({
                 >
                   P
                 </SafeText>
+              </>
+            ) : null}
+            {/* Mula Mami — green lashes, high bun headscarf, $ hoops */}
+            {isMulaMami ? (
+              <>
+                <mesh position={[-0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.45} />
+                </mesh>
+                <mesh position={[0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#14532d" emissive="#22c55e" emissiveIntensity={0.45} />
+                </mesh>
+                {/* Lashes */}
+                <mesh position={[-0.14, 0.16, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.09, 0.015, 0.01]} />
+                </mesh>
+                <mesh position={[0.14, 0.16, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.09, 0.015, 0.01]} />
+                </mesh>
+                <mesh position={[-0.18, 0.14, 0.12]} rotation={[0, 0, 0.5]} material={materials.dark}>
+                  <boxGeometry args={[0.04, 0.01, 0.01]} />
+                </mesh>
+                <mesh position={[0.18, 0.14, 0.12]} rotation={[0, 0, -0.5]} material={materials.dark}>
+                  <boxGeometry args={[0.04, 0.01, 0.01]} />
+                </mesh>
+                <mesh position={[0, -0.08, 0.11]}>
+                  <boxGeometry args={[0.1, 0.025, 0.01]} />
+                  <meshStandardMaterial color="#9f1239" roughness={0.45} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.28, 0.12]}
+                  fontSize={0.12}
+                  color="#14532d"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.012}
+                  outlineColor="#fde68a"
+                >
+                  MM
+                </SafeText>
+                {/* High bun + black headscarf */}
+                <mesh castShadow position={[0, 0.48, -0.02]}>
+                  <sphereGeometry args={[0.18, 12, 10]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+                </mesh>
+                <mesh castShadow position={[0, 0.35, -0.05]}>
+                  <sphereGeometry args={[0.26, 14, 12]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.55} />
+                </mesh>
+                {/* $ accents on scarf */}
+                {[-0.12, 0.12].map((x, i) => (
+                  <SafeText
+                    key={i}
+                    position={[x, 0.42, 0.18]}
+                    fontSize={0.07}
+                    color="#fde68a"
+                    anchorX="center"
+                    anchorY="middle"
+                  >
+                    $
+                  </SafeText>
+                ))}
+                {/* Massive $ hoop earrings */}
+                {([-1, 1] as const).map((side) => (
+                  <group key={side} position={[side * 0.48, 0.05, 0.05]}>
+                    <mesh castShadow material={materials.gold}>
+                      <torusGeometry args={[0.1, 0.02, 8, 18]} />
+                    </mesh>
+                    <SafeText
+                      position={[0, 0, 0.03]}
+                      fontSize={0.08}
+                      color="#14532d"
+                      anchorX="center"
+                      anchorY="middle"
+                    >
+                      $
+                    </SafeText>
+                  </group>
+                ))}
               </>
             ) : null}
             {/* Moneybagg Bro — green eyes, wide grin, durag, mini $ crown */}
@@ -1141,7 +1223,9 @@ export function VoyagerMesh({
                                   ? "kandake_kash"
                                   : isMoneybaggBro
                                     ? "moneybagg_bro"
-                                    : null
+                                    : isMulaMami
+                                      ? "mula_mami"
+                                      : null
             }
           />
         ) : null}
@@ -1191,6 +1275,13 @@ export function VoyagerMesh({
             <MoneybaggDollarCane materials={materials} />
             <MoneybaggCashPhone materials={materials} />
             <MoneybaggChain materials={materials} />
+          </>
+        ) : null}
+        {isMulaMami ? (
+          <>
+            <MulaCashFan materials={materials} />
+            <MulaQuiltedBag materials={materials} />
+            <MulaChainBelt materials={materials} />
           </>
         ) : null}
 
@@ -1837,6 +1928,88 @@ function MoneybaggChain({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Mula’s fanned cash — queen of the bag. */
+function MulaCashFan({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.48, 0.95, 0.12]} rotation={[0.2, -0.4, 0.3]}>
+      {[-2, -1, 0, 1, 2].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[i * 0.02, Math.abs(i) * 0.01, i * 0.015]}
+          rotation={[0, 0, i * 0.18]}
+        >
+          <boxGeometry args={[0.12, 0.06, 0.008]} />
+          <meshStandardMaterial color="#166534" roughness={0.55} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, -0.02, 0]} material={materials.gold}>
+        <boxGeometry args={[0.04, 0.02, 0.04]} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Quilted $ handbag — street glamour. */
+function MulaQuiltedBag({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.48, 0.55, 0.12]} rotation={[0.1, 0.35, -0.1]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.2, 0.16, 0.1]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.4} />
+      </mesh>
+      {/* Quilt diamond hints */}
+      {[0, 1].map((row) =>
+        [0, 1].map((col) => (
+          <mesh
+            key={`${row}-${col}`}
+            position={[(col - 0.5) * 0.07, (row - 0.5) * 0.06, 0.052]}
+            rotation={[0, 0, Math.PI / 4]}
+          >
+            <boxGeometry args={[0.05, 0.05, 0.01]} />
+            <meshStandardMaterial color="#1c1917" roughness={0.45} />
+          </mesh>
+        )),
+      )}
+      <mesh castShadow position={[0, 0.12, 0]} material={materials.gold}>
+        <torusGeometry args={[0.08, 0.012, 6, 14, Math.PI]} />
+      </mesh>
+      <mesh castShadow position={[0, 0, 0.06]} material={materials.gold}>
+        <cylinderGeometry args={[0.06, 0.06, 0.03, 14]} />
+      </mesh>
+      <SafeText
+        position={[0, 0, 0.08]}
+        fontSize={0.09}
+        color="#14532d"
+        anchorX="center"
+        anchorY="middle"
+      >
+        $
+      </SafeText>
+      <mesh castShadow position={[0.08, -0.1, 0.04]} material={materials.gold}>
+        <capsuleGeometry args={[0.015, 0.1, 3, 5]} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Gold chain hip belt — hustle & heels. */
+function MulaChainBelt({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0, 0.55, 0.15]}>
+      <mesh castShadow rotation={[0.1, 0, 0]} material={materials.gold}>
+        <torusGeometry args={[0.28, 0.02, 6, 18]} />
+      </mesh>
+      <mesh castShadow position={[0.2, -0.12, 0.05]} material={materials.gold}>
+        <sphereGeometry args={[0.04, 8, 6]} />
+      </mesh>
+      <mesh castShadow position={[-0.18, -0.15, 0.04]} material={materials.gold}>
+        <sphereGeometry args={[0.035, 8, 6]} />
+      </mesh>
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -1860,6 +2033,7 @@ function GearAttach({
     | "mansa_moneybaggs"
     | "kandake_kash"
     | "moneybagg_bro"
+    | "mula_mami"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -2260,6 +2434,7 @@ function GearAttach({
   if (accessory === "vest") {
     const bao = seriesLead === "billionaire_bao";
     const moneybagg = seriesLead === "moneybagg_bro";
+    const mula = seriesLead === "mula_mami";
     return (
       <group position={[0, L.torsoY, L.neckZ * 0.25]}>
         {bao ? (
@@ -2274,11 +2449,17 @@ function GearAttach({
             <meshStandardMaterial color="#171717" roughness={0.45} metalness={0.2} />
           </mesh>
         ) : null}
+        {mula ? (
+          <mesh castShadow position={[0, 0.08, -0.02]}>
+            <boxGeometry args={[L.torsoW * 1.15, L.torsoH * 0.75, L.torsoD * 0.9]} />
+            <meshStandardMaterial color="#1c1917" roughness={0.4} metalness={0.25} />
+          </mesh>
+        ) : null}
         <mesh castShadow material={materials.dark}>
-          <boxGeometry args={[L.torsoW * 0.95, L.torsoH * 0.85, L.torsoD * 0.75]} />
+          <boxGeometry args={[L.torsoW * 0.95, L.torsoH * (mula ? 0.7 : 0.85), L.torsoD * 0.75]} />
         </mesh>
         <mesh position={[0, L.torsoH * 0.12, L.torsoD * 0.38]} material={materials.gold}>
-          <boxGeometry args={[0.06, L.torsoH * 0.55, 0.02]} />
+          <boxGeometry args={[0.06, L.torsoH * (mula ? 0.4 : 0.55), 0.02]} />
         </mesh>
         {/* Frog closures / lapel seals */}
         {[0.18, 0.02, -0.14].map((y, i) => (
@@ -2324,6 +2505,27 @@ function GearAttach({
               anchorY="middle"
             >
               MB
+            </SafeText>
+          </>
+        ) : null}
+        {mula ? (
+          <>
+            {/* Gold patterned sleeves flash */}
+            <mesh castShadow position={[-L.torsoW * 0.55, L.torsoH * 0.1, 0]} material={materials.gold}>
+              <boxGeometry args={[0.12, L.torsoH * 0.55, 0.1]} />
+            </mesh>
+            <mesh castShadow position={[L.torsoW * 0.55, L.torsoH * 0.1, 0]} material={materials.gold}>
+              <boxGeometry args={[0.12, L.torsoH * 0.55, 0.1]} />
+            </mesh>
+            {/* Chest $ mark */}
+            <SafeText
+              position={[0, L.torsoH * 0.05, L.torsoD * 0.42]}
+              fontSize={0.14}
+              color="#fde68a"
+              anchorX="center"
+              anchorY="middle"
+            >
+              $
             </SafeText>
           </>
         ) : null}

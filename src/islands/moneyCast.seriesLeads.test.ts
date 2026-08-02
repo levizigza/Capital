@@ -11,8 +11,8 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell through Moneybagg Bro", () => {
-  it("registers eleven leads with locked sheet looks", () => {
+describe("series leads — Cashwell through Mula Mami", () => {
+  it("registers twelve leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
     expect(SERIES_LEAD_MASCOT_IDS).toEqual([
       "cashwell",
@@ -26,17 +26,18 @@ describe("series leads — Cashwell through Moneybagg Bro", () => {
       "mansa_moneybaggs",
       "kandake_kash",
       "moneybagg_bro",
+      "mula_mami",
     ]);
-    expect(isSeriesLeadMascot("moneybagg_bro")).toBe(true);
+    expect(isSeriesLeadMascot("mula_mami")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const bro = getMascot("moneybagg_bro");
-    expect(bro.name).toBe("Moneybagg Bro");
-    expect(bro.form).toBe("coin");
-    expect(bro.glyph).toBe("MB");
-    expect(bro.accessory).toBe("vest");
-    expect(colorHex(bro.color)).toBe("#171717");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(11);
+    const mula = getMascot("mula_mami");
+    expect(mula.name).toBe("Mula Mami");
+    expect(mula.form).toBe("coin");
+    expect(mula.glyph).toBe("MM");
+    expect(mula.accessory).toBe("vest");
+    expect(colorHex(mula.color)).toBe("#1c1917");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(12);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
