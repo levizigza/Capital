@@ -280,11 +280,11 @@ function FlightRig({
       carpet.current.rotation.z = Math.sin(performance.now() / 500) * 0.03;
       carpet.current.updateMatrixWorld(true);
 
-      // Wide horizon ride — eye above the rug, gaze far across the sea.
-      const eye = new THREE.Vector3(0, 1.05, -0.55).applyMatrix4(carpet.current.matrixWorld);
-      const horizon = new THREE.Vector3(0, 1.35, 42).applyMatrix4(carpet.current.matrixWorld);
-      const carpetHint = new THREE.Vector3(0, 0.02, 3.4).applyMatrix4(carpet.current.matrixWorld);
-      horizon.lerp(carpetHint, 0.1);
+      // Wide horizon ride — keep enough banknote rug in frame to read as Money Carpet.
+      const eye = new THREE.Vector3(0, 0.92, -0.48).applyMatrix4(carpet.current.matrixWorld);
+      const horizon = new THREE.Vector3(0, 1.2, 42).applyMatrix4(carpet.current.matrixWorld);
+      const carpetHint = new THREE.Vector3(0, 0.04, 2.6).applyMatrix4(carpet.current.matrixWorld);
+      horizon.lerp(carpetHint, 0.22);
       camera.position.lerp(eye, 1 - Math.pow(0.0004, step));
       camera.lookAt(horizon);
       camera.fov = 68;

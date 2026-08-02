@@ -9,6 +9,7 @@ import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 import { organMaterialTint, type MoneyOrganId } from "../moneyOrgans";
 import { SafeText } from "./SafeText";
+import { MoneyCarpet } from "./MoneyCarpet";
 
 type AccentProps = {
   active?: boolean;
@@ -17,25 +18,20 @@ type AccentProps = {
 
 /** Money Carpet Gate — leave-home portal; previews Cove warmth. */
 export function MoneyCarpetGate({ active = false, guided = false }: AccentProps) {
-  const cloth = useRef<THREE.Mesh>(null);
+  const carpet = useRef<THREE.Group>(null);
   const glow = useRef<THREE.Mesh>(null);
-  const fringe = useRef<THREE.Group>(null);
   const lit = active || guided;
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
-    if (cloth.current) {
-      cloth.current.position.y = 0.62 + Math.sin(t * 1.6) * 0.07;
-      cloth.current.rotation.z = Math.sin(t * 1.1) * 0.05;
+    if (carpet.current) {
+      carpet.current.position.y = 0.78 + Math.sin(t * 1.6) * 0.07;
+      carpet.current.rotation.z = Math.sin(t * 1.1) * 0.05;
+      carpet.current.rotation.x = -0.22 + Math.sin(t * 0.9) * 0.03;
     }
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
       mat.emissiveIntensity = (lit ? 0.85 : 0.32) + Math.sin(t * 2.4) * 0.1;
-    }
-    if (fringe.current) {
-      fringe.current.children.forEach((c, i) => {
-        c.rotation.x = Math.sin(t * 3 + i) * 0.2;
-      });
     }
   });
 
@@ -92,30 +88,9 @@ export function MoneyCarpetGate({ active = false, guided = false }: AccentProps)
         <sphereGeometry args={[0.35, 10, 8]} />
         <meshStandardMaterial color="#4ade80" roughness={0.7} flatShading />
       </mesh>
-      {/* Floating money carpet with fringe */}
-      <mesh ref={cloth} castShadow position={[0, 0.62, 0.7]} rotation={[-0.18, 0, 0]}>
-        <boxGeometry args={[1.85, 0.07, 2.35]} />
-        <meshStandardMaterial color="#166534" roughness={0.5} metalness={0.1} />
-      </mesh>
-      <mesh position={[0, 0.7, 0.7]} rotation={[-0.18, 0, 0]}>
-        <planeGeometry args={[1.35, 1.7]} />
-        <meshStandardMaterial
-          color="#fef08a"
-          emissive="#facc15"
-          emissiveIntensity={lit ? 0.5 : 0.2}
-          transparent
-          opacity={0.88}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-      <group ref={fringe} position={[0, 0.55, 1.75]}>
-        {[-0.7, -0.35, 0, 0.35, 0.7].map((x) => (
-          <mesh key={x} position={[x, 0, 0]}>
-            <boxGeometry args={[0.08, 0.35, 0.04]} />
-            <meshStandardMaterial color="#14532d" />
-          </mesh>
-        ))}
+      {/* Floating Money Carpet preview — same banknote rug as flight */}
+      <group ref={carpet} position={[0, 0.78, 0.85]} scale={0.95}>
+        <MoneyCarpet flying hideRider showBuddy={false} />
       </group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.55]}>
         <ringGeometry args={[1.45, 1.9, 28]} />
