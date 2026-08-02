@@ -56,12 +56,12 @@ function ChipGrid({
     <div
       className={
         dark
-          ? "grid max-h-[18vh] grid-cols-3 gap-2 overflow-y-auto overscroll-contain py-1 sm:grid-cols-4"
+          ? "grid max-h-[16vh] grid-cols-4 gap-1.5 overflow-y-auto overscroll-contain py-1 sm:grid-cols-5"
           : "flex max-h-[28vh] flex-wrap justify-center gap-2 overflow-y-auto overscroll-contain rounded-xl border border-black/10 bg-white/70 p-2"
       }
       role="listbox"
       aria-label={ariaLabel}
-      data-testid="outfit-chip-carousel"
+      data-testid="outfit-options-grid"
     >
       {chips.map((chip) => {
         const active = selectedId === chip.id;
@@ -81,9 +81,9 @@ function ChipGrid({
             }}
             className={
               dark
-                ? `flex min-h-[4.5rem] flex-col items-center justify-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition ${
+                ? `flex min-h-[4.1rem] flex-col items-center justify-center gap-0.5 rounded-xl border-2 px-1 py-1.5 transition ${
                     active
-                      ? "scale-[1.02] border-amber-300 bg-amber-200/90 text-[#1c1917]"
+                      ? "border-amber-300 bg-amber-200/90 text-[#1c1917]"
                       : "border-white/20 bg-black/45 text-white hover:border-white/55"
                   }`
                 : `flex min-w-[4.5rem] flex-col items-center gap-1 rounded-2xl border-2 px-2 py-2 transition ${
@@ -211,13 +211,21 @@ export function CharacterCreator({
           </div>
         </div>
       ) : (
-        <div className="shrink-0 text-center">
-          <p className={`text-sm font-black drop-shadow ${dark ? "text-amber-100" : ""}`}>
-            {mascot.name}
-          </p>
-          <p className={`text-xs font-semibold drop-shadow ${dark ? "text-amber-100/90" : "text-muted-foreground"}`}>
-            {catMeta.hint}
-          </p>
+        <div className="flex shrink-0 items-center justify-between gap-2 text-left">
+          <div className="min-w-0">
+            <p
+              className="truncate text-base font-black"
+              style={dark ? { color: "#fffdf6" } : undefined}
+            >
+              {mascot.name}
+            </p>
+            <p
+              className="truncate text-xs font-semibold"
+              style={dark ? { color: "rgba(253,230,138,0.9)" } : undefined}
+            >
+              {catMeta.hint}
+            </p>
+          </div>
           {onChangeFighter ? (
             <button
               type="button"
@@ -226,10 +234,10 @@ export function CharacterCreator({
                 e.stopPropagation();
                 onChangeFighter();
               }}
-              className="mt-1 min-h-9 px-2 text-xs font-bold text-amber-200 underline underline-offset-2 hover:text-amber-100"
+              className="min-h-10 shrink-0 rounded-xl border border-amber-200/40 bg-black/40 px-3 text-xs font-bold text-amber-100 hover:bg-black/60"
               data-testid="outfitter-change-fighter"
             >
-              ← Change fighter
+              ← Fighters
             </button>
           ) : null}
         </div>
@@ -243,7 +251,7 @@ export function CharacterCreator({
           placeholder="Name your Voyager"
           className={
             dark
-              ? "w-full rounded-2xl border-2 border-white/30 bg-black/45 px-3 py-2 text-center text-lg font-bold text-white placeholder:text-white/50 focus:border-amber-300 focus:outline-none"
+              ? "w-full rounded-xl border border-white/25 bg-black/40 px-3 py-1.5 text-center text-sm font-bold text-white placeholder:text-white/45 focus:border-amber-300 focus:outline-none"
               : "w-full rounded-xl border-2 border-slate-200 px-3 py-2 text-center text-lg font-bold focus:border-indigo-500 focus:outline-none"
           }
           aria-label="Character name"

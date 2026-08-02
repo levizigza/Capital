@@ -17,9 +17,8 @@ type Props = {
 const LEAD_IDS = SERIES_LEAD_MASCOT_IDS as readonly string[];
 
 /**
- * Street Fighter–style select: every fighter as a spinning coin face,
+ * Street Fighter–style select: every fighter as a rocking coin face,
  * all visible at once. HTML/CSS 3D so taps always work (no WebGL steal).
- * Tap a coin → parent opens full 3D body + customize.
  */
 export function StreetFighterCoinSelect({
   selectedId,
@@ -32,26 +31,31 @@ export function StreetFighterCoinSelect({
 
   return (
     <div
-      className={`${className ?? "absolute inset-0"} z-0 overflow-hidden bg-[#0c1622]`}
+      className={`${className ?? "absolute inset-0"} z-0 overflow-hidden`}
       data-testid="sf-coin-select"
       data-selected={selectedId}
+      style={{
+        background:
+          "radial-gradient(ellipse 90% 70% at 50% 40%, #1a3a5c 0%, #0a1628 55%, #050a12 100%)",
+      }}
     >
       <div
-        className="absolute inset-0 opacity-45"
+        className="pointer-events-none absolute inset-0 opacity-30"
         style={{
-          background:
-            "radial-gradient(ellipse 80% 55% at 50% 35%, #1e3a5f 0%, #0c1622 72%)",
+          backgroundImage:
+            "linear-gradient(rgba(253,230,138,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(253,230,138,0.07) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
         }}
         aria-hidden
       />
 
-      <div className="relative flex h-full flex-col px-2 py-2 sm:px-4 sm:py-3">
+      <div className="relative flex h-full flex-col px-2 py-1 sm:px-4 sm:py-2">
         <div
-          className="mx-auto grid h-full w-full max-w-5xl grid-cols-3 content-center gap-1.5 sm:grid-cols-4 sm:gap-2.5"
+          className="mx-auto grid h-full w-full max-w-6xl grid-cols-3 content-center gap-2 sm:grid-cols-4 sm:gap-3"
           role="listbox"
           aria-label="Series lead fighters"
         >
-          {boardIds.map((id) => {
+          {boardIds.map((id, index) => {
             const m = getMascot(id);
             const spec = SERIES_SHEET_SPECS[id];
             const active = id === selectedId;
@@ -63,7 +67,6 @@ export function StreetFighterCoinSelect({
                 role="option"
                 aria-selected={active}
                 onPointerUp={(e) => {
-                  // pointerup is more reliable than click when CSS 3D transforms are animating.
                   if (e.button !== 0) return;
                   e.preventDefault();
                   onPick(id);
@@ -75,24 +78,29 @@ export function StreetFighterCoinSelect({
                 onFocus={() => onFocus?.(id)}
                 onMouseEnter={() => onFocus?.(id)}
                 data-testid={`sf-coin-${id}`}
-                className={`relative flex min-h-0 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-1 py-1.5 touch-manipulation sm:gap-1 sm:p-2 ${
+                className={`relative flex min-h-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 px-1 py-2 touch-manipulation sm:gap-1.5 sm:p-2.5 ${
                   active
-                    ? "border-amber-300 bg-amber-200/20 shadow-[0_0_28px_rgba(251,191,36,0.4)]"
-                    : "border-white/15 bg-black/40 hover:border-white/45 hover:bg-black/55"
+                    ? "border-amber-300 bg-amber-200/20 shadow-[0_0_32px_rgba(251,191,36,0.45)]"
+                    : "border-white/15 bg-black/45 hover:border-amber-200/50 hover:bg-black/60"
                 }`}
               >
+                <span
+                  className="pointer-events-none absolute left-1.5 top-1 text-[9px] font-black tracking-wider text-white/45 sm:text-[10px]"
+                  aria-hidden
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <div
-                  className="sf-coin-spin relative aspect-square w-[72%] max-w-[5.75rem] sm:max-w-[6.5rem]"
-                  style={{ perspective: "700px" }}
+                  className="sf-coin-spin relative aspect-square w-[78%] max-w-[6.75rem] sm:max-w-[7.5rem]"
+                  style={{ perspective: "800px" }}
                 >
                   <div
                     className="sf-coin-spin-inner absolute inset-0"
                     style={{
                       transformStyle: "preserve-3d",
-                      animation: `sf-coin-rock ${active ? "2.4s" : "3.2s"} ease-in-out infinite`,
+                      animation: `sf-coin-rock ${active ? "2.2s" : "3.1s"} ease-in-out infinite`,
                     }}
                   >
-                    {/* Face on both sides — rock (not full spin) so fighters stay readable. */}
                     <div
                       className="absolute inset-0 overflow-hidden rounded-full border-[3px] shadow-lg"
                       style={{
@@ -129,21 +137,23 @@ export function StreetFighterCoinSelect({
                     </div>
                   </div>
                 </div>
-                <span className="w-full truncate px-0.5 text-center text-[10px] font-bold leading-tight text-white sm:text-[11px]">
+                <span
+                  className="w-full truncate px-0.5 text-center text-[11px] font-black leading-tight sm:text-xs"
+                  style={{ color: "#fffdf6", textShadow: "0 1px 3px rgba(0,0,0,0.95)" }}
+                >
                   {m.name}
                 </span>
               </button>
             );
           })}
         </div>
-
       </div>
 
       <style>{`
         @keyframes sf-coin-rock {
-          0% { transform: rotateY(-32deg); }
-          50% { transform: rotateY(32deg); }
-          100% { transform: rotateY(-32deg); }
+          0% { transform: rotateY(-28deg); }
+          50% { transform: rotateY(28deg); }
+          100% { transform: rotateY(-28deg); }
         }
         @media (prefers-reduced-motion: reduce) {
           .sf-coin-spin-inner { animation: none !important; }

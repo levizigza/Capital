@@ -169,14 +169,15 @@ function StudioCamera({ mode }: { mode: OutfitterStudioMode }) {
       want.set(0, 3.4, 9.2);
       look.set(0, 1.0, -1.2);
     } else {
-      want.set(0, 2.1, 5.2);
-      look.set(0, 1.1, 0);
+      // Front three-quarter — face and coat read immediately.
+      want.set(0.55, 1.55, 3.6);
+      look.set(0, 1.15, 0);
     }
     camera.position.lerp(want, 1 - Math.pow(0.001, dt));
     lookTarget.lerp(look, 1 - Math.pow(0.001, dt));
     camera.lookAt(lookTarget);
     const persp = camera as THREE.PerspectiveCamera;
-    persp.fov = THREE.MathUtils.damp(persp.fov, mode === "lineup" ? 38 : 42, 6, dt);
+    persp.fov = THREE.MathUtils.damp(persp.fov, mode === "lineup" ? 38 : 36, 6, dt);
     persp.updateProjectionMatrix();
   });
   return null;
@@ -184,8 +185,12 @@ function StudioCamera({ mode }: { mode: OutfitterStudioMode }) {
 
 function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps) {
   const spin = useRef<THREE.Group>(null);
+  const t0 = useRef(0);
   useFrame((_, dt) => {
-    if (mode === "solo" && spin.current) spin.current.rotation.y += dt * 0.4;
+    if (mode !== "solo" || !spin.current) return;
+    t0.current += dt;
+    // Gentle face-forward rock — never turn the back to the player.
+    spin.current.rotation.y = Math.sin(t0.current * 0.7) * 0.35;
   });
 
   const ids = lineupIds ?? [];
@@ -193,35 +198,43 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
 
   return (
     <>
-      <color attach="background" args={["#1c1917"]} />
-      <fog attach="fog" args={["#1c1917", 12, 22]} />
-      <ambientLight intensity={0.75} />
+      <color attach="background" args={["#152033"]} />
+      <fog attach="fog" args={["#152033", 14, 28]} />
+      <ambientLight intensity={1.05} />
       <directionalLight
-        position={[4, 9, 4]}
-        intensity={1.25}
+        position={[3.2, 8.5, 4.5]}
+        intensity={1.55}
         castShadow={mode === "solo"}
         shadow-mapSize={[512, 512]}
       />
-      <pointLight position={[-2.4, 2.6, 1.4]} intensity={0.6} color="#fbbf24" />
-      <pointLight position={[2.6, 2.4, -0.6]} intensity={0.45} color="#38bdf8" />
+      <pointLight position={[-2.2, 2.8, 2.2]} intensity={0.95} color="#fde68a" />
+      <pointLight position={[2.4, 2.2, 1.2]} intensity={0.7} color="#7dd3fc" />
+      <spotLight
+        position={[0, 5.2, 2.4]}
+        angle={0.55}
+        penumbra={0.5}
+        intensity={1.1}
+        color="#fff7ed"
+        castShadow={false}
+      />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[16, 14]} />
-        <meshStandardMaterial color="#a8a29e" roughness={0.9} />
+        <meshStandardMaterial color="#334155" roughness={0.92} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
-        <circleGeometry args={[mode === "lineup" ? 4.2 : 1.6, 48]} />
-        <meshStandardMaterial color="#efe6d4" roughness={0.7} />
+        <circleGeometry args={[mode === "lineup" ? 4.2 : 1.85, 48]} />
+        <meshStandardMaterial color="#f5e6c8" roughness={0.55} metalness={0.12} />
       </mesh>
 
       <mesh position={[0, 2.4, -5.2]} receiveShadow>
         <boxGeometry args={[14, 5.2, 0.3]} />
-        <meshStandardMaterial color="#44403c" roughness={0.92} />
+        <meshStandardMaterial color="#1e293b" roughness={0.92} />
       </mesh>
       {mode === "solo" ? (
-        <mesh position={[0, 2.0, -4.95]}>
-          <planeGeometry args={[3.2, 2.6]} />
-          <meshStandardMaterial color="#bae6fd" metalness={0.55} roughness={0.15} />
+        <mesh position={[0, 1.85, -4.95]}>
+          <planeGeometry args={[4.2, 3.1]} />
+          <meshStandardMaterial color="#e0f2fe" metalness={0.35} roughness={0.2} />
         </mesh>
       ) : null}
 
@@ -242,40 +255,43 @@ function FittingRoom({ character, mode, lineupIds, onPickFighter }: FittingProps
         </group>
       ) : (
         <>
-          {([-3.4, 3.4] as const).map((x) => (
-            <group key={x} position={[x, 0, -0.5]}>
-              <mesh castShadow position={[0, 1.4, 0]}>
-                <boxGeometry args={[0.12, 2.6, 0.12]} />
-                <meshStandardMaterial color="#292524" roughness={0.6} metalness={0.3} />
+          {([-2.9, 2.9] as const).map((x) => (
+            <group key={x} position={[x, 0, -1.1]}>
+              <mesh castShadow position={[0, 1.35, 0]}>
+                <boxGeometry args={[0.1, 2.4, 0.1]} />
+                <meshStandardMaterial color="#0f172a" roughness={0.55} metalness={0.35} />
               </mesh>
-              {[0.7, 1.2, 1.7, 2.2].map((y, i) => (
+              {[0.75, 1.25, 1.75].map((y, i) => (
                 <mesh
                   key={y}
                   castShadow
-                  position={[x > 0 ? -0.35 : 0.35, y, 0]}
-                  rotation={[0, 0, x > 0 ? 0.2 : -0.2]}
+                  position={[x > 0 ? -0.28 : 0.28, y, 0]}
+                  rotation={[0, 0, x > 0 ? 0.18 : -0.18]}
                 >
-                  <boxGeometry args={[0.55, 0.7, 0.08]} />
+                  <boxGeometry args={[0.42, 0.55, 0.06]} />
                   <meshStandardMaterial
-                    color={["#0ea5e9", "#f4a629", "#2dd4bf", "#fb7185"][i]!}
-                    roughness={0.55}
+                    color={["#0ea5e9", "#f4a629", "#2dd4bf"][i]!}
+                    roughness={0.45}
+                    emissive={["#0ea5e9", "#f4a629", "#2dd4bf"][i]!}
+                    emissiveIntensity={0.18}
                   />
                 </mesh>
               ))}
             </group>
           ))}
-          <mesh castShadow receiveShadow position={[0, 0.45, 2.4]}>
-            <boxGeometry args={[4.5, 0.9, 1.1]} />
-            <meshStandardMaterial color="#78350f" roughness={0.8} />
+          {/* Low pedestal ring — no tall desk blocking the body */}
+          <mesh castShadow receiveShadow position={[0, 0.08, 0.1]}>
+            <cylinderGeometry args={[1.15, 1.25, 0.14, 40]} />
+            <meshStandardMaterial color="#92400e" roughness={0.55} metalness={0.25} />
           </mesh>
-          <group ref={spin} position={[0, 0.02, 0.15]}>
+          <group ref={spin} position={[0, 0.16, 0.1]}>
             <VoyagerMesh
               key={`${character.base}-${character.color}-${character.accessory}-${character.pants ?? "ink"}-${character.lookId ?? "sheet"}-${character.companion}`}
               character={character}
               coatColor={colorHex(character.color)}
               pantColor={character.pants ? colorHex(character.pants) : "#1e3a5f"}
               pose="stand"
-              scale={1.25}
+              scale={1.35}
             />
           </group>
         </>
@@ -360,7 +376,7 @@ export function OutfitterStudio3D({
           <Canvas
             shadows={!reduced && !lineup}
             dpr={reduced || lineup ? [1, 1] : [1, 1.25]}
-            camera={{ position: lineup ? [0, 3.4, 9.2] : [0, 2.1, 5.2], fov: lineup ? 38 : 42 }}
+            camera={{ position: lineup ? [0, 3.4, 9.2] : [0.55, 1.55, 3.6], fov: lineup ? 38 : 36 }}
             className="absolute inset-0"
             style={{ pointerEvents }}
             gl={{
@@ -370,8 +386,8 @@ export function OutfitterStudio3D({
               failIfMajorPerformanceCaveat: false,
             }}
             onCreated={({ gl, camera }) => {
-              gl.setClearColor("#1c1917", 1);
-              camera.lookAt(0, lineup ? 1.0 : 1.1, lineup ? -1.2 : 0);
+              gl.setClearColor(lineup ? "#1c1917" : "#152033", 1);
+              camera.lookAt(0, lineup ? 1.0 : 1.15, lineup ? -1.2 : 0);
               setReady(true);
             }}
           >

@@ -92,16 +92,22 @@ export function OutfitterStudioOverlay({
     >
       <header className="relative z-10 flex shrink-0 items-start justify-between gap-3 px-3 pb-1 pt-3 sm:px-4 sm:pt-4">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-wide text-amber-200/90">
+          <div
+            className="text-[10px] font-bold uppercase tracking-[0.22em]"
+            style={{ color: "#fde68a" }}
+          >
             Harbor Haven · 3D Outfitter
           </div>
-          <h2 className="text-xl font-black text-white drop-shadow sm:text-2xl">
-            {stage === "select" ? "Choose your fighter" : "Become you"}
+          <h2
+            className="text-xl font-black sm:text-2xl"
+            style={{ color: "#fffdf6", textShadow: "0 2px 12px rgba(0,0,0,0.85)" }}
+          >
+            {stage === "select" ? "Choose your fighter" : getMascot(draft.base).name}
           </h2>
-          <p className="max-w-md text-xs text-white/80 sm:text-sm">
+          <p className="max-w-md text-xs sm:text-sm" style={{ color: "rgba(255,255,255,0.82)" }}>
             {stage === "select"
-              ? "Spinning coin faces — tap one for the full 3D body, then Snapchat-customize."
-              : "Snapchat layers on the live mirror. Esc or Save & leave keeps your look on the plaza."}
+              ? "Tap a coin face for the full 3D body, then Snapchat-customize."
+              : "Looks · Shirt · Pants · Accessories · Electronics. Esc keeps your look on the plaza."}
           </p>
         </div>
         <button

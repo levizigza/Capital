@@ -14,10 +14,18 @@ test.describe("Street Fighter cast select", () => {
     await expect(page.getByTestId("opening-choose-voyager")).toBeVisible({ timeout: 20_000 });
     // Framer motion keeps the CTA "unstable" for Playwright checks — DOM click is reliable.
     // Keep the evaluate body free of TypeScript (it runs in the browser).
-    await page.getByTestId("opening-choose-voyager").evaluate((el) => {
-      el.click();
-    });
-    // Wait for cast after the 550ms title fade.
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (await page.getByTestId("boot-cast-select").count()) break;
+      await page.getByTestId("opening-choose-voyager").evaluate((el) => {
+        el.click();
+      });
+      try {
+        await page.getByTestId("boot-cast-select").waitFor({ state: "visible", timeout: 4_000 });
+        break;
+      } catch {
+        await page.keyboard.press("Enter");
+      }
+    }
     await expect(page.getByTestId("boot-cast-select")).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId("sf-coin-count")).toHaveText("12");
 
@@ -28,7 +36,7 @@ test.describe("Street Fighter cast select", () => {
     await page.getByTestId("outfit-tab-coat").click();
     await expect(page.getByTestId("outfit-tab-coat")).toHaveAttribute("aria-selected", "true");
 
-    const chip = page.locator('[data-testid^="outfit-chip-"]').nth(2);
+    const chip = page.locator('[data-testid="outfit-options-grid"] [data-testid^="outfit-chip-"]').nth(2);
     await chip.click();
     await expect(chip).toHaveAttribute("aria-selected", "true");
 
