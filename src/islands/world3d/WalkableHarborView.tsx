@@ -910,12 +910,15 @@ export function WalkableHarborView({
   readyRef.current = ready;
   force2dRef.current = force2d;
 
-  const escapeToMyth = useCallback(() => {
+  /** soft = this visit only; sticky = remember for the session (context lost / probe fail). */
+  const escapeToMyth = useCallback((mode: "soft" | "sticky" = "soft") => {
     if (escapedRef.current) return;
     escapedRef.current = true;
     try {
       sessionStorage.removeItem("capital_harbor3d_ok");
-      sessionStorage.setItem("capital_harbor3d_fail", "1");
+      if (mode === "sticky") {
+        sessionStorage.setItem("capital_harbor3d_fail", "1");
+      }
     } catch {
       /* ignore */
     }
@@ -930,6 +933,7 @@ export function WalkableHarborView({
     let cancelled = false;
     let idleId: number | undefined;
     let mountTimer: number | undefined;
+    let canvasWatch: number | undefined;
 
     const probeWebGL = (): boolean => {
       try {
@@ -950,10 +954,14 @@ export function WalkableHarborView({
     const scheduleCanvas = () => {
       if (cancelled || force2dRef.current || readyRef.current) return;
       if (!probeWebGL()) {
-        escapeToMyth();
+        escapeToMyth("sticky");
         return;
       }
       setAllowCanvas(true);
+      // If R3F never reports onCreated, tear Canvas down and play myth — don't veil forever.
+      canvasWatch = window.setTimeout(() => {
+        if (!readyRef.current) escapeToMyth("soft");
+      }, 1_800);
     };
 
     // Double-rAF + idle: Enter Harbor paints and stays tappable before WebGL hitch.
@@ -967,21 +975,21 @@ export function WalkableHarborView({
         ).requestIdleCallback;
         if (typeof ric === "function") {
           idleId = ric(() => {
-            mountTimer = window.setTimeout(scheduleCanvas, 120);
-          }, { timeout: 700 });
+            mountTimer = window.setTimeout(scheduleCanvas, 80);
+          }, { timeout: 400 });
         } else {
-          mountTimer = window.setTimeout(scheduleCanvas, 450);
+          mountTimer = window.setTimeout(scheduleCanvas, 280);
         }
       });
     });
 
     const hint = window.setTimeout(() => {
       setLoadHint(HARBOR_LOADING_SLOW);
-    }, 1_200);
-    // Hard myth escape — iconic reliability gate: playable Harbor < ~3s.
+    }, 900);
+    // Hard myth escape — iconic reliability gate: playable Harbor < ~2.5s.
     const failsafe = window.setTimeout(() => {
-      if (!readyRef.current) escapeToMyth();
-    }, 2_800);
+      if (!readyRef.current) escapeToMyth("soft");
+    }, 2_400);
     return () => {
       cancelled = true;
       if (idleId !== undefined) {
@@ -991,6 +999,7 @@ export function WalkableHarborView({
         cic?.(idleId);
       }
       if (mountTimer !== undefined) window.clearTimeout(mountTimer);
+      if (canvasWatch !== undefined) window.clearTimeout(canvasWatch);
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
     };
@@ -1027,8 +1036,9 @@ export function WalkableHarborView({
     <div className="relative h-full w-full overflow-hidden" data-testid="harbor-3d-shell">
       {!ready ? (
         <div
-          className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[#7dd3fc] px-4 text-center"
+          className="absolute inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-[#7dd3fc] px-4 text-center"
           style={{ pointerEvents: "auto", touchAction: "manipulation" }}
+          data-testid="harbor-loading-veil"
         >
           <p className="text-sm font-bold text-[#16283b]/80" data-testid="harbor-loading">
             {loadHint}
@@ -1036,16 +1046,16 @@ export function WalkableHarborView({
           <button
             type="button"
             data-testid="harbor-skip-3d"
-            className="pointer-events-auto relative z-50 min-h-11 min-w-[12rem] rounded-full bg-[#16283b] px-5 py-3 text-sm font-bold text-white shadow-md"
+            className="pointer-events-auto relative z-[110] min-h-12 min-w-[14rem] rounded-full bg-[#16283b] px-6 py-3.5 text-sm font-bold text-white shadow-lg"
             style={{ touchAction: "manipulation" }}
             onPointerDown={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              escapeToMyth();
+              escapeToMyth("soft");
             }}
             onClick={(e) => {
               e.preventDefault();
-              escapeToMyth();
+              escapeToMyth("soft");
             }}
           >
             {ENTER_HARBOR_HAVEN}
@@ -1079,7 +1089,7 @@ export function WalkableHarborView({
           const canvas = gl.domElement;
           const onLost = (e: Event) => {
             e.preventDefault();
-            escapeToMyth();
+            escapeToMyth("sticky");
           };
           canvas.addEventListener("webglcontextlost", onLost, { once: true });
         }}

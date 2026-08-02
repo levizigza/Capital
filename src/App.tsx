@@ -485,6 +485,12 @@ function App() {
             key="capital-carpet-boot"
             character={bootCharacter ?? BASE_VOYAGER}
             onComplete={() => {
+              // Fresh Harbor 3D attempt after boot — don't inherit Outfitter/carpet WebGL sticky fails.
+              try {
+                sessionStorage.removeItem("capital_harbor3d_fail")
+              } catch {
+                /* ignore */
+              }
               setShowCapitalIntro(false)
               setBootPhase("title")
               setCurrentMode("islands")

@@ -11,8 +11,6 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { hasSheetArtId } from "../../art/seriesCast";
-import { SeriesLeadSheetBillboard } from "../../art/seriesCast/SeriesLeadSheetBillboard";
 import type { CapitalCharacter } from "../character";
 import { colorHex } from "../character";
 import { sheetLookForBase } from "../castLooks";
@@ -137,10 +135,7 @@ function LineupFighter({
     >
       <Pedestal active={selected} color={accent} />
       <group position={[0, 0.14, 0]}>
-        {hasSheetArtId(id) ? (
-          // Illustrated sheet card — matches uploaded cast art (PNG drop-in or SVG sheet)
-          <SeriesLeadSheetBillboard id={id} height={selected ? 2.05 : 1.75} selected={selected} />
-        ) : detailed ? (
+        {detailed ? (
           <VoyagerMesh
             key={`${id}-${look.color}-${look.accessory}-${look.pants}`}
             character={look}
@@ -330,6 +325,13 @@ export function OutfitterStudio3D({
       document.body.style.cursor = "auto";
     };
   }, []);
+
+  // Never leave boot stuck on “Opening the 3D Outfitter…” — UI chrome must stay usable.
+  useEffect(() => {
+    if (ready || failed) return;
+    const t = window.setTimeout(() => setReady(true), 2_200);
+    return () => window.clearTimeout(t);
+  }, [ready, failed]);
 
   return (
     <div

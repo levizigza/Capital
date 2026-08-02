@@ -91,7 +91,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         </div>
       </header>
 
-      <div className="relative z-[2] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
+      <div className="pointer-events-auto relative z-[20] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
         <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/55 p-3 shadow-2xl backdrop-blur-md sm:p-4">
           {stage === "select" ? (
             <div className="flex flex-col gap-3 text-center text-white">
@@ -118,6 +118,15 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                 data-testid="boot-customize-look"
               >
                 Customize on the 3D mirror →
+              </GameButton>
+              <GameButton
+                variant="outline"
+                className="w-full border-white/40 bg-white/10 text-white hover:bg-white/20"
+                disabled={busy}
+                onClick={() => boardCarpet()}
+                data-testid="boot-board-carpet-now"
+              >
+                {busy ? "Boarding…" : "Board the Money Carpet →"}
               </GameButton>
             </div>
           ) : (

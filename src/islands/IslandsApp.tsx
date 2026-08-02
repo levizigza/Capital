@@ -273,14 +273,29 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
-      const loaded = await loadIslandSave();
+    const failsafe = window.setTimeout(() => {
       if (!mounted) return;
-      setSave(loaded);
-      if (loaded.currentIslandId) setActiveIslandId(loaded.currentIslandId);
+      setSave((prev) => {
+        if (prev) return prev;
+        console.warn("[islands] save load timed out — starting default Harbor save");
+        return createDefaultIslandSave();
+      });
+    }, 3_000);
+    (async () => {
+      try {
+        const loaded = await loadIslandSave();
+        if (!mounted) return;
+        setSave(loaded);
+        if (loaded.currentIslandId) setActiveIslandId(loaded.currentIslandId);
+      } catch (e) {
+        console.warn("[islands] save load failed", e);
+        if (!mounted) return;
+        setSave(createDefaultIslandSave());
+      }
     })();
     return () => {
       mounted = false;
+      window.clearTimeout(failsafe);
     };
   }, []);
 

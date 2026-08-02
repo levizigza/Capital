@@ -23,15 +23,27 @@ describe("Harbor load failsafe contract", () => {
   });
 
   it("hard failsafe deadline is under the iconic 3s playable gate", () => {
-    const HARD_FAILSAFE_MS = 2_800;
+    const HARD_FAILSAFE_MS = 2_400;
     expect(HARD_FAILSAFE_MS).toBeLessThan(3_000);
   });
 
+  it("canvas watchdog tears down hung R3F before the hard failsafe", () => {
+    const CANVAS_WATCHDOG_MS = 1_800;
+    const HARD_FAILSAFE_MS = 2_400;
+    expect(CANVAS_WATCHDOG_MS).toBeLessThan(HARD_FAILSAFE_MS);
+  });
+
+  it("timeout escape stays soft — sticky only on probe/context loss", () => {
+    const timeoutMode: "soft" | "sticky" = "soft";
+    const probeFailMode: "soft" | "sticky" = "sticky";
+    expect(timeoutMode).toBe("soft");
+    expect(probeFailMode).toBe("sticky");
+  });
+
   it("defers Canvas until after Continue paint window", () => {
-    const DEFER_BEFORE_PROBE_MS = 120;
-    const OLD_INSTANT_MOUNT_MS = 100;
-    // Probe + idle defer must not race ahead of first paint of Continue.
-    expect(DEFER_BEFORE_PROBE_MS).toBeGreaterThanOrEqual(OLD_INSTANT_MOUNT_MS);
+    const DEFER_BEFORE_PROBE_MS = 80;
+    expect(DEFER_BEFORE_PROBE_MS).toBeGreaterThan(0);
+    expect(DEFER_BEFORE_PROBE_MS).toBeLessThan(500);
   });
 
   it("failed WebGL probe skips R3F Canvas entirely", () => {

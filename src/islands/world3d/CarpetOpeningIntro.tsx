@@ -1,5 +1,6 @@
 import {
   Suspense,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -182,7 +183,7 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
     if (ready) return;
     const t = window.setTimeout(() => {
       if (!readyRef.current) setReady(true);
-    }, 6_000);
+    }, 2_400);
     return () => window.clearTimeout(t);
   }, [ready]);
 
@@ -191,9 +192,29 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
     const t = window.setTimeout(() => {
       if (finishing.current) return;
       setPhase((p) => (p === "fly" ? "land" : p));
-    }, 14_000);
+    }, 8_000);
     return () => window.clearTimeout(t);
   }, []);
+
+  const finish = useCallback(() => {
+    if (finishing.current) return;
+    finishing.current = true;
+    markCapitalIntroSeen();
+    try {
+      sessionStorage.setItem("capital_boot_land_hub", "1");
+    } catch {
+      /* ignore */
+    }
+    onComplete();
+  }, [onComplete]);
+
+  // Absolute escape — carpet must never trap the boot forever
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      if (!finishing.current) finish();
+    }, 12_000);
+    return () => window.clearTimeout(t);
+  }, [finish]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -222,19 +243,7 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
       window.removeEventListener("keydown", down);
       window.removeEventListener("keyup", up);
     };
-  }, [reduced]);
-
-  const finish = () => {
-    if (finishing.current) return;
-    finishing.current = true;
-    markCapitalIntroSeen();
-    try {
-      sessionStorage.setItem("capital_boot_land_hub", "1");
-    } catch {
-      /* ignore */
-    }
-    onComplete();
-  };
+  }, [reduced, finish]);
 
   const onLanded = () => {
     setPhase("land");
