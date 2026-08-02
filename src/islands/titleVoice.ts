@@ -59,8 +59,8 @@ function organIdForIsland(islandId: string): MoneyOrganId {
 }
 
 /** Harbor load veil — myth, not a spinner. */
-export const HARBOR_LOADING_HINT = `${MONEY_IS_ALIVE} in Harbor Haven…`;
-export const HARBOR_LOADING_SLOW = `${CAPITAL_BRAND} · washing ashore — enter anytime`;
+export const HARBOR_LOADING_HINT = `Harbor Haven · your plaza is waking up…`;
+export const HARBOR_LOADING_SLOW = `${CAPITAL_BRAND} · enter anytime — Piggy is waiting`;
 export const ENTER_HARBOR_HAVEN = "Enter Harbor Haven";
 
 /** Carpet dock / leave / map. */

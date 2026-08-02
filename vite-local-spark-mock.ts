@@ -28,6 +28,14 @@ function handleKvRequest(
     return true;
   }
 
+  // Wipe all mock keys — local QA / replayIntro needs a true fresh vault.
+  if (urlPath === "/_spark/kv" && req.method === "DELETE") {
+    kvStore.clear();
+    res.statusCode = 204;
+    res.end();
+    return true;
+  }
+
   const keyPrefix = "/_spark/kv/";
   if (!urlPath.startsWith(keyPrefix)) {
     return false;

@@ -368,7 +368,13 @@ export function CharacterCreator({
         ) : null}
         <button
           type="button"
-          className="min-h-11 flex-1 rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          className="min-h-11 flex-1 touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          onPointerUp={(e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+            commit();
+          }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

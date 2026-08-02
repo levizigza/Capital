@@ -5,6 +5,7 @@ import {
   isPiggyPresenceBeat,
   isQuietHomecoming,
   mythFallbackActions,
+  resolveCarpetBootGuidedIntro,
   resolvePulseHotspotId,
 } from "./harborFirstMeet";
 
@@ -44,5 +45,24 @@ describe("harbor first meet (Wave 1)", () => {
     expect(isPiggyPresenceBeat({ firstMeet: true })).toBe(true);
     expect(isPiggyPresenceBeat({ quietHomecoming: true })).toBe(true);
     expect(isPiggyPresenceBeat({})).toBe(false);
+  });
+
+  it("carpet boot restarts Castle Grounds when tutorial is done or missing", () => {
+    const fresh = resolveCarpetBootGuidedIntro({});
+    expect(fresh.hubGuidedIntro.step).toBe("meet_guide");
+    expect(fresh.clearQuietPending).toBe(false);
+
+    const done = resolveCarpetBootGuidedIntro({
+      hubGuidedIntro: { version: 1, step: "done" },
+      harborHomecoming: { quietPending: true },
+    });
+    expect(done.hubGuidedIntro.step).toBe("meet_guide");
+    expect(done.clearQuietPending).toBe(true);
+
+    const mid = resolveCarpetBootGuidedIntro({
+      hubGuidedIntro: { version: 1, step: "walk_outfitter", didOutfitter: false },
+    });
+    expect(mid.hubGuidedIntro.step).toBe("walk_outfitter");
+    expect(mid.clearQuietPending).toBe(false);
   });
 });

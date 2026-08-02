@@ -143,16 +143,19 @@ export function LedgerBankLandmark({
       </mesh>
 
       <Billboard position={[0, 5.0, 0]} follow>
-        <SafeText
-          fontSize={0.32}
-          color="#fffbeb"
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.028}
-          outlineColor="#0f172a"
-        >
-          {active ? "Enter · vault door" : label}
-        </SafeText>
+        {/* Parent plaza yaw can leave troika mirrored in local/dev Text. */}
+        <group scale={[-1, 1, 1]}>
+          <SafeText
+            fontSize={0.32}
+            color="#fffbeb"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.028}
+            outlineColor="#0f172a"
+          >
+            {active ? "Enter · vault door" : label}
+          </SafeText>
+        </group>
       </Billboard>
     </group>
   );

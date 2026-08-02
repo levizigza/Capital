@@ -163,9 +163,17 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               <button
                 type="button"
                 disabled={busy}
-                className="w-full text-center text-xs font-bold uppercase tracking-wide underline-offset-2 hover:underline disabled:opacity-40"
+                className="min-h-10 w-full touch-manipulation text-center text-xs font-bold uppercase tracking-wide underline-offset-2 hover:underline disabled:opacity-40"
                 style={{ color: "rgba(255,255,255,0.7)" }}
-                onClick={() => boardCarpet()}
+                onPointerUp={(e) => {
+                  if (e.button !== 0 || busy) return;
+                  e.preventDefault();
+                  boardCarpet();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!busy) boardCarpet();
+                }}
                 data-testid="boot-board-carpet-now"
               >
                 {busy ? "Boarding…" : "Skip customize · Board carpet"}

@@ -40,6 +40,7 @@ import {
   findHarborNpc,
   resolveHarborDialogue,
   HARBOR_DIALOGUES,
+  piggyGuidedGraph,
   piggyHomecomingGraph,
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
@@ -140,6 +141,7 @@ import {
   getHubGuidedStep,
   isHubGuidedComplete,
 } from "./story/hubGuidedIntro";
+import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -561,22 +563,31 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setBootHubHandled(true);
     const hub = getIslandById(content, HUB_ISLAND_ID);
     const defaultArea = hub?.areas[0]?.id;
-    updateSave((prev) => ({
-      ...prev,
-      onboardingComplete: true,
-      character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
-      currentIslandId: HUB_ISLAND_ID,
-      currentAreaId: defaultArea ?? prev.currentAreaId,
-      // Castle Grounds guided lap — carpet magic stays; teaching starts here.
-      hubGuidedIntro: prev.hubGuidedIntro?.step
-        ? prev.hubGuidedIntro
-        : createDefaultHubGuidedIntro(),
-      discovered: {
-        ...prev.discovered,
-        islands: uniq([...prev.discovered.islands, HUB_ISLAND_ID]),
-        areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
-      },
-    }));
+    updateSave((prev) => {
+      // Preserve only an in-progress Castle Grounds lap. Never keep a finished
+      // tutorial (or leftover quiet homecoming) over the opening carpet ceremony —
+      // that steals first-meet and strands players with no coach.
+      const { hubGuidedIntro, clearQuietPending } = resolveCarpetBootGuidedIntro(prev);
+      return {
+        ...prev,
+        onboardingComplete: true,
+        character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
+        currentIslandId: HUB_ISLAND_ID,
+        currentAreaId: defaultArea ?? prev.currentAreaId,
+        hubGuidedIntro,
+        harborHomecoming: clearQuietPending
+          ? {
+              ...(prev.harborHomecoming ?? {}),
+              quietPending: false,
+            }
+          : prev.harborHomecoming,
+        discovered: {
+          ...prev.discovered,
+          islands: uniq([...prev.discovered.islands, HUB_ISLAND_ID]),
+          areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
+        },
+      };
+    });
     if (!save.onboardingComplete) {
       void analytics.track("onboarding_completed", { via: "carpet_boot" });
     }
@@ -1295,9 +1306,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         bondBeat: Math.max(upcoming, 1),
       });
     }
+    // Guided Piggy graphs share one id — never use the static "done" mint from HARBOR_DIALOGUES.
+    if (dialogueState.graphId === "dlg_harbor_piggy_penny_guided") {
+      const guided =
+        save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
+          ? getHubGuidedStep(save.hubGuidedIntro)?.id
+          : "done";
+      return piggyGuidedGraph(guided);
+    }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
     if (fromHarbor) return fromHarbor;
-    // Guided / homecoming Piggy graphs are minted and may not be in the static list
+    // Homecoming / memory Piggy graphs are minted and may not be in the static list
     if (dialogueState.npcId) {
       const guided =
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
