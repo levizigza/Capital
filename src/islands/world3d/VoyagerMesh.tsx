@@ -281,7 +281,8 @@ export function VoyagerMesh({
   const isCashwell = character?.base === "cashwell";
   const isCashmere = character?.base === "cashmere";
   const isPesoPedro = character?.base === "peso_pedro";
-  const isSeriesLeadFace = isCashwell || isCashmere || isPesoPedro;
+  const isFortunaFernanda = character?.base === "fortuna_fernanda";
+  const isSeriesLeadFace = isCashwell || isCashmere || isPesoPedro || isFortunaFernanda;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -469,6 +470,78 @@ export function VoyagerMesh({
                 </SafeText>
               </>
             ) : null}
+            {/* Fortuna Fernanda — lashes, dark curls, rose crown */}
+            {isFortunaFernanda ? (
+              <>
+                <mesh position={[-0.14, 0.12, 0.11]} material={materials.eye}>
+                  <sphereGeometry args={[0.065, 10, 8]} />
+                </mesh>
+                <mesh position={[0.14, 0.12, 0.11]} material={materials.eye}>
+                  <sphereGeometry args={[0.065, 10, 8]} />
+                </mesh>
+                <mesh position={[-0.14, 0.175, 0.12]} rotation={[0, 0, 0.25]} material={materials.dark}>
+                  <boxGeometry args={[0.085, 0.012, 0.01]} />
+                </mesh>
+                <mesh position={[0.14, 0.175, 0.12]} rotation={[0, 0, -0.25]} material={materials.dark}>
+                  <boxGeometry args={[0.085, 0.012, 0.01]} />
+                </mesh>
+                <mesh position={[0, -0.06, 0.11]} material={materials.blush}>
+                  <boxGeometry args={[0.1, 0.025, 0.01]} />
+                </mesh>
+                {/* Dark curls */}
+                <mesh castShadow position={[-0.4, 0.02, -0.06]}>
+                  <sphereGeometry args={[0.17, 10, 8]} />
+                  <meshStandardMaterial color="#1c1917" roughness={0.7} />
+                </mesh>
+                <mesh castShadow position={[0.4, 0.02, -0.06]}>
+                  <sphereGeometry args={[0.17, 10, 8]} />
+                  <meshStandardMaterial color="#1c1917" roughness={0.7} />
+                </mesh>
+                <mesh castShadow position={[-0.36, -0.22, -0.1]}>
+                  <capsuleGeometry args={[0.09, 0.2, 4, 6]} />
+                  <meshStandardMaterial color="#1c1917" roughness={0.7} />
+                </mesh>
+                <mesh castShadow position={[0.36, -0.22, -0.1]}>
+                  <capsuleGeometry args={[0.09, 0.2, 4, 6]} />
+                  <meshStandardMaterial color="#1c1917" roughness={0.7} />
+                </mesh>
+                {/* Rose crown */}
+                {[
+                  [-0.16, 0.42, 0.05],
+                  [0.02, 0.48, 0.02],
+                  [0.18, 0.42, 0.05],
+                  [-0.05, 0.4, 0.12],
+                ].map((p, i) => (
+                  <mesh key={i} castShadow position={p as [number, number, number]}>
+                    <sphereGeometry args={[0.07, 10, 8]} />
+                    <meshStandardMaterial
+                      color={i % 2 === 0 ? "#b91c1c" : "#fbbf24"}
+                      roughness={0.45}
+                      metalness={i % 2 === 0 ? 0.1 : 0.4}
+                    />
+                  </mesh>
+                ))}
+                {/* $ earrings */}
+                <SafeText
+                  position={[-0.42, 0.02, 0.1]}
+                  fontSize={0.1}
+                  color="#fbbf24"
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  $
+                </SafeText>
+                <SafeText
+                  position={[0.42, 0.02, 0.1]}
+                  fontSize={0.1}
+                  color="#fbbf24"
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  $
+                </SafeText>
+              </>
+            ) : null}
             {/* Cashmere Couture — lashes, blonde waves, cocktail hat, pearls */}
             {isCashmere ? (
               <>
@@ -646,7 +719,15 @@ export function VoyagerMesh({
             form={bodyForm}
             materials={materials}
             seriesLead={
-              isCashwell ? "cashwell" : isCashmere ? "cashmere" : isPesoPedro ? "peso_pedro" : null
+              isCashwell
+                ? "cashwell"
+                : isCashmere
+                  ? "cashmere"
+                  : isPesoPedro
+                    ? "peso_pedro"
+                    : isFortunaFernanda
+                      ? "fortuna_fernanda"
+                      : null
             }
           />
         ) : null}
@@ -654,6 +735,12 @@ export function VoyagerMesh({
         {isCashwell ? <CashwellCane materials={materials} /> : null}
         {isCashmere ? <CashmereStaff materials={materials} /> : null}
         {isPesoPedro ? <PesoPedroCane materials={materials} /> : null}
+        {isFortunaFernanda ? (
+          <>
+            <PesoPedroCane materials={materials} />
+            <FortunaBillFan materials={materials} />
+          </>
+        ) : null}
 
         {companion !== "none" ? (
           <CompanionAttach companion={companion} form={bodyForm} materials={materials} />
@@ -822,6 +909,28 @@ function PesoPedroCane({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Fortuna’s dollar-bill fan — flair of the bag. */
+function FortunaBillFan({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.5, 0.85, 0.15]} rotation={[0.2, 0.4, -0.35]}>
+      {[-0.2, -0.1, 0, 0.1, 0.2].map((a, i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[Math.sin(a) * 0.08, Math.cos(a) * 0.02, i * 0.01]}
+          rotation={[0.1, 0, a]}
+          material={materials.paper}
+        >
+          <boxGeometry args={[0.16, 0.08, 0.008]} />
+        </mesh>
+      ))}
+      <mesh position={[0, -0.02, 0.04]} material={materials.gold}>
+        <sphereGeometry args={[0.035, 8, 6]} />
+      </mesh>
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -832,8 +941,8 @@ function GearAttach({
   accessory: string;
   form: MoneyForm;
   materials: GearMats;
-  /** Series lead accents — Cashwell hat / Cashmere cape / Pedro sombrero */
-  seriesLead?: "cashwell" | "cashmere" | "peso_pedro" | null;
+  /** Series lead accents — Cashwell hat / Cashmere cape / Pedro sombrero / Fernanda cape */
+  seriesLead?: "cashwell" | "cashmere" | "peso_pedro" | "fortuna_fernanda" | null;
 }) {
   const L = gearLandmarks(form);
   const monocleR = Math.max(0.08, L.headR * 0.26);
@@ -999,16 +1108,21 @@ function GearAttach({
   // Fortune Cape — draped from shoulders down the back
   if (accessory === "cape") {
     const couture = seriesLead === "cashmere";
+    const fortuna = seriesLead === "fortuna_fernanda";
+    const dramatic = couture || fortuna;
     return (
       <group position={[0, L.neckY - 0.05, L.backZ]}>
         <mesh
           castShadow
-          position={[0, -L.torsoH * (couture ? 0.55 : 0.35), -0.02]}
+          position={[0, -L.torsoH * (dramatic ? 0.55 : 0.35), -0.02]}
           rotation={[0.35, 0, 0]}
-          material={materials.dark}
         >
           <boxGeometry
-            args={[L.torsoW * (couture ? 1.35 : 1.15), L.torsoH * (couture ? 1.85 : 1.35), 0.06]}
+            args={[L.torsoW * (dramatic ? 1.35 : 1.15), L.torsoH * (dramatic ? 1.85 : 1.35), 0.06]}
+          />
+          <meshStandardMaterial
+            color={fortuna ? "#047857" : "#0a0a0a"}
+            roughness={0.55}
           />
         </mesh>
         {/* Gold lining flash */}
@@ -1018,7 +1132,7 @@ function GearAttach({
           rotation={[0.3, -0.4, 0.1]}
           material={materials.gold}
         >
-          <boxGeometry args={[L.torsoW * 0.45, L.torsoH * (couture ? 1.4 : 0.9), 0.04]} />
+          <boxGeometry args={[L.torsoW * 0.45, L.torsoH * (dramatic ? 1.4 : 0.9), 0.04]} />
         </mesh>
         <mesh castShadow position={[0, 0.02, 0.02]} material={materials.gold}>
           <boxGeometry args={[L.torsoW * 0.55, 0.06, 0.05]} />
@@ -1027,6 +1141,17 @@ function GearAttach({
           <mesh castShadow position={[0, -0.15, 0.08]} material={materials.gold}>
             <boxGeometry args={[0.14, 0.1, 0.04]} />
           </mesh>
+        ) : null}
+        {fortuna ? (
+          <>
+            <mesh castShadow position={[-0.2, -0.2, 0.06]}>
+              <sphereGeometry args={[0.06, 8, 6]} />
+              <meshStandardMaterial color="#b91c1c" roughness={0.45} />
+            </mesh>
+            <mesh castShadow position={[0.18, -0.35, 0.05]} material={materials.gold}>
+              <sphereGeometry args={[0.05, 8, 6]} />
+            </mesh>
+          </>
         ) : null}
       </group>
     );

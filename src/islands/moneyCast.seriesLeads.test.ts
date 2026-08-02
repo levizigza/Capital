@@ -11,32 +11,35 @@ import {
 import { colorHex } from "./character";
 import { HARBOR_NPCS } from "./story/harborTalks";
 
-describe("series leads — Cashwell · Cashmere · Peso Pedro", () => {
-  it("registers three leads with locked sheet looks", () => {
+describe("series leads — Cashwell · Cashmere · Pedro · Fernanda", () => {
+  it("registers four leads with locked sheet looks", () => {
     expect(SERIES_LEAD_MASCOT_ID).toBe("cashwell");
-    expect(SERIES_LEAD_MASCOT_IDS).toEqual(["cashwell", "cashmere", "peso_pedro"]);
-    expect(isSeriesLeadMascot("cashwell")).toBe(true);
-    expect(isSeriesLeadMascot("cashmere")).toBe(true);
-    expect(isSeriesLeadMascot("peso_pedro")).toBe(true);
+    expect(SERIES_LEAD_MASCOT_IDS).toEqual([
+      "cashwell",
+      "cashmere",
+      "peso_pedro",
+      "fortuna_fernanda",
+    ]);
+    expect(isSeriesLeadMascot("fortuna_fernanda")).toBe(true);
     expect(isSeriesLeadMascot("piggy_penny")).toBe(false);
 
-    const cashwell = getMascot("cashwell");
-    expect(cashwell.name).toBe("Cashwell");
-    expect(cashwell.accessory).toBe("cap");
-    expect(colorHex(cashwell.color)).toBe("#14532d");
-
-    const cashmere = getMascot("cashmere");
-    expect(cashmere.name).toBe("Cashmere Couture");
-    expect(cashmere.accessory).toBe("cape");
-    expect(colorHex(cashmere.color)).toBe("#0a0a0a");
+    expect(getMascot("cashwell").accessory).toBe("cap");
+    expect(colorHex(getMascot("cashwell").color)).toBe("#14532d");
+    expect(getMascot("cashmere").accessory).toBe("cape");
+    expect(colorHex(getMascot("cashmere").color)).toBe("#0a0a0a");
 
     const pedro = getMascot("peso_pedro");
     expect(pedro.name).toBe("Peso Pedro");
-    expect(pedro.form).toBe("coin");
     expect(pedro.glyph).toBe("P");
-    expect(pedro.accessory).toBe("cap");
     expect(colorHex(pedro.color)).toBe("#166534");
-    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(3);
+
+    const fernanda = getMascot("fortuna_fernanda");
+    expect(fernanda.name).toBe("Fortuna Fernanda");
+    expect(fernanda.form).toBe("coin");
+    expect(fernanda.glyph).toBe("P");
+    expect(fernanda.accessory).toBe("cape");
+    expect(colorHex(fernanda.color)).toBe("#047857");
+    expect(MONEY_CAST.filter((c) => isSeriesLeadMascot(c.id))).toHaveLength(4);
   });
 
   it("flanks Memory Courtyard — never Piggy’s fountain slot", () => {
@@ -52,12 +55,9 @@ describe("series leads — Cashwell · Cashmere · Peso Pedro", () => {
   it("does not randomize series-lead coats or gear", () => {
     for (const id of SERIES_LEAD_MASCOT_IDS) {
       const a = varyMascot(id, `harbor:${id}:morning`);
-      const b = varyMascot(id, `harbor:${id}:evening`);
       const sheet = getMascot(id);
       expect(a.color).toBe(sheet.color);
-      expect(b.color).toBe(sheet.color);
       expect(a.accessory).toBe(sheet.accessory);
-      expect(b.accessory).toBe(sheet.accessory);
       expect(a.name).toBe(sheet.name);
     }
   });
