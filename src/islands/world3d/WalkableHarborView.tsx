@@ -143,8 +143,8 @@ type Props = {
    * owns the one-job plaza beat.
    */
   piggyPresenceBeat?: boolean;
-  /** Fires once plaza is playable (3D ready or myth fallback) — gates signature cinema. */
-  onPlazaReady?: () => void;
+  /** Plaza playable flag (3D ready or myth) — gates signature cinema; false while veiled. */
+  onPlazaReady?: (ready: boolean) => void;
   /** Spectacle / share / day-2 — myth path stays a quiet Memory stage, not Piggy meet. */
   cinemaActive?: boolean;
 };
@@ -1035,7 +1035,7 @@ export function WalkableHarborView({
   }, [ready]);
 
   useEffect(() => {
-    if (ready) onPlazaReady?.();
+    onPlazaReady?.(ready);
   }, [ready, onPlazaReady]);
 
   useEffect(() => {

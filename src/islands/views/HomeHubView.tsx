@@ -322,7 +322,7 @@ export function HomeHubView({
   const [feltShareOpen, setFeltShareOpen] = useState(false);
   /** Plaza playable (3D or myth) — signature cinema must wait for this. */
   const [plazaReady, setPlazaReady] = useState(false);
-  const markPlazaReady = useCallback(() => setPlazaReady(true), []);
+  const markPlazaReady = useCallback((ok: boolean) => setPlazaReady(ok), []);
   const [feltPreviewUrl, setFeltPreviewUrl] = useState<string | null>(null);
   const [trailerOpen, setTrailerOpen] = useState(false);
   const [echoSurpriseOpen, setEchoSurpriseOpen] = useState(false);
