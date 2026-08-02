@@ -287,6 +287,7 @@ export function VoyagerMesh({
   const isSultanStacks = character?.base === "sultan_stacks";
   const isDinarDahlia = character?.base === "dinar_dahlia";
   const isMansaMoneybaggs = character?.base === "mansa_moneybaggs";
+  const isKandakeKash = character?.base === "kandake_kash";
   const isSeriesLeadFace =
     isCashwell ||
     isCashmere ||
@@ -296,7 +297,8 @@ export function VoyagerMesh({
     isJadeFortune ||
     isSultanStacks ||
     isDinarDahlia ||
-    isMansaMoneybaggs;
+    isMansaMoneybaggs ||
+    isKandakeKash;
   const look = getEraLook3D(animationStyle);
   const needsPop = look.shading === "vector" || look.shading === "wire" || look.skyMode === "void";
 
@@ -482,6 +484,80 @@ export function VoyagerMesh({
                 >
                   P
                 </SafeText>
+              </>
+            ) : null}
+            {/* Kandake Kash — amber eyes, braided crown, KK crest */}
+            {isKandakeKash ? (
+              <>
+                <mesh position={[-0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#78350f" emissive="#f59e0b" emissiveIntensity={0.35} />
+                </mesh>
+                <mesh position={[0.14, 0.1, 0.11]}>
+                  <sphereGeometry args={[0.07, 10, 8]} />
+                  <meshStandardMaterial color="#78350f" emissive="#f59e0b" emissiveIntensity={0.35} />
+                </mesh>
+                <mesh position={[-0.14, 0.17, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.08, 0.018, 0.01]} />
+                </mesh>
+                <mesh position={[0.14, 0.17, 0.115]} material={materials.dark}>
+                  <boxGeometry args={[0.08, 0.018, 0.01]} />
+                </mesh>
+                <mesh position={[0, -0.08, 0.11]}>
+                  <boxGeometry args={[0.1, 0.025, 0.01]} />
+                  <meshStandardMaterial color="#9f1239" roughness={0.45} />
+                </mesh>
+                <SafeText
+                  position={[0, 0.28, 0.12]}
+                  fontSize={0.12}
+                  color="#1b4332"
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.012}
+                  outlineColor="#fde68a"
+                >
+                  KK
+                </SafeText>
+                {/* Tall braided crown of hair */}
+                <mesh castShadow position={[0, 0.42, -0.05]}>
+                  <sphereGeometry args={[0.22, 12, 10]} />
+                  <meshStandardMaterial color="#0a0a0a" roughness={0.65} />
+                </mesh>
+                {[0, 1, 2, 3, 4].map((i) => {
+                  const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+                  return (
+                    <group key={i} position={[Math.cos(a) * 0.16, 0.55, Math.sin(a) * 0.12]}>
+                      <mesh castShadow>
+                        <capsuleGeometry args={[0.045, 0.22, 4, 6]} />
+                        <meshStandardMaterial color="#0a0a0a" roughness={0.65} />
+                      </mesh>
+                      <mesh castShadow position={[0, 0.08, 0]} material={materials.gold}>
+                        <torusGeometry args={[0.05, 0.012, 6, 10]} />
+                      </mesh>
+                      {i % 2 === 0 ? (
+                        <mesh castShadow position={[0, 0.16, 0]}>
+                          <octahedronGeometry args={[0.03, 0]} />
+                          <meshStandardMaterial color="#10b981" roughness={0.3} metalness={0.4} />
+                        </mesh>
+                      ) : null}
+                    </group>
+                  );
+                })}
+                {/* Wide gold collar */}
+                <mesh castShadow position={[0, -0.32, 0.08]} material={materials.gold}>
+                  <torusGeometry args={[0.22, 0.04, 8, 16]} />
+                </mesh>
+                <mesh castShadow position={[0, -0.32, 0.1]}>
+                  <octahedronGeometry args={[0.04, 0]} />
+                  <meshStandardMaterial color="#10b981" roughness={0.3} metalness={0.4} />
+                </mesh>
+                {/* Disc earrings */}
+                <mesh castShadow position={[-0.42, 0.05, 0.05]} material={materials.gold}>
+                  <cylinderGeometry args={[0.07, 0.07, 0.02, 14]} />
+                </mesh>
+                <mesh castShadow position={[0.42, 0.05, 0.05]} material={materials.gold}>
+                  <cylinderGeometry args={[0.07, 0.07, 0.02, 14]} />
+                </mesh>
               </>
             ) : null}
             {/* Mansa Moneybaggs — gold mask, full beard, M crest */}
@@ -1000,7 +1076,9 @@ export function VoyagerMesh({
                               ? "dinar_dahlia"
                               : isMansaMoneybaggs
                                 ? "mansa_moneybaggs"
-                                : null
+                                : isKandakeKash
+                                  ? "kandake_kash"
+                                  : null
             }
           />
         ) : null}
@@ -1037,6 +1115,12 @@ export function VoyagerMesh({
           <>
             <MansaSunburstStaff materials={materials} />
             <MansaMoneyBag materials={materials} />
+          </>
+        ) : null}
+        {isKandakeKash ? (
+          <>
+            <KandakeDollarStaff materials={materials} />
+            <KandakeCashClutch materials={materials} />
           </>
         ) : null}
 
@@ -1518,6 +1602,84 @@ function MansaMoneyBag({ materials }: { materials: GearMats }) {
   );
 }
 
+/** Kandake’s $-orb staff — crowned commerce. */
+function KandakeDollarStaff({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[0.5, 0.48, 0.1]} rotation={[0.1, 0, 0.06]}>
+      <mesh castShadow position={[0, 0.42, 0]} material={materials.gold}>
+        <cylinderGeometry args={[0.026, 0.03, 1.1, 8]} />
+      </mesh>
+      <mesh castShadow position={[0, 1.02, 0]}>
+        <sphereGeometry args={[0.12, 14, 12]} />
+        <meshStandardMaterial
+          color="#a7f3d0"
+          transparent
+          opacity={0.55}
+          roughness={0.2}
+          metalness={0.15}
+        />
+      </mesh>
+      <mesh castShadow position={[0, 1.02, 0]} material={materials.gold}>
+        <torusGeometry args={[0.12, 0.02, 8, 18]} />
+      </mesh>
+      <SafeText
+        position={[0, 1.02, 0.08]}
+        fontSize={0.14}
+        color="#fde68a"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.01}
+        outlineColor="#1b4332"
+      >
+        $
+      </SafeText>
+    </group>
+  );
+}
+
+/** Kandake’s overflowing cash clutch — golden generosity. */
+function KandakeCashClutch({ materials }: { materials: GearMats }) {
+  return (
+    <group position={[-0.48, 0.55, 0.12]} rotation={[0.15, 0.3, -0.1]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.24, 0.18, 0.1]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.45} />
+      </mesh>
+      <mesh castShadow position={[0, 0.02, 0.055]} material={materials.gold}>
+        <boxGeometry args={[0.1, 0.08, 0.02]} />
+      </mesh>
+      {/* Winged queen mark */}
+      <mesh castShadow position={[-0.06, 0.04, 0.07]} material={materials.gold} rotation={[0, 0, 0.4]}>
+        <boxGeometry args={[0.08, 0.03, 0.01]} />
+      </mesh>
+      <mesh castShadow position={[0.06, 0.04, 0.07]} material={materials.gold} rotation={[0, 0, -0.4]}>
+        <boxGeometry args={[0.08, 0.03, 0.01]} />
+      </mesh>
+      {[0, 1, 2].map((i) => (
+        <mesh
+          key={`bill-${i}`}
+          castShadow
+          position={[(i - 1) * 0.04, 0.12, 0.02]}
+          rotation={[0.2, 0.1 * i, 0]}
+        >
+          <boxGeometry args={[0.08, 0.04, 0.01]} />
+          <meshStandardMaterial color="#166534" roughness={0.55} />
+        </mesh>
+      ))}
+      {[0, 1, 2, 3].map((i) => (
+        <mesh
+          key={`coin-${i}`}
+          castShadow
+          position={[(i % 2) * 0.05 - 0.02, 0.14 + (i > 1 ? 0.03 : 0), 0.05]}
+          material={materials.gold}
+        >
+          <cylinderGeometry args={[0.025, 0.025, 0.015, 10]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Readable outfit gear for every mascot silhouette (Outfitter + plaza Voyager). */
 function GearAttach({
   accessory,
@@ -1539,6 +1701,7 @@ function GearAttach({
     | "sultan_stacks"
     | "dinar_dahlia"
     | "mansa_moneybaggs"
+    | "kandake_kash"
     | null;
 }) {
   const L = gearLandmarks(form);
@@ -1815,7 +1978,8 @@ function GearAttach({
     const fortuna = seriesLead === "fortuna_fernanda";
     const jade = seriesLead === "jade_fortune";
     const dahlia = seriesLead === "dinar_dahlia";
-    const dramatic = couture || fortuna || jade || dahlia;
+    const kandake = seriesLead === "kandake_kash";
+    const dramatic = couture || fortuna || jade || dahlia || kandake;
     return (
       <group position={[0, L.neckY - 0.05, L.backZ]}>
         <mesh
@@ -1827,7 +1991,17 @@ function GearAttach({
             args={[L.torsoW * (dramatic ? 1.35 : 1.15), L.torsoH * (dramatic ? 1.85 : 1.35), 0.06]}
           />
           <meshStandardMaterial
-            color={fortuna ? "#047857" : dahlia ? "#0b3d2e" : jade ? "#0a0a0a" : "#0a0a0a"}
+            color={
+              fortuna
+                ? "#047857"
+                : dahlia
+                  ? "#0b3d2e"
+                  : kandake
+                    ? "#1b4332"
+                    : jade
+                      ? "#0a0a0a"
+                      : "#0a0a0a"
+            }
             roughness={0.55}
           />
         </mesh>
@@ -1881,6 +2055,24 @@ function GearAttach({
             </mesh>
             <mesh castShadow position={[0, -L.torsoH * 0.85, 0]} material={materials.gold}>
               <boxGeometry args={[L.torsoW * 0.9, 0.04, 0.04]} />
+            </mesh>
+          </>
+        ) : null}
+        {kandake ? (
+          <>
+            <mesh castShadow position={[0.2, -0.2, 0.05]} material={materials.gold}>
+              <sphereGeometry args={[0.05, 8, 6]} />
+            </mesh>
+            <mesh castShadow position={[-0.18, -0.36, 0.04]}>
+              <octahedronGeometry args={[0.04, 0]} />
+              <meshStandardMaterial color="#10b981" roughness={0.3} metalness={0.4} />
+            </mesh>
+            {/* Geometric gold trim */}
+            <mesh castShadow position={[0, -L.torsoH * 0.5, 0.02]} material={materials.gold}>
+              <boxGeometry args={[L.torsoW * 1.1, 0.03, 0.03]} />
+            </mesh>
+            <mesh castShadow position={[0, -L.torsoH * 0.9, 0]} material={materials.gold}>
+              <boxGeometry args={[L.torsoW * 0.95, 0.035, 0.035]} />
             </mesh>
           </>
         ) : null}

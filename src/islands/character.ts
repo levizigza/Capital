@@ -54,6 +54,8 @@ export const CHARACTER_COLORS: { id: string; hex: string; label: string }[] = [
   { id: "dahlia", hex: "#0b3d2e", label: "Dahlia Emerald" },
   /** Mansa Moneybaggs — kingdom emerald robe */
   { id: "mansa", hex: "#1b4332", label: "Mansa Emerald" },
+  /** Kandake Kash — onyx gown with forest cape */
+  { id: "kandake", hex: "#0f1412", label: "Kandake Onyx" },
 ];
 
 /** Snapchat-style gear / clothing layers (procedural meshes on VoyagerMesh). */

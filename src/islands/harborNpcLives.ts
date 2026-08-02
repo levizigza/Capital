@@ -141,12 +141,19 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
                             afternoon: "Mansa: Paths connect kingdoms. Memory Courtyard never forgets a Take.",
                             evening: "Mansa: Giving is royalty. Tip yourself first — then uplift.",
                           }
-                        : {
-                            morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                            midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                            afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                            evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                          };
+                        : slot.mascotId === "kandake_kash"
+                          ? {
+                              morning: "Kandake Kash: History like a crown — the Plinth keeps yesterday’s stride.",
+                              midday: "Kandake: Crowned commerce. Piggy keeps the Harbor verbs.",
+                              afternoon: "Kandake: Riches feel richer shared. Memory Courtyard never forgets a Take.",
+                              evening: "Kandake: Treasure in motion. Tip yourself first — then multiply people.",
+                            }
+                          : {
+                              morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+                              midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+                              afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+                              evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+                            };
     const motion = harborMotionForIndex(i, slot.mascotId);
     return {
       mascotId: slot.mascotId,
