@@ -1,34 +1,7 @@
-import {
-  Component,
-  Suspense,
-  useEffect,
-  useMemo,
-  useState,
-  type ErrorInfo,
-  type ReactNode,
-} from "react";
-import { Canvas } from "@react-three/fiber";
-
 import { SERIES_LEAD_MASCOT_IDS, getMascot } from "../moneyCast";
 import { PLAYABLE_SELECT_CAST } from "../castLooks";
-import { SeriesCoinFace } from "./SeriesCoinFace";
-
-class CanvasErrorBoundary extends Component<
-  { children: ReactNode; onError?: () => void },
-  { failed: boolean }
-> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch(_e: Error, _info: ErrorInfo) {
-    this.props.onError?.();
-  }
-  render() {
-    if (this.state.failed) return null;
-    return this.props.children;
-  }
-}
+import { SERIES_SHEET_SPECS } from "../../art/seriesCast/seriesLeadArt";
+import { SeriesLeadPortrait } from "../../art/seriesCast/SeriesLeadPortrait";
 
 type Props = {
   selectedId: string;
@@ -40,91 +13,10 @@ type Props = {
 
 const LEAD_IDS = SERIES_LEAD_MASCOT_IDS as readonly string[];
 
-function CoinCell({
-  id,
-  index,
-  cols,
-  rows,
-  selected,
-  onPick,
-}: {
-  id: string;
-  index: number;
-  cols: number;
-  rows: number;
-  selected: boolean;
-  onPick: (id: string) => void;
-}) {
-  const col = index % cols;
-  const row = Math.floor(index / cols);
-  const spacingX = 1.55;
-  const spacingY = 1.55;
-  const x = (col - (cols - 1) / 2) * spacingX;
-  const y = ((rows - 1) / 2 - row) * spacingY;
-  const r = selected ? 0.52 : 0.44;
-  return (
-    <group position={[x, y, 0]}>
-      {/* Stable hit target — spinning mesh alone is edge-on half the time and misses clicks */}
-      <mesh
-        position={[0, 0, 0.35]}
-        onClick={(e) => {
-          e.stopPropagation();
-          onPick(id);
-        }}
-        onPointerOver={() => {
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <circleGeometry args={[r * 1.15, 28]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
-      <SeriesCoinFace id={id} radius={r} spin selected={selected} />
-    </group>
-  );
-}
-
-function CoinBoard({
-  ids,
-  selectedId,
-  onPick,
-}: {
-  ids: readonly string[];
-  selectedId: string;
-  onPick: (id: string) => void;
-}) {
-  const cols = ids.length <= 12 ? 4 : 5;
-  const rows = Math.ceil(ids.length / cols);
-  return (
-    <>
-      <color attach="background" args={["#0c1622"]} />
-      <ambientLight intensity={0.85} />
-      <directionalLight position={[2, 4, 6]} intensity={1.15} />
-      <pointLight position={[-3, 2, 4]} intensity={0.55} color="#fbbf24" />
-      <mesh position={[0, 0, -1.2]} receiveShadow>
-        <planeGeometry args={[cols * 2.2, rows * 2.2]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.92} />
-      </mesh>
-      {ids.map((id, i) => (
-        <CoinCell
-          key={id}
-          id={id}
-          index={i}
-          cols={cols}
-          rows={rows}
-          selected={id === selectedId}
-          onPick={onPick}
-        />
-      ))}
-    </>
-  );
-}
-
 /**
- * Street Fighter–style select: every fighter as a spinning face-forward coin,
- * all visible at once. Tap a coin → parent opens full 3D body + customize.
+ * Street Fighter–style select: every fighter as a spinning coin face,
+ * all visible at once. HTML/CSS 3D so taps always work (no WebGL steal).
+ * Tap a coin → parent opens full 3D body + customize.
  */
 export function StreetFighterCoinSelect({
   selectedId,
@@ -132,121 +24,124 @@ export function StreetFighterCoinSelect({
   onPick,
   className,
 }: Props) {
-  const roster = useMemo(() => {
-    if (ids?.length) return ids;
-    // Series leads first (the 12), then Harbor classics for Outfitter reuse
-    const leads = LEAD_IDS;
-    const extras = PLAYABLE_SELECT_CAST.filter((id) => !leads.includes(id));
-    return [...leads, ...extras];
-  }, [ids]);
-
-  // Boot cast: show only the 12 leads so every face fits one screen.
   const boardIds = ids ?? LEAD_IDS;
-
-  const [ready, setReady] = useState(false);
-  const [failed, setFailed] = useState(false);
   const selected = getMascot(selectedId);
-
-  const cols = 4;
-  const rows = Math.ceil(boardIds.length / cols);
-  const camZ = rows <= 3 ? 7.2 : 8.6;
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setReady(true), 2_000);
-    return () => {
-      window.clearTimeout(t);
-      document.body.style.cursor = "auto";
-    };
-  }, []);
 
   return (
     <div
-      className={`${className ?? "absolute inset-0"} z-0`}
+      className={`${className ?? "absolute inset-0"} z-0 overflow-hidden bg-[#0c1622]`}
       data-testid="sf-coin-select"
       data-selected={selectedId}
     >
-      {!ready && !failed ? (
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c1622] text-sm font-bold text-amber-100/80">
-          Spinning the cast coins…
-        </div>
-      ) : null}
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 40%, #1e3a5f 0%, #0c1622 70%)",
+        }}
+        aria-hidden
+      />
 
-      {failed ? (
-        // HTML fallback grid — still Street Fighter, still distinct sheets
-        <div className="absolute inset-0 overflow-y-auto bg-[#0c1622] px-3 pb-36 pt-24">
-          <div className="mx-auto grid max-w-3xl grid-cols-3 gap-3 sm:grid-cols-4">
-            {boardIds.map((id) => {
-              const m = getMascot(id);
-              const active = id === selectedId;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => onPick(id)}
-                  className={`flex flex-col items-center gap-1 rounded-2xl border-2 p-2 ${
-                    active
-                      ? "border-amber-300 bg-amber-200/20"
-                      : "border-white/20 bg-black/40 hover:border-white/50"
-                  }`}
-                  data-testid={`sf-coin-fallback-${id}`}
+      <div className="relative flex h-full flex-col px-3 pb-[11.5rem] pt-20 sm:px-5 sm:pb-44 sm:pt-24">
+        <div
+          className="mx-auto grid w-full max-w-4xl flex-1 grid-cols-3 content-center gap-2 sm:grid-cols-4 sm:gap-3"
+          role="listbox"
+          aria-label="Series lead fighters"
+        >
+          {boardIds.map((id) => {
+            const m = getMascot(id);
+            const spec = SERIES_SHEET_SPECS[id];
+            const active = id === selectedId;
+            const isLead = LEAD_IDS.includes(id);
+            return (
+              <button
+                key={id}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => onPick(id)}
+                data-testid={`sf-coin-${id}`}
+                className={`group relative flex flex-col items-center gap-1 rounded-2xl border-2 p-1.5 transition sm:p-2 ${
+                  active
+                    ? "scale-[1.03] border-amber-300 bg-amber-200/15 shadow-[0_0_24px_rgba(251,191,36,0.35)]"
+                    : "border-white/15 bg-black/35 hover:border-white/45 hover:bg-black/50"
+                }`}
+              >
+                <div
+                  className="sf-coin-spin relative h-[4.6rem] w-[4.6rem] sm:h-[5.6rem] sm:w-[5.6rem]"
+                  style={{ perspective: "600px" }}
                 >
-                  <span
-                    className="flex h-16 w-16 items-center justify-center rounded-full text-2xl font-black text-[#14532d] shadow-inner"
+                  <div
+                    className="sf-coin-spin-inner absolute inset-0"
                     style={{
-                      background: "radial-gradient(circle at 35% 30%, #fde68a, #f4b942 55%, #d97706)",
+                      transformStyle: "preserve-3d",
+                      animation: `sf-coin-y ${active ? "2.4s" : "3.6s"} linear infinite`,
                     }}
                   >
-                    {m.glyph ?? m.emoji}
-                  </span>
-                  <span className="w-full truncate text-center text-[10px] font-bold text-white">
-                    {m.name}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                    <div
+                      className="absolute inset-0 overflow-hidden rounded-full border-[3px] shadow-lg"
+                      style={{
+                        borderColor: active ? "#fde68a" : spec?.accent ?? "#f4b942",
+                        background: `radial-gradient(circle at 35% 30%, #fde68a, ${spec?.coin ?? "#f4b942"} 55%, #b45309)`,
+                        backfaceVisibility: "hidden",
+                      }}
+                    >
+                      {isLead ? (
+                        <SeriesLeadPortrait
+                          id={id}
+                          title={m.name}
+                          className="h-full w-full scale-110"
+                        />
+                      ) : (
+                        <span className="flex h-full w-full items-center justify-center text-3xl font-black text-[#14532d]">
+                          {m.glyph ?? m.emoji}
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      className="absolute inset-0 rounded-full border-[3px]"
+                      style={{
+                        borderColor: "#92400e",
+                        background: `radial-gradient(circle at 65% 40%, #fbbf24, #d97706 60%, #78350f)`,
+                        transform: "rotateY(180deg)",
+                        backfaceVisibility: "hidden",
+                      }}
+                      aria-hidden
+                    />
+                  </div>
+                </div>
+                <span className="w-full truncate px-0.5 text-center text-[10px] font-bold leading-tight text-white sm:text-[11px]">
+                  {m.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
-      ) : (
-        <CanvasErrorBoundary onError={() => setFailed(true)}>
-          <Canvas
-            dpr={[1, 1.25]}
-            camera={{ position: [0, 0, camZ], fov: 42, near: 0.1, far: 40 }}
-            className="absolute inset-0"
-            gl={{
-              antialias: true,
-              alpha: false,
-              powerPreference: "high-performance",
-              failIfMajorPerformanceCaveat: false,
-            }}
-            onCreated={({ gl, camera }) => {
-              gl.setClearColor("#0c1622", 1);
-              camera.lookAt(0, 0, 0);
-              setReady(true);
-            }}
-          >
-            <Suspense fallback={null}>
-              <CoinBoard ids={boardIds} selectedId={selectedId} onPick={onPick} />
-            </Suspense>
-          </Canvas>
-        </CanvasErrorBoundary>
-      )}
 
-      {/* Name plate under the board — doesn't cover coins on desktop */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[8.5rem] z-[2] px-4 text-center sm:bottom-40">
-        <p className="text-lg font-black text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.85)]">
+        <p className="pointer-events-none mt-2 text-center text-sm font-black text-white drop-shadow sm:text-base">
           {selected.name}
         </p>
-        <p className="mx-auto max-w-md text-xs text-white/80 sm:text-sm">{selected.tagline}</p>
+        <p className="pointer-events-none mx-auto max-w-md text-center text-[11px] text-white/75 sm:text-xs">
+          {selected.tagline}
+        </p>
       </div>
 
-      {/* Invisible — keep roster length for tests */}
+      <style>{`
+        @keyframes sf-coin-y {
+          from { transform: rotateY(0deg); }
+          to { transform: rotateY(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .sf-coin-spin-inner { animation: none !important; }
+        }
+      `}</style>
+
       <span className="sr-only" data-testid="sf-coin-count">
         {boardIds.length}
       </span>
-      <span className="sr-only">{roster.length}</span>
+      <span className="sr-only">{PLAYABLE_SELECT_CAST.length}</span>
     </div>
   );
 }
 
-/** Orthographic helper export for tests */
 export const SF_SELECT_LEAD_COUNT = LEAD_IDS.length;
