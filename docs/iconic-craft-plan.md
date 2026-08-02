@@ -243,6 +243,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Cold player sentence per organ. If they invent a second mythology, copy failed. |
 
+**Shipped (Pillar 12):** `coldOrganKidSentence` — one Story Bible sentence per organ (Coin holds · Clock shelters · Spiral withstands · Memory keeps). Spectacle headlines unified to suit verbs (cut “Coin Change” / “Clock Take” split). Family Room myth uses the same Harbor retell form. Guarded by `storyColdRetell.test.ts`. Debt Collector stays Credit Ordeal-only.
+
 ---
 
 ### 13. Onboarding and tutorials
@@ -319,7 +321,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Window Esc via `useOverlayEscape` on signature overlays; HarborFelt sticky Leave + backdrop; Esc · Leave chrome. Next: Talk Battle Leave chrome still SaaS-y |
 | 10 | Art direction | playable → iconic | 2026-08-02 | Structure part silhouettes + Soft Beat beacon; Lid Lookout hatch; SafeText on interior (Pages silhouette-true). Next: shore Coin Jar vs painting gate distance read |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` mute-test stingers; Harbor bed ducks on spectacle/share. Next: Piggy homecoming reward sting |
-| 12 | Story | | | |
+| 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
 | 13 | Onboarding | | | |
 | 14 | Technical | | | |
 | 15 | Accessibility | | | |
@@ -337,6 +339,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **11 — Sound and music** (`take_mark` + `harbor_felt` mute-test stingers; Harbor hush duck on spectacle/share).  
+**Last shipped:** Pillar **12 — Story, world, and context** (`coldOrganKidSentence` + unified spectacle/Family cold retell; Story Bible only).  
 
-**Start next:** Pillar **12 — Story, world, and context** (cold player sentence per organ; Story Bible only).
+**Start next:** Pillar **13 — Onboarding and tutorials** (fresh profile; one verb → practice → combine).

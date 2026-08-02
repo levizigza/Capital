@@ -79,6 +79,8 @@ Content = Money Mascots + islands + capsules. Presentation must stay readable (l
 
 **Shipped (Pillar 11 — audio):** Mute test Take → hush → Harbor felt that — `take_mark` on Take cinema mark (not Soft Beat); `harbor_felt` on spectacle reveal + share land (not trailer cheer); Harbor Memory bed ducks during spectacle/share.
 
+**Shipped (Pillar 12 — story):** One cold kid sentence per organ (`coldOrganKidSentence`); spectacle + Family Room share the Harbor retell form (suit verb + plaque). Cut “Coin Change” vs “Clock Take” headline split that invented a second mythology.
+
 ## 13. Onboarding
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.

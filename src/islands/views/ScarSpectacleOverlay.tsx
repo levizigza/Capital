@@ -31,7 +31,7 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   const latest = scars[scars.length - 1];
   const organId = latest ? scarOrganId(latest) : "memory";
   const organWord = scarOrganName(organId);
-  const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
+  const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that — Memory keeps";
   const retell = latest ? coldRetellLine(latest) : null;
   const shelf = latest ? plaqueShelfLine(latest) : null;
   const onDoneRef = useRef(onDone);

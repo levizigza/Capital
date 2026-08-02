@@ -1,0 +1,57 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { HARBOR_LOCAL_CAST } from "./moneyCast";
+import { familyPlaqueMythLine } from "./familyRoom";
+import {
+  coldOrganKidSentence,
+  coldSpectacleHeadline,
+  coldRetellLine,
+} from "./worldMemory";
+
+/**
+ * Pillar 12 — Story Bible only: one cold sentence per organ;
+ * inventing a second mythology fails the pass.
+ */
+describe("Pillar 12 story cold retell", () => {
+  it("locks four organ kid sentences to suit verbs", () => {
+    expect(coldOrganKidSentence("coin")).toBe(
+      "The Coin holds — save a little; the jar still waits.",
+    );
+    expect(coldOrganKidSentence("clock")).toBe(
+      "The Clock shelters — wait under the umbrella before glitter.",
+    );
+    expect(coldOrganKidSentence("spiral")).toBe(
+      "The Spiral withstands — wait beats haste on the interest wall.",
+    );
+    expect(coldOrganKidSentence("memory")).toBe(
+      "Memory keeps — Harbor remembers your Take on the Plinth.",
+    );
+  });
+
+  it("keeps spectacle headline + plaque retell + Family myth on one mythology", () => {
+    const cove = {
+      id: "cove_saver_plaque",
+      islandId: "coincraft_cove",
+      label: "Jar before treat",
+    };
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
+    expect(coldRetellLine(cove)).toBe(
+      'The Coin holds — Harbor remembered: “Jar before treat.”',
+    );
+    expect(familyPlaqueMythLine(cove.label, "coin")).toBe(
+      'The Coin holds — Harbor remembered: “Jar before treat.” Local myth — and so do you.',
+    );
+    // Competing Harmon-as-organ names are bugs
+    const spectacleSrc = readFileSync(
+      join(__dirname, "worldMemory.ts"),
+      "utf8",
+    );
+    expect(spectacleSrc).not.toMatch(/Harbor felt the Coin Change/);
+    expect(spectacleSrc).not.toMatch(/Harbor felt the Clock Take/);
+  });
+
+  it("keeps Debt Collector off the Harbor terrace cast", () => {
+    expect(HARBOR_LOCAL_CAST.some((s) => s.mascotId === "debt_collector")).toBe(false);
+  });
+});

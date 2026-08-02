@@ -55,15 +55,13 @@ describe("familyRoom", () => {
     ).toThrow();
   });
 
-  it("names a plaque as local household myth", () => {
+  it("names a plaque with Harbor cold-retell mythology (suit verb)", () => {
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Local myth/i);
-    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Coin/);
-    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/tips jars/i);
-    expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/Clock/);
-    expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/stamps/i);
-    expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/Spiral/);
-    expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/weighs/i);
+    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Coin holds/);
+    expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Harbor remembered/);
+    expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/Clock shelters/);
+    expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/Spiral withstands/);
     expect(familyPlaqueMythLine(null)).toBeNull();
     expect(familyPlaqueMythLine("  ")).toBeNull();
   });

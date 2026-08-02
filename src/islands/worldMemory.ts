@@ -185,6 +185,23 @@ export function nextPaintingAfterScar(
   return null;
 }
 
+/**
+ * Plaque-free kid sentence per organ (Pillar 12).
+ * One mythology — suit verb only; never Harmon jargon as organ names.
+ */
+export function coldOrganKidSentence(organ: MoneyOrganId): string {
+  if (organ === "clock") {
+    return "The Clock shelters — wait under the umbrella before glitter.";
+  }
+  if (organ === "spiral") {
+    return "The Spiral withstands — wait beats haste on the interest wall.";
+  }
+  if (organ === "memory") {
+    return "Memory keeps — Harbor remembers your Take on the Plinth.";
+  }
+  return "The Coin holds — save a little; the jar still waits.";
+}
+
 /** One kid-facing sentence after a cold play — organ verb + plaque. */
 export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
@@ -197,13 +214,13 @@ export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "labe
   return `${organVerbChip(organ)} · ${scar.label}`;
 }
 
-/** Spectacle headline — organ-first Harbor proof. */
+/**
+ * Spectacle headline — same suit-verb mythology as cold retell.
+ * Never “Coin Change” vs “Clock Take” (that invents a second cosmos).
+ */
 export function coldSpectacleHeadline(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  if (organ === "coin") return "Harbor felt the Coin Change";
-  if (organ === "clock") return "Harbor felt the Clock Take";
-  if (organ === "spiral") return "Harbor felt the Spiral";
-  return "Harbor felt that choice";
+  return `Harbor felt that — the ${organVerbChip(organ)}`;
 }
 
 /** Suit-verb hush after Take — Coin holds · Clock shelters · Spiral withstands. */

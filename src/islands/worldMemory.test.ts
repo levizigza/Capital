@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   addHarborScar,
   applyStanceDelta,
+  coldOrganKidSentence,
   coldRetellLine,
   coldSpectacleHeadline,
   day2EchoBody,
@@ -156,9 +157,11 @@ describe("worldMemory", () => {
     expect(nextPaintingAfterScar(cove)).toBe("Paycheck Peninsula");
     expect(nextPaintingAfterScar(pay)).toBe("Credit Kingdom");
     expect(nextPaintingAfterScar(credit)).toBeNull();
-    expect(coldSpectacleHeadline(cove)).toMatch(/Coin/);
-    expect(coldSpectacleHeadline(pay)).toMatch(/Clock/);
-    expect(coldSpectacleHeadline(credit)).toMatch(/Spiral/);
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
+    expect(coldSpectacleHeadline(pay)).toBe("Harbor felt that — the Clock shelters");
+    expect(coldSpectacleHeadline(credit)).toBe("Harbor felt that — the Spiral withstands");
+    // One mythology — never Harmon jargon as organ names
+    expect(coldSpectacleHeadline(cove)).not.toMatch(/Change|Take$/);
     expect(organTakeHushLine("coin")).toMatch(/holds/);
     expect(organTakeHushLine("clock")).toMatch(/shelters/);
     expect(organTakeHushLine("spiral")).toMatch(/withstands/);
@@ -167,5 +170,18 @@ describe("worldMemory", () => {
     expect(day2EchoBody("Umbrella before glitter", "clock")).not.toMatch(/jars/);
     expect(scarRumorLine(cove, "later")).toMatch(/Coin/);
     expect(scarRumorLine(pay, "same")).toMatch(/Clock/);
+  });
+
+  it("Pillar 12 — cold player can recite one sentence per organ", () => {
+    expect(coldOrganKidSentence("coin")).toMatch(/^The Coin holds/);
+    expect(coldOrganKidSentence("clock")).toMatch(/^The Clock shelters/);
+    expect(coldOrganKidSentence("spiral")).toMatch(/^The Spiral withstands/);
+    expect(coldOrganKidSentence("memory")).toMatch(/^Memory keeps/);
+    // Story Bible frame — living money, not a second cosmos
+    for (const organ of ["coin", "clock", "spiral", "memory"] as const) {
+      const line = coldOrganKidSentence(organ);
+      expect(line).not.toMatch(/Dotgraph|Ledgerlight|Mindwage|Harmon/i);
+      expect(line).not.toMatch(/Coin Change|Clock Take/);
+    }
   });
 });

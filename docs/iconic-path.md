@@ -129,9 +129,22 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 
 ### Cold-retell polish
 
-Canonical kid sentence (spectacle, share, Plinth modal):
+Canonical kid sentences (`coldOrganKidSentence` — plaque-free):
 
-`Harbor remembered the {Coin|Clock|Spiral}: “{plaque}.”`
+| Organ | Cold sentence |
+|-------|---------------|
+| Coin | The Coin holds — save a little; the jar still waits. |
+| Clock | The Clock shelters — wait under the umbrella before glitter. |
+| Spiral | The Spiral withstands — wait beats haste on the interest wall. |
+| Memory | Memory keeps — Harbor remembers your Take on the Plinth. |
+
+With a plaque (spectacle retell, share, Plinth, Family Room):
+
+`The {Coin holds|Clock shelters|Spiral withstands|Memory keeps} — Harbor remembered: “{plaque}.”`
+
+Spectacle headline (one mythology — never “Coin Change” vs “Clock Take”):
+
+`Harbor felt that — the {Coin holds|Clock shelters|Spiral withstands}`
 
 | Organ | Plaque labels | Suit hush verb |
 |-------|---------------|----------------|
