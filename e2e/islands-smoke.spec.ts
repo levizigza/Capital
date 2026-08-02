@@ -50,7 +50,8 @@ test.describe("Islands smoke", () => {
     // Day-2 cinema may open — dismiss without blocking the smoke path
     const hearThem = page.getByRole("button", { name: /I hear them/i });
     if (await hearThem.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await hearThem.click();
+      // Footer HUD can intercept the Soft Beat CTA in CI — force dismiss.
+      await hearThem.click({ force: true });
     }
 
     // Free-roam Harbor: Archipelago map is diegetic at Money Carpet (no always-on chip)
