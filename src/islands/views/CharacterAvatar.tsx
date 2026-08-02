@@ -1,4 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
+import { SeriesLeadPortrait } from "../../art/seriesCast";
+import { hasSheetArtId } from "../../art/seriesCast/seriesLeadArt";
 import {
   type CapitalCharacter,
   baseEmoji,
@@ -168,7 +170,7 @@ export function CharacterAvatar({
         style={{
           position: "absolute",
           inset: 0,
-          borderRadius: "50%",
+          borderRadius: hasSheetArtId(character.base) ? "18%" : "50%",
           background: `radial-gradient(circle at 50% 35%, ${accent}55, ${accent}22 60%, transparent 75%)`,
           border: `${Math.max(3, size * 0.045)}px solid ${accent}`,
           boxShadow: `0 8px 22px ${accent}55, inset 0 2px 8px rgba(255,255,255,0.35)`,
@@ -177,11 +179,21 @@ export function CharacterAvatar({
           justifyContent: "center",
           fontSize: size * 0.52,
           lineHeight: 1,
+          overflow: "hidden",
         }}
       >
-        <span>{baseEmoji(character.base)}</span>
+        {hasSheetArtId(character.base) ? (
+          <SeriesLeadPortrait
+            id={character.base}
+            title={character.name}
+            className="h-full w-full"
+            size={size}
+          />
+        ) : (
+          <span>{baseEmoji(character.base)}</span>
+        )}
       </div>
-      {acc ? (
+      {acc && !hasSheetArtId(character.base) ? (
         <span style={accessoryBadgeStyle(character.accessory, size)}>{acc}</span>
       ) : null}
       {pet ? (

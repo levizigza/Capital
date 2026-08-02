@@ -1,3 +1,5 @@
+import { SeriesLeadPortrait } from "../../art/seriesCast";
+import { hasSheetArtId } from "../../art/seriesCast/seriesLeadArt";
 import { getMascot } from "../moneyCast";
 import { PLAYABLE_SELECT_CAST } from "../castLooks";
 
@@ -32,7 +34,15 @@ export function CastSelectGrid({ selectedId, onPick }: Props) {
             }`}
             data-testid={`cast-select-${id}`}
           >
-            <span className="text-2xl leading-none">{m.emoji}</span>
+            {hasSheetArtId(id) ? (
+              <SeriesLeadPortrait
+                id={id}
+                title={m.name}
+                className="h-14 w-11 shrink-0 drop-shadow"
+              />
+            ) : (
+              <span className="text-2xl leading-none">{m.emoji}</span>
+            )}
             <span className="w-full truncate px-0.5 text-center text-[10px] font-bold leading-tight">
               {m.name}
             </span>

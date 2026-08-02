@@ -22,12 +22,13 @@ Outfitter in Family Room / plaza reopens the same select → Looks · Shirt · P
 
 ## Cast pipeline (per character)
 
-1. Sheet art → `moneyCast.ts` id + tagline + locked look  
-2. Harbor plaza slot (never Piggy’s fountain) **or** island ally later  
-3. Talk tip that names organ / Plinth without stealing Piggy beats  
-4. Distinctive mesh accents (hat, glyph, coat) — procedural first  
-5. Hide or mute during `isPiggyPresenceBeat`  
-6. Story-bible one-liner  
+1. Sheet art → drop exact PNG in `public/cast/{id}.png` (see that folder’s README)  
+2. `moneyCast.ts` id + tagline + locked look + `SeriesLeadPortrait` SVG recreation fallback  
+3. Harbor plaza slot (never Piggy’s fountain) **or** island ally later  
+4. Talk tip that names organ / Plinth without stealing Piggy beats  
+5. Distinctive mesh accents (hat, glyph, coat torso) — sheet billboard in cast select  
+6. Hide or mute during `isPiggyPresenceBeat`  
+7. Story-bible one-liner  
 
 ## Roster progress
 

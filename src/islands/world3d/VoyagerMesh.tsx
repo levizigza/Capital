@@ -389,6 +389,41 @@ export function VoyagerMesh({
           </group>
         ) : null}
 
+        {/* Series-lead coat / gown torso — sheet outfits need a body under the coin head */}
+        {isSeriesLeadFace || isDebtCollector ? (
+          <SeriesLeadTorso
+            lead={
+              isCashwell
+                ? "cashwell"
+                : isCashmere
+                  ? "cashmere"
+                  : isPesoPedro
+                    ? "peso_pedro"
+                    : isFortunaFernanda
+                      ? "fortuna_fernanda"
+                      : isBillionaireBao
+                        ? "billionaire_bao"
+                        : isJadeFortune
+                          ? "jade_fortune"
+                          : isSultanStacks
+                            ? "sultan_stacks"
+                            : isDinarDahlia
+                              ? "dinar_dahlia"
+                              : isMansaMoneybaggs
+                                ? "mansa_moneybaggs"
+                                : isKandakeKash
+                                  ? "kandake_kash"
+                                  : isMoneybaggBro
+                                    ? "moneybagg_bro"
+                                    : isMulaMami
+                                      ? "mula_mami"
+                                      : "debt_collector"
+            }
+            coatHex={hex}
+            materials={materials}
+          />
+        ) : null}
+
         {isCoin ? (
           <group position={[0, 0.95, 0]}>
             <mesh castShadow material={isSeriesLeadFace ? materials.gold : materials.body}>
@@ -1404,6 +1439,145 @@ function gearLandmarks(form: MoneyForm): {
         handX: 0.48, handY: 0.7, handZ: 0.14, backZ: -0.3,
       };
   }
+}
+
+/** Distinct coat / gown / vest body for each illustrated series lead. */
+function SeriesLeadTorso({
+  lead,
+  coatHex,
+  materials,
+}: {
+  lead:
+    | "cashwell"
+    | "cashmere"
+    | "peso_pedro"
+    | "fortuna_fernanda"
+    | "billionaire_bao"
+    | "jade_fortune"
+    | "sultan_stacks"
+    | "dinar_dahlia"
+    | "mansa_moneybaggs"
+    | "kandake_kash"
+    | "moneybagg_bro"
+    | "mula_mami"
+    | "debt_collector";
+  coatHex: string;
+  materials: GearMats;
+}) {
+  const y = 0.62;
+  if (lead === "cashwell") {
+    return (
+      <group position={[0, y, 0]}>
+        {/* Forest frock coat */}
+        <mesh castShadow position={[0, 0.02, 0]}>
+          <boxGeometry args={[0.72, 0.62, 0.38]} />
+          <meshStandardMaterial color="#14532d" roughness={0.5} />
+        </mesh>
+        {/* Gold waistcoat */}
+        <mesh castShadow position={[0, 0.06, 0.12]} material={materials.gold}>
+          <boxGeometry args={[0.42, 0.42, 0.16]} />
+        </mesh>
+        <mesh position={[0, 0.08, 0.22]} material={materials.dark}>
+          <boxGeometry args={[0.04, 0.3, 0.02]} />
+        </mesh>
+        {/* Pocket watch chain */}
+        <mesh castShadow position={[0.16, 0.0, 0.22]} rotation={[0.2, 0, 0.4]} material={materials.gold}>
+          <torusGeometry args={[0.08, 0.012, 6, 12, Math.PI]} />
+        </mesh>
+        <mesh castShadow position={[0.22, -0.08, 0.2]} material={materials.gold}>
+          <cylinderGeometry args={[0.05, 0.05, 0.03, 12]} />
+        </mesh>
+        {/* Coat tails */}
+        <mesh castShadow position={[-0.18, -0.38, -0.06]} rotation={[0.25, 0.1, 0.15]}>
+          <boxGeometry args={[0.28, 0.28, 0.08]} />
+          <meshStandardMaterial color="#14532d" roughness={0.5} />
+        </mesh>
+        <mesh castShadow position={[0.18, -0.38, -0.06]} rotation={[0.25, -0.1, -0.15]}>
+          <boxGeometry args={[0.28, 0.28, 0.08]} />
+          <meshStandardMaterial color="#14532d" roughness={0.5} />
+        </mesh>
+      </group>
+    );
+  }
+  if (lead === "cashmere") {
+    return (
+      <group position={[0, y, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.58, 0.5, 0.32]} />
+          <meshStandardMaterial color="#0a0a0a" roughness={0.4} metalness={0.15} />
+        </mesh>
+        <mesh castShadow position={[0, -0.05, 0.1]} material={materials.gold}>
+          <boxGeometry args={[0.2, 0.08, 0.04]} />
+        </mesh>
+        {/* Pearl belt */}
+        {[-0.12, -0.04, 0.04, 0.12].map((x, i) => (
+          <mesh key={i} castShadow position={[x, -0.18, 0.16]}>
+            <sphereGeometry args={[0.035, 8, 6]} />
+            <meshStandardMaterial color="#fafaf9" roughness={0.35} metalness={0.15} />
+          </mesh>
+        ))}
+      </group>
+    );
+  }
+  if (lead === "peso_pedro") {
+    return (
+      <group position={[0, y, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.7, 0.58, 0.36]} />
+          <meshStandardMaterial color="#166534" roughness={0.5} />
+        </mesh>
+        <mesh castShadow position={[0, 0.05, 0.14]} material={materials.gold}>
+          <boxGeometry args={[0.35, 0.35, 0.12]} />
+        </mesh>
+        <mesh castShadow position={[0, -0.12, 0.18]} material={materials.gold}>
+          <boxGeometry args={[0.5, 0.06, 0.04]} />
+        </mesh>
+      </group>
+    );
+  }
+  if (lead === "sultan_stacks" || lead === "mansa_moneybaggs") {
+    return (
+      <group position={[0, y, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.42, 0.5, 0.7, 16]} />
+          <meshStandardMaterial color={coatHex} roughness={0.5} />
+        </mesh>
+        <mesh castShadow position={[0, 0.1, 0.2]} material={materials.gold}>
+          <boxGeometry args={[0.45, 0.08, 0.04]} />
+        </mesh>
+        <mesh castShadow position={[0, -0.1, 0.22]} material={materials.gold}>
+          <boxGeometry args={[0.5, 0.05, 0.03]} />
+        </mesh>
+      </group>
+    );
+  }
+  if (lead === "billionaire_bao" || lead === "moneybagg_bro" || lead === "mula_mami") {
+    // Thin under-layer — GearAttach vest owns the sheet jacket / crop top.
+    const crop = lead === "mula_mami";
+    return (
+      <group position={[0, y + (crop ? 0.06 : 0), 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[0.55, crop ? 0.36 : 0.5, 0.28]} />
+          <meshStandardMaterial color={coatHex} roughness={0.55} />
+        </mesh>
+      </group>
+    );
+  }
+  if (lead === "debt_collector") {
+    return null; // DebtCollectorBody owns the silhouette
+  }
+  // Cape leads — emerald / onyx gown body under cape
+  return (
+    <group position={[0, y, 0]}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.32, 0.45, 0.68, 14]} />
+        <meshStandardMaterial color={coatHex} roughness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0, 0.12, 0.18]} material={materials.gold}>
+        <boxGeometry args={[0.28, 0.06, 0.04]} />
+      </mesh>
+    </group>
+  );
 }
 
 /** Cashwell’s dollar cane — wealth in every detail. */

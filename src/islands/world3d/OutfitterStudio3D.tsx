@@ -11,6 +11,8 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
+import { hasSheetArtId } from "../../art/seriesCast";
+import { SeriesLeadSheetBillboard } from "../../art/seriesCast/SeriesLeadSheetBillboard";
 import type { CapitalCharacter } from "../character";
 import { colorHex } from "../character";
 import { sheetLookForBase } from "../castLooks";
@@ -135,7 +137,10 @@ function LineupFighter({
     >
       <Pedestal active={selected} color={accent} />
       <group position={[0, 0.14, 0]}>
-        {detailed ? (
+        {hasSheetArtId(id) ? (
+          // Illustrated sheet card — matches uploaded cast art (PNG drop-in or SVG sheet)
+          <SeriesLeadSheetBillboard id={id} height={selected ? 2.05 : 1.75} selected={selected} />
+        ) : detailed ? (
           <VoyagerMesh
             key={`${id}-${look.color}-${look.accessory}-${look.pants}`}
             character={look}
@@ -143,7 +148,6 @@ function LineupFighter({
             scale={selected ? 1.05 : 0.95}
           />
         ) : (
-          // Lightweight 3D stand-in so every pedestal still reads as a fighter
           <group>
             <mesh castShadow position={[0, 0.55, 0]}>
               <capsuleGeometry args={[0.28, 0.55, 6, 12]} />
