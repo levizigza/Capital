@@ -80,7 +80,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
             Fortune Archipelago · 3D Outfitter
           </p>
-          <h1 className="cap-display text-2xl text-white drop-shadow sm:text-3xl">
+          <h1 className="cap-display text-2xl text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] sm:text-3xl">
             {stage === "select" ? "Choose your Voyager" : "Become you"}
           </h1>
           <p className="max-w-lg text-sm text-white/80">
