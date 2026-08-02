@@ -37,7 +37,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
     setDraft(sheetLookForBase(id, draft.name || defaultName || getMascot(id).name));
   };
 
-  const boardCarpet = async () => {
+  const boardCarpet = () => {
     if (busy) return;
     setBusy(true);
     const character: CapitalCharacter = {
@@ -45,18 +45,21 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
       name: draft.name.trim() || defaultName || mascot.name,
       companion: draft.companion === "none" ? "tortoise" : draft.companion,
     };
-    try {
-      const loaded = await loadIslandSave();
-      const withChar: IslandSaveV1 = {
-        ...loaded,
-        character,
-        updatedAt: new Date().toISOString(),
-      };
-      await persistIslandSave(applyCompanionPurchase(withChar, character.companion));
-    } catch (e) {
-      console.warn("[boot] failed to persist cast pick", e);
-    }
+    // Board immediately — never block the carpet on Spark KV / save I/O.
     onComplete(character);
+    void (async () => {
+      try {
+        const loaded = await loadIslandSave();
+        const withChar: IslandSaveV1 = {
+          ...loaded,
+          character,
+          updatedAt: new Date().toISOString(),
+        };
+        await persistIslandSave(applyCompanionPurchase(withChar, character.companion));
+      } catch (e) {
+        console.warn("[boot] failed to persist cast pick", e);
+      }
+    })();
   };
 
   return (
@@ -169,12 +172,12 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
           <motion.button
             type="button"
             disabled={busy}
-            onClick={() => void boardCarpet()}
+            onClick={boardCarpet}
             className="mt-auto rounded-2xl border-2 border-[#14532d] bg-gradient-to-b from-amber-300 to-amber-500 px-4 py-3 text-lg font-black text-[#1c1917] shadow-[0_8px_0_#14532d] transition enabled:hover:translate-y-0.5 enabled:hover:shadow-[0_6px_0_#14532d] disabled:opacity-60"
             data-testid="boot-board-carpet"
             whileTap={{ scale: 0.98 }}
           >
-            {busy ? "Saving look…" : "Board the Money Carpet →"}
+            {busy ? "Boarding…" : "Board the Money Carpet →"}
           </motion.button>
           <p className="text-center text-[11px] text-white/55">
             Customize more shirts, pants, and gear at the Harbor Outfitter.
