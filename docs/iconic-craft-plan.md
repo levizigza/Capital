@@ -293,7 +293,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 4 | Feel | playable → iconic | 2026-08-02 | Wire orphan juice into Take mark → Plinth complete → share accept/reward; Settings Game Feel; fail shake. Next: WASD stop readability + carpet rail juice |
 | 5 | Progression | playable → iconic | 2026-08-02 | After Cove Take Harbor names Coin holds + Paycheck newly open (retell/shelf/share/Piggy/homecoming). Next: Freedom seal / carpet tier plaza reads |
 | 6 | Encounters | playable → iconic | 2026-08-02 | Credit canyon: Score Scanner (not Paycheck categorize); wait/haste Take after practice. Next: Cove Alma vs Paycheck categorize overlap |
-| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs out of live loader/Arcade; Paycheck renamed off Dotgraph; genre HUD muted on spine. Next: tag Cove side minigames (compound/mancala) or park them |
+| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: park docs under docs/islands/{signal-city,…} with explicit PARKED banners |
 | 8 | Balance | | | |
 | 9 | UI / comms | | | |
 | 10 | Art direction | | | |
@@ -316,6 +316,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **7 — Content** (`spineContentRegistry.ts` organ·verb·cold-retell inventory; orphan packs parked from live loader; Paycheck Clock identity restored; genre HUD off spine).  
+**Last shipped:** Pillar **7 — Content** (spine registry + parked packs/minigames from Arcade; Paycheck Clock identity; genre HUD off spine).  
 
 **Start next:** Pillar **8 — Challenge and balance** (Cove Take + carpet price + first seal balance sheet).

@@ -69,6 +69,8 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 
 Content = Money Mascots + islands + capsules. Presentation must stay readable (labels, one coach sentence). Story = Story Bible only.
 
+**Shipped (Pillar 7 — content):** `spineContentRegistry` tags organ · verb · cold-retell for the Fortune spine; genre/asset packs + Cove digression minigames are **parked** out of live loader / Arcade; Paycheck ships as Clock organ (not Dotgraph); genre HUD muted on spine.
+
 ## 13. Onboarding
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.

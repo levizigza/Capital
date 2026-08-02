@@ -2,6 +2,7 @@ import type { GameComplexity, GameGenre } from "../themes/islandThemes";
 import type { IslandDefinition, IslandsContent } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
 import { shellForEra } from "../eraMorph";
+import { isParkedMinigameId } from "../spineContentRegistry";
 
 export type MinigameVisualShell =
   | "arcade"
@@ -65,6 +66,8 @@ export function buildGameCatalog(content: IslandsContent): CatalogGame[] {
     const islandShell = shellForEra(theme.animationStyle);
 
     for (const mg of island.minigames ?? []) {
+      // Pillar 7 — keep Harbor Arcade organ-pure (park digression leftovers).
+      if (isParkedMinigameId(mg.id)) continue;
       const meta = COMPONENT_META[mg.componentId] ?? {
         genre: theme.genre,
         complexity: theme.complexity,

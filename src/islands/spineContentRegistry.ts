@@ -79,6 +79,26 @@ export function isSpineContentIslandId(id: string | null | undefined): boolean {
 }
 
 /**
+ * Digression minigames still defined on spine island JSON (schema / board toys)
+ * but parked out of Harbor Arcade so the live catalog stays organ-pure.
+ */
+export const PARKED_MINIGAME_IDS = [
+  "mg_news_shocks",
+  "mg_compound_snowball",
+  "mg_pasaran_market",
+  "mg_mancala_compound",
+  "mg_life_fork",
+  /** Credit leftover — Paycheck-shaped categorize; replaced by Score Scanner on Anvil */
+  "mg_ck_budget_balancer",
+] as const;
+
+export type ParkedMinigameId = (typeof PARKED_MINIGAME_IDS)[number];
+
+export function isParkedMinigameId(id: string | null | undefined): boolean {
+  return Boolean(id && (PARKED_MINIGAME_IDS as readonly string[]).includes(id));
+}
+
+/**
  * Spine inventory — Harbor cast + Piggy + Coin Bag; Cove / Paycheck / Credit;
  * Structure parts + toys; Outfitter / carpet / share card.
  */
@@ -345,6 +365,16 @@ export const SPINE_CONTENT_REGISTRY: SpineContentPiece[] = [
 
   // —— Signature minigames on spine ——
   {
+    id: "mg_coin_sort",
+    kind: "minigame",
+    path: "src/islands/content/coincraft-cove.islands.json",
+    lane: "spine",
+    organ: "coin",
+    verb: "Hold",
+    coldRetell: "Coin",
+    notes: "First Coins quest — denomination hold",
+  },
+  {
     id: "mg_coin_catcher",
     kind: "minigame",
     path: "src/islands/content/coincraft-cove.islands.json",
@@ -456,6 +486,23 @@ export const SPINE_CONTENT_REGISTRY: SpineContentPiece[] = [
       notes: "Off Cove→Paycheck→Credit+Harbor spine — parked for Pillar 7",
     };
   }),
+
+  // —— Parked digression minigames (JSON may remain; Arcade must not lead with them) ——
+  ...PARKED_MINIGAME_IDS.map(
+    (id): SpineContentPiece => ({
+      id,
+      kind: "minigame",
+      path:
+        id.startsWith("mg_ck_")
+          ? "src/islands/content/credit-kingdom.islands.json"
+          : "src/islands/content/coincraft-cove.islands.json",
+      lane: "parked",
+      organ: null,
+      verb: "—",
+      coldRetell: "—",
+      notes: "Digression / leftover — parked from Arcade; not organ-primary spine",
+    }),
+  ),
 ];
 
 export function spineRegistryPieces(lane?: ContentLane): SpineContentPiece[] {

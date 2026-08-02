@@ -5,8 +5,10 @@ import { SPINE_TRAVEL_IDS } from "./spineArchipelago";
 import {
   assertRegistryMuralLaw,
   isParkedIslandId,
+  isParkedMinigameId,
   isSpineContentIslandId,
   PARKED_ISLAND_IDS,
+  PARKED_MINIGAME_IDS,
   spineRegistryPieces,
   SPINE_CONTENT_REGISTRY,
 } from "./spineContentRegistry";
@@ -28,7 +30,7 @@ describe("Pillar 7 — spine content registry", () => {
       expect(isSpineContentIslandId(id)).toBe(false);
     }
     const parked = spineRegistryPieces("parked");
-    expect(parked.length).toBe(PARKED_ISLAND_IDS.length);
+    expect(parked.length).toBe(PARKED_ISLAND_IDS.length + PARKED_MINIGAME_IDS.length);
     expect(parked.every((p) => p.organ == null)).toBe(true);
   });
 
@@ -46,7 +48,11 @@ describe("Pillar 7 — spine content registry", () => {
     for (const game of catalog) {
       expect(isSpineContentIslandId(game.islandId)).toBe(true);
       expect(isParkedIslandId(game.islandId)).toBe(false);
+      expect(isParkedMinigameId(game.minigameId)).toBe(false);
     }
+    expect(catalog.some((g) => g.minigameId === "mg_coin_sort")).toBe(true);
+    expect(catalog.some((g) => g.minigameId === "mg_compound_snowball")).toBe(false);
+    expect(catalog.some((g) => g.minigameId === "mg_ck_budget_balancer")).toBe(false);
   });
 
   it("does not let genre cities lead spine HUD copy", () => {
