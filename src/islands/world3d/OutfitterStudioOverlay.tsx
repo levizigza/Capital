@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from "react";
-import { GameButton } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { CHARACTER_COMPANIONS, companionEmoji } from "../character";
 import { CharacterCreator } from "../views/CharacterCreator";
@@ -55,7 +54,6 @@ export function OutfitterStudioOverlay({
     if (!owned && price > 0) {
       const ok = onHarborPurchase(price, companionId);
       if (!ok) {
-        // Stay in the fitting room — player can pick Slow Coin (free) or another pet.
         setDraft(next);
         return;
       }
@@ -79,31 +77,20 @@ export function OutfitterStudioOverlay({
     return () => window.removeEventListener("keydown", onKey, true);
   }, [commitAndLeave]);
 
+  const boardIds = [
+    ...SERIES_LEAD_MASCOT_IDS,
+    ...PLAYABLE_SELECT_CAST.filter((id) => !(SERIES_LEAD_MASCOT_IDS as readonly string[]).includes(id)),
+  ];
+
   return (
     <div
-      className="fixed inset-0 z-[80] flex flex-col"
+      className="fixed inset-0 z-[80] flex flex-col bg-[#0c1622]"
       data-testid="outfitter-studio-overlay"
       role="dialog"
       aria-modal="true"
       aria-label="Outfitter fitting room"
     >
-      {stage === "select" ? (
-        <StreetFighterCoinSelect
-          selectedId={draft.base}
-          ids={[...SERIES_LEAD_MASCOT_IDS, ...PLAYABLE_SELECT_CAST.filter((id) => !(SERIES_LEAD_MASCOT_IDS as readonly string[]).includes(id))]}
-          onPick={(id) => {
-            setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
-            setStage("look");
-          }}
-          className="absolute inset-0"
-        />
-      ) : (
-        <OutfitterStudio3D character={draft} className="absolute inset-0" mode="solo" />
-      )}
-
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/75" />
-
-      <header className="relative z-[2] flex items-start justify-between gap-3 p-3 sm:p-4">
+      <header className="relative z-10 flex shrink-0 items-start justify-between gap-3 px-3 pb-1 pt-3 sm:px-4 sm:pt-4">
         <div>
           <div className="text-[10px] font-bold uppercase tracking-wide text-amber-200/90">
             Harbor Haven · 3D Outfitter
@@ -127,8 +114,40 @@ export function OutfitterStudioOverlay({
         </button>
       </header>
 
-      <div className="pointer-events-auto relative z-[20] mt-auto w-full px-3 pb-3 sm:px-4 sm:pb-4">
-        <div className="mx-auto w-full max-w-xl rounded-3xl border border-white/15 bg-black/50 p-3 shadow-2xl backdrop-blur-md sm:p-4">
+      <div className="relative min-h-0 flex-1">
+        {stage === "select" ? (
+          <StreetFighterCoinSelect
+            selectedId={draft.base}
+            ids={boardIds}
+            onFocus={(id) => {
+              setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
+            }}
+            onPick={(id) => {
+              setDraft((d) => sheetLookForBase(id, d.name || defaultName || getMascot(id).name));
+              setStage("look");
+            }}
+            className="absolute inset-0"
+          />
+        ) : (
+          <OutfitterStudio3D
+            character={draft}
+            className="absolute inset-0"
+            mode="solo"
+            pointerEvents="none"
+          />
+        )}
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/45"
+          aria-hidden
+        />
+      </div>
+
+      <div
+        className="relative z-20 shrink-0 border-t border-white/10 bg-black/90 px-3 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md sm:px-4 sm:py-4"
+        data-testid="outfitter-dock"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <div className="mx-auto w-full max-w-xl">
           {stage === "select" ? (
             <div className="flex min-h-0 flex-col gap-3 text-center text-white">
               <div>
@@ -138,21 +157,21 @@ export function OutfitterStudioOverlay({
                 </p>
               </div>
               <div className="flex gap-2">
-                <GameButton
-                  variant="outline"
-                  className="flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50"
+                <button
+                  type="button"
+                  className="min-h-11 flex-1 rounded-2xl border-2 border-white/40 bg-black/45 px-3 text-sm font-bold text-white hover:bg-black/60"
                   onClick={commitAndLeave}
                 >
                   Save & leave
-                </GameButton>
-                <GameButton
-                  variant="primary"
-                  className="flex-1"
+                </button>
+                <button
+                  type="button"
+                  className="min-h-11 flex-1 rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917]"
                   onClick={() => setStage("look")}
                   data-testid="outfitter-confirm-fighter"
                 >
                   Customize on mirror →
-                </GameButton>
+                </button>
               </div>
             </div>
           ) : stage === "look" ? (
@@ -162,6 +181,7 @@ export function OutfitterStudioOverlay({
               variant="outfitter"
               hideCompanion
               preview="none"
+              chrome="dark"
               saveLabel="Next: pick a pet →"
               onDraftChange={setDraft}
               onCancel={commitAndLeave}
@@ -181,7 +201,7 @@ export function OutfitterStudioOverlay({
                   otherwise stay here and pick another.
                 </p>
               </div>
-              <div className="flex max-h-[32vh] flex-wrap justify-center gap-2 overflow-y-auto py-1">
+              <div className="grid max-h-[32vh] grid-cols-3 gap-2 overflow-y-auto py-1 sm:grid-cols-4">
                 {pets.map((pet) => {
                   const active = draft.companion === pet.id;
                   const price = companionPrice(pet.id);
@@ -191,9 +211,9 @@ export function OutfitterStudioOverlay({
                       key={pet.id}
                       type="button"
                       onClick={() => setDraft((d) => ({ ...d, companion: pet.id }))}
-                      className={`flex min-w-[5.25rem] flex-col items-center gap-1 rounded-2xl border-2 px-3 py-3 transition ${
+                      className={`flex min-h-[5rem] flex-col items-center justify-center gap-1 rounded-2xl border-2 px-2 py-2 transition ${
                         active
-                          ? "scale-105 border-amber-300 bg-amber-200/90 text-[#1c1917]"
+                          ? "scale-[1.02] border-amber-300 bg-amber-200/90 text-[#1c1917]"
                           : "border-white/25 bg-black/40 text-white hover:border-white/55"
                       }`}
                     >
@@ -207,20 +227,24 @@ export function OutfitterStudioOverlay({
                 })}
               </div>
               <div className="flex gap-2">
-                <GameButton
-                  variant="outline"
-                  className="flex-1 border-white/40 bg-black/35 text-white hover:bg-black/50"
+                <button
+                  type="button"
+                  className="min-h-11 flex-1 rounded-2xl border-2 border-white/40 bg-black/45 px-3 text-sm font-bold text-white hover:bg-black/60"
                   onClick={() => setStage("look")}
                 >
                   ← Looks
-                </GameButton>
-                <GameButton variant="primary" className="flex-1" onClick={commitAndLeave}>
+                </button>
+                <button
+                  type="button"
+                  className="min-h-11 flex-1 rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917]"
+                  onClick={commitAndLeave}
+                >
                   {draft.companion === "none"
                     ? "Take free Slow Coin ✓"
                     : ownsCompanion(save, draft.companion) || companionPrice(draft.companion) === 0
                       ? "Save & leave ✓"
                       : `Adopt · 🪙 ${companionPrice(draft.companion)}`}
-                </GameButton>
+                </button>
               </div>
             </div>
           )}

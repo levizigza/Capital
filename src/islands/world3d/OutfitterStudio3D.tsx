@@ -293,6 +293,8 @@ type Props = {
   mode?: OutfitterStudioMode;
   lineupIds?: readonly string[];
   onPickFighter?: (id: string) => void;
+  /** When "none", canvas never steals dock/UI taps (solo customize). */
+  pointerEvents?: "auto" | "none";
 };
 
 /**
@@ -305,6 +307,7 @@ export function OutfitterStudio3D({
   mode = "solo",
   lineupIds,
   onPickFighter,
+  pointerEvents = "auto",
 }: Props) {
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -339,7 +342,9 @@ export function OutfitterStudio3D({
       className={className ?? "absolute inset-0"}
       data-testid="outfitter-studio-3d"
       data-mode={mode}
+      data-pointer={pointerEvents}
       aria-hidden={!ready}
+      style={{ pointerEvents }}
     >
       {!ready && !failed ? (
         <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#1c1917] text-sm font-bold text-amber-100/80">
@@ -357,6 +362,7 @@ export function OutfitterStudio3D({
             dpr={reduced || lineup ? [1, 1] : [1, 1.25]}
             camera={{ position: lineup ? [0, 3.4, 9.2] : [0, 2.1, 5.2], fov: lineup ? 38 : 42 }}
             className="absolute inset-0"
+            style={{ pointerEvents }}
             gl={{
               antialias: !reduced,
               alpha: false,

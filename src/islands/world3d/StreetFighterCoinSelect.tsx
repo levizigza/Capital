@@ -1,12 +1,15 @@
 import { SERIES_LEAD_MASCOT_IDS, getMascot } from "../moneyCast";
 import { PLAYABLE_SELECT_CAST } from "../castLooks";
 import { SERIES_SHEET_SPECS } from "../../art/seriesCast/seriesLeadArt";
-import { SeriesLeadPortrait } from "../../art/seriesCast/SeriesLeadPortrait";
+import { SeriesCoinFace, hasSeriesCoinFace } from "../../art/seriesCast/SeriesCoinFace";
 
 type Props = {
   selectedId: string;
   /** Prefer the 12 series leads on the SF board; classics optional. */
   ids?: readonly string[];
+  /** Highlight / preview without leaving the board. */
+  onFocus?: (id: string) => void;
+  /** Enter full 3D body + customize. */
   onPick: (id: string) => void;
   className?: string;
 };
@@ -21,6 +24,7 @@ const LEAD_IDS = SERIES_LEAD_MASCOT_IDS as readonly string[];
 export function StreetFighterCoinSelect({
   selectedId,
   ids,
+  onFocus,
   onPick,
   className,
 }: Props) {
@@ -34,17 +38,17 @@ export function StreetFighterCoinSelect({
       data-selected={selectedId}
     >
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-45"
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 50% 40%, #1e3a5f 0%, #0c1622 70%)",
+            "radial-gradient(ellipse 80% 55% at 50% 35%, #1e3a5f 0%, #0c1622 72%)",
         }}
         aria-hidden
       />
 
-      <div className="relative flex h-full flex-col px-3 pb-[11.5rem] pt-20 sm:px-5 sm:pb-44 sm:pt-24">
+      <div className="relative flex h-full flex-col px-2 py-2 sm:px-4 sm:py-3">
         <div
-          className="mx-auto grid w-full max-w-4xl flex-1 grid-cols-3 content-center gap-2 sm:grid-cols-4 sm:gap-3"
+          className="mx-auto grid h-full w-full max-w-5xl grid-cols-3 content-center gap-1.5 sm:grid-cols-4 sm:gap-2.5"
           role="listbox"
           aria-label="Series lead fighters"
         >
@@ -52,7 +56,7 @@ export function StreetFighterCoinSelect({
             const m = getMascot(id);
             const spec = SERIES_SHEET_SPECS[id];
             const active = id === selectedId;
-            const isLead = LEAD_IDS.includes(id);
+            const faceOk = hasSeriesCoinFace(id);
             return (
               <button
                 key={id}
@@ -60,40 +64,43 @@ export function StreetFighterCoinSelect({
                 role="option"
                 aria-selected={active}
                 onClick={() => onPick(id)}
+                onFocus={() => onFocus?.(id)}
+                onMouseEnter={() => onFocus?.(id)}
                 data-testid={`sf-coin-${id}`}
-                className={`group relative flex flex-col items-center gap-1 rounded-2xl border-2 p-1.5 transition sm:p-2 ${
+                className={`group relative flex min-h-0 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 px-1 py-1.5 transition sm:gap-1 sm:p-2 ${
                   active
-                    ? "scale-[1.03] border-amber-300 bg-amber-200/15 shadow-[0_0_24px_rgba(251,191,36,0.35)]"
-                    : "border-white/15 bg-black/35 hover:border-white/45 hover:bg-black/50"
+                    ? "scale-[1.03] border-amber-300 bg-amber-200/20 shadow-[0_0_28px_rgba(251,191,36,0.4)]"
+                    : "border-white/15 bg-black/40 hover:border-white/45 hover:bg-black/55"
                 }`}
               >
                 <div
-                  className="sf-coin-spin relative h-[4.6rem] w-[4.6rem] sm:h-[5.6rem] sm:w-[5.6rem]"
-                  style={{ perspective: "600px" }}
+                  className="sf-coin-spin relative aspect-square w-[72%] max-w-[5.75rem] sm:max-w-[6.5rem]"
+                  style={{ perspective: "700px" }}
                 >
                   <div
                     className="sf-coin-spin-inner absolute inset-0"
                     style={{
                       transformStyle: "preserve-3d",
-                      animation: `sf-coin-y ${active ? "2.4s" : "3.6s"} linear infinite`,
+                      animation: `sf-coin-y ${active ? "2.2s" : "3.5s"} linear infinite`,
                     }}
                   >
                     <div
                       className="absolute inset-0 overflow-hidden rounded-full border-[3px] shadow-lg"
                       style={{
                         borderColor: active ? "#fde68a" : spec?.accent ?? "#f4b942",
-                        background: `radial-gradient(circle at 35% 30%, #fde68a, ${spec?.coin ?? "#f4b942"} 55%, #b45309)`,
                         backfaceVisibility: "hidden",
                       }}
                     >
-                      {isLead ? (
-                        <SeriesLeadPortrait
-                          id={id}
-                          title={m.name}
-                          className="h-full w-full scale-110"
-                        />
+                      {faceOk ? (
+                        <SeriesCoinFace id={id} title={m.name} className="h-full w-full" />
                       ) : (
-                        <span className="flex h-full w-full items-center justify-center text-3xl font-black text-[#14532d]">
+                        <span
+                          className="flex h-full w-full items-center justify-center text-3xl font-black"
+                          style={{
+                            background: `radial-gradient(circle at 35% 30%, #fde68a, ${spec?.coin ?? "#f4b942"} 55%, #b45309)`,
+                            color: "#14532d",
+                          }}
+                        >
                           {m.glyph ?? m.emoji}
                         </span>
                       )}
@@ -102,7 +109,8 @@ export function StreetFighterCoinSelect({
                       className="absolute inset-0 rounded-full border-[3px]"
                       style={{
                         borderColor: "#92400e",
-                        background: `radial-gradient(circle at 65% 40%, #fbbf24, #d97706 60%, #78350f)`,
+                        background:
+                          "radial-gradient(circle at 65% 40%, #fbbf24, #d97706 60%, #78350f)",
                         transform: "rotateY(180deg)",
                         backfaceVisibility: "hidden",
                       }}
@@ -118,10 +126,10 @@ export function StreetFighterCoinSelect({
           })}
         </div>
 
-        <p className="pointer-events-none mt-2 text-center text-sm font-black text-white drop-shadow sm:text-base">
+        <p className="pointer-events-none mt-1 shrink-0 text-center text-sm font-black text-white drop-shadow sm:text-base">
           {selected.name}
         </p>
-        <p className="pointer-events-none mx-auto max-w-md text-center text-[11px] text-white/75 sm:text-xs">
+        <p className="pointer-events-none mx-auto max-w-md shrink-0 text-center text-[11px] text-white/75 sm:text-xs">
           {selected.tagline}
         </p>
       </div>

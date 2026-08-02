@@ -1,4 +1,5 @@
 export { SeriesLeadPortrait } from "./SeriesLeadPortrait";
+export { SeriesCoinFace, hasSeriesCoinFace } from "./SeriesCoinFace";
 export { SeriesLeadSheetBillboard } from "./SeriesLeadSheetBillboard";
 export {
   SHEET_ART_IDS,
