@@ -4,6 +4,7 @@ import {
   localDayKey,
   localWeekKey,
   markPaydayDone,
+  prepareDay2EchoSave,
   syncHarborRitual,
   weeklyShareText,
 } from "./harborRitual";
@@ -68,5 +69,38 @@ describe("harborRitual", () => {
     save = markPaydayDone(save);
     expect(save.harborRitual?.today.paydayDone).toBe(true);
     expect(save.harborRitual?.weekly?.done).toBe(true);
+  });
+
+  it("prepareDay2EchoSave backdates scar and rolls scar_echo rumor", () => {
+    const now = new Date(2026, 6, 28);
+    let save = syncHarborRitual(baseSave(), now);
+    save = {
+      ...save,
+      harborScars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          choiceId: "cove_saver_plaque",
+          label: "Jar before treat",
+          kind: "plaque",
+          createdAt: "2026-07-28T15:00:00.000Z",
+        },
+      ],
+      harborHomecoming: {
+        pending: true,
+        celebrated: false,
+        piggyTalked: false,
+        quietPending: true,
+        chapterIslandId: "coincraft_cove",
+        questId: "q_cc_save_or_spend",
+        message: "Piggy Penny: The Coin holds",
+      },
+    };
+    save = prepareDay2EchoSave(save, now);
+    expect(save.harborScars?.[0]?.createdAt.slice(0, 10)).toBe("2026-07-27");
+    expect(save.harborRitual?.today.rumorId).toBe("scar_echo_cove_saver_plaque");
+    expect(save.harborRitual?.today.echoSurpriseSeen).toBe(false);
+    expect(save.harborHomecoming?.piggyTalked).toBe(true);
+    expect(save.harborHomecoming?.pending).toBe(false);
   });
 });

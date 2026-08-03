@@ -86,6 +86,8 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 ```js
 await __QA__.seedSignatureLoop("spectacle_ready")
 await __QA__.seedSignatureLoop("day2_echo")
+// Overnight craft after a same-day Take (backdates scar + rolls scar_echo_*):
+__QA__.prepareDay2Echo()
 __QA__.playSignatureTrailer()
 ```
 

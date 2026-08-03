@@ -109,6 +109,32 @@ describe("Harbor Ashore redesign", () => {
         anyBlockingOverlay: false,
       }),
     ).toBe(false);
+
+    const day2Echo = bareSave({
+      hubGuidedIntro: { version: 1, step: "done", didDock: true },
+      harborRitual: {
+        ...ritualToday,
+        today: {
+          ...ritualToday.today,
+          rumorId: "scar_echo_cove_saver_plaque",
+          echoSurpriseSeen: false,
+        },
+      },
+      questStatus: {
+        q_cc_save_or_spend: {
+          started: true,
+          completed: true,
+          completedObjectives: [],
+        },
+      },
+    });
+    expect(
+      shouldAutoOpenDailyRitual({
+        save: day2Echo,
+        guidedActive: false,
+        anyBlockingOverlay: false,
+      }),
+    ).toBe(false);
   });
 
   it("carpet boot: ceremony starts meet_guide; mid-lap normalizes to voyage", () => {

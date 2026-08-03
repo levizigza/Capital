@@ -31,9 +31,17 @@ describe("Structure part silhouettes", () => {
     expect(src).toMatch(/LidLookoutSilhouette/);
     expect(src).toMatch(/lid_lookout/);
     // Flat-disc fallback must not be the Lid Lookout branch
-    const lidBlock = src.slice(src.indexOf("lid_lookout"), src.indexOf("cork_vault"));
+    const lidBlock = src.slice(src.indexOf('partId === "lid_lookout"'), src.indexOf('partId === "cork_vault"'));
     expect(lidBlock).toMatch(/LidLookoutSilhouette/);
     expect(lidBlock).not.toMatch(/cylinderGeometry args=\{\[0\.85, 0\.85, 0\.25/);
+  });
+
+  it("gives Cork Vault and Coin Spring jar-true silhouettes", () => {
+    const src = readFileSync(join(__dirname, "StructurePartSilhouette.tsx"), "utf8");
+    expect(src).toMatch(/CorkVaultSilhouette/);
+    expect(src).toMatch(/CoinSpringSilhouette/);
+    expect(src).toMatch(/cork_vault[\s\S]*CorkVaultSilhouette/);
+    expect(src).toMatch(/coin_spring[\s\S]*CoinSpringSilhouette/);
   });
 
   it("wires Soft Beat pads with a lookout beacon in the interior", () => {
@@ -43,6 +51,7 @@ describe("Structure part silhouettes", () => {
     expect(interior).toMatch(/Crown orb/);
     expect(interior).toMatch(/StructurePartSilhouette/);
     expect(interior).toMatch(/SafeText/);
+    expect(interior).toMatch(/active && onEnter/);
     expect(interior).not.toMatch(/from "@react-three\/drei".*Text|,\s*Text\s*}/);
     for (const part of allParts.filter((p) => p.softBeat)) {
       expect(STRUCTURE_PART_SILHOUETTE_IDS).toContain(part.id);

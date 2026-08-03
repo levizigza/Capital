@@ -740,7 +740,11 @@ export function resolveHarborDialogue(
     }
   }
 
-  if (npcId !== "piggy_penny" && hasScars) {
+  // Scar / stance memory lines are Harbor plaza locals only — never steal
+  // island quest graphs (Vendor Vee Take, Alma, Priya, …).
+  const harborLocal = Boolean(findHarborNpc(npcId));
+
+  if (harborLocal && npcId !== "piggy_penny" && hasScars) {
     try {
       return scarMemoryLocalGraph(npcId as MoneyMascotId, scars, {
         stanceHint: opts.stanceHint,
@@ -751,7 +755,11 @@ export function resolveHarborDialogue(
     }
   }
 
-  if (npcId !== "piggy_penny" && (opts.stanceHint || (opts.npcTalks ?? 0) >= 2)) {
+  if (
+    harborLocal &&
+    npcId !== "piggy_penny" &&
+    (opts.stanceHint || (opts.npcTalks ?? 0) >= 2)
+  ) {
     try {
       return stanceLocalGraph(npcId as MoneyMascotId, {
         stanceHint: opts.stanceHint,

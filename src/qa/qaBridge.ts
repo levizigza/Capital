@@ -28,6 +28,11 @@ export type QABridge = {
   resetSave: () => Promise<void>;
   /** Seed Harbor at a signature-loop phase (cold playtest). */
   seedSignatureLoop: (phase?: SignaturePhase) => Promise<void>;
+  /**
+   * After a same-day Cove/Paycheck/Credit Take: backdate the latest scar and
+   * re-roll ritual so Day-2 echo cinema can open (cold overnight proof).
+   */
+  prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
   ready: boolean;

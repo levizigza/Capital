@@ -68,6 +68,7 @@ import {
   markRitualGreeted,
   markRumorSeen,
   markEchoSurpriseSeen,
+  prepareDay2EchoSave,
   markPaydayDone,
   markRewardClaimed,
   bumpWeeklyTalk,
@@ -923,6 +924,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
         setActiveIslandId(null);
         setView("home");
+      },
+      prepareDay2Echo: () => {
+        const prev = saveRef.current;
+        if (!prev) return;
+        const next = prepareDay2EchoSave(prev);
+        replaceSave(next);
+        setHubModal(null);
+        setActiveIslandId(null);
+        setView("home");
+        void persistIslandSave(next);
       },
       playSignatureTrailer: () => {
         setView("home");

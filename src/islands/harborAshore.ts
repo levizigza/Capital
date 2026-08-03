@@ -83,6 +83,13 @@ export function shouldAutoOpenDailyRitual(opts: {
   if (!opts.save.hubGuidedIntro?.didDock) return false;
   // Whole-game fit: ritual after Cove Change, not before the signature loop.
   if (!hasCompletedCoveChange(opts.save)) return false;
+  // Day-2 Soft Beat cinema owns the plaza — never steal with the ritual card.
+  if (
+    ritual.today.rumorId?.startsWith("scar_echo_") &&
+    !ritual.today.echoSurpriseSeen
+  ) {
+    return false;
+  }
   return true;
 }
 

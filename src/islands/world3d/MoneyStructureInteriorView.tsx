@@ -183,11 +183,14 @@ function PartPad({
   active,
   theme,
   accent = "#fbbf24",
+  onEnter,
 }: {
   part: MoneyStructurePart;
   active: boolean;
   theme: MoneyStructureDef["theme"];
   accent?: string;
+  /** Near + poke climbs into the part (Soft Beat / minigame). */
+  onEnter?: () => void;
 }) {
   const bounce = useRef(0);
   const poke = useRef(0);
@@ -217,6 +220,8 @@ function PartPad({
         e.stopPropagation();
         poke.current = 1;
         playOrganSfx(moneyOrganForStructureTheme(theme).id);
+        // Near pad: poke climbs in (kids poke what they can reach).
+        if (active && onEnter) onEnter();
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -261,12 +266,14 @@ function InteriorWorld({
   nearId,
   setNearId,
   inputFrozen,
+  onEnterPart,
 }: {
   structure: MoneyStructureDef;
   character?: CapitalCharacter | null;
   nearId: string | null;
   setNearId: (id: string | null) => void;
   inputFrozen: boolean;
+  onEnterPart: (part: MoneyStructurePart) => void;
 }) {
   const shell = structureShell(structure.theme);
   const pads = useMemo(
@@ -309,6 +316,7 @@ function InteriorWorld({
           active={nearId === p.id}
           theme={structure.theme}
           accent={shell.accent}
+          onEnter={inputFrozen ? undefined : () => onEnterPart(p)}
         />
       ))}
 
@@ -428,6 +436,7 @@ export function MoneyStructureInteriorView({
                   nearId={nearId}
                   setNearId={setNearId}
                   inputFrozen={inputFrozen}
+                  onEnterPart={onEnterPart}
                 />
               </Suspense>
             </Canvas>

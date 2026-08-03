@@ -50,7 +50,12 @@ export function InsightCard({
         </div>
       ) : null}
 
-      <GameButton variant="primary" className="w-full" onClick={onContinue}>
+      <GameButton
+        variant="primary"
+        className="w-full"
+        data-testid="insight-continue"
+        onClick={onContinue}
+      >
         Continue →
       </GameButton>
     </motion.div>

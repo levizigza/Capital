@@ -64,6 +64,8 @@ describe("Pillar 12 story cold retell", () => {
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
     expect(soft).toMatch(/coldOrganKidSentence/);
     expect(soft).toMatch(/soft-beat-retell/);
+    expect(soft).toMatch(/data-soft-beat-climb/);
+    expect(soft).toMatch(/Climb the lid/);
     expect(soft).not.toMatch(/After the Coin Take/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(day2).toMatch(/day2-echo-kid-sentence/);

@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   COVE_COIN_JAR,
   CREDIT_INTEREST_KEEP,
@@ -20,6 +22,14 @@ describe("money structure toy culture contract", () => {
     expect(HARBOR_LEDGER_BANK.theme).toBe("bank");
     expect(PAYCHECK_PAYROLL_TOWER.theme).toBe("tower");
     expect(CREDIT_INTEREST_KEEP.theme).toBe("keep");
+  });
+
+  it("gives Cove Jar cork + spring toys (not a stray bank stamp)", () => {
+    const toys = readFileSync(join(__dirname, "world3d/StructureInteriorToys.tsx"), "utf8");
+    const jarBlock = toys.slice(toys.lastIndexOf("// jar"));
+    expect(jarBlock).toMatch(/ToyCork/);
+    expect(jarBlock).toMatch(/ToySpringCoil/);
+    expect(jarBlock).not.toMatch(/ToyStamp/);
   });
 });
 

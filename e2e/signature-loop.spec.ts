@@ -90,6 +90,11 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
     });
 
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
     const echo = page.getByTestId("day2-echo-surprise");
     await expect(echo).toBeVisible({ timeout: 20_000 });
     // Soft Beat cinema over live Plinth — not a centered tutorial card
@@ -102,6 +107,24 @@ test.describe("Signature loop", () => {
       (el as HTMLButtonElement).click();
     });
     await expect(page.getByTestId("day2-echo-surprise")).toHaveCount(0);
+  });
+
+  test("prepareDay2Echo overnight craft from piggy_ready", async ({ page }) => {
+    await page.goto("/?mode=islands&skipIntro=1");
+    await waitForQaReady(page);
+
+    await page.evaluate(async () => {
+      await window.__QA__!.seedSignatureLoop("piggy_ready");
+      window.__QA__!.prepareDay2Echo();
+    });
+
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
+    await expect(page.getByTestId("day2-echo-surprise")).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId("day2-echo-kid-sentence")).toContainText(/The Coin holds/);
   });
 
   test("signature trailer captions play", async ({ page }) => {

@@ -82,6 +82,15 @@ export function SoftBeatOverlay({
         ? `“${scarLabel}” is written in the marble.`
         : null;
 
+  const climbMotif =
+    kind === "lookout"
+      ? "lid-climb"
+      : kind === "umbrella"
+        ? "loft-climb"
+        : kind === "battlement"
+          ? "wall-climb"
+          : "teller-step";
+
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[70] flex items-center justify-center bg-[#0f172a]/75 backdrop-blur-[2px]"
@@ -89,6 +98,7 @@ export function SoftBeatOverlay({
       aria-label={beat.title}
       data-testid="soft-beat-overlay"
       data-soft-beat={kind}
+      data-soft-beat-climb={climbMotif}
       data-organ={organ.id}
       data-nav-escape="window"
       onClick={onDone}
@@ -103,6 +113,11 @@ export function SoftBeatOverlay({
         >
           {softBeatEyebrow(organ.id)} · {organVerbChip(organ.id)}
         </p>
+        {kind === "lookout" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
+            Climb the lid — peek from the Coin Jar
+          </p>
+        ) : null}
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
         <p

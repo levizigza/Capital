@@ -7,6 +7,62 @@ type Props = {
   partId: string;
 };
 
+/** Cork stopper vault — Cove Coin Jar (Cork Vault). */
+function CorkVaultSilhouette() {
+  return (
+    <group>
+      <mesh castShadow position={[0, -0.15, 0]}>
+        <cylinderGeometry args={[0.62, 0.7, 0.55, 16]} />
+        <meshStandardMaterial color="#92400e" roughness={0.8} metalness={0.05} />
+      </mesh>
+      <mesh castShadow position={[0, 0.35, 0]}>
+        <cylinderGeometry args={[0.48, 0.55, 0.7, 14]} />
+        <meshStandardMaterial color="#b45309" roughness={0.72} metalness={0.08} />
+      </mesh>
+      {/* Cork grain rings */}
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} castShadow position={[0, 0.15 + i * 0.14, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.5, 0.03, 6, 20]} />
+          <meshStandardMaterial color="#78350f" roughness={0.85} />
+        </mesh>
+      ))}
+      <mesh castShadow position={[0, 0.78, 0]}>
+        <sphereGeometry args={[0.22, 12, 10]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.35} metalness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Coil spring of coins — Cove Coin Jar (Coin Spring). */
+function CoinSpringSilhouette() {
+  return (
+    <group>
+      <mesh castShadow position={[0, -0.2, 0]}>
+        <cylinderGeometry args={[0.35, 0.45, 0.2, 16]} />
+        <meshStandardMaterial color="#d97706" metalness={0.5} roughness={0.4} />
+      </mesh>
+      {[0, 1, 2, 3].map((i) => (
+        <mesh
+          key={i}
+          castShadow
+          position={[0, -0.05 + i * 0.22, 0]}
+          rotation={[0.55, i * 0.4, 0]}
+        >
+          <torusGeometry args={[0.5 - i * 0.04, 0.1, 8, 22]} />
+          <meshStandardMaterial
+            color={i % 2 === 0 ? "#fbbf24" : "#f59e0b"}
+            metalness={0.55}
+            roughness={0.32}
+            emissive="#f59e0b"
+            emissiveIntensity={0.2}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Screw-top lid hatch — Cove Soft Beat (Lid Lookout). */
 function LidLookoutSilhouette() {
   return (
@@ -112,12 +168,7 @@ export function StructurePartSilhouette({ partId }: Props) {
     return <LidLookoutSilhouette />;
   }
   if (partId === "cork_vault") {
-    return (
-      <mesh castShadow>
-        <cylinderGeometry args={[0.55, 0.65, 1.1, 12]} />
-        <meshStandardMaterial color="#b45309" roughness={0.75} metalness={0.05} />
-      </mesh>
-    );
+    return <CorkVaultSilhouette />;
   }
   if (partId === "vault_safe") {
     return (
@@ -134,12 +185,7 @@ export function StructurePartSilhouette({ partId }: Props) {
     );
   }
   if (partId === "coin_spring") {
-    return (
-      <mesh rotation={[0.4, 0, 0]} castShadow>
-        <torusGeometry args={[0.55, 0.14, 8, 24]} />
-        <meshStandardMaterial color="#d97706" metalness={0.55} roughness={0.35} />
-      </mesh>
-    );
+    return <CoinSpringSilhouette />;
   }
   if (partId === "stamp_press") {
     return <StampPressSilhouette />;

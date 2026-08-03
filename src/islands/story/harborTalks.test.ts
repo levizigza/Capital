@@ -79,4 +79,17 @@ describe("harborTalks", () => {
     expect(piggy.toLowerCase()).toMatch(/save|pay yourself/);
     expect(spendy.toLowerCase()).toMatch(/impulse|wait|24/);
   });
+
+  it("does not steal island quest NPCs with scar memory graphs", () => {
+    const scars = [
+      {
+        id: "cove_saver_plaque",
+        islandId: "coincraft_cove",
+        label: "Jar before treat",
+      },
+    ];
+    expect(resolveHarborDialogue("npc_vendor_vee", { scars })).toBeUndefined();
+    expect(resolveHarborDialogue("npc_artisan_alma", { scars })).toBeUndefined();
+    expect(resolveHarborDialogue("coiny", { scars })?.id).toMatch(/scar|harbor/);
+  });
 });

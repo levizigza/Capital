@@ -120,8 +120,14 @@ If not, that surface is not iconic yet.
 - Coin Sort: real EarnSpend payloads + Finish round; mastery choices expose `mastery-choice-*` testids
 - Script: `scripts/cold-full-cove-chain.mjs` — kid sentence from Piggy homecoming: **The Coin holds**
 
+## Iteration 10 (shipped)
+
+- **Day-2 Coin echo:** `prepareDay2EchoSave` / `__QA__.prepareDay2Echo()` overnight craft → Soft Beat cinema; `scripts/cold-day2-coin-echo.mjs` + e2e `prepareDay2Echo overnight craft`
+- **Coin Jar deepen:** Cork Vault + Coin Spring silhouettes; near-pad poke-to-enter; cork/spring toys; Lid Soft Beat `data-soft-beat-climb="lid-climb"`
+- **Paycheck cold chain:** Pat → paycheck → Priya → Budget Split → Carlos → Vee protect → Harbor **Clock shelters** (`scripts/cold-full-paycheck-chain.mjs`)
+
 ## Still deepen (from iconic-later)
 
-Day-2 scar echo · Money Structure interiors · merge when you want  
+Credit Spiral Take cold chain · Ledger Bank / Payroll Tower poke polish · merge when you want  
 
 Iterate those next — never new islands first.

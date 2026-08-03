@@ -13,6 +13,72 @@ function pokeCursor(on: boolean) {
   document.body.style.cursor = on ? "pointer" : "auto";
 }
 
+/** Poppable cork — Jar Cork Vault organ toy. */
+function ToyCork({ position }: { position: [number, number, number] }) {
+  const mesh = useRef<THREE.Group>(null);
+  const [pop, setPop] = useState(0);
+  useFrame((_, dt) => {
+    if (!mesh.current) return;
+    mesh.current.position.y = position[1] + 0.4 + pop * 0.55;
+    mesh.current.rotation.z = pop * 0.8;
+    if (pop > 0) setPop((p) => Math.max(0, p - dt * 1.8));
+  });
+  return (
+    <group
+      ref={mesh}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setPop(1);
+        playOrganSfx("coin");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      <mesh castShadow>
+        <cylinderGeometry args={[0.28, 0.32, 0.55, 12]} />
+        <meshStandardMaterial color="#b45309" roughness={0.8} />
+      </mesh>
+      <mesh castShadow position={[0, 0.35, 0]}>
+        <sphereGeometry args={[0.16, 10, 8]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Bouncy coil — Jar Coin Spring organ toy. */
+function ToySpringCoil({ position }: { position: [number, number, number] }) {
+  const mesh = useRef<THREE.Group>(null);
+  const [squash, setSquash] = useState(0);
+  useFrame((_, dt) => {
+    if (!mesh.current) return;
+    const s = 1 + Math.sin(performance.now() * 0.006) * 0.06 - squash * 0.35;
+    mesh.current.scale.set(1, Math.max(0.45, s), 1);
+    if (squash > 0) setSquash((v) => Math.max(0, v - dt * 2.2));
+  });
+  return (
+    <group
+      ref={mesh}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSquash(1);
+        playOrganSfx("coin");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} castShadow position={[0, 0.15 + i * 0.18, 0]} rotation={[0.5, i, 0]}>
+          <torusGeometry args={[0.28, 0.06, 6, 16]} />
+          <meshStandardMaterial color="#f59e0b" metalness={0.5} roughness={0.35} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Spinning coin — Jar / Bank. */
 function ToyCoin({
   position,
@@ -281,9 +347,11 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       </group>
     );
   }
-  // jar — denser coin toys
+  // jar — coin mosaic + cork / spring organ toys (no stray bank stamp)
   return (
     <group>
+      <ToyCork position={[-2.8, 0, 2.4]} />
+      <ToySpringCoil position={[2.8, 0, 2.0]} />
       <ToyCoin position={[-2.4, 0, 2.6]} />
       <ToyCoin position={[2.6, 0, 2.2]} />
       <ToyCoin position={[0.2, 0, 3.8]} accent="#fde68a" />
@@ -291,7 +359,8 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       <ToyCoin position={[3.2, 0, -1.4]} />
       <ToyCoin position={[-1.2, 0, -3.8]} accent="#fbbf24" />
       <ToyCoin position={[1.8, 0, -4.2]} accent="#fde68a" />
-      <ToyStamp position={[3.6, 0, 0.4]} />
+      <ToyCork position={[0.4, 0, -3.6]} />
+      <ToySpringCoil position={[-0.6, 0, 3.2]} />
     </group>
   );
 }

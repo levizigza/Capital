@@ -54,11 +54,12 @@ export default function BudgetSplitterGame({
     return t;
   }, [buckets]);
 
-  const place = (bucket: Expense["bucket"]) => {
-    if (!dragId) return;
-    const item = pool.find((e) => e.id === dragId);
+  const place = (bucket: Expense["bucket"], expenseId?: string) => {
+    const id = expenseId ?? dragId;
+    if (!id) return;
+    const item = pool.find((e) => e.id === id);
     if (!item) return;
-    setPool((p) => p.filter((e) => e.id !== dragId));
+    setPool((p) => p.filter((e) => e.id !== id));
     setBuckets((b) => ({ ...b, [bucket]: [...b[bucket], item] }));
     if (item.bucket === bucket) sfx.correct();
     else sfx.wrong();
@@ -110,7 +111,12 @@ export default function BudgetSplitterGame({
           ]}
           success={success}
         />
-        <GameButton variant="primary" className="w-full mt-3" onClick={() => setPhase("insight")}>
+        <GameButton
+          variant="primary"
+          className="w-full mt-3"
+          data-testid="budget-why"
+          onClick={() => setPhase("insight")}
+        >
           Why this matters →
         </GameButton>
       </GameVisualShell>
@@ -155,6 +161,8 @@ export default function BudgetSplitterGame({
             <motion.button
               key={e.id}
               type="button"
+              data-testid={`budget-expense-${e.id}`}
+              data-bucket={e.bucket}
               whileTap={{ scale: 0.95 }}
               onClick={() => setDragId(e.id)}
               className={`px-3 py-2 rounded-lg text-sm font-bold border-2 shadow-sm ${
@@ -172,6 +180,7 @@ export default function BudgetSplitterGame({
             <motion.button
               key={bucket}
               type="button"
+              data-testid={`budget-bucket-${bucket}`}
               whileHover={{ scale: 1.02 }}
               onClick={() => place(bucket)}
               className={`rounded-xl border-2 p-3 text-left min-h-[7rem] ${BUCKET_META[bucket].color}`}
@@ -189,7 +198,12 @@ export default function BudgetSplitterGame({
         </div>
 
         {allPlaced ? (
-          <GameButton variant="primary" className="w-full" onClick={finish}>
+          <GameButton
+            variant="primary"
+            className="w-full"
+            data-testid="budget-seal"
+            onClick={finish}
+          >
             Seal my budget 📬
           </GameButton>
         ) : null}
