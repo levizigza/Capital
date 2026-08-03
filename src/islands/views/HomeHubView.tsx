@@ -289,11 +289,9 @@ export function HomeHubView({
     Boolean(save.harborHomecoming?.pending || save.harborHomecoming?.celebrated);
   const quietHarbor =
     needsPiggyWelcome && Boolean(save.harborHomecoming?.quietPending);
-  /** Early Castle Grounds — one job, minimal chrome */
-  const earlyCastle =
-    Boolean(castleMode && guidedStep) &&
-    !["practice_optional", "to_dock", "first_island", "done"].includes(guidedStep!.id);
   const firstMeet = isFirstMeetStep(guidedStep?.id);
+  /** Early Ashore — Talk only; voyage uses Carpet CTA (no Outfitter early chrome). */
+  const earlyCastle = Boolean(castleMode && firstMeet);
   /** First meet or quiet homecoming — Piggy owns the plaza, not a stall checklist. */
   const piggyPresence = isPiggyPresenceBeat({
     firstMeet,
@@ -304,17 +302,11 @@ export function HomeHubView({
     quietHomecoming: quietHarbor,
     castleActive: Boolean(castleMode && guidedStep && guidedStep.id !== "done"),
   });
-  const showOutfitterChrome =
-    !quietHarbor &&
-    (!castleMode ||
-      guidedStep?.highlight === "outfitter" ||
-      guidedStep?.id === "walk_outfitter" ||
-      guidedStep?.id === "become_you");
-  /** Map chrome only when guided to dock / first voyage — free roam uses diegetic Money Carpet. */
+  // Outfitter is plaza discovery after Ashore — never a guided hero teach.
+  const showOutfitterChrome = !quietHarbor && !castleMode && !firstMeet;
+  /** Map chrome on voyage — free roam uses diegetic Money Carpet. */
   const showTravelChip =
-    !quietHarbor &&
-    Boolean(castleMode) &&
-    (guidedStep?.id === "to_dock" || guidedStep?.id === "first_island");
+    !quietHarbor && Boolean(castleMode) && guidedStep?.id === "to_dock";
   const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
@@ -586,8 +578,12 @@ export function HomeHubView({
       ? visualBeats.bagTip
       : buddyTip.tip;
 
+  // Never pulse Outfitter during Ashore first session (discovery after voyage).
   const showOutfitterHighlight =
-    highlightOutfitter || guidedStep?.highlight === "outfitter";
+    !piggyPresence &&
+    !firstMeet &&
+    guidedStep?.id !== "to_dock" &&
+    (highlightOutfitter || guidedStep?.highlight === "outfitter");
 
   const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
@@ -855,9 +851,7 @@ export function HomeHubView({
     if (piggyPresence) return;
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
-      if (guidedStep?.id === "walk_outfitter" || guidedStep?.id === "become_you") {
-        onHubGuidedEvent("near_outfitter");
-      }
+      // Discovery only — never a guided Ashore gate.
       openOutfitter();
     } else if (id === "studio") onOpenStudio();
     else if (id === "gallery") {

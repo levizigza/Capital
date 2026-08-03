@@ -257,7 +257,7 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Fresh profile, no coach reading ahead. Note first confusion; teach that one thing earlier or clearer. |
 
-**Shipped (Pillar 13):** `meet_guide` Piggy Talk teaches Walk · Talk only (cut Outfitter pitch); `tiny_spend` coach stays on Capsule (Carpet / Cove wait for dock). One concept → practice → combine. Guarded by `onboardingNoAhead.test.ts` + harbor-tutorial e2e.
+**Shipped (Pillar 13):** Harbor Ashore UI law — Talk → Carpet → Cove; Outfitter-card onboarding demoted; legacy gates normalize to voyage; Portal / Asobi / HL research in `docs/harbor-ashore.md`. Guarded by `onboardingNoAhead.test.ts` + harbor-tutorial e2e.
 
 ---
 
@@ -334,7 +334,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
 | 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences + Talk Battle organ chip; Ashore→Cove retell contract. Next: cold human Ashore→Cove |
-| 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; boot Board + Cancel look parity. Next: cold unseeded Ashore→Cove human pass |
+| 13 | Onboarding | playable → iconic | 2026-08-03 | Ashore UI law Talk→Carpet→Cove; Outfitter-card demoted; Portal/Asobi/HL research |
 | 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
 | 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |
 | 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
@@ -353,4 +353,4 @@ When two pillars fight, **fantasy + signature loop win**.
 
 **Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
 
-**Craft sequence complete (0–17).** Whole-game craft iters 9–14 deepened Harbor · Cove → Paycheck → Credit (cold Take chains + human triangle + Ashore Piggy/veil polish 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.
+**Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.

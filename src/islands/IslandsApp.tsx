@@ -21,7 +21,6 @@ import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
 import { IslandThemeProvider } from "./themes/IslandThemeProvider";
 import { getIslandTheme } from "./themes/islandThemes";
-import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
@@ -603,13 +602,35 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ...prev,
       onboardingComplete: true,
       character: prev.character ?? { ...BASE_VOYAGER },
-      hubGuidedIntro: prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+      hubGuidedIntro: normalizeHubGuidedIntro(
+        prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+      ),
     }));
-    void analytics.track("onboarding_completed", {});
-    // After card onboarding, still run Castle Grounds verbs in 3D Harbor — not straight to board.
+    void analytics.track("onboarding_completed", { via: "ashore_land" });
+    // Ashore law: land Harbor Talk Piggy → Carpet → Cove (no Outfitter-card hero).
     setActiveIslandId(HUB_ISLAND_ID);
     setView("home");
   }, [updateSave]);
+
+  /**
+   * Demote Outfitter-card WelcomeOnboarding — boot cast already picked a look.
+   * First session UI is Harbor Ashore only (Talk → Carpet → Cove).
+   * Never stomp signature seeds / mid-run Harbor memory.
+   */
+  useEffect(() => {
+    if (!save || save.onboardingComplete || bootLandHub) return;
+    if (content.islands.length === 0) return;
+    const hasProgress =
+      isHubGuidedComplete(save.hubGuidedIntro) ||
+      (save.harborScars?.length ?? 0) > 0 ||
+      Boolean(save.harborHomecoming) ||
+      Boolean(save.hubGuidedIntro && save.hubGuidedIntro.step !== "meet_guide");
+    if (hasProgress) {
+      updateSave((prev) => ({ ...prev, onboardingComplete: true }));
+      return;
+    }
+    completeOnboarding();
+  }, [save, bootLandHub, content.islands.length, completeOnboarding, updateSave]);
 
   // Carpet opening lands you on Harbor Haven plaza (3D walk) — not the party board yet.
   useEffect(() => {
@@ -1969,24 +1990,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     );
   }
 
-  // First-run world onboarding (skipped when carpet POV boot already lands you on Harbor).
-  if (
-    !save.onboardingComplete &&
-    !bootLandHub &&
-    content.islands.length > 0 &&
-    import.meta.env.VITE_QA !== "1"
-  ) {
-    return (
-      <WelcomeOnboarding
-        playerName={userProfile.name}
-        character={save.character}
-        islandsCount={content.islands.length}
-        onSaveCharacter={saveCharacter}
-        onComplete={completeOnboarding}
-        onSkip={completeOnboarding}
-      />
-    );
-  }
+  // Outfitter-card WelcomeOnboarding demoted — Ashore land effect completes above.
+  // Never mount card plaza as hero teach (docs/harbor-ashore.md).
 
   const rootA11yClasses = [
     a11y.highContrast ? "contrast-more" : "",

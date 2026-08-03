@@ -158,6 +158,12 @@ If not, that surface is not iconic yet.
 - **Talk Battle open arm:** ignore I hear you / Walk on for ~220ms after open so the Talk CTA gesture can’t skip the first listen beat.
 - **CI gate:** `resolveShoreGuideLookAt` unstarted fallback restores first-NPC / first-objective when Penny isn’t on the shore (unit green for PR #68).
 
+## Iteration 15 (shipped) — Ashore tutorial craft (Portal / Asobi / HL)
+
+- **Kill Outfitter-card hero teach:** `WelcomeOnboarding` no longer mounts; Ashore land completes to Harbor meet_guide (boot cast already picked look).
+- **First session UI law:** Talk Piggy → Carpet → Cove only — normalize in `getHubGuidedStep` / save sanitize / Piggy graphs / Coin Bag / visual beats; Outfitter chrome is discovery after Ashore.
+- **Research pass:** [harbor-ashore.md](./harbor-ashore.md) Portal one-verb · Asobi introduce→practice→combine · HL learn-by-doing — combine at Cove Take.
+
 ## Still deepen (from iconic-later)
 
 PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  

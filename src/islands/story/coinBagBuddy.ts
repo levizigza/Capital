@@ -4,8 +4,12 @@
  * Never claims “I’m running ahead” — the bag points, you walk together.
  */
 
-import type { HubGuidedStepId } from "./storyBible";
-import { isHubGuidedComplete, type HubGuidedIntroState } from "./storyBible";
+import {
+  isHubGuidedComplete,
+  normalizeHubGuidedIntro,
+  type HubGuidedIntroState,
+  type HubGuidedStepId,
+} from "./storyBible";
 import type { IslandDefinition, IslandSaveV1, QuestTrack } from "../types";
 import { islandMainQuestsComplete, nextIncompleteObjective } from "../chapterLoop";
 import { questTrack, trackCoachPrefix } from "../questTracks";
@@ -22,35 +26,24 @@ export type CoinBagBuddyTip = {
   track?: QuestTrack;
 };
 
+/** Voyage tip — shared by to_dock + demoted legacy gate ids. */
+const VOYAGE_TIP: CoinBagBuddyTip = {
+  tip: "Money Carpet → Coincraft Cove",
+  coach: "Board the carpet with me. First painting!",
+};
+
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
   meet_guide: {
     tip: "Talk to Piggy Penny — soft gold ring by the fountain",
     coach: "I’m Coin Bag. Stay with me — we’ll walk to Piggy together.",
   },
-  walk_outfitter: {
-    tip: "Next stop: the Outfitter door",
-    coach: "Piggy said become YOU. I’ll point at the Outfitter — walk that way.",
-  },
-  become_you: {
-    tip: "Go inside the Outfitter",
-    coach: "Body · Coat · Gear on the mirror. I’ll wait right here with you.",
-  },
-  tiny_spend: {
-    tip: "Visit Capsule Stall with me",
-    coach: "Coins can buy help. Peek the stall — Piggy will nod.",
-  },
-  practice_optional: {
-    tip: "Practice board, or skip to the dock",
-    coach: "Your call. I’ll point at practice — or we head to the carpet.",
-  },
-  to_dock: {
-    tip: "Money Carpet → Coincraft Cove",
-    coach: "Board the carpet with me. First painting!",
-  },
-  first_island: {
-    tip: "Open the map → Coincraft Cove",
-    coach: "First painting! I’ll be with you on every island.",
-  },
+  // DEMOTED — Ashore remaps these onto voyage; copy stays Outfitter-free.
+  walk_outfitter: VOYAGE_TIP,
+  become_you: VOYAGE_TIP,
+  tiny_spend: VOYAGE_TIP,
+  practice_optional: VOYAGE_TIP,
+  to_dock: VOYAGE_TIP,
+  first_island: VOYAGE_TIP,
   done: {
     tip: "Harbor is yours — I’m still here",
     coach: "Whenever you’re stuck, look at me. I’ll point the next good step.",
@@ -83,7 +76,8 @@ export function coinBagHarborTip(
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
-    return TUTORIAL_TIPS[guided.step] ?? TUTORIAL_TIPS.meet_guide;
+    const live = normalizeHubGuidedIntro(guided);
+    return TUTORIAL_TIPS[live.step] ?? TUTORIAL_TIPS.meet_guide;
   }
 
   if (opts?.homecomingPending) {

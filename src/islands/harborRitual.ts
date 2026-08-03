@@ -243,6 +243,7 @@ export function prepareDay2EchoSave(save: IslandSaveV1, now = new Date()): Islan
 
   let next: IslandSaveV1 = {
     ...save,
+    onboardingComplete: true,
     harborScars: scars,
     harborHomecoming: save.harborHomecoming
       ? {

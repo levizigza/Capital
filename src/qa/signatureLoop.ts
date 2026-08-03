@@ -142,6 +142,8 @@ export function buildSignatureLoopSave(
 
   const save: IslandSaveV1 = {
     ...base,
+    // Ashore land must not remount card onboarding over signature seeds.
+    onboardingComplete: true,
     hubGuidedIntro: {
       version: STORY_BIBLE_VERSION,
       step: "done",

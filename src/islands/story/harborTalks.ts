@@ -5,7 +5,11 @@
 
 import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
-import type { HubGuidedStepId } from "./storyBible";
+import {
+  normalizeHubGuidedIntro,
+  STORY_BIBLE_VERSION,
+  type HubGuidedStepId,
+} from "./storyBible";
 import {
   coldOrganKidSentence,
   nextPaintingAfterScar,
@@ -39,7 +43,7 @@ const ROLE_TIPS: Record<
       strategist: "Automate a savings transfer before discretionary Harbor spends.",
     },
     bye: {
-      explorer: "I’m always near the Outfitter if you need me!",
+      explorer: "I’m by the fountain if you need me!",
       apprentice: "Come back anytime — Harbor Keeper desk is open.",
       strategist: "Ping me when cashflow or freedom seals need a check-in.",
     },
@@ -368,41 +372,21 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
   };
 }
 
-/** Guided Piggy conversations — one short turn-based beat per Castle Grounds step */
+/** Guided Piggy conversations — Ashore live beats only (legacy ids remap to voyage). */
 export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
-  // One concept per step — never pitch Outfitter / Carpet / Cove before that verb.
+  // One concept per step — never pitch Outfitter / Capsule before Talk → Carpet → Cove.
   const lines: Record<string, { text: string; next?: string; choice?: string; follow?: string }> = {
     meet_guide: {
       text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with WASD or the walk pad, talk with E. Coin Bag sticks with you.",
       choice: "Nice to meet you!",
       next: "meet_b",
-      // Celebrate Talk only — voyage coach names the carpet next (no Outfitter pitch).
+      // Celebrate Talk only — voyage coach names the carpet next.
       follow:
         "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
     },
-    walk_outfitter: {
-      text: "See that Outfitter door? Walk over with Coin Bag and press Enter. Become the Voyager you want to be!",
-      choice: "On my way!",
-    },
-    become_you: {
-      text: "Looking sharp already. Finish Body · Coat · Gear on the mirror, then come say hi again.",
-      choice: "Got it!",
-    },
-    tiny_spend: {
-      text: "Coins can buy help. Peek Capsule Stall with Coin Bag — a tiny spend is still a choice.",
-      choice: "I'll peek!",
-    },
-    practice_optional: {
-      text: "Practice board if you want drills — or skip straight to the Carpet Dock. Your call!",
-      choice: "Thanks, Piggy!",
-    },
     to_dock: {
-      text: "Carpet Dock is that way. Open the Archipelago map and sail to your first painting!",
-      choice: "To the dock!",
-    },
-    first_island: {
-      text: "Coincraft Cove is waiting. I'll be here when you fly home changed.",
-      choice: "See you soon!",
+      text: "Carpet Dock is that way. Open the Archipelago map and board for Coincraft Cove — your first painting!",
+      choice: "To the carpet!",
     },
     done: {
       text: "Harbor is yours. Talk to locals, shop, or open the map whenever you're ready.",
@@ -410,7 +394,12 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
     },
   };
 
-  const beat = lines[step ?? "done"] ?? lines.done!;
+  // Free-roam null → done. Legacy Outfitter/Capsule ids → voyage (Ashore law).
+  const live: HubGuidedStepId =
+    step == null || step === "done"
+      ? "done"
+      : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
+  const beat = lines[live] ?? lines.done!;
   return {
     id: "dlg_harbor_piggy_penny_guided",
     startNodeId: "g1",

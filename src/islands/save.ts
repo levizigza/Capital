@@ -4,6 +4,7 @@ import {
   HARBOR_HAVEN_ID,
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
+import { normalizeHubGuidedIntro } from "./story/storyBible";
 
 const SAVE_KEY = "island_save_v1";
 
@@ -90,7 +91,10 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
     sanitized.harborShop = parsed.harborShop as IslandSaveV1["harborShop"];
   }
   if (parsed.hubGuidedIntro && typeof parsed.hubGuidedIntro === "object") {
-    sanitized.hubGuidedIntro = parsed.hubGuidedIntro as IslandSaveV1["hubGuidedIntro"];
+    // Ashore law: never revive Outfitter/Capsule gates from poisoned mid-saves.
+    sanitized.hubGuidedIntro = normalizeHubGuidedIntro(
+      parsed.hubGuidedIntro as IslandSaveV1["hubGuidedIntro"],
+    );
   }
   if (parsed.harborHomecoming && typeof parsed.harborHomecoming === "object") {
     sanitized.harborHomecoming = parsed.harborHomecoming as IslandSaveV1["harborHomecoming"];

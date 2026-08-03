@@ -85,7 +85,7 @@ Content = Money Mascots + islands + capsules. Presentation must stay readable (l
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.
 
-**Shipped (Pillar 13 — onboarding):** First Piggy Talk (`meet_guide`) teaches Walk · Talk only — Outfitter waits for `walk_outfitter`. Capsule coach no longer pitches Carpet / Cove ahead of `to_dock`.
+**Shipped (Pillar 13 — onboarding):** Harbor Ashore UI law — Talk Piggy → Carpet → Cove. Outfitter-card `WelcomeOnboarding` demoted (not mounted). Legacy Outfitter/Capsule steps normalize to voyage. Combine at Cove Take.
 
 **Shipped (Pillar 14 — technical):** Corrupt `island_save_v1` blobs sanitize to playable Harbor defaults (`sanitizeIslandSave`). WebGL kill / hung Canvas escapes to myth under 3s via shared `harborLoadFailsafe` timers; sticky probe fail skips Canvas next visit.
 
