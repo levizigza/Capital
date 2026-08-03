@@ -7,6 +7,7 @@ import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
 import type { HubGuidedStepId } from "./storyBible";
 import {
+  coldOrganKidSentence,
   nextPaintingAfterScar,
   plaqueShelfLine,
   scarOrganId,
@@ -468,11 +469,19 @@ export function piggyHomecomingGraph(
       label: s.label,
     }),
   );
+  const latestScar = shelfScars.at(-1);
+  const latestOrgan = latestScar
+    ? scarOrganId({
+        id: latestScar.id ?? "",
+        islandId: latestScar.islandId ?? "",
+        label: latestScar.label,
+      })
+    : null;
+  const kidLine = latestOrgan ? coldOrganKidSentence(latestOrgan) : null;
   const scarLine =
     named.length > 0
-      ? `Your Memory Plinth: ${named.join(" · ")}.`
-      : "Coin Bag and I watched you grow.";
-  const latestScar = shelfScars.at(-1);
+      ? `${kidLine ? `${kidLine} ` : ""}Your Memory Plinth: ${named.join(" · ")}.`
+      : kidLine ?? "Coin Bag and I watched you grow.";
   const nextPainting = latestScar
     ? nextPaintingAfterScar({
         id: latestScar.id ?? "",
@@ -507,8 +516,8 @@ export function piggyHomecomingGraph(
           : bond;
 
   const nextLine = nextPainting
-    ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Or wander and read your Memory Plinth; Harbor keeps your story.`
-    : "Coin Bag will point the Carpet Dock when a painting waits — or wander the plaza and read your Memory Plinth. Harbor keeps your story.";
+    ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Memory keeps your story on the Plinth.`
+    : "Coin Bag will point the Carpet Dock when a painting waits — Memory keeps your story on the Plinth.";
 
   return {
     id: "dlg_harbor_piggy_penny_homecoming",

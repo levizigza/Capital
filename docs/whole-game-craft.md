@@ -91,8 +91,13 @@ If not, that surface is not iconic yet.
 - Seal chase plaza chip after pouch dips into deals (before Freedom earned)
 - Boot look-stage Cancel hit parity with Board Carpet (`boot-cancel-look`)
 
+## Iteration 5 (shipped)
+
+- Cold kid retell wired through Soft Beat · share · day-2 · Piggy · quiet badges
+- Suit verbs only (no “Coin Take” mythology) · Soft Beat crown beacon + organ pad labels
+
 ## Still deepen (from iconic-later)
 
-Cold kid retell (Coin · Clock · Spiral · Memory) · Soft Beat shore beacons · Talk Battle living-money polish  
+Talk Battle living-money polish · cold human Ashore→Cove retell pass · merge readiness  
 
 Iterate those next — never new islands first.

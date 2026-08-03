@@ -49,17 +49,25 @@ describe("harborTalks", () => {
   });
 
   it("names Coin holds + Paycheck unlock after Cove scar homecoming", () => {
-    const g = piggyHomecomingGraph("Piggy Penny: The Coin holds — you came home changed.", {
-      scars: [
-        {
-          id: "cove_saver_plaque",
-          islandId: "coincraft_cove",
-          label: "Jar before treat",
-        },
-      ],
-    });
-    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Coin holds/);
+    const g = piggyHomecomingGraph(
+      "Piggy Penny: The Coin holds — save a little; the jar still waits.",
+      {
+        scars: [
+          {
+            id: "cove_saver_plaque",
+            islandId: "coincraft_cove",
+            label: "Jar before treat",
+          },
+        ],
+      },
+    );
+    expect(g.nodes.find((n) => n.id === "h1")?.text).toMatch(/Coin holds/);
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(
+      /The Coin holds — save a little/,
+    );
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Coin holds · Jar before treat/);
     expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Paycheck Peninsula/);
+    expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Memory keeps/);
   });
 
   it("gives distinct tip beats per mascot role", () => {

@@ -20,6 +20,7 @@ import {
 import { playOrganSfx } from "../audio/capitalSfx";
 import { capitalMusic } from "../audio/capitalMusic";
 import { moneyOrganForStructureTheme } from "../moneyOrgans";
+import { organVerbChip } from "../worldMemory";
 import { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
 import { StructureInteriorLights } from "./StructureInteriorLights";
 import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
@@ -124,33 +125,52 @@ function InteriorPlayer({
 
 function SoftBeatBeacon({ accent, active }: { accent: string; active: boolean }) {
   const beam = useRef<THREE.Mesh>(null);
+  const crown = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
-    if (!beam.current) return;
-    const mat = beam.current.material as THREE.MeshStandardMaterial;
-    mat.emissiveIntensity = (active ? 0.75 : 0.4) + Math.sin(clock.elapsedTime * 2.4) * 0.12;
-    beam.current.scale.y = 1 + Math.sin(clock.elapsedTime * 1.8) * 0.06;
+    const t = clock.elapsedTime;
+    if (beam.current) {
+      const mat = beam.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = (active ? 0.9 : 0.5) + Math.sin(t * 2.4) * 0.15;
+      beam.current.scale.y = 1 + Math.sin(t * 1.8) * 0.08;
+    }
+    if (crown.current) {
+      const mat = crown.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = (active ? 1.1 : 0.65) + Math.sin(t * 3.1) * 0.2;
+      crown.current.position.y = 2.85 + Math.sin(t * 2.2) * 0.08;
+    }
   });
   return (
     <group>
       <mesh ref={beam} position={[0, 1.55, 0]}>
-        <cylinderGeometry args={[0.08, 0.14, 2.4, 10]} />
+        <cylinderGeometry args={[0.1, 0.16, 2.6, 12]} />
         <meshStandardMaterial
           color={accent}
           emissive={accent}
-          emissiveIntensity={0.45}
+          emissiveIntensity={0.55}
           transparent
-          opacity={0.55}
+          opacity={0.62}
           depthWrite={false}
         />
       </mesh>
+      {/* Crown orb — Soft Beat reads from across the interior */}
+      <mesh ref={crown} position={[0, 2.85, 0]}>
+        <sphereGeometry args={[0.28, 16, 16]} />
+        <meshStandardMaterial
+          color="#fff7ed"
+          emissive={accent}
+          emissiveIntensity={0.75}
+          roughness={0.25}
+          metalness={0.15}
+        />
+      </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
-        <ringGeometry args={[1.05, 1.45, 28]} />
+        <ringGeometry args={[1.05, 1.55, 32]} />
         <meshStandardMaterial
           color={accent}
           emissive={accent}
-          emissiveIntensity={active ? 0.65 : 0.35}
+          emissiveIntensity={active ? 0.75 : 0.42}
           transparent
-          opacity={0.7}
+          opacity={0.75}
           depthWrite={false}
         />
       </mesh>
@@ -182,6 +202,14 @@ function PartPad({
     }
   });
   const y = softBeat ? 1.05 : 0.9;
+  const organChip = organVerbChip(moneyOrganForStructureTheme(theme).id);
+  const padLabel = softBeat
+    ? active
+      ? `Enter · ${organChip}`
+      : `${part.label} · ${organChip}`
+    : active
+      ? `Enter · ${part.entryPiece}`
+      : part.label;
   return (
     <group
       position={part.position}
@@ -211,16 +239,16 @@ function PartPad({
       <group ref={meshGroup} position={[0, y, 0]}>
         <StructurePartSilhouette partId={part.id} />
       </group>
-      {/* Dev-only labels — Pages relies on silhouette + pad glow (SafeText). */}
-      <Billboard position={[0, softBeat ? 2.55 : 2.1, 0]} follow>
+      {/* Soft Beat pads name the suit verb — cold retell in the interior. */}
+      <Billboard position={[0, softBeat ? 2.85 : 2.1, 0]} follow>
         <SafeText
-          fontSize={0.28}
+          fontSize={softBeat ? 0.3 : 0.28}
           color="#fff"
           anchorX="center"
           outlineWidth={0.025}
           outlineColor="#0f172a"
         >
-          {active ? `Enter · ${part.entryPiece}` : part.label}
+          {padLabel}
         </SafeText>
       </Billboard>
     </group>

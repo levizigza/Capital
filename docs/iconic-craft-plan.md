@@ -322,8 +322,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
-| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle Leave + plaza profile chip removed (Settings). Next: cold kid retell after Harbor return |
-| 2 | Core loop | playable → iconic | 2026-08-02 | Cold Take `doneMs` + pier guide + Carpet CTA after hush. Next: cold kid retell after Harbor return |
+| 1 | Fantasy | playable → iconic | 2026-08-02 | Cold kid retell on Soft Beat/share/day-2/Piggy. Next: Talk Battle living-money polish |
+| 2 | Core loop | playable → iconic | 2026-08-02 | Cold Take `doneMs` + pier guide + Carpet CTA after hush. Next: cold human Ashore→Cove pass |
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
 | 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: Soft Beat shore beacons |
 | 5 | Progression | playable → iconic | 2026-08-02 | Freedom Seal + Seal chase chip after pouch dips; carpet tier. Next: cold kid retell |
@@ -331,9 +331,9 @@ When two pillars fight, **fantasy + signature loop win**.
 | 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
 | 8 | Balance | playable → iconic | 2026-08-02 | Cove → Freedom balance sheet + Seal chase chip after pouch dips. Next: keep escape streak honest |
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Esc · Leave + boot look Cancel parity (`boot-cancel-look`). Next: Talk Battle living-money polish |
-| 10 | Art direction | playable → iconic | 2026-08-02 | Cove Jar distance read + parked digression pads off shore; structure silhouettes. Next: Soft Beat beacon polish on shores |
+| 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
-| 12 | Story | playable → iconic | 2026-08-02 | One cold sentence per organ; spectacle + Family myth on suit verbs (no Change/Take split). Next: Talk Battle chrome still SaaS-y vs living-money stage |
+| 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences on Soft Beat/share/day-2/Piggy; quiet badges use suit verbs. Next: Talk Battle living-money stage polish |
 | 13 | Onboarding | playable → iconic | 2026-08-02 | meet_guide Talk-only; boot Board + Cancel look parity. Next: cold unseeded Ashore→Cove human pass |
 | 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
 | 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |

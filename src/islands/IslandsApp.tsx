@@ -57,7 +57,6 @@ import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
   nextPaintingAfterScar,
-  organVerbChip,
   plaqueShelfLine,
   stanceGreetingHint,
   recordNpcTalk,
@@ -1002,7 +1001,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The ${organVerbChip("coin")} — you came home changed.${scarBit} ${next} is newly open on the Carpet.`,
+              message: `Piggy Penny: The Coin holds — save a little; the jar still waits.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1034,7 +1033,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The ${organVerbChip("clock")} — a paycheck isn’t freedom until you face a surprise.${scarBit} ${next} is newly open on the Carpet.`,
+              message: `Piggy Penny: The Clock shelters — wait under the umbrella before glitter.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1067,7 +1066,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The ${organVerbChip("spiral")} — you faced the interest storm and came home.${scarBit} Harbor keeps your Ordeal on the Plinth.`,
+              message: `Piggy Penny: The Spiral withstands — wait beats haste on the interest wall.${scarBit} Memory keeps your Ordeal on the Plinth.`,
             },
           };
         });

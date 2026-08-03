@@ -10,6 +10,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { capitalOrganEyebrow } from "../titleVoice";
 import {
+  coldOrganKidSentence,
   coldRetellLine,
   nextPaintingAfterScar,
   organVerbChip,
@@ -117,6 +118,12 @@ export function HarborFeltShareOverlay({
           >
             {retell}
             {chapter ? ` (${chapter})` : ""}
+          </p>
+          <p
+            className="mt-1 text-[12px] font-bold leading-snug text-amber-50/95"
+            data-testid="harbor-felt-kid-sentence"
+          >
+            {coldOrganKidSentence(organ)}
           </p>
           {nextPainting ? (
             <p

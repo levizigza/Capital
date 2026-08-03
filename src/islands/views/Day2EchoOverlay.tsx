@@ -6,7 +6,7 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
-import { day2EchoBody, scarOrganName } from "../worldMemory";
+import { coldOrganKidSentence, day2EchoBody, scarOrganName } from "../worldMemory";
 import { GameButton } from "@/game-ui";
 import { useOverlayEscape } from "./useOverlayEscape";
 
@@ -62,9 +62,15 @@ export function Day2EchoOverlay({
           Still here · {organWord}
         </p>
         <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
-          The Plinth did not forget
+          Memory keeps — the Plinth did not forget
         </h2>
-        <p className="mt-3 text-sm text-white/85 drop-shadow" data-testid="day2-echo-retell">
+        <p
+          className="mt-2 text-sm font-semibold text-amber-100 drop-shadow"
+          data-testid="day2-echo-kid-sentence"
+        >
+          {coldOrganKidSentence(organId)}
+        </p>
+        <p className="mt-2 text-sm text-white/85 drop-shadow" data-testid="day2-echo-retell">
           {day2EchoBody(scarLabel, organId)}
         </p>
         <GameButton variant="primary" className="mt-4 w-full" onClick={onVisitPlinth} autoFocus>

@@ -39,6 +39,8 @@ describe("Structure part silhouettes", () => {
   it("wires Soft Beat pads with a lookout beacon in the interior", () => {
     const interior = readFileSync(join(__dirname, "MoneyStructureInteriorView.tsx"), "utf8");
     expect(interior).toMatch(/SoftBeatBeacon/);
+    expect(interior).toMatch(/organVerbChip/);
+    expect(interior).toMatch(/Crown orb/);
     expect(interior).toMatch(/StructurePartSilhouette/);
     expect(interior).toMatch(/SafeText/);
     expect(interior).not.toMatch(/from "@react-three\/drei".*Text|,\s*Text\s*}/);

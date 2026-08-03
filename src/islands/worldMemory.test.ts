@@ -165,8 +165,10 @@ describe("worldMemory", () => {
     expect(organTakeHushLine("coin")).toMatch(/holds/);
     expect(organTakeHushLine("clock")).toMatch(/shelters/);
     expect(organTakeHushLine("spiral")).toMatch(/withstands/);
-    expect(organQuietBadge("clock")).toMatch(/Clock/);
-    expect(day2EchoBody("Umbrella before glitter", "clock")).toMatch(/Clock/);
+    expect(organQuietBadge("clock")).toBe("Quiet — Clock shelters");
+    expect(organQuietBadge("coin")).toBe("Quiet — Coin holds");
+    expect(organQuietBadge("coin")).not.toMatch(/Coin Take/);
+    expect(day2EchoBody("Umbrella before glitter", "clock")).toMatch(/Clock shelters/);
     expect(day2EchoBody("Umbrella before glitter", "clock")).not.toMatch(/jars/);
     expect(scarRumorLine(cove, "later")).toMatch(/Coin/);
     expect(scarRumorLine(pay, "same")).toMatch(/Clock/);

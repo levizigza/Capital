@@ -29,9 +29,10 @@ describe("Harbor progression contract", () => {
     const share = readFileSync(join(__dirname, "HarborFeltShareOverlay.tsx"), "utf8");
     const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
     expect(share).toMatch(/harbor-felt-newly-true/);
+    expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(share).toMatch(/nextPaintingAfterScar/);
     expect(app).toMatch(/newly open on the Carpet/);
-    expect(app).toMatch(/organVerbChip\("coin"\)/);
+    expect(app).toMatch(/The Coin holds — save a little/);
   });
 
   it("names Freedom Seal + carpet tier on the plaza", () => {

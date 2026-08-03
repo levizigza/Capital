@@ -231,27 +231,24 @@ export function organTakeHushLine(organ: MoneyOrganId): string {
   return "The Coin holds. Harbor is already listening.";
 }
 
-/** Shore quiet badge after irreversible Take. */
+/** Shore quiet badge after irreversible Take — suit verb, never “Coin Take”. */
 export function organQuietBadge(organ: MoneyOrganId): string {
-  if (organ === "clock") return "Quiet after the Clock Take";
-  if (organ === "spiral") return "Quiet after the Spiral Take";
-  if (organ === "memory") return "Quiet after Memory";
-  return "Quiet after the Coin Take";
+  return `Quiet — ${organVerbChip(organ)}`;
 }
 
-/** Day-2 cinema body — organ-true metaphor (not always jars). */
+/** Day-2 cinema body — lead with suit verb so cold kids can retell. */
 export function day2EchoBody(scarLabel: string, organ: MoneyOrganId): string {
-  const organWord = scarOrganName(organ);
+  const chip = organVerbChip(organ);
   if (organ === "clock") {
-    return `Locals still stamp about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `The ${chip} — locals still stamp “${scarLabel}.” Yesterday sticks as today’s weather.`;
   }
   if (organ === "spiral") {
-    return `Locals still weigh the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `The ${chip} — locals still weigh “${scarLabel}.” Yesterday sticks as today’s weather.`;
   }
   if (organ === "memory") {
-    return `Locals still name the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `${chip} — locals still name “${scarLabel}” on the Plinth. Yesterday sticks as today’s weather.`;
   }
-  return `Locals still tip their jars about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+  return `The ${chip} — locals still tip their jars about “${scarLabel}.” Yesterday sticks as today’s weather.`;
 }
 
 /** Daily Harbor rumor that carries the organ word. */
@@ -311,11 +308,11 @@ export function piggyScarMemoryLine(
   dayOffset: "same" | "later",
   organ: MoneyOrganId = "memory",
 ): string {
-  const organWord = scarOrganName(organ);
+  const chip = organVerbChip(organ);
   if (dayOffset === "later") {
-    return `Piggy Penny: Still here — the ${organWord} did not wash out. “${scarLabel}.”`;
+    return `Piggy Penny: Still here — the ${chip} did not wash out. “${scarLabel}.”`;
   }
-  return `Piggy Penny: Harbor felt the ${organWord} — “${scarLabel}.” I’m proud you came home changed.`;
+  return `Piggy Penny: Harbor felt that — the ${chip}. “${scarLabel}.” I’m proud you came home changed.`;
 }
 
 /** True when this local should name the scar (dense plaza memory, not sparse). */

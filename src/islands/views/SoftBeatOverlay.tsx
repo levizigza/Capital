@@ -10,6 +10,7 @@ import { moneyOrganForSoftBeat } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
+import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
@@ -20,26 +21,26 @@ const BEATS: Record<
 > = {
   lookout: {
     title: "Lid Lookout",
-    line: "Cove looks tiny from up here — save a little, the jar still holds.",
-    hushLine: "After the Coin Take, even the lid is quiet. Harbor is already listening.",
+    line: "Cove looks tiny — the Coin holds. Save a little; the jar still waits.",
+    hushLine: "Quiet — Coin holds. Even the lid listens. Harbor felt that.",
     accent: "#fbbf24",
   },
   umbrella: {
     title: "Umbrella Loft",
-    line: "Rainy-day loft — Main Street looks small. Keep a little dry for later.",
-    hushLine: "The Clock loft remembers your Take. Fly home — Harbor felt the Clock.",
+    line: "Rainy-day loft — the Clock shelters. Keep a little dry for later.",
+    hushLine: "Quiet — Clock shelters. Fly home — Harbor felt that.",
     accent: "#38bdf8",
   },
   battlement: {
     title: "Score Battlement",
-    line: "On-time history beats haste — interest feeds on rushing.",
-    hushLine: "The Spiral slowed after your choice. Interest leaves footprints on the Plinth.",
+    line: "The Spiral withstands — on-time history beats haste.",
+    hushLine: "Quiet — Spiral withstands. Interest leaves footprints on the Plinth.",
     accent: "#a78bfa",
   },
   ledger: {
     title: "Teller Window",
-    line: "Marble cool under your hands — the ledger remembers every jar and stamp.",
-    hushLine: "Memory already carries your latest plaque. Money is alive here.",
+    line: "Memory keeps — the ledger remembers every jar and stamp.",
+    hushLine: "Quiet — Memory keeps your plaque. Money is alive here.",
     accent: "#f59e0b",
   },
 };
@@ -73,6 +74,7 @@ export function SoftBeatOverlay({
   }, [hushActive, onDone, organ.id]);
 
   const body = hushActive ? beat.hushLine : beat.line;
+  const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
       ? `“${scarLabel}” already lives on the Memory Plinth.`
@@ -99,10 +101,16 @@ export function SoftBeatOverlay({
           className="text-xs font-bold uppercase tracking-[0.2em]"
           style={{ color: beat.accent }}
         >
-          {softBeatEyebrow(organ.id)}
+          {softBeatEyebrow(organ.id)} · {organVerbChip(organ.id)}
         </p>
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
+        <p
+          className="mt-2 text-sm font-semibold text-amber-100/95"
+          data-testid="soft-beat-retell"
+        >
+          {kidSentence}
+        </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
         <p className="mt-2 text-[10px] uppercase tracking-wider text-white/45">
           {organ.suit} · {organ.metaphor}
