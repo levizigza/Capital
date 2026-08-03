@@ -139,7 +139,11 @@ import {
 } from "./economy";
 import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
-import { buildSignatureLoopSave, type SignaturePhase } from "@/qa/signatureLoop";
+import {
+  buildSignatureLoopSave,
+  type SignaturePhase,
+  type SignatureSpineOrgan,
+} from "@/qa/signatureLoop";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
@@ -911,9 +915,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setView("home");
         await persistIslandSave(fresh);
       },
-      seedSignatureLoop: async (phase?: SignaturePhase) => {
+      seedSignatureLoop: async (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => {
         const resolved = phase ?? "spectacle_ready";
-        const seeded = buildSignatureLoopSave(resolved);
+        const seeded = buildSignatureLoopSave(resolved, new Date(), organ ?? "coin");
         replaceSave(seeded);
         setHubModal(null);
         await persistIslandSave(seeded);

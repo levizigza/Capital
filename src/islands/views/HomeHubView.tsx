@@ -436,13 +436,16 @@ export function HomeHubView({
       voyagerName: voyager.name || "Voyager",
       scarLabel: latestPlaque.label,
       chapter: scarChapterTitle(latestPlaque),
+      scarId: latestPlaque.id,
+      islandId: latestPlaque.islandId,
+      organId: latestOrgan,
     }).then((url) => {
       if (!cancelled) setFeltPreviewUrl(url);
     });
     return () => {
       cancelled = true;
     };
-  }, [feltShareOpen, latestPlaque, voyager.name]);
+  }, [feltShareOpen, latestPlaque, latestOrgan, voyager.name]);
 
   useEffect(() => {
     // Hold glow through the share freeze-frame so the lamp doesn't die mid-PNG.
@@ -1118,6 +1121,7 @@ export function HomeHubView({
                           chapter: scarChapterTitle(latestPlaque),
                           scarId: latestPlaque.id,
                           islandId: latestPlaque.islandId,
+                          organId: latestOrgan,
                         });
                         toast.message(result === "shared" ? "Shared" : "Share card downloaded");
                       } catch (err) {

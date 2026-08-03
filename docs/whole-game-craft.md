@@ -132,8 +132,13 @@ If not, that surface is not iconic yet.
 - **Credit Spiral cold chain:** Cleo → Credit Inbox → Rex → Score Scanner → Wait Take → Harbor **Spiral withstands** (`scripts/cold-full-credit-chain.mjs`)
 - **Structure poke polish:** Ledger Bank vault dial + teller glass; Payroll Tower buckets + umbrella fold; Soft Beat climb copy on lid · loft · wall · teller
 
+## Iteration 12 (shipped)
+
+- **Spine cold-retell polish:** spectacle shows `coldOrganKidSentence`; QA `seedSignatureLoop(phase, organ)` for Coin · Clock · Spiral; Family myth infers organ from plaque label; `scripts/cold-spine-retell.mjs`
+- **Share / thumbnail pass:** felt PNG lower-third leads with kid sentence + large organ seal; preview passes scarId/organId; `feltCardCopy` unit contract
+
 ## Still deepen (from iconic-later)
 
-Spine cold-retell polish · share/thumbnail pass · merge when you want  
+Human cold pass of the full triangle · merge when you want  
 
 Iterate those next — never new islands first.

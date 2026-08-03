@@ -22,6 +22,18 @@ describe("signature loop QA", () => {
     expect(save.hubGuidedIntro?.didDock).toBe(true);
   });
 
+  it("seeds Clock and Spiral spectacle for spine cold retell", () => {
+    const clock = buildSignatureLoopSave("spectacle_ready", new Date(), "clock");
+    expect(clock.harborScars?.[0]?.id).toBe("pp_protector_plaque");
+    expect(auditSignatureLoop(clock).phase).toBe("spectacle_ready");
+    expect(clock.harborHomecoming?.message).toMatch(/Clock shelters/);
+
+    const spiral = buildSignatureLoopSave("spectacle_ready", new Date(), "spiral");
+    expect(spiral.harborScars?.[0]?.id).toBe("credit_patience_plaque");
+    expect(auditSignatureLoop(spiral).phase).toBe("spectacle_ready");
+    expect(spiral.harborHomecoming?.message).toMatch(/Spiral withstands/);
+  });
+
   it("seeds day2_echo with overnight surprise rumor", () => {
     const save = buildSignatureLoopSave("day2_echo", new Date(2026, 6, 28));
     const audit = auditSignatureLoop(save, "2026-07-28");

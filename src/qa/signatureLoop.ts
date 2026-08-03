@@ -6,10 +6,23 @@
 
 import type { IslandSaveV1 } from "@/islands/types";
 import { STORY_BIBLE_VERSION } from "@/islands/story/storyBible";
-import { harborScarPlaques, scarTriggersChapterQuiet } from "@/islands/worldMemory";
+import {
+  coldOrganKidSentence,
+  harborScarPlaques,
+  scarTriggersChapterQuiet,
+  type HarborScar,
+} from "@/islands/worldMemory";
 import { localDayKey, pickDailyRumor } from "@/islands/harborRitual";
 import { createDefaultIslandSave } from "@/islands/save";
-import { COVE_CHANGE_QUEST_ID, COVE_ISLAND_ID } from "@/islands/islandIds";
+import {
+  COVE_CHANGE_QUEST_ID,
+  COVE_ISLAND_ID,
+  CREDIT_KINGDOM_ID,
+  CREDIT_ORDEAL_QUEST_ID,
+  PAYCHECK_CHANGE_QUEST_ID,
+  PAYCHECK_PENINSULA_ID,
+} from "@/islands/islandIds";
+import type { MoneyOrganId } from "@/islands/moneyOrgans";
 
 /** Trailer-grade beat timings (ms). Reduced-motion scales by REDUCED_MOTION_MULT. */
 export const SIGNATURE_TIMING = {
@@ -60,26 +73,72 @@ export type SignaturePhase =
   | "piggy_ready"
   | "day2_echo";
 
-const COVE_SCAR = {
-  id: "cove_saver_plaque",
-  islandId: COVE_ISLAND_ID,
-  choiceId: "save",
-  label: "Jar before treat",
-  kind: "plaque" as const,
-  createdAt: "2026-07-27T18:00:00.000Z",
+/** Spine Take organ for cold retell seeds (Memory arrives via day-2 / Plinth). */
+export type SignatureSpineOrgan = Extract<MoneyOrganId, "coin" | "clock" | "spiral">;
+
+type SpineScarSeed = {
+  scar: Omit<HarborScar, "createdAt"> & { createdAt?: string };
+  irreversibleKey: string;
+  choiceId: string;
+  questId: string;
+  islandId: string;
 };
 
-/** Seed a save parked at Harbor right after Cove Change (cold playtest / e2e). */
+const SPINE_SCARS: Record<SignatureSpineOrgan, SpineScarSeed> = {
+  coin: {
+    scar: {
+      id: "cove_saver_plaque",
+      islandId: COVE_ISLAND_ID,
+      choiceId: "save",
+      label: "Jar before treat",
+      kind: "plaque",
+    },
+    irreversibleKey: "cove_save_vs_spend",
+    choiceId: "save",
+    questId: COVE_CHANGE_QUEST_ID,
+    islandId: COVE_ISLAND_ID,
+  },
+  clock: {
+    scar: {
+      id: "pp_protector_plaque",
+      islandId: PAYCHECK_PENINSULA_ID,
+      choiceId: "protect",
+      label: "Umbrella before glitter",
+      kind: "plaque",
+    },
+    irreversibleKey: "paycheck_protect_vs_spend",
+    choiceId: "protect",
+    questId: PAYCHECK_CHANGE_QUEST_ID,
+    islandId: PAYCHECK_PENINSULA_ID,
+  },
+  spiral: {
+    scar: {
+      id: "credit_patience_plaque",
+      islandId: CREDIT_KINGDOM_ID,
+      choiceId: "wait",
+      label: "Waited the spiral",
+      kind: "plaque",
+    },
+    irreversibleKey: "credit_borrow_vs_wait",
+    choiceId: "wait",
+    questId: CREDIT_ORDEAL_QUEST_ID,
+    islandId: CREDIT_KINGDOM_ID,
+  },
+};
+
+/** Seed a save parked at Harbor after a spine Take (cold playtest / e2e). */
 export function buildSignatureLoopSave(
   phase: SignaturePhase = "spectacle_ready",
   now = new Date(),
+  organ: SignatureSpineOrgan = "coin",
 ): IslandSaveV1 {
   const base = createDefaultIslandSave();
   const dayKey = localDayKey(now);
-  const scar =
-    phase === "day2_echo"
-      ? { ...COVE_SCAR, createdAt: "2026-07-20T12:00:00.000Z" }
-      : { ...COVE_SCAR, createdAt: now.toISOString() };
+  const seed = SPINE_SCARS[organ];
+  const createdAt =
+    phase === "day2_echo" ? "2026-07-20T12:00:00.000Z" : now.toISOString();
+  const scar: HarborScar = { ...seed.scar, createdAt };
+  const kid = coldOrganKidSentence(organ);
 
   const save: IslandSaveV1 = {
     ...base,
@@ -97,16 +156,47 @@ export function buildSignatureLoopSave(
         completed: true,
         completedObjectives: ["talk:npc_keeper_kira"],
       },
+      ...(organ === "clock" || organ === "spiral"
+        ? {
+            [PAYCHECK_CHANGE_QUEST_ID]: {
+              started: true,
+              completed: true,
+              completedObjectives: [] as string[],
+            },
+          }
+        : {}),
+      ...(organ === "spiral"
+        ? {
+            [CREDIT_ORDEAL_QUEST_ID]: {
+              started: true,
+              completed: true,
+              completedObjectives: [] as string[],
+            },
+          }
+        : {}),
+      [seed.questId]: {
+        started: true,
+        completed: true,
+        completedObjectives: [] as string[],
+      },
     },
     discovered: {
       ...base.discovered,
-      islands: [...new Set([...(base.discovered.islands ?? []), COVE_ISLAND_ID, "harbor_haven"])],
+      islands: [
+        ...new Set([
+          ...(base.discovered.islands ?? []),
+          COVE_ISLAND_ID,
+          "harbor_haven",
+          ...(organ === "clock" || organ === "spiral" ? [PAYCHECK_PENINSULA_ID] : []),
+          ...(organ === "spiral" ? [CREDIT_KINGDOM_ID] : []),
+        ]),
+      ],
     },
     irreversibleChoices: {
-      cove_save_vs_spend: {
-        choiceId: "save",
-        label: "Jar before treat",
-        islandId: COVE_ISLAND_ID,
+      [seed.irreversibleKey]: {
+        choiceId: seed.choiceId,
+        label: scar.label,
+        islandId: seed.islandId,
         at: scar.createdAt,
       },
     },
@@ -124,10 +214,9 @@ export function buildSignatureLoopSave(
             celebrated: phase !== "spectacle_ready",
             piggyTalked: false,
             quietPending: true,
-            chapterIslandId: COVE_ISLAND_ID,
-            questId: COVE_CHANGE_QUEST_ID,
-            message:
-              "Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are. I already set a plaque: Jar before treat.",
+            chapterIslandId: seed.islandId,
+            questId: seed.questId,
+            message: `Piggy Penny: ${kid} Harbor remembered: “${scar.label}.”`,
           }
         : phase === "day2_echo"
           ? {
@@ -135,8 +224,8 @@ export function buildSignatureLoopSave(
               celebrated: true,
               piggyTalked: true,
               quietPending: false,
-              chapterIslandId: COVE_ISLAND_ID,
-              questId: COVE_CHANGE_QUEST_ID,
+              chapterIslandId: seed.islandId,
+              questId: seed.questId,
             }
           : undefined,
   };

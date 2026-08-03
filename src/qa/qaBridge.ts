@@ -1,5 +1,5 @@
 import type { IslandSaveV1 } from "@/islands/types";
-import type { SignaturePhase } from "./signatureLoop";
+import type { SignaturePhase, SignatureSpineOrgan } from "./signatureLoop";
 
 export type QAView =
   | "home"
@@ -26,8 +26,8 @@ export type QABridge = {
   collectItem: (itemId: string) => Promise<boolean>;
   persistSave: () => Promise<void>;
   resetSave: () => Promise<void>;
-  /** Seed Harbor at a signature-loop phase (cold playtest). */
-  seedSignatureLoop: (phase?: SignaturePhase) => Promise<void>;
+  /** Seed Harbor at a signature-loop phase (cold playtest). Optional spine organ. */
+  seedSignatureLoop: (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => Promise<void>;
   /**
    * After a same-day Cove/Paycheck/Credit Take: backdate the latest scar and
    * re-roll ritual so Day-2 echo cinema can open (cold overnight proof).

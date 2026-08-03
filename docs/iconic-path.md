@@ -93,7 +93,11 @@ __QA__.playSignatureTrailer()
 
 Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cove smoke: `npm run test:iconic:e2e`.
 
-Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs`.
+Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs` · `cold-spine-retell.mjs`.
+
+```js
+await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spiral"
+```
 
 ## Freeze (do not ship yet)
 

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
 import {
+  coldOrganKidSentence,
   coldRetellLine,
   coldSpectacleHeadline,
   plaqueShelfLine,
@@ -122,7 +123,13 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
             {headline}
           </h2>
           <p
-            className="mt-2 text-sm text-white/85 drop-shadow"
+            className="mt-2 text-sm font-semibold text-amber-50 drop-shadow"
+            data-testid="scar-spectacle-kid-sentence"
+          >
+            {coldOrganKidSentence(organId)}
+          </p>
+          <p
+            className="mt-1.5 text-sm text-white/85 drop-shadow"
             data-testid="scar-spectacle-retell"
           >
             {retell ?? shelf}

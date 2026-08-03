@@ -47,7 +47,10 @@ test.describe("Signature loop", () => {
     await expect(spectacle).toBeVisible({ timeout: 20_000 });
     // World cinema — captions over Plinth (not a modal card).
     await expect(spectacle).toHaveAttribute("data-cinema-phase", /.+/);
-    // Cold-retell polish — organ word in the kid sentence (present even during hush).
+    // Cold-retell polish — organ kid sentence + plaque retell (present even during hush).
+    await expect(page.getByTestId("scar-spectacle-kid-sentence")).toContainText(
+      /The Coin holds|The Clock shelters|The Spiral withstands|Memory keeps/,
+    );
     await expect(page.getByTestId("scar-spectacle-retell")).toContainText(/Coin|Clock|Spiral|Memory/);
     // Dismiss early if still up; otherwise cinema auto-advances to share (~5.6s).
     if (await spectacle.isVisible()) {

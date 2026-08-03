@@ -58,9 +58,13 @@ describe("familyRoom", () => {
   it("names a plaque with Harbor cold-retell mythology (suit verb)", () => {
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Local myth/i);
+    // Label alone still names Coin (not a silent Memory default).
+    expect(familyPlaqueMythLine("Jar before treat")).toMatch(/Coin holds/);
     expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Coin holds/);
     expect(familyPlaqueMythLine("Jar before treat", "coin")).toMatch(/Harbor remembered/);
+    expect(familyPlaqueMythLine("Umbrella before glitter")).toMatch(/Clock shelters/);
     expect(familyPlaqueMythLine("Umbrella", "clock")).toMatch(/Clock shelters/);
+    expect(familyPlaqueMythLine("Waited the spiral")).toMatch(/Spiral withstands/);
     expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/Spiral withstands/);
     expect(familyPlaqueMythLine(null)).toBeNull();
     expect(familyPlaqueMythLine("  ")).toBeNull();

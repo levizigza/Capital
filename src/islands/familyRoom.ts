@@ -173,6 +173,15 @@ export function importFamilyRoomJson(text: string): FamilyRoom {
  * Local myth line for Family Room — same cold-retell mythology as Harbor
  * (suit verb + plaque). Never invents a second habit cosmos at home.
  */
+/** Infer spine organ from plaque label when Family Room has no live organ id. */
+function organFromPlaqueLabel(label: string): MoneyOrganId {
+  const l = label.toLowerCase();
+  if (l.includes("umbrella") || l.includes("glitter")) return "clock";
+  if (l.includes("spiral") || l.includes("haste")) return "spiral";
+  if (l.includes("jar") || l.includes("treat") || l.includes("coin")) return "coin";
+  return "memory";
+}
+
 export function familyPlaqueMythLine(
   scarLabel: string | null | undefined,
   organId?: MoneyOrganId | null,
@@ -182,6 +191,6 @@ export function familyPlaqueMythLine(
   const organ: MoneyOrganId =
     organId === "coin" || organId === "clock" || organId === "spiral" || organId === "memory"
       ? organId
-      : "memory";
+      : organFromPlaqueLabel(label);
   return `The ${organVerbChip(organ)} — Harbor remembered: “${label}.” Local myth — and so do you.`;
 }

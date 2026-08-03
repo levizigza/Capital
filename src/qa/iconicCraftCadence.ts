@@ -115,8 +115,11 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
   {
     id: "share",
     step: "Share",
-    modes: ["e2e", "human"],
-    guards: ["e2e/signature-loop.spec.ts"],
+    modes: ["unit", "e2e", "human"],
+    guards: [
+      "src/islands/views/weeklyShareCard.test.ts",
+      "e2e/signature-loop.spec.ts",
+    ],
   },
   {
     id: "piggy_presence",
