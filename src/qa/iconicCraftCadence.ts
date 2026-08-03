@@ -133,8 +133,11 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
   {
     id: "soft_beat",
     step: "Soft Beat",
-    modes: ["human"],
-    guards: [],
+    modes: ["unit", "human"],
+    guards: [
+      "src/islands/storyColdRetell.test.ts",
+      "src/islands/structureToyCulture.test.ts",
+    ],
   },
   {
     id: "trailer",

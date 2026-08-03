@@ -66,6 +66,9 @@ describe("Pillar 12 story cold retell", () => {
     expect(soft).toMatch(/soft-beat-retell/);
     expect(soft).toMatch(/data-soft-beat-climb/);
     expect(soft).toMatch(/Climb the lid/);
+    expect(soft).toMatch(/Climb the loft/);
+    expect(soft).toMatch(/Climb the wall/);
+    expect(soft).toMatch(/Step to the teller/);
     expect(soft).not.toMatch(/After the Coin Take/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(day2).toMatch(/day2-echo-kid-sentence/);

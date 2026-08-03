@@ -126,8 +126,14 @@ If not, that surface is not iconic yet.
 - **Coin Jar deepen:** Cork Vault + Coin Spring silhouettes; near-pad poke-to-enter; cork/spring toys; Lid Soft Beat `data-soft-beat-climb="lid-climb"`
 - **Paycheck cold chain:** Pat → paycheck → Priya → Budget Split → Carlos → Vee protect → Harbor **Clock shelters** (`scripts/cold-full-paycheck-chain.mjs`)
 
+## Iteration 11 (shipped)
+
+- **Day-2 deepen proof:** cold day-2 Coin echo + Paycheck Clock chain re-green; Vee Take effects now `addScar` before `giveItem` so homecoming names Clock + opens Credit
+- **Credit Spiral cold chain:** Cleo → Credit Inbox → Rex → Score Scanner → Wait Take → Harbor **Spiral withstands** (`scripts/cold-full-credit-chain.mjs`)
+- **Structure poke polish:** Ledger Bank vault dial + teller glass; Payroll Tower buckets + umbrella fold; Soft Beat climb copy on lid · loft · wall · teller
+
 ## Still deepen (from iconic-later)
 
-Credit Spiral Take cold chain · Ledger Bank / Payroll Tower poke polish · merge when you want  
+Spine cold-retell polish · share/thumbnail pass · merge when you want  
 
 Iterate those next — never new islands first.

@@ -118,6 +118,21 @@ export function SoftBeatOverlay({
             Climb the lid — peek from the Coin Jar
           </p>
         ) : null}
+        {kind === "umbrella" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-sky-100/80">
+            Climb the loft — peek from the Payroll Tower
+          </p>
+        ) : null}
+        {kind === "battlement" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-violet-100/80">
+            Climb the wall — peek from Interest Keep
+          </p>
+        ) : null}
+        {kind === "ledger" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
+            Step to the teller — peek from Ledger Bank
+          </p>
+        ) : null}
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
         <p

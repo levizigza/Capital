@@ -255,7 +255,6 @@
                   "text": "Protect the fund — fountain first.",
                   "nextNodeId": "vv_protect_end",
                   "effects": [
-                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
@@ -269,7 +268,8 @@
                       "kind": "plaque",
                       "stance": "saver",
                       "stanceDelta": 2
-                    }
+                    },
+                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" }
                   ]
                 },
                 {
@@ -277,7 +277,6 @@
                   "text": "Spend the stash — I'll rebuild later.",
                   "nextNodeId": "vv_spend_end",
                   "effects": [
-                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
@@ -291,7 +290,8 @@
                       "kind": "plaza_prop",
                       "stance": "spender",
                       "stanceDelta": 2
-                    }
+                    },
+                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" }
                   ]
                 }
               ]

@@ -93,6 +93,8 @@ __QA__.playSignatureTrailer()
 
 Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cove smoke: `npm run test:iconic:e2e`.
 
+Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs`.
+
 ## Freeze (do not ship yet)
 
 - **No new outer islands** beyond the existing triangle spine (Cove → Paycheck → Credit).  

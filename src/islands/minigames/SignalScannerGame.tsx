@@ -100,7 +100,7 @@ export default function SignalScannerGame({
           <p className="text-sm text-cyan-200/80">
             You decoded {Math.round(score / 25)} signals in Signal City&apos;s noise.
           </p>
-          <GameButton variant="primary" className="w-full" onClick={onClose}>
+          <GameButton variant="primary" className="w-full" onClick={onClose} data-testid="signal-exit">
             Exit interceptor
           </GameButton>
         </div>
@@ -143,8 +143,15 @@ export default function SignalScannerGame({
                 value={dial}
                 onChange={(e) => setDial(Number(e.target.value))}
                 className="w-full accent-cyan-400"
+                data-testid="signal-dial"
               />
-              <GameButton variant="primary" className="w-full" disabled={!canLock} onClick={lockSignal}>
+              <GameButton
+                variant="primary"
+                className="w-full"
+                disabled={!canLock}
+                onClick={lockSignal}
+                data-testid="signal-lock"
+              >
                 {canLock ? "◆ Lock frequency" : "△ Keep tuning..."}
               </GameButton>
             </motion.div>
@@ -161,6 +168,7 @@ export default function SignalScannerGame({
                       key={cat}
                       type="button"
                       onClick={() => classify(cat)}
+                      data-testid={`signal-classify-${cat}`}
                       className={`lq-classify-zone rounded-xl border-2 p-3 text-center ${z.color} hover:scale-105 transition-transform`}
                     >
                       <div className="text-2xl">{z.emoji}</div>
@@ -183,7 +191,12 @@ export default function SignalScannerGame({
                 beats={lastSuccess ? signal.consequenceGood : signal.consequenceBad}
                 success={lastSuccess}
               />
-              <GameButton variant="primary" className="w-full mt-3" onClick={afterReveal}>
+              <GameButton
+                variant="primary"
+                className="w-full mt-3"
+                onClick={afterReveal}
+                data-testid="signal-decode-deeper"
+              >
                 Decode deeper →
               </GameButton>
             </motion.div>

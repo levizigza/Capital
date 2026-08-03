@@ -63,6 +63,7 @@ export function CinematicEventPanel({
               className="w-full text-left !justify-start border-amber-500/30 bg-black/20 hover:bg-amber-500/10"
               disabled={disabled}
               onClick={() => onChoose(c.index, c.label)}
+              data-testid={`event-choice-${c.index}`}
             >
               <span className="font-mono text-amber-400 mr-2">{String.fromCharCode(65 + i)}.</span>
               {c.label}

@@ -391,6 +391,7 @@ function ModulePanel({
             variant={disabled || action.disabled ? "secondary" : "primary"}
             disabled={disabled || action.disabled}
             motionEnabled={false}
+            data-testid={`module-action-${model.moduleId}-${action.type}`}
             onClick={() => {
               const payload = getActionPayload(model.moduleId, action.type, data, action.label);
               onAction(action.type, payload);
