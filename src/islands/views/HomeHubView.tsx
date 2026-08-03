@@ -393,6 +393,13 @@ export function HomeHubView({
   useEffect(() => {
     const count = plaques.length;
     if (count < 1) return;
+    const shown = save.scarSpectacle?.shownForCount ?? 0;
+    if (count <= shown) return;
+    // Unshown scars own the plaza — dismiss Daily Ritual so it cannot sit above cinema.
+    if (hubModal === "ritual") {
+      setHubModal(null);
+      return;
+    }
     if (
       !canOpenSignatureCinema({
         plazaReady,
@@ -405,8 +412,7 @@ export function HomeHubView({
     ) {
       return;
     }
-    const shown = save.scarSpectacle?.shownForCount ?? 0;
-    if (count > shown) setSpectacleOpen(true);
+    setSpectacleOpen(true);
   }, [
     plaques.length,
     save.scarSpectacle?.shownForCount,
@@ -416,6 +422,7 @@ export function HomeHubView({
     spectacleOpen,
     feltShareOpen,
     plazaReady,
+    setHubModal,
   ]);
 
   const closeSpectacle = useCallback(() => {
@@ -476,6 +483,11 @@ export function HomeHubView({
     // Micro-loop order: Piggy homecoming before day-2 echo — never stack.
     if (save.harborHomecoming?.pending) return;
     if (save.harborHomecoming && !save.harborHomecoming.piggyTalked) return;
+    // Day-2 Soft Beat owns the plaza — never leave Daily Ritual parked above it.
+    if (hubModal === "ritual") {
+      setHubModal(null);
+      return;
+    }
     if (
       !canOpenSignatureCinema({
         plazaReady,
@@ -503,6 +515,7 @@ export function HomeHubView({
     trailerOpen,
     guided,
     plazaReady,
+    setHubModal,
   ]);
 
   useEffect(() => {
@@ -525,7 +538,10 @@ export function HomeHubView({
             trailerOpen ||
             echoSurpriseOpen,
         ),
-        homecomingPending: Boolean(save.harborHomecoming?.pending),
+        homecomingPending: Boolean(
+          save.harborHomecoming?.pending ||
+            (save.harborHomecoming && !save.harborHomecoming.piggyTalked),
+        ),
       })
     ) {
       return;

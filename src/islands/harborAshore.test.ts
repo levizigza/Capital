@@ -135,6 +135,36 @@ describe("Harbor Ashore redesign", () => {
         anyBlockingOverlay: false,
       }),
     ).toBe(false);
+
+    const spectaclePending = bareSave({
+      hubGuidedIntro: { version: 1, step: "done", didDock: true },
+      harborRitual: ritualToday,
+      harborScars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          choiceId: "save",
+          label: "Jar before treat",
+          kind: "plaque",
+          createdAt: "2026-08-03T12:00:00.000Z",
+        },
+      ],
+      scarSpectacle: { shownForCount: 0 },
+      questStatus: {
+        q_cc_save_or_spend: {
+          started: true,
+          completed: true,
+          completedObjectives: [],
+        },
+      },
+    });
+    expect(
+      shouldAutoOpenDailyRitual({
+        save: spectaclePending,
+        guidedActive: false,
+        anyBlockingOverlay: false,
+      }),
+    ).toBe(false);
   });
 
   it("carpet boot: ceremony starts meet_guide; mid-lap normalizes to voyage", () => {

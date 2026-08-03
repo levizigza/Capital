@@ -67,7 +67,7 @@ export function ashoreVoyageVerb(): string {
 
 /**
  * Daily Ritual auto-open — Memory organ after Harbor has something to remember.
- * Never interrupt first-meet, voyage, or quiet homecoming.
+ * Never interrupt first-meet, voyage, quiet homecoming, or signature cinema.
  */
 export function shouldAutoOpenDailyRitual(opts: {
   save: IslandSaveV1;
@@ -83,6 +83,13 @@ export function shouldAutoOpenDailyRitual(opts: {
   if (!opts.save.hubGuidedIntro?.didDock) return false;
   // Whole-game fit: ritual after Cove Change, not before the signature loop.
   if (!hasCompletedCoveChange(opts.save)) return false;
+  // Unshown scars → spectacle owns the plaza (ritual must never race under the lamp).
+  const scars = opts.save.harborScars?.length ?? 0;
+  const shown = opts.save.scarSpectacle?.shownForCount ?? 0;
+  if (scars > shown) return false;
+  // Quiet homecoming until Piggy Talk — same chrome hush as first-meet.
+  const hc = opts.save.harborHomecoming;
+  if (hc && !hc.piggyTalked) return false;
   // Day-2 Soft Beat cinema owns the plaza — never steal with the ritual card.
   if (
     ritual.today.rumorId?.startsWith("scar_echo_") &&

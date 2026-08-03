@@ -353,4 +353,4 @@ When two pillars fight, **fantasy + signature loop win**.
 
 **Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
 
-**Craft sequence complete (0–17).** Next work: pick deferred polish from [iconic-later.md](./iconic-later.md) — deepen Harbor · Cove → Paycheck → Credit; do not widen the map.
+**Craft sequence complete (0–17).** Whole-game craft iters 9–13 deepened Harbor · Cove → Paycheck → Credit (cold Take chains + human triangle cinema pass 2026-08-03). Next: merge when ready; optional Ashore→Cove unseeded polish from [iconic-later.md](./iconic-later.md) — do not widen the map.

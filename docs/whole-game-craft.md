@@ -137,8 +137,22 @@ If not, that surface is not iconic yet.
 - **Spine cold-retell polish:** spectacle shows `coldOrganKidSentence`; QA `seedSignatureLoop(phase, organ)` for Coin · Clock · Spiral; Family myth infers organ from plaque label; `scripts/cold-spine-retell.mjs`
 - **Share / thumbnail pass:** felt PNG lower-third leads with kid sentence + large organ seal; preview passes scarId/organId; `feltCardCopy` unit contract
 
+## Iteration 13 (shipped) — human cold triangle pass
+
+- **Blocker found + fixed:** Daily Ritual could race above spectacle / day-2 Soft Beat. Gate now blocks unshown scars + quiet homecoming; HomeHub force-dismisses ritual when cinema is due.
+- **Human cold evidence:** `scripts/cold-human-triangle-pass.mjs` + screenshots under `/opt/cursor/artifacts/screenshots/cold-human/`
+  - Coin · Clock · Spiral spectacle → share kid sentences
+  - Day-2 Memory Soft Beat (not ritual card)
+- **Six questions (this pass):**
+  1. Misunderstand? Next verb usually clear; Piggy small in 3D first-meet.
+  2. Unfair? Ritual trap was unfair — fixed this iteration.
+  3. Repetitive? Same hush→share shape; new suit verb + plaque each organ; day-2 is a new Soft Beat.
+  4. Ignored ability? WebGL veil still needs skip-3d in headless; live Takes already cold-scripted.
+  5. Lost? Place/goal clear once cinema owns plaza.
+  6. Fun vs functional? Kid sentences + Plinth freeze read iconic, not only checklist.
+
 ## Still deepen (from iconic-later)
 
-Human cold pass of the full triangle · merge when you want  
+Merge when you want · optional Ashore→Cove unseeded human polish  
 
 Iterate those next — never new islands first.
