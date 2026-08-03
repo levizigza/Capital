@@ -20,7 +20,8 @@ export type LedgerHolding = {
 
 /** Harbor escape: sustain strong cashflow for several Pay Days in a row */
 export const HARBOR_ESCAPE_TARGET = 30;
-export const HARBOR_ESCAPE_STREAK = 2;
+/** 3 keeps Freedom earned (not instant after first two deals + two board Pay Days). */
+export const HARBOR_ESCAPE_STREAK = 3;
 
 export type DealOffer = LedgerHolding & { purchaseCost: number };
 
@@ -99,6 +100,26 @@ export function harborEscapeProgress(ledger: VoyagerLedger): {
     cashflow,
     escaped: ledger.harborEscaped,
   };
+}
+
+/**
+ * Plaza Freedom chip — still readable after pouch dips into deals.
+ * Freed → seal + carpet tier; chasing → Pay Day streak / cashflow goal.
+ */
+export function freedomPlazaChip(opts: {
+  freed: boolean;
+  boatLabel: string;
+  ledger: VoyagerLedger;
+}): string | null {
+  if (opts.freed) return `Freedom Seal · ${opts.boatLabel}`;
+  const p = harborEscapeProgress(opts.ledger);
+  const hasAssets = opts.ledger.holdings.some((h) => h.kind === "asset");
+  const chasing = p.cashflow >= HARBOR_ESCAPE_TARGET || p.streak > 0 || hasAssets;
+  if (!chasing) return null;
+  if (p.cashflow >= HARBOR_ESCAPE_TARGET) {
+    return `Seal chase · ${p.streak}/${p.needed} Pay Days`;
+  }
+  return `Seal chase · +${p.cashflow}/mo (need $${HARBOR_ESCAPE_TARGET})`;
 }
 
 export function dealPurchaseCost(holding: LedgerHolding): number {

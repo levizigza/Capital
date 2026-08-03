@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { HarborScar } from "../worldMemory";
 import {
+  coldOrganKidSentence,
   coldRetellLine,
   coldSpectacleHeadline,
   plaqueShelfLine,
@@ -15,6 +16,9 @@ import {
   scarOrganId,
 } from "../worldMemory";
 import { signatureTiming } from "@/qa/signatureLoop";
+import { triggerJuice } from "@/juice";
+import { prefersReducedMotion } from "../a11yMotion";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
 
@@ -29,7 +33,7 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   const latest = scars[scars.length - 1];
   const organId = latest ? scarOrganId(latest) : "memory";
   const organWord = scarOrganName(organId);
-  const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that choice";
+  const headline = latest ? coldSpectacleHeadline(latest) : "Harbor felt that — Memory keeps";
   const retell = latest ? coldRetellLine(latest) : null;
   const shelf = latest ? plaqueShelfLine(latest) : null;
   const onDoneRef = useRef(onDone);
@@ -40,20 +44,24 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   organIdRef.current = organId;
 
   useEffect(() => {
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const t = signatureTiming(Boolean(reduced));
+    const t = signatureTiming(prefersReducedMotion());
     playCapitalSfx("scar_chime");
     onPhaseChangeRef.current?.("hush");
 
     const t0 = window.setTimeout(() => {
       setPhase("in");
       onPhaseChangeRef.current?.("in");
-      playCapitalSfx("harbor_cheer");
+      // “Harbor felt that” — Memory resolve (not trailer cheer).
+      playCapitalSfx("harbor_felt");
       // Leitmotif: scar organ speaks; plinth_hum stays Memory underlayer.
       playOrganSfx(organIdRef.current);
       playCapitalSfx("plinth_hum");
+      // Plinth peak — complete juice (nudge + burst) so the lamp hit reads in the body.
+      triggerJuice("complete", {
+        burst: true,
+        x: typeof window !== "undefined" ? window.innerWidth * 0.62 : undefined,
+        y: typeof window !== "undefined" ? window.innerHeight * 0.36 : undefined,
+      });
     }, t.hushMs);
     const t1 = window.setTimeout(() => {
       setPhase("hold");
@@ -73,6 +81,7 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
   }, []);
 
   const showLine = phase !== "hush";
+  useOverlayEscape(() => onDoneRef.current());
 
   return (
     <div
@@ -83,11 +92,9 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       aria-label="Harbor remembers your choice"
       data-testid="scar-spectacle"
       data-cinema-phase={phase}
+      data-nav-escape="window"
       tabIndex={0}
       onClick={() => onDoneRef.current()}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDoneRef.current();
-      }}
       style={{
         background:
           phase === "hush"
@@ -116,15 +123,24 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
             {headline}
           </h2>
           <p
-            className="mt-2 text-sm text-white/85 drop-shadow"
+            className="mt-2 text-sm font-semibold text-amber-50 drop-shadow"
+            data-testid="scar-spectacle-kid-sentence"
+          >
+            {coldOrganKidSentence(organId)}
+          </p>
+          <p
+            className="mt-1.5 text-sm text-white/85 drop-shadow"
             data-testid="scar-spectacle-retell"
           >
             {retell ?? shelf}
           </p>
           <p className="mt-3 text-[11px] tracking-wide text-white/50">
-            {organWord} Plinth · Money is alive · Click or Esc
+            {organWord} Plinth · Money is alive · Esc · Leave
           </p>
         </div>
+        {!showLine ? (
+          <p className="mt-6 text-[11px] tracking-wide text-white/40">Esc · Leave</p>
+        ) : null}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import type { IslandSaveV1 } from "@/islands/types";
-import type { SignaturePhase } from "./signatureLoop";
+import type { SignaturePhase, SignatureSpineOrgan } from "./signatureLoop";
 
 export type QAView =
   | "home"
@@ -20,10 +20,19 @@ export type QABridge = {
   openHub: () => void;
   startMinigame: (minigameId: string) => void;
   startQuest: (questId: string) => void;
+  /** Open a real Talk Battle (cold quest chains — not a seed shortcut). */
+  talkNpc: (npcId: string) => void | Promise<void>;
+  /** Pick up a shore item through the live collect path. Resolves when inventory updates. */
+  collectItem: (itemId: string) => Promise<boolean>;
   persistSave: () => Promise<void>;
   resetSave: () => Promise<void>;
-  /** Seed Harbor at a signature-loop phase (cold playtest). */
-  seedSignatureLoop: (phase?: SignaturePhase) => Promise<void>;
+  /** Seed Harbor at a signature-loop phase (cold playtest). Optional spine organ. */
+  seedSignatureLoop: (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => Promise<void>;
+  /**
+   * After a same-day Cove/Paycheck/Credit Take: backdate the latest scar and
+   * re-roll ritual so Day-2 echo cinema can open (cold overnight proof).
+   */
+  prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
   ready: boolean;

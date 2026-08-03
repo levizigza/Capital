@@ -3,6 +3,7 @@ import {
   HARBOR_NPCS,
   HARBOR_DIALOGUES,
   piggyGuidedGraph,
+  piggyHomecomingGraph,
   resolveHarborDialogue,
   findHarborNpc,
   harborTipPreview,
@@ -47,6 +48,28 @@ describe("harborTalks", () => {
     expect(afterTalk?.id).toBe("dlg_harbor_piggy_penny");
   });
 
+  it("names Coin holds + Paycheck unlock after Cove scar homecoming", () => {
+    const g = piggyHomecomingGraph(
+      "Piggy Penny: The Coin holds — save a little; the jar still waits.",
+      {
+        scars: [
+          {
+            id: "cove_saver_plaque",
+            islandId: "coincraft_cove",
+            label: "Jar before treat",
+          },
+        ],
+      },
+    );
+    expect(g.nodes.find((n) => n.id === "h1")?.text).toMatch(/Coin holds/);
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(
+      /The Coin holds — save a little/,
+    );
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Coin holds · Jar before treat/);
+    expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Paycheck Peninsula/);
+    expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Memory keeps/);
+  });
+
   it("gives distinct tip beats per mascot role", () => {
     const piggy = resolveProfileText(harborTipPreview("piggy_penny"), "apprentice");
     const spendy = resolveProfileText(harborTipPreview("spendy_sue"), "apprentice");
@@ -55,5 +78,18 @@ describe("harborTalks", () => {
     expect(spendy).not.toEqual(vault);
     expect(piggy.toLowerCase()).toMatch(/save|pay yourself/);
     expect(spendy.toLowerCase()).toMatch(/impulse|wait|24/);
+  });
+
+  it("does not steal island quest NPCs with scar memory graphs", () => {
+    const scars = [
+      {
+        id: "cove_saver_plaque",
+        islandId: "coincraft_cove",
+        label: "Jar before treat",
+      },
+    ];
+    expect(resolveHarborDialogue("npc_vendor_vee", { scars })).toBeUndefined();
+    expect(resolveHarborDialogue("npc_artisan_alma", { scars })).toBeUndefined();
+    expect(resolveHarborDialogue("coiny", { scars })?.id).toMatch(/scar|harbor/);
   });
 });

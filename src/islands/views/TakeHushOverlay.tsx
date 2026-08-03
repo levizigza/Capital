@@ -8,9 +8,12 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { capitalMusic } from "../audio/capitalMusic";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { signatureTiming, type TakeCinemaPhase } from "@/qa/signatureLoop";
-import { systemPrefersReducedMotion } from "../a11yMotion";
+import { prefersReducedMotion } from "../a11yMotion";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
+import { triggerJuice } from "@/juice";
+import { useOverlayEscape } from "./useOverlayEscape";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type { TakeCinemaPhase };
 
@@ -34,9 +37,10 @@ export function TakeHushOverlay({
   onPhaseChange,
 }: Props) {
   const [phase, setPhase] = useState<TakeCinemaPhase>("hush");
+  useOverlayEscape(onDone);
 
   useEffect(() => {
-    const t = signatureTiming(systemPrefersReducedMotion());
+    const t = signatureTiming(prefersReducedMotion());
     playCapitalSfx("scar_chime");
     playOrganSfx(organId);
     capitalMusic.playPlace({
@@ -49,8 +53,10 @@ export function TakeHushOverlay({
     const tMark = window.setTimeout(() => {
       setPhase("mark");
       onPhaseChange?.("mark");
-      // Soft settle only — organ already spoke on open (avoid Howler pool thrash).
-      playCapitalSfx("soft_beat");
+      // Irreversible mark — distinct from Soft Beat lookout (mute-test Take beat).
+      playCapitalSfx("take_mark");
+      // Hit-stop nudge when the organ mark flashes (juice checklist).
+      triggerJuice("reward", { burst: true });
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {
@@ -58,7 +64,8 @@ export function TakeHushOverlay({
       onPhaseChange?.("line");
     }, t.revealMs);
 
-    const tEnd = window.setTimeout(onDone, t.holdEndMs);
+    // doneMs (not holdEndMs) — cold unseeded path needs the Carpet CTA beat.
+    const tEnd = window.setTimeout(onDone, t.doneMs);
     return () => {
       window.clearTimeout(tMark);
       window.clearTimeout(tLine);
@@ -75,11 +82,9 @@ export function TakeHushOverlay({
       aria-label="Quiet after the Take"
       data-testid="take-hush-overlay"
       data-cinema-phase={phase}
+      data-nav-escape="window"
       tabIndex={0}
-      onClick={onDone}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
-      }}
+      {...pointerSafeActivate(onDone)}
       style={{
         background:
           "radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, transparent 45%, rgba(15,23,42,0.35) 78%, rgba(15,23,42,0.62) 100%)",
@@ -107,19 +112,30 @@ export function TakeHushOverlay({
         ) : null}
 
         {phase === "line" ? (
-          <div data-testid="take-cinema-line">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/70">
+          <div
+            className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/88 px-4 py-3 shadow-[0_12px_36px_rgba(0,0,0,0.45)] backdrop-blur-md"
+            data-testid="take-cinema-line"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
               Quiet after the Take
             </p>
-            <p className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
+            <p className="cap-display mt-2 text-xl text-[#fffdf6] sm:text-2xl">
               “{scarLabel}”
             </p>
-            <p className="mt-2 text-sm text-white/80">{organLine}</p>
-            <p className="mt-3 text-[11px] tracking-wide text-white/45">
-              Click or Esc · then board the carpet home
+            <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90">{organLine}</p>
+            <p
+              className="mt-3 text-sm font-black tracking-wide text-amber-100"
+              data-testid="take-cinema-home-cta"
+            >
+              Carpet home — Harbor felt that
+            </p>
+            <p className="mt-1 text-[11px] font-semibold tracking-wide text-white/80">
+              Esc · Leave · board the Money Carpet
             </p>
           </div>
-        ) : null}
+        ) : (
+          <p className="mt-6 text-[11px] tracking-wide text-white/55">Esc · Leave</p>
+        )}
       </div>
     </div>
   );

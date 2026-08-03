@@ -136,13 +136,14 @@ export function buildCoveChangeReplayTimeline(opts: {
         timestamp: now,
         context: { islandId: opts.islandId, questId: COVE_CHANGE_QUEST_ID },
         action: {
-          eventTitle: "Needs vs wants with Alma",
-          chosenLabel: "Helped sort needs and wants",
+          eventTitle: "Craft bench with Alma",
+          chosenLabel: "Cleared brushes; glitter can wait",
           chosenIndex: 0,
         },
         alternatives: ["Walked away"],
         stateDiff: "Quest started",
-        explanation: "Learning needs vs wants is the first money skill on Cove.",
+        explanation:
+          "Alma clears the path to the jar Take — Coin Hold, not Paycheck's three payday buckets.",
       },
       {
         timestamp: now,
@@ -218,6 +219,6 @@ export function buildPaycheckChangeReplayTimeline(opts: {
       },
     ],
     storySummary:
-      "You turned a paycheck into a plan, faced a surprise Take, and Dotgraph left a mark on Harbor.",
+      "You turned a paycheck into a plan, faced a surprise Take, and Paycheck left a mark on Harbor.",
   };
 }

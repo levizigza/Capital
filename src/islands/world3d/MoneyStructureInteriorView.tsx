@@ -4,12 +4,13 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Billboard, Text } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 import { useInputAction } from "@/input";
 import { GameButton, GameHudLayout } from "@/game-ui";
 import type { CapitalCharacter } from "../character";
 import { VoyagerMesh } from "./VoyagerMesh";
+import { SafeText } from "./SafeText";
 import {
   structureExitLabel,
   structureReturnLabel,
@@ -19,10 +20,12 @@ import {
 import { playOrganSfx } from "../audio/capitalSfx";
 import { capitalMusic } from "../audio/capitalMusic";
 import { moneyOrganForStructureTheme } from "../moneyOrgans";
+import { organVerbChip } from "../worldMemory";
 import { StructureFloorMotif, StructureToyCulture } from "./StructureInteriorToys";
 import { StructureInteriorLights } from "./StructureInteriorLights";
 import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
 import { structureShell } from "./structureInteriorTheme";
+import { StructurePartSilhouette } from "./StructurePartSilhouette";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Close the vault" : "Return · Memory plaza";
@@ -120,20 +123,79 @@ function InteriorPlayer({
   );
 }
 
+function SoftBeatBeacon({ accent, active }: { accent: string; active: boolean }) {
+  const beam = useRef<THREE.Mesh>(null);
+  const crown = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    if (beam.current) {
+      const mat = beam.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = (active ? 0.9 : 0.5) + Math.sin(t * 2.4) * 0.15;
+      beam.current.scale.y = 1 + Math.sin(t * 1.8) * 0.08;
+    }
+    if (crown.current) {
+      const mat = crown.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = (active ? 1.1 : 0.65) + Math.sin(t * 3.1) * 0.2;
+      crown.current.position.y = 2.85 + Math.sin(t * 2.2) * 0.08;
+    }
+  });
+  return (
+    <group>
+      <mesh ref={beam} position={[0, 1.55, 0]}>
+        <cylinderGeometry args={[0.1, 0.16, 2.6, 12]} />
+        <meshStandardMaterial
+          color={accent}
+          emissive={accent}
+          emissiveIntensity={0.55}
+          transparent
+          opacity={0.62}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Crown orb — Soft Beat reads from across the interior */}
+      <mesh ref={crown} position={[0, 2.85, 0]}>
+        <sphereGeometry args={[0.28, 16, 16]} />
+        <meshStandardMaterial
+          color="#fff7ed"
+          emissive={accent}
+          emissiveIntensity={0.75}
+          roughness={0.25}
+          metalness={0.15}
+        />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]}>
+        <ringGeometry args={[1.05, 1.55, 32]} />
+        <meshStandardMaterial
+          color={accent}
+          emissive={accent}
+          emissiveIntensity={active ? 0.75 : 0.42}
+          transparent
+          opacity={0.75}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
+}
+
 function PartPad({
   part,
   active,
   theme,
   accent = "#fbbf24",
+  onEnter,
 }: {
   part: MoneyStructurePart;
   active: boolean;
   theme: MoneyStructureDef["theme"];
   accent?: string;
+  /** Near + poke climbs into the part (Soft Beat / minigame). */
+  onEnter?: () => void;
 }) {
   const bounce = useRef(0);
   const poke = useRef(0);
   const meshGroup = useRef<THREE.Group>(null);
+  const softBeat = Boolean(part.softBeat);
   useFrame((_, dt) => {
     bounce.current += dt;
     if (poke.current > 0) poke.current = Math.max(0, poke.current - dt * 2.5);
@@ -142,7 +204,15 @@ function PartPad({
       meshGroup.current.position.y = Math.sin(bounce.current * 2.5) * 0.06 + poke.current * 0.12;
     }
   });
-  const y = 0.9;
+  const y = softBeat ? 1.05 : 0.9;
+  const organChip = organVerbChip(moneyOrganForStructureTheme(theme).id);
+  const padLabel = softBeat
+    ? active
+      ? `Enter · ${organChip}`
+      : `${part.label} · ${organChip}`
+    : active
+      ? `Enter · ${part.entryPiece}`
+      : part.label;
   return (
     <group
       position={part.position}
@@ -150,6 +220,8 @@ function PartPad({
         e.stopPropagation();
         poke.current = 1;
         playOrganSfx(moneyOrganForStructureTheme(theme).id);
+        // Near pad: poke climbs in (kids poke what they can reach).
+        if (active && onEnter) onEnter();
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -159,91 +231,30 @@ function PartPad({
       }}
     >
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-        <circleGeometry args={[active ? 1.4 : 1.15, 24]} />
+        <circleGeometry args={[active ? 1.4 : softBeat ? 1.25 : 1.15, 24]} />
         <meshStandardMaterial
           color={accent}
           emissive={accent}
-          emissiveIntensity={active ? 0.55 : 0.25}
+          emissiveIntensity={active ? 0.55 : softBeat ? 0.38 : 0.25}
           transparent
           opacity={0.85}
         />
       </mesh>
+      {softBeat ? <SoftBeatBeacon accent={accent} active={active} /> : null}
       <group ref={meshGroup} position={[0, y, 0]}>
-      {/* Creative piece silhouette */}
-      {part.id === "cork_vault" || part.id === "vault_safe" ? (
-        <mesh castShadow>
-          <cylinderGeometry args={[0.55, 0.65, 1.1, 12]} />
-          <meshStandardMaterial
-            color="#b45309"
-            roughness={0.75}
-            metalness={part.id === "vault_safe" ? 0.45 : 0.05}
-          />
-        </mesh>
-      ) : part.id === "coin_spring" || part.id === "stamp_press" ? (
-        <mesh rotation={[0.4, 0, 0]} castShadow>
-          <torusGeometry args={[0.55, 0.14, 8, 24]} />
-          <meshStandardMaterial color="#d97706" metalness={0.55} roughness={0.35} />
-        </mesh>
-      ) : part.id === "teller_window" ? (
-        <mesh castShadow>
-          <boxGeometry args={[1.4, 0.9, 0.2]} />
-          <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.4} />
-        </mesh>
-      ) : part.id === "budget_press" ? (
-        <group>
-          {([-0.55, 0, 0.55] as const).map((x, i) => (
-            <mesh key={i} position={[x, 0, 0]} castShadow>
-              <boxGeometry args={[0.4, 0.85, 0.4]} />
-              <meshStandardMaterial
-                color={i === 0 ? "#22c55e" : i === 1 ? "#f59e0b" : "#38bdf8"}
-                metalness={0.2}
-                roughness={0.45}
-              />
-            </mesh>
-          ))}
-        </group>
-      ) : part.id === "time_clock" ? (
-        <mesh castShadow>
-          <cylinderGeometry args={[0.7, 0.7, 0.22, 24]} />
-          <meshStandardMaterial color="#f8fafc" metalness={0.25} roughness={0.35} />
-        </mesh>
-      ) : part.id === "umbrella_loft" ? (
-        <mesh castShadow>
-          <coneGeometry args={[0.85, 1.1, 12]} />
-          <meshStandardMaterial color="#0ea5e9" metalness={0.15} roughness={0.5} />
-        </mesh>
-      ) : part.id === "debt_anvil" ? (
-        <mesh castShadow>
-          <boxGeometry args={[1.1, 0.55, 0.7]} />
-          <meshStandardMaterial color="#78716c" metalness={0.55} roughness={0.35} />
-        </mesh>
-      ) : part.id === "dispatch_hatch" ? (
-        <mesh castShadow>
-          <boxGeometry args={[1.0, 0.75, 0.2]} />
-          <meshStandardMaterial color="#fbbf24" metalness={0.2} roughness={0.45} />
-        </mesh>
-      ) : part.id === "score_battlement" ? (
-        <mesh castShadow>
-          <cylinderGeometry args={[0.15, 0.2, 1.4, 8]} />
-          <meshStandardMaterial color="#94a3b8" metalness={0.4} roughness={0.4} />
-        </mesh>
-      ) : (
-        <mesh castShadow>
-          <cylinderGeometry args={[0.85, 0.85, 0.25, 20]} />
-          <meshStandardMaterial color="#0ea5e9" metalness={0.3} roughness={0.4} />
-        </mesh>
-      )}
+        <StructurePartSilhouette partId={part.id} />
       </group>
-      <Billboard position={[0, 2.1, 0]} follow>
-        <Text
-          fontSize={0.28}
+      {/* Soft Beat pads name the suit verb — cold retell in the interior. */}
+      <Billboard position={[0, softBeat ? 2.85 : 2.1, 0]} follow>
+        <SafeText
+          fontSize={softBeat ? 0.3 : 0.28}
           color="#fff"
           anchorX="center"
           outlineWidth={0.025}
           outlineColor="#0f172a"
         >
-          {active ? `Enter · ${part.entryPiece}` : part.label}
-        </Text>
+          {padLabel}
+        </SafeText>
       </Billboard>
     </group>
   );
@@ -255,12 +266,14 @@ function InteriorWorld({
   nearId,
   setNearId,
   inputFrozen,
+  onEnterPart,
 }: {
   structure: MoneyStructureDef;
   character?: CapitalCharacter | null;
   nearId: string | null;
   setNearId: (id: string | null) => void;
   inputFrozen: boolean;
+  onEnterPart: (part: MoneyStructurePart) => void;
 }) {
   const shell = structureShell(structure.theme);
   const pads = useMemo(
@@ -303,6 +316,7 @@ function InteriorWorld({
           active={nearId === p.id}
           theme={structure.theme}
           accent={shell.accent}
+          onEnter={inputFrozen ? undefined : () => onEnterPart(p)}
         />
       ))}
 
@@ -317,9 +331,9 @@ function InteriorWorld({
           />
         </mesh>
         <Billboard position={[0, 1.8, 0]} follow>
-          <Text fontSize={0.28} color={shell.accent} outlineWidth={0.02} outlineColor="#0f172a">
+          <SafeText fontSize={0.28} color={shell.accent} outlineWidth={0.02} outlineColor="#0f172a">
             {themeExitHint(structure.theme, nearId === "exit")}
-          </Text>
+          </SafeText>
         </Billboard>
       </group>
 
@@ -422,6 +436,7 @@ export function MoneyStructureInteriorView({
                   nearId={nearId}
                   setNearId={setNearId}
                   inputFrozen={inputFrozen}
+                  onEnterPart={onEnterPart}
                 />
               </Suspense>
             </Canvas>

@@ -6,6 +6,7 @@
 import type { IslandDefinition, IslandSaveV1, QuestObjective } from "./types";
 import { nextIncompleteObjective, objectiveKey } from "./chapterLoop";
 import type { ShoreHotspot } from "./islandShoreLayout";
+import { HARBOR_PIGGY_POS } from "./moneyCast";
 
 export type GuideLookAt = [number, number, number];
 
@@ -43,8 +44,27 @@ export function resolveShoreGuideLookAt(
   const journal = hotspots.find((h) => h.kind === "journal")?.position ?? null;
   const moneyMachine = hotspots.find((h) => h.kind === "money_structure")?.position ?? null;
 
+  // After an irreversible Take — only one verb: carpet home.
+  if (save.chapterQuietPending && pier) return pier;
+
   const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
-  if (!anyStarted && moneyMachine) return moneyMachine;
+  if (!anyStarted) {
+    // First painting: prefer Penny on Cove; else first main objective / any NPC / structure.
+    const penny =
+      hotspots.find((h) => h.refId === "npc_captain_penny")?.position ??
+      hotspots.find((h) => h.id.includes("captain_penny"))?.position ??
+      null;
+    const firstMain = island.quests.find((q) => q.track === "main")?.objectives[0];
+    const firstNpc = hotspots.find((h) => h.kind === "npc")?.position ?? null;
+    return (
+      penny ??
+      hotspotForObjective(firstMain, hotspots) ??
+      firstNpc ??
+      moneyMachine ??
+      journal ??
+      pier
+    );
+  }
 
   const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
   if (!next) return moneyMachine ?? pier;
@@ -77,7 +97,7 @@ export function resolveHarborGuideLookAt(opts: {
   pointMemoryPlinth?: boolean;
   defaultId?: string;
 }): GuideLookAt | null {
-  const piggy = opts.piggyPos ?? ([1.4, 0, 0.6] as GuideLookAt);
+  const piggy = opts.piggyPos ?? (HARBOR_PIGGY_POS as GuideLookAt);
   const find = (id: string) => opts.hotspots.find((h) => h.id === id)?.position ?? null;
 
   if (opts.highlight) {

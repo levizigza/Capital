@@ -4,8 +4,12 @@
  * Never claims “I’m running ahead” — the bag points, you walk together.
  */
 
-import type { HubGuidedStepId } from "./storyBible";
-import { isHubGuidedComplete, type HubGuidedIntroState } from "./storyBible";
+import {
+  isHubGuidedComplete,
+  normalizeHubGuidedIntro,
+  type HubGuidedIntroState,
+  type HubGuidedStepId,
+} from "./storyBible";
 import type { IslandDefinition, IslandSaveV1, QuestTrack } from "../types";
 import { islandMainQuestsComplete, nextIncompleteObjective } from "../chapterLoop";
 import { questTrack, trackCoachPrefix } from "../questTracks";
@@ -22,35 +26,24 @@ export type CoinBagBuddyTip = {
   track?: QuestTrack;
 };
 
+/** Voyage tip — shared by to_dock + demoted legacy gate ids. */
+const VOYAGE_TIP: CoinBagBuddyTip = {
+  tip: "Money Carpet → Coincraft Cove",
+  coach: "Board the carpet with me. First painting!",
+};
+
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
   meet_guide: {
-    tip: "Talk to Piggy Penny — she’s waving!",
+    tip: "Talk to Piggy Penny — soft gold ring by the fountain",
     coach: "I’m Coin Bag. Stay with me — we’ll walk to Piggy together.",
   },
-  walk_outfitter: {
-    tip: "Next stop: the Outfitter door",
-    coach: "Piggy said become YOU. I’ll point at the Outfitter — walk that way.",
-  },
-  become_you: {
-    tip: "Go inside the Outfitter",
-    coach: "Body · Coat · Gear on the mirror. I’ll wait right here with you.",
-  },
-  tiny_spend: {
-    tip: "Visit Capsule Stall with me",
-    coach: "Coins can buy help. Peek the stall — Piggy will nod.",
-  },
-  practice_optional: {
-    tip: "Practice board, or skip to the dock",
-    coach: "Your call. I’ll point at practice — or we head to the carpet.",
-  },
-  to_dock: {
-    tip: "Money Carpet this way",
-    coach: "The Fortune Thread starts at the dock. Stick with me.",
-  },
-  first_island: {
-    tip: "Open the map → Coincraft Cove",
-    coach: "First painting! I’ll be with you on every island.",
-  },
+  // DEMOTED — Ashore remaps these onto voyage; copy stays Outfitter-free.
+  walk_outfitter: VOYAGE_TIP,
+  become_you: VOYAGE_TIP,
+  tiny_spend: VOYAGE_TIP,
+  practice_optional: VOYAGE_TIP,
+  to_dock: VOYAGE_TIP,
+  first_island: VOYAGE_TIP,
   done: {
     tip: "Harbor is yours — I’m still here",
     coach: "Whenever you’re stuck, look at me. I’ll point the next good step.",
@@ -78,10 +71,13 @@ export function coinBagHarborTip(
     plinthGlow?: boolean;
     /** Day-2 rumor still naming the scar */
     day2Echo?: boolean;
+    /** Freedom Seal carpet tier label (plaza read) */
+    carpetTierLabel?: string | null;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
-    return TUTORIAL_TIPS[guided.step] ?? TUTORIAL_TIPS.meet_guide;
+    const live = normalizeHubGuidedIntro(guided);
+    return TUTORIAL_TIPS[live.step] ?? TUTORIAL_TIPS.meet_guide;
   }
 
   if (opts?.homecomingPending) {
@@ -118,7 +114,7 @@ export function coinBagHarborTip(
   if (opts?.plinthGlow && opts?.latestScarLabel) {
     return {
       tip: `Plinth glows — “${opts.latestScarLabel}”`,
-      coach: "Harbor felt that. Share the card, then walk the Memory Plinth with me.",
+      coach: "Harbor felt that. Share the card, then find Piggy — she’ll name what’s newly open on the Carpet.",
     };
   }
 
@@ -144,15 +140,21 @@ export function coinBagHarborTip(
   }
 
   if (opts?.hasFreedom && opts?.pavilionUnlocked !== false) {
+    const tier = opts.carpetTierLabel?.trim();
     return {
-      tip: "Freedom Pavilion is open — this way!",
-      coach: "Your seal unlocked a new wing. Let’s peek together.",
+      tip: tier
+        ? `Freedom Seal · ${tier} ready`
+        : "Freedom Pavilion is open — this way!",
+      coach: tier
+        ? `Your seal unlocked the Pavilion — and the ${tier} on the Carpet. Let’s peek together.`
+        : "Your seal unlocked a new wing. Let’s peek together.",
     };
   }
   if (opts?.hasFreedom) {
+    const tier = opts.carpetTierLabel?.trim();
     return {
-      tip: "Map’s open — pick your next island",
-      coach: "Freedom seal earned. Where should we sail?",
+      tip: tier ? `Freedom Seal · sail the ${tier}` : "Map’s open — pick your next island",
+      coach: "Freedom Seal earned. Carpet Dock is yours — where should we sail?",
     };
   }
   if (opts?.currentIslandId && !isHubIslandId(opts.currentIslandId)) {
@@ -186,15 +188,15 @@ export function coinBagIslandTip(
   if (island && typeof island === "object") {
     if (save.chapterQuietPending) {
       return {
-        tip: "Breathe — that choice sticks",
+        tip: "Carpet home — Harbor felt that",
         coach:
           island.id === "coincraft_cove"
-            ? "Harbor is already listening. Soft HUD. When you're ready, carpet home — Piggy will feel it."
+            ? "One verb left: board the Money Carpet. Piggy will feel the Take."
             : island.id === "paycheck_peninsula"
-            ? "No glitter HUD. Walk Main Street, then fly home when you're ready — Harbor is listening."
+            ? "One verb left: carpet home. Harbor is listening for the Clock Take."
             : island.id === "credit_kingdom"
-              ? "Interest is quiet. So are we. Finish the canyon, then carpet home."
-              : "The island got quieter after your Take. When you're ready, fly home changed.",
+              ? "One verb left: carpet home. Interest stays quiet until Harbor."
+              : "One verb left: carpet home — Harbor felt that.",
         track: "main",
       };
     }
@@ -231,7 +233,7 @@ export function coinBagIslandTip(
       if (basics?.started && !basics.completed) {
         return {
           tip: "Budget Bureau — needs, wants, savings",
-          coach: "Dotgraph runs on buckets. Priya's whiteboard is waiting.",
+          coach: "Paycheck runs on buckets. Priya's whiteboard is waiting.",
           track: "main",
         };
       }
@@ -260,9 +262,9 @@ export function coinBagIslandTip(
       const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
       if (!anyStarted) {
         return {
-          tip: "Giant Coin Jar — squeeze the slot!",
+          tip: "Captain Penny — First Coins",
           coach:
-            "That big Jar is a money machine. Walk into the glowing coin slot — cork, spring, and lid each open a world.",
+            "Talk to Captain Penny at the harbor. Earn fair coins, then the Giant Coin Jar Take waits.",
           track: "main",
         };
       }

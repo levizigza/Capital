@@ -64,4 +64,11 @@ describe("Capital soundtrack catalog", () => {
     expect(hush).toBeLessThan(open);
     expect(hush).toBeLessThan(0.4);
   });
+
+  it("Pillar 11 — Harbor spectacle/share hush ducks Memory bed", () => {
+    const hush = gainScaleForPlace({ kind: "harbor", hush: true });
+    const open = gainScaleForPlace({ kind: "harbor" });
+    expect(hush).toBeLessThan(open);
+    expect(hush).toBeLessThan(0.45);
+  });
 });

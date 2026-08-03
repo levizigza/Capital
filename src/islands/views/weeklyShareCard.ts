@@ -1,11 +1,22 @@
 /** Share cards — weekly ritual + iconic “Harbor felt that” social object. */
 
 import { drawMemoryPlinthSilhouette } from "../harborIcon";
+import type { MoneyOrganId } from "../moneyOrgans";
+import {
+  coldOrganKidSentence,
+  coldRetellLine,
+  organVerbChip,
+  scarOrganId,
+} from "../worldMemory";
 
 export type HarborFeltCardOpts = {
   voyagerName: string;
   scarLabel: string;
   chapter?: string | null;
+  scarId?: string;
+  islandId?: string;
+  /** Prefer explicit organ when chapter string is ambiguous. */
+  organId?: MoneyOrganId | null;
 };
 
 export async function downloadWeeklyShareCard(opts: {
@@ -26,22 +37,77 @@ export async function downloadWeeklyShareCard(opts: {
   triggerDownload(blob, `capital-harbor-week-${Date.now()}.png`);
 }
 
+/** Resolve organ for felt cards — scar ids beat chapter fuzzy match. */
+export function resolveFeltOrgan(opts: HarborFeltCardOpts): MoneyOrganId {
+  if (
+    opts.organId === "coin" ||
+    opts.organId === "clock" ||
+    opts.organId === "spiral" ||
+    opts.organId === "memory"
+  ) {
+    return opts.organId;
+  }
+  if (opts.scarId || opts.islandId) {
+    return scarOrganId({
+      id: opts.scarId ?? "",
+      islandId: opts.islandId ?? islandIdFromChapter(opts.chapter),
+    });
+  }
+  return organFromChapter(opts.chapter);
+}
+
+/** Pure text stack for thumbnail hierarchy (unit-tested). */
+export function feltCardCopy(opts: HarborFeltCardOpts): {
+  organ: MoneyOrganId;
+  seal: string;
+  brand: string;
+  place: string;
+  title: string;
+  kid: string;
+  retell: string;
+  chapter: string;
+  tagline: string;
+} {
+  const organ = resolveFeltOrgan(opts);
+  const retell = coldRetellLine({
+    id: opts.scarId ?? "",
+    islandId: opts.islandId ?? islandIdFromChapter(opts.chapter),
+    label: opts.scarLabel,
+  });
+  return {
+    organ,
+    seal:
+      organ === "coin"
+        ? "COIN"
+        : organ === "clock"
+          ? "CLOCK"
+          : organ === "spiral"
+            ? "SPIRAL"
+            : "PLINTH",
+    brand: "CAPITAL",
+    place: "Harbor Haven · Memory Plinth",
+    title: "Harbor felt that",
+    kid: coldOrganKidSentence(organ),
+    retell,
+    chapter: opts.chapter || "Harbor Haven",
+    tagline: organTagline(organ),
+  };
+}
+
 /** Build Harbor-felt PNG as blob (for preview + download + Web Share). */
 export async function buildHarborFeltCardBlob(opts: HarborFeltCardOpts): Promise<Blob> {
-  const organ = organFromChapter(opts.chapter);
-  const organWord =
-    organ === "coin" ? "Coin" : organ === "clock" ? "Clock" : organ === "spiral" ? "Spiral" : "Memory";
+  const copy = feltCardCopy(opts);
   return paintCard({
     mode: "felt",
     voyagerName: opts.voyagerName,
-    title: "Harbor felt that",
-    lines: [
-      opts.chapter || "Harbor Haven",
-      `Harbor remembered the ${organWord}: “${opts.scarLabel}.”`,
-    ],
-    accent: organTagline(organ),
-    organ,
+    title: copy.title,
+    lines: [copy.kid, copy.retell],
+    accent: copy.tagline,
+    organ: copy.organ,
     scarLabel: opts.scarLabel,
+    chapter: copy.chapter,
+    kidSentence: copy.kid,
+    sealWord: copy.seal,
   });
 }
 
@@ -61,23 +127,13 @@ export async function shareHarborFeltCard(opts: HarborFeltCardOpts): Promise<"sh
   const blob = await buildHarborFeltCardBlob(opts);
   const file = new File([blob], `capital-harbor-felt-${Date.now()}.png`, { type: "image/png" });
   const nav = typeof navigator !== "undefined" ? navigator : null;
+  const copy = feltCardCopy(opts);
   if (nav && typeof nav.share === "function" && (!nav.canShare || nav.canShare({ files: [file] }))) {
     try {
       await nav.share({
         files: [file],
         title: "Harbor felt that",
-        text: (() => {
-          const organ = organFromChapter(opts.chapter);
-          const word =
-            organ === "coin"
-              ? "Coin"
-              : organ === "clock"
-                ? "Clock"
-                : organ === "spiral"
-                  ? "Spiral"
-                  : "Memory";
-          return `Capital · Harbor remembered the ${word}: “${opts.scarLabel}.”`;
-        })(),
+        text: `Capital · ${copy.kid} · ${organVerbChip(copy.organ)}`,
       });
       return "shared";
     } catch (err) {
@@ -89,7 +145,7 @@ export async function shareHarborFeltCard(opts: HarborFeltCardOpts): Promise<"sh
   return "downloaded";
 }
 
-type OrganTone = "coin" | "clock" | "spiral" | "memory";
+type OrganTone = MoneyOrganId;
 
 function organFromChapter(chapter?: string | null): OrganTone {
   const c = (chapter || "").toLowerCase();
@@ -99,11 +155,19 @@ function organFromChapter(chapter?: string | null): OrganTone {
   return "memory";
 }
 
+function islandIdFromChapter(chapter?: string | null): string {
+  const c = (chapter || "").toLowerCase();
+  if (c.includes("paycheck")) return "paycheck_peninsula";
+  if (c.includes("credit")) return "credit_kingdom";
+  if (c.includes("cove")) return "coincraft_cove";
+  return "";
+}
+
 function organTagline(organ: OrganTone): string {
-  if (organ === "coin") return "Coin · Hold · Take · Hush";
-  if (organ === "clock") return "Clock · Earn · Stamp · Shelter";
-  if (organ === "spiral") return "Spiral · Borrow · Weigh · Withstand";
-  return "Memory Plinth · money is alive";
+  if (organ === "coin") return "Coin holds · Take · Hush";
+  if (organ === "clock") return "Clock shelters · Earn · Stamp";
+  if (organ === "spiral") return "Spiral withstands · Borrow · Weigh";
+  return "Memory keeps · money is alive";
 }
 
 function organAccent(organ: OrganTone): { seal: string; glow: string; wash: string } {
@@ -121,6 +185,9 @@ async function paintCard(opts: {
   accent?: string | null;
   organ: OrganTone;
   scarLabel?: string;
+  chapter?: string;
+  kidSentence?: string;
+  sealWord?: string;
 }): Promise<Blob> {
   const w = 1080;
   const h = 1080;
@@ -140,57 +207,62 @@ async function paintCard(opts: {
   ctx.fillRect(0, 0, w, h);
 
   if (opts.mode === "felt") {
-    // Plinth freeze-frame — silhouette owns the square; text rides the lower third.
-    ctx.fillStyle = "rgba(15, 23, 42, 0.28)";
-    ctx.fillRect(0, 720, w, 360);
+    // Plinth owns the upper square; high-contrast lower third for thumbnail retell.
+    ctx.fillStyle = "rgba(8, 12, 22, 0.78)";
+    ctx.fillRect(0, 640, w, 440);
 
-    drawMemoryPlinthSilhouette(ctx, w / 2, 390, 2.15, true);
+    drawMemoryPlinthSilhouette(ctx, w / 2, 340, 2.05, true);
 
-    ctx.fillStyle = `${tone.seal}40`;
+    // Large organ seal — readable when the PNG is a phone thumbnail.
+    const sealX = w / 2 + 250;
+    const sealY = 200;
+    ctx.fillStyle = `${tone.seal}55`;
     ctx.beginPath();
-    ctx.arc(w / 2 + 210, 210, 58, 0, Math.PI * 2);
+    ctx.arc(sealX, sealY, 78, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = tone.seal;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.arc(w / 2 + 210, 210, 58, 0, Math.PI * 2);
+    ctx.arc(sealX, sealY, 78, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.fillStyle = "#fef3c7";
-    ctx.font = "800 24px system-ui, sans-serif";
+    ctx.fillStyle = "#fffdf6";
+    ctx.font = "900 30px system-ui, sans-serif";
     ctx.textAlign = "center";
-    const seal =
-      opts.organ === "coin"
-        ? "COIN"
-        : opts.organ === "clock"
-          ? "CLOCK"
-          : opts.organ === "spiral"
-            ? "SPIRAL"
-            : "PLINTH";
-    ctx.fillText(seal, w / 2 + 210, 218);
+    ctx.fillText(opts.sealWord ?? "PLINTH", sealX, sealY + 10);
     ctx.textAlign = "left";
 
+    // Brand first in the lower third
     ctx.fillStyle = tone.glow;
-    ctx.font = "700 34px Georgia, 'Times New Roman', serif";
-    ctx.fillText("CAPITAL", 72, 780);
-    ctx.fillStyle = "rgba(255,255,255,0.72)";
-    ctx.font = "600 26px system-ui, sans-serif";
-    ctx.fillText("Harbor Haven · Memory Plinth", 72, 818);
+    ctx.font = "800 42px Georgia, 'Times New Roman', serif";
+    ctx.fillText("CAPITAL", 64, 710);
+    ctx.fillStyle = "rgba(255,253,246,0.78)";
+    ctx.font = "700 28px system-ui, sans-serif";
+    ctx.fillText("Harbor Haven · Memory Plinth", 64, 752);
 
-    ctx.fillStyle = "#fff";
-    ctx.font = "800 64px system-ui, sans-serif";
-    wrapText(ctx, opts.title, 72, 890, w - 144, 70);
+    ctx.fillStyle = "#fffdf6";
+    ctx.font = "900 58px system-ui, sans-serif";
+    wrapText(ctx, opts.title, 64, 820, w - 128, 64);
 
-    ctx.fillStyle = "#e0f2fe";
-    ctx.font = "600 34px Georgia, serif";
-    let y = 960;
-    for (const line of opts.lines) {
-      wrapText(ctx, line, 72, y, w - 144, 42);
-      y += 48;
-    }
+    // Kid sentence — primary cold retell at thumbnail size
+    ctx.fillStyle = tone.glow;
+    ctx.font = "800 36px Georgia, serif";
+    const kid = opts.kidSentence ?? opts.lines[0] ?? "";
+    let y = 890;
+    y = wrapText(ctx, kid, 64, y, w - 128, 44) + 12;
 
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.font = "600 28px Georgia, serif";
-    ctx.fillText("Money is alive — choices stick.", 72, 1048);
+    // Plaque retell — secondary
+    ctx.fillStyle = "rgba(255,253,246,0.9)";
+    ctx.font = "600 30px Georgia, serif";
+    const retell = opts.lines[1] ?? opts.lines[0] ?? "";
+    y = wrapText(ctx, retell, 64, y, w - 128, 38) + 10;
+
+    ctx.fillStyle = `${tone.seal}`;
+    ctx.font = "700 26px system-ui, sans-serif";
+    wrapText(ctx, opts.accent ?? organTagline(opts.organ), 64, Math.min(y, 1035), w - 128, 32);
+
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.font = "600 24px Georgia, serif";
+    ctx.fillText("Money is alive — choices stick.", 64, 1060);
   } else {
     ctx.fillStyle = "rgba(253, 224, 71, 0.35)";
     ctx.beginPath();
@@ -227,8 +299,7 @@ async function paintCard(opts: {
     ctx.font = "600 40px Georgia, serif";
     let y = 570;
     for (const line of opts.lines) {
-      wrapText(ctx, line, 110, y, w - 240, 48);
-      y += 58;
+      y = wrapText(ctx, line, 110, y, w - 240, 48) + 10;
     }
 
     if (opts.accent) {
@@ -284,6 +355,7 @@ function roundRect(
   ctx.closePath();
 }
 
+/** Draw wrapped text; returns the y of the last baseline used. */
 function wrapText(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -291,7 +363,7 @@ function wrapText(
   y: number,
   maxWidth: number,
   lineHeight: number,
-): void {
+): number {
   const words = text.split(" ");
   let line = "";
   let yy = y;
@@ -306,4 +378,5 @@ function wrapText(
     }
   }
   if (line) ctx.fillText(line, x, yy);
+  return yy;
 }

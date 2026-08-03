@@ -4,6 +4,7 @@ import {
   HARBOR_HAVEN_ID,
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
+import { normalizeHubGuidedIntro } from "./story/storyBible";
 
 const SAVE_KEY = "island_save_v1";
 
@@ -25,6 +26,111 @@ export function createDefaultIslandSave(): IslandSaveV1 {
     },
     voyagerLedger: createDefaultVoyagerLedger(),
   };
+}
+
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((x): x is string => typeof x === "string");
+}
+
+function asQuestStatus(value: unknown): IslandSaveV1["questStatus"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value as IslandSaveV1["questStatus"];
+}
+
+function asDiscovered(value: unknown): IslandSaveV1["discovered"] {
+  const empty = { npcs: [], items: [], areas: [], islands: [] as string[] };
+  if (!value || typeof value !== "object" || Array.isArray(value)) return empty;
+  const d = value as Record<string, unknown>;
+  return {
+    npcs: asStringArray(d.npcs),
+    items: asStringArray(d.items),
+    areas: asStringArray(d.areas),
+    islands: asStringArray(d.islands),
+  };
+}
+
+function asPartyBoard(value: unknown): IslandSaveV1["partyBoard"] | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  return value as IslandSaveV1["partyBoard"];
+}
+
+/**
+ * Pillar 14 — corrupt save must never brick Harbor.
+ * Coerce required arrays/objects; drop poison shapes; migrate when safe.
+ */
+export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const parsed = raw as Record<string, unknown>;
+  if (parsed.version !== "1") return null;
+
+  const base = createDefaultIslandSave();
+  const sanitized: IslandSaveV1 = {
+    ...base,
+    updatedAt: typeof parsed.updatedAt === "string" ? parsed.updatedAt : base.updatedAt,
+    currentIslandId: typeof parsed.currentIslandId === "string" ? parsed.currentIslandId : undefined,
+    currentAreaId: typeof parsed.currentAreaId === "string" ? parsed.currentAreaId : undefined,
+    inventory: asStringArray(parsed.inventory),
+    questStatus: asQuestStatus(parsed.questStatus),
+    completedMinigames: asStringArray(parsed.completedMinigames),
+    discovered: asDiscovered(parsed.discovered),
+    voyagerLedger:
+      parsed.voyagerLedger && typeof parsed.voyagerLedger === "object"
+        ? { ...createDefaultVoyagerLedger(), ...(parsed.voyagerLedger as object) }
+        : createDefaultVoyagerLedger(),
+  };
+
+  // Preserve optional progress blobs only when object-shaped (never strings / null).
+  if (parsed.eventHistory && typeof parsed.eventHistory === "object") {
+    sanitized.eventHistory = parsed.eventHistory as IslandSaveV1["eventHistory"];
+  }
+  if (parsed.character && typeof parsed.character === "object") {
+    sanitized.character = parsed.character as IslandSaveV1["character"];
+  }
+  if (parsed.harborShop && typeof parsed.harborShop === "object") {
+    sanitized.harborShop = parsed.harborShop as IslandSaveV1["harborShop"];
+  }
+  if (parsed.hubGuidedIntro && typeof parsed.hubGuidedIntro === "object") {
+    // Ashore law: never revive Outfitter/Capsule gates from poisoned mid-saves.
+    sanitized.hubGuidedIntro = normalizeHubGuidedIntro(
+      parsed.hubGuidedIntro as IslandSaveV1["hubGuidedIntro"],
+    );
+  }
+  if (parsed.harborHomecoming && typeof parsed.harborHomecoming === "object") {
+    sanitized.harborHomecoming = parsed.harborHomecoming as IslandSaveV1["harborHomecoming"];
+  }
+  if (parsed.scarSpectacle && typeof parsed.scarSpectacle === "object") {
+    sanitized.scarSpectacle = parsed.scarSpectacle as IslandSaveV1["scarSpectacle"];
+  }
+  if (Array.isArray(parsed.harborScars)) {
+    sanitized.harborScars = parsed.harborScars as IslandSaveV1["harborScars"];
+  }
+  if (parsed.irreversibleChoices && typeof parsed.irreversibleChoices === "object") {
+    sanitized.irreversibleChoices =
+      parsed.irreversibleChoices as IslandSaveV1["irreversibleChoices"];
+  }
+  if (parsed.stance && typeof parsed.stance === "object") {
+    sanitized.stance = parsed.stance as IslandSaveV1["stance"];
+  }
+  if (parsed.npcMemory && typeof parsed.npcMemory === "object") {
+    sanitized.npcMemory = parsed.npcMemory as IslandSaveV1["npcMemory"];
+  }
+  if (parsed.harborRitual && typeof parsed.harborRitual === "object") {
+    sanitized.harborRitual = parsed.harborRitual as IslandSaveV1["harborRitual"];
+  }
+  if (typeof parsed.onboardingComplete === "boolean") {
+    sanitized.onboardingComplete = parsed.onboardingComplete;
+  }
+  if (typeof parsed.chapterQuietPending === "boolean") {
+    sanitized.chapterQuietPending = parsed.chapterQuietPending;
+  }
+  if (typeof parsed.piggyBondHomecomings === "number") {
+    sanitized.piggyBondHomecomings = parsed.piggyBondHomecomings;
+  }
+  const board = asPartyBoard(parsed.partyBoard);
+  if (board) sanitized.partyBoard = board;
+
+  return migrateIslandSave(sanitized);
 }
 
 function hasCoveChapterProgress(save: IslandSaveV1): boolean {
@@ -56,7 +162,10 @@ export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
   }
 
   // Capsule / practice board inventory lived under coincraft_cove — copy to Harbor.
-  const boards = { ...(next.partyBoard ?? {}) };
+  const boards =
+    next.partyBoard && typeof next.partyBoard === "object" && !Array.isArray(next.partyBoard)
+      ? { ...next.partyBoard }
+      : {};
   const legacyBoard = boards[LEGACY_HUB_ISLAND_ID];
   if (legacyBoard && !boards[HARBOR_HAVEN_ID]) {
     boards[HARBOR_HAVEN_ID] = { ...legacyBoard };
@@ -90,13 +199,11 @@ export function migrateIslandSave(save: IslandSaveV1): IslandSaveV1 {
 }
 
 function parseSave(raw: unknown): IslandSaveV1 | null {
-  if (!raw || typeof raw !== "object") return null;
-  const parsed = raw as IslandSaveV1;
-  if (parsed.version !== "1") return null;
-  return migrateIslandSave({
-    ...parsed,
-    voyagerLedger: parsed.voyagerLedger ?? createDefaultVoyagerLedger(),
-  });
+  try {
+    return sanitizeIslandSave(raw);
+  } catch {
+    return null;
+  }
 }
 
 function newerSave(a: IslandSaveV1 | null, b: IslandSaveV1 | null): IslandSaveV1 | null {

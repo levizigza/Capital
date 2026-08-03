@@ -34,6 +34,7 @@ import { GuideProjector } from "../views/GuideWayfinder";
 import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
+import { stepWalkVelocity } from "../input/walkFeel";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell, ShoreClockToy, ShoreSpiralToy } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
@@ -162,18 +163,17 @@ function Player({
     camYaw.current += turn;
 
     const forward = Number(k.f) - Number(k.b);
-    moving.current = Math.abs(forward) > 0.01 || Math.abs(turn) > 0.001;
     if (Math.abs(forward) > 0.01) {
       facing.current = forward >= 0 ? camYaw.current : camYaw.current + Math.PI;
-      const spd = SPEED * (k.b && !k.f ? 0.65 : 1);
-      vel.current.set(
-        Math.sin(camYaw.current) * forward * spd,
-        0,
-        Math.cos(camYaw.current) * forward * spd,
-      );
-      p.x += vel.current.x * dt;
-      p.z += vel.current.z * dt;
     }
+    const stepped = stepWalkVelocity(
+      { x: vel.current.x, z: vel.current.z },
+      { forward, yaw: camYaw.current, dt, speed: SPEED },
+    );
+    vel.current.set(stepped.vel.x, 0, stepped.vel.z);
+    p.x += vel.current.x * dt;
+    p.z += vel.current.z * dt;
+    moving.current = stepped.moving || Math.abs(turn) > 0.001;
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 
@@ -184,17 +184,26 @@ function Player({
     }
     p.y = 0.02;
 
+    // Prefer Money Structure whenever it is in reach — landmark enter
+    // must not lose to a nearby item / pad CTA.
     let near: string | null = null;
-    let best = INTERACT_R;
+    let best = Number.POSITIVE_INFINITY;
+    let structureNear: string | null = null;
+    let structureBest = Number.POSITIVE_INFINITY;
     for (const h of hotspots) {
       const reach = h.kind === "money_structure" ? INTERACT_R * 1.55 : INTERACT_R;
       const d = Math.hypot(h.position[0] - p.x, h.position[2] - p.z);
-      if (d < reach && d < best) {
+      if (d >= reach) continue;
+      if (h.kind === "money_structure" && d < structureBest) {
+        structureBest = d;
+        structureNear = h.id;
+      }
+      if (d < best) {
         best = d;
         near = h.id;
       }
     }
-    onNear(near);
+    onNear(structureNear ?? near);
 
     const back = near ? shoreScale(10.2) : shoreScale(8.2);
     const camH = near ? shoreScale(5.2) : shoreScale(4.7);

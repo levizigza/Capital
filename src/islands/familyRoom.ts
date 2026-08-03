@@ -16,6 +16,8 @@ import {
   secureSetItemSync,
   secureRemoveItem,
 } from "@/security";
+import type { MoneyOrganId } from "./moneyOrgans";
+import { organVerbChip } from "./worldMemory";
 
 const ROOM_KEY = "capital_family_room_v1";
 const ROOMS_INDEX_KEY = "capital_family_rooms_index_v1";
@@ -168,30 +170,27 @@ export function importFamilyRoomJson(text: string): FamilyRoom {
 }
 
 /**
- * Local myth line for Family Room — names a Harbor plaque without inventing multiplayer sync.
- * Wave 7 — organ word so cold retell stays true at home.
+ * Local myth line for Family Room — same cold-retell mythology as Harbor
+ * (suit verb + plaque). Never invents a second habit cosmos at home.
  */
+/** Infer spine organ from plaque label when Family Room has no live organ id. */
+function organFromPlaqueLabel(label: string): MoneyOrganId {
+  const l = label.toLowerCase();
+  if (l.includes("umbrella") || l.includes("glitter")) return "clock";
+  if (l.includes("spiral") || l.includes("haste")) return "spiral";
+  if (l.includes("jar") || l.includes("treat") || l.includes("coin")) return "coin";
+  return "memory";
+}
+
 export function familyPlaqueMythLine(
   scarLabel: string | null | undefined,
-  organId?: import("./moneyOrgans").MoneyOrganId | null,
+  organId?: MoneyOrganId | null,
 ): string | null {
   const label = (scarLabel ?? "").trim();
   if (!label) return null;
-  const organ =
-    organId === "coin"
-      ? "Coin"
-      : organId === "clock"
-        ? "Clock"
-        : organId === "spiral"
-          ? "Spiral"
-          : "Memory";
-  const habit =
-    organId === "clock"
-      ? "still stamps about"
-      : organId === "spiral"
-        ? "still weighs"
-        : organId === "memory"
-          ? "still names"
-          : "still tips jars about";
-  return `This household ${habit} the ${organ} — “${label}.” Local myth — the Plinth remembered, and so do you.`;
+  const organ: MoneyOrganId =
+    organId === "coin" || organId === "clock" || organId === "spiral" || organId === "memory"
+      ? organId
+      : organFromPlaqueLabel(label);
+  return `The ${organVerbChip(organ)} — Harbor remembered: “${label}.” Local myth — and so do you.`;
 }

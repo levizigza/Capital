@@ -11,7 +11,7 @@ import {
   cueForPlace,
   gainScaleForPlace,
 } from "./soundtrackCatalog";
-import { systemPrefersReducedMotion } from "../a11yMotion";
+import { prefersReducedMotion } from "../a11yMotion";
 
 const STORAGE_KEY = "capital_music_v1";
 
@@ -151,7 +151,7 @@ class CapitalMusic {
       return;
     }
     const track = SOUNDTRACK[cue];
-    const quietScale = systemPrefersReducedMotion() ? 0.55 : 1;
+    const quietScale = prefersReducedMotion() ? 0.55 : 1;
     const effectiveScale = gainScale * quietScale;
     const targetVol = this.prefs.volume * (track.gain ?? 0.5) * effectiveScale;
     if (this.currentCue === cue && this.current?.playing()) {

@@ -224,6 +224,58 @@ export function markEchoSurpriseSeen(save: IslandSaveV1): IslandSaveV1 {
   };
 }
 
+/**
+ * Overnight craft after a same-day Take: backdate the latest scar and re-roll
+ * Harbor ritual so `scar_echo_*` opens Day-2 Soft Beat cinema.
+ * Clears Piggy-homecoming blockers so echo can own the plaza.
+ */
+export function prepareDay2EchoSave(save: IslandSaveV1, now = new Date()): IslandSaveV1 {
+  const scars = [...(save.harborScars ?? [])];
+  if (scars.length === 0) return save;
+
+  const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const yesterday = localDayKey(y);
+  const last = scars[scars.length - 1]!;
+  scars[scars.length - 1] = {
+    ...last,
+    createdAt: `${yesterday}T12:00:00.000Z`,
+  };
+
+  let next: IslandSaveV1 = {
+    ...save,
+    onboardingComplete: true,
+    harborScars: scars,
+    harborHomecoming: save.harborHomecoming
+      ? {
+          ...save.harborHomecoming,
+          pending: false,
+          celebrated: true,
+          piggyTalked: true,
+          quietPending: false,
+        }
+      : save.harborHomecoming,
+    // Force syncHarborRitual to treat this as a fresh calendar day.
+    harborRitual: save.harborRitual
+      ? { ...save.harborRitual, lastDayKey: "1970-01-01" }
+      : save.harborRitual,
+  };
+
+  next = syncHarborRitual(next, now);
+  if (next.harborRitual?.today) {
+    next = {
+      ...next,
+      harborRitual: {
+        ...next.harborRitual,
+        today: {
+          ...next.harborRitual.today,
+          echoSurpriseSeen: false,
+        },
+      },
+    };
+  }
+  return next;
+}
+
 export function markPaydayDone(save: IslandSaveV1): IslandSaveV1 {
   if (!save.harborRitual) return save;
   let weekly = save.harborRitual.weekly;

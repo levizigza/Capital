@@ -44,10 +44,20 @@
 
 ---
 
+## Signature spine (Pillar 4)
+
+| Beat | Juice |
+|------|--------|
+| Cove Take **mark** | `triggerJuice('reward')` + organ soft_beat |
+| Harbor **Plinth** spectacle `in` | `triggerJuice('complete', { burst })` + cheer / organ |
+| **Share** “Harbor felt that” | `triggerJuice('accept')` + `reward` burst |
+| Minigame **fail** overlay | `triggerJuice('fail')` shake |
+
 ## Files
 
-- `src/juice/` — provider, SFX, CSS, bursts
-- `src/islands/SettingsPanel.tsx` — JuiceLevel control
-- `src/game-ui/components/GameButton.tsx` — wired accept + scaled motion
+- `src/juice/` — `triggerJuice`, SFX, CSS, settings
+- `src/islands/SettingsPanel.tsx` — Game Feel (JuiceLevel)
+- `src/game-ui/GameViewport.tsx` — `.juice-viewport` host
+- `src/game-ui/components/GameButton.tsx` — hover / tap motion
 
 *See also [islands-ui-style-guide.md](./islands-ui-style-guide.md) pillar “Delightful juice”.*

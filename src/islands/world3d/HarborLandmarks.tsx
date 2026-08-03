@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
+import { cinemaFlashAmp, prefersReducedMotion } from "../a11yMotion";
 import { organMaterialTint, type MoneyOrganId } from "../moneyOrgans";
 import { SafeText } from "./SafeText";
 import { MoneyCarpet } from "./MoneyCarpet";
@@ -349,30 +350,33 @@ export function MemoryPlinthMesh({
   const ring = useRef<THREE.Mesh>(null);
   const lit = active || guided || scarRemembered || spectacleActive;
   const tint = organMaterialTint(scarOrgan);
+  const quietFlash = prefersReducedMotion();
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
+    const flash = cinemaFlashAmp(); // 0 under reduce — steady lamp, no strobe
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
       if (spectacleActive) {
         // Peak must read clearly over always-on scarRemembered baseline.
-        mat.emissiveIntensity = 2.05 + Math.sin(t * 5.4) * 0.45;
+        mat.emissiveIntensity = 1.15 + flash * (0.9 + Math.sin(t * 5.4) * 0.45);
       } else {
         const base = scarRemembered ? 1.05 : lit ? 0.7 : 0.22;
         mat.emissiveIntensity = base + Math.sin(t * (scarRemembered ? 2.6 : 1.8)) * 0.14;
       }
     }
     if (pages.current && (scarRemembered || spectacleActive)) {
-      pages.current.rotation.y = Math.sin(t * (spectacleActive ? 1.4 : 0.7)) * (spectacleActive ? 0.07 : 0.04);
+      pages.current.rotation.y =
+        Math.sin(t * (spectacleActive ? 1.4 : 0.7)) * (spectacleActive ? 0.07 : 0.04) * Math.max(flash, 0.25);
     }
     if (ring.current) {
       const mat = ring.current.material as THREE.MeshStandardMaterial;
       mat.emissiveIntensity = spectacleActive
-        ? 0.95 + Math.sin(t * 6) * 0.25
+        ? 0.55 + flash * (0.4 + Math.sin(t * 6) * 0.25)
         : scarRemembered
           ? 0.55
           : 0.2;
-      mat.opacity = spectacleActive ? 0.92 : scarRemembered ? 0.75 : 0.5;
+      mat.opacity = spectacleActive ? 0.8 + 0.12 * flash : scarRemembered ? 0.75 : 0.5;
     }
   });
 
@@ -448,7 +452,7 @@ export function MemoryPlinthMesh({
           color={scarRemembered || spectacleActive ? tint.lamp : "#f5f5f4"}
           emissive={tint.emissive}
           emissiveIntensity={
-            spectacleActive ? 1.65 : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
+            spectacleActive ? (quietFlash ? 0.95 : 1.65) : scarRemembered ? 0.65 : lit ? 0.35 : 0.12
           }
           metalness={0.35}
         />
@@ -457,8 +461,8 @@ export function MemoryPlinthMesh({
         <pointLight
           position={[0, 2.5, 0.4]}
           color={tint.accent}
-          intensity={spectacleActive ? 3.4 : 1.4}
-          distance={spectacleActive ? 14 : 8}
+          intensity={spectacleActive ? (quietFlash ? 1.6 : 3.4) : 1.4}
+          distance={spectacleActive ? (quietFlash ? 10 : 14) : 8}
           decay={2}
         />
       ) : null}

@@ -16,11 +16,11 @@ import { IslandBoardView } from "./views/IslandBoardView";
 import { IslandPlayView } from "./views/IslandPlayView";
 import { IslandShoreView } from "./views/IslandShoreView";
 import { PartyRewardOverlay } from "./views/PartyRewardOverlay";
+import { MinigameFailOverlay } from "./views/MinigameFailOverlay";
 import { ArcadeView } from "./platform/ArcadeView";
 import { VibeCodeStudio } from "./studio/VibeCodeStudio";
 import { IslandThemeProvider } from "./themes/IslandThemeProvider";
 import { getIslandTheme } from "./themes/islandThemes";
-import { WelcomeOnboarding } from "./views/WelcomeOnboarding";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
@@ -35,6 +35,12 @@ import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
 import { CourseWorldOverlay } from "./views/CourseWorldOverlay";
 import { TalkBattleScreen } from "./views/TalkBattleScreen";
+import {
+  minigameFailCopy,
+  resolveMinigameFailReason,
+  resolveTakeFailFlavor,
+  type MinigameFailCopy,
+} from "./minigameFail";
 import { toast } from "sonner";
 import {
   findHarborNpc,
@@ -45,13 +51,23 @@ import {
 } from "./story/harborTalks";
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
+import { playCapitalSfx } from "./audio/capitalSfx";
 import { getGenreWorld } from "./genreWorlds";
-import { harborScarPlaques, stanceGreetingHint, recordNpcTalk, scarTriggersChapterQuiet } from "./worldMemory";
+import {
+  harborScarPlaques,
+  nextPaintingAfterScar,
+  plaqueShelfLine,
+  stanceGreetingHint,
+  recordNpcTalk,
+  scarTriggersChapterQuiet,
+} from "./worldMemory";
+import { CREDIT_REX_GRAPH_ID, creditRexStartNodeId } from "./creditEncounter";
 import {
   syncHarborRitual,
   markRitualGreeted,
   markRumorSeen,
   markEchoSurpriseSeen,
+  prepareDay2EchoSave,
   markPaydayDone,
   markRewardClaimed,
   bumpWeeklyTalk,
@@ -122,7 +138,11 @@ import {
 } from "./economy";
 import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
-import { buildSignatureLoopSave, type SignaturePhase } from "@/qa/signatureLoop";
+import {
+  buildSignatureLoopSave,
+  type SignaturePhase,
+  type SignatureSpineOrgan,
+} from "@/qa/signatureLoop";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
@@ -142,6 +162,7 @@ import {
   isHubGuidedComplete,
 } from "./story/hubGuidedIntro";
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
+import { normalizeHubGuidedIntro } from "./harborAshore";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -161,6 +182,12 @@ type PendingMasteryClear = {
   timeline?: DecisionTimeline;
   source: MinigameSource;
   firstClear: boolean;
+};
+
+type PendingMinigameFail = {
+  mgId: MinigameId;
+  source: MinigameSource;
+  copy: MinigameFailCopy;
 };
 
 function uniq<T>(arr: T[]): T[] {
@@ -197,6 +224,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const [view, setView] = useState<View>("home");
   const [save, setSave] = useState<IslandSaveV1 | null>(null);
+  const viewRef = useRef(view);
+  const saveRef = useRef(save);
+  viewRef.current = view;
+  // Keep ref aligned with React state for external setSave paths (load/reset/seed).
+  // updateSave writes saveRef synchronously before setSave — do not clobber mid-tick.
+  useEffect(() => {
+    saveRef.current = save;
+  }, [save]);
   /** After carpet POV boot flight — skip 2D welcome cards and land on Harbor. */
   const [bootLandHub] = useState(() => {
     try {
@@ -246,6 +281,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const [pendingBoardReward, setPendingBoardReward] = useState<MinigameBoardReward | null>(null);
   const [pendingBoardMinigameName, setPendingBoardMinigameName] = useState<string | null>(null);
   const [pendingMastery, setPendingMastery] = useState<PendingMasteryClear | null>(null);
+  const [pendingMinigameFail, setPendingMinigameFail] = useState<PendingMinigameFail | null>(null);
   const [voyageTargetId, setVoyageTargetId] = useState<string | null>(null);
   const [voyageReturnView, setVoyageReturnView] = useState<VoyageReturn>("travel");
   const [showEditor, setShowEditor] = useState(
@@ -277,22 +313,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     let mounted = true;
     const failsafe = window.setTimeout(() => {
       if (!mounted) return;
-      setSave((prev) => {
-        if (prev) return prev;
-        console.warn("[islands] save load timed out — starting default Harbor save");
-        return createDefaultIslandSave();
-      });
+      if (saveRef.current) return;
+      console.warn("[islands] save load timed out — starting default Harbor save");
+      const fresh = createDefaultIslandSave();
+      saveRef.current = fresh;
+      setSave(fresh);
     }, 3_000);
     (async () => {
       try {
         const loaded = await loadIslandSave();
         if (!mounted) return;
+        saveRef.current = loaded;
         setSave(loaded);
         if (loaded.currentIslandId) setActiveIslandId(loaded.currentIslandId);
       } catch (e) {
         console.warn("[islands] save load failed", e);
         if (!mounted) return;
-        setSave(createDefaultIslandSave());
+        const fresh = createDefaultIslandSave();
+        saveRef.current = fresh;
+        setSave(fresh);
       }
     })();
     return () => {
@@ -399,11 +438,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     onExit();
   }, [onExit]);
 
+  /**
+   * Apply save updates synchronously through saveRef, then mirror into React state.
+   * Side-effect gates (quest complete → homecoming, objective touch lists) read
+   * flags set inside the updater — those must run before the next await, not on
+   * a later React flush.
+   */
   const updateSave = useCallback((updater: (prev: IslandSaveV1) => IslandSaveV1) => {
-    setSave((prev) => {
-      if (!prev) return prev;
-      return updater(prev);
-    });
+    const prev = saveRef.current;
+    if (!prev) return;
+    const next = updater(prev);
+    saveRef.current = next;
+    setSave(next);
+  }, []);
+
+  const replaceSave = useCallback((next: IslandSaveV1) => {
+    saveRef.current = next;
+    setSave(next);
   }, []);
 
   /** Debounced persist — always writes the latest save, never a stale in-flight body. */
@@ -490,7 +541,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     (event: Parameters<typeof advanceHubGuided>[1]) => {
       updateSave((prev) => {
         if (isHubGuidedComplete(prev.hubGuidedIntro)) return prev;
-        const guided = prev.hubGuidedIntro ?? createDefaultHubGuidedIntro();
+        const guided = normalizeHubGuidedIntro(
+          prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+        );
         return { ...prev, hubGuidedIntro: advanceHubGuided(guided, event) };
       });
     },
@@ -549,13 +602,35 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ...prev,
       onboardingComplete: true,
       character: prev.character ?? { ...BASE_VOYAGER },
-      hubGuidedIntro: prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+      hubGuidedIntro: normalizeHubGuidedIntro(
+        prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
+      ),
     }));
-    void analytics.track("onboarding_completed", {});
-    // After card onboarding, still run Castle Grounds verbs in 3D Harbor — not straight to board.
+    void analytics.track("onboarding_completed", { via: "ashore_land" });
+    // Ashore law: land Harbor Talk Piggy → Carpet → Cove (no Outfitter-card hero).
     setActiveIslandId(HUB_ISLAND_ID);
     setView("home");
   }, [updateSave]);
+
+  /**
+   * Demote Outfitter-card WelcomeOnboarding — boot cast already picked a look.
+   * First session UI is Harbor Ashore only (Talk → Carpet → Cove).
+   * Never stomp signature seeds / mid-run Harbor memory.
+   */
+  useEffect(() => {
+    if (!save || save.onboardingComplete || bootLandHub) return;
+    if (content.islands.length === 0) return;
+    const hasProgress =
+      isHubGuidedComplete(save.hubGuidedIntro) ||
+      (save.harborScars?.length ?? 0) > 0 ||
+      Boolean(save.harborHomecoming) ||
+      Boolean(save.hubGuidedIntro && save.hubGuidedIntro.step !== "meet_guide");
+    if (hasProgress) {
+      updateSave((prev) => ({ ...prev, onboardingComplete: true }));
+      return;
+    }
+    completeOnboarding();
+  }, [save, bootLandHub, content.islands.length, completeOnboarding, updateSave]);
 
   // Carpet opening lands you on Harbor Haven plaza (3D walk) — not the party board yet.
   useEffect(() => {
@@ -575,10 +650,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         currentIslandId: HUB_ISLAND_ID,
         currentAreaId: defaultArea ?? prev.currentAreaId,
         hubGuidedIntro,
+        // Opening ceremony owns first-meet — do not let a leftover homecoming steal Piggy.
         harborHomecoming: clearQuietPending
           ? {
               ...(prev.harborHomecoming ?? {}),
               quietPending: false,
+              pending: false,
             }
           : prev.harborHomecoming,
         discovered: {
@@ -818,10 +895,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     [activeIsland, updateSave]
   );
 
-  const viewRef = useRef(view);
-  const saveRef = useRef(save);
-  viewRef.current = view;
-  saveRef.current = save;
+  const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
+  const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
 
   useEffect(() => {
     if (!save) return;
@@ -846,21 +921,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       startQuest: (questId) => {
         void startQuest(questId as QuestId);
       },
+      talkNpc: (npcId) => {
+        talkNpcRef.current(npcId as NpcId);
+      },
+      collectItem: (itemId) => collectItemRef.current(itemId as ItemId),
       persistSave: async () => {
         const current = saveRef.current;
         if (current) await persistIslandSave(current);
       },
       resetSave: async () => {
         const fresh = createDefaultIslandSave();
-        setSave(fresh);
+        replaceSave(fresh);
         setActiveIslandId(null);
         setView("home");
         await persistIslandSave(fresh);
       },
-      seedSignatureLoop: async (phase?: SignaturePhase) => {
+      seedSignatureLoop: async (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => {
         const resolved = phase ?? "spectacle_ready";
-        const seeded = buildSignatureLoopSave(resolved);
-        setSave(seeded);
+        const seeded = buildSignatureLoopSave(resolved, new Date(), organ ?? "coin");
+        replaceSave(seeded);
         setHubModal(null);
         await persistIslandSave(seeded);
         // Take cinema lives on the shore — land Cove quiet on the organ landmark.
@@ -871,12 +950,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setActiveIslandId(null);
         setView("home");
       },
+      prepareDay2Echo: () => {
+        const prev = saveRef.current;
+        if (!prev) return;
+        const next = prepareDay2EchoSave(prev);
+        replaceSave(next);
+        setHubModal(null);
+        setActiveIslandId(null);
+        setView("home");
+        void persistIslandSave(next);
+      },
       playSignatureTrailer: () => {
         setView("home");
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
     });
-  }, [save, enterIsland, startQuest, activeIslandId]);
+  }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
 
   const maybeCompleteQuest = useCallback(
     async (questId: QuestId) => {
@@ -961,8 +1050,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` I already set a plaque: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
+          const next = lastScar ? nextPaintingAfterScar(lastScar) : "Paycheck Peninsula";
           return {
             ...prev,
             harborHomecoming: {
@@ -972,7 +1062,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: You earned coins and made a real choice. Harbor feels different because YOU are.${scarBit}`,
+              message: `Piggy Penny: The Coin holds — save a little; the jar still waits.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -992,8 +1082,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` Dotgraph left a mark: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
+          const next = lastScar ? nextPaintingAfterScar(lastScar) : "Credit Kingdom";
           return {
             ...prev,
             harborHomecoming: {
@@ -1003,7 +1094,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: A paycheck isn't freedom until you face a surprise. You chose — and Harbor got quieter to listen.${scarBit}`,
+              message: `Piggy Penny: The Clock shelters — wait under the umbrella before glitter.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1025,7 +1116,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         updateSave((prev) => {
           const lastScar = (prev.harborScars ?? []).at(-1);
           const scarBit = lastScar
-            ? ` The plaza still shows: ${lastScar.label}.`
+            ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
           return {
             ...prev,
@@ -1036,7 +1127,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: You faced the interest storm and came home. That's Ordeal courage.${scarBit}`,
+              message: `Piggy Penny: The Spiral withstands — wait beats haste on the interest wall.${scarBit} Memory keeps your Ordeal on the Plinth.`,
             },
           };
         });
@@ -1050,14 +1141,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!activeIsland) return;
 
       const key = objectiveKey(objective);
-
-      const startedQuestIds = activeIsland.quests
-        .map((q) => q.id)
-        .filter((id) => save?.questStatus[id]?.started && !save?.questStatus[id]?.completed);
-
+      // Read started quests from updater `prev` — startQuest may have just flipped
+      // started in the same tick (Penny First Coins), so closure `save` is stale.
+      let touchedQuestIds: QuestId[] = [];
       updateSave((prev) => {
+        touchedQuestIds = activeIsland.quests
+          .map((q) => q.id)
+          .filter(
+            (id) =>
+              prev.questStatus[id]?.started && !prev.questStatus[id]?.completed,
+          );
+        if (touchedQuestIds.length === 0) return prev;
         const nextQuestStatus = { ...prev.questStatus };
-        for (const questId of startedQuestIds) {
+        for (const questId of touchedQuestIds) {
           const status = nextQuestStatus[questId];
           if (!status || status.completed) continue;
           nextQuestStatus[questId] = {
@@ -1068,20 +1164,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         return { ...prev, questStatus: nextQuestStatus };
       });
 
-      for (const questId of startedQuestIds) {
+      for (const questId of touchedQuestIds) {
         await maybeCompleteQuest(questId);
       }
     },
-    [activeIsland, maybeCompleteQuest, save?.questStatus, updateSave]
+    [activeIsland, maybeCompleteQuest, updateSave]
   );
 
   const collectItem = useCallback(
-    async (itemId: ItemId) => {
-      if (!activeIsland) return;
-      const item = activeIsland.items.find((i) => i.id === itemId);
-      if (!item) return;
+    async (itemId: ItemId): Promise<boolean> => {
+      const islandId =
+        activeIsland?.id ??
+        activeIslandId ??
+        saveRef.current?.currentIslandId ??
+        null;
+      const island = islandId ? getIslandById(content, islandId) : activeIsland;
+      if (!island || isHubIslandId(island.id)) return false;
+      const item = island.items.find((i) => i.id === itemId);
+      if (!item) return false;
 
-      await analytics.track("item_collected", { islandId: activeIsland.id, itemId });
+      await analytics.track("item_collected", { islandId: island.id, itemId });
 
       updateSave((prev) => {
         if (prev.inventory.includes(itemId)) return prev;
@@ -1096,9 +1198,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       });
 
       await completeObjective({ type: "collectItem", itemId });
+      return true;
     },
-    [activeIsland, completeObjective, updateSave]
+    [activeIsland, activeIslandId, completeObjective, content, updateSave]
   );
+  collectItemRef.current = (itemId) => collectItem(itemId);
 
   const openNpcDialogue = useCallback(
     async (npcId: NpcId) => {
@@ -1153,8 +1257,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
+      // Credit canyon — open Rex on the earned Ordeal fork after Score Scanner.
+      const nodeId =
+        graphId === CREDIT_REX_GRAPH_ID ? creditRexStartNodeId(save) : undefined;
 
-      setDialogueState({ open: true, graphId, nodeId: undefined, npcId });
+      setDialogueState({ open: true, graphId, nodeId, npcId });
+      // Quiet homecoming reward sting — Piggy presence, not a checklist modal.
+      if (graphId === "dlg_harbor_piggy_penny_homecoming") {
+        playCapitalSfx("piggy_homecoming");
+      }
 
       void trackScreenEnter(`dialogue:${npcId}`, {
         islandId: island?.id ?? HUB_ISLAND_ID,
@@ -1170,6 +1281,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       completeObjective,
       content,
       dialogueState.open,
+      save,
       save?.hubGuidedIntro,
       save?.harborHomecoming,
       save?.piggyBondHomecomings,
@@ -1180,6 +1292,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       view,
     ],
   );
+  talkNpcRef.current = (npcId) => {
+    void openNpcDialogue(npcId);
+  };
 
   const applyDialogueEffects = useCallback(
     async (effects: Array<{ type: string; [k: string]: any }> | undefined) => {
@@ -1187,6 +1302,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       for (const effect of effects) {
         if (effect.type === "startQuest") {
           await startQuest(effect.questId);
+          // Talk often opens before the quest starts (Penny First Coins).
+          // Re-credit talkToNpc once the quest exists.
+          if (dialogueState.npcId) {
+            await completeObjective({
+              type: "talkToNpc",
+              npcId: dialogueState.npcId,
+            });
+          }
         }
         if (effect.type === "giveItem") {
           await collectItem(effect.itemId);
@@ -1288,7 +1411,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
       }
     },
-    [activeIsland, analytics, collectItem, startQuest, updateSave]
+    [
+      activeIsland,
+      analytics,
+      collectItem,
+      completeObjective,
+      dialogueState.npcId,
+      startQuest,
+      updateSave,
+    ]
   );
 
   const dialogueGraph = useMemo(() => {
@@ -1603,15 +1734,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
         await finalizeSuccessfulClear(firstClear);
       } else {
+        const failReason = resolveMinigameFailReason({
+          reportedSuccess: success,
+          meetsThreshold,
+        });
+        const resolvedThreshold = thresholdObjective?.scoreThreshold
+          ? resolveProfileNumber(thresholdObjective.scoreThreshold, learningProfile)
+          : undefined;
+
         await analytics.track("fail_reason", {
           context: "minigame",
           minigameId: activeMinigameId,
           islandId: activeIsland.id,
-          reason: success && !meetsThreshold ? "score_below_threshold" : "objective_not_met",
+          reason: failReason,
           score,
-          scoreThreshold: thresholdObjective?.scoreThreshold
-            ? resolveProfileNumber(thresholdObjective.scoreThreshold, learningProfile)
-            : undefined,
+          scoreThreshold: resolvedThreshold,
           learningProfile,
           durationMs,
           difficulty,
@@ -1646,17 +1783,37 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
 
-        applyBoardReward(source, firstClear);
+        // Consolation for board attempts — quiet coins only; fail chrome owns the moment.
+        if (source === "board") {
+          const consolation = computeMinigameReward(false, score, firstClear, false);
+          setUserProfile((prev) => ({
+            ...prev,
+            totalCoins: prev.totalCoins + consolation.coins,
+            xp: prev.xp + consolation.xp,
+          }));
+        }
+
+        const mgName =
+          activeIsland.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
+        setPendingMinigameFail({
+          mgId,
+          source,
+          copy: minigameFailCopy({
+            reason: failReason,
+            minigameName: mgName,
+            score,
+            scoreThreshold: resolvedThreshold,
+            source,
+            takeFlavor: resolveTakeFailFlavor({
+              irreversibleChoices: save?.irreversibleChoices,
+            }),
+          }),
+        });
         setActiveMinigameId(null);
         setMinigameStartedAt(null);
         setMinigameSource(null);
-        if (source === "structure") {
-          setView("home");
-          setActiveIslandId(HUB_ISLAND_ID);
-          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
-        } else {
-          void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
-        }
+        // Stay put — never soft-dump to Harbor after a miss.
+        void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
       }
     },
     [
@@ -1733,6 +1890,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(mgId);
     setMinigameStartedAt(Date.now());
   }, [pendingMastery]);
+
+  const handleMinigameFailRetry = useCallback(() => {
+    if (!pendingMinigameFail) return;
+    const { mgId, source } = pendingMinigameFail;
+    setPendingMinigameFail(null);
+    setMinigameSource(source);
+    setActiveMinigameId(mgId);
+    setMinigameStartedAt(Date.now());
+    void trackScreenEnter(`minigame:${mgId}`, {
+      islandId: activeIsland?.id,
+      minigameId: mgId,
+      source: source ?? "retry",
+    });
+  }, [activeIsland?.id, pendingMinigameFail]);
+
+  const handleMinigameFailWalk = useCallback(() => {
+    if (!pendingMinigameFail) return;
+    setPendingMinigameFail(null);
+    if (activeIsland) {
+      void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
+    }
+  }, [activeIsland, pendingMinigameFail]);
 
   const activeMinigameDef = useMemo(() => {
     if (!activeMinigameId) return undefined;
@@ -1811,24 +1990,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     );
   }
 
-  // First-run world onboarding (skipped when carpet POV boot already lands you on Harbor).
-  if (
-    !save.onboardingComplete &&
-    !bootLandHub &&
-    content.islands.length > 0 &&
-    import.meta.env.VITE_QA !== "1"
-  ) {
-    return (
-      <WelcomeOnboarding
-        playerName={userProfile.name}
-        character={save.character}
-        islandsCount={content.islands.length}
-        onSaveCharacter={saveCharacter}
-        onComplete={completeOnboarding}
-        onSkip={completeOnboarding}
-      />
-    );
-  }
+  // Outfitter-card WelcomeOnboarding demoted — Ashore land effect completes above.
+  // Never mount card plaza as hero teach (docs/harbor-ashore.md).
 
   const rootA11yClasses = [
     a11y.highContrast ? "contrast-more" : "",
@@ -1939,7 +2102,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 if (confirm("Reset all island save data?")) {
                   import("./save").then(({ createDefaultIslandSave, persistIslandSave }) => {
                     const fresh = createDefaultIslandSave();
-                    setSave(fresh);
+                    replaceSave(fresh);
                     setActiveIslandId(null);
                     setView("home");
                     persistIslandSave(fresh);
@@ -2263,6 +2426,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onFailed={handleMasteryFailed}
             />
           </GameModal>
+        ) : null}
+
+        {pendingMinigameFail ? (
+          <MinigameFailOverlay
+            copy={pendingMinigameFail.copy}
+            onRetry={handleMinigameFailRetry}
+            onKeepWalking={handleMinigameFailWalk}
+          />
         ) : null}
 
         {pendingReplayTimeline ? (

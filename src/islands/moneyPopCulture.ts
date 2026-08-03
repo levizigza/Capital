@@ -535,6 +535,10 @@ export const MINIGAME_HOMAGE: Record<string, MinigameHomage> = {
     description: "Debt loadout screen — equip payments, unequip regret.",
     homage: "RPG gear screen for bills",
   },
+  mg_ck_signal: {
+    description: "Canyon signal anvil — weigh on-time history vs utilization spikes.",
+    homage: "Radar / scope read before the storm",
+  },
 };
 
 const EXTRA_FORBIDDEN = [

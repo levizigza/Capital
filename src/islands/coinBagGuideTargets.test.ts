@@ -82,6 +82,20 @@ describe("resolveShoreGuideLookAt", () => {
     const at = resolveShoreGuideLookAt(island, save, hotspots);
     expect(at).toEqual([0, 0, 10]);
   });
+
+  it("points pier during chapter quiet after a Take (cold carpet-home verb)", () => {
+    const save = createDefaultIslandSave() as IslandSaveV1;
+    save.chapterQuietPending = true;
+    save.questStatus = {
+      q_main: {
+        started: true,
+        completed: false,
+        completedObjectives: ["talk:npc_a"],
+      },
+    };
+    const at = resolveShoreGuideLookAt(island, save, hotspots);
+    expect(at).toEqual([0, 0, 10]);
+  });
 });
 
 describe("resolveHarborGuideLookAt", () => {

@@ -223,8 +223,8 @@ const CULTURE_BY_ISLAND: Record<string, Partial<Omit<IslandCulture, "id">>> = {
     ecosystemMotion: "mixed",
   },
   paycheck_peninsula: {
-    cultureName: "Dotgraph Cognisphere",
-    vibe: "AI Future floe · wages vs automation · companion minds",
+    cultureName: "Payroll Clock Coast",
+    vibe: "Clock organ · stamp · shelter the rainy-day loft",
     layout: "radar",
     roles: ["plan", "save", "cash"],
     landmarks: ["antenna", "terminal", "statue"],

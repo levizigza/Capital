@@ -13,6 +13,72 @@ function pokeCursor(on: boolean) {
   document.body.style.cursor = on ? "pointer" : "auto";
 }
 
+/** Poppable cork — Jar Cork Vault organ toy. */
+function ToyCork({ position }: { position: [number, number, number] }) {
+  const mesh = useRef<THREE.Group>(null);
+  const [pop, setPop] = useState(0);
+  useFrame((_, dt) => {
+    if (!mesh.current) return;
+    mesh.current.position.y = position[1] + 0.4 + pop * 0.55;
+    mesh.current.rotation.z = pop * 0.8;
+    if (pop > 0) setPop((p) => Math.max(0, p - dt * 1.8));
+  });
+  return (
+    <group
+      ref={mesh}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setPop(1);
+        playOrganSfx("coin");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      <mesh castShadow>
+        <cylinderGeometry args={[0.28, 0.32, 0.55, 12]} />
+        <meshStandardMaterial color="#b45309" roughness={0.8} />
+      </mesh>
+      <mesh castShadow position={[0, 0.35, 0]}>
+        <sphereGeometry args={[0.16, 10, 8]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#f59e0b" emissiveIntensity={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Bouncy coil — Jar Coin Spring organ toy. */
+function ToySpringCoil({ position }: { position: [number, number, number] }) {
+  const mesh = useRef<THREE.Group>(null);
+  const [squash, setSquash] = useState(0);
+  useFrame((_, dt) => {
+    if (!mesh.current) return;
+    const s = 1 + Math.sin(performance.now() * 0.006) * 0.06 - squash * 0.35;
+    mesh.current.scale.set(1, Math.max(0.45, s), 1);
+    if (squash > 0) setSquash((v) => Math.max(0, v - dt * 2.2));
+  });
+  return (
+    <group
+      ref={mesh}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSquash(1);
+        playOrganSfx("coin");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} castShadow position={[0, 0.15 + i * 0.18, 0]} rotation={[0.5, i, 0]}>
+          <torusGeometry args={[0.28, 0.06, 6, 16]} />
+          <meshStandardMaterial color="#f59e0b" metalness={0.5} roughness={0.35} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /** Spinning coin — Jar / Bank. */
 function ToyCoin({
   position,
@@ -128,7 +194,7 @@ function ToySpiralBead({
   );
 }
 
-/** Brass stamp — Bank. */
+/** Brass stamp — Bank Payday Stamp. */
 function ToyStamp({ position }: { position: [number, number, number] }) {
   const mesh = useRef<THREE.Mesh>(null);
   const [press, setPress] = useState(0);
@@ -155,6 +221,155 @@ function ToyStamp({ position }: { position: [number, number, number] }) {
       <mesh position={[0, 0.08, 0]} receiveShadow>
         <cylinderGeometry args={[0.4, 0.42, 0.1, 12]} />
         <meshStandardMaterial color="#78716c" />
+      </mesh>
+    </group>
+  );
+}
+
+/** Spinning vault dial — Bank Safe Heart. */
+function ToyVaultDial({ position }: { position: [number, number, number] }) {
+  const dial = useRef<THREE.Group>(null);
+  const [spin, setSpin] = useState(0);
+  useFrame((_, dt) => {
+    if (!dial.current) return;
+    dial.current.rotation.z -= (0.35 + spin) * dt;
+    if (spin > 0) setSpin((s) => Math.max(0, s - dt * 1.6));
+  });
+  return (
+    <group
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setSpin(10);
+        playOrganSfx("memory");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      <mesh castShadow rotation={[Math.PI / 2, 0, 0]} position={[0, 0.35, 0]}>
+        <cylinderGeometry args={[0.42, 0.42, 0.14, 20]} />
+        <meshStandardMaterial color="#a8a29e" metalness={0.55} roughness={0.35} />
+      </mesh>
+      <group ref={dial} position={[0, 0.42, 0]}>
+        <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.28, 0.28, 0.08, 16]} />
+          <meshStandardMaterial color="#fbbf24" metalness={0.65} roughness={0.28} />
+        </mesh>
+        <mesh castShadow position={[0.12, 0.05, 0]}>
+          <boxGeometry args={[0.18, 0.06, 0.06]} />
+          <meshStandardMaterial color="#78350f" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+/** Marble teller glass — Bank Teller Window. */
+function ToyTellerGlass({ position }: { position: [number, number, number] }) {
+  const pane = useRef<THREE.Mesh>(null);
+  const [glow, setGlow] = useState(0);
+  useFrame((_, dt) => {
+    if (!pane.current) return;
+    const mat = pane.current.material as THREE.MeshStandardMaterial;
+    mat.emissiveIntensity = 0.25 + glow * 0.55;
+    if (glow > 0) setGlow((g) => Math.max(0, g - dt * 1.8));
+  });
+  return (
+    <group
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setGlow(1);
+        playOrganSfx("memory");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      <mesh castShadow position={[0, 0.45, 0]}>
+        <boxGeometry args={[0.85, 0.7, 0.08]} />
+        <meshStandardMaterial color="#e2e8f0" metalness={0.2} roughness={0.4} />
+      </mesh>
+      <mesh ref={pane} castShadow position={[0, 0.48, 0.05]}>
+        <boxGeometry args={[0.65, 0.42, 0.04]} />
+        <meshStandardMaterial
+          color="#67e8f9"
+          emissive="#0891b2"
+          emissiveIntensity={0.25}
+          transparent
+          opacity={0.85}
+        />
+      </mesh>
+      <mesh castShadow position={[0, 0.05, 0.1]}>
+        <boxGeometry args={[0.95, 0.12, 0.35]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.15} roughness={0.5} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Three-bucket stack — Tower Bucket Press. */
+function ToyBucketStack({ position }: { position: [number, number, number] }) {
+  const stack = useRef<THREE.Group>(null);
+  const [bounce, setBounce] = useState(0);
+  useFrame((_, dt) => {
+    if (!stack.current) return;
+    stack.current.position.y = position[1] + bounce * 0.2;
+    stack.current.rotation.y = bounce * 0.6;
+    if (bounce > 0) setBounce((b) => Math.max(0, b - dt * 2));
+  });
+  const colors = ["#22c55e", "#f59e0b", "#38bdf8"] as const;
+  return (
+    <group
+      ref={stack}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setBounce(1);
+        playOrganSfx("clock");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      {colors.map((c, i) => (
+        <mesh key={c} castShadow position={[(i - 1) * 0.38, 0.35, 0]}>
+          <cylinderGeometry args={[0.22, 0.26, 0.45, 12]} />
+          <meshStandardMaterial color={c} metalness={0.2} roughness={0.45} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Folded umbrella — Tower Umbrella Loft. */
+function ToyUmbrellaFold({ position }: { position: [number, number, number] }) {
+  const canopy = useRef<THREE.Group>(null);
+  const [open, setOpen] = useState(0);
+  useFrame((_, dt) => {
+    if (!canopy.current) return;
+    const s = 0.55 + open * 0.55;
+    canopy.current.scale.set(s, 0.7 + open * 0.4, s);
+    if (open > 0) setOpen((o) => Math.max(0, o - dt * 1.4));
+  });
+  return (
+    <group
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        setOpen(1);
+        playOrganSfx("clock");
+      }}
+      onPointerOver={() => pokeCursor(true)}
+      onPointerOut={() => pokeCursor(false)}
+    >
+      <group ref={canopy} position={[0, 0.55, 0]}>
+        <mesh castShadow>
+          <coneGeometry args={[0.55, 0.55, 12]} />
+          <meshStandardMaterial color="#0ea5e9" metalness={0.15} roughness={0.5} />
+        </mesh>
+      </group>
+      <mesh castShadow position={[0, 0.15, 0]}>
+        <cylinderGeometry args={[0.04, 0.04, 0.7, 8]} />
+        <meshStandardMaterial color="#334155" roughness={0.6} />
       </mesh>
     </group>
   );
@@ -248,12 +463,14 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
   if (theme === "tower") {
     return (
       <group>
-        <ToyClockFace position={[-2.2, 0, 2.4]} />
+        <ToyBucketStack position={[-2.6, 0, 2.4]} />
         <ToyClockFace position={[2.6, 0, 1.8]} />
-        <ToyClockFace position={[0, 0, -3.8]} />
+        <ToyUmbrellaFold position={[0, 0, -3.8]} />
+        <ToyClockFace position={[-0.8, 0, 3.2]} />
+        <ToyBucketStack position={[3.0, 0, -1.6]} />
         <ToyCoin position={[0.8, 0, 3.5]} accent="#38bdf8" />
         <ToyCoin position={[-3.4, 0, -0.5]} accent="#7dd3fc" />
-        <ToyCoin position={[3.2, 0, -2.2]} accent="#bae6fd" />
+        <ToyUmbrellaFold position={[2.2, 0, 3.0]} />
       </group>
     );
   }
@@ -272,18 +489,22 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
   if (theme === "bank") {
     return (
       <group>
-        <ToyStamp position={[-2.6, 0, 2.5]} />
+        <ToyVaultDial position={[-2.8, 0, 2.4]} />
         <ToyStamp position={[2.4, 0, 2.0]} />
-        <ToyStamp position={[0.2, 0, -4.0]} />
+        <ToyTellerGlass position={[0.2, 0, -4.0]} />
+        <ToyStamp position={[-1.2, 0, 3.4]} />
+        <ToyVaultDial position={[3.0, 0, -1.4]} />
         <ToyCoin position={[0.5, 0, 3.8]} accent="#f59e0b" />
         <ToyCoin position={[-1.8, 0, 3.2]} accent="#fbbf24" />
-        <ToyCoin position={[3.0, 0, -1.5]} accent="#fde68a" />
+        <ToyTellerGlass position={[2.6, 0, 3.2]} />
       </group>
     );
   }
-  // jar — denser coin toys
+  // jar — coin mosaic + cork / spring organ toys (no stray bank stamp)
   return (
     <group>
+      <ToyCork position={[-2.8, 0, 2.4]} />
+      <ToySpringCoil position={[2.8, 0, 2.0]} />
       <ToyCoin position={[-2.4, 0, 2.6]} />
       <ToyCoin position={[2.6, 0, 2.2]} />
       <ToyCoin position={[0.2, 0, 3.8]} accent="#fde68a" />
@@ -291,7 +512,8 @@ export function StructureToyCulture({ theme }: { theme: MoneyStructureTheme }) {
       <ToyCoin position={[3.2, 0, -1.4]} />
       <ToyCoin position={[-1.2, 0, -3.8]} accent="#fbbf24" />
       <ToyCoin position={[1.8, 0, -4.2]} accent="#fde68a" />
-      <ToyStamp position={[3.6, 0, 0.4]} />
+      <ToyCork position={[0.4, 0, -3.6]} />
+      <ToySpringCoil position={[-0.6, 0, 3.2]} />
     </group>
   );
 }

@@ -55,18 +55,17 @@ If a feature cannot answer *which beat it serves* and *how the Voyager returns c
 
 ## Harbor Haven = Castle Grounds (safe hub yard)
 
-Harbor is **not** a menu. It is the yard that teaches **one verb at a time**:
+Harbor is **not** a menu. It is the yard that teaches **one verb at a time** (Harbor Ashore):
 
-1. Look / wonder (carpet landing)  
+1. Look / wonder (carpet landing — boot cast already picked your look)  
 2. Walk (follow **Coin Bag** — hopping money-bag pointer)  
 3. Talk to a guide (**Piggy Penny** — Harbor Keeper)  
-4. Become *you* (**3D Outfitter** — Snapchat-style Body · Coat · Gear)  
-5. Coins mean something (tiny Capsule spend)  
-6. How challenges feel (optional practice board)  
-7. Cross a threshold (Carpet Dock → map → island)  
-8. Return changed (seal / unlock / new line from guide)
+4. Cross a threshold (Money Carpet → map → **Coincraft Cove**)  
+5. Return changed (seal / unlock / Piggy homecoming)
 
-**Push-back:** Free-roam before the guided lap is done is allowed only as soft exploration — the **next good action** must always be obvious (Coin Bag hop, glow, guide line, one HUD sentence).
+**Discoveries after Talk (not gates):** 3D Outfitter · Capsule Stall · practice board · Daily Ritual (after Cove Change).
+
+**Push-back:** Free-roam before the guided lap is done is allowed only as soft exploration — the **next good action** must always be obvious (Coin Bag hop, glow, guide line, one HUD sentence). See [harbor-ashore.md](./harbor-ashore.md).
 
 ### Main course vs side tomfoolery (financial quest)
 

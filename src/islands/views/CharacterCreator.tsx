@@ -19,6 +19,7 @@ import {
   applyLookPreset,
   lookPresetsForBase,
 } from "../castLooks";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -35,6 +36,8 @@ type Props = {
   onChangeFighter?: () => void;
   cancelLabel?: string;
   saveTestId?: string;
+  /** Boot look-stage Cancel parity with Board Carpet CTA hit target. */
+  cancelTestId?: string;
 };
 
 type Chip = { id: string; label: string; sub: string; node: ReactNode };
@@ -122,6 +125,7 @@ export function CharacterCreator({
   onChangeFighter,
   cancelLabel,
   saveTestId = "character-creator-save",
+  cancelTestId = "character-creator-cancel",
 }: Props) {
   const [draft, setDraft] = useState<CapitalCharacter>(
     () => character ?? { ...DEFAULT_CHARACTER, name: defaultName ?? "" },
@@ -353,33 +357,19 @@ export function CharacterCreator({
             type="button"
             className={
               dark
-                ? "min-h-11 flex-1 rounded-2xl border-2 border-white/40 bg-black/45 px-3 text-sm font-bold text-white hover:bg-black/60"
-                : "min-h-11 flex-1 rounded-2xl border-2 border-slate-300 bg-white px-3 text-sm font-bold text-slate-800"
+                ? "min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-amber-100/40 bg-white/10 px-3 text-sm font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-white/15 active:translate-x-[1px] active:translate-y-[1px]"
+                : "min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-slate-300 bg-white px-3 text-sm font-bold text-slate-800"
             }
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onCancel();
-            }}
-            data-testid="character-creator-cancel"
+            {...pointerSafeActivate(onCancel, { stopPropagation: true })}
+            data-testid={cancelTestId}
           >
             {cancelLabel ?? (dark ? (onChangeFighter ? "← Fighters" : "Save look & leave") : "Leave")}
           </button>
         ) : null}
         <button
           type="button"
-          className="min-h-11 flex-1 touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-          onPointerUp={(e) => {
-            if (e.button !== 0) return;
-            e.preventDefault();
-            e.stopPropagation();
-            commit();
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            commit();
-          }}
+          className="min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+          {...pointerSafeActivate(commit, { stopPropagation: true })}
           data-testid={saveTestId}
         >
           {saveLabel}

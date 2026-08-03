@@ -89,7 +89,7 @@ async function bootToHarbor(page: import("@playwright/test").Page) {
   }
 }
 
-test.describe.configure({ timeout: 90_000 });
+test.describe.configure({ timeout: 120_000 });
 
 test.describe("Harbor Haven tutorial opening", () => {
   test("Castle Grounds coach + Talk to Piggy after carpet", async ({ page }) => {
@@ -100,37 +100,130 @@ test.describe("Harbor Haven tutorial opening", () => {
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
 
-    // Either 3D plaza with coach, or myth_meet fallback — both teach Talk
+    // Ashore redesign: first-meet hides Castle coach (Talk CTA is the only surface).
+    // Myth fallback still teaches Talk.
     await expect
       .poll(async () => {
-        const coachOk = await coach.isVisible().catch(() => false);
+        const talkOk = await talk.isVisible().catch(() => false);
+        const mythTalkOk = await mythTalk.isVisible().catch(() => false);
+        const presence = await page
+          .getByTestId("harbor-piggy-presence")
+          .isVisible()
+          .catch(() => false);
         const mythOk = await myth.isVisible().catch(() => false);
-        return coachOk || mythOk;
+        return (talkOk || mythTalkOk) && (presence || mythOk);
       }, { timeout: 25_000 })
       .toBe(true);
 
-    if (await coach.isVisible().catch(() => false)) {
-      await expect(coach).toHaveAttribute("data-guided-step", "meet_guide");
-      await expect(coach).toContainText(/Walk · Talk|Castle Grounds/i);
-      await expect(page.getByTestId("harbor-piggy-presence")).toBeVisible();
+    // Daily Ritual must not steal first-meet (Memory organ waits for Cove Change).
+    await expect(page.getByRole("heading", { name: /Harbor Daily Ritual/i })).toHaveCount(0);
+
+    if (await talk.isVisible().catch(() => false)) {
+      await expect(coach).toHaveCount(0);
+      await expect(page.getByTestId("harbor-piggy-presence")).toContainText(
+        /Talk to Piggy|Piggy’s by the fountain/i,
+      );
       await expect(page.getByTestId("harbor-controls-whisper")).toBeVisible();
-      await expect(talk).toBeVisible();
-      await talk.click({ force: true });
+      // evaluate click — avoid pointerup→overlay retarget skipping first listen
+      await talk.evaluate((el) => (el as HTMLElement).click());
     } else {
       await expect(myth).toHaveAttribute("data-fallback-mode", "myth_meet");
       await expect(mythTalk).toBeVisible();
-      await mythTalk.click({ force: true });
+      await mythTalk.evaluate((el) => (el as HTMLElement).click());
     }
 
     // Piggy Talk Battle — not Memory Plinth stealing the beat
     await expect(page.getByTestId("harbor-memory-modal")).toHaveCount(0);
     await expect(page.getByTestId("talk-battle-screen")).toBeVisible({ timeout: 15_000 });
-    // meet_guide beat — not the static "done" graph that used to steal Talk Battle
+    // Living-money stage — organ chip + Leave, not SaaS Skip / Continue
+    await expect(page.getByTestId("talk-battle-organ")).toContainText(/Memory keeps/);
+    await expect(page.getByTestId("talk-battle-leave")).toBeVisible();
+    await expect(page.getByTestId("talk-battle-continue")).toContainText(/I hear you|Walk on/);
+    // meet_guide — Teach Talk only (one verb). Outfitter waits for the next step.
     await expect(page.getByTestId("talk-battle-screen")).toContainText(
-      /Welcome to Harbor Haven|WASD|walk pad|Outfitter/i,
+      /Welcome to Harbor Haven/i,
+      { timeout: 8_000 },
     );
+    await expect(page.getByTestId("talk-battle-screen")).toContainText(/WASD|walk pad/i);
+    await expect(page.getByTestId("talk-battle-screen")).not.toContainText(/Outfitter/i);
     await expect(page.getByTestId("talk-battle-screen")).not.toContainText(
       /Harbor is yours\. Talk to locals/i,
     );
+
+    // Finish Talk: listen → reply → Walk on.
+    // Use element handles + force clicks — choice nodes remount and defeat auto-wait.
+    await page.waitForTimeout(250); // TalkBattle input arm after open
+    for (let step = 0; step < 8; step++) {
+      if ((await page.getByTestId("talk-battle-screen").count()) === 0) break;
+      const cont = await page.$('[data-testid="talk-battle-continue"]');
+      if (cont) {
+        const label = ((await cont.textContent()) || "").trim();
+        await cont.evaluate((el) => (el as HTMLElement).click());
+        await page.waitForTimeout(120);
+        if (/Walk on/i.test(label)) break;
+        continue;
+      }
+      const choice = await page.$('[data-testid^="talk-choice-"]');
+      if (choice) {
+        await choice.evaluate((el) => (el as HTMLElement).click());
+        await page.waitForTimeout(120);
+        continue;
+      }
+      await page.waitForTimeout(120);
+    }
+    await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0, {
+      timeout: 15_000,
+    });
+
+    // Voyage next: Carpet CTA, myth board, or map already open (Ashore → to_dock).
+    const hubCarpet = page.getByTestId("hub-travel-map");
+    const mythCarpet = page.getByTestId("fallback-board-carpet");
+    const onMap = async () => {
+      const chip = await page
+        .getByTestId("fortune-archipelago-chip")
+        .isVisible()
+        .catch(() => false);
+      const cove = await page
+        .getByTestId("island-pin-coincraft_cove")
+        .isVisible()
+        .catch(() => false);
+      const strip = await page
+        .getByTestId("archipelago-island-strip")
+        .isVisible()
+        .catch(() => false);
+      const flight = await page
+        .getByTestId("carpet-flight-view")
+        .isVisible()
+        .catch(() => false);
+      const boardCta = await page
+        .getByTestId("carpet-board-cta")
+        .isVisible()
+        .catch(() => false);
+      return chip || cove || strip || flight || boardCta;
+    };
+    await expect
+      .poll(async () => {
+        if (await onMap()) return true;
+        const hub = await hubCarpet.isVisible().catch(() => false);
+        const myth = await mythCarpet.isVisible().catch(() => false);
+        return hub || myth;
+      }, { timeout: 20_000 })
+      .toBe(true);
+
+    if (await onMap()) {
+      await expect(page.getByTestId("island-pin-coincraft_cove")).toBeVisible();
+      return;
+    }
+    if (await hubCarpet.isVisible().catch(() => false)) {
+      await hubCarpet.evaluate((el) => (el as HTMLElement).click());
+    } else if (await mythCarpet.isVisible().catch(() => false)) {
+      await expect(page.getByTestId("harbor-myth-fallback")).toHaveAttribute(
+        "data-fallback-mode",
+        "myth_travel",
+      );
+      await mythCarpet.evaluate((el) => (el as HTMLElement).click());
+    }
+
+    await expect.poll(onMap, { timeout: 20_000 }).toBe(true);
   });
 });

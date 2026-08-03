@@ -3,7 +3,7 @@
  * Persisted to localStorage for cross-session survival.
  */
 
-import { systemPrefersReducedMotion } from "./a11yMotion";
+import { syncReducedMotionSetting, systemPrefersReducedMotion } from "./a11yMotion";
 
 const SETTINGS_KEY = "island_settings_v1";
 const PERF_KEY = "island_performance_v1";
@@ -37,21 +37,33 @@ const DEFAULT_A11Y: AccessibilitySettings = {
 };
 
 export function loadAccessibilitySettings(): AccessibilitySettings {
+  let next: AccessibilitySettings;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) return { ...DEFAULT_A11Y, ...JSON.parse(raw) };
-  } catch { /* ignore */ }
-  // First run: mirror OS reduced-motion so spine cinema stays quiet without a settings visit
-  return {
-    ...DEFAULT_A11Y,
-    reducedMotion: systemPrefersReducedMotion(),
-  };
+    if (raw) {
+      next = { ...DEFAULT_A11Y, ...JSON.parse(raw) };
+    } else {
+      // First run: mirror OS reduced-motion so spine cinema stays quiet without a settings visit
+      next = {
+        ...DEFAULT_A11Y,
+        reducedMotion: systemPrefersReducedMotion(),
+      };
+    }
+  } catch {
+    next = {
+      ...DEFAULT_A11Y,
+      reducedMotion: systemPrefersReducedMotion(),
+    };
+  }
+  syncReducedMotionSetting(next.reducedMotion);
+  return next;
 }
 
 export function persistAccessibilitySettings(s: AccessibilitySettings): void {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
   } catch { /* ignore */ }
+  syncReducedMotionSetting(s.reducedMotion);
 }
 
 /** Returns Tailwind text-size class for the root island container. */

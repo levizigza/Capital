@@ -16,6 +16,7 @@ import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
 import { moneyStructureForIsland } from "../moneyStructures";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 /** Compact structure label for the strip — Jar / Tower / Keep / Bank. */
 function structurePinGlyph(islandId: string): string {
@@ -112,8 +113,10 @@ export function TravelMapView({
                       : `Board carpet · ${island.name}`)
                   }
                   disabled={locked || here}
-                  onClick={() => beginVoyage(island.id)}
-                  className={`shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
+                  {...pointerSafeActivate(() => {
+                    if (!locked && !here) beginVoyage(island.id);
+                  })}
+                  className={`shrink-0 touch-manipulation rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
                     here
                       ? "bg-amber-200 text-amber-950 ring-amber-400"
                       : locked

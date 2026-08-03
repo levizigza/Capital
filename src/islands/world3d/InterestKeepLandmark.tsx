@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
+import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
 
 type CinemaPhase = "hush" | "mark" | "line";
@@ -35,11 +36,12 @@ export function InterestKeepLandmark({
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     const mark = cinemaPhase === "mark";
+    const flash = cinemaFlashAmp();
     if (spiral.current) spiral.current.rotation.y = t * (mark ? 0.04 : hushActive ? 0.12 : 0.55);
     if (gateGlow.current) {
       const mat = gateGlow.current.material as THREE.MeshStandardMaterial;
       if (mark) {
-        mat.emissiveIntensity = 0.9 + Math.sin(t * 10) * 0.2;
+        mat.emissiveIntensity = 0.5 + flash * (0.4 + Math.sin(t * 10) * 0.2);
       } else {
         const base = hushActive ? 0.12 : active ? 0.85 : guided ? 0.5 : 0.28;
         mat.emissiveIntensity = base + Math.sin(t * (hushActive ? 1.1 : 3.0)) * (hushActive ? 0.03 : 0.08);
@@ -47,8 +49,8 @@ export function InterestKeepLandmark({
     }
     if (scar.current) {
       const mat = scar.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = mark ? 0.75 + Math.sin(t * 12) * 0.2 : 0.2;
-      mat.opacity = mark ? 0.9 : 0.65;
+      mat.emissiveIntensity = mark ? 0.4 + flash * (0.35 + Math.sin(t * 12) * 0.2) : 0.2;
+      mat.opacity = mark ? 0.8 + 0.1 * flash : 0.65;
     }
   });
 

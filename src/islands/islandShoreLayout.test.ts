@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildShoreHotspots, islandNeedsPartyDash } from "./islandShoreLayout";
+import {
+  buildShoreHotspots,
+  islandNeedsPartyDash,
+  itemIsDialogueReward,
+} from "./islandShoreLayout";
+import { loadIslandsContent } from "./content/loader";
+import { COVE_ISLAND_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { getMasteryGateForMinigame } from "./masteryGate";
 import type { IslandDefinition } from "./types";
@@ -37,7 +43,7 @@ describe("island shore + party play", () => {
   it("builds pier, board, journal, and play pads", () => {
     const island = fakeIsland({
       id: "paycheck_peninsula",
-      name: "Dotgraph Atoll",
+      name: "Paycheck Peninsula",
       minigames: [
         {
           id: "mg_budget_split",
@@ -97,5 +103,16 @@ describe("island shore + party play", () => {
     const gate = getMasteryGateForMinigame("mg_party_dash_signal_city");
     expect(gate?.title).toMatch(/Mastery Quiz/i);
     expect(gate?.questions.length).toBeGreaterThan(0);
+  });
+
+  it("keeps Cove dialogue/quest-reward jars off the shore pickup ring", () => {
+    const cove = loadIslandsContent().islands.find((i) => i.id === COVE_ISLAND_ID)!;
+    expect(itemIsDialogueReward(cove, "cc_savings_jar")).toBe(true);
+    expect(itemIsDialogueReward(cove, "cc_craft_badge")).toBe(true);
+    const spots = buildShoreHotspots(cove);
+    expect(spots.some((h) => h.kind === "money_structure")).toBe(true);
+    expect(spots.some((h) => h.refId === "cc_savings_jar")).toBe(false);
+    expect(spots.some((h) => h.refId === "cc_craft_badge")).toBe(false);
+    expect(spots.some((h) => h.refId === "cc_coin_pouch")).toBe(true);
   });
 });

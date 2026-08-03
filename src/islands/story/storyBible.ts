@@ -36,7 +36,9 @@ export const STORY_BEATS: Array<{
 export const HARBOR_KEEPER_MASCOT_ID = "piggy_penny" as const;
 
 /**
- * Castle Grounds guided first hour — one verb at a time (SM64 yard).
+ * Harbor Ashore guided first hour — one verb at a time (Portal chambers).
+ * Live critical path: meet_guide → to_dock → done.
+ * Legacy step ids remain for old saves; normalizeHubGuidedIntro remaps them.
  * Advances when the Voyager completes the action, not when they skip text.
  */
 export type HubGuidedStepId =
@@ -48,6 +50,18 @@ export type HubGuidedStepId =
   | "to_dock"
   | "first_island"
   | "done";
+
+/** Steps retired from the critical path — still valid in old saves. */
+export const ASHORE_LEGACY_GATE_STEPS: readonly HubGuidedStepId[] = [
+  "walk_outfitter",
+  "become_you",
+  "tiny_spend",
+  "practice_optional",
+  "first_island",
+] as const;
+
+/** Critical path after Talk: voyage to Cove. */
+export const ASHORE_VOYAGE_STEP: HubGuidedStepId = "to_dock";
 
 export type HubGuidedIntroState = {
   version: typeof STORY_BIBLE_VERSION;
@@ -75,59 +89,67 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "meet_guide",
     storyBeat: "you",
-    coach: "Talk to Piggy Penny — tap Talk, or walk over and press E. Coin Bag sticks with you.",
-    guideLine:
-      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper. Coin Bag stays by your side — talk to me first (tap Talk or press E)!",
-    verb: "Walk · Talk",
+    // Presence CTA carries this — keep coach short for any leftover surface.
+    coach: "Talk to Piggy Penny.",
+    guideLine: "Piggy Penny: Welcome ashore! I’m your Harbor Keeper.",
+    verb: "Talk",
     highlight: "guide",
   },
+  // DEMOTED legacy gates — normalizeHubGuidedIntro remaps onto to_dock.
+  // Copy stays voyage-safe so raw table reads cannot re-hero Outfitter.
   {
     id: "walk_outfitter",
-    storyBeat: "you",
-    coach: "Coin Bag points at the Outfitter — walk with your buddy.",
+    storyBeat: "go",
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
     guideLine:
-      "Piggy Penny: Become YOU first. Coin Bag will point at the Outfitter — walk together!",
-    verb: "Walk",
-    highlight: "outfitter",
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
+    highlight: "travel",
   },
   {
     id: "become_you",
-    storyBeat: "you",
-    coach: "Outfitter door is glowing — go inside. Coin Bag waits beside you.",
-    guideLine: "Piggy Penny: Go inside! Body · Coat · Gear on the live mirror.",
-    verb: "Enter · Style",
-    highlight: "outfitter",
+    storyBeat: "go",
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    guideLine:
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
+    highlight: "travel",
   },
   {
     id: "tiny_spend",
-    storyBeat: "need",
-    coach: "Capsule Stall peek — then Coin Bag points to the Carpet Dock.",
-    guideLine: "Piggy Penny: Peek the Capsule Stall — then we sail to Coincraft Cove!",
-    verb: "Spend (or peek)",
-    highlight: "capsule",
+    storyBeat: "go",
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    guideLine:
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
+    highlight: "travel",
   },
   {
     id: "practice_optional",
-    storyBeat: "need",
-    coach: "Practice is optional tomfoolery — dock when you're ready.",
-    guideLine: "Piggy Penny: Practice board is optional — or skip to the carpet!",
-    verb: "Play or Skip",
-    highlight: "practice",
+    storyBeat: "go",
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    guideLine:
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
+    highlight: "travel",
   },
   {
     id: "to_dock",
     storyBeat: "go",
-    coach: "Carpet Dock — first painting is Coincraft Cove. Nothing else yet.",
-    guideLine: "Piggy Penny: Coincraft Cove is your first painting — open the map at the dock!",
-    verb: "Walk",
+    // Critical path after Talk (Harbor Ashore) — one voyage verb.
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    guideLine:
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
     highlight: "travel",
   },
   {
     id: "first_island",
     storyBeat: "go",
-    coach: "Open the map for Coincraft Cove — Coin Bag comes with you.",
-    guideLine: "Piggy Penny: Open the map — Coincraft Cove is your first painting!",
-    verb: "Go",
+    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    guideLine:
+      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+    verb: "Board carpet",
     highlight: "travel",
   },
   {
@@ -143,8 +165,21 @@ export function createDefaultHubGuidedIntro(): HubGuidedIntroState {
   return { version: STORY_BIBLE_VERSION, step: "meet_guide" };
 }
 
+/** Normalize mid-save legacy Outfitter/Capsule gates onto the voyage step. */
+export function normalizeHubGuidedIntro(
+  state?: HubGuidedIntroState | null,
+): HubGuidedIntroState {
+  const base = state ?? createDefaultHubGuidedIntro();
+  if (isHubGuidedComplete(base)) return base;
+  if ((ASHORE_LEGACY_GATE_STEPS as readonly string[]).includes(base.step)) {
+    return { ...base, step: ASHORE_VOYAGE_STEP };
+  }
+  return base;
+}
+
+/** Live coach step — always Ashore-normalized (never Outfitter-gate hero). */
 export function getHubGuidedStep(state?: HubGuidedIntroState | null) {
-  const stepId = state?.step ?? "meet_guide";
+  const stepId = normalizeHubGuidedIntro(state).step;
   return HUB_GUIDED_STEPS.find((s) => s.id === stepId) ?? HUB_GUIDED_STEPS[0]!;
 }
 
@@ -163,27 +198,40 @@ export type HubGuidedEvent =
   | "near_dock"
   | "opened_map";
 
-/** Advance helpers — called from Harbor UI when verbs complete. */
+/**
+ * Advance helpers — called from Harbor UI when verbs complete.
+ *
+ * Harbor Ashore redesign (docs/harbor-ashore.md): critical path is
+ * Talk Piggy → Money Carpet → Cove. Outfitter / Capsule / practice are
+ * plaza discoveries, not gates (legacy mid-saves still advance if stuck).
+ */
 export function advanceHubGuided(
   state: HubGuidedIntroState,
   event: HubGuidedEvent,
 ): HubGuidedIntroState {
-  const next = { ...state };
+  const next = { ...normalizeHubGuidedIntro(state) };
   switch (event) {
     case "talked_guide":
-      if (next.step === "meet_guide") next.step = "walk_outfitter";
+      // One teach → voyage (Portal-style: next chamber is leave home).
+      if (next.step === "meet_guide") next.step = ASHORE_VOYAGE_STEP;
       break;
     case "near_outfitter":
       if (next.step === "walk_outfitter") next.step = "become_you";
       break;
     case "saved_outfitter":
       next.didOutfitter = true;
-      if (next.step === "become_you" || next.step === "walk_outfitter") next.step = "tiny_spend";
+      if (
+        next.step === "become_you" ||
+        next.step === "walk_outfitter" ||
+        next.step === "to_dock"
+      ) {
+        // Discovery save during voyage — stay on voyage; don't bounce to Capsule gate.
+        if (next.step !== "to_dock") next.step = "to_dock";
+      }
       break;
     case "capsule_visit":
       if (next.step === "tiny_spend") {
         next.didSpendLesson = true;
-        // Critical path skips optional practice — dock next (trailer first session)
         next.step = "to_dock";
       }
       break;
@@ -199,11 +247,21 @@ export function advanceHubGuided(
       if (next.step === "practice_optional") next.step = "to_dock";
       break;
     case "near_dock":
-      if (next.step === "to_dock") next.step = "first_island";
+      // Voyage is already to_dock — stay; map open completes.
       break;
     case "opened_map":
       next.didDock = true;
-      if (next.step === "first_island" || next.step === "to_dock") next.step = "done";
+      if (
+        next.step === "first_island" ||
+        next.step === "to_dock" ||
+        next.step === "meet_guide" ||
+        next.step === "tiny_spend" ||
+        next.step === "practice_optional" ||
+        next.step === "walk_outfitter" ||
+        next.step === "become_you"
+      ) {
+        next.step = "done";
+      }
       break;
     default:
       break;

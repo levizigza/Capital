@@ -44,14 +44,19 @@ This is **structure depth**, not map width — still no new outer islands.
 
 Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
+**Cadence (Pillar 16):** after each pillar fix → `npm run test:iconic` → (Harbor/Cove/carpet touch) `npm run test:iconic:e2e` → one cold run below → update [iconic-craft-plan.md](./iconic-craft-plan.md) status board. Machine map: `src/qa/iconicCraftCadence.ts`.
+
 | Step | Pass look / feel |
 |------|------------------|
 | Cove Take | Irreversible Take verb → dismiss Talk → **world cinema** (jar/shore visible, captions not a modal card) → soft HUD + “Carpet home — Harbor felt that” |
 | Carpet to Cove | Targeted flight is a short **carpet rail** (≤12s) — never a stuck free-flight | 
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
+| Structure pads | Unique part silhouettes (`StructurePartSilhouette`) + Soft Beat lookout beacon — readable without HUD text on Pages |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
-| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide` |
-| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid |
+| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide`; **no stacked Castle coach** (Talk CTA is the only surface) |
+| Ashore voyage | After Talk → Money Carpet → Coincraft Cove (Outfitter / Capsule / Daily Ritual are discoveries, not gates) |
+| No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove |
+| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid / Daily Ritual auto-open |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → captions over **Plinth camera lock** (not a modal card) → Plinth pulse |
@@ -60,18 +65,39 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Day 2 | Soft Beat–style “Still here” cinema — no tutorial modal |
 | Soft Beat | Lid / Loft / Battlement / Teller — hush overlay, not a toast |
 | Trailer | Memory Plinth → Replay signature beat (~24s, mute-friendly) |
+| Mute-test stingers | Volume 0: Take mark + Harbor felt still *read* as beats (no silent empty flash) |
+| Esc · Leave overlays | Signature overlays dismiss with Esc and a sticky Leave — never trap |
+| Corrupt save never bricks | Poison `island_save_v1` still boots Harbor (sanitize → playable defaults) |
+| Reduced motion | Settings **or** OS reduce: softer cinema timings; Take/Plinth strobes damp (`cinemaFlashAmp`) |
 
-**Harbor tutorial chrome:** early Castle Grounds hides Leave, Archipelago chip, and Outfitter avatar until those steps matter — Coin Bag + Piggy only.
+**After the loop — six questions (write answers in the PR / board):**
+
+1. Did the player misunderstand what to do?  
+2. Did anything feel unfair?  
+3. Did anything feel repetitive without a new beat?  
+4. Did the game ignore a clear ability the player already had?  
+5. Did the player get lost (place or goal)?  
+6. Did the moment feel fun, or only functional?
+
+**Harbor Ashore (redesign):** see [harbor-ashore.md](./harbor-ashore.md) — Talk → Carpet → Cove; Daily Ritual only after Cove Change. Early chrome hides Leave / CASH / stall grid until Talk is done.
 
 **QA seeds (dev / `VITE_QA=1`):**
 
 ```js
 await __QA__.seedSignatureLoop("spectacle_ready")
 await __QA__.seedSignatureLoop("day2_echo")
+// Overnight craft after a same-day Take (backdates scar + rolls scar_echo_*):
+__QA__.prepareDay2Echo()
 __QA__.playSignatureTrailer()
 ```
 
-Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e2e/signature-loop.spec.ts`.
+Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cove smoke: `npm run test:iconic:e2e`.
+
+Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs` · `cold-spine-retell.mjs` · `cold-human-triangle-pass.mjs`.
+
+```js
+await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spiral"
+```
 
 ## Freeze (do not ship yet)
 
@@ -79,6 +105,8 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 - **No fake multiplayer backend** (Family Room stays local/device-share).  
 - **No BMO / CBE / Nathan Project** content merged into Capital.  
 - Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
+
+**Parked “later” sink (Pillar 17):** [iconic-later.md](./iconic-later.md) — put new island ideas and deferred polish there; do not open the map. Guarded by `iconicScopeFreeze.test.ts`.
 
 ## Identity freeze (Wave 4)
 
@@ -91,12 +119,14 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 
 - Harbor always-on micro-life: fountain jet, pennants, **Fortune flags**, idle wave/cheer, Coin Bag bob, contact shadows (quieter under reduced motion).  
 - Family Room names the latest plaque as a **local myth** (device-only — no fake MMO).  
-- First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with the OS.
+- First-run settings mirror `prefers-reduced-motion`; Soft Beat / World Arrive / music beds duck with Settings OR OS (`prefersReducedMotion`).  
+- Take mark / Plinth spectacle strobes damp under reduce (`cinemaFlashAmp`) — steady organ read, no blinding flash.
 
 ## Organ score (Wave 6)
 
 - Spine beds speak the mural: **Memory Courtyard · Coin Jar Morning · Clock Stamp Shift · Spiral Interest Keep**.  
 - Post-Take hush ducks the shore organ bed (`MusicPlace.shore.hush`) while Take cinema plays the matching organ stinger.  
+- Mute-test chain: Take open `scar_chime`+organ → mark `take_mark` → Harbor spectacle hush `scar_chime` → reveal `harbor_felt`+organ+`plinth_hum` → share reprises `harbor_felt`. Harbor plaza bed ducks (`MusicPlace.harbor.hush`) so those stingers read.  
 - Settings copy names organs, not leftover genre-city labels.  
 - Off-spine genre cues stay available; the frozen triangle leads with organ language.
 
@@ -104,7 +134,8 @@ Automated: `npm test -- src/qa/signatureLoop.test.ts` and `npx playwright test e
 
 Cold play is blocked if Harbor never becomes playable. Ship this before Wave-8 content:
 
-1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s; sticky `capital_harbor3d_fail` skips Canvas next visit.  
+1. **Harbor never sticks** — Continue paints before WebGL; cheap probe before R3F; hard myth escape under 3s (`harborLoadFailsafe.ts`); sticky `capital_harbor3d_fail` skips Canvas next visit.  
+1b. **Corrupt save never bricks** — `sanitizeIslandSave` coerces poison version-1 shapes to Harbor-safe arrays/objects (or default save).  
 2. **CSP allows audio** — `media-src 'self' data: blob:` so Howler / data beds are not blocked on Pages.  
 3. **E2E stays green** — skip SW under `navigator.webdriver` + kill-switch init so `controllerchange` reloads do not flake `__QA__.ready`.
 
@@ -127,9 +158,22 @@ A cold player (or a kid watching) should be able to say one sentence per organ a
 
 ### Cold-retell polish
 
-Canonical kid sentence (spectacle, share, Plinth modal):
+Canonical kid sentences (`coldOrganKidSentence` — plaque-free):
 
-`Harbor remembered the {Coin|Clock|Spiral}: “{plaque}.”`
+| Organ | Cold sentence |
+|-------|---------------|
+| Coin | The Coin holds — save a little; the jar still waits. |
+| Clock | The Clock shelters — wait under the umbrella before glitter. |
+| Spiral | The Spiral withstands — wait beats haste on the interest wall. |
+| Memory | Memory keeps — Harbor remembers your Take on the Plinth. |
+
+With a plaque (spectacle retell, share, Plinth, Family Room):
+
+`The {Coin holds|Clock shelters|Spiral withstands|Memory keeps} — Harbor remembered: “{plaque}.”`
+
+Spectacle headline (one mythology — never “Coin Change” vs “Clock Take”):
+
+`Harbor felt that — the {Coin holds|Clock shelters|Spiral withstands}`
 
 | Organ | Plaque labels | Suit hush verb |
 |-------|---------------|----------------|

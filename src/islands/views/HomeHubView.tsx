@@ -4,7 +4,6 @@ import {
   GameHudLayout,
   GameButton,
   GameModal,
-  HudBadge,
 } from "@/game-ui";
 import { useInputAction } from "@/input";
 
@@ -22,7 +21,7 @@ import {
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
-import { ensureLedger } from "../voyagerLedger";
+import { ensureLedger, freedomPlazaChip } from "../voyagerLedger";
 import { OutfitterStudioOverlay } from "../world3d/OutfitterStudioOverlay";
 import { CapsuleStudioOverlay } from "../world3d/CapsuleStudioOverlay";
 import { HarborMarketOverlay } from "../world3d/HarborMarketOverlay";
@@ -95,6 +94,13 @@ import { Day2EchoOverlay } from "./Day2EchoOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
 import {
+  ashorePresenceLine,
+  normalizeHubGuidedIntro,
+  shouldAutoOpenDailyRitual,
+  shouldShowCastleCoach,
+} from "../harborAshore";
+import { pointerSafeActivate } from "../pointerSafeClick";
+import {
   harborFallbackMode,
   isFirstMeetStep,
   isPiggyPresenceBeat,
@@ -102,6 +108,7 @@ import {
 } from "../harborFirstMeet";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { capitalMusic } from "../audio/capitalMusic";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
 import { isKilled } from "@/sre";
@@ -184,8 +191,9 @@ export type HomeHubViewProps = {
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
   if (!save.hubGuidedIntro) return null;
-  if (isHubGuidedComplete(save.hubGuidedIntro)) return null;
-  return save.hubGuidedIntro;
+  const guided = normalizeHubGuidedIntro(save.hubGuidedIntro);
+  if (isHubGuidedComplete(guided)) return null;
+  return guided;
 }
 
 export function HomeHubView({
@@ -254,6 +262,11 @@ export function HomeHubView({
   const simplified = profile.hudMode === "simplified";
   const voyager = character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" };
   const freed = hasHarborFreedom(save);
+  const freedomPlazaLine = freedomPlazaChip({
+    freed,
+    boatLabel: boat.label,
+    ledger: ensureLedger(save.voyagerLedger),
+  });
   const guided = guidedFromSave(save);
   const guidedStep = guided ? getHubGuidedStep(guided) : null;
   const castleMode = !!guidedStep;
@@ -276,11 +289,9 @@ export function HomeHubView({
     Boolean(save.harborHomecoming?.pending || save.harborHomecoming?.celebrated);
   const quietHarbor =
     needsPiggyWelcome && Boolean(save.harborHomecoming?.quietPending);
-  /** Early Castle Grounds — one job, minimal chrome */
-  const earlyCastle =
-    Boolean(castleMode && guidedStep) &&
-    !["practice_optional", "to_dock", "first_island", "done"].includes(guidedStep!.id);
   const firstMeet = isFirstMeetStep(guidedStep?.id);
+  /** Early Ashore — Talk only; voyage uses Carpet CTA (no Outfitter early chrome). */
+  const earlyCastle = Boolean(castleMode && firstMeet);
   /** First meet or quiet homecoming — Piggy owns the plaza, not a stall checklist. */
   const piggyPresence = isPiggyPresenceBeat({
     firstMeet,
@@ -291,17 +302,11 @@ export function HomeHubView({
     quietHomecoming: quietHarbor,
     castleActive: Boolean(castleMode && guidedStep && guidedStep.id !== "done"),
   });
-  const showOutfitterChrome =
-    !quietHarbor &&
-    (!castleMode ||
-      guidedStep?.highlight === "outfitter" ||
-      guidedStep?.id === "walk_outfitter" ||
-      guidedStep?.id === "become_you");
-  /** Map chrome only when guided to dock / first voyage — free roam uses diegetic Money Carpet. */
+  // Outfitter is plaza discovery after Ashore — never a guided hero teach.
+  const showOutfitterChrome = !quietHarbor && !castleMode && !firstMeet;
+  /** Map chrome on voyage — free roam uses diegetic Money Carpet. */
   const showTravelChip =
-    !quietHarbor &&
-    Boolean(castleMode) &&
-    (guidedStep?.id === "to_dock" || guidedStep?.id === "first_island");
+    !quietHarbor && Boolean(castleMode) && guidedStep?.id === "to_dock";
   const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
@@ -380,6 +385,13 @@ export function HomeHubView({
   useEffect(() => {
     const count = plaques.length;
     if (count < 1) return;
+    const shown = save.scarSpectacle?.shownForCount ?? 0;
+    if (count <= shown) return;
+    // Unshown scars own the plaza — dismiss Daily Ritual so it cannot sit above cinema.
+    if (hubModal === "ritual") {
+      setHubModal(null);
+      return;
+    }
     if (
       !canOpenSignatureCinema({
         plazaReady,
@@ -392,8 +404,7 @@ export function HomeHubView({
     ) {
       return;
     }
-    const shown = save.scarSpectacle?.shownForCount ?? 0;
-    if (count > shown) setSpectacleOpen(true);
+    setSpectacleOpen(true);
   }, [
     plaques.length,
     save.scarSpectacle?.shownForCount,
@@ -403,6 +414,7 @@ export function HomeHubView({
     spectacleOpen,
     feltShareOpen,
     plazaReady,
+    setHubModal,
   ]);
 
   const closeSpectacle = useCallback(() => {
@@ -423,13 +435,16 @@ export function HomeHubView({
       voyagerName: voyager.name || "Voyager",
       scarLabel: latestPlaque.label,
       chapter: scarChapterTitle(latestPlaque),
+      scarId: latestPlaque.id,
+      islandId: latestPlaque.islandId,
+      organId: latestOrgan,
     }).then((url) => {
       if (!cancelled) setFeltPreviewUrl(url);
     });
     return () => {
       cancelled = true;
     };
-  }, [feltShareOpen, latestPlaque, voyager.name]);
+  }, [feltShareOpen, latestPlaque, latestOrgan, voyager.name]);
 
   useEffect(() => {
     // Hold glow through the share freeze-frame so the lamp doesn't die mid-PNG.
@@ -443,6 +458,15 @@ export function HomeHubView({
     if (!spectacleOpen) setSpectaclePhase(null);
   }, [spectacleOpen]);
 
+  // Pillar 11 — duck Memory bed during spectacle / share so Harbor-felt stingers read.
+  useEffect(() => {
+    const hush = spectacleOpen || feltShareOpen;
+    capitalMusic.playPlace({ kind: "harbor", hush });
+    return () => {
+      if (hush) capitalMusic.playPlace({ kind: "harbor" });
+    };
+  }, [spectacleOpen, feltShareOpen]);
+
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;
     if (!rumorId?.startsWith("scar_echo_")) return;
@@ -451,6 +475,11 @@ export function HomeHubView({
     // Micro-loop order: Piggy homecoming before day-2 echo — never stack.
     if (save.harborHomecoming?.pending) return;
     if (save.harborHomecoming && !save.harborHomecoming.piggyTalked) return;
+    // Day-2 Soft Beat owns the plaza — never leave Daily Ritual parked above it.
+    if (hubModal === "ritual") {
+      setHubModal(null);
+      return;
+    }
     if (
       !canOpenSignatureCinema({
         plazaReady,
@@ -478,6 +507,7 @@ export function HomeHubView({
     trailerOpen,
     guided,
     plazaReady,
+    setHubModal,
   ]);
 
   useEffect(() => {
@@ -487,20 +517,30 @@ export function HomeHubView({
   }, []);
 
   useEffect(() => {
-    if (!save.harborRitual) return;
-    if (save.harborRitual.today.greeted) return;
-    if (hubModal || talkOpen || spectacleOpen || feltShareOpen || trailerOpen || echoSurpriseOpen) {
+    // Memory organ: Daily Ritual after Cove Change — never steals first-meet / voyage.
+    if (
+      !shouldAutoOpenDailyRitual({
+        save,
+        guidedActive: Boolean(guided && !isHubGuidedComplete(guided)),
+        anyBlockingOverlay: Boolean(
+          hubModal ||
+            talkOpen ||
+            spectacleOpen ||
+            feltShareOpen ||
+            trailerOpen ||
+            echoSurpriseOpen,
+        ),
+        homecomingPending: Boolean(
+          save.harborHomecoming?.pending ||
+            (save.harborHomecoming && !save.harborHomecoming.piggyTalked),
+        ),
+      })
+    ) {
       return;
     }
-    if (save.harborHomecoming?.pending) return;
-    // Trailer path: Castle Grounds done + map opened once before ritual auto-opens
-    if (guided && !isHubGuidedComplete(guided)) return;
-    if (!save.hubGuidedIntro?.didDock) return;
     setHubModal("ritual");
   }, [
-    save.harborRitual,
-    save.harborHomecoming?.pending,
-    save.hubGuidedIntro?.didDock,
+    save,
     hubModal,
     guided,
     setHubModal,
@@ -524,6 +564,7 @@ export function HomeHubView({
     latestScarLabel: latestPlaque?.label ?? null,
     plinthGlow: plinthGlow || feltShareOpen,
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
+    carpetTierLabel: boat.label,
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -537,8 +578,12 @@ export function HomeHubView({
       ? visualBeats.bagTip
       : buddyTip.tip;
 
+  // Never pulse Outfitter during Ashore first session (discovery after voyage).
   const showOutfitterHighlight =
-    highlightOutfitter || guidedStep?.highlight === "outfitter";
+    !piggyPresence &&
+    !firstMeet &&
+    guidedStep?.id !== "to_dock" &&
+    (highlightOutfitter || guidedStep?.highlight === "outfitter");
 
   const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
@@ -806,9 +851,7 @@ export function HomeHubView({
     if (piggyPresence) return;
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
-      if (guidedStep?.id === "walk_outfitter" || guidedStep?.id === "become_you") {
-        onHubGuidedEvent("near_outfitter");
-      }
+      // Discovery only — never a guided Ashore gate.
       openOutfitter();
     } else if (id === "studio") onOpenStudio();
     else if (id === "gallery") {
@@ -1003,17 +1046,17 @@ export function HomeHubView({
                   guideLookAt={harborGuideLookAt}
                   guideTip={bagGuideTip}
                   keeperEmote={
-                    castleMode || homecomingActive || plinthShareBeat
+                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
                       ? keeperEmote
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || plinthShareBeat
+                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
                       ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
                       : null
                   }
                   pulseHotspotId={
-                    castleMode || plinthShareBeat || homecomingActive
+                    castleMode || plinthShareBeat || homecomingActive || piggyPresence
                       ? pulseHotspotId
                       : showOutfitterHighlight
                         ? "outfitter"
@@ -1078,6 +1121,7 @@ export function HomeHubView({
                     scarLabel={latestPlaque.label}
                     chapter={scarChapterTitle(latestPlaque)}
                     organId={latestOrgan}
+                    scarMeta={{ id: latestPlaque.id, islandId: latestPlaque.islandId }}
                     previewUrl={feltPreviewUrl}
                     onShare={async () => {
                       try {
@@ -1085,6 +1129,9 @@ export function HomeHubView({
                           voyagerName: voyager.name || "Voyager",
                           scarLabel: latestPlaque.label,
                           chapter: scarChapterTitle(latestPlaque),
+                          scarId: latestPlaque.id,
+                          islandId: latestPlaque.islandId,
+                          organId: latestOrgan,
                         });
                         toast.message(result === "shared" ? "Shared" : "Share card downloaded");
                       } catch (err) {
@@ -1156,17 +1203,30 @@ export function HomeHubView({
             {!simplified && !castleMode ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
+            {freedomPlazaLine && !castleMode && !piggyPresence ? (
+              <p
+                className={`rounded-full px-3 py-1.5 text-[11px] font-bold ring-1 ${
+                  freed
+                    ? "bg-emerald-900/55 text-emerald-50 ring-emerald-200/35"
+                    : "bg-amber-950/60 text-amber-50 ring-amber-200/35"
+                }`}
+                data-testid="harbor-freedom-chip"
+                title={
+                  freed
+                    ? "Harbor Freedom Seal — Pavilion + carpet tier"
+                    : "Freedom Seal chase — keep cashflow strong after pouch dips"
+                }
+              >
+                {freedomPlazaLine}
+              </p>
+            ) : null}
           </div>
           )
         }
         topRight={
           hideHudForCinema || quietHarbor || earlyCastle || firstMeet ? null : (
           <div className="flex items-center gap-1.5">
-            {!castleMode ? (
-              <HudBadge>
-                {profile.icon} {profile.label}
-              </HudBadge>
-            ) : null}
+            {/* Learning profile lives in Settings — plaza stays myth, not SaaS rank chip */}
             {showLeaveChrome ? (
               <GameButton
                 variant="outline"
@@ -1190,11 +1250,9 @@ export function HomeHubView({
                 className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow"
                 data-testid="harbor-piggy-presence"
               >
-                {firstMeet
-                  ? "One job: Talk to Piggy Penny — she’s waving by the fountain."
-                  : "Harbor is quiet. Piggy’s by the fountain — walk to her when you’re ready."}
+                {ashorePresenceLine({ firstMeet })}
               </p>
-            ) : (
+            ) : showTravelChip ? null : (
             <CoinBagBuddyHud
               tip={buddyTip.tip}
               detail={castleMode ? guidedStep?.coach : undefined}
@@ -1202,30 +1260,36 @@ export function HomeHubView({
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />
             )}
-            {/* Single primary action — Archipelago map is diegetic at Money Carpet */}
+            {/* Single primary action — Ashore: Talk, then voyage CTA (not a stall checklist). */}
             {piggyPresence ? (
               onTalkNpc ? (
                 <button
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
                   data-testid="hub-talk-npc"
-                  onPointerUp={(e) => {
-                    if (e.button !== 0) return;
-                    e.preventDefault();
-                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
-                  }}
+                  {...pointerSafeActivate(() =>
+                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID),
+                  )}
                 >
                   Talk to {nearNpc?.name ?? "Piggy Penny"}
                 </button>
               ) : (
                 <p className="text-center text-xs font-medium text-white/80">
-                  Walk toward Piggy Penny — press E when you’re ready to talk.
+                  Walk to Piggy — press E to talk.
                 </p>
               )
+            ) : showTravelChip ? (
+              <button
+                type="button"
+                data-testid="hub-travel-map"
+                {...pointerSafeActivate(() => {
+                  onHubGuidedEvent("opened_map");
+                  onOpenTravel();
+                })}
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              >
+                Board Money Carpet · Coincraft Cove
+              </button>
             ) : nearStore ? (
               <GameButton
                 variant="primary"
@@ -1234,7 +1298,7 @@ export function HomeHubView({
                 className="w-full shadow-lg"
                 data-testid="hub-enter-store"
               >
-                {nearTravel ? `🪄 Board carpet · open map` : `Enter ${nearStore.label}`}
+                {nearTravel ? `Board carpet · open map` : `Enter ${nearStore.label}`}
               </GameButton>
             ) : nearNpc && onTalkNpc ? (
               <GameButton
@@ -1246,61 +1310,24 @@ export function HomeHubView({
               >
                 Talk to {nearNpc.name}
               </GameButton>
-            ) : guidedStep?.id === "practice_optional" ? (
-              <div className="flex w-full flex-col gap-2">
-                {onPlayHarborBoard ? (
-                  <GameButton
-                    variant="primary"
-                    size="lg"
-                    onClick={() => {
-                      onHubGuidedEvent("practice_opened");
-                      onPlayHarborBoard();
-                    }}
-                    className="w-full shadow-lg"
-                  >
-                    Practice board
-                  </GameButton>
-                ) : null}
-                <GameButton
-                  variant="outline"
-                  size="lg"
-                  onClick={() => {
-                    onHubGuidedEvent("skip_practice");
-                    onHubGuidedEvent("opened_map");
-                    onOpenTravel();
-                  }}
-                  className="w-full bg-white/90"
-                  data-testid="hub-travel-map"
-                >
-                  Archipelago map
-                </GameButton>
-              </div>
-            ) : showTravelChip ? (
-              <button
-                type="button"
-                data-testid="hub-travel-map"
-                onClick={() => {
-                  onHubGuidedEvent("opened_map");
-                  onOpenTravel();
-                }}
-                className="rounded-full bg-black/35 px-3 py-1.5 text-[11px] font-semibold text-white/85 backdrop-blur-sm hover:bg-black/50"
-              >
-                Walk to Money Carpet · open map
-              </button>
             ) : (
               <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
-                Walk pad or WASD · E talk · map at Money Carpet
+                WASD / walk pad · E talk
               </p>
             )}
             <p
               className="text-center text-[11px] font-semibold text-white/85 drop-shadow"
               data-testid="harbor-controls-whisper"
             >
-              {nearStore
-                ? "E enter · Esc leaves shops"
-                : piggyPresence || nearNpc
-                  ? "WASD / walk pad to move · E or Talk button"
-                  : "WASD / walk pad · E talk · map at Money Carpet"}
+              {piggyPresence
+                ? "WASD · E"
+                : showTravelChip
+                  ? "Or walk to the Money Carpet"
+                  : nearStore
+                    ? "E enter · Esc leaves shops"
+                    : nearNpc
+                      ? "WASD · E"
+                      : "WASD · E · map at Money Carpet"}
             </p>
           </div>
           )
@@ -1310,7 +1337,12 @@ export function HomeHubView({
         {hideHudForCinema ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
-          {castleMode && guidedStep ? (
+          {castleMode &&
+          guidedStep &&
+          shouldShowCastleCoach({
+            guidedStepId: guidedStep.id,
+            piggyPresence,
+          }) ? (
             <div
               className="pointer-events-none absolute inset-x-0 top-3 z-[5] flex justify-center px-3"
               data-testid="castle-grounds-coach"
@@ -1318,7 +1350,7 @@ export function HomeHubView({
             >
               <div className="max-w-md rounded-2xl border border-amber-200/35 bg-black/70 px-4 py-2.5 text-center shadow-lg backdrop-blur-md">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-200/90">
-                  {guidedStep.verb} · Castle Grounds
+                  {guidedStep.verb} · Harbor Haven
                 </p>
                 <p className="mt-0.5 text-sm font-semibold text-white">{guidedStep.coach}</p>
               </div>

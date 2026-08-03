@@ -36,11 +36,21 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("spectacle_ready");
     });
 
+    // Headless WebGL often sits on the loading veil — Enter Harbor sets plazaReady
+    // so scar cinema can open (failsafe alone is flaky under vite preview).
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
     const spectacle = page.getByTestId("scar-spectacle");
     await expect(spectacle).toBeVisible({ timeout: 20_000 });
     // World cinema — captions over Plinth (not a modal card).
     await expect(spectacle).toHaveAttribute("data-cinema-phase", /.+/);
-    // Cold-retell polish — organ word in the kid sentence (present even during hush).
+    // Cold-retell polish — organ kid sentence + plaque retell (present even during hush).
+    await expect(page.getByTestId("scar-spectacle-kid-sentence")).toContainText(
+      /The Coin holds|The Clock shelters|The Spiral withstands|Memory keeps/,
+    );
     await expect(page.getByTestId("scar-spectacle-retell")).toContainText(/Coin|Clock|Spiral|Memory/);
     // Dismiss early if still up; otherwise cinema auto-advances to share (~5.6s).
     if (await spectacle.isVisible()) {
@@ -52,7 +62,16 @@ test.describe("Signature loop", () => {
     await expect(share).toHaveAttribute("data-share-presentation", "plinth-freeze");
     await expect(share).toHaveAttribute("data-plinth-aperture", "live");
     await expect(page.getByTestId("harbor-felt-plinth-aperture")).toBeAttached();
-    await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered the/);
+    await expect(page.getByTestId("harbor-felt-retell")).toContainText(
+      /Coin holds|Clock shelters|Spiral withstands|Memory keeps/,
+    );
+    await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered/);
+    await expect(page.getByTestId("harbor-felt-kid-sentence")).toContainText(
+      /The Coin holds|The Clock shelters|The Spiral withstands|Memory keeps/,
+    );
+    await expect(page.getByTestId("harbor-felt-newly-true")).toContainText(
+      /Paycheck Peninsula|Credit Kingdom|on the Plinth/,
+    );
     await expect(page.getByTestId("harbor-felt-download")).toBeVisible();
     await expect(page.getByTestId("harbor-felt-preview")).toBeVisible({ timeout: 10_000 });
     // Dev Errors / PERF chrome can sit over the lower-third CTA in headed CI viewports.
@@ -74,15 +93,41 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
     });
 
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
     const echo = page.getByTestId("day2-echo-surprise");
     await expect(echo).toBeVisible({ timeout: 20_000 });
     // Soft Beat cinema over live Plinth — not a centered tutorial card
     await expect(echo).toHaveAttribute("data-echo-presentation", "plinth-cinema");
+    await expect(page.getByTestId("day2-echo-kid-sentence")).toContainText(
+      /Coin holds|Clock shelters|Spiral withstands|Memory keeps/,
+    );
     // Dev Errors / residual HUD can sit over the lower-third CTA in headed CI.
     await page.getByRole("button", { name: /I hear them/i }).evaluate((el) => {
       (el as HTMLButtonElement).click();
     });
     await expect(page.getByTestId("day2-echo-surprise")).toHaveCount(0);
+  });
+
+  test("prepareDay2Echo overnight craft from piggy_ready", async ({ page }) => {
+    await page.goto("/?mode=islands&skipIntro=1");
+    await waitForQaReady(page);
+
+    await page.evaluate(async () => {
+      await window.__QA__!.seedSignatureLoop("piggy_ready");
+      window.__QA__!.prepareDay2Echo();
+    });
+
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
+    await expect(page.getByTestId("day2-echo-surprise")).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId("day2-echo-kid-sentence")).toContainText(/The Coin holds/);
   });
 
   test("signature trailer captions play", async ({ page }) => {
@@ -98,7 +143,9 @@ test.describe("Signature loop", () => {
     await expect(page.getByTestId("signature-trailer-caption")).toBeVisible();
     // One Harbor icon — Memory Plinth silhouette in the mute-friendly trailer
     await expect(page.getByTestId("trailer-plinth-icon")).toBeVisible();
-    await page.getByTestId("signature-trailer").click();
+    await page.getByTestId("signature-trailer-leave").evaluate((el) => {
+      (el as HTMLButtonElement).click();
+    });
     await expect(page.getByTestId("signature-trailer")).toHaveCount(0);
   });
 });

@@ -2,14 +2,18 @@ import { describe, expect, it } from "vitest";
 import {
   addHarborScar,
   applyStanceDelta,
+  coldOrganKidSentence,
   coldRetellLine,
   coldSpectacleHeadline,
   day2EchoBody,
   dominantStance,
   groupScarsByChapter,
   hasIrreversible,
+  nextPaintingAfterScar,
   organQuietBadge,
+  organSuitVerb,
   organTakeHushLine,
+  organVerbChip,
   plaqueShelfLine,
   recordIrreversible,
   recordNpcTalk,
@@ -144,20 +148,42 @@ describe("worldMemory", () => {
     expect(scarOrganId(cove)).toBe("coin");
     expect(scarOrganId(pay)).toBe("clock");
     expect(scarOrganId(credit)).toBe("spiral");
-    expect(coldRetellLine(cove)).toBe('Harbor remembered the Coin: “Jar before treat.”');
-    expect(coldRetellLine(pay)).toBe('Harbor remembered the Clock: “Umbrella before glitter.”');
-    expect(coldRetellLine(credit)).toBe('Harbor remembered the Spiral: “Waited the spiral.”');
-    expect(plaqueShelfLine(cove)).toBe("Coin · Jar before treat");
-    expect(coldSpectacleHeadline(cove)).toMatch(/Coin/);
-    expect(coldSpectacleHeadline(pay)).toMatch(/Clock/);
-    expect(coldSpectacleHeadline(credit)).toMatch(/Spiral/);
+    expect(organSuitVerb("coin")).toBe("holds");
+    expect(organVerbChip("coin")).toBe("Coin holds");
+    expect(coldRetellLine(cove)).toBe('The Coin holds — Harbor remembered: “Jar before treat.”');
+    expect(coldRetellLine(pay)).toBe('The Clock shelters — Harbor remembered: “Umbrella before glitter.”');
+    expect(coldRetellLine(credit)).toBe('The Spiral withstands — Harbor remembered: “Waited the spiral.”');
+    expect(plaqueShelfLine(cove)).toBe("Coin holds · Jar before treat");
+    expect(nextPaintingAfterScar(cove)).toBe("Paycheck Peninsula");
+    expect(nextPaintingAfterScar(pay)).toBe("Credit Kingdom");
+    expect(nextPaintingAfterScar(credit)).toBeNull();
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
+    expect(coldSpectacleHeadline(pay)).toBe("Harbor felt that — the Clock shelters");
+    expect(coldSpectacleHeadline(credit)).toBe("Harbor felt that — the Spiral withstands");
+    // One mythology — never Harmon jargon as organ names
+    expect(coldSpectacleHeadline(cove)).not.toMatch(/Change|Take$/);
     expect(organTakeHushLine("coin")).toMatch(/holds/);
     expect(organTakeHushLine("clock")).toMatch(/shelters/);
     expect(organTakeHushLine("spiral")).toMatch(/withstands/);
-    expect(organQuietBadge("clock")).toMatch(/Clock/);
-    expect(day2EchoBody("Umbrella before glitter", "clock")).toMatch(/Clock/);
+    expect(organQuietBadge("clock")).toBe("Quiet — Clock shelters");
+    expect(organQuietBadge("coin")).toBe("Quiet — Coin holds");
+    expect(organQuietBadge("coin")).not.toMatch(/Coin Take/);
+    expect(day2EchoBody("Umbrella before glitter", "clock")).toMatch(/Clock shelters/);
     expect(day2EchoBody("Umbrella before glitter", "clock")).not.toMatch(/jars/);
     expect(scarRumorLine(cove, "later")).toMatch(/Coin/);
     expect(scarRumorLine(pay, "same")).toMatch(/Clock/);
+  });
+
+  it("Pillar 12 — cold player can recite one sentence per organ", () => {
+    expect(coldOrganKidSentence("coin")).toMatch(/^The Coin holds/);
+    expect(coldOrganKidSentence("clock")).toMatch(/^The Clock shelters/);
+    expect(coldOrganKidSentence("spiral")).toMatch(/^The Spiral withstands/);
+    expect(coldOrganKidSentence("memory")).toMatch(/^Memory keeps/);
+    // Story Bible frame — living money, not a second cosmos
+    for (const organ of ["coin", "clock", "spiral", "memory"] as const) {
+      const line = coldOrganKidSentence(organ);
+      expect(line).not.toMatch(/Dotgraph|Ledgerlight|Mindwage|Harmon/i);
+      expect(line).not.toMatch(/Coin Change|Clock Take/);
+    }
   });
 });

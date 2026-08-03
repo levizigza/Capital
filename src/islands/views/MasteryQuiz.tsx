@@ -64,6 +64,7 @@ export function MasteryQuiz({ gate, onPassed, onFailed }: Props) {
                     <button
                       key={ci}
                       type="button"
+                      data-testid={`mastery-choice-${q.id}-${ci}`}
                       disabled={submitted && Boolean(result?.allCorrect)}
                       onClick={() => setAnswers((a) => ({ ...a, [q.id]: ci }))}
                       className={`flex w-full items-start gap-2 rounded-xl border-2 px-3 py-2 text-left text-sm transition ${

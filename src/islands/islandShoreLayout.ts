@@ -10,6 +10,7 @@ import {
   castForIslandNpc,
 } from "./islandCulture";
 import { moneyStructureForIsland } from "./moneyStructures";
+import { isParkedMinigameId } from "./spineContentRegistry";
 
 export type ShoreHotspotKind =
   | "pier"
@@ -60,6 +61,26 @@ function clusterPos(
   return [Math.cos(ang) * r, 0, Math.sin(ang) * r];
 }
 
+/** Items granted by dialogue Take / quest reward lists — not free shore pickups. */
+export function itemIsDialogueReward(
+  island: IslandDefinition,
+  itemId: string,
+): boolean {
+  for (const graph of island.dialogues ?? []) {
+    for (const node of graph.nodes ?? []) {
+      for (const choice of node.choices ?? []) {
+        for (const effect of choice.effects ?? []) {
+          if (effect.type === "giveItem" && effect.itemId === itemId) return true;
+        }
+      }
+    }
+  }
+  for (const quest of island.quests ?? []) {
+    if (quest.rewards?.items?.includes(itemId)) return true;
+  }
+  return false;
+}
+
 /**
  * Build walkable shore hotspots shaped by island culture.
  */
@@ -95,7 +116,7 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     subtitle: "Quests, bag, and chapter notes",
   });
 
-  const games = island.minigames ?? [];
+  const games = (island.minigames ?? []).filter((g) => !isParkedMinigameId(g.id));
   const kinesthetic = games.filter((g) => isKinestheticComponent(g.componentId));
   const needsDash = kinesthetic.length === 0;
 
@@ -147,7 +168,9 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     });
   });
 
-  const items = (island.items ?? []).filter((it) => it.location?.areaId).slice(0, 3);
+  const items = (island.items ?? [])
+    .filter((it) => it.location?.areaId && !itemIsDialogueReward(island, it.id))
+    .slice(0, 3);
   items.forEach((item, i) => {
     const pos = ringPos(i + 0.5, 4, a.itemRadius, a.npcAngle0);
     spots.push({

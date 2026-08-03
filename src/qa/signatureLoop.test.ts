@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   auditSignatureLoop,
   buildSignatureLoopSave,
@@ -18,6 +20,18 @@ describe("signature loop QA", () => {
     expect(save.scarSpectacle?.shownForCount ?? 0).toBe(0);
     expect(save.hubGuidedIntro?.step).toBe("done");
     expect(save.hubGuidedIntro?.didDock).toBe(true);
+  });
+
+  it("seeds Clock and Spiral spectacle for spine cold retell", () => {
+    const clock = buildSignatureLoopSave("spectacle_ready", new Date(), "clock");
+    expect(clock.harborScars?.[0]?.id).toBe("pp_protector_plaque");
+    expect(auditSignatureLoop(clock).phase).toBe("spectacle_ready");
+    expect(clock.harborHomecoming?.message).toMatch(/Clock shelters/);
+
+    const spiral = buildSignatureLoopSave("spectacle_ready", new Date(), "spiral");
+    expect(spiral.harborScars?.[0]?.id).toBe("credit_patience_plaque");
+    expect(auditSignatureLoop(spiral).phase).toBe("spectacle_ready");
+    expect(spiral.harborHomecoming?.message).toMatch(/Spiral withstands/);
   });
 
   it("seeds day2_echo with overnight surprise rumor", () => {
@@ -45,6 +59,19 @@ describe("signature loop QA", () => {
     expect(takeCinemaPhaseAt(t.revealMs - 1, t)).toBe("mark");
     expect(takeCinemaPhaseAt(t.revealMs, t)).toBe("line");
     expect(t.revealMs).toBeLessThan(t.holdEndMs);
+    // Mark stays readable; line + Carpet CTA own the rest until doneMs.
+    expect(t.revealMs - t.hushMs).toBeGreaterThanOrEqual(800);
+    expect(t.doneMs - t.revealMs).toBeGreaterThanOrEqual(2000);
+    expect(t.doneMs).toBeLessThanOrEqual(5000);
+  });
+
+  it("TakeHushOverlay auto-dismisses on doneMs (cold unseeded path)", () => {
+    const take = readFileSync(
+      join(__dirname, "../islands/views/TakeHushOverlay.tsx"),
+      "utf8",
+    );
+    expect(take).toMatch(/t\.doneMs/);
+    expect(take).not.toMatch(/t\.holdEndMs/);
   });
 
   it("flags cove_quiet when chapter hush is pending", () => {

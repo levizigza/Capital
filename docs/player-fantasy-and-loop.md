@@ -22,7 +22,7 @@ Every UI/mechanic decision asks: *Does this make me feel like a Voyager among Mo
 | Quiet first-meet (no CASH / Leave / stall grid) | Sterile blue void behind Talk (reads as settings onboarding) |
 | Cove Take that Harbor can name later | Ledger dashboards as hero chrome before Change |
 
-**Shipped (Pillar 1):** Talk Battle stage paints place sky + soft plaza (Harbor Memory courtyard); combat HP strips removed; PERF overlay defaults off (backtick to toggle).
+**Shipped (Pillar 1):** Talk Battle stage paints place sky + soft plaza (Harbor Memory courtyard); combat HP strips removed; PERF overlay defaults off (backtick to toggle). Living-money polish: organ suit verb chip, “I hear you / Walk on”, speech-style replies, plaza Leave (not SaaS Skip).
 
 **Shipped (Pillar 2 — core loop):** Signature cinema (spectacle → share → day-2) waits until Harbor plaza is ready; Piggy HUD stays hidden for the whole cinema chain; myth path uses a quiet Memory stage under Plinth cinema (not “Piggy is waving”); day-2 echo waits until Piggy has been talked to.
 
@@ -51,19 +51,45 @@ Explore → challenge → earn → upgrade (carpet, seals, pets) → face harder
 | Lose? | Minigame fail / bad spend — retry with a hint, keep dignity |
 | After lose? | Same place, clearer next verb |
 
+**Shipped (Pillar 3 — goals / failure):** After a minigame miss (including score-below-threshold), Capital shows a dignity overlay with why + **Retry** / stay-put; structure fails no longer dump to Harbor; ModularMinigame ends as “Round over” until the parent judges the clear. Cove Take hush already names the next verb (board carpet home).
+
 ## 4–6. Feel, progression, encounters
 
 - **Feel:** WASD tank controls, near-prompt Enter, Esc leaves dialogs, juice on earn/spend  
 - **Progression:** carpet tiers, pets, plaza passes, Ledger Seals, Freedom Seal, boss mastery  
 - **Encounters:** island Story Circles + deepened board minigames — not bigger HP bars  
 
+**Shipped (Pillar 4 — controls & feel):** Signature Take mark / Plinth spectacle / share fire `triggerJuice` (SFX + nudge/burst); Settings → Game Feel; minigame fail shakes. Juice CSS mounts on `GameViewport`.
+
+**Shipped (Pillar 5 — progression):** After Cove Take, Harbor can answer “what’s newly true?” — `Coin holds` on Plinth retell/shelf/share + Piggy homecoming names **Paycheck Peninsula** newly open on the Carpet (Clock → Credit).
+
+**Shipped (Pillar 6 — encounters):** Credit’s three tests are spiral-true — Inbox → Score Scanner (Debt Anvil) → earned wait/haste Take. Cut “Debt Loadout” categorize clone of Paycheck Budget Split.
+
 ## 7–12. Content → audio → story
 
 Content = Money Mascots + islands + capsules. Presentation must stay readable (labels, one coach sentence). Story = Story Bible only.
 
+**Shipped (Pillar 7 — content):** `spineContentRegistry` tags organ · verb · cold-retell for the Fortune spine; genre/asset packs + Cove digression minigames are **parked** out of live loader / Arcade; Paycheck ships as Clock organ (not Dotgraph); genre HUD muted on spine.
+
+**Shipped (Pillar 8 — balance):** Post-Cove earn (~105–120) clears Coin carpet polish (50) and first seal (20) without buying Fortune polish (175). Freedom Seal needs **3** Pay Days at $30+/mo cashflow (was 2) so escape stays earned — not an instant free Fortune flyer.
+
+**Shipped (Pillar 9 — UI / comms):** Signature overlays use window-level `useOverlayEscape` (Esc works without focus) + visible Leave + “Esc · Leave” chrome — HarborFelt share, Take hush, Plinth spectacle, Soft Beat, trailer, day-2 echo, World Arrive. Share sticky lower-third; backdrop leave on freeze share.
+
+**Shipped (Pillar 10 — art direction):** Money Structure interactables silhouette without HUD — every part id has a named mesh (`StructurePartSilhouette`); Cove Lid Lookout is a screw-top hatch + Soft Beat lookout beacon (was a flat cyan disc); interior Billboard labels use `SafeText` so Pages relies on silhouette + glow.
+
+**Shipped (Pillar 11 — audio):** Mute test Take → hush → Harbor felt that — `take_mark` on Take cinema mark (not Soft Beat); `harbor_felt` on spectacle reveal + share land (not trailer cheer); Harbor Memory bed ducks during spectacle/share.
+
+**Shipped (Pillar 12 — story):** One cold kid sentence per organ (`coldOrganKidSentence`); spectacle + Family Room share the Harbor retell form (suit verb + plaque). Cut “Coin Change” vs “Clock Take” headline split that invented a second mythology.
+
 ## 13. Onboarding
 
 Castle Grounds guided intro (Piggy Penny): **one verb → practice → combine**. Never dump 30 options without Cancel/Next in reach.
+
+**Shipped (Pillar 13 — onboarding):** Harbor Ashore UI law — Talk Piggy → Carpet → Cove. Outfitter-card `WelcomeOnboarding` demoted (not mounted). Legacy Outfitter/Capsule steps normalize to voyage. Combine at Cove Take.
+
+**Shipped (Pillar 14 — technical):** Corrupt `island_save_v1` blobs sanitize to playable Harbor defaults (`sanitizeIslandSave`). WebGL kill / hung Canvas escapes to myth under 3s via shared `harborLoadFailsafe` timers; sticky probe fail skips Canvas next visit.
+
+**Shipped (Pillar 15 — accessibility):** `prefersReducedMotion()` = Settings OR OS. Signature cinema timings, juice bounce/burst, and Capital SFX honor it. Take mark / Plinth spectacle strobes damp via `cinemaFlashAmp()` so flashes never blind the beat.
 
 ## 14–15. Plumbing & accessibility
 
@@ -73,6 +99,14 @@ Save, Esc, settings, reduced motion, text size already exist — **navigability 
 
 Playtest question: *Can a 5-year-old leave every screen and finish every form?*  
 If not, cut content before adding systems.
+
+**Shipped (Pillar 16 — testing):** After each pillar fix run `npm run test:iconic` (and `test:iconic:e2e` when Harbor/Cove/carpet change), one cold checklist pass with the six iteration questions, then update the craft-plan status board. Coverage map: `src/qa/iconicCraftCadence.ts`.
+
+**Shipped (Pillar 17 — scope):** Freeze reaffirmed — travel spine stays Harbor · Cove · Paycheck · Credit (`iconicScopeFreeze`). Parked creep sink: [iconic-later.md](./iconic-later.md). Outer island docs carry **PARKED** banners. New island ideas go on the later list; deepen Take / feel / Plinth first.
+
+**Shipped (Harbor Ashore redesign):** Opening tutorial follows iconic organic patterns (Portal one-verb · HL2 learn-by-doing). Critical path Talk Piggy → Money Carpet → Cove; no Outfitter/Capsule/Daily Ritual gates ashore. Single coach surface; ritual waits until Cove Change. See [harbor-ashore.md](./harbor-ashore.md).
+
+**Shipped (whole-game craft pass):** Talk Battle plaza **Leave** (not SaaS Skip); share lower-third high-contrast panel; Piggy `piggy_homecoming` sting; warmer boot cast Board CTA. Systems map: [whole-game-craft.md](./whole-game-craft.md).
 
 ---
 

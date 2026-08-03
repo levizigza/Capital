@@ -5,8 +5,18 @@
 
 import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
-import type { HubGuidedStepId } from "./storyBible";
-import { scarOrganId, scarOrganName } from "../worldMemory";
+import {
+  normalizeHubGuidedIntro,
+  STORY_BIBLE_VERSION,
+  type HubGuidedStepId,
+} from "./storyBible";
+import {
+  coldOrganKidSentence,
+  nextPaintingAfterScar,
+  plaqueShelfLine,
+  scarOrganId,
+  scarOrganName,
+} from "../worldMemory";
 
 export const HARBOR_NPCS: IslandNpc[] = HARBOR_LOCAL_CAST.map((slot) => {
   const m = getMascot(slot.mascotId);
@@ -33,7 +43,7 @@ const ROLE_TIPS: Record<
       strategist: "Automate a savings transfer before discretionary Harbor spends.",
     },
     bye: {
-      explorer: "I’m always near the Outfitter if you need me!",
+      explorer: "I’m by the fountain if you need me!",
       apprentice: "Come back anytime — Harbor Keeper desk is open.",
       strategist: "Ping me when cashflow or freedom seals need a check-in.",
     },
@@ -362,37 +372,21 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
   };
 }
 
-/** Guided Piggy conversations — one short turn-based beat per Castle Grounds step */
+/** Guided Piggy conversations — Ashore live beats only (legacy ids remap to voyage). */
 export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
-  const lines: Record<string, { text: string; next?: string; choice?: string }> = {
+  // One concept per step — never pitch Outfitter / Capsule before Talk → Carpet → Cove.
+  const lines: Record<string, { text: string; next?: string; choice?: string; follow?: string }> = {
     meet_guide: {
-      text: "Welcome to Harbor Haven! I'm Piggy Penny. Move with WASD or the walk pad, talk with E — Coin Bag sticks with you. First stop: make YOU at the Outfitter.",
-      choice: "Let's go!",
+      text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with WASD or the walk pad, talk with E. Coin Bag sticks with you.",
+      choice: "Nice to meet you!",
       next: "meet_b",
-    },
-    walk_outfitter: {
-      text: "See that Outfitter door? Walk over and press Enter. Become the Voyager you want to be!",
-      choice: "On my way!",
-    },
-    become_you: {
-      text: "Looking sharp already. Finish Body · Coat · Gear on the mirror, then come say hi again.",
-      choice: "Got it!",
-    },
-    tiny_spend: {
-      text: "Coins can buy help. Peek Capsule Stall with Coin Bag — a tiny spend is still a choice.",
-      choice: "I'll peek!",
-    },
-    practice_optional: {
-      text: "Practice board if you want drills — or skip straight to the Carpet Dock. Your call!",
-      choice: "Thanks, Piggy!",
+      // Celebrate Talk only — voyage coach names the carpet next.
+      follow:
+        "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
     },
     to_dock: {
-      text: "Carpet Dock is that way. Open the Archipelago map and sail to your first painting!",
-      choice: "To the dock!",
-    },
-    first_island: {
-      text: "Coincraft Cove is waiting. I'll be here when you fly home changed.",
-      choice: "See you soon!",
+      text: "Carpet Dock is that way. Open the Archipelago map and board for Coincraft Cove — your first painting!",
+      choice: "To the carpet!",
     },
     done: {
       text: "Harbor is yours. Talk to locals, shop, or open the map whenever you're ready.",
@@ -400,7 +394,12 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
     },
   };
 
-  const beat = lines[step ?? "done"] ?? lines.done!;
+  // Free-roam null → done. Legacy Outfitter/Capsule ids → voyage (Ashore law).
+  const live: HubGuidedStepId =
+    step == null || step === "done"
+      ? "done"
+      : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
+  const beat = lines[live] ?? lines.done!;
   return {
     id: "dlg_harbor_piggy_penny_guided",
     startNodeId: "g1",
@@ -423,7 +422,9 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
             {
               id: beat.next,
               speaker: "Piggy Penny",
-              text: "Coin Bag stays beside you the whole journey. Wave if you get stuck!",
+              text:
+                beat.follow ??
+                "Coin Bag stays beside you the whole journey. Wave if you get stuck!",
               end: true,
             },
           ]
@@ -447,24 +448,38 @@ export function piggyHomecomingGraph(
 ): DialogueGraph {
   const opener =
     message?.replace(/^Piggy Penny:\s*/i, "").trim() ||
-    "You earned coins and made a real choice. Harbor feels different because YOU are.";
+    "You came home changed. The Plinth already knows — Harbor feels different because YOU are.";
 
-  const named = (opts?.scars ?? [])
-    .slice(-3)
-    .map((s) => {
-      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
-      if (id.includes("cove")) return `Cove — ${s.label}`;
-      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
-      if (id.includes("credit")) return `Kingdom — ${s.label}`;
-      return s.label;
-    });
+  const shelfScars = (opts?.scars ?? []).slice(-3);
+  const named = shelfScars.map((s) =>
+    plaqueShelfLine({
+      id: s.id ?? "",
+      islandId: s.islandId ?? "",
+      label: s.label,
+    }),
+  );
+  const latestScar = shelfScars.at(-1);
+  const latestOrgan = latestScar
+    ? scarOrganId({
+        id: latestScar.id ?? "",
+        islandId: latestScar.islandId ?? "",
+        label: latestScar.label,
+      })
+    : null;
+  const kidLine = latestOrgan ? coldOrganKidSentence(latestOrgan) : null;
   const scarLine =
     named.length > 0
-      ? `Your Memory Plinth holds: ${named.join(" · ")}.`
-      : "Coin Bag and I watched you grow.";
+      ? `${kidLine ? `${kidLine} ` : ""}Your Memory Plinth: ${named.join(" · ")}.`
+      : kidLine ?? "Coin Bag and I watched you grow.";
+  const nextPainting = latestScar
+    ? nextPaintingAfterScar({
+        id: latestScar.id ?? "",
+        islandId: latestScar.islandId ?? "",
+      })
+    : null;
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
-      ? "Three homecomings. Cove, Dotgraph, Kingdom — I trust your pouch, and you."
+      ? "Three homecomings. Cove, Paycheck, Kingdom — I trust your pouch, and you."
       : opts?.bondBeat && opts.bondBeat >= 2
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
         : "That's the Change beat — earn fair, then choose.";
@@ -488,6 +503,10 @@ export function piggyHomecomingGraph(
         : phase === "trust"
           ? bond
           : bond;
+
+  const nextLine = nextPainting
+    ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Memory keeps your story on the Plinth.`
+    : "Coin Bag will point the Carpet Dock when a painting waits — Memory keeps your story on the Plinth.";
 
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
@@ -520,7 +539,7 @@ export function piggyHomecomingGraph(
       {
         id: "h3",
         speaker: "Piggy Penny",
-        text: "Coin Bag will point the Carpet Dock when a painting waits — or wander the plaza and read your Memory Plinth. Harbor keeps your story.",
+        text: nextLine,
         choices: [
           {
             id: "h3_ok",
@@ -556,13 +575,13 @@ function formatScarShelf(
 ): string {
   return scars
     .slice(-3)
-    .map((s) => {
-      const id = `${s.id ?? ""} ${s.islandId ?? ""}`.toLowerCase();
-      if (id.includes("cove")) return `Cove — ${s.label}`;
-      if (id.includes("pp_") || id.includes("paycheck")) return `Peninsula — ${s.label}`;
-      if (id.includes("credit")) return `Kingdom — ${s.label}`;
-      return s.label;
-    })
+    .map((s) =>
+      plaqueShelfLine({
+        id: s.id ?? "",
+        islandId: s.islandId ?? "",
+        label: s.label,
+      }),
+    )
     .join(" · ");
 }
 
@@ -710,7 +729,11 @@ export function resolveHarborDialogue(
     }
   }
 
-  if (npcId !== "piggy_penny" && hasScars) {
+  // Scar / stance memory lines are Harbor plaza locals only — never steal
+  // island quest graphs (Vendor Vee Take, Alma, Priya, …).
+  const harborLocal = Boolean(findHarborNpc(npcId));
+
+  if (harborLocal && npcId !== "piggy_penny" && hasScars) {
     try {
       return scarMemoryLocalGraph(npcId as MoneyMascotId, scars, {
         stanceHint: opts.stanceHint,
@@ -721,7 +744,11 @@ export function resolveHarborDialogue(
     }
   }
 
-  if (npcId !== "piggy_penny" && (opts.stanceHint || (opts.npcTalks ?? 0) >= 2)) {
+  if (
+    harborLocal &&
+    npcId !== "piggy_penny" &&
+    (opts.stanceHint || (opts.npcTalks ?? 0) >= 2)
+  ) {
     try {
       return stanceLocalGraph(npcId as MoneyMascotId, {
         stanceHint: opts.stanceHint,

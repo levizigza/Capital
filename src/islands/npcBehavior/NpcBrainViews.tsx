@@ -79,23 +79,32 @@ export function HarborBehaviorNpc({
     ? keeperSpeech
       ? keeperSpeech
       : guidedEmote === "wave"
-        ? "👋 Hi! Come talk!"
+        ? "Talk — I’m Piggy by the fountain!"
         : guidedEmote === "cheer"
-          ? "🎉 You got this!"
+          ? "You came home different — I’m here."
           : guidedEmote === "nod"
-            ? "🙂 *nod nod*"
+            ? "That’s the way — keep going."
             : guidedEmote === "point"
-              ? "👉 That way!"
-              : null
+              ? "That way — follow Coin Bag!"
+              : showPulse
+                ? "Talk — I’m right here."
+                : null
     : null;
 
   return (
     <group ref={group}>
       {showPulse ? (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 1.1]}>
-          <ringGeometry args={[0.85, 1.25, 28]} />
-          <meshStandardMaterial color="#fbbf24" transparent opacity={0.45} depthWrite={false} />
-        </mesh>
+        <>
+          {/* Soft ground disc — readable at first-meet distance */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+            <circleGeometry args={[1.35, 28]} />
+            <meshStandardMaterial color="#fbbf24" transparent opacity={0.22} depthWrite={false} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0.15]}>
+            <ringGeometry args={[1.05, 1.55, 32]} />
+            <meshStandardMaterial color="#f59e0b" transparent opacity={0.62} depthWrite={false} />
+          </mesh>
+        </>
       ) : null}
       <HarborNpcMesh
         coat={coat}
@@ -104,11 +113,12 @@ export function HarborBehaviorNpc({
         character={look}
         pose={pose}
         animationStyle="capital-default"
+        scale={showPulse ? 1.18 : 0.95}
       />
-      <Billboard position={[0, 2.05, 0]} follow>
+      <Billboard position={[0, showPulse ? 2.35 : 2.05, 0]} follow>
         {(nearPlayer || showPulse) && (
           <Text
-            fontSize={0.22}
+            fontSize={showPulse ? 0.28 : 0.22}
             color="#ffffff"
             anchorX="center"
             anchorY="middle"
@@ -120,15 +130,15 @@ export function HarborBehaviorNpc({
         )}
       </Billboard>
       {bubble ? (
-        <Billboard position={[0, 2.55, 0]} follow>
+        <Billboard position={[0, showPulse ? 2.9 : 2.55, 0]} follow>
           <Text
-            fontSize={0.16}
+            fontSize={showPulse ? 0.2 : 0.16}
             color="#fef3c7"
             anchorX="center"
             anchorY="bottom"
             outlineWidth={0.022}
             outlineColor="#0f172a"
-            maxWidth={3.4}
+            maxWidth={3.6}
             textAlign="center"
           >
             {bubble}

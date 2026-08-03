@@ -5,6 +5,7 @@ import {
   DOCUMENT_TITLE,
   ENTER_HARBOR_HAVEN,
   FORTUNE_ARCHIPELAGO_NAME,
+  HARBOR_LOADING_ASHORE,
   HARBOR_LOADING_HINT,
   LEAVE_ARCHIPELAGO,
   MONEY_IS_ALIVE,
@@ -62,6 +63,9 @@ describe("titleVoice", () => {
     expect(structureEnterCta("Squeeze through the coin slot", "Jar")).toMatch(/Squeeze/);
     expect(ENTER_HARBOR_HAVEN).toMatch(/Harbor Haven/);
     expect(HARBOR_LOADING_HINT).toMatch(/Harbor Haven|plaza is waking/i);
+    expect(HARBOR_LOADING_ASHORE).toMatch(/Talk to Piggy/);
+    expect(HARBOR_LOADING_ASHORE).toMatch(/Money Carpet/);
+    expect(HARBOR_LOADING_ASHORE).not.toMatch(/Outfitter/i);
     expect(LEAVE_ARCHIPELAGO).toMatch(/Fortune Archipelago/);
     expect(SHARE_CARD_HEADLINE).toMatch(/Capital/);
     expect(SPECTACLE_FOOTER).toMatch(/Money is alive/);

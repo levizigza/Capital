@@ -24,8 +24,10 @@ type Props = {
 type Step = "arrive" | "plaza" | "inside-look" | "inside-pet" | "party" | "ready";
 
 /**
- * Harbor Haven tutorial — wash ashore, walk to the Outfitter building,
- * go inside for looks + pet, learn Fortune Party, then practice on Cove.
+ * DEMOTED — Outfitter-card hero teach (Ashore law).
+ * Not mounted from IslandsApp. Boot cast picks look; Harbor teaches
+ * Talk Piggy → Carpet → Cove only. Kept for asset/reference; do not re-wire
+ * as the first-session path. See docs/harbor-ashore.md.
  */
 export function WelcomeOnboarding({
   playerName,

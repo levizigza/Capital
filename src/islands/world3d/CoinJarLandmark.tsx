@@ -8,6 +8,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
+import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
 
 type CinemaPhase = "hush" | "mark" | "line";
@@ -40,23 +41,24 @@ export function CoinJarLandmark({
     const t = clock.elapsedTime;
     const mark = cinemaPhase === "mark";
     const settle = cinemaPhase === "line" || (hushActive && !cinemaPhase);
+    const flash = cinemaFlashAmp(); // 0 under reduced motion — no blinding strobe
 
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
       if (mark) {
-        mat.emissiveIntensity = 0.95 + Math.sin(t * 10) * 0.25;
+        mat.emissiveIntensity = 0.55 + flash * (0.4 + Math.sin(t * 10) * 0.25);
       } else if (hushActive) {
         const base = settle ? 0.1 : 0.12;
-        mat.emissiveIntensity = base + Math.sin(t * 1.1) * 0.03;
+        mat.emissiveIntensity = base + Math.sin(t * 1.1) * 0.03 * Math.max(flash, 0.35);
       } else {
         const base = active ? 0.85 : guided ? 0.55 : 0.28;
-        mat.emissiveIntensity = base + Math.sin(t * 3) * 0.08;
+        mat.emissiveIntensity = base + Math.sin(t * 3) * 0.08 * Math.max(flash, 0.35);
       }
     }
     if (lid.current) {
       if (mark) {
-        lid.current.rotation.y = Math.sin(t * 6) * 0.04;
-        lid.current.position.y = 3.28 + Math.sin(t * 8) * 0.02;
+        lid.current.rotation.y = Math.sin(t * 6) * 0.04 * flash;
+        lid.current.position.y = 3.28 + Math.sin(t * 8) * 0.02 * flash;
       } else if (settle || hushActive) {
         const speed = settle ? 0.08 : 0.2;
         lid.current.rotation.y = Math.sin(t * speed) * (settle ? 0.008 : 0.02);
@@ -68,12 +70,16 @@ export function CoinJarLandmark({
     }
     if (pile.current) {
       const mat = pile.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = mark ? 0.55 : hushActive ? 0.08 : 0.35;
+      mat.emissiveIntensity = mark ? 0.35 + 0.2 * flash : hushActive ? 0.08 : 0.35;
     }
     if (scar.current) {
       const mat = scar.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = mark ? 0.85 + Math.sin(t * 12) * 0.2 : hushActive ? 0.25 : 0;
-      mat.opacity = mark ? 0.95 : hushActive ? 0.7 : 0;
+      mat.emissiveIntensity = mark
+        ? 0.45 + flash * (0.4 + Math.sin(t * 12) * 0.2)
+        : hushActive
+          ? 0.25
+          : 0;
+      mat.opacity = mark ? 0.85 + 0.1 * flash : hushActive ? 0.7 : 0;
     }
   });
 

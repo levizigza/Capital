@@ -2,7 +2,7 @@
 
 **Purpose:** Bring Capital’s game design, logic, and mechanics to the same iconic bar as the signature Harbor loop — without widening the map.
 
-**Canon:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [iconic-path.md](./iconic-path.md) · [mural-thesis.md](./mural-thesis.md) · [game-pillars.md](./game-pillars.md) · [story-bible.md](./story-bible.md)
+**Canon:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [mural-thesis.md](./mural-thesis.md) · [game-pillars.md](./game-pillars.md) · [story-bible.md](./story-bible.md)
 
 **Freeze (still holds):** Cove → Paycheck → Credit + Harbor only · Family Room local · no Nathan/BMO/CBE merge · deepen organs, don’t add islands.
 
@@ -171,6 +171,21 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | One balance sheet for Cove Take + carpet price + first seal. Adjust numbers that stall or trivialise. |
 
+**Balance sheet (Pillar 8 — guarded by `balanceSheet.test.ts`):**
+
+| Beat | Earn / spend | Note |
+|------|----------------|------|
+| Cove quests | +80 coins | First Coins 30 + Save/Spend 50 |
+| `mg_coin_sort` first clear | ~25–40 | Thresholds 20 / 35 / 55 |
+| Cove Take | 0 pouch | Scar / irreversible only |
+| Post-Cove pouch | ~105–120 | Typical |
+| Carpet travel | 0 | Scrap rug free |
+| Carpet polish → Coin | 50 | Soft upgrade after Cove |
+| Carpet polish → Fortune | 175 | Not auto-bought by Cove earn |
+| First Ledger Seal | 20 | Soft board sink |
+| Escape deals (jar+shell) | 60 | CF 15 → 30 |
+| Freedom Seal | CF ≥30 for **3** Pay Days | Was 2 — trivialised polish skip |
+
 ---
 
 ### 9. UI and player communication
@@ -183,6 +198,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | Where am I? | Title voice + World Arrive + shore labels |
 
 | Pass work | Navigability law audit (`player-fantasy-and-loop.md`). Every overlay: Esc + Leave + sticky Complete. |
+
+**Shipped (Pillar 9):** `useOverlayEscape` — window Esc on HarborFelt share · Take hush · Scar spectacle · Soft Beat · signature trailer · day-2 echo · World Arrive. Share sticky Complete/Leave + backdrop dismiss; Leave labels + Esc hint copy. Guarded by `useOverlayEscape.test.ts`.
 
 ---
 
@@ -197,6 +214,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | Pass work | Screenshot Harbor + one structure: can you spot next interactable without HUD? If not, strengthen silhouette/VFX. |
 | Refs | `docs/art-direction-bible.md` · `docs/islands-ui-style-guide.md` |
 
+**Shipped (Pillar 10):** Money Structure pads silhouette without HUD — `StructurePartSilhouette` for every part id; Cove **Lid Lookout** is a screw-top hatch (was flat cyan disc); Soft Beat pads get a lookout beacon; stamp / battlement / teller / anvil distinct; interior labels use `SafeText` (Pages = silhouette + glow). Guarded by `StructurePartSilhouette.test.ts`. Harbor Memory Plinth / Carpet gate already carry the plaza read when troika text is off.
+
 ---
 
 ### 11. Sound and music
@@ -210,6 +229,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Mute test: can audio alone telegraph Take → hush → Harbor felt that? Patch missing stingers. |
 
+**Shipped (Pillar 11):** Mute-test stingers — Take mark → `take_mark` (was Soft Beat reuse); spectacle/share → `harbor_felt` Memory resolve (was trailer `harbor_cheer` on spectacle); Harbor plaza bed ducks during spectacle/share (`MusicPlace.harbor.hush`). Soft Beat keeps `soft_beat`. Guarded by `signatureMuteAudio.test.ts`.
+
 ---
 
 ### 12. Story, world, and context
@@ -222,6 +243,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Cold player sentence per organ. If they invent a second mythology, copy failed. |
 
+**Shipped (Pillar 12):** `coldOrganKidSentence` — one Story Bible sentence per organ (Coin holds · Clock shelters · Spiral withstands · Memory keeps). Spectacle headlines unified to suit verbs (cut “Coin Change” / “Clock Take” split). Family Room myth uses the same Harbor retell form. Guarded by `storyColdRetell.test.ts`. Debt Collector stays Credit Ordeal-only.
+
 ---
 
 ### 13. Onboarding and tutorials
@@ -233,6 +256,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | Anti-pattern | 30 options, stall grid, no Cancel |
 
 | Pass work | Fresh profile, no coach reading ahead. Note first confusion; teach that one thing earlier or clearer. |
+
+**Shipped (Pillar 13):** Harbor Ashore UI law — Talk → Carpet → Cove; Outfitter-card onboarding demoted; legacy gates normalize to voyage; Portal / Asobi / HL research in `docs/harbor-ashore.md`. Guarded by `onboardingNoAhead.test.ts` + harbor-tutorial e2e.
 
 ---
 
@@ -248,6 +273,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Kill WebGL once; confirm myth path. Corrupt save once; confirm fallback. |
 
+**Shipped (Pillar 14):** `sanitizeIslandSave` — corrupt version-1 blobs (null discovered / string inventory) coerce to playable Harbor defaults instead of bricking boot. Harbor failsafe timers live in `harborLoadFailsafe.ts` and wire into WalkableHarborView (sticky probe fail → myth; hard escape <3s). Guarded by `save.test.ts` + `harborLoadFailsafe.test.ts`.
+
 ---
 
 ### 15. Accessibility
@@ -255,17 +282,22 @@ When two pillars fight, **fantasy + signature loop win**.
 | Must keep | Reduced motion · text size · volume split · hold/toggle where relevant · no soft-lock on color alone |
 | Pass work | `prefers-reduced-motion` full signature loop. List any shake/flash that still blinds the beat. |
 
+**Shipped (Pillar 15):** `prefersReducedMotion()` = Settings OR OS (synced from accessibility load/persist). Signature cinema timings, juice bounce/burst, Capital SFX, and music duck all honor it. Take mark / Plinth spectacle strobes damp via `cinemaFlashAmp()` (Coin Jar · Payroll Tower · Interest Keep · Memory Plinth). Guarded by `signatureA11y.test.ts`.
+
 ---
 
 ### 16. Testing and iteration
 
 | Cadence | |
 |---------|--|
-| Automated | `signatureLoop` unit + e2e; content validate |
-| Cold human | Fresh profile checklist in iconic-path |
+| Automated | `npm run test:iconic` (pillar contracts + `signatureLoop` + content validate); Harbor/Cove: `npm run test:iconic:e2e` |
+| Cold human | Fresh profile checklist in [iconic-path.md](./iconic-path.md) |
 | Questions | Misunderstand · unfair · repetitive · ignored ability · lost · fun vs functional |
+| Machine map | `src/qa/iconicCraftCadence.ts` — checklist rows ↔ guard files (rots → red) |
 
-| Pass work | After each pillar fix: one cold run + update this doc’s status table. |
+| Pass work | After each pillar fix: `test:iconic` → cold run + six questions → update this doc’s status table. |
+
+**Shipped (Pillar 16):** Durable cadence — `iconicCraftCadence` maps cold checklist + pillar 7–16 contracts to real tests; `npm run test:iconic` / `test:iconic:e2e` are the gate; iconic-path checklist adds mute / Esc / corrupt-save / reduce + six iteration questions.
 
 ---
 
@@ -277,8 +309,11 @@ When two pillars fight, **fantasy + signature loop win**.
 | Cut before add | New island < deeper Take/feel |
 | Milestones | Per-pillar pass verdicts below |
 | Roles | Design truth in docs; code proof in `src/islands` + e2e |
+| Later sink | [iconic-later.md](./iconic-later.md) · `iconicScopeFreeze.ts` |
 
 | Pass work | Reaffirm freeze. Park a “later” list so feature creep doesn’t eat the loop. |
+
+**Shipped (Pillar 17):** Freeze reaffirmed in code (`assertSpineTravelFrozen` — Harbor · Cove · Paycheck · Credit only). Parked “later” list at `docs/iconic-later.md` (out-of-scope laws + parked content + deferred polish from status Next fixes). Outer island story-circles carry explicit **PARKED** banners. Guarded by `iconicScopeFreeze.test.ts`.
 
 ---
 
@@ -287,23 +322,23 @@ When two pillars fight, **fantasy + signature loop win**.
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
-| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage + no HP bars; PERF default off. Next: Leave/Apprentice chrome still SaaS-y after tutorial |
-| 2 | Core loop | playable → iconic | 2026-08-02 | Gate spectacle/echo on plaza ready; hide Piggy HUD during all cinema; myth cinema stage; Piggy before day-2. Next: cold unseeded Cove Take timing |
-| 3 | Goals / failure | | | |
-| 4 | Feel | | | |
-| 5 | Progression | | | |
-| 6 | Encounters | | | |
-| 7 | Content | | | |
-| 8 | Balance | | | |
-| 9 | UI / comms | | | |
-| 10 | Art direction | | | |
-| 11 | Audio | | | |
-| 12 | Story | | | |
-| 13 | Onboarding | | | |
-| 14 | Technical | | | |
-| 15 | Accessibility | | | |
-| 16 | Testing | | | |
-| 17 | Scope | | | |
+| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage (organ chip, I hear you / Walk on, Leave). Next: cold human Ashore→Cove |
+| 2 | Core loop | playable → iconic | 2026-08-02 | Cold Take `doneMs` + pier guide + Carpet CTA after hush. Next: cold human Ashore→Cove pass |
+| 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
+| 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: Soft Beat shore beacons |
+| 5 | Progression | playable → iconic | 2026-08-02 | Freedom Seal + Seal chase chip after pouch dips; carpet tier. Next: cold kid retell |
+| 6 | Encounters | playable → iconic | 2026-08-02 | Alma craft-bench → jar Take; Paycheck Priya owns payday buckets; Credit Score Scanner. Next: deepen organ vocabulary in Talk |
+| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
+| 8 | Balance | playable → iconic | 2026-08-02 | Cove → Freedom balance sheet + Seal chase chip after pouch dips. Next: keep escape streak honest |
+| 9 | UI / comms | playable → iconic | 2026-08-02 | Talk Battle Leave + organ stage + Esc · Leave overlays. Next: cold human Ashore→Cove |
+| 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
+| 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
+| 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences + Talk Battle organ chip; Ashore→Cove retell contract. Next: cold human Ashore→Cove |
+| 13 | Onboarding | playable → iconic | 2026-08-03 | Ashore UI law Talk→Carpet→Cove; Outfitter-card demoted; Portal/Asobi/HL research |
+| 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
+| 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |
+| 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
+| 17 | Scope | playable → iconic | 2026-08-02 | Freeze in code + `docs/iconic-later.md` creep sink + PARKED banners on outer docs. Next: deepen spine from later-list polish only |
 
 ---
 
@@ -311,11 +346,11 @@ When two pillars fight, **fantasy + signature loop win**.
 
 1. Read the pillar row above (2 min)  
 2. Cold evidence (play or QA seed) (10–20 min)  
-3. Write gap list in the status board  
+3. Write gap list in the status board (or park on [iconic-later.md](./iconic-later.md))  
 4. Ship the single highest-leverage fix **or** mark defer with reason  
-5. Re-smoke the signature loop if the fix touched Harbor / Cove / carpet  
+5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **2 — Core loop** (signature cinema waits for plaza ready; no Piggy HUD under spectacle/share/echo; myth Memory stage under cinema; day-2 waits for Piggy talk).  
+**Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
 
-**Start next:** Pillar **3 — Goals / rules / failure** (Cove Take + one minigame: goal / affordance / fail / retry screenshots).
+**Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.

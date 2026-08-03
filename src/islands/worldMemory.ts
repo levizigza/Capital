@@ -156,24 +156,71 @@ export function scarOrganName(organ: MoneyOrganId): string {
   return "Memory";
 }
 
-/** One kid-facing sentence after a cold play — organ + plaque. */
+/**
+ * Suit verb that must survive Take → Harbor (Pillar 5 progression).
+ * Coin holds · Clock shelters · Spiral withstands · Memory keeps.
+ */
+export function organSuitVerb(organ: MoneyOrganId): string {
+  if (organ === "clock") return "shelters";
+  if (organ === "spiral") return "withstands";
+  if (organ === "memory") return "keeps";
+  return "holds";
+}
+
+/** Short organ+verb chip — “Coin holds”. */
+export function organVerbChip(organ: MoneyOrganId): string {
+  return `${scarOrganName(organ)} ${organSuitVerb(organ)}`;
+}
+
+/**
+ * After a spine Take lands at Harbor — what painting is newly boardable?
+ * Ability/story/space progression kids can point at without opening a ledger.
+ */
+export function nextPaintingAfterScar(
+  scar: Pick<HarborScar, "id" | "islandId">,
+): string | null {
+  const organ = scarOrganId(scar);
+  if (organ === "coin") return "Paycheck Peninsula";
+  if (organ === "clock") return "Credit Kingdom";
+  return null;
+}
+
+/**
+ * Plaque-free kid sentence per organ (Pillar 12).
+ * One mythology — suit verb only; never Harmon jargon as organ names.
+ */
+export function coldOrganKidSentence(organ: MoneyOrganId): string {
+  if (organ === "clock") {
+    return "The Clock shelters — wait under the umbrella before glitter.";
+  }
+  if (organ === "spiral") {
+    return "The Spiral withstands — wait beats haste on the interest wall.";
+  }
+  if (organ === "memory") {
+    return "Memory keeps — Harbor remembers your Take on the Plinth.";
+  }
+  return "The Coin holds — save a little; the jar still waits.";
+}
+
+/** One kid-facing sentence after a cold play — organ verb + plaque. */
 export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
-  const organ = scarOrganName(scarOrganId(scar));
-  return `Harbor remembered the ${organ}: “${scar.label}.”`;
+  const organ = scarOrganId(scar);
+  return `The ${organVerbChip(organ)} — Harbor remembered: “${scar.label}.”`;
 }
 
-/** Plinth billboard / modal row — organ first so the word sticks. */
+/** Plinth billboard / modal row — organ verb first so the suit sticks. */
 export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
-  return `${scarOrganName(scarOrganId(scar))} · ${scar.label}`;
+  const organ = scarOrganId(scar);
+  return `${organVerbChip(organ)} · ${scar.label}`;
 }
 
-/** Spectacle headline — organ-first Harbor proof. */
+/**
+ * Spectacle headline — same suit-verb mythology as cold retell.
+ * Never “Coin Change” vs “Clock Take” (that invents a second cosmos).
+ */
 export function coldSpectacleHeadline(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  if (organ === "coin") return "Harbor felt the Coin Change";
-  if (organ === "clock") return "Harbor felt the Clock Take";
-  if (organ === "spiral") return "Harbor felt the Spiral";
-  return "Harbor felt that choice";
+  return `Harbor felt that — the ${organVerbChip(organ)}`;
 }
 
 /** Suit-verb hush after Take — Coin holds · Clock shelters · Spiral withstands. */
@@ -184,27 +231,24 @@ export function organTakeHushLine(organ: MoneyOrganId): string {
   return "The Coin holds. Harbor is already listening.";
 }
 
-/** Shore quiet badge after irreversible Take. */
+/** Shore quiet badge after irreversible Take — suit verb, never “Coin Take”. */
 export function organQuietBadge(organ: MoneyOrganId): string {
-  if (organ === "clock") return "Quiet after the Clock Take";
-  if (organ === "spiral") return "Quiet after the Spiral Take";
-  if (organ === "memory") return "Quiet after Memory";
-  return "Quiet after the Coin Take";
+  return `Quiet — ${organVerbChip(organ)}`;
 }
 
-/** Day-2 cinema body — organ-true metaphor (not always jars). */
+/** Day-2 cinema body — lead with suit verb so cold kids can retell. */
 export function day2EchoBody(scarLabel: string, organ: MoneyOrganId): string {
-  const organWord = scarOrganName(organ);
+  const chip = organVerbChip(organ);
   if (organ === "clock") {
-    return `Locals still stamp about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `The ${chip} — locals still stamp “${scarLabel}.” Yesterday sticks as today’s weather.`;
   }
   if (organ === "spiral") {
-    return `Locals still weigh the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `The ${chip} — locals still weigh “${scarLabel}.” Yesterday sticks as today’s weather.`;
   }
   if (organ === "memory") {
-    return `Locals still name the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+    return `${chip} — locals still name “${scarLabel}” on the Plinth. Yesterday sticks as today’s weather.`;
   }
-  return `Locals still tip their jars about the ${organWord} — “${scarLabel}.” Yesterday’s Take is today’s weather.`;
+  return `The ${chip} — locals still tip their jars about “${scarLabel}.” Yesterday sticks as today’s weather.`;
 }
 
 /** Daily Harbor rumor that carries the organ word. */
@@ -264,11 +308,11 @@ export function piggyScarMemoryLine(
   dayOffset: "same" | "later",
   organ: MoneyOrganId = "memory",
 ): string {
-  const organWord = scarOrganName(organ);
+  const chip = organVerbChip(organ);
   if (dayOffset === "later") {
-    return `Piggy Penny: Still here — the ${organWord} did not wash out. “${scarLabel}.”`;
+    return `Piggy Penny: Still here — the ${chip} did not wash out. “${scarLabel}.”`;
   }
-  return `Piggy Penny: Harbor felt the ${organWord} — “${scarLabel}.” I’m proud you came home changed.`;
+  return `Piggy Penny: Harbor felt that — the ${chip}. “${scarLabel}.” I’m proud you came home changed.`;
 }
 
 /** True when this local should name the scar (dense plaza memory, not sparse). */

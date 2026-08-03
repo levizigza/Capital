@@ -45,9 +45,9 @@ describe("cast-as-memory", () => {
 
   it("keeps Piggy scar lines distinct for same-day vs later", () => {
     expect(piggyScarMemoryLine("X", "same", "coin")).toMatch(/felt/);
-    expect(piggyScarMemoryLine("X", "same", "coin")).toMatch(/Coin/);
-    expect(piggyScarMemoryLine("X", "later", "clock")).toMatch(/tide|Still here/i);
-    expect(piggyScarMemoryLine("X", "later", "clock")).toMatch(/Clock/);
+    expect(piggyScarMemoryLine("X", "same", "coin")).toMatch(/Coin holds/);
+    expect(piggyScarMemoryLine("X", "later", "clock")).toMatch(/Still here/i);
+    expect(piggyScarMemoryLine("X", "later", "clock")).toMatch(/Clock shelters/);
   });
 
   it("names Clock and Spiral in Talk Battle openers", () => {

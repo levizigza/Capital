@@ -22,16 +22,17 @@ import {
 } from "../harborIcon";
 
 describe("iconic craft — first 20 min path", () => {
-  it("skips optional practice after capsule visit (trailer critical path)", () => {
+  it("Harbor Ashore critical path: Talk → voyage → done (no Outfitter gate)", () => {
     let g = createDefaultHubGuidedIntro();
-    for (const ev of [
-      "talked_guide",
-      "near_outfitter",
-      "saved_outfitter",
-    ] as const) {
-      g = advanceHubGuided(g, ev);
-    }
-    expect(g.step).toBe("tiny_spend");
+    g = advanceHubGuided(g, "talked_guide");
+    expect(g.step).toBe("to_dock");
+    g = advanceHubGuided(g, "opened_map");
+    expect(g.step).toBe("done");
+    expect(g.didDock).toBe(true);
+  });
+
+  it("legacy Capsule gate still resolves to voyage", () => {
+    let g = { version: 1 as const, step: "tiny_spend" as const };
     g = advanceHubGuided(g, "capsule_visit");
     expect(g.step).toBe("to_dock");
   });

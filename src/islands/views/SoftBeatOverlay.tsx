@@ -7,9 +7,11 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForSoftBeat } from "../moneyOrgans";
-import { cinemaTimeScale, systemPrefersReducedMotion } from "../a11yMotion";
+import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
+import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -19,26 +21,26 @@ const BEATS: Record<
 > = {
   lookout: {
     title: "Lid Lookout",
-    line: "Cove looks tiny from up here — save a little, the jar still holds.",
-    hushLine: "After the Coin Take, even the lid is quiet. Harbor is already listening.",
+    line: "Cove looks tiny — the Coin holds. Save a little; the jar still waits.",
+    hushLine: "Quiet — Coin holds. Even the lid listens. Harbor felt that.",
     accent: "#fbbf24",
   },
   umbrella: {
     title: "Umbrella Loft",
-    line: "Rainy-day loft — Main Street looks small. Keep a little dry for later.",
-    hushLine: "The Clock loft remembers your Take. Fly home — Harbor felt the Clock.",
+    line: "Rainy-day loft — the Clock shelters. Keep a little dry for later.",
+    hushLine: "Quiet — Clock shelters. Fly home — Harbor felt that.",
     accent: "#38bdf8",
   },
   battlement: {
     title: "Score Battlement",
-    line: "On-time history beats haste — interest feeds on rushing.",
-    hushLine: "The Spiral slowed after your choice. Interest leaves footprints on the Plinth.",
+    line: "The Spiral withstands — on-time history beats haste.",
+    hushLine: "Quiet — Spiral withstands. Interest leaves footprints on the Plinth.",
     accent: "#a78bfa",
   },
   ledger: {
     title: "Teller Window",
-    line: "Marble cool under your hands — the ledger remembers every jar and stamp.",
-    hushLine: "Memory already carries your latest plaque. Money is alive here.",
+    line: "Memory keeps — the ledger remembers every jar and stamp.",
+    hushLine: "Quiet — Memory keeps your plaque. Money is alive here.",
     accent: "#f59e0b",
   },
 };
@@ -59,10 +61,11 @@ export function SoftBeatOverlay({
 }: Props) {
   const beat = BEATS[kind];
   const organ = moneyOrganForSoftBeat(kind);
+  useOverlayEscape(onDone);
 
   useEffect(() => {
     playOrganSfx(organ.id);
-    if (!systemPrefersReducedMotion() || hushActive) {
+    if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
     const scale = cinemaTimeScale();
@@ -71,12 +74,22 @@ export function SoftBeatOverlay({
   }, [hushActive, onDone, organ.id]);
 
   const body = hushActive ? beat.hushLine : beat.line;
+  const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
       ? `“${scarLabel}” already lives on the Memory Plinth.`
       : scarLabel && kind === "ledger"
         ? `“${scarLabel}” is written in the marble.`
         : null;
+
+  const climbMotif =
+    kind === "lookout"
+      ? "lid-climb"
+      : kind === "umbrella"
+        ? "loft-climb"
+        : kind === "battlement"
+          ? "wall-climb"
+          : "teller-step";
 
   return (
     <div
@@ -85,11 +98,10 @@ export function SoftBeatOverlay({
       aria-label={beat.title}
       data-testid="soft-beat-overlay"
       data-soft-beat={kind}
+      data-soft-beat-climb={climbMotif}
       data-organ={organ.id}
+      data-nav-escape="window"
       onClick={onDone}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
-      }}
     >
       <div
         className="relative mx-4 max-w-md rounded-2xl border px-6 py-5 text-center text-white shadow-2xl"
@@ -99,23 +111,50 @@ export function SoftBeatOverlay({
           className="text-xs font-bold uppercase tracking-[0.2em]"
           style={{ color: beat.accent }}
         >
-          {softBeatEyebrow(organ.id)}
+          {softBeatEyebrow(organ.id)} · {organVerbChip(organ.id)}
         </p>
+        {kind === "lookout" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
+            Climb the lid — peek from the Coin Jar
+          </p>
+        ) : null}
+        {kind === "umbrella" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-sky-100/80">
+            Climb the loft — peek from the Payroll Tower
+          </p>
+        ) : null}
+        {kind === "battlement" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-violet-100/80">
+            Climb the wall — peek from Interest Keep
+          </p>
+        ) : null}
+        {kind === "ledger" ? (
+          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
+            Step to the teller — peek from Ledger Bank
+          </p>
+        ) : null}
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
+        <p
+          className="mt-2 text-sm font-semibold text-amber-100/95"
+          data-testid="soft-beat-retell"
+        >
+          {kidSentence}
+        </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
         <p className="mt-2 text-[10px] uppercase tracking-wider text-white/45">
           {organ.suit} · {organ.metaphor}
         </p>
-        <GameButton variant="primary" className="mt-4" onClick={onDone}>
+        <GameButton variant="primary" className="mt-4" onClick={onDone} data-testid="soft-beat-leave">
           {organ.id === "coin"
-            ? "Back into the Jar"
+            ? "Leave — back into the Jar"
             : organ.id === "clock"
-              ? "Back to the Clock loft"
+              ? "Leave — back to the Clock loft"
               : organ.id === "spiral"
-                ? "Back to the Spiral"
-                : "Back to the ledger"}
+                ? "Leave — back to the Spiral"
+                : "Leave — back to the ledger"}
         </GameButton>
+        <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>
   );

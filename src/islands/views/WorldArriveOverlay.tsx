@@ -15,6 +15,7 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForIsland } from "../moneyOrgans";
 import { cinemaTimeScale } from "../a11yMotion";
 import { arriveEyebrow } from "../titleVoice";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 export type WorldArriveKind = "carpet_land" | "structure_enter" | "painting_portal";
 
@@ -111,6 +112,7 @@ export function WorldArriveOverlay({
 }: Props) {
   const theme = useMemo(() => themeForIsland(islandId, kind), [islandId, kind]);
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
+  useOverlayEscape(onDone);
 
   useEffect(() => {
     const organ = moneyOrganForIsland(islandId);
@@ -142,6 +144,7 @@ export function WorldArriveOverlay({
       data-testid={kind === "structure_enter" ? "money-structure-enter-transition" : "world-arrive-overlay"}
       data-arrive-motif={theme.motif}
       data-arrive-island={islandId}
+      data-nav-escape="window"
       style={{
         opacity,
         transition: "opacity 320ms ease",
@@ -181,6 +184,7 @@ export function WorldArriveOverlay({
         </h2>
         <p className="mt-2 text-lg font-bold text-white/90">{islandName}</p>
         <p className="mt-2 text-sm text-white/70">{theme.blurb}</p>
+        <p className="mt-3 text-[11px] tracking-wide text-white/40">Esc · Leave</p>
       </div>
     </div>
   );

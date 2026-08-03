@@ -18,7 +18,8 @@ Capital: you are inside living money; islands are money organs; mascots are its 
 | **Clock** | Paycheck Peninsula | Earn | Earn · Stamp · Shelter | Payday vs rainy-day loft |
 | **Spiral** | Credit Kingdom | Borrow | Borrow · Weigh · Withstand | Interest as gravity |
 
-Code source of truth: [`src/islands/moneyOrgans.ts`](../src/islands/moneyOrgans.ts).
+Code source of truth: [`src/islands/moneyOrgans.ts`](../src/islands/moneyOrgans.ts).  
+Content inventory (organ · verb · cold-retell + parked orphans): [`src/islands/spineContentRegistry.ts`](../src/islands/spineContentRegistry.ts).
 
 ## Piece checklist (every prop / NPC / portal)
 

@@ -8,6 +8,7 @@ import type { IslandSaveV1 } from "../types";
 import { OutfitterStudio3D } from "../world3d/OutfitterStudio3D";
 import { StreetFighterCoinSelect } from "../world3d/StreetFighterCoinSelect";
 import { CharacterCreator } from "./CharacterCreator";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Stage = "select" | "look";
 
@@ -100,8 +101,8 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
           {stage === "select"
-            ? "Twelve series leads. Tap a coin face for the full 3D body — then make the look yours."
-            : "Looks · Shirt · Pants · Accessories · Electronics on the live mirror."}
+            ? "Meet your Voyager. Click a coin face to see them in 3D — then dress them, or board the carpet now."
+            : "Dress your Voyager on the mirror — then board the Money Carpet to Harbor Haven."}
         </p>
       </header>
 
@@ -147,15 +148,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               <button
                 type="button"
                 className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                onPointerUp={(e) => {
-                  if (e.button !== 0) return;
-                  e.preventDefault();
-                  setStage("look");
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setStage("look");
-                }}
+                {...pointerSafeActivate(() => setStage("look"))}
                 data-testid="boot-customize-look"
               >
                 Customize {mascot.name} →
@@ -163,20 +156,16 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               <button
                 type="button"
                 disabled={busy}
-                className="min-h-10 w-full touch-manipulation text-center text-xs font-bold uppercase tracking-wide underline-offset-2 hover:underline disabled:opacity-40"
-                style={{ color: "rgba(255,255,255,0.7)" }}
-                onPointerUp={(e) => {
-                  if (e.button !== 0 || busy) return;
-                  e.preventDefault();
-                  boardCarpet();
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!busy) boardCarpet();
-                }}
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-amber-100/40 bg-white/10 px-4 py-3 text-sm font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-white/15 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-40"
+                {...pointerSafeActivate(
+                  () => {
+                    if (!busy) boardCarpet();
+                  },
+                  { stopPropagation: true },
+                )}
                 data-testid="boot-board-carpet-now"
               >
-                {busy ? "Boarding…" : "Skip customize · Board carpet"}
+                {busy ? "Boarding…" : "Board Money Carpet now →"}
               </button>
             </div>
           ) : (
@@ -188,12 +177,17 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               preview="none"
               chrome="dark"
               saveLabel={busy ? "Boarding…" : "Board the Money Carpet →"}
-              cancelLabel="← Coin select"
+              cancelLabel="← Back to coin faces"
               saveTestId="boot-board-carpet"
+              cancelTestId="boot-cancel-look"
               onDraftChange={setDraft}
               onChangeFighter={() => setStage("select")}
-              onCancel={() => setStage("select")}
-              onSave={(c) => boardCarpet(c)}
+              onCancel={() => {
+                if (!busy) setStage("select");
+              }}
+              onSave={(c) => {
+                if (!busy) boardCarpet(c);
+              }}
             />
           )}
         </div>

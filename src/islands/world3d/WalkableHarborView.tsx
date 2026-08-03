@@ -54,6 +54,7 @@ import { plazaLifeAmp } from "../a11yMotion";
 import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
+import { stepWalkVelocity } from "../input/walkFeel";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -65,9 +66,20 @@ import { HarborMythFallback } from "../views/HarborMythFallback";
 import type { HarborFallbackMode } from "../harborFirstMeet";
 import {
   ENTER_HARBOR_HAVEN,
+  HARBOR_LOADING_ASHORE,
   HARBOR_LOADING_HINT,
   HARBOR_LOADING_SLOW,
 } from "../titleVoice";
+import { HARBOR_PIGGY_POS } from "../moneyCast";
+import {
+  HARBOR_3D_FAIL_KEY,
+  HARBOR_3D_OK_KEY,
+  HARBOR_CANVAS_WATCHDOG_MS,
+  HARBOR_DEFER_BEFORE_PROBE_MS,
+  HARBOR_HARD_FAILSAFE_MS,
+  HARBOR_LOAD_HINT_MS,
+} from "./harborLoadFailsafe";
+import { prefersReducedMotion } from "../a11yMotion";
 import { scarOrganName } from "../worldMemory";
 
 export type HarborLandmarkKind =
@@ -261,18 +273,17 @@ function Player({
     camYaw.current += turn;
 
     const forward = Number(k.f) - Number(k.b);
-    moving.current = Math.abs(forward) > 0.01 || Math.abs(turn) > 0.001;
     if (Math.abs(forward) > 0.01) {
       facing.current = forward >= 0 ? camYaw.current : camYaw.current + Math.PI;
-      const spd = SPEED * (k.b && !k.f ? 0.65 : 1);
-      vel.current.set(
-        Math.sin(camYaw.current) * forward * spd,
-        0,
-        Math.cos(camYaw.current) * forward * spd,
-      );
-      p.x += vel.current.x * dt;
-      p.z += vel.current.z * dt;
     }
+    const stepped = stepWalkVelocity(
+      { x: vel.current.x, z: vel.current.z },
+      { forward, yaw: camYaw.current, dt, speed: SPEED },
+    );
+    vel.current.set(stepped.vel.x, 0, stepped.vel.z);
+    p.x += vel.current.x * dt;
+    p.z += vel.current.z * dt;
+    moving.current = stepped.moving || Math.abs(turn) > 0.001;
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 
@@ -836,9 +847,7 @@ export function WalkableHarborView({
 }: Props) {
   const [near, setNear] = useState<string | null>(null);
   const [nearNpcId, setNearNpcId] = useState<string | null>(null);
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduced = prefersReducedMotion();
   /** Mid-phone budget: also soften when deviceMemory is low */
   const lowMem =
     typeof navigator !== "undefined" &&
@@ -893,8 +902,10 @@ export function WalkableHarborView({
   const guideTarget = useMemo(() => {
     if (guideLookAt) return guideLookAt;
     if (!guideHighlight) return null;
-    return guideTargetForHighlight(guideHighlight, hotspots);
-  }, [guideLookAt, guideHighlight, hotspots]);
+    const piggyHome =
+      lives.find((l) => l.mascotId === HARBOR_KEEPER_MASCOT_ID)?.home ?? HARBOR_PIGGY_POS;
+    return guideTargetForHighlight(guideHighlight, hotspots, piggyHome);
+  }, [guideLookAt, guideHighlight, hotspots, lives]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -918,7 +929,7 @@ export function WalkableHarborView({
   const [loadHint, setLoadHint] = useState(HARBOR_LOADING_HINT);
   const [force2d, setForce2d] = useState(() => {
     try {
-      return sessionStorage.getItem("capital_harbor3d_fail") === "1";
+      return sessionStorage.getItem(HARBOR_3D_FAIL_KEY) === "1";
     } catch {
       return false;
     }
@@ -940,9 +951,9 @@ export function WalkableHarborView({
     if (escapedRef.current) return;
     escapedRef.current = true;
     try {
-      sessionStorage.removeItem("capital_harbor3d_ok");
+      sessionStorage.removeItem(HARBOR_3D_OK_KEY);
       if (mode === "sticky") {
-        sessionStorage.setItem("capital_harbor3d_fail", "1");
+        sessionStorage.setItem(HARBOR_3D_FAIL_KEY, "1");
       }
     } catch {
       /* ignore */
@@ -986,7 +997,7 @@ export function WalkableHarborView({
       // If R3F never reports onCreated, tear Canvas down and play myth — don't veil forever.
       canvasWatch = window.setTimeout(() => {
         if (!readyRef.current) escapeToMyth("soft");
-      }, 1_800);
+      }, HARBOR_CANVAS_WATCHDOG_MS);
     };
 
     // Double-rAF + idle: Enter Harbor paints and stays tappable before WebGL hitch.
@@ -1000,7 +1011,7 @@ export function WalkableHarborView({
         ).requestIdleCallback;
         if (typeof ric === "function") {
           idleId = ric(() => {
-            mountTimer = window.setTimeout(scheduleCanvas, 80);
+            mountTimer = window.setTimeout(scheduleCanvas, HARBOR_DEFER_BEFORE_PROBE_MS);
           }, { timeout: 400 });
         } else {
           mountTimer = window.setTimeout(scheduleCanvas, 280);
@@ -1010,11 +1021,11 @@ export function WalkableHarborView({
 
     const hint = window.setTimeout(() => {
       setLoadHint(HARBOR_LOADING_SLOW);
-    }, 900);
+    }, HARBOR_LOAD_HINT_MS);
     // Hard myth escape — iconic reliability gate: playable Harbor < ~2.5s.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) escapeToMyth("soft");
-    }, 2_400);
+    }, HARBOR_HARD_FAILSAFE_MS);
     return () => {
       cancelled = true;
       if (idleId !== undefined) {
@@ -1096,13 +1107,16 @@ export function WalkableHarborView({
           <p className="max-w-sm text-base font-black text-[#16283b]" data-testid="harbor-loading">
             {loadHint}
           </p>
-          <p className="max-w-xs text-sm font-medium text-[#16283b]/80">
-            How to play: Talk to Piggy · Become you at the Outfitter · Board the Money Carpet for Cove.
+          <p
+            className="max-w-xs text-sm font-medium text-[#16283b]/80"
+            data-testid="harbor-loading-ashore"
+          >
+            {HARBOR_LOADING_ASHORE}
           </p>
           <button
             type="button"
             data-testid="harbor-skip-3d"
-            className="pointer-events-auto relative z-[110] min-h-12 min-w-[14rem] rounded-full bg-[#16283b] px-6 py-3.5 text-sm font-bold text-white shadow-lg"
+            className="pointer-events-auto relative z-[110] min-h-14 min-w-[16rem] rounded-2xl bg-[#16283b] px-7 py-4 text-base font-black text-white shadow-[4px_4px_0_rgba(22,40,59,0.35)]"
             style={{ touchAction: "manipulation" }}
             onPointerDown={(e) => {
               e.preventDefault();
@@ -1117,7 +1131,7 @@ export function WalkableHarborView({
             {ENTER_HARBOR_HAVEN}
           </button>
           <p className="max-w-xs text-[11px] font-medium text-[#16283b]/65">
-            Enter anytime — if the plaza is slow, you still get Talk · Carpet.
+            Slow plaza? Tap Enter — myth path still gives Talk Piggy · Carpet · Cove.
           </p>
         </div>
       ) : null}
@@ -1140,8 +1154,8 @@ export function WalkableHarborView({
           gl.setClearColor("#7dd3fc", 1);
           setReady(true);
           try {
-            sessionStorage.setItem("capital_harbor3d_ok", "1");
-            sessionStorage.removeItem("capital_harbor3d_fail");
+            sessionStorage.setItem(HARBOR_3D_OK_KEY, "1");
+            sessionStorage.removeItem(HARBOR_3D_FAIL_KEY);
           } catch {
             /* ignore */
           }

@@ -10,6 +10,9 @@ import {
   SIGNATURE_TRAILER_SHOTS,
   signatureTiming,
 } from "@/qa/signatureLoop";
+import { GameButton } from "@/game-ui";
+import { prefersReducedMotion } from "../a11yMotion";
+import { useOverlayEscape } from "./useOverlayEscape";
 
 type Props = {
   open: boolean;
@@ -58,11 +61,9 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
     const musicOn = capitalMusic.isEnabled();
-    const timing = signatureTiming(Boolean(reduced));
+    const timing = signatureTiming(reduced);
     // Mute-friendly: captions carry the story; SFX only when music is on and motion is full
     const sfxOk = musicOn && !reduced;
     if (sfxOk) playCapitalSfx("scar_chime");
@@ -100,6 +101,8 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
     };
   }, [open, onDone, scarLabel]);
 
+  useOverlayEscape(onDone, open);
+
   if (!open) return null;
 
   return (
@@ -108,12 +111,10 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
       role="dialog"
       aria-label="Signature Harbor trailer"
       data-testid="signature-trailer"
+      data-nav-escape="window"
       onClick={onDone}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === "Escape" || e.key === " ") onDone();
-      }}
     >
-      <div className="mx-4 max-w-lg text-center">
+      <div className="mx-4 max-w-lg text-center" onClick={(e) => e.stopPropagation()}>
         <TrailerCastSilhouettes />
         <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-amber-200/80">
           Capital · Signature beat
@@ -125,7 +126,15 @@ export function SignatureTrailerOverlay({ open, onDone, scarLabel }: Props) {
         >
           {caption}
         </h2>
-        <p className="mt-3 text-xs text-white/55">Tap to skip · mute-friendly captions</p>
+        <GameButton
+          variant="outline"
+          className="mt-4 bg-white/10"
+          data-testid="signature-trailer-leave"
+          onClick={onDone}
+        >
+          Leave — skip trailer
+        </GameButton>
+        <p className="mt-2 text-xs text-white/55">Esc · Leave · mute-friendly captions</p>
       </div>
       <div className="absolute inset-x-8 bottom-6 h-1 overflow-hidden rounded-full bg-white/15">
         <div

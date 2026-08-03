@@ -118,7 +118,8 @@ describe("money structures", () => {
     expect(s?.id).toBe(CREDIT_INTEREST_KEEP.id);
     expect(s?.theme).toBe("keep");
     expect(s?.entryVerb.toLowerCase()).toMatch(/spiral|interest/);
-    expect(s?.parts.some((p) => p.minigameId === "mg_ck_budget_balancer")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_signal")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_ck_budget_balancer")).toBe(false);
     expect(s?.parts.some((p) => p.minigameId === "mg_ck_inbox_credit")).toBe(true);
     expect(s?.parts.some((p) => p.softBeat === "battlement")).toBe(true);
   });
@@ -129,6 +130,50 @@ describe("money structures", () => {
     expect(jar?.label).toMatch(/Coin Jar/i);
     expect(jar?.structureId).toBe("cove_coin_jar");
     expect(jar?.subtitle?.toLowerCase()).toMatch(/slot|squeeze/);
+  });
+
+  it("keeps Cove Coin Jar readable away from painting gates", () => {
+    const spots = buildShoreHotspots({
+      ...stubCove(),
+      minigames: [
+        ...stubCove().minigames!,
+        {
+          id: "mg_treasure_vault",
+          name: "Treasure Vault",
+          description: "x",
+          icon: "🗺️",
+          componentId: "ExplorablePuzzleGame",
+        },
+        {
+          id: "mg_pasaran_market",
+          name: "Pasaran (parked)",
+          description: "x",
+          icon: "🧺",
+          componentId: "PasaranMarketGame",
+        },
+        {
+          id: "mg_mancala_compound",
+          name: "Mancala (parked)",
+          description: "x",
+          icon: "⚪",
+          componentId: "MancalaCompoundGame",
+        },
+      ],
+    });
+    const jar = spots.find((h) => h.kind === "money_structure");
+    expect(jar).toBeTruthy();
+    const pads = spots.filter((h) => h.kind === "play_pad");
+    expect(pads.length).toBeGreaterThan(0);
+    expect(pads.map((p) => p.minigameId)).toEqual(
+      expect.arrayContaining(["mg_coin_catcher", "mg_treasure_vault"]),
+    );
+    expect(pads.every((p) => p.minigameId !== "mg_pasaran_market")).toBe(true);
+    expect(pads.every((p) => p.minigameId !== "mg_mancala_compound")).toBe(true);
+    for (const pad of pads) {
+      const dx = jar!.position[0] - pad.position[0];
+      const dz = jar!.position[2] - pad.position[2];
+      expect(Math.hypot(dx, dz)).toBeGreaterThan(10);
+    }
   });
 
   it("adds a money_structure shore hotspot on Paycheck", () => {
