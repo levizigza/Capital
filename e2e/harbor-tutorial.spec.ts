@@ -134,6 +134,10 @@ test.describe("Harbor Haven tutorial opening", () => {
     // Piggy Talk Battle — not Memory Plinth stealing the beat
     await expect(page.getByTestId("harbor-memory-modal")).toHaveCount(0);
     await expect(page.getByTestId("talk-battle-screen")).toBeVisible({ timeout: 15_000 });
+    // Living-money stage — organ chip + Leave, not SaaS Skip / Continue
+    await expect(page.getByTestId("talk-battle-organ")).toContainText(/Memory keeps/);
+    await expect(page.getByTestId("talk-battle-leave")).toBeVisible();
+    await expect(page.getByTestId("talk-battle-continue")).toContainText(/I hear you|Walk on/);
     // meet_guide — Teach Talk only (one verb). Outfitter waits for the next step.
     await expect(page.getByTestId("talk-battle-screen")).toContainText(
       /Welcome to Harbor Haven/i,

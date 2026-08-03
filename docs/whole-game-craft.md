@@ -96,8 +96,13 @@ If not, that surface is not iconic yet.
 - Cold kid retell wired through Soft Beat · share · day-2 · Piggy · quiet badges
 - Suit verbs only (no “Coin Take” mythology) · Soft Beat crown beacon + organ pad labels
 
+## Iteration 6 (shipped)
+
+- Talk Battle living-money stage: organ chip, “I hear you / Walk on”, speech replies, Leave chrome
+- Ashore→Cove cold retell contract + kid sentences asserted in signature / Harbor e2e
+
 ## Still deepen (from iconic-later)
 
-Talk Battle living-money polish · cold human Ashore→Cove retell pass · merge readiness  
+Cold human play of Ashore→Cove→Harbor · merge readiness  
 
 Iterate those next — never new islands first.

@@ -242,6 +242,7 @@ export function iconicUnitTestPaths(): string[] {
     "src/islands/moneyStructures.test.ts",
     "src/islands/views/progressionContract.test.ts",
     "src/islands/views/talkBattleFantasy.test.ts",
+    "src/islands/ashoreColdRetell.test.ts",
     "src/islands/input/walkFeel.test.ts",
     "src/islands/creditEncounter.test.ts",
   ]);

@@ -56,6 +56,9 @@ test.describe("Signature loop", () => {
       /Coin holds|Clock shelters|Spiral withstands|Memory keeps/,
     );
     await expect(page.getByTestId("harbor-felt-retell")).toContainText(/Harbor remembered/);
+    await expect(page.getByTestId("harbor-felt-kid-sentence")).toContainText(
+      /The Coin holds|The Clock shelters|The Spiral withstands|Memory keeps/,
+    );
     await expect(page.getByTestId("harbor-felt-newly-true")).toContainText(
       /Paycheck Peninsula|Credit Kingdom|on the Plinth/,
     );
@@ -84,6 +87,9 @@ test.describe("Signature loop", () => {
     await expect(echo).toBeVisible({ timeout: 20_000 });
     // Soft Beat cinema over live Plinth — not a centered tutorial card
     await expect(echo).toHaveAttribute("data-echo-presentation", "plinth-cinema");
+    await expect(page.getByTestId("day2-echo-kid-sentence")).toContainText(
+      /Coin holds|Clock shelters|Spiral withstands|Memory keeps/,
+    );
     // Dev Errors / residual HUD can sit over the lower-third CTA in headed CI.
     await page.getByRole("button", { name: /I hear them/i }).evaluate((el) => {
       (el as HTMLButtonElement).click();

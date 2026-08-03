@@ -5,7 +5,6 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { GameButton } from "@/game-ui";
 import { useInputAction } from "@/input";
 import { CharacterAvatar } from "./CharacterAvatar";
 import type { CapitalCharacter } from "../character";
@@ -18,6 +17,8 @@ import {
   MONEY_IS_ALIVE_HERE,
   spineShortName,
 } from "../titleVoice";
+import { moneyOrganForIsland } from "../moneyOrgans";
+import { organVerbChip } from "../worldMemory";
 import {
   COVE_ISLAND_ID,
   CREDIT_KINGDOM_ID,
@@ -61,10 +62,18 @@ function stageSky(placeId?: string | null): string {
   return "radial-gradient(ellipse 90% 70% at 50% 18%, #7dd3fc 0%, #38bdf8 38%, #0ea5e9 72%, #0c4a6e 100%)";
 }
 
+function organAccent(placeId?: string | null): string {
+  const organ = moneyOrganForIsland(placeId)?.id;
+  if (organ === "coin") return "#fbbf24";
+  if (organ === "clock") return "#38bdf8";
+  if (organ === "spiral") return "#a78bfa";
+  return "#fde68a";
+}
+
 /**
  * Turn-based talk:
- * 1) Listen — NPC line fills the box (Continue)
- * 2) Choose — your reply options (or auto-continue if none)
+ * 1) Listen — NPC line fills the box
+ * 2) Choose — your reply options (or walk on if none)
  * Leave (Esc) abandons the whole encounter — plaza courtesy, not SaaS Skip.
  */
 export function TalkBattleScreen({
@@ -85,6 +94,9 @@ export function TalkBattleScreen({
   const body = resolveProfileText(node.text, learningProfile);
   const place = spineShortName(placeId);
   const harbor = !placeId || placeId === HARBOR_HAVEN_ID;
+  const organ = moneyOrganForIsland(placeId);
+  const organChip = organ ? organVerbChip(organ.id) : null;
+  const accent = organAccent(placeId);
 
   // Reset to listen whenever the dialogue node changes
   useEffect(() => {
@@ -121,6 +133,7 @@ export function TalkBattleScreen({
       className="fixed inset-0 z-[60] flex flex-col"
       data-testid="talk-battle-screen"
       data-place={placeId ?? HARBOR_HAVEN_ID}
+      data-organ={organ?.id ?? "memory"}
       role="dialog"
       aria-modal="true"
       aria-label={`Talk with ${npcName}`}
@@ -152,14 +165,17 @@ export function TalkBattleScreen({
       <div
         className="pointer-events-none absolute left-[18%] top-[12%] h-24 w-24 rounded-full opacity-40 blur-2xl"
         aria-hidden
-        style={{ background: harbor ? "#fde68a" : "#fff7ed" }}
+        style={{ background: accent }}
       />
 
-      {/* Brand + place — title voice, not RPG duel chrome */}
+      {/* Brand + organ — title voice, not RPG duel chrome */}
       <div className="relative z-10 flex items-start justify-between gap-3 px-4 pt-4">
         <div className="min-w-0">
           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/90 drop-shadow">
             {CAPITAL_BRAND} · {place}
+            {organChip ? (
+              <span data-testid="talk-battle-organ"> · {organChip}</span>
+            ) : null}
           </p>
           <p className="mt-0.5 text-[11px] font-semibold text-white/80 drop-shadow">
             {MONEY_IS_ALIVE_HERE}
@@ -168,15 +184,15 @@ export function TalkBattleScreen({
         <button
           type="button"
           onClick={onSkip}
-          className="shrink-0 rounded-full border border-white/35 bg-black/45 px-3.5 py-1.5 text-xs font-bold text-white shadow-md backdrop-blur-sm hover:bg-black/60"
-          data-testid="talk-battle-skip"
+          className="shrink-0 rounded-xl border-2 border-white/40 bg-black/45 px-3.5 py-1.5 text-xs font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-black/60"
+          data-testid="talk-battle-leave"
           title="Leave talk (Esc)"
         >
           Leave
         </button>
       </div>
 
-      {/* Arena: NPC top-right, player bottom-left — faces only, no fake HP */}
+      {/* Stage: NPC top-right, player bottom-left — faces only, no fake HP */}
       <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between px-4 pb-2 pt-2 sm:px-8">
         <div className="flex items-start justify-end gap-3">
           <div className="max-w-[14rem] text-right">
@@ -190,6 +206,7 @@ export function TalkBattleScreen({
           <div
             className="flex h-28 w-28 items-center justify-center rounded-full bg-white/25 text-6xl shadow-[0_8px_32px_rgba(15,23,42,0.25)] ring-4 ring-white/40 sm:h-36 sm:w-36 sm:text-7xl"
             aria-hidden
+            style={{ boxShadow: `0 8px 32px rgba(15,23,42,0.25), 0 0 0 4px ${accent}55` }}
           >
             {npcIcon}
           </div>
@@ -204,21 +221,31 @@ export function TalkBattleScreen({
           <div className="max-w-[14rem]">
             <div className="rounded-2xl bg-[#fffdf6]/95 px-3 py-2 shadow-lg ring-1 ring-black/10">
               <div className="text-sm font-black text-[#16283b]">{player.name || "Voyager"}</div>
-              <div className="text-[11px] font-medium text-[#4b5c6e]">Listening among living money</div>
+              <div className="text-[11px] font-medium text-[#4b5c6e]">
+                {organChip
+                  ? `Listening · ${organChip}`
+                  : "Listening among living money"}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Dialogue box */}
+      {/* Dialogue — speech stage, not a settings card */}
       <div className="relative z-10 mx-auto w-full max-w-3xl px-3 pb-4 sm:px-6">
-        <div className="overflow-hidden rounded-2xl border-2 border-[#1c1917]/80 bg-[#fffdf6] shadow-[4px_4px_0_rgba(28,25,23,0.35)]">
-          <div className="flex items-center justify-between border-b border-[#e7e5e4] bg-[#fef3c7]/70 px-4 py-2">
+        <div
+          className="overflow-hidden rounded-2xl border-2 border-[#1c1917]/80 bg-[#fffdf6] shadow-[4px_4px_0_rgba(28,25,23,0.35)]"
+          style={{ borderTopColor: accent }}
+        >
+          <div
+            className="flex items-center justify-between border-b border-[#e7e5e4] px-4 py-2"
+            style={{ background: `${accent}33` }}
+          >
             <span className="text-xs font-black uppercase tracking-wide text-[#78350f]">
-              {phase === "listen" ? node.speaker || npcName : "Your turn"}
+              {phase === "listen" ? node.speaker || npcName : "Your reply"}
             </span>
             <span className="text-[10px] font-semibold text-[#92400e]/80">
-              {phase === "listen" ? "Listening…" : "Choose a reply"}
+              {phase === "listen" ? "Listening…" : "Speak among living money"}
             </span>
           </div>
 
@@ -227,34 +254,36 @@ export function TalkBattleScreen({
               <p className="min-h-[4.5rem] text-base font-medium leading-relaxed text-[#16283b] sm:text-lg">
                 {body}
               </p>
-              <GameButton
-                variant="primary"
-                className="w-full"
+              <button
+                type="button"
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                style={{ background: accent }}
                 onClick={advanceFromListen}
                 data-testid="talk-battle-continue"
               >
-                {choices.length > 0 ? "Continue ▾" : "Done"}
-              </GameButton>
+                {choices.length > 0 ? "I hear you ▾" : "Walk on"}
+              </button>
             </div>
           ) : (
             <div className="space-y-2 px-4 py-4">
               <p className="mb-2 text-sm font-medium text-[#4b5c6e] line-clamp-2">{body}</p>
               {choices.map((choice: DialogueChoice) => (
-                <GameButton
+                <button
                   key={choice.id}
-                  variant="outline"
-                  className="w-full justify-start text-left"
+                  type="button"
+                  className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/70 bg-white px-4 py-3 text-left text-sm font-bold text-[#16283b] shadow-[2px_2px_0_rgba(28,25,23,0.2)] hover:bg-[#fffbeb] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                  style={{ borderLeftWidth: 6, borderLeftColor: accent }}
                   onClick={() => onChoice(choice.id)}
                   data-testid={`talk-choice-${choice.id}`}
                 >
                   {resolveProfileText(choice.text, learningProfile)}
-                </GameButton>
+                </button>
               ))}
             </div>
           )}
         </div>
         <p className="mt-2 text-center text-[11px] font-semibold text-white/90 drop-shadow">
-          Enter continue · Esc · Leave
+          Enter listen · Esc · Leave
         </p>
       </div>
     </div>
