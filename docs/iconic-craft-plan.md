@@ -4,7 +4,7 @@
 
 **Canon:** [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [mural-thesis.md](./mural-thesis.md) · [game-pillars.md](./game-pillars.md) · [story-bible.md](./story-bible.md)
 
-**Freeze (still holds):** Cove → Paycheck → Credit + Harbor only · Family Room local · no Nathan/BMO/CBE merge · deepen organs, don’t add islands.
+**Freeze (still holds):** Cove → Paycheck → Credit + Harbor only · Family Room local · no foreign repos · deepen organs, don’t add islands.
 
 ---
 
@@ -322,8 +322,8 @@ When two pillars fight, **fantasy + signature loop win**.
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
-| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage (organ chip, I hear you / Walk on, Leave). Next: cold human Ashore→Cove |
-| 2 | Core loop | playable → iconic | 2026-08-02 | Cold Take `doneMs` + pier guide + Carpet CTA after hush. Next: cold human Ashore→Cove pass |
+| 1 | Fantasy | playable → iconic | 2026-08-03 | Talk Battle + Ashore law + Take kid sentence combine chamber |
+| 2 | Core loop | playable → iconic | 2026-08-03 | Take lower-third + kid sentence + pier exit beat; cold-full-cove-chain |
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
 | 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: Soft Beat shore beacons |
 | 5 | Progression | playable → iconic | 2026-08-02 | Freedom Seal + Seal chase chip after pouch dips; carpet tier. Next: cold kid retell |
@@ -353,4 +353,4 @@ When two pillars fight, **fantasy + signature loop win**.
 
 **Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
 
-**Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.
+**Craft sequence complete (0–17).** Whole-game craft iters 9–16 deepened Harbor · Cove → Paycheck → Credit (Ashore law + Cove Take combine chamber 2026-08-03). Next: Money Structure interiors · day-2 echo presence · share thumbnail — do not widen the map.

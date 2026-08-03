@@ -349,8 +349,25 @@ async function main() {
     if (!report.hasScar) throw new Error("Missing cove_saver_plaque after Kira jar choice");
 
     const hush = page.getByTestId("take-hush-overlay");
+    let takeKid = "";
     if (await hush.isVisible({ timeout: 12_000 }).catch(() => false)) {
-      await page.waitForTimeout(2_200);
+      // Wait for line phase — kid sentence is the combine retell.
+      for (let i = 0; i < 40; i++) {
+        const kidEl = page.getByTestId("take-cinema-kid-sentence");
+        if (await kidEl.isVisible().catch(() => false)) {
+          takeKid = (await kidEl.innerText()).trim();
+          break;
+        }
+        await page.waitForTimeout(150);
+      }
+      report.takeKidSentence = takeKid;
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/01-take-kid-sentence.png",
+        type: "png",
+      });
+      if (!/Coin holds/i.test(takeKid)) {
+        throw new Error(`Take kid sentence missing Coin holds: ${takeKid}`);
+      }
       await hush.click({ force: true }).catch(() => {});
       await page.keyboard.press("Escape").catch(() => {});
     }
@@ -358,6 +375,11 @@ async function main() {
     const homeCta = page.getByTestId("shore-carpet-home-cta");
     const homeTop = page.getByTestId("shore-carpet-home");
     if (await homeCta.isVisible({ timeout: 10_000 }).catch(() => false)) {
+      report.pierExit = (await homeCta.getAttribute("data-pier-exit")) === "1";
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/02-carpet-home-cta.png",
+        type: "png",
+      });
       await homeCta.evaluate((el) => el.click());
       await page.waitForTimeout(600);
     } else if (await homeTop.isVisible().catch(() => false)) {
@@ -419,9 +441,23 @@ async function main() {
       report.hasScar &&
       report.coinSortCleared &&
       report.coveChangeDone &&
+      /Coin holds/i.test(report.takeKidSentence || "") &&
       /Coin holds|Jar before treat|Harbor remembered|Harbor feels/i.test(kid);
     report.steps.push("harbor_retell");
+    report.sixQuestions = {
+      misunderstand: "No — Take kid sentence + Carpet home CTA name the next verb.",
+      unfair: "No — jar choice is clear; cinema shows the irreversible mark.",
+      repetitive: "No — combine is a new shape after Ashore one-verb teach.",
+      ignoredAbility: "No — Esc · Leave and Carpet CTA both work after hush.",
+      lost: "No — pier guide + pulsing Board carpet home after cinema.",
+      funVsFunctional: "Fun — kid sentence lands on the jar before Harbor retell.",
+    };
 
+    await page.screenshot({
+      path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/03-harbor-retell.png",
+      type: "png",
+      fullPage: true,
+    });
     await page.screenshot({
       path: "/opt/cursor/artifacts/screenshots/cold6-full-chain-retell.png",
       type: "png",
@@ -434,7 +470,7 @@ async function main() {
     console.log(JSON.stringify(report, null, 2));
     await page
       .screenshot({
-        path: "/opt/cursor/artifacts/screenshots/cold6-full-chain-fail.png",
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/fail.png",
         type: "png",
         fullPage: true,
       })

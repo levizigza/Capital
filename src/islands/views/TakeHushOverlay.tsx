@@ -1,6 +1,7 @@
 /**
- * Signature Take cinema — world stays visible; captions only.
- * Cove / Paycheck / Credit organ landmark holds the climax (no modal card).
+ * Signature Take cinema — world stays visible; captions only (combine chamber).
+ * Cove / Paycheck / Credit organ landmark holds the climax — no modal card.
+ * Kid sentence lands here so carpet home already knows the retell.
  */
 
 import { useEffect, useState } from "react";
@@ -10,7 +11,7 @@ import type { MoneyOrganId } from "../moneyOrgans";
 import { signatureTiming, type TakeCinemaPhase } from "@/qa/signatureLoop";
 import { prefersReducedMotion } from "../a11yMotion";
 import { capitalOrganEyebrow } from "../titleVoice";
-import { scarOrganName } from "../worldMemory";
+import { coldOrganKidSentence, scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
 import { pointerSafeActivate } from "../pointerSafeClick";
@@ -19,6 +20,7 @@ export type { TakeCinemaPhase };
 
 type Props = {
   scarLabel: string;
+  /** @deprecated Prefer kid sentence from organId — kept for callers */
   organLine?: string;
   /** Wave 6 — which organ bed ducks during the hush */
   organId?: MoneyOrganId;
@@ -30,7 +32,6 @@ type Props = {
 
 export function TakeHushOverlay({
   scarLabel,
-  organLine = "The Coin holds. Harbor is already listening.", // prefer organTakeHushLine(organId) from caller
   organId = "coin",
   islandId = "coincraft_cove",
   onDone,
@@ -74,6 +75,7 @@ export function TakeHushOverlay({
   }, [onDone, onPhaseChange, organId, islandId]);
 
   const organWord = scarOrganName(organId);
+  const kidSentence = coldOrganKidSentence(organId);
 
   return (
     <div
@@ -90,6 +92,7 @@ export function TakeHushOverlay({
           "radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, transparent 45%, rgba(15,23,42,0.35) 78%, rgba(15,23,42,0.62) 100%)",
       }}
     >
+      {/* Edge lower-third — same family as Plinth spectacle (no card chrome). */}
       <div className="pointer-events-none mx-auto w-full max-w-xl px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-8 text-center">
         {phase === "hush" ? (
           <p
@@ -112,24 +115,26 @@ export function TakeHushOverlay({
         ) : null}
 
         {phase === "line" ? (
-          <div
-            className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/88 px-4 py-3 shadow-[0_12px_36px_rgba(0,0,0,0.45)] backdrop-blur-md"
-            data-testid="take-cinema-line"
-          >
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
-              Quiet after the Take
+          <div data-testid="take-cinema-line">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
+              Quiet after the Take · {organWord}
             </p>
-            <p className="cap-display mt-2 text-xl text-[#fffdf6] sm:text-2xl">
+            <p
+              className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl"
+              data-testid="take-cinema-kid-sentence"
+            >
+              {kidSentence}
+            </p>
+            <p className="mt-1.5 text-sm font-semibold text-amber-50 drop-shadow">
               “{scarLabel}”
             </p>
-            <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90">{organLine}</p>
             <p
-              className="mt-3 text-sm font-black tracking-wide text-amber-100"
+              className="mt-3 text-sm font-black tracking-wide text-amber-100 drop-shadow"
               data-testid="take-cinema-home-cta"
             >
               Carpet home — Harbor felt that
             </p>
-            <p className="mt-1 text-[11px] font-semibold tracking-wide text-white/80">
+            <p className="mt-1 text-[11px] tracking-wide text-white/70">
               Esc · Leave · board the Money Carpet
             </p>
           </div>

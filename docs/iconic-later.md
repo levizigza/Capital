@@ -15,7 +15,7 @@ Anything here is **parked** until the MVP iconic bar holds:
 |-----|---------|
 | No map width | Travel / carpet stay **Harbor · Cove → Paycheck → Credit** only |
 | No fake MMO | Family Room stays local / device-share |
-| No foreign merge | Nathan Project · BMO · CBE stay out of Capital |
+| No foreign merge | Foreign game repos / external IPs stay out of Capital |
 | Cut before add | New outer island < deeper Take / feel / Plinth proof |
 
 Lift only when a cold player can retell Coin · Clock · Spiral · Memory in one kid sentence each after Harbor return.
@@ -49,7 +49,7 @@ These are **allowed later** as spine depth — not new islands:
 
 | From | Parked polish |
 |------|----------------|
-| Fantasy / Story / UI | (iterated) Talk Battle + cold kid retell; Ashore Piggy/veil polish on PR #68 |
+| Fantasy / Story / UI | (iterated) Talk Battle + Ashore law + Take combine kid sentence (iter 16) |
 | Core loop | (iterated) Cold Take `doneMs` + pier guide + Carpet CTA after hush |
 | Goals | (iterated) Bad-take Spend soft-fail copy parity |
 | Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |

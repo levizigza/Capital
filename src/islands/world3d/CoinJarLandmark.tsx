@@ -46,7 +46,8 @@ export function CoinJarLandmark({
     if (glow.current) {
       const mat = glow.current.material as THREE.MeshStandardMaterial;
       if (mark) {
-        mat.emissiveIntensity = 0.55 + flash * (0.4 + Math.sin(t * 10) * 0.25);
+        // Irreversible punch — brighter than Soft Beat so the combine reads in-world.
+        mat.emissiveIntensity = 0.75 + flash * (0.55 + Math.sin(t * 11) * 0.3);
       } else if (hushActive) {
         const base = settle ? 0.1 : 0.12;
         mat.emissiveIntensity = base + Math.sin(t * 1.1) * 0.03 * Math.max(flash, 0.35);
@@ -57,8 +58,8 @@ export function CoinJarLandmark({
     }
     if (lid.current) {
       if (mark) {
-        lid.current.rotation.y = Math.sin(t * 6) * 0.04 * flash;
-        lid.current.position.y = 3.28 + Math.sin(t * 8) * 0.02 * flash;
+        lid.current.rotation.y = Math.sin(t * 7) * 0.06 * flash;
+        lid.current.position.y = 3.26 + Math.sin(t * 9) * 0.035 * flash;
       } else if (settle || hushActive) {
         const speed = settle ? 0.08 : 0.2;
         lid.current.rotation.y = Math.sin(t * speed) * (settle ? 0.008 : 0.02);

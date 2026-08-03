@@ -61,8 +61,8 @@ describe("signature loop QA", () => {
     expect(t.revealMs).toBeLessThan(t.holdEndMs);
     // Mark stays readable; line + Carpet CTA own the rest until doneMs.
     expect(t.revealMs - t.hushMs).toBeGreaterThanOrEqual(800);
-    expect(t.doneMs - t.revealMs).toBeGreaterThanOrEqual(2000);
-    expect(t.doneMs).toBeLessThanOrEqual(5000);
+    expect(t.doneMs - t.revealMs).toBeGreaterThanOrEqual(2800);
+    expect(t.doneMs).toBeLessThanOrEqual(6000);
   });
 
   it("TakeHushOverlay auto-dismisses on doneMs (cold unseeded path)", () => {
