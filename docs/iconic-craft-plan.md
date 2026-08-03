@@ -323,7 +323,7 @@ When two pillars fight, **fantasy + signature loop win**.
 |---|--------|---------|-----------|----------|
 | 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
 | 1 | Fantasy | playable → iconic | 2026-08-03 | Talk Battle + Ashore law + Take kid sentence combine chamber |
-| 2 | Core loop | playable → iconic | 2026-08-03 | Take lower-third + kid sentence + pier exit beat; cold-full-cove-chain |
+| 2 | Core loop | playable → iconic | 2026-08-03 | Unseeded cold-full-cove-chain green: Take kid sentence + Harbor Piggy retell |
 | 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
 | 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: Soft Beat shore beacons |
 | 5 | Progression | playable → iconic | 2026-08-02 | Freedom Seal + Seal chase chip after pouch dips; carpet tier. Next: cold kid retell |
@@ -333,12 +333,12 @@ When two pillars fight, **fantasy + signature loop win**.
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Talk Battle Leave + organ stage + Esc · Leave overlays. Next: cold human Ashore→Cove |
 | 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
-| 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences + Talk Battle organ chip; Ashore→Cove retell contract. Next: cold human Ashore→Cove |
+| 12 | Story | playable → iconic | 2026-08-03 | Unseeded Ashore→Cove→Harbor Coin-holds retell proven cold. Next: structure interiors |
 | 13 | Onboarding | playable → iconic | 2026-08-03 | Ashore UI law Talk→Carpet→Cove; Outfitter-card demoted; Portal/Asobi/HL research |
 | 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
 | 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |
-| 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
-| 17 | Scope | playable → iconic | 2026-08-02 | Freeze in code + `docs/iconic-later.md` creep sink + PARKED banners on outer docs. Next: deepen spine from later-list polish only |
+| 16 | Testing | playable → iconic | 2026-08-03 | cold-full-cove-chain + six questions + `passPendingMastery` QA. Next: keep board honest |
+| 17 | Scope | playable → iconic | 2026-08-03 | Freeze laws generic (no foreign repos/IPs); deepen spine only |
 
 ---
 

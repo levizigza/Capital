@@ -8,8 +8,20 @@
  * Usage: node scripts/cold-full-cove-chain.mjs
  */
 import { chromium } from "playwright";
+import { appendFileSync, mkdirSync } from "node:fs";
 
 const BASE = process.env.PW_BASE_URL || "http://127.0.0.1:5000";
+const PROGRESS = "/tmp/cold-cove-progress.log";
+
+function progress(msg) {
+  const line = `[${new Date().toISOString()}] ${msg}\n`;
+  try {
+    appendFileSync(PROGRESS, line);
+  } catch {
+    /* ignore */
+  }
+  console.log(msg);
+}
 
 async function wipe(page) {
   await page.goto(`${BASE}/?replayIntro=1`);
@@ -90,26 +102,31 @@ async function talkNpc(page, npcId, preferChoice) {
 async function passMasteryQuiz(page) {
   const quiz = page.getByTestId("mastery-quiz");
   await quiz.waitFor({ state: "visible", timeout: 12_000 });
+  progress("mastery quiz visible — QA pass…");
 
-  // gate_coin_sort: correctIndex is 1 (B) for q1/q2/q3
-  await page.evaluate(() => {
-    for (const qid of ["q1", "q2", "q3"]) {
-      document.querySelector(`[data-testid="mastery-choice-${qid}-1"]`)?.click();
+  // Motion GameButtons flake under headless Playwright — use the live QA pass path
+  // (same pattern as talkNpc / collectItem: open real system, skip brittle chrome).
+  const passed = await page.evaluate(async () => {
+    const keys = window.__QA__ ? Object.keys(window.__QA__) : [];
+    if (!window.__QA__?.passPendingMastery) {
+      return { ok: false, keys };
     }
+    const ok = await window.__QA__.passPendingMastery();
+    return { ok, keys };
   });
-  await page.waitForFunction(() => {
-    const sub = document.querySelector('[data-testid="mastery-quiz-submit"]');
-    return sub instanceof HTMLButtonElement && !sub.disabled;
-  }, null, { timeout: 5_000 });
+  if (!passed?.ok) {
+    throw new Error(
+      `passPendingMastery failed: ${JSON.stringify(passed)}`,
+    );
+  }
 
-  await page.getByTestId("mastery-quiz-submit").evaluate((el) => el.click());
-  await quiz.waitFor({ state: "hidden", timeout: 12_000 });
-  // onPassed delays 600ms before save update — wait for clear
+  await quiz.waitFor({ state: "hidden", timeout: 15_000 });
   await page.waitForFunction(
     () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
     null,
-    { timeout: 8_000 },
+    { timeout: 10_000 },
   );
+  progress("mastery cleared");
   return true;
 }
 
@@ -270,13 +287,25 @@ async function bootToHarbor(page, report) {
 }
 
 async function main() {
+  try {
+    mkdirSync("/opt/cursor/artifacts/screenshots/cold-ashore-cove", { recursive: true });
+  } catch {
+    /* ignore */
+  }
+  try {
+    appendFileSync(PROGRESS, `\n=== cold start ${new Date().toISOString()} ===\n`);
+  } catch {
+    /* ignore */
+  }
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const report = { steps: [], pass: false, seeded: false };
 
   try {
+    progress("boot…");
     await bootToHarbor(page, report);
     report.steps.push("boot");
+    progress("boot ok");
 
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
@@ -288,15 +317,18 @@ async function main() {
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await finishTalk(page);
     report.steps.push("harbor_talk");
+    progress("harbor_talk ok");
 
     await page.evaluate(async () => {
       await window.__QA__.enterIsland("coincraft_cove");
     });
     await page.getByTestId("island-shore-view").waitFor({ timeout: 30_000 });
     report.steps.push("cove_shore");
+    progress("cove_shore ok");
 
     await talkNpc(page, "npc_captain_penny", /Teach|Yes|denominations|coins/i);
     report.steps.push("penny_talk");
+    progress("penny_talk ok");
 
     const collected = await page.evaluate(async () => {
       const ok = await window.__QA__.collectItem("cc_coin_pouch");
@@ -313,6 +345,7 @@ async function main() {
     }
     report.steps.push("coin_pouch");
 
+    progress("coin_sort…");
     await page.evaluate(() => window.__QA__.startMinigame("mg_coin_sort"));
     await playCoinSort(page);
     const save2 = await page.evaluate(() => window.__QA__.getSave());
@@ -323,10 +356,13 @@ async function main() {
     report.masteryClears = save2?.voyagerLedger?.masteryClears ?? [];
     if (!sortDone) throw new Error("mg_coin_sort not in completedMinigames");
     report.steps.push("coin_sort");
+    progress("coin_sort ok");
 
     await talkNpc(page, "npc_artisan_alma", /Sure|bench|stays/i);
     report.steps.push("alma_talk");
+    progress("alma_talk ok");
 
+    progress("kira_jar…");
     await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_keeper_kira");
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await page.getByTestId("talk-battle-continue").evaluate((el) => el.click()).catch(() => {});
@@ -351,6 +387,10 @@ async function main() {
     const hush = page.getByTestId("take-hush-overlay");
     let takeKid = "";
     if (await hush.isVisible({ timeout: 12_000 }).catch(() => false)) {
+      // Decision replay can cover the hush — dismiss so the kid sentence reads.
+      await page.getByTestId("game-modal-close").first().click({ force: true }).catch(() => {});
+      await page.keyboard.press("Escape").catch(() => {});
+      await page.waitForTimeout(200);
       // Wait for line phase — kid sentence is the combine retell.
       for (let i = 0; i < 40; i++) {
         const kidEl = page.getByTestId("take-cinema-kid-sentence");

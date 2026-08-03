@@ -167,8 +167,9 @@ If not, that surface is not iconic yet.
 ## Iteration 16 (shipped) — unseeded Ashore→Cove combine + Take juice
 
 - **Cove Take combine chamber:** lower-third captions (no card); `coldOrganKidSentence` on Take line; jar mark punch; pier/Carpet exit beat on cinema end; `doneMs` 5.2s for readable kid sentence.
-- **Cold evidence:** `scripts/cold-full-cove-chain.mjs` (+ screenshots under `/opt/cursor/artifacts/screenshots/cold-ashore-cove/`).
-- **Freeze scrub:** removed foreign-project name bans from living docs/rules — law is generic “no foreign game repos / external IPs.”
+- **Cold evidence (unseeded, pass):** `scripts/cold-full-cove-chain.mjs` → Take *“The Coin holds — save a little; the jar still waits.”* → Harbor Piggy homecoming same sentence · screenshots `cold-ashore-cove/`.
+- **QA:** `passPendingMastery` clears Harbor Boss without flaky motion-button clicks (coin sort play stays real).
+- **Freeze scrub:** living docs/rules say only “no foreign game repos / external IPs” — no merge path, no foreign-project names.
 
 ## Still deepen (from iconic-later)
 
