@@ -28,8 +28,8 @@ export type GuidedVisualBeats = {
 export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   meet_guide: {
     keeperEmote: "wave",
-    keeperBubbleWhenNear: "Piggy Penny: Welcome ashore!",
-    bagTip: "Talk to Piggy Penny — she’s waving!",
+    keeperBubbleWhenNear: "Piggy Penny: Welcome ashore — talk to me!",
+    bagTip: "Talk to Piggy Penny — soft gold ring by the fountain",
     pulseHotspot: "guide",
   },
   walk_outfitter: {

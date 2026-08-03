@@ -49,7 +49,7 @@ These are **allowed later** as spine depth — not new islands:
 
 | From | Parked polish |
 |------|----------------|
-| Fantasy / Story / UI | (iterated) Talk Battle living-money stage + cold kid retell; cold human Ashore→Cove pass remains |
+| Fantasy / Story / UI | (iterated) Talk Battle + cold kid retell; Ashore Piggy/veil polish on PR #68 |
 | Core loop | (iterated) Cold Take `doneMs` + pier guide + Carpet CTA after hush |
 | Goals | (iterated) Bad-take Spend soft-fail copy parity |
 | Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |

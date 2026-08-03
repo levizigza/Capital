@@ -653,12 +653,15 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
   return list[h % list.length];
 }
 
+/** Piggy fountain slot — Coin Bag look-at + first-meet spawn anchor. */
+export const HARBOR_PIGGY_POS: [number, number, number] = [1.4, 0, 0.6];
+
 /** Harbor plaza sample — readable crowd without spawning all 30.
  *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide).
  *  Series leads flank the Memory Courtyard (near Plinth / bank) — never Piggy's fountain slot. */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
   // Front-and-center for first meet (player spawns ~[0,0,3] facing -Z)
-  { mascotId: "piggy_penny", pos: [1.4, 0, 0.6], yaw: 0.15 },
+  { mascotId: "piggy_penny", pos: HARBOR_PIGGY_POS, yaw: 0.15 },
   // Series leads — terrace by the Memory Plinth, readable after the loop settles
   { mascotId: "cashwell", pos: [5.6, 0, 0.4], yaw: -0.85 },
   { mascotId: "cashmere", pos: [6.4, 0, -1.6], yaw: -1.1 },

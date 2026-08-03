@@ -24,7 +24,7 @@ export type CoinBagBuddyTip = {
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
   meet_guide: {
-    tip: "Talk to Piggy Penny — she’s waving!",
+    tip: "Talk to Piggy Penny — soft gold ring by the fountain",
     coach: "I’m Coin Bag. Stay with me — we’ll walk to Piggy together.",
   },
   walk_outfitter: {

@@ -66,9 +66,11 @@ import { HarborMythFallback } from "../views/HarborMythFallback";
 import type { HarborFallbackMode } from "../harborFirstMeet";
 import {
   ENTER_HARBOR_HAVEN,
+  HARBOR_LOADING_ASHORE,
   HARBOR_LOADING_HINT,
   HARBOR_LOADING_SLOW,
 } from "../titleVoice";
+import { HARBOR_PIGGY_POS } from "../moneyCast";
 import {
   HARBOR_3D_FAIL_KEY,
   HARBOR_3D_OK_KEY,
@@ -900,8 +902,10 @@ export function WalkableHarborView({
   const guideTarget = useMemo(() => {
     if (guideLookAt) return guideLookAt;
     if (!guideHighlight) return null;
-    return guideTargetForHighlight(guideHighlight, hotspots);
-  }, [guideLookAt, guideHighlight, hotspots]);
+    const piggyHome =
+      lives.find((l) => l.mascotId === HARBOR_KEEPER_MASCOT_ID)?.home ?? HARBOR_PIGGY_POS;
+    return guideTargetForHighlight(guideHighlight, hotspots, piggyHome);
+  }, [guideLookAt, guideHighlight, hotspots, lives]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -1103,13 +1107,16 @@ export function WalkableHarborView({
           <p className="max-w-sm text-base font-black text-[#16283b]" data-testid="harbor-loading">
             {loadHint}
           </p>
-          <p className="max-w-xs text-sm font-medium text-[#16283b]/80">
-            How to play: Talk to Piggy · Become you at the Outfitter · Board the Money Carpet for Cove.
+          <p
+            className="max-w-xs text-sm font-medium text-[#16283b]/80"
+            data-testid="harbor-loading-ashore"
+          >
+            {HARBOR_LOADING_ASHORE}
           </p>
           <button
             type="button"
             data-testid="harbor-skip-3d"
-            className="pointer-events-auto relative z-[110] min-h-12 min-w-[14rem] rounded-full bg-[#16283b] px-6 py-3.5 text-sm font-bold text-white shadow-lg"
+            className="pointer-events-auto relative z-[110] min-h-14 min-w-[16rem] rounded-2xl bg-[#16283b] px-7 py-4 text-base font-black text-white shadow-[4px_4px_0_rgba(22,40,59,0.35)]"
             style={{ touchAction: "manipulation" }}
             onPointerDown={(e) => {
               e.preventDefault();
@@ -1124,7 +1131,7 @@ export function WalkableHarborView({
             {ENTER_HARBOR_HAVEN}
           </button>
           <p className="max-w-xs text-[11px] font-medium text-[#16283b]/65">
-            Enter anytime — if the plaza is slow, you still get Talk · Carpet.
+            Slow plaza? Tap Enter — myth path still gives Talk Piggy · Carpet · Cove.
           </p>
         </div>
       ) : null}

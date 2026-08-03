@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import * as THREE from "three";
+import { HARBOR_PIGGY_POS } from "../moneyCast";
 
 export const COIN_BAG_GUIDE_ID = "coin_bag_guide";
 
@@ -297,7 +298,7 @@ export function MoneyBagGuide({
 export function guideTargetForHighlight(
   highlight: "outfitter" | "capsule" | "travel" | "practice" | "guide" | "pavilion" | string | undefined,
   hotspots: { id: string; position: [number, number, number] }[],
-  piggyPos: [number, number, number] = [4.8, 0, -4],
+  piggyPos: [number, number, number] = HARBOR_PIGGY_POS,
 ): [number, number, number] | null {
   if (!highlight) return null;
   if (highlight === "guide") return piggyPos;

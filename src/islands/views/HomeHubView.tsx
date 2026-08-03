@@ -1052,17 +1052,17 @@ export function HomeHubView({
                   guideLookAt={harborGuideLookAt}
                   guideTip={bagGuideTip}
                   keeperEmote={
-                    castleMode || homecomingActive || plinthShareBeat
+                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
                       ? keeperEmote
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || plinthShareBeat
+                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
                       ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
                       : null
                   }
                   pulseHotspotId={
-                    castleMode || plinthShareBeat || homecomingActive
+                    castleMode || plinthShareBeat || homecomingActive || piggyPresence
                       ? pulseHotspotId
                       : showOutfitterHighlight
                         ? "outfitter"

@@ -61,6 +61,9 @@ function organIdForIsland(islandId: string): MoneyOrganId {
 /** Harbor load veil — myth, not a spinner. */
 export const HARBOR_LOADING_HINT = `Harbor Haven · your plaza is waking up…`;
 export const HARBOR_LOADING_SLOW = `${CAPITAL_BRAND} · enter anytime — Piggy is waiting`;
+/** Ashore law on the veil — Talk → Carpet → Cove (Outfitter is discovery, not a gate). */
+export const HARBOR_LOADING_ASHORE =
+  "How to play: Talk to Piggy · Board the Money Carpet · Coincraft Cove.";
 export const ENTER_HARBOR_HAVEN = "Enter Harbor Haven";
 
 /** Carpet dock / leave / map. */

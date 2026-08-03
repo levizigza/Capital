@@ -151,8 +151,14 @@ If not, that surface is not iconic yet.
   5. Lost? Place/goal clear once cinema owns plaza.
   6. Fun vs functional? Kid sentences + Plinth freeze read iconic, not only checklist.
 
+## Iteration 14 (shipped) — Ashore→Cove unseeded human polish
+
+- **Piggy readability:** fountain look-at fixed (`HARBOR_PIGGY_POS` — Coin Bag no longer points at a dead plaza slot); first-meet pulse gets larger mesh + soft gold disc + word bubble (not emoji-only).
+- **WebGL veil / skip-3d:** loading veil speaks Ashore law only — Talk Piggy · Carpet · Cove (Outfitter off the veil); Enter Harbor Haven CTA bigger / clearer myth escape.
+- **CI gate:** `resolveShoreGuideLookAt` unstarted fallback restores first-NPC / first-objective when Penny isn’t on the shore (unit green for PR #68).
+
 ## Still deepen (from iconic-later)
 
-Merge when you want · optional Ashore→Cove unseeded human polish  
+PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  
 
-Iterate those next — never new islands first.
+Iterate depth next — never new islands first.
