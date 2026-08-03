@@ -8,16 +8,28 @@ const FLAG = "__capitalPointerActivated";
 
 type FlagTarget = EventTarget & { [FLAG]?: boolean };
 
-export function pointerSafeActivate(handler: () => void) {
+type ActivateEvent = {
+  button?: number;
+  preventDefault: () => void;
+  stopPropagation: () => void;
+  currentTarget: EventTarget;
+};
+
+export function pointerSafeActivate(
+  handler: () => void,
+  opts?: { stopPropagation?: boolean },
+) {
   return {
-    onPointerUp: (e: { button: number; preventDefault: () => void; currentTarget: EventTarget }) => {
-      if (e.button !== 0) return;
+    onPointerUp: (e: ActivateEvent) => {
+      if ((e.button ?? 0) !== 0) return;
       e.preventDefault();
+      if (opts?.stopPropagation) e.stopPropagation();
       (e.currentTarget as FlagTarget)[FLAG] = true;
       handler();
     },
-    onClick: (e: { preventDefault: () => void; currentTarget: EventTarget }) => {
+    onClick: (e: ActivateEvent) => {
       e.preventDefault();
+      if (opts?.stopPropagation) e.stopPropagation();
       const t = e.currentTarget as FlagTarget;
       if (t[FLAG]) {
         t[FLAG] = false;

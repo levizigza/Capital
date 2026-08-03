@@ -19,6 +19,7 @@ import {
   applyLookPreset,
   lookPresetsForBase,
 } from "../castLooks";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -359,17 +360,7 @@ export function CharacterCreator({
                 ? "min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-amber-100/40 bg-white/10 px-3 text-sm font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-white/15 active:translate-x-[1px] active:translate-y-[1px]"
                 : "min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-slate-300 bg-white px-3 text-sm font-bold text-slate-800"
             }
-            onPointerUp={(e) => {
-              if (e.button !== 0) return;
-              e.preventDefault();
-              e.stopPropagation();
-              onCancel();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onCancel();
-            }}
+            {...pointerSafeActivate(onCancel, { stopPropagation: true })}
             data-testid={cancelTestId}
           >
             {cancelLabel ?? (dark ? (onChangeFighter ? "← Fighters" : "Save look & leave") : "Leave")}
@@ -378,17 +369,7 @@ export function CharacterCreator({
         <button
           type="button"
           className="min-h-12 flex-1 touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[var(--cap-gold,#f4b942)] px-3 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-          onPointerUp={(e) => {
-            if (e.button !== 0) return;
-            e.preventDefault();
-            e.stopPropagation();
-            commit();
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            commit();
-          }}
+          {...pointerSafeActivate(commit, { stopPropagation: true })}
           data-testid={saveTestId}
         >
           {saveLabel}

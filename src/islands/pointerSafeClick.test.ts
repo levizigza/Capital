@@ -9,10 +9,12 @@ describe("pointerSafeActivate", () => {
     onPointerUp({
       button: 0,
       preventDefault: () => undefined,
+      stopPropagation: () => undefined,
       currentTarget: target,
     });
     onClick({
       preventDefault: () => undefined,
+      stopPropagation: () => undefined,
       currentTarget: target,
     });
     expect(handler).toHaveBeenCalledTimes(1);
@@ -23,6 +25,7 @@ describe("pointerSafeActivate", () => {
     const { onClick } = pointerSafeActivate(handler);
     onClick({
       preventDefault: () => undefined,
+      stopPropagation: () => undefined,
       currentTarget: {} as EventTarget,
     });
     expect(handler).toHaveBeenCalledTimes(1);
@@ -34,8 +37,22 @@ describe("pointerSafeActivate", () => {
     onPointerUp({
       button: 2,
       preventDefault: () => undefined,
+      stopPropagation: () => undefined,
       currentTarget: {} as EventTarget,
     });
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("can stopPropagation for nested CTAs", () => {
+    const handler = vi.fn();
+    const stop = vi.fn();
+    const { onClick } = pointerSafeActivate(handler, { stopPropagation: true });
+    onClick({
+      preventDefault: () => undefined,
+      stopPropagation: stop,
+      currentTarget: {} as EventTarget,
+    });
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(stop).toHaveBeenCalledTimes(1);
   });
 });
