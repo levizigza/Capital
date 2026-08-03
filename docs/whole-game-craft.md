@@ -107,14 +107,14 @@ If not, that surface is not iconic yet.
 - Talk Battle: compact stage + pinned dialogue so “I hear you” / replies stay above the fold
 - Harbor e2e: Talk → Board Carpet → travel map / carpet flight
 
-## Iteration 8 (in flight)
+## Iteration 8 (shipped)
 
-- Cove shore: Savings Jar / Badge no longer steal the Giant Coin Jar CTA (dialogue rewards only)
-- Shore interact + Carpet home CTAs use `pointerSafeActivate`
-- Structure near-prefer when ranges overlap items
+- Cove shore: dialogue/quest-reward items no longer steal the Giant Coin Jar CTA
+- Shore interact + Carpet home CTAs use `pointerSafeActivate`; structure wins near-target
+- Cold script + retell: Squeeze jar CTA → **Coin holds — Harbor remembered: “Jar before treat.”**
 
 ## Still deepen (from iconic-later)
 
-Cold human play past Cove Take → Harbor retell · merge readiness  
+Optional full human Penny → Coin Sort → Alma → Kira chain · merge when you want  
 
 Iterate those next — never new islands first.
