@@ -297,6 +297,20 @@ export default function ModularMinigame({
         ))}
       </div>
 
+      {/* Cove Coin Sort (and similar) never emit endGame — kids need a clear finish verb. */}
+      {!gameOver ? (
+        <div className="flex justify-center pt-1">
+          <GameButton
+            variant="secondary"
+            motionEnabled={false}
+            onClick={() => setGameOver(true)}
+            data-testid="minigame-finish-round"
+          >
+            Finish round →
+          </GameButton>
+        </div>
+      ) : null}
+
       {/* Round over — parent judges clear vs fail (Pillar 3: no fake celebration before threshold). */}
       {gameOver && (
         <div
@@ -402,15 +416,22 @@ function getActionPayload(
   data: Record<string, unknown>,
   actionLabel?: string,
 ): Record<string, unknown> | undefined {
-  // EarnSpend: pick first available earn/spend option from data
+  // EarnSpend: match labeled job / shop buttons to config options
   if (moduleId === "EarnSpend" && actionType === "earn") {
-    // The renderer could show individual buttons per option, but for the
-    // MVP we cycle through earn options. Actual per-option buttons can be
-    // added with a richer renderer layer later.
-    return undefined; // will use default in module
+    const opts = data.earnOptions as { id: string; label: string; amount: number }[] | undefined;
+    const match = opts?.find(
+      (o) => actionLabel === o.label || actionLabel?.startsWith(`${o.label} `),
+    );
+    if (match) return { id: match.id, label: match.label, amount: match.amount };
+    return opts?.[0] ? { id: opts[0].id, label: opts[0].label, amount: opts[0].amount } : undefined;
   }
   if (moduleId === "EarnSpend" && actionType === "spend") {
-    return undefined;
+    const opts = data.spendOptions as { id: string; label: string; cost: number }[] | undefined;
+    const match = opts?.find(
+      (o) => actionLabel === o.label || actionLabel?.startsWith(`${o.label} `),
+    );
+    if (match) return { id: match.id, label: match.label, cost: match.cost };
+    return opts?.[0] ? { id: opts[0].id, label: opts[0].label, cost: opts[0].cost } : undefined;
   }
 
   // ChangeMaking: addCoin picks from denominatons list — handled by

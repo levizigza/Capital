@@ -20,6 +20,10 @@ export type QABridge = {
   openHub: () => void;
   startMinigame: (minigameId: string) => void;
   startQuest: (questId: string) => void;
+  /** Open a real Talk Battle (cold quest chains — not a seed shortcut). */
+  talkNpc: (npcId: string) => void | Promise<void>;
+  /** Pick up a shore item through the live collect path. Resolves when inventory updates. */
+  collectItem: (itemId: string) => Promise<boolean>;
   persistSave: () => Promise<void>;
   resetSave: () => Promise<void>;
   /** Seed Harbor at a signature-loop phase (cold playtest). */

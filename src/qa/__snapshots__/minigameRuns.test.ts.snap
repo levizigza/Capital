@@ -2,8 +2,8 @@
 
 exports[`deterministic minigame test runs > coincraft coin sort minigame session runs without error 1`] = `
 {
-  "finalMoney": 0,
-  "finalScore": 0,
+  "finalMoney": 5,
+  "finalScore": 8,
   "finalTurn": 1,
   "seed": 100,
   "telemetryEvents": [

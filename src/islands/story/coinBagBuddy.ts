@@ -268,9 +268,9 @@ export function coinBagIslandTip(
       const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
       if (!anyStarted) {
         return {
-          tip: "Giant Coin Jar — squeeze the slot!",
+          tip: "Captain Penny — First Coins",
           coach:
-            "That big Jar is a money machine. Walk into the glowing coin slot — cork, spring, and lid each open a world.",
+            "Talk to Captain Penny at the harbor. Earn fair coins, then the Giant Coin Jar Take waits.",
           track: "main",
         };
       }

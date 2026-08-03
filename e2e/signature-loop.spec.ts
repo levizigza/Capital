@@ -36,6 +36,13 @@ test.describe("Signature loop", () => {
       await window.__QA__!.seedSignatureLoop("spectacle_ready");
     });
 
+    // Headless WebGL often sits on the loading veil — Enter Harbor sets plazaReady
+    // so scar cinema can open (failsafe alone is flaky under vite preview).
+    const skip3d = page.getByTestId("harbor-skip-3d");
+    if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skip3d.click({ force: true });
+    }
+
     const spectacle = page.getByTestId("scar-spectacle");
     await expect(spectacle).toBeVisible({ timeout: 20_000 });
     // World cinema — captions over Plinth (not a modal card).

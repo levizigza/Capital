@@ -113,8 +113,15 @@ If not, that surface is not iconic yet.
 - Shore interact + Carpet home CTAs use `pointerSafeActivate`; structure wins near-target
 - Cold script + retell: Squeeze jar CTA → **Coin holds — Harbor remembered: “Jar before treat.”**
 
+## Iteration 9 (shipped)
+
+- Full cold Cove chain (no seed): Penny → Coin Pouch → Coin Sort + mastery → Alma → Kira jar → Harbor retell
+- `updateSave` applies through `saveRef` synchronously so quest-complete side effects (homecoming / Coin holds) fire before the next await
+- Coin Sort: real EarnSpend payloads + Finish round; mastery choices expose `mastery-choice-*` testids
+- Script: `scripts/cold-full-cove-chain.mjs` — kid sentence from Piggy homecoming: **The Coin holds**
+
 ## Still deepen (from iconic-later)
 
-Optional full human Penny → Coin Sort → Alma → Kira chain · merge when you want  
+Day-2 scar echo · Money Structure interiors · merge when you want  
 
 Iterate those next — never new islands first.

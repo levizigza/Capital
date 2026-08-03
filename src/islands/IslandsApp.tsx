@@ -220,6 +220,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const [view, setView] = useState<View>("home");
   const [save, setSave] = useState<IslandSaveV1 | null>(null);
+  const viewRef = useRef(view);
+  const saveRef = useRef(save);
+  viewRef.current = view;
+  // Keep ref aligned with React state for external setSave paths (load/reset/seed).
+  // updateSave writes saveRef synchronously before setSave — do not clobber mid-tick.
+  useEffect(() => {
+    saveRef.current = save;
+  }, [save]);
   /** After carpet POV boot flight — skip 2D welcome cards and land on Harbor. */
   const [bootLandHub] = useState(() => {
     try {
@@ -301,22 +309,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     let mounted = true;
     const failsafe = window.setTimeout(() => {
       if (!mounted) return;
-      setSave((prev) => {
-        if (prev) return prev;
-        console.warn("[islands] save load timed out — starting default Harbor save");
-        return createDefaultIslandSave();
-      });
+      if (saveRef.current) return;
+      console.warn("[islands] save load timed out — starting default Harbor save");
+      const fresh = createDefaultIslandSave();
+      saveRef.current = fresh;
+      setSave(fresh);
     }, 3_000);
     (async () => {
       try {
         const loaded = await loadIslandSave();
         if (!mounted) return;
+        saveRef.current = loaded;
         setSave(loaded);
         if (loaded.currentIslandId) setActiveIslandId(loaded.currentIslandId);
       } catch (e) {
         console.warn("[islands] save load failed", e);
         if (!mounted) return;
-        setSave(createDefaultIslandSave());
+        const fresh = createDefaultIslandSave();
+        saveRef.current = fresh;
+        setSave(fresh);
       }
     })();
     return () => {
@@ -423,11 +434,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     onExit();
   }, [onExit]);
 
+  /**
+   * Apply save updates synchronously through saveRef, then mirror into React state.
+   * Side-effect gates (quest complete → homecoming, objective touch lists) read
+   * flags set inside the updater — those must run before the next await, not on
+   * a later React flush.
+   */
   const updateSave = useCallback((updater: (prev: IslandSaveV1) => IslandSaveV1) => {
-    setSave((prev) => {
-      if (!prev) return prev;
-      return updater(prev);
-    });
+    const prev = saveRef.current;
+    if (!prev) return;
+    const next = updater(prev);
+    saveRef.current = next;
+    setSave(next);
+  }, []);
+
+  const replaceSave = useCallback((next: IslandSaveV1) => {
+    saveRef.current = next;
+    setSave(next);
   }, []);
 
   /** Debounced persist — always writes the latest save, never a stale in-flight body. */
@@ -846,10 +869,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     [activeIsland, updateSave]
   );
 
-  const viewRef = useRef(view);
-  const saveRef = useRef(save);
-  viewRef.current = view;
-  saveRef.current = save;
+  const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
+  const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
 
   useEffect(() => {
     if (!save) return;
@@ -874,13 +895,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       startQuest: (questId) => {
         void startQuest(questId as QuestId);
       },
+      talkNpc: (npcId) => {
+        talkNpcRef.current(npcId as NpcId);
+      },
+      collectItem: (itemId) => collectItemRef.current(itemId as ItemId),
       persistSave: async () => {
         const current = saveRef.current;
         if (current) await persistIslandSave(current);
       },
       resetSave: async () => {
         const fresh = createDefaultIslandSave();
-        setSave(fresh);
+        replaceSave(fresh);
         setActiveIslandId(null);
         setView("home");
         await persistIslandSave(fresh);
@@ -888,7 +913,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       seedSignatureLoop: async (phase?: SignaturePhase) => {
         const resolved = phase ?? "spectacle_ready";
         const seeded = buildSignatureLoopSave(resolved);
-        setSave(seeded);
+        replaceSave(seeded);
         setHubModal(null);
         await persistIslandSave(seeded);
         // Take cinema lives on the shore — land Cove quiet on the organ landmark.
@@ -904,7 +929,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
     });
-  }, [save, enterIsland, startQuest, activeIslandId]);
+  }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
 
   const maybeCompleteQuest = useCallback(
     async (questId: QuestId) => {
@@ -1080,14 +1105,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!activeIsland) return;
 
       const key = objectiveKey(objective);
-
-      const startedQuestIds = activeIsland.quests
-        .map((q) => q.id)
-        .filter((id) => save?.questStatus[id]?.started && !save?.questStatus[id]?.completed);
-
+      // Read started quests from updater `prev` — startQuest may have just flipped
+      // started in the same tick (Penny First Coins), so closure `save` is stale.
+      let touchedQuestIds: QuestId[] = [];
       updateSave((prev) => {
+        touchedQuestIds = activeIsland.quests
+          .map((q) => q.id)
+          .filter(
+            (id) =>
+              prev.questStatus[id]?.started && !prev.questStatus[id]?.completed,
+          );
+        if (touchedQuestIds.length === 0) return prev;
         const nextQuestStatus = { ...prev.questStatus };
-        for (const questId of startedQuestIds) {
+        for (const questId of touchedQuestIds) {
           const status = nextQuestStatus[questId];
           if (!status || status.completed) continue;
           nextQuestStatus[questId] = {
@@ -1098,20 +1128,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         return { ...prev, questStatus: nextQuestStatus };
       });
 
-      for (const questId of startedQuestIds) {
+      for (const questId of touchedQuestIds) {
         await maybeCompleteQuest(questId);
       }
     },
-    [activeIsland, maybeCompleteQuest, save?.questStatus, updateSave]
+    [activeIsland, maybeCompleteQuest, updateSave]
   );
 
   const collectItem = useCallback(
-    async (itemId: ItemId) => {
-      if (!activeIsland) return;
-      const item = activeIsland.items.find((i) => i.id === itemId);
-      if (!item) return;
+    async (itemId: ItemId): Promise<boolean> => {
+      const islandId =
+        activeIsland?.id ??
+        activeIslandId ??
+        saveRef.current?.currentIslandId ??
+        null;
+      const island = islandId ? getIslandById(content, islandId) : activeIsland;
+      if (!island || isHubIslandId(island.id)) return false;
+      const item = island.items.find((i) => i.id === itemId);
+      if (!item) return false;
 
-      await analytics.track("item_collected", { islandId: activeIsland.id, itemId });
+      await analytics.track("item_collected", { islandId: island.id, itemId });
 
       updateSave((prev) => {
         if (prev.inventory.includes(itemId)) return prev;
@@ -1126,9 +1162,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       });
 
       await completeObjective({ type: "collectItem", itemId });
+      return true;
     },
-    [activeIsland, completeObjective, updateSave]
+    [activeIsland, activeIslandId, completeObjective, content, updateSave]
   );
+  collectItemRef.current = (itemId) => collectItem(itemId);
 
   const openNpcDialogue = useCallback(
     async (npcId: NpcId) => {
@@ -1218,6 +1256,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       view,
     ],
   );
+  talkNpcRef.current = (npcId) => {
+    void openNpcDialogue(npcId);
+  };
 
   const applyDialogueEffects = useCallback(
     async (effects: Array<{ type: string; [k: string]: any }> | undefined) => {
@@ -1225,6 +1266,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       for (const effect of effects) {
         if (effect.type === "startQuest") {
           await startQuest(effect.questId);
+          // Talk often opens before the quest starts (Penny First Coins).
+          // Re-credit talkToNpc once the quest exists.
+          if (dialogueState.npcId) {
+            await completeObjective({
+              type: "talkToNpc",
+              npcId: dialogueState.npcId,
+            });
+          }
         }
         if (effect.type === "giveItem") {
           await collectItem(effect.itemId);
@@ -1326,7 +1375,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }
       }
     },
-    [activeIsland, analytics, collectItem, startQuest, updateSave]
+    [
+      activeIsland,
+      analytics,
+      collectItem,
+      completeObjective,
+      dialogueState.npcId,
+      startQuest,
+      updateSave,
+    ]
   );
 
   const dialogueGraph = useMemo(() => {
@@ -2025,7 +2082,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 if (confirm("Reset all island save data?")) {
                   import("./save").then(({ createDefaultIslandSave, persistIslandSave }) => {
                     const fresh = createDefaultIslandSave();
-                    setSave(fresh);
+                    replaceSave(fresh);
                     setActiveIslandId(null);
                     setView("home");
                     persistIslandSave(fresh);

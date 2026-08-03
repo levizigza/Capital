@@ -47,7 +47,14 @@ export function resolveShoreGuideLookAt(
   if (save.chapterQuietPending && pier) return pier;
 
   const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
-  if (!anyStarted && moneyMachine) return moneyMachine;
+  if (!anyStarted) {
+    // First painting: guide to Penny's First Coins, not the Jar silhouette alone.
+    const penny =
+      hotspots.find((h) => h.refId === "npc_captain_penny")?.position ??
+      hotspots.find((h) => h.id.includes("captain_penny"))?.position ??
+      null;
+    return penny ?? moneyMachine;
+  }
 
   const next = nextIncompleteObjective(island, save, { preferTrack: "main" });
   if (!next) return moneyMachine ?? pier;

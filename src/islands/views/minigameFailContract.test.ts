@@ -25,4 +25,9 @@ describe("Minigame fail contract", () => {
     expect(modular).toMatch(/Round over/);
     expect(modular).toMatch(/See result/);
   });
+
+  it("offers Finish round so Coin Sort can leave EarnSpend/ChangeMaking", () => {
+    expect(modular).toMatch(/data-testid="minigame-finish-round"/);
+    expect(modular).toMatch(/Finish round/);
+  });
 });
