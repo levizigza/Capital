@@ -61,7 +61,7 @@ function clusterPos(
   return [Math.cos(ang) * r, 0, Math.sin(ang) * r];
 }
 
-/** Items granted by dialogue Take/rewards — not free shore pickups. */
+/** Items granted by dialogue Take / quest reward lists — not free shore pickups. */
 export function itemIsDialogueReward(
   island: IslandDefinition,
   itemId: string,
@@ -74,6 +74,9 @@ export function itemIsDialogueReward(
         }
       }
     }
+  }
+  for (const quest of island.quests ?? []) {
+    if (quest.rewards?.items?.includes(itemId)) return true;
   }
   return false;
 }

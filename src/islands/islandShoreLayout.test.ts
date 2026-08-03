@@ -105,12 +105,14 @@ describe("island shore + party play", () => {
     expect(gate?.questions.length).toBeGreaterThan(0);
   });
 
-  it("keeps Cove dialogue-reward jars off the shore pickup ring", () => {
+  it("keeps Cove dialogue/quest-reward jars off the shore pickup ring", () => {
     const cove = loadIslandsContent().islands.find((i) => i.id === COVE_ISLAND_ID)!;
     expect(itemIsDialogueReward(cove, "cc_savings_jar")).toBe(true);
+    expect(itemIsDialogueReward(cove, "cc_craft_badge")).toBe(true);
     const spots = buildShoreHotspots(cove);
     expect(spots.some((h) => h.kind === "money_structure")).toBe(true);
     expect(spots.some((h) => h.refId === "cc_savings_jar")).toBe(false);
+    expect(spots.some((h) => h.refId === "cc_craft_badge")).toBe(false);
     expect(spots.some((h) => h.refId === "cc_coin_pouch")).toBe(true);
   });
 });

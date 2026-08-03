@@ -184,26 +184,26 @@ function Player({
     }
     p.y = 0.02;
 
-    // Prefer Money Structure when ranges overlap — landmark Take/enter
-    // must not lose to a nearby item pickup CTA.
+    // Prefer Money Structure whenever it is in reach — landmark enter
+    // must not lose to a nearby item / pad CTA.
     let near: string | null = null;
     let best = Number.POSITIVE_INFINITY;
-    let bestKind: ShoreHotspot["kind"] | null = null;
+    let structureNear: string | null = null;
+    let structureBest = Number.POSITIVE_INFINITY;
     for (const h of hotspots) {
       const reach = h.kind === "money_structure" ? INTERACT_R * 1.55 : INTERACT_R;
       const d = Math.hypot(h.position[0] - p.x, h.position[2] - p.z);
       if (d >= reach) continue;
-      const structureWins =
-        h.kind === "money_structure" &&
-        bestKind !== "money_structure" &&
-        d <= best + INTERACT_R * 0.35;
-      if (d < best || structureWins) {
+      if (h.kind === "money_structure" && d < structureBest) {
+        structureBest = d;
+        structureNear = h.id;
+      }
+      if (d < best) {
         best = d;
-        bestKind = h.kind;
         near = h.id;
       }
     }
-    onNear(near);
+    onNear(structureNear ?? near);
 
     const back = near ? shoreScale(10.2) : shoreScale(8.2);
     const camH = near ? shoreScale(5.2) : shoreScale(4.7);
