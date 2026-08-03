@@ -4,7 +4,7 @@
  * Fantasy law: Voyager among Money Mascots — never combat HP bars or a sterile void.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInputAction } from "@/input";
 import { CharacterAvatar } from "./CharacterAvatar";
 import type { CapitalCharacter } from "../character";
@@ -26,6 +26,9 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { pointerSafeActivate } from "../pointerSafeClick";
+
+/** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
+const TALK_INPUT_ARM_MS = 220;
 
 export type TalkBattleProps = {
   open: boolean;
@@ -91,6 +94,7 @@ export function TalkBattleScreen({
   onSkip,
 }: TalkBattleProps) {
   const [phase, setPhase] = useState<Phase>("listen");
+  const inputArmed = useRef(false);
   const choices = node.choices ?? [];
   const body = resolveProfileText(node.text, learningProfile);
   const place = spineShortName(placeId);
@@ -105,15 +109,26 @@ export function TalkBattleScreen({
   }, [node.id]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      inputArmed.current = false;
+      return;
+    }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Arm after the opening Talk gesture finishes — keeps first listen readable.
+    inputArmed.current = false;
+    const arm = window.setTimeout(() => {
+      inputArmed.current = true;
+    }, TALK_INPUT_ARM_MS);
     return () => {
+      window.clearTimeout(arm);
       document.body.style.overflow = prev;
+      inputArmed.current = false;
     };
   }, [open]);
 
   const advanceFromListen = useCallback(() => {
+    if (!inputArmed.current) return;
     const next = nextTalkPhase(node, "listen");
     if (next === "choose") {
       setPhase("choose");
@@ -121,6 +136,14 @@ export function TalkBattleScreen({
     }
     onContinue();
   }, [node, onContinue]);
+
+  const chooseReply = useCallback(
+    (choiceId: string) => {
+      if (!inputArmed.current) return;
+      onChoice(choiceId);
+    },
+    [onChoice],
+  );
 
   useInputAction("cancel", onSkip);
   useInputAction("confirm", () => {
@@ -274,7 +297,7 @@ export function TalkBattleScreen({
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/70 bg-white px-4 py-3 text-left text-sm font-bold text-[#16283b] shadow-[2px_2px_0_rgba(28,25,23,0.2)] hover:bg-[#fffbeb] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   style={{ borderLeftWidth: 6, borderLeftColor: accent }}
-                  {...pointerSafeActivate(() => onChoice(choice.id))}
+                  {...pointerSafeActivate(() => chooseReply(choice.id))}
                   data-testid={`talk-choice-${choice.id}`}
                 >
                   {resolveProfileText(choice.text, learningProfile)}

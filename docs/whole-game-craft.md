@@ -155,6 +155,7 @@ If not, that surface is not iconic yet.
 
 - **Piggy readability:** fountain look-at fixed (`HARBOR_PIGGY_POS` — Coin Bag no longer points at a dead plaza slot); first-meet pulse gets larger mesh + soft gold disc + word bubble (not emoji-only).
 - **WebGL veil / skip-3d:** loading veil speaks Ashore law only — Talk Piggy · Carpet · Cove (Outfitter off the veil); Enter Harbor Haven CTA bigger / clearer myth escape.
+- **Talk Battle open arm:** ignore I hear you / Walk on for ~220ms after open so the Talk CTA gesture can’t skip the first listen beat.
 - **CI gate:** `resolveShoreGuideLookAt` unstarted fallback restores first-NPC / first-objective when Penny isn’t on the shore (unit green for PR #68).
 
 ## Still deepen (from iconic-later)
