@@ -101,8 +101,14 @@ If not, that surface is not iconic yet.
 - Talk Battle living-money stage: organ chip, “I hear you / Walk on”, speech replies, Leave chrome
 - Ashore→Cove cold retell contract + kid sentences asserted in signature / Harbor e2e
 
+## Iteration 7 (shipped)
+
+- Cold play unblock: Board Carpet / Ledger Bank / hub travel / carpet board CTA use `onPointerUp` + `onClick` (Talk hit parity)
+- Talk Battle: compact stage + pinned dialogue so “I hear you” / replies stay above the fold
+- Harbor e2e: Talk → Board Carpet → travel map / carpet flight
+
 ## Still deepen (from iconic-later)
 
-Cold human play of Ashore→Cove→Harbor · merge readiness  
+Cold human play past Cove → Harbor retell · merge readiness  
 
 Iterate those next — never new islands first.

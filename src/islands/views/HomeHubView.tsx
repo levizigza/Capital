@@ -1273,7 +1273,14 @@ export function HomeHubView({
               <button
                 type="button"
                 data-testid="hub-travel-map"
-                onClick={() => {
+                onPointerUp={(e) => {
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  onHubGuidedEvent("opened_map");
+                  onOpenTravel();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
                   onHubGuidedEvent("opened_map");
                   onOpenTravel();
                 }}

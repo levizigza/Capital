@@ -124,6 +124,11 @@ export function HarborMythFallback({
                 : "bg-white/95 text-[#16283b]"
             }`}
             data-testid="fallback-board-carpet"
+            onPointerUp={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              onBoardCarpet();
+            }}
             onClick={(e) => {
               e.preventDefault();
               onBoardCarpet();
@@ -137,6 +142,11 @@ export function HarborMythFallback({
             type="button"
             className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/50 bg-white/90 px-4 py-3 text-base font-bold text-[#16283b]"
             data-testid="fallback-ledger-bank"
+            onPointerUp={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              onEnterBank();
+            }}
             onClick={(e) => {
               e.preventDefault();
               onEnterBank();

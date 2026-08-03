@@ -147,5 +147,59 @@ test.describe("Harbor Haven tutorial opening", () => {
     await expect(page.getByTestId("talk-battle-screen")).not.toContainText(
       /Harbor is yours\. Talk to locals/i,
     );
+
+    // Finish Talk → voyage CTA (Board Carpet) must fire via pointer-safe hit targets
+    await page.getByTestId("talk-battle-continue").click({ force: true });
+    const reply = page.getByTestId("talk-choice-ok");
+    if (await reply.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await reply.click({ force: true });
+    }
+    // Follow-up listen beat (meet_b) — Walk on
+    const walkOn = page.getByTestId("talk-battle-continue");
+    if (await walkOn.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await walkOn.click({ force: true });
+    }
+    await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0, {
+      timeout: 15_000,
+    });
+
+    const hubCarpet = page.getByTestId("hub-travel-map");
+    const mythCarpet = page.getByTestId("fallback-board-carpet");
+    await expect
+      .poll(async () => {
+        const hub = await hubCarpet.isVisible().catch(() => false);
+        const myth = await mythCarpet.isVisible().catch(() => false);
+        return hub || myth;
+      }, { timeout: 20_000 })
+      .toBe(true);
+
+    if (await hubCarpet.isVisible().catch(() => false)) {
+      await hubCarpet.click({ force: true });
+    } else {
+      await expect(page.getByTestId("harbor-myth-fallback")).toHaveAttribute(
+        "data-fallback-mode",
+        "myth_travel",
+      );
+      await mythCarpet.click({ force: true });
+    }
+
+    // Travel map (strip) or carpet flight — Cove path is open
+    await expect
+      .poll(async () => {
+        const strip = await page
+          .getByTestId("archipelago-island-strip")
+          .isVisible()
+          .catch(() => false);
+        const flight = await page
+          .getByTestId("carpet-flight-view")
+          .isVisible()
+          .catch(() => false);
+        const boardCta = await page
+          .getByTestId("carpet-board-cta")
+          .isVisible()
+          .catch(() => false);
+        return strip || flight || boardCta;
+      }, { timeout: 20_000 })
+      .toBe(true);
   });
 });

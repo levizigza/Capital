@@ -183,8 +183,16 @@ export function TalkBattleScreen({
         </div>
         <button
           type="button"
-          onClick={onSkip}
-          className="shrink-0 rounded-xl border-2 border-white/40 bg-black/45 px-3.5 py-1.5 text-xs font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-black/60"
+          onPointerUp={(e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            onSkip();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            onSkip();
+          }}
+          className="shrink-0 touch-manipulation rounded-xl border-2 border-white/40 bg-black/45 px-3.5 py-1.5 text-xs font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-black/60"
           data-testid="talk-battle-leave"
           title="Leave talk (Esc)"
         >
@@ -192,11 +200,11 @@ export function TalkBattleScreen({
         </button>
       </div>
 
-      {/* Stage: NPC top-right, player bottom-left — faces only, no fake HP */}
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between px-4 pb-2 pt-2 sm:px-8">
-        <div className="flex items-start justify-end gap-3">
-          <div className="max-w-[14rem] text-right">
-            <div className="rounded-2xl bg-[#fef9e7]/95 px-3 py-2 shadow-lg ring-1 ring-black/10">
+      {/* Compact stage — dialogue stays above the fold on short viewports */}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-between gap-2 px-4 pb-1 pt-1 sm:px-8">
+        <div className="flex items-start justify-end gap-2">
+          <div className="max-w-[12rem] text-right sm:max-w-[14rem]">
+            <div className="rounded-2xl bg-[#fef9e7]/95 px-3 py-1.5 shadow-lg ring-1 ring-black/10">
               <div className="text-sm font-black text-[#16283b]">{npcName}</div>
               {npcTagline ? (
                 <div className="text-[11px] font-medium text-[#4b5c6e]">{npcTagline}</div>
@@ -204,7 +212,7 @@ export function TalkBattleScreen({
             </div>
           </div>
           <div
-            className="flex h-28 w-28 items-center justify-center rounded-full bg-white/25 text-6xl shadow-[0_8px_32px_rgba(15,23,42,0.25)] ring-4 ring-white/40 sm:h-36 sm:w-36 sm:text-7xl"
+            className="flex h-20 w-20 items-center justify-center rounded-full bg-white/25 text-5xl shadow-[0_8px_32px_rgba(15,23,42,0.25)] ring-4 ring-white/40 sm:h-28 sm:w-28 sm:text-6xl"
             aria-hidden
             style={{ boxShadow: `0 8px 32px rgba(15,23,42,0.25), 0 0 0 4px ${accent}55` }}
           >
@@ -212,14 +220,14 @@ export function TalkBattleScreen({
           </div>
         </div>
 
-        <div className="flex items-end justify-start gap-3">
+        <div className="flex items-end justify-start gap-2">
           <div className="relative">
-            <div className="rounded-full bg-white/30 p-2 ring-4 ring-white/35 shadow-[0_8px_28px_rgba(15,23,42,0.2)]">
-              <CharacterAvatar character={player} size={112} />
+            <div className="rounded-full bg-white/30 p-1.5 ring-4 ring-white/35 shadow-[0_8px_28px_rgba(15,23,42,0.2)] sm:p-2">
+              <CharacterAvatar character={player} size={88} />
             </div>
           </div>
-          <div className="max-w-[14rem]">
-            <div className="rounded-2xl bg-[#fffdf6]/95 px-3 py-2 shadow-lg ring-1 ring-black/10">
+          <div className="max-w-[12rem] sm:max-w-[14rem]">
+            <div className="rounded-2xl bg-[#fffdf6]/95 px-3 py-1.5 shadow-lg ring-1 ring-black/10">
               <div className="text-sm font-black text-[#16283b]">{player.name || "Voyager"}</div>
               <div className="text-[11px] font-medium text-[#4b5c6e]">
                 {organChip
@@ -231,8 +239,8 @@ export function TalkBattleScreen({
         </div>
       </div>
 
-      {/* Dialogue — speech stage, not a settings card */}
-      <div className="relative z-10 mx-auto w-full max-w-3xl px-3 pb-4 sm:px-6">
+      {/* Dialogue pinned low — replies always in the first job of the viewport */}
+      <div className="relative z-20 mx-auto w-full max-w-3xl shrink-0 px-3 pb-3 sm:px-6">
         <div
           className="overflow-hidden rounded-2xl border-2 border-[#1c1917]/80 bg-[#fffdf6] shadow-[4px_4px_0_rgba(28,25,23,0.35)]"
           style={{ borderTopColor: accent }}
@@ -250,30 +258,46 @@ export function TalkBattleScreen({
           </div>
 
           {phase === "listen" ? (
-            <div className="space-y-4 px-4 py-4">
-              <p className="min-h-[4.5rem] text-base font-medium leading-relaxed text-[#16283b] sm:text-lg">
+            <div className="space-y-3 px-4 py-3">
+              <p className="max-h-[28vh] overflow-y-auto text-base font-medium leading-relaxed text-[#16283b] sm:text-lg">
                 {body}
               </p>
               <button
                 type="button"
                 className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 style={{ background: accent }}
-                onClick={advanceFromListen}
+                onPointerUp={(e) => {
+                  if (e.button !== 0) return;
+                  e.preventDefault();
+                  advanceFromListen();
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  advanceFromListen();
+                }}
                 data-testid="talk-battle-continue"
               >
                 {choices.length > 0 ? "I hear you ▾" : "Walk on"}
               </button>
             </div>
           ) : (
-            <div className="space-y-2 px-4 py-4">
-              <p className="mb-2 text-sm font-medium text-[#4b5c6e] line-clamp-2">{body}</p>
+            <div className="max-h-[42vh] space-y-2 overflow-y-auto px-4 py-3">
+              <p className="mb-1 text-sm font-medium text-[#4b5c6e] line-clamp-2">{body}</p>
               {choices.map((choice: DialogueChoice) => (
                 <button
                   key={choice.id}
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/70 bg-white px-4 py-3 text-left text-sm font-bold text-[#16283b] shadow-[2px_2px_0_rgba(28,25,23,0.2)] hover:bg-[#fffbeb] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   style={{ borderLeftWidth: 6, borderLeftColor: accent }}
-                  onClick={() => onChoice(choice.id)}
+                  onPointerUp={(e) => {
+                    if (e.button !== 0) return;
+                    e.preventDefault();
+                    onChoice(choice.id);
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onChoice(choice.id);
+                  }}
                   data-testid={`talk-choice-${choice.id}`}
                 >
                   {resolveProfileText(choice.text, learningProfile)}

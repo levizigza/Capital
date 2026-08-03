@@ -112,8 +112,16 @@ export function TravelMapView({
                       : `Board carpet · ${island.name}`)
                   }
                   disabled={locked || here}
-                  onClick={() => beginVoyage(island.id)}
-                  className={`shrink-0 rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
+                  onPointerUp={(e) => {
+                    if (e.button !== 0 || locked || here) return;
+                    e.preventDefault();
+                    beginVoyage(island.id);
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!locked && !here) beginVoyage(island.id);
+                  }}
+                  className={`shrink-0 touch-manipulation rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
                     here
                       ? "bg-amber-200 text-amber-950 ring-amber-400"
                       : locked

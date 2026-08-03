@@ -617,8 +617,16 @@ export function CarpetFlightView({
           </p>
           <button
             type="button"
-            className="rounded-full border-3 border-[#16283b] bg-[#f4a629] px-8 py-3 text-base font-extrabold text-[#16283b] shadow-lg"
-            onClick={() => setPhase("fly")}
+            className="rounded-full border-3 border-[#16283b] bg-[#f4a629] px-8 py-3 text-base font-extrabold text-[#16283b] shadow-lg touch-manipulation"
+            onPointerUp={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              setPhase("fly");
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              setPhase("fly");
+            }}
             autoFocus
             data-testid="carpet-board-cta"
           >
