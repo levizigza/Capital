@@ -103,7 +103,7 @@ If not, that surface is not iconic yet.
 
 ## Iteration 7 (shipped)
 
-- Cold play unblock: Board Carpet / Ledger Bank / hub travel / carpet board CTA use `onPointerUp` + `onClick` (Talk hit parity)
+- Cold play unblock: Board Carpet / Ledger Bank / hub travel / carpet board CTA use pointer-safe activate (Talk hit parity, no double-fire)
 - Talk Battle: compact stage + pinned dialogue so “I hear you” / replies stay above the fold
 - Harbor e2e: Talk → Board Carpet → travel map / carpet flight
 

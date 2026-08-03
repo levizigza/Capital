@@ -99,6 +99,7 @@ import {
   shouldAutoOpenDailyRitual,
   shouldShowCastleCoach,
 } from "../harborAshore";
+import { pointerSafeActivate } from "../pointerSafeClick";
 import {
   harborFallbackMode,
   isFirstMeetStep,
@@ -1252,15 +1253,9 @@ export function HomeHubView({
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
                   data-testid="hub-talk-npc"
-                  onPointerUp={(e) => {
-                    if (e.button !== 0) return;
-                    e.preventDefault();
-                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
-                  }}
+                  {...pointerSafeActivate(() =>
+                    onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID),
+                  )}
                 >
                   Talk to {nearNpc?.name ?? "Piggy Penny"}
                 </button>
@@ -1273,17 +1268,10 @@ export function HomeHubView({
               <button
                 type="button"
                 data-testid="hub-travel-map"
-                onPointerUp={(e) => {
-                  if (e.button !== 0) return;
-                  e.preventDefault();
+                {...pointerSafeActivate(() => {
                   onHubGuidedEvent("opened_map");
                   onOpenTravel();
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onHubGuidedEvent("opened_map");
-                  onOpenTravel();
-                }}
+                })}
                 className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               >
                 Board Money Carpet · Coincraft Cove

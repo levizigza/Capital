@@ -71,6 +71,7 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
       "src/islands/harborAshore.test.ts",
       "src/islands/harborFirstMeet.test.ts",
       "src/islands/story/onboardingNoAhead.test.ts",
+      "src/islands/pointerSafeClick.test.ts",
       "e2e/harbor-tutorial.spec.ts",
     ],
   },
@@ -181,7 +182,10 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
   {
     pillar: 9,
     name: "UI / comms",
-    guards: ["src/islands/views/useOverlayEscape.test.ts"],
+    guards: [
+      "src/islands/views/useOverlayEscape.test.ts",
+      "src/islands/pointerSafeClick.test.ts",
+    ],
   },
   {
     pillar: 10,

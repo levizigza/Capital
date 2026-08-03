@@ -2,11 +2,11 @@
  * Slow-device Harbor — still a myth composition, never a settings dashboard.
  */
 
-import { GameButton } from "@/game-ui";
 import {
   mythFallbackActions,
   type HarborFallbackMode,
 } from "../harborFirstMeet";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Props = {
   mode: HarborFallbackMode;
@@ -102,15 +102,7 @@ export function HarborMythFallback({
             type="button"
             className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
             data-testid="fallback-talk-piggy"
-            onPointerUp={(e) => {
-              if (e.button !== 0) return;
-              e.preventDefault();
-              onTalkPiggy();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              onTalkPiggy();
-            }}
+            {...pointerSafeActivate(onTalkPiggy)}
           >
             Talk to Piggy Penny
           </button>
@@ -124,15 +116,7 @@ export function HarborMythFallback({
                 : "bg-white/95 text-[#16283b]"
             }`}
             data-testid="fallback-board-carpet"
-            onPointerUp={(e) => {
-              if (e.button !== 0) return;
-              e.preventDefault();
-              onBoardCarpet();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              onBoardCarpet();
-            }}
+            {...pointerSafeActivate(onBoardCarpet)}
           >
             Board the Money Carpet
           </button>
@@ -142,15 +126,7 @@ export function HarborMythFallback({
             type="button"
             className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/50 bg-white/90 px-4 py-3 text-base font-bold text-[#16283b]"
             data-testid="fallback-ledger-bank"
-            onPointerUp={(e) => {
-              if (e.button !== 0) return;
-              e.preventDefault();
-              onEnterBank();
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              onEnterBank();
-            }}
+            {...pointerSafeActivate(onEnterBank)}
           >
             Enter Ledger Bank
           </button>

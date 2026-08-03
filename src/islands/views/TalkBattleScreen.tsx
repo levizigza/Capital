@@ -25,6 +25,7 @@ import {
   HARBOR_HAVEN_ID,
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type TalkBattleProps = {
   open: boolean;
@@ -183,15 +184,7 @@ export function TalkBattleScreen({
         </div>
         <button
           type="button"
-          onPointerUp={(e) => {
-            if (e.button !== 0) return;
-            e.preventDefault();
-            onSkip();
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            onSkip();
-          }}
+          {...pointerSafeActivate(onSkip)}
           className="shrink-0 touch-manipulation rounded-xl border-2 border-white/40 bg-black/45 px-3.5 py-1.5 text-xs font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-black/60"
           data-testid="talk-battle-leave"
           title="Leave talk (Esc)"
@@ -266,15 +259,7 @@ export function TalkBattleScreen({
                 type="button"
                 className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 style={{ background: accent }}
-                onPointerUp={(e) => {
-                  if (e.button !== 0) return;
-                  e.preventDefault();
-                  advanceFromListen();
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  advanceFromListen();
-                }}
+                {...pointerSafeActivate(advanceFromListen)}
                 data-testid="talk-battle-continue"
               >
                 {choices.length > 0 ? "I hear you ▾" : "Walk on"}
@@ -289,15 +274,7 @@ export function TalkBattleScreen({
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917]/70 bg-white px-4 py-3 text-left text-sm font-bold text-[#16283b] shadow-[2px_2px_0_rgba(28,25,23,0.2)] hover:bg-[#fffbeb] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   style={{ borderLeftWidth: 6, borderLeftColor: accent }}
-                  onPointerUp={(e) => {
-                    if (e.button !== 0) return;
-                    e.preventDefault();
-                    onChoice(choice.id);
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onChoice(choice.id);
-                  }}
+                  {...pointerSafeActivate(() => onChoice(choice.id))}
                   data-testid={`talk-choice-${choice.id}`}
                 >
                   {resolveProfileText(choice.text, learningProfile)}

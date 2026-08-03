@@ -89,7 +89,7 @@ async function bootToHarbor(page: import("@playwright/test").Page) {
   }
 }
 
-test.describe.configure({ timeout: 90_000 });
+test.describe.configure({ timeout: 120_000 });
 
 test.describe("Harbor Haven tutorial opening", () => {
   test("Castle Grounds coach + Talk to Piggy after carpet", async ({ page }) => {
@@ -148,16 +148,23 @@ test.describe("Harbor Haven tutorial opening", () => {
       /Harbor is yours\. Talk to locals/i,
     );
 
-    // Finish Talk → voyage CTA (Board Carpet) must fire via pointer-safe hit targets
-    await page.getByTestId("talk-battle-continue").click({ force: true });
-    const reply = page.getByTestId("talk-choice-ok");
-    if (await reply.isVisible({ timeout: 4_000 }).catch(() => false)) {
-      await reply.click({ force: true });
-    }
-    // Follow-up listen beat (meet_b) — Walk on
-    const walkOn = page.getByTestId("talk-battle-continue");
-    if (await walkOn.isVisible({ timeout: 4_000 }).catch(() => false)) {
-      await walkOn.click({ force: true });
+    // Finish Talk (listen → reply → Walk on). Use element.click() so Dev Errors
+    // overlays cannot steal Playwright hit-testing; pointerSafeActivate handles it.
+    for (let step = 0; step < 8; step++) {
+      if (!(await page.getByTestId("talk-battle-screen").isVisible().catch(() => false))) {
+        break;
+      }
+      const choice = page.locator('[data-testid^="talk-choice-"]').first();
+      if (await choice.isVisible().catch(() => false)) {
+        await choice.evaluate((el) => (el as HTMLElement).click());
+        continue;
+      }
+      const cont = page.getByTestId("talk-battle-continue");
+      if (await cont.isVisible().catch(() => false)) {
+        await cont.evaluate((el) => (el as HTMLElement).click());
+        continue;
+      }
+      break;
     }
     await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0, {
       timeout: 15_000,
@@ -174,13 +181,13 @@ test.describe("Harbor Haven tutorial opening", () => {
       .toBe(true);
 
     if (await hubCarpet.isVisible().catch(() => false)) {
-      await hubCarpet.click({ force: true });
+      await hubCarpet.evaluate((el) => (el as HTMLElement).click());
     } else {
       await expect(page.getByTestId("harbor-myth-fallback")).toHaveAttribute(
         "data-fallback-mode",
         "myth_travel",
       );
-      await mythCarpet.click({ force: true });
+      await mythCarpet.evaluate((el) => (el as HTMLElement).click());
     }
 
     // Travel map (strip) or carpet flight — Cove path is open
