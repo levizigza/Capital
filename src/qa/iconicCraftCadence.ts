@@ -244,6 +244,7 @@ export function iconicUnitTestPaths(): string[] {
     "src/islands/views/minigameFailContract.test.ts",
     "src/islands/minigameFail.test.ts",
     "src/islands/moneyStructures.test.ts",
+    "src/islands/islandShoreLayout.test.ts",
     "src/islands/views/progressionContract.test.ts",
     "src/islands/views/talkBattleFantasy.test.ts",
     "src/islands/ashoreColdRetell.test.ts",

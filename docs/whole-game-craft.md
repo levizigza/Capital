@@ -107,8 +107,14 @@ If not, that surface is not iconic yet.
 - Talk Battle: compact stage + pinned dialogue so “I hear you” / replies stay above the fold
 - Harbor e2e: Talk → Board Carpet → travel map / carpet flight
 
+## Iteration 8 (in flight)
+
+- Cove shore: Savings Jar / Badge no longer steal the Giant Coin Jar CTA (dialogue rewards only)
+- Shore interact + Carpet home CTAs use `pointerSafeActivate`
+- Structure near-prefer when ranges overlap items
+
 ## Still deepen (from iconic-later)
 
-Cold human play past Cove → Harbor retell · merge readiness  
+Cold human play past Cove Take → Harbor retell · merge readiness  
 
 Iterate those next — never new islands first.

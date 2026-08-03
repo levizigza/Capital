@@ -53,6 +53,7 @@ import {
   SHORE_TO_HARBOR,
   structureEnterCta,
 } from "../titleVoice";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -416,7 +417,11 @@ export function IslandShoreView({
               />
             ) : null}
             {!chapterQuiet ? (
-              <GameButton variant="outline" size="sm" onClick={onOpenTravel}>
+              <GameButton
+                variant="outline"
+                size="sm"
+                {...pointerSafeActivate(onOpenTravel)}
+              >
                 {SHORE_MONEY_CARPET}
               </GameButton>
             ) : null}
@@ -425,12 +430,16 @@ export function IslandShoreView({
                 variant="primary"
                 size="sm"
                 data-testid="shore-carpet-home"
-                onClick={onOpenTravel}
+                {...pointerSafeActivate(onOpenTravel)}
               >
                 Carpet home — Harbor felt that
               </GameButton>
             ) : (
-              <GameButton variant="primary" size="sm" onClick={onOpenHub}>
+              <GameButton
+                variant="primary"
+                size="sm"
+                {...pointerSafeActivate(onOpenHub)}
+              >
                 {SHORE_TO_HARBOR}
               </GameButton>
             )}
@@ -445,7 +454,7 @@ export function IslandShoreView({
                 variant="primary"
                 size="lg"
                 data-testid="shore-carpet-home-cta"
-                onClick={onOpenTravel}
+                {...pointerSafeActivate(onOpenTravel)}
                 className="shadow-lg"
               >
                 {near?.id === "pier"
@@ -458,7 +467,7 @@ export function IslandShoreView({
                 size="lg"
                 autoFocus
                 data-testid="shore-interact"
-                onClick={() => activate(near.id)}
+                {...pointerSafeActivate(() => activate(near.id))}
                 className="shadow-lg"
               >
                 {hotspots.find((h) => h.id === near.id)?.kind === "npc"

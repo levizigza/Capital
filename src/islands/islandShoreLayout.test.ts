@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { buildShoreHotspots, islandNeedsPartyDash } from "./islandShoreLayout";
+import {
+  buildShoreHotspots,
+  islandNeedsPartyDash,
+  itemIsDialogueReward,
+} from "./islandShoreLayout";
+import { loadIslandsContent } from "./content/loader";
+import { COVE_ISLAND_ID } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { getMasteryGateForMinigame } from "./masteryGate";
 import type { IslandDefinition } from "./types";
@@ -97,5 +103,14 @@ describe("island shore + party play", () => {
     const gate = getMasteryGateForMinigame("mg_party_dash_signal_city");
     expect(gate?.title).toMatch(/Mastery Quiz/i);
     expect(gate?.questions.length).toBeGreaterThan(0);
+  });
+
+  it("keeps Cove dialogue-reward jars off the shore pickup ring", () => {
+    const cove = loadIslandsContent().islands.find((i) => i.id === COVE_ISLAND_ID)!;
+    expect(itemIsDialogueReward(cove, "cc_savings_jar")).toBe(true);
+    const spots = buildShoreHotspots(cove);
+    expect(spots.some((h) => h.kind === "money_structure")).toBe(true);
+    expect(spots.some((h) => h.refId === "cc_savings_jar")).toBe(false);
+    expect(spots.some((h) => h.refId === "cc_coin_pouch")).toBe(true);
   });
 });

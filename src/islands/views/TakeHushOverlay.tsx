@@ -13,6 +13,7 @@ import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type { TakeCinemaPhase };
 
@@ -83,7 +84,7 @@ export function TakeHushOverlay({
       data-cinema-phase={phase}
       data-nav-escape="window"
       tabIndex={0}
-      onClick={onDone}
+      {...pointerSafeActivate(onDone)}
       style={{
         background:
           "radial-gradient(ellipse 70% 55% at 50% 42%, transparent 0%, transparent 45%, rgba(15,23,42,0.35) 78%, rgba(15,23,42,0.62) 100%)",
