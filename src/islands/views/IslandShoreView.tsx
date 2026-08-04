@@ -30,6 +30,7 @@ import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorVie
 import { buildShoreHotspots } from "../islandShoreLayout";
 import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStructures";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { triggerJuice } from "@/juice";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
@@ -44,7 +45,6 @@ import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds
 import {
   harborScarPlaques,
   organQuietBadge,
-  organTakeHushLine,
   plaqueShelfLine,
 } from "../worldMemory";
 import { moneyOrganForIsland } from "../moneyOrgans";
@@ -111,6 +111,8 @@ export function IslandShoreView({
   const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
   const [takeHushOpen, setTakeHushOpen] = useState(false);
   const [takeCinemaPhase, setTakeCinemaPhase] = useState<TakeCinemaPhase | null>(null);
+  /** Brief pier / Carpet punch after Take cinema — one exit verb. */
+  const [pierExitBeat, setPierExitBeat] = useState(false);
   const takeHushSeenRef = useRef(false);
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const chapterQuiet = Boolean(save.chapterQuietPending);
@@ -122,6 +124,7 @@ export function IslandShoreView({
       takeHushSeenRef.current = false;
       setTakeHushOpen(false);
       setTakeCinemaPhase(null);
+      setPierExitBeat(false);
       return;
     }
     if (talkOpen) return;
@@ -135,7 +138,17 @@ export function IslandShoreView({
   const dismissTakeHush = useCallback(() => {
     setTakeHushOpen(false);
     setTakeCinemaPhase(null);
+    // Combine → practice leave: punch Carpet home the same frame cinema ends.
+    setPierExitBeat(true);
+    triggerJuice("accept", { burst: true });
+    playCapitalSfx("harbor_cheer");
   }, []);
+
+  useEffect(() => {
+    if (!pierExitBeat) return;
+    const t = window.setTimeout(() => setPierExitBeat(false), 2600);
+    return () => window.clearTimeout(t);
+  }, [pierExitBeat]);
   const guideLookAt = useMemo(
     () => resolveShoreGuideLookAt(island, save, hotspots),
     [island, save, hotspots],
@@ -330,11 +343,6 @@ export function IslandShoreView({
                 scarLabel={latestScar.label}
                 organId={organ?.id ?? "coin"}
                 islandId={island.id}
-                organLine={
-                  organ
-                    ? organTakeHushLine(organ.id)
-                    : organTakeHushLine("coin")
-                }
                 onPhaseChange={setTakeCinemaPhase}
                 onDone={dismissTakeHush}
               />
@@ -454,10 +462,15 @@ export function IslandShoreView({
                 variant="primary"
                 size="lg"
                 data-testid="shore-carpet-home-cta"
+                data-pier-exit={pierExitBeat ? "1" : "0"}
                 {...pointerSafeActivate(onOpenTravel)}
-                className="shadow-lg"
+                className={`shadow-lg ${
+                  pierExitBeat
+                    ? "ring-4 ring-amber-300/80 animate-pulse"
+                    : ""
+                }`}
               >
-                {near?.id === "pier"
+                {near?.id === "pier" || pierExitBeat
                   ? "Board the carpet home"
                   : "Carpet home — Harbor felt that"}
               </GameButton>

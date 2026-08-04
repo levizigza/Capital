@@ -103,7 +103,7 @@ await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spira
 
 - **No new outer islands** beyond the existing triangle spine (Cove → Paycheck → Credit).  
 - **No fake multiplayer backend** (Family Room stays local/device-share).  
-- **No BMO / CBE / Nathan Project** content merged into Capital.  
+- **No foreign game repos / external IPs** merged into Capital.  
 - Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
 
 **Parked “later” sink (Pillar 17):** [iconic-later.md](./iconic-later.md) — put new island ideas and deferred polish there; do not open the map. Guarded by `iconicScopeFreeze.test.ts`.

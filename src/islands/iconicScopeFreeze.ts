@@ -29,7 +29,7 @@ export const ICONIC_FREEZE_LAWS = [
   },
   {
     id: "no_foreign_merge",
-    law: "No Nathan Project / BMO / CBE merge into Capital",
+    law: "No foreign game repos or external IPs merged into Capital",
   },
   {
     id: "cut_before_add",
@@ -138,7 +138,7 @@ export function auditIconicLaterDoc(repoRoot: string): {
   const needles = [
     "No map width",
     "Family Room",
-    "Nathan",
+    "foreign",
     "signal_city",
     "mg_news_shocks",
     "Talk Battle",

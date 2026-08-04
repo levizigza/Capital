@@ -55,14 +55,18 @@ describe("Pillar 12 story cold retell", () => {
     expect(HARBOR_LOCAL_CAST.some((s) => s.mascotId === "debt_collector")).toBe(false);
   });
 
-  it("wires kid sentences onto Soft Beat, share, day-2, spectacle, and Piggy homecoming", () => {
+  it("wires kid sentences onto Take, Soft Beat, share, day-2, spectacle, and Piggy", () => {
     const views = join(__dirname, "views");
+    const take = readFileSync(join(views, "TakeHushOverlay.tsx"), "utf8");
     const soft = readFileSync(join(views, "SoftBeatOverlay.tsx"), "utf8");
     const share = readFileSync(join(views, "HarborFeltShareOverlay.tsx"), "utf8");
     const day2 = readFileSync(join(views, "Day2EchoOverlay.tsx"), "utf8");
     const spectacle = readFileSync(join(views, "ScarSpectacleOverlay.tsx"), "utf8");
     const talks = readFileSync(join(__dirname, "story/harborTalks.ts"), "utf8");
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
+    expect(take).toMatch(/coldOrganKidSentence/);
+    expect(take).toMatch(/take-cinema-kid-sentence/);
+    expect(take).not.toMatch(/rounded-2xl border border-amber/);
     expect(soft).toMatch(/coldOrganKidSentence/);
     expect(soft).toMatch(/soft-beat-retell/);
     expect(soft).toMatch(/data-soft-beat-climb/);

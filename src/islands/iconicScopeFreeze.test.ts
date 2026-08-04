@@ -60,7 +60,8 @@ describe("Iconic scope freeze (Pillar 17)", () => {
     const rule = readFileSync(join(root, ".cursor/rules/iconic-freeze.mdc"), "utf8");
     expect(rule).toMatch(/Cove.*Paycheck.*Credit/s);
     expect(rule).toMatch(/Family Room/);
-    expect(rule).toMatch(/Nathan|BMO|CBE/);
+    expect(rule).toMatch(/foreign game repos|external IPs/i);
+    expect(rule).not.toMatch(/Nathan|BMO|CBE/);
     expect(rule).toMatch(/iconic-path/);
   });
 

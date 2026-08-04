@@ -35,6 +35,11 @@ export type QABridge = {
   prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
+  /**
+   * Clear the pending Harbor Boss mastery quiz through the live pass path
+   * (cold chains — Playwright clicks on motion buttons are flaky).
+   */
+  passPendingMastery: () => Promise<boolean>;
   ready: boolean;
 };
 

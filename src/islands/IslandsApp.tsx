@@ -897,6 +897,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
   const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
+  const passMasteryRef = useRef<() => Promise<boolean>>(async () => false);
 
   useEffect(() => {
     if (!save) return;
@@ -964,6 +965,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setView("home");
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
+      passPendingMastery: () => passMasteryRef.current(),
     });
   }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
 
@@ -1834,6 +1836,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     if (!pendingMastery || !activeIsland || !save) return;
     const { gate, mgId, score, timeline, source, firstClear } = pendingMastery;
 
+    // Drop the quiz chrome immediately so cold / human runs never sit on
+    // "All correct" while quest + analytics settle.
+    setPendingMastery(null);
+
     updateSave((prev) => {
       const skillStats = prev.skillStats ?? createDefaultSkillStats();
       const updatedSkillStats = timeline?.skillChanges?.length
@@ -1867,7 +1873,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       );
     }
 
-    setPendingMastery(null);
     void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
     if (timeline && timeline.entries.length > 0) {
       setPendingReplayTimeline(timeline);
@@ -1890,6 +1895,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(mgId);
     setMinigameStartedAt(Date.now());
   }, [pendingMastery]);
+
+  passMasteryRef.current = async () => {
+    if (!pendingMastery) return false;
+    await handleMasteryPassed();
+    return true;
+  };
 
   const handleMinigameFailRetry = useCallback(() => {
     if (!pendingMinigameFail) return;

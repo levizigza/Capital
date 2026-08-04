@@ -33,10 +33,11 @@ export const SIGNATURE_TIMING = {
   /** Spectacle hold (ScarSpectacleOverlay may still use doneMs). */
   holdEndMs: 3600,
   /**
-   * Cold unseeded Take auto-dismiss — line + “Carpet home” CTA must land
-   * before the shore quiet HUD (pier guide + bottom CTA).
+   * Cold unseeded Take auto-dismiss — line + kid sentence + “Carpet home”
+   * must land before the shore quiet HUD (pier guide + bottom CTA).
+   * Slightly longer than hold so the combine chamber is readable.
    */
-  doneMs: 4200,
+  doneMs: 5200,
   plinthGlowMs: 14000,
   trailerBeatMs: 24_000,
   reducedMotionMult: 0.55,

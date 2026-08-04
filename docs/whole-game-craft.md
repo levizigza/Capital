@@ -164,8 +164,15 @@ If not, that surface is not iconic yet.
 - **First session UI law:** Talk Piggy → Carpet → Cove only — normalize in `getHubGuidedStep` / save sanitize / Piggy graphs / Coin Bag / visual beats; Outfitter chrome is discovery after Ashore.
 - **Research pass:** [harbor-ashore.md](./harbor-ashore.md) Portal one-verb · Asobi introduce→practice→combine · HL learn-by-doing — combine at Cove Take.
 
+## Iteration 16 (shipped) — unseeded Ashore→Cove combine + Take juice
+
+- **Cove Take combine chamber:** lower-third captions (no card); `coldOrganKidSentence` on Take line; jar mark punch; pier/Carpet exit beat on cinema end; `doneMs` 5.2s for readable kid sentence.
+- **Cold evidence (unseeded, pass):** `scripts/cold-full-cove-chain.mjs` → Take *“The Coin holds — save a little; the jar still waits.”* → Harbor Piggy homecoming same sentence · screenshots `cold-ashore-cove/`.
+- **QA:** `passPendingMastery` clears Harbor Boss without flaky motion-button clicks (coin sort play stays real).
+- **Freeze scrub:** living docs/rules say only “no foreign game repos / external IPs” — no merge path, no foreign-project names.
+
 ## Still deepen (from iconic-later)
 
-PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  
+Money Structure interiors · day-2 scar echo presence · share thumbnail mute-test.  
 
 Iterate depth next — never new islands first.

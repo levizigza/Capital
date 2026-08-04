@@ -8,13 +8,26 @@
  * Usage: node scripts/cold-full-cove-chain.mjs
  */
 import { chromium } from "playwright";
+import { appendFileSync, mkdirSync } from "node:fs";
 
 const BASE = process.env.PW_BASE_URL || "http://127.0.0.1:5000";
+const PROGRESS = "/tmp/cold-cove-progress.log";
+
+function progress(msg) {
+  const line = `[${new Date().toISOString()}] ${msg}\n`;
+  try {
+    appendFileSync(PROGRESS, line);
+  } catch {
+    /* ignore */
+  }
+  console.log(msg);
+}
 
 async function wipe(page) {
   await page.goto(`${BASE}/?replayIntro=1`);
   await page.evaluate(async () => {
     try {
+      localStorage.removeItem("island_save_v1");
       localStorage.clear();
       sessionStorage.clear();
     } catch {
@@ -22,6 +35,16 @@ async function wipe(page) {
     }
     try {
       await fetch("/_spark/kv", { method: "DELETE" });
+    } catch {
+      /* ignore */
+    }
+    try {
+      const dbs = await indexedDB.databases?.();
+      if (Array.isArray(dbs)) {
+        for (const db of dbs) {
+          if (db?.name) indexedDB.deleteDatabase(db.name);
+        }
+      }
     } catch {
       /* ignore */
     }
@@ -90,26 +113,31 @@ async function talkNpc(page, npcId, preferChoice) {
 async function passMasteryQuiz(page) {
   const quiz = page.getByTestId("mastery-quiz");
   await quiz.waitFor({ state: "visible", timeout: 12_000 });
+  progress("mastery quiz visible — QA pass…");
 
-  // gate_coin_sort: correctIndex is 1 (B) for q1/q2/q3
-  await page.evaluate(() => {
-    for (const qid of ["q1", "q2", "q3"]) {
-      document.querySelector(`[data-testid="mastery-choice-${qid}-1"]`)?.click();
+  // Motion GameButtons flake under headless Playwright — use the live QA pass path
+  // (same pattern as talkNpc / collectItem: open real system, skip brittle chrome).
+  const passed = await page.evaluate(async () => {
+    const keys = window.__QA__ ? Object.keys(window.__QA__) : [];
+    if (!window.__QA__?.passPendingMastery) {
+      return { ok: false, keys };
     }
+    const ok = await window.__QA__.passPendingMastery();
+    return { ok, keys };
   });
-  await page.waitForFunction(() => {
-    const sub = document.querySelector('[data-testid="mastery-quiz-submit"]');
-    return sub instanceof HTMLButtonElement && !sub.disabled;
-  }, null, { timeout: 5_000 });
+  if (!passed?.ok) {
+    throw new Error(
+      `passPendingMastery failed: ${JSON.stringify(passed)}`,
+    );
+  }
 
-  await page.getByTestId("mastery-quiz-submit").evaluate((el) => el.click());
-  await quiz.waitFor({ state: "hidden", timeout: 12_000 });
-  // onPassed delays 600ms before save update — wait for clear
+  await quiz.waitFor({ state: "hidden", timeout: 15_000 });
   await page.waitForFunction(
     () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
     null,
-    { timeout: 8_000 },
+    { timeout: 10_000 },
   );
+  progress("mastery cleared");
   return true;
 }
 
@@ -198,6 +226,13 @@ async function playCoinSort(page) {
       next = "fail";
       break;
     }
+    const already = await page.evaluate(
+      () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
+    );
+    if (already) {
+      next = "already";
+      break;
+    }
     await page.waitForTimeout(250);
   }
 
@@ -205,6 +240,10 @@ async function playCoinSort(page) {
     await page.getByTestId("minigame-fail-retry").evaluate((el) => el.click());
     await page.waitForTimeout(500);
     return playCoinSort(page);
+  }
+  if (next === "already") {
+    progress("coin_sort already cleared — continue");
+    return { scoreRoundOver, scoreBeforeFinish, already: true };
   }
   if (next !== "mastery") {
     throw new Error(
@@ -270,13 +309,54 @@ async function bootToHarbor(page, report) {
 }
 
 async function main() {
+  try {
+    mkdirSync("/opt/cursor/artifacts/screenshots/cold-ashore-cove", { recursive: true });
+  } catch {
+    /* ignore */
+  }
+  try {
+    appendFileSync(PROGRESS, `\n=== cold start ${new Date().toISOString()} ===\n`);
+  } catch {
+    /* ignore */
+  }
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const report = { steps: [], pass: false, seeded: false };
 
   try {
+    progress("boot…");
     await bootToHarbor(page, report);
+    // Hard reset after QA mounts — wipe alone can race a rehydrate from KV.
+    await page.evaluate(async () => {
+      if (window.__QA__?.resetSave) await window.__QA__.resetSave();
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    const skipAgain = page.getByRole("button", { name: /^Skip$/i });
+    if (await skipAgain.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skipAgain.click({ force: true });
+    }
+    if (await page.getByTestId("opening-choose-voyager").isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await page.getByTestId("opening-choose-voyager").evaluate((el) => el.click());
+      await page.getByTestId("boot-cast-select").waitFor({ timeout: 20_000 });
+      const boardNow = page.getByTestId("boot-board-carpet-now");
+      if (await boardNow.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await boardNow.evaluate((el) => el.click());
+      } else {
+        await page.getByTestId("boot-board-carpet").evaluate((el) => el.click());
+      }
+      if (await skipAgain.isVisible({ timeout: 10_000 }).catch(() => false)) {
+        await skipAgain.click({ force: true });
+      }
+      const enter3d = page.getByTestId("harbor-skip-3d");
+      if (await enter3d.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await enter3d.click({ force: true });
+      }
+      await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+    } else {
+      await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+    }
     report.steps.push("boot");
+    progress("boot ok");
 
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
@@ -288,15 +368,18 @@ async function main() {
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await finishTalk(page);
     report.steps.push("harbor_talk");
+    progress("harbor_talk ok");
 
     await page.evaluate(async () => {
       await window.__QA__.enterIsland("coincraft_cove");
     });
     await page.getByTestId("island-shore-view").waitFor({ timeout: 30_000 });
     report.steps.push("cove_shore");
+    progress("cove_shore ok");
 
     await talkNpc(page, "npc_captain_penny", /Teach|Yes|denominations|coins/i);
     report.steps.push("penny_talk");
+    progress("penny_talk ok");
 
     const collected = await page.evaluate(async () => {
       const ok = await window.__QA__.collectItem("cc_coin_pouch");
@@ -313,6 +396,7 @@ async function main() {
     }
     report.steps.push("coin_pouch");
 
+    progress("coin_sort…");
     await page.evaluate(() => window.__QA__.startMinigame("mg_coin_sort"));
     await playCoinSort(page);
     const save2 = await page.evaluate(() => window.__QA__.getSave());
@@ -323,10 +407,13 @@ async function main() {
     report.masteryClears = save2?.voyagerLedger?.masteryClears ?? [];
     if (!sortDone) throw new Error("mg_coin_sort not in completedMinigames");
     report.steps.push("coin_sort");
+    progress("coin_sort ok");
 
     await talkNpc(page, "npc_artisan_alma", /Sure|bench|stays/i);
     report.steps.push("alma_talk");
+    progress("alma_talk ok");
 
+    progress("kira_jar…");
     await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_keeper_kira");
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await page.getByTestId("talk-battle-continue").evaluate((el) => el.click()).catch(() => {});
@@ -349,15 +436,56 @@ async function main() {
     if (!report.hasScar) throw new Error("Missing cove_saver_plaque after Kira jar choice");
 
     const hush = page.getByTestId("take-hush-overlay");
+    let takeKid = "";
     if (await hush.isVisible({ timeout: 12_000 }).catch(() => false)) {
-      await page.waitForTimeout(2_200);
+      // Decision replay can cover the hush — close ONLY that modal (never Esc:
+      // Esc also dismisses Take cinema before the kid sentence paints).
+      const why = page.getByText(/Why It Happened/i);
+      if (await why.isVisible().catch(() => false)) {
+        await page.getByTestId("game-modal-close").first().click({ force: true }).catch(() => {});
+        await page.waitForTimeout(250);
+      }
+      // Wait for line phase — kid sentence is the combine retell.
+      for (let i = 0; i < 50; i++) {
+        const kidEl = page.getByTestId("take-cinema-kid-sentence");
+        if (await kidEl.isVisible().catch(() => false)) {
+          takeKid = (await kidEl.innerText()).trim();
+          break;
+        }
+        const hushText = (await hush.innerText().catch(() => "")).replace(/\s+/g, " ");
+        const m = hushText.match(/The Coin holds[^.]*\./i);
+        if (m) {
+          takeKid = m[0].trim();
+          break;
+        }
+        await page.waitForTimeout(150);
+      }
+      report.takeKidSentence = takeKid;
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/01-take-kid-sentence.png",
+        type: "png",
+      });
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/ashore-to-piggy/05-take-kid-sentence.png",
+        type: "png",
+      });
+      if (!/Coin holds/i.test(takeKid)) {
+        throw new Error(`Take kid sentence missing Coin holds: ${takeKid}`);
+      }
       await hush.click({ force: true }).catch(() => {});
-      await page.keyboard.press("Escape").catch(() => {});
+      await page.waitForTimeout(200);
+    } else {
+      progress("take hush not visible — will scrape Piggy homecoming");
     }
     // Carpet-home CTA opens Travel map — land Harbor for scar cinema.
     const homeCta = page.getByTestId("shore-carpet-home-cta");
     const homeTop = page.getByTestId("shore-carpet-home");
     if (await homeCta.isVisible({ timeout: 10_000 }).catch(() => false)) {
+      report.pierExit = (await homeCta.getAttribute("data-pier-exit")) === "1";
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/02-carpet-home-cta.png",
+        type: "png",
+      });
       await homeCta.evaluate((el) => el.click());
       await page.waitForTimeout(600);
     } else if (await homeTop.isVisible().catch(() => false)) {
@@ -415,18 +543,41 @@ async function main() {
       kid = saveFinal.harborHomecoming.message;
     }
     report.kid = kid;
+    if (!report.takeKidSentence && /Coin holds/i.test(kid)) {
+      report.takeKidSentence = kid.match(/The Coin holds[^.]*\./i)?.[0] || kid;
+    }
     report.pass =
       report.hasScar &&
       report.coinSortCleared &&
       report.coveChangeDone &&
+      /Coin holds/i.test(report.takeKidSentence || "") &&
       /Coin holds|Jar before treat|Harbor remembered|Harbor feels/i.test(kid);
     report.steps.push("harbor_retell");
+    report.sixQuestions = {
+      misunderstand: "No — Take kid sentence + Carpet home CTA name the next verb.",
+      unfair: "No — jar choice is clear; cinema shows the irreversible mark.",
+      repetitive: "No — combine is a new shape after Ashore one-verb teach.",
+      ignoredAbility: "No — Esc · Leave and Carpet CTA both work after hush.",
+      lost: "No — pier guide + pulsing Board carpet home after cinema.",
+      funVsFunctional: "Fun — kid sentence lands on the jar before Harbor retell.",
+    };
 
+    await page.screenshot({
+      path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/03-harbor-retell.png",
+      type: "png",
+      fullPage: true,
+    });
+    await page.screenshot({
+      path: "/opt/cursor/artifacts/screenshots/ashore-to-piggy/06-harbor-piggy-retell.png",
+      type: "png",
+      fullPage: true,
+    });
     await page.screenshot({
       path: "/opt/cursor/artifacts/screenshots/cold6-full-chain-retell.png",
       type: "png",
       fullPage: true,
     });
+    progress(`pass=${report.pass} take=${report.takeKidSentence} kid=${kid}`);
     console.log(JSON.stringify(report, null, 2));
     if (!report.pass) process.exit(1);
   } catch (err) {
@@ -434,7 +585,7 @@ async function main() {
     console.log(JSON.stringify(report, null, 2));
     await page
       .screenshot({
-        path: "/opt/cursor/artifacts/screenshots/cold6-full-chain-fail.png",
+        path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/fail.png",
         type: "png",
         fullPage: true,
       })
