@@ -19,10 +19,10 @@ export function structureShell(theme: MoneyStructureTheme): StructureShell {
   if (theme === "bank") {
     return {
       wall: "#94a3b8",
-      wallOp: 0.55,
-      bg: "#1e293b",
+      wallOp: 0.6,
+      bg: "#0f172a",
       accent: organ.accentHint,
-      floor: "#334155",
+      floor: "#1e293b",
       exit: "#f59e0b",
       exitEmissive: "#d97706",
       fillLight: "#fde68a",

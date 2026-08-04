@@ -50,14 +50,14 @@ These are **allowed later** as spine depth — not new islands:
 | From | Parked polish |
 |------|----------------|
 | Fantasy / Story / UI | (iterated) Talk Battle + cold kid retell; Ashore Piggy/veil polish |
-| Core loop | (iterated) Cold Take + Coin Jar interior architecture / lid lower-third (iter 17) |
+| Core loop | (iterated) Cold Take + Coin Jar (iter 17) + Ledger Bank interior / dial-spin + Teller lower-third (iter 18) |
 | Goals | (iterated) Bad-take Spend soft-fail copy parity |
 | Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |
 | Progression | (iterated) Freedom Seal + Seal chase chip after pouch dips |
 | Encounters | (iterated) Alma craft-bench ≠ Paycheck payday buckets |
 | Content | (done) PARKED banners on outer island docs |
 | Balance | (iterated) First seal plaza readability after pouch dips |
-| Art | (iterated) Coin Jar glass ribs · cork shelf · Lid lower-third (iter 17). Next: Bank/Tower/Keep |
+| Art | (iterated) Coin Jar (iter 17) · Ledger Bank brass/teller/vault (iter 18). Next: Tower/Keep |
 | Audio | (done) Piggy homecoming reward sting |
 | Onboarding | (iterated) Boot Board CTA + look-stage Cancel parity |
 | Technical | (iterated) Kill-switch e2e for harbor3d sticky fail |

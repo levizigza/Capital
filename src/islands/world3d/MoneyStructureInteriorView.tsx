@@ -27,6 +27,7 @@ import { StructureRoomBackdrop } from "./StructureRoomBackdrop";
 import { structureShell } from "./structureInteriorTheme";
 import { StructurePartSilhouette } from "./StructurePartSilhouette";
 import { JarInteriorArchitecture } from "./JarInteriorArchitecture";
+import { BankInteriorArchitecture } from "./BankInteriorArchitecture";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Close the vault" : "Return · Memory plaza";
@@ -310,6 +311,7 @@ function InteriorWorld({
       <StructureFloorMotif theme={structure.theme} />
       <StructureToyCulture theme={structure.theme} />
       {structure.theme === "jar" ? <JarInteriorArchitecture /> : null}
+      {structure.theme === "bank" ? <BankInteriorArchitecture /> : null}
 
       {structure.parts.map((p) => (
         <PartPad
