@@ -215,13 +215,6 @@ export function IslandShoreView({
     setStructureOpen(true);
   }, []);
 
-  // QA / cold scripts — open Jar without flaky WebGL walk-to-hotspot.
-  useEffect(() => {
-    const onEnter = () => enterStructure();
-    window.addEventListener("capital:enter-money-structure", onEnter);
-    return () => window.removeEventListener("capital:enter-money-structure", onEnter);
-  }, [enterStructure]);
-
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "lookout" || part.softBeat === "umbrella" || part.softBeat === "battlement") {
@@ -241,22 +234,37 @@ export function IslandShoreView({
     [onPlayMinigame, structure],
   );
 
+  // QA / cold scripts — direct hooks beat flaky WebGL walk + CustomEvent races.
   useEffect(() => {
-    const onPart = (ev: Event) => {
-      const partId = (ev as CustomEvent<{ partId?: string }>).detail?.partId;
-      if (!structure || !partId) return;
-      const part = structure.parts.find((p) => p.id === partId);
-      if (!part) return;
-      if (!structureOpen) {
-        setEnteringJar(false);
-        setStructureOpen(true);
-      }
-      // Defer so interior mounts before Soft Beat / motif.
-      window.setTimeout(() => onEnterPart(part), 80);
+    const api = {
+      enter: () => enterStructure(),
+      enterPart: (partId: string) => {
+        if (!structure) return false;
+        const part = structure.parts.find((p) => p.id === partId);
+        if (!part) return false;
+        if (!structureOpen) {
+          setEnteringJar(false);
+          setStructureOpen(true);
+          window.setTimeout(() => onEnterPart(part), 120);
+        } else {
+          onEnterPart(part);
+        }
+        return true;
+      },
     };
-    window.addEventListener("capital:enter-structure-part", onPart);
-    return () => window.removeEventListener("capital:enter-structure-part", onPart);
-  }, [structure, structureOpen, onEnterPart]);
+    (
+      window as Window & {
+        __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+      }
+    ).__QA_STRUCTURE__ = api;
+    return () => {
+      delete (
+        window as Window & {
+          __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+        }
+      ).__QA_STRUCTURE__;
+    };
+  }, [enterStructure, structure, structureOpen, onEnterPart]);
 
   const finishPartEnter = useCallback(() => {
     if (!partEnter) return;

@@ -965,9 +965,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
       enterMoneyStructure: () => {
-        window.dispatchEvent(new Event("capital:enter-money-structure"));
+        const api = (
+          window as Window & {
+            __QA_STRUCTURE__?: { enter: () => void };
+          }
+        ).__QA_STRUCTURE__;
+        if (api?.enter) api.enter();
+        else window.dispatchEvent(new Event("capital:enter-money-structure"));
       },
       enterStructurePart: (partId: string) => {
+        const api = (
+          window as Window & {
+            __QA_STRUCTURE__?: { enterPart: (id: string) => boolean };
+          }
+        ).__QA_STRUCTURE__;
+        if (api?.enterPart) {
+          api.enterPart(partId);
+          return;
+        }
         window.dispatchEvent(
           new CustomEvent("capital:enter-structure-part", { detail: { partId } }),
         );

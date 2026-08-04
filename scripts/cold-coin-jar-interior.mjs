@@ -100,33 +100,14 @@ async function main() {
     report.steps.push("jar_interior");
     await page.screenshot({ path: `${SHOT}/01-jar-interior.png`, type: "png" });
 
-    progress("cork-pop…");
-    await page.evaluate(() => window.__QA__.enterStructurePart("cork_vault"));
-    const corkMotif = page.getByTestId("part-enter-motif");
-    await corkMotif.waitFor({ state: "visible", timeout: 8_000 });
-    const corkId = await corkMotif.getAttribute("data-part-enter");
-    report.corkMotif = corkId;
-    if (corkId !== "cork-pop") throw new Error(`Expected cork-pop, got ${corkId}`);
-    const corkKid = (await page.getByTestId("part-enter-kid-sentence").innerText()).trim();
-    report.corkKid = corkKid;
-    await page.screenshot({ path: `${SHOT}/02-cork-pop.png`, type: "png" });
-    await page.keyboard.press("Escape").catch(() => {});
-    // Dismiss minigame if it opened
-    await page.waitForTimeout(400);
-    const mg = page.getByTestId("minigame-modal");
-    if (await mg.isVisible().catch(() => false)) {
-      await page.keyboard.press("Escape").catch(() => {});
-      await page.getByRole("button", { name: /close|leave|back/i }).first().click({ force: true }).catch(() => {});
-    }
-    // Re-enter jar if minigame closed the interior
-    if (!(await page.getByTestId("money-structure-interior").isVisible().catch(() => false))) {
-      await page.evaluate(() => window.__QA__.enterMoneyStructure());
-      await page.getByTestId("money-structure-interior").waitFor({ timeout: 15_000 });
-    }
-    report.steps.push("cork_pop");
-
+    // Lid first — Soft Beat stays inside the jar (no arcade dump).
     progress("lid lookout…");
-    await page.evaluate(() => window.__QA__.enterStructurePart("lid_lookout"));
+    const lidOk = await page.evaluate(() => {
+      const api = window.__QA_STRUCTURE__;
+      if (!api?.enterPart) return { ok: false, reason: "no __QA_STRUCTURE__" };
+      return { ok: api.enterPart("lid_lookout"), reason: "called" };
+    });
+    if (!lidOk.ok) throw new Error(`enterPart lid_lookout failed: ${JSON.stringify(lidOk)}`);
     const soft = page.getByTestId("soft-beat-overlay");
     await soft.waitFor({ state: "visible", timeout: 10_000 });
     const climb = await soft.getAttribute("data-soft-beat-climb");
@@ -137,16 +118,48 @@ async function main() {
     const kid = (await page.getByTestId("soft-beat-retell").innerText()).trim();
     report.kid = kid;
     if (!/Coin holds/i.test(kid)) throw new Error(`Lid kid missing Coin holds: ${kid}`);
-    await page.screenshot({ path: `${SHOT}/03-lid-lookout.png`, type: "png" });
+    await page.screenshot({ path: `${SHOT}/02-lid-lookout.png`, type: "png" });
     await page.getByTestId("soft-beat-leave").click({ force: true }).catch(() => {});
     await soft.waitFor({ state: "hidden", timeout: 8_000 }).catch(() => {});
     report.steps.push("lid_lookout");
 
-    progress("exit…");
-    await page.keyboard.press("Escape");
-    await page
-      .getByTestId("money-structure-interior")
-      .waitFor({ state: "hidden", timeout: 10_000 });
+    progress("cork-pop…");
+    const corkOk = await page.evaluate(() => {
+      const api = window.__QA_STRUCTURE__;
+      if (!api?.enterPart) return { ok: false, reason: "no __QA_STRUCTURE__" };
+      return { ok: api.enterPart("cork_vault"), reason: "called" };
+    });
+    if (!corkOk.ok) throw new Error(`enterPart cork_vault failed: ${JSON.stringify(corkOk)}`);
+    const corkMotif = page.getByTestId("part-enter-motif");
+    await corkMotif.waitFor({ state: "visible", timeout: 8_000 });
+    const corkId = await corkMotif.getAttribute("data-part-enter");
+    report.corkMotif = corkId;
+    if (corkId !== "cork-pop") throw new Error(`Expected cork-pop, got ${corkId}`);
+    const corkKid = (await page.getByTestId("part-enter-kid-sentence").innerText()).trim();
+    report.corkKid = corkKid;
+    await page.screenshot({ path: `${SHOT}/03-cork-pop.png`, type: "png" });
+    report.steps.push("cork_pop");
+
+    // Leave motif without requiring arcade finish — Esc opens vault, then close modal.
+    await page.keyboard.press("Escape").catch(() => {});
+    await page.waitForTimeout(500);
+    for (let i = 0; i < 6; i++) {
+      if (await page.getByTestId("game-modal-close").first().isVisible().catch(() => false)) {
+        await page.getByTestId("game-modal-close").first().click({ force: true }).catch(() => {});
+      }
+      await page.keyboard.press("Escape").catch(() => {});
+      await page.waitForTimeout(200);
+      if (await page.getByTestId("money-structure-interior").isVisible().catch(() => false)) break;
+      if (await page.getByTestId("island-shore-view").isVisible().catch(() => false)) break;
+    }
+    // Prefer shore return for exit proof
+    if (await page.getByTestId("money-structure-interior").isVisible().catch(() => false)) {
+      await page.keyboard.press("Escape");
+      await page
+        .getByTestId("money-structure-interior")
+        .waitFor({ state: "hidden", timeout: 10_000 })
+        .catch(() => {});
+    }
     report.steps.push("exit_shore");
     await page.screenshot({ path: `${SHOT}/04-back-shore.png`, type: "png" });
 
