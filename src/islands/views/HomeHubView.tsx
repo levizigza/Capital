@@ -176,6 +176,8 @@ export type HomeHubViewProps = {
   onClearHomecoming?: () => void;
   /** Auto / manual talk with a Harbor local (opens Talk Battle) */
   onTalkNpc?: (npcId: string) => void;
+  /** Close Talk Battle before vault enter so Soft Beat / dial-spin own Esc */
+  onCloseTalk?: () => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
   onSyncHarborRitual?: () => void;
@@ -227,6 +229,7 @@ export function HomeHubView({
   onClearHomecoming: _onClearHomecoming,
   onExit,
   onTalkNpc,
+  onCloseTalk,
   talkOpen = false,
   onSyncHarborRitual,
   onClaimRitualPayday,
@@ -902,9 +905,10 @@ export function HomeHubView({
   }, []);
 
   const enterBank = useCallback(() => {
-    if (!ledgerBank || enteringBank) return;
+    if (!ledgerBank || enteringBank || bankOpen) return;
+    onCloseTalk?.();
     setEnteringBank(true);
-  }, [enteringBank, ledgerBank]);
+  }, [bankOpen, enteringBank, ledgerBank, onCloseTalk]);
 
   const onEnterBankPart = useCallback(
     (part: MoneyStructurePart) => {
@@ -942,6 +946,7 @@ export function HomeHubView({
         const part = ledgerBank.parts.find((p) => p.id === partId);
         if (!part) return false;
         if (!bankOpen) {
+          onCloseTalk?.();
           setEnteringBank(false);
           setBankOpen(true);
           window.setTimeout(() => onEnterBankPart(part), 120);
@@ -963,7 +968,7 @@ export function HomeHubView({
         }
       ).__QA_STRUCTURE__;
     };
-  }, [bankOpen, enterBank, ledgerBank, onEnterBankPart]);
+  }, [bankOpen, enterBank, ledgerBank, onCloseTalk, onEnterBankPart]);
 
   const onNearChange = useCallback(
     (id: string | null, label: string | null) => {

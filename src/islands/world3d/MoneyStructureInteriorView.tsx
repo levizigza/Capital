@@ -404,7 +404,7 @@ export function MoneyStructureInteriorView({
 
   return (
     <div
-      className="fixed inset-0 z-[60]"
+      className="fixed inset-0 z-[65]"
       style={{ background: shell.bg }}
       data-testid="money-structure-interior"
       data-structure={structure.id}

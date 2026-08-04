@@ -37,10 +37,28 @@ async function wipe(page) {
   });
 }
 
+async function dismissDevChrome(page) {
+  await page.evaluate(() => {
+    const hide = [...document.querySelectorAll("button")].find((b) =>
+      /^Hide$/i.test((b.textContent || "").trim()),
+    );
+    hide?.click();
+  });
+}
+
 async function finishTalk(page) {
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 20; i++) {
     if (!(await page.getByTestId("talk-battle-screen").isVisible().catch(() => false))) {
       return;
+    }
+    // Prefer Leave — vault enter must not stack under Talk Battle.
+    const leave = page.getByTestId("talk-battle-leave");
+    if (await leave.isVisible().catch(() => false)) {
+      await leave.click({ force: true }).catch(async () => {
+        await leave.evaluate((el) => el.click());
+      });
+      await page.waitForTimeout(250);
+      continue;
     }
     const choice = page.locator('[data-testid^="talk-choice-"]').first();
     if (await choice.isVisible().catch(() => false)) {
@@ -54,38 +72,57 @@ async function finishTalk(page) {
       await page.waitForTimeout(200);
       continue;
     }
-    const leave = page.getByTestId("talk-battle-leave");
-    if (await leave.isVisible().catch(() => false)) {
-      await leave.evaluate((el) => el.click());
-    }
-    break;
+    await page.keyboard.press("Escape").catch(() => {});
+    await page.waitForTimeout(200);
   }
+  await page
+    .getByTestId("talk-battle-screen")
+    .waitFor({ state: "hidden", timeout: 8_000 })
+    .catch(() => {});
 }
 
 async function bootToHarbor(page) {
-  await wipe(page);
-  await page.goto(`${BASE}/?replayIntro=1`);
-  const skip = page.getByRole("button", { name: /^Skip$/i });
-  if (await skip.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    await skip.click({ force: true });
+  let lastErr;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await wipe(page);
+      await page.goto(`${BASE}/?replayIntro=1`);
+      const skip = page.getByRole("button", { name: /^Skip$/i });
+      if (await skip.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await skip.click({ force: true });
+      }
+      const choose = page.getByTestId("opening-choose-voyager");
+      await choose.waitFor({ timeout: 25_000 });
+      await choose.click({ force: true }).catch(async () => {
+        await choose.evaluate((el) => el.click());
+      });
+      // Opening CTA also accepts Enter · Space
+      if (!(await page.getByTestId("boot-cast-select").isVisible({ timeout: 2_500 }).catch(() => false))) {
+        await page.keyboard.press("Enter").catch(() => {});
+      }
+      await page.getByTestId("boot-cast-select").waitFor({ timeout: 25_000 });
+      const boardNow = page.getByTestId("boot-board-carpet-now");
+      if (await boardNow.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await boardNow.evaluate((el) => el.click());
+      } else {
+        await page.getByTestId("boot-board-carpet").evaluate((el) => el.click());
+      }
+      if (await skip.isVisible({ timeout: 12_000 }).catch(() => false)) {
+        await skip.click({ force: true });
+      }
+      const enter3d = page.getByTestId("harbor-skip-3d");
+      if (await enter3d.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await enter3d.click({ force: true });
+      }
+      await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+      return;
+    } catch (err) {
+      lastErr = err;
+      progress(`boot retry ${attempt}: ${String(err?.message || err).slice(0, 120)}`);
+      await page.waitForTimeout(800);
+    }
   }
-  await page.getByTestId("opening-choose-voyager").waitFor({ timeout: 25_000 });
-  await page.getByTestId("opening-choose-voyager").evaluate((el) => el.click());
-  await page.getByTestId("boot-cast-select").waitFor({ timeout: 25_000 });
-  const boardNow = page.getByTestId("boot-board-carpet-now");
-  if (await boardNow.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await boardNow.evaluate((el) => el.click());
-  } else {
-    await page.getByTestId("boot-board-carpet").evaluate((el) => el.click());
-  }
-  if (await skip.isVisible({ timeout: 12_000 }).catch(() => false)) {
-    await skip.click({ force: true });
-  }
-  const enter3d = page.getByTestId("harbor-skip-3d");
-  if (await enter3d.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    await enter3d.click({ force: true });
-  }
-  await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+  throw lastErr;
 }
 
 async function main() {
@@ -106,18 +143,23 @@ async function main() {
     report.steps.push("boot");
 
     // Clear Ashore meet_guide so Ledger Bank hotspot is live.
-    progress("piggy talk…");
-    const talk = page.getByTestId("hub-talk-npc");
-    const myth = page.getByTestId("fallback-talk-piggy");
-    if (await talk.isVisible({ timeout: 10_000 }).catch(() => false)) {
-      await talk.evaluate((el) => el.click());
-    } else if (await myth.isVisible().catch(() => false)) {
-      await myth.evaluate((el) => el.click());
-    }
-    if (await page.getByTestId("talk-battle-screen").isVisible({ timeout: 8_000 }).catch(() => false)) {
+    progress("clear talk…");
+    // Meet-guide may already have Talk open — Leave before vault.
+    if (await page.getByTestId("talk-battle-screen").isVisible({ timeout: 3_000 }).catch(() => false)) {
       await finishTalk(page);
+    } else {
+      const talk = page.getByTestId("hub-talk-npc");
+      const myth = page.getByTestId("fallback-talk-piggy");
+      if (await talk.isVisible({ timeout: 4_000 }).catch(() => false)) {
+        await talk.evaluate((el) => el.click());
+        await finishTalk(page);
+      } else if (await myth.isVisible().catch(() => false)) {
+        await myth.evaluate((el) => el.click());
+        await finishTalk(page);
+      }
     }
     report.steps.push("harbor_talk");
+    await dismissDevChrome(page);
 
     progress("enter bank…");
     await page.waitForFunction(() => Boolean(window.__QA_STRUCTURE__?.enter), null, {
@@ -125,6 +167,18 @@ async function main() {
     });
     await page.evaluate(() => window.__QA__.enterMoneyStructure());
     await page.getByTestId("money-structure-interior").waitFor({ timeout: 20_000 });
+    await page.waitForFunction(
+      () =>
+        document.querySelector('[data-testid="money-structure-interior"]')?.getAttribute("data-ready") ===
+        "1",
+      null,
+      { timeout: 15_000 },
+    );
+    await page
+      .getByTestId("talk-battle-screen")
+      .waitFor({ state: "hidden", timeout: 8_000 })
+      .catch(() => {});
+    await page.waitForTimeout(900);
     const structureId = await page
       .getByTestId("money-structure-interior")
       .getAttribute("data-structure");
@@ -132,6 +186,9 @@ async function main() {
     if (structureId !== "harbor_ledger_bank") {
       throw new Error(`Expected harbor_ledger_bank, got ${structureId}`);
     }
+    const talkStillOpen = await page.getByTestId("talk-battle-screen").isVisible().catch(() => false);
+    report.talkClosed = !talkStillOpen;
+    if (talkStillOpen) throw new Error("Talk Battle still open over Ledger Bank");
     report.steps.push("bank_interior");
     await page.screenshot({ path: `${SHOT}/01-bank-interior.png`, type: "png" });
 
@@ -148,6 +205,7 @@ async function main() {
     const kid = (await page.getByTestId("soft-beat-retell").innerText()).trim();
     report.kid = kid;
     if (!/Memory keeps/i.test(kid)) throw new Error(`Teller kid missing Memory keeps: ${kid}`);
+    await dismissDevChrome(page);
     await page.screenshot({ path: `${SHOT}/02-teller-window.png`, type: "png" });
     await page.getByTestId("soft-beat-leave").click({ force: true }).catch(() => {});
     await soft.waitFor({ state: "hidden", timeout: 8_000 }).catch(() => {});
@@ -163,6 +221,7 @@ async function main() {
     if (motifId !== "dial-spin") throw new Error(`Expected dial-spin, got ${motifId}`);
     const dialKid = (await page.getByTestId("part-enter-kid-sentence").innerText()).trim();
     report.dialKid = dialKid;
+    await dismissDevChrome(page);
     await page.screenshot({ path: `${SHOT}/03-dial-spin.png`, type: "png" });
     report.steps.push("dial_spin");
 
@@ -187,6 +246,7 @@ async function main() {
 
     report.pass =
       report.structureId === "harbor_ledger_bank" &&
+      report.talkClosed === true &&
       report.softBeat?.climb === "teller-step" &&
       report.softBeat?.layout === "lower-third" &&
       /Memory keeps/i.test(report.kid || "") &&
