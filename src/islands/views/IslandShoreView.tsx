@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { PartEnterMotifOverlay } from "./PartEnterMotifOverlay";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -54,6 +55,10 @@ import {
   structureEnterCta,
 } from "../titleVoice";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import {
+  resolvePartEnterMotif,
+  type PartEnterMotif,
+} from "../structurePartEnter";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -109,6 +114,10 @@ export function IslandShoreView({
   const [structureOpen, setStructureOpen] = useState(false);
   const [enteringJar, setEnteringJar] = useState(false);
   const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
+  const [partEnter, setPartEnter] = useState<{
+    motif: PartEnterMotif;
+    minigameId: string;
+  } | null>(null);
   const [takeHushOpen, setTakeHushOpen] = useState(false);
   const [takeCinemaPhase, setTakeCinemaPhase] = useState<TakeCinemaPhase | null>(null);
   const takeHushSeenRef = useRef(false);
@@ -206,19 +215,56 @@ export function IslandShoreView({
     setStructureOpen(true);
   }, []);
 
+  // QA / cold scripts — open Jar without flaky WebGL walk-to-hotspot.
+  useEffect(() => {
+    const onEnter = () => enterStructure();
+    window.addEventListener("capital:enter-money-structure", onEnter);
+    return () => window.removeEventListener("capital:enter-money-structure", onEnter);
+  }, [enterStructure]);
+
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "lookout" || part.softBeat === "umbrella" || part.softBeat === "battlement") {
         setSoftBeat(part.softBeat);
         return;
       }
-      if (part.minigameId) {
+      if (part.minigameId && structure) {
+        const motif = resolvePartEnterMotif(structure.theme, part);
+        if (motif && motif.durationMs > 0) {
+          setPartEnter({ motif, minigameId: part.minigameId });
+          return;
+        }
         playCapitalSfx("scar_chime");
         onPlayMinigame(part.minigameId);
       }
     },
-    [onPlayMinigame],
+    [onPlayMinigame, structure],
   );
+
+  useEffect(() => {
+    const onPart = (ev: Event) => {
+      const partId = (ev as CustomEvent<{ partId?: string }>).detail?.partId;
+      if (!structure || !partId) return;
+      const part = structure.parts.find((p) => p.id === partId);
+      if (!part) return;
+      if (!structureOpen) {
+        setEnteringJar(false);
+        setStructureOpen(true);
+      }
+      // Defer so interior mounts before Soft Beat / motif.
+      window.setTimeout(() => onEnterPart(part), 80);
+    };
+    window.addEventListener("capital:enter-structure-part", onPart);
+    return () => window.removeEventListener("capital:enter-structure-part", onPart);
+  }, [structure, structureOpen, onEnterPart]);
+
+  const finishPartEnter = useCallback(() => {
+    if (!partEnter) return;
+    const { minigameId } = partEnter;
+    setPartEnter(null);
+    playCapitalSfx("scar_chime");
+    onPlayMinigame(minigameId);
+  }, [onPlayMinigame, partEnter]);
 
   const activate = useCallback(
     (hotspotId: string) => {
@@ -274,7 +320,7 @@ export function IslandShoreView({
             character={character}
             onExit={() => setStructureOpen(false)}
             onEnterPart={onEnterPart}
-            inputFrozen={Boolean(softBeat)}
+            inputFrozen={Boolean(softBeat) || Boolean(partEnter)}
           />
             {softBeat ? (
             <SoftBeatOverlay
@@ -283,6 +329,9 @@ export function IslandShoreView({
               scarLabel={latestScar?.label ?? null}
               onDone={() => setSoftBeat(null)}
             />
+          ) : null}
+          {partEnter ? (
+            <PartEnterMotifOverlay motif={partEnter.motif} onDone={finishPartEnter} />
           ) : null}
         </>
       ) : null}
@@ -314,7 +363,9 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
-              inputFrozen={talkOpen || enteringJar || structureOpen || takeHushOpen}
+              inputFrozen={
+                talkOpen || enteringJar || structureOpen || takeHushOpen || Boolean(partEnter)
+              }
               chapterQuiet={chapterQuiet}
               hushCinemaPhase={takeCinemaPhase}
             />

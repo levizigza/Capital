@@ -964,6 +964,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setView("home");
         window.dispatchEvent(new Event("capital:signature-trailer"));
       },
+      enterMoneyStructure: () => {
+        window.dispatchEvent(new Event("capital:enter-money-structure"));
+      },
+      enterStructurePart: (partId: string) => {
+        window.dispatchEvent(
+          new CustomEvent("capital:enter-structure-part", { detail: { partId } }),
+        );
+      },
     });
   }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
 
