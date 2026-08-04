@@ -88,6 +88,7 @@ import {
   type SpectacleCinemaPhase,
 } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { PartEnterMotifOverlay } from "./PartEnterMotifOverlay";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
 import { Day2EchoOverlay } from "./Day2EchoOverlay";
@@ -116,6 +117,10 @@ import {
   moneyStructureForIsland,
   type MoneyStructurePart,
 } from "../moneyStructures";
+import {
+  resolvePartEnterMotif,
+  type PartEnterMotif,
+} from "../structurePartEnter";
 import { HARBOR_HAVEN_ID } from "../islandIds";
 
 const LazySettingsPanel = lazy(() => import("../SettingsPanel"));
@@ -171,6 +176,8 @@ export type HomeHubViewProps = {
   onClearHomecoming?: () => void;
   /** Auto / manual talk with a Harbor local (opens Talk Battle) */
   onTalkNpc?: (npcId: string) => void;
+  /** Close Talk Battle before vault enter so Soft Beat / dial-spin own Esc */
+  onCloseTalk?: () => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
   onSyncHarborRitual?: () => void;
@@ -222,6 +229,7 @@ export function HomeHubView({
   onClearHomecoming: _onClearHomecoming,
   onExit,
   onTalkNpc,
+  onCloseTalk,
   talkOpen = false,
   onSyncHarborRitual,
   onClaimRitualPayday,
@@ -334,6 +342,10 @@ export function HomeHubView({
   const [bankOpen, setBankOpen] = useState(false);
   const [enteringBank, setEnteringBank] = useState(false);
   const [bankSoftBeat, setBankSoftBeat] = useState<SoftBeatKind | null>(null);
+  const [bankPartEnter, setBankPartEnter] = useState<{
+    motif: PartEnterMotif;
+    minigameId: string;
+  } | null>(null);
   const ledgerBank = useMemo(() => moneyStructureForIsland(HARBOR_HAVEN_ID), []);
 
   const visualBeats = resolveHarborVisualBeats({
@@ -883,8 +895,7 @@ export function HomeHubView({
       onHubGuidedEvent("practice_opened");
       onPlayHarborBoard();
     } else if (id === "ledger_bank" && ledgerBank) {
-      if (enteringBank) return;
-      setEnteringBank(true);
+      enterBank();
     }
   };
 
@@ -893,19 +904,71 @@ export function HomeHubView({
     setBankOpen(true);
   }, []);
 
+  const enterBank = useCallback(() => {
+    if (!ledgerBank || enteringBank || bankOpen) return;
+    onCloseTalk?.();
+    setEnteringBank(true);
+  }, [bankOpen, enteringBank, ledgerBank, onCloseTalk]);
+
   const onEnterBankPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "ledger") {
         setBankSoftBeat("ledger");
         return;
       }
-      if (part.minigameId) {
+      if (part.minigameId && ledgerBank) {
+        const motif = resolvePartEnterMotif(ledgerBank.theme, part);
+        if (motif && motif.durationMs > 0) {
+          setBankPartEnter({ motif, minigameId: part.minigameId });
+          return;
+        }
         playCapitalSfx("organ_memory");
         onPlayStructureMinigame?.(part.minigameId);
       }
     },
-    [onPlayStructureMinigame],
+    [ledgerBank, onPlayStructureMinigame],
   );
+
+  const finishBankPartEnter = useCallback(() => {
+    if (!bankPartEnter) return;
+    const { minigameId } = bankPartEnter;
+    setBankPartEnter(null);
+    playCapitalSfx("organ_memory");
+    onPlayStructureMinigame?.(minigameId);
+  }, [bankPartEnter, onPlayStructureMinigame]);
+
+  // QA / cold — Harbor bank hooks (shore Cove uses the same window slot).
+  useEffect(() => {
+    if (!ledgerBank) return;
+    const api = {
+      enter: () => enterBank(),
+      enterPart: (partId: string) => {
+        const part = ledgerBank.parts.find((p) => p.id === partId);
+        if (!part) return false;
+        if (!bankOpen) {
+          onCloseTalk?.();
+          setEnteringBank(false);
+          setBankOpen(true);
+          window.setTimeout(() => onEnterBankPart(part), 120);
+        } else {
+          onEnterBankPart(part);
+        }
+        return true;
+      },
+    };
+    (
+      window as Window & {
+        __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+      }
+    ).__QA_STRUCTURE__ = api;
+    return () => {
+      delete (
+        window as Window & {
+          __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+        }
+      ).__QA_STRUCTURE__;
+    };
+  }, [bankOpen, enterBank, ledgerBank, onCloseTalk, onEnterBankPart]);
 
   const onNearChange = useCallback(
     (id: string | null, label: string | null) => {
@@ -1000,7 +1063,7 @@ export function HomeHubView({
             character={voyager}
             onExit={() => setBankOpen(false)}
             onEnterPart={onEnterBankPart}
-            inputFrozen={Boolean(bankSoftBeat)}
+            inputFrozen={Boolean(bankSoftBeat) || Boolean(bankPartEnter)}
           />
           {bankSoftBeat ? (
             <SoftBeatOverlay
@@ -1008,6 +1071,12 @@ export function HomeHubView({
               hushActive={plaques.length > 0}
               scarLabel={latestPlaque?.label ?? null}
               onDone={() => setBankSoftBeat(null)}
+            />
+          ) : null}
+          {bankPartEnter ? (
+            <PartEnterMotifOverlay
+              motif={bankPartEnter.motif}
+              onDone={finishBankPartEnter}
             />
           ) : null}
         </>

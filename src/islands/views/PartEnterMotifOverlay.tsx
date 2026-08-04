@@ -1,6 +1,6 @@
 /**
- * Short lower-third before Cork Vault / Coin Spring dump into arcade —
- * jar-true combine beat (not a settings card).
+ * Short lower-third before structure part arcade dump —
+ * jar cork-pop / bank dial-spin (not a settings card).
  */
 
 import { useEffect } from "react";
@@ -18,9 +18,11 @@ export function PartEnterMotifOverlay({ motif, onDone }: Props) {
   useOverlayEscape(onDone);
 
   useEffect(() => {
-    playOrganSfx("coin");
+    playOrganSfx(motif.organ);
     if (!prefersReducedMotion()) {
-      playCapitalSfx(motif.id === "cork-pop" ? "take_mark" : "soft_beat");
+      playCapitalSfx(
+        motif.id === "cork-pop" || motif.id === "dial-spin" ? "take_mark" : "soft_beat",
+      );
     }
     const ms = Math.round(motif.durationMs * cinemaTimeScale());
     if (ms <= 0) {
@@ -29,7 +31,7 @@ export function PartEnterMotifOverlay({ motif, onDone }: Props) {
     }
     const t = window.setTimeout(onDone, ms);
     return () => window.clearTimeout(t);
-  }, [motif.durationMs, motif.id, onDone]);
+  }, [motif.durationMs, motif.id, motif.organ, onDone]);
 
   return (
     <div
@@ -38,6 +40,7 @@ export function PartEnterMotifOverlay({ motif, onDone }: Props) {
       aria-label={motif.title}
       data-testid="part-enter-motif"
       data-part-enter={motif.id}
+      data-organ={motif.organ}
       data-nav-escape="window"
       onClick={onDone}
     >

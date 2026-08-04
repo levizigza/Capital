@@ -91,8 +91,14 @@ export function SoftBeatOverlay({
           ? "wall-climb"
           : "teller-step";
 
-  // Lid Lookout — lower-third cinema over the jar room (not a centered card).
-  if (kind === "lookout") {
+  // Lid Lookout + Teller Window — lower-third cinema over the structure room.
+  if (kind === "lookout" || kind === "ledger") {
+    const climbHint =
+      kind === "lookout"
+        ? "Climb the lid — peek from the Coin Jar"
+        : "Step to the teller — peek from Ledger Bank";
+    const leaveLabel =
+      kind === "lookout" ? "Leave — back into the Jar" : "Leave — back to the ledger";
     return (
       <div
         className="pointer-events-auto absolute inset-0 z-[70] flex items-end justify-center bg-gradient-to-t from-[#0f172a]/90 via-[#0f172a]/35 to-transparent"
@@ -114,7 +120,7 @@ export function SoftBeatOverlay({
             {softBeatEyebrow(organ.id)} · {organVerbChip(organ.id)}
           </p>
           <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/85">
-            Climb the lid — peek from the Coin Jar
+            {climbHint}
           </p>
           <h2 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
             {beat.title}
@@ -133,7 +139,7 @@ export function SoftBeatOverlay({
             onClick={onDone}
             data-testid="soft-beat-leave"
           >
-            Leave — back into the Jar
+            {leaveLabel}
           </GameButton>
           <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
         </div>
@@ -173,11 +179,6 @@ export function SoftBeatOverlay({
             Climb the wall — peek from Interest Keep
           </p>
         ) : null}
-        {kind === "ledger" ? (
-          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
-            Step to the teller — peek from Ledger Bank
-          </p>
-        ) : null}
         <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
         <p
@@ -193,9 +194,7 @@ export function SoftBeatOverlay({
         <GameButton variant="primary" className="mt-4" onClick={onDone} data-testid="soft-beat-leave">
           {organ.id === "clock"
             ? "Leave — back to the Clock loft"
-            : organ.id === "spiral"
-              ? "Leave — back to the Spiral"
-              : "Leave — back to the ledger"}
+            : "Leave — back to the Spiral"}
         </GameButton>
         <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
       </div>

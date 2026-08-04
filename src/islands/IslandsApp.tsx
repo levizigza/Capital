@@ -2242,6 +2242,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             }}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
+            onCloseTalk={closeDialogue}
             talkOpen={dialogueState.open}
             a11y={a11y}
             updateA11y={updateA11y}

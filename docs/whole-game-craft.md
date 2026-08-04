@@ -170,8 +170,14 @@ If not, that surface is not iconic yet.
 - **Part enter motifs:** cork-pop / spring-fling lower-thirds before shared arcade IDs; Lid Lookout Soft Beat is lower-third cinema (`data-soft-beat-layout="lower-third"`).
 - **QA / cold:** `__QA__.enterMoneyStructure` · `enterStructurePart`; `scripts/cold-coin-jar-interior.mjs` asserts cork-pop + lid-climb Coin holds.
 
+## Iteration 18 (shipped) — Harbor Ledger Bank interior deepen
+
+- **Bank architecture:** brass columns · marble ledger glow lines · teller glass · vault door mouth (`BankInteriorArchitecture`) so the room reads as a vault, not a stone cylinder.
+- **Part enter motifs:** dial-spin / stamp-press lower-thirds before arcade dump; Teller Soft Beat is lower-third cinema (`data-soft-beat-layout="lower-third"`, climb `teller-step`).
+- **QA / cold:** Harbor `__QA_STRUCTURE__` enter / enterPart; `scripts/cold-ledger-bank-interior.mjs` asserts Memory keeps on Teller + dial-spin.
+
 ## Still deepen (from iconic-later)
 
-Ledger Bank · Payroll Tower · Interest Keep interiors · day-2 scar echo presence · share thumbnail mute-test.  
+Payroll Tower · Interest Keep interiors · day-2 scar echo presence · share thumbnail mute-test.  
 
 Iterate depth next — never new islands first.
