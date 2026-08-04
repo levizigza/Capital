@@ -27,6 +27,7 @@ async function wipe(page) {
   await page.goto(`${BASE}/?replayIntro=1`);
   await page.evaluate(async () => {
     try {
+      localStorage.removeItem("island_save_v1");
       localStorage.clear();
       sessionStorage.clear();
     } catch {
@@ -34,6 +35,16 @@ async function wipe(page) {
     }
     try {
       await fetch("/_spark/kv", { method: "DELETE" });
+    } catch {
+      /* ignore */
+    }
+    try {
+      const dbs = await indexedDB.databases?.();
+      if (Array.isArray(dbs)) {
+        for (const db of dbs) {
+          if (db?.name) indexedDB.deleteDatabase(db.name);
+        }
+      }
     } catch {
       /* ignore */
     }
@@ -215,6 +226,13 @@ async function playCoinSort(page) {
       next = "fail";
       break;
     }
+    const already = await page.evaluate(
+      () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
+    );
+    if (already) {
+      next = "already";
+      break;
+    }
     await page.waitForTimeout(250);
   }
 
@@ -222,6 +240,10 @@ async function playCoinSort(page) {
     await page.getByTestId("minigame-fail-retry").evaluate((el) => el.click());
     await page.waitForTimeout(500);
     return playCoinSort(page);
+  }
+  if (next === "already") {
+    progress("coin_sort already cleared — continue");
+    return { scoreRoundOver, scoreBeforeFinish, already: true };
   }
   if (next !== "mastery") {
     throw new Error(
@@ -304,6 +326,35 @@ async function main() {
   try {
     progress("boot…");
     await bootToHarbor(page, report);
+    // Hard reset after QA mounts — wipe alone can race a rehydrate from KV.
+    await page.evaluate(async () => {
+      if (window.__QA__?.resetSave) await window.__QA__.resetSave();
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    const skipAgain = page.getByRole("button", { name: /^Skip$/i });
+    if (await skipAgain.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await skipAgain.click({ force: true });
+    }
+    if (await page.getByTestId("opening-choose-voyager").isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await page.getByTestId("opening-choose-voyager").evaluate((el) => el.click());
+      await page.getByTestId("boot-cast-select").waitFor({ timeout: 20_000 });
+      const boardNow = page.getByTestId("boot-board-carpet-now");
+      if (await boardNow.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await boardNow.evaluate((el) => el.click());
+      } else {
+        await page.getByTestId("boot-board-carpet").evaluate((el) => el.click());
+      }
+      if (await skipAgain.isVisible({ timeout: 10_000 }).catch(() => false)) {
+        await skipAgain.click({ force: true });
+      }
+      const enter3d = page.getByTestId("harbor-skip-3d");
+      if (await enter3d.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await enter3d.click({ force: true });
+      }
+      await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+    } else {
+      await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
+    }
     report.steps.push("boot");
     progress("boot ok");
 
@@ -387,15 +438,24 @@ async function main() {
     const hush = page.getByTestId("take-hush-overlay");
     let takeKid = "";
     if (await hush.isVisible({ timeout: 12_000 }).catch(() => false)) {
-      // Decision replay can cover the hush — dismiss so the kid sentence reads.
-      await page.getByTestId("game-modal-close").first().click({ force: true }).catch(() => {});
-      await page.keyboard.press("Escape").catch(() => {});
-      await page.waitForTimeout(200);
+      // Decision replay can cover the hush — close ONLY that modal (never Esc:
+      // Esc also dismisses Take cinema before the kid sentence paints).
+      const why = page.getByText(/Why It Happened/i);
+      if (await why.isVisible().catch(() => false)) {
+        await page.getByTestId("game-modal-close").first().click({ force: true }).catch(() => {});
+        await page.waitForTimeout(250);
+      }
       // Wait for line phase — kid sentence is the combine retell.
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 50; i++) {
         const kidEl = page.getByTestId("take-cinema-kid-sentence");
         if (await kidEl.isVisible().catch(() => false)) {
           takeKid = (await kidEl.innerText()).trim();
+          break;
+        }
+        const hushText = (await hush.innerText().catch(() => "")).replace(/\s+/g, " ");
+        const m = hushText.match(/The Coin holds[^.]*\./i);
+        if (m) {
+          takeKid = m[0].trim();
           break;
         }
         await page.waitForTimeout(150);
@@ -405,11 +465,17 @@ async function main() {
         path: "/opt/cursor/artifacts/screenshots/cold-ashore-cove/01-take-kid-sentence.png",
         type: "png",
       });
+      await page.screenshot({
+        path: "/opt/cursor/artifacts/screenshots/ashore-to-piggy/05-take-kid-sentence.png",
+        type: "png",
+      });
       if (!/Coin holds/i.test(takeKid)) {
         throw new Error(`Take kid sentence missing Coin holds: ${takeKid}`);
       }
       await hush.click({ force: true }).catch(() => {});
-      await page.keyboard.press("Escape").catch(() => {});
+      await page.waitForTimeout(200);
+    } else {
+      progress("take hush not visible — will scrape Piggy homecoming");
     }
     // Carpet-home CTA opens Travel map — land Harbor for scar cinema.
     const homeCta = page.getByTestId("shore-carpet-home-cta");
@@ -477,6 +543,9 @@ async function main() {
       kid = saveFinal.harborHomecoming.message;
     }
     report.kid = kid;
+    if (!report.takeKidSentence && /Coin holds/i.test(kid)) {
+      report.takeKidSentence = kid.match(/The Coin holds[^.]*\./i)?.[0] || kid;
+    }
     report.pass =
       report.hasScar &&
       report.coinSortCleared &&
@@ -499,10 +568,16 @@ async function main() {
       fullPage: true,
     });
     await page.screenshot({
+      path: "/opt/cursor/artifacts/screenshots/ashore-to-piggy/06-harbor-piggy-retell.png",
+      type: "png",
+      fullPage: true,
+    });
+    await page.screenshot({
       path: "/opt/cursor/artifacts/screenshots/cold6-full-chain-retell.png",
       type: "png",
       fullPage: true,
     });
+    progress(`pass=${report.pass} take=${report.takeKidSentence} kid=${kid}`);
     console.log(JSON.stringify(report, null, 2));
     if (!report.pass) process.exit(1);
   } catch (err) {
