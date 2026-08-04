@@ -164,8 +164,14 @@ If not, that surface is not iconic yet.
 - **First session UI law:** Talk Piggy → Carpet → Cove only — normalize in `getHubGuidedStep` / save sanitize / Piggy graphs / Coin Bag / visual beats; Outfitter chrome is discovery after Ashore.
 - **Research pass:** [harbor-ashore.md](./harbor-ashore.md) Portal one-verb · Asobi introduce→practice→combine · HL learn-by-doing — combine at Cove Take.
 
+## Iteration 17 (shipped) — Cove Coin Jar interior deepen
+
+- **Jar architecture:** glass ribs · cork shelf · coin piles · slot mouth (`JarInteriorArchitecture`) so the room reads as a jar, not a cyan tube.
+- **Part enter motifs:** cork-pop / spring-fling lower-thirds before shared arcade IDs; Lid Lookout Soft Beat is lower-third cinema (`data-soft-beat-layout="lower-third"`).
+- **QA / cold:** `__QA__.enterMoneyStructure` · `enterStructurePart`; `scripts/cold-coin-jar-interior.mjs` asserts cork-pop + lid-climb Coin holds.
+
 ## Still deepen (from iconic-later)
 
-PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  
+Ledger Bank · Payroll Tower · Interest Keep interiors · day-2 scar echo presence · share thumbnail mute-test.  
 
 Iterate depth next — never new islands first.

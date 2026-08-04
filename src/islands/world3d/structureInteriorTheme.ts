@@ -52,11 +52,11 @@ export function structureShell(theme: MoneyStructureTheme): StructureShell {
       fillLight: "#c4b5fd",
     };
   }
-  // Jar — glass + coin gold (not tower cyan)
+  // Jar — glass + coin gold (not tower cyan); denser so ribs/cork read
   return {
     wall: "#67e8f9",
-    wallOp: 0.5,
-    bg: "#164e63",
+    wallOp: 0.58,
+    bg: "#134e4a",
     accent: organ.accentHint,
     floor: "#78350f",
     exit: "#fbbf24",

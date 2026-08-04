@@ -32,6 +32,15 @@ describe("money structure toy culture contract", () => {
     expect(jarBlock).not.toMatch(/ToyStamp/);
   });
 
+  it("mounts jar-true architecture inside the Coin Jar interior", () => {
+    const interior = readFileSync(
+      join(__dirname, "world3d/MoneyStructureInteriorView.tsx"),
+      "utf8",
+    );
+    expect(interior).toMatch(/JarInteriorArchitecture/);
+    expect(interior).toMatch(/theme === \"jar\"/);
+  });
+
   it("gives Ledger Bank vault dial + teller glass (not jar cork)", () => {
     const toys = readFileSync(join(__dirname, "world3d/StructureInteriorToys.tsx"), "utf8");
     const culture = toys.slice(toys.indexOf("export function StructureToyCulture"));

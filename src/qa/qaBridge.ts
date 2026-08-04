@@ -35,6 +35,10 @@ export type QABridge = {
   prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
+  /** Open the island Money Structure interior (Cove Jar · Tower · Keep). */
+  enterMoneyStructure: () => void;
+  /** Climb a named structure part (cork_vault · coin_spring · lid_lookout · …). */
+  enterStructurePart: (partId: string) => void;
   ready: boolean;
 };
 

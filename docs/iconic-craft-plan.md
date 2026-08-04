@@ -331,7 +331,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
 | 8 | Balance | playable → iconic | 2026-08-02 | Cove → Freedom balance sheet + Seal chase chip after pouch dips. Next: keep escape streak honest |
 | 9 | UI / comms | playable → iconic | 2026-08-02 | Talk Battle Leave + organ stage + Esc · Leave overlays. Next: cold human Ashore→Cove |
-| 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
+| 10 | Art direction | playable → iconic | 2026-08-04 | Coin Jar glass ribs + cork shelf + Lid lower-third. Next: Bank/Tower/Keep architecture parity |
 | 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
 | 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences + Talk Battle organ chip; Ashore→Cove retell contract. Next: cold human Ashore→Cove |
 | 13 | Onboarding | playable → iconic | 2026-08-03 | Ashore UI law Talk→Carpet→Cove; Outfitter-card demoted; Portal/Asobi/HL research |
@@ -351,6 +351,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
+**Last shipped:** Whole-game craft **iter 17 — Cove Coin Jar interior** (architecture + cork-pop/spring-fling + Lid lower-third).  
 
-**Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.
+**Craft sequence complete (0–17 pillars).** Next deepen: Ledger Bank · Payroll Tower · Interest Keep interiors · day-2 echo · share thumbnail — do not widen the map.

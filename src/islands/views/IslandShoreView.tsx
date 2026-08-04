@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { PartEnterMotifOverlay } from "./PartEnterMotifOverlay";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -54,6 +55,10 @@ import {
   structureEnterCta,
 } from "../titleVoice";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import {
+  resolvePartEnterMotif,
+  type PartEnterMotif,
+} from "../structurePartEnter";
 
 export type IslandShoreViewProps = {
   island: IslandDefinition;
@@ -109,6 +114,10 @@ export function IslandShoreView({
   const [structureOpen, setStructureOpen] = useState(false);
   const [enteringJar, setEnteringJar] = useState(false);
   const [softBeat, setSoftBeat] = useState<SoftBeatKind | null>(null);
+  const [partEnter, setPartEnter] = useState<{
+    motif: PartEnterMotif;
+    minigameId: string;
+  } | null>(null);
   const [takeHushOpen, setTakeHushOpen] = useState(false);
   const [takeCinemaPhase, setTakeCinemaPhase] = useState<TakeCinemaPhase | null>(null);
   const takeHushSeenRef = useRef(false);
@@ -212,13 +221,58 @@ export function IslandShoreView({
         setSoftBeat(part.softBeat);
         return;
       }
-      if (part.minigameId) {
+      if (part.minigameId && structure) {
+        const motif = resolvePartEnterMotif(structure.theme, part);
+        if (motif && motif.durationMs > 0) {
+          setPartEnter({ motif, minigameId: part.minigameId });
+          return;
+        }
         playCapitalSfx("scar_chime");
         onPlayMinigame(part.minigameId);
       }
     },
-    [onPlayMinigame],
+    [onPlayMinigame, structure],
   );
+
+  // QA / cold scripts — direct hooks beat flaky WebGL walk + CustomEvent races.
+  useEffect(() => {
+    const api = {
+      enter: () => enterStructure(),
+      enterPart: (partId: string) => {
+        if (!structure) return false;
+        const part = structure.parts.find((p) => p.id === partId);
+        if (!part) return false;
+        if (!structureOpen) {
+          setEnteringJar(false);
+          setStructureOpen(true);
+          window.setTimeout(() => onEnterPart(part), 120);
+        } else {
+          onEnterPart(part);
+        }
+        return true;
+      },
+    };
+    (
+      window as Window & {
+        __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+      }
+    ).__QA_STRUCTURE__ = api;
+    return () => {
+      delete (
+        window as Window & {
+          __QA_STRUCTURE__?: { enter: () => void; enterPart: (id: string) => boolean };
+        }
+      ).__QA_STRUCTURE__;
+    };
+  }, [enterStructure, structure, structureOpen, onEnterPart]);
+
+  const finishPartEnter = useCallback(() => {
+    if (!partEnter) return;
+    const { minigameId } = partEnter;
+    setPartEnter(null);
+    playCapitalSfx("scar_chime");
+    onPlayMinigame(minigameId);
+  }, [onPlayMinigame, partEnter]);
 
   const activate = useCallback(
     (hotspotId: string) => {
@@ -274,7 +328,7 @@ export function IslandShoreView({
             character={character}
             onExit={() => setStructureOpen(false)}
             onEnterPart={onEnterPart}
-            inputFrozen={Boolean(softBeat)}
+            inputFrozen={Boolean(softBeat) || Boolean(partEnter)}
           />
             {softBeat ? (
             <SoftBeatOverlay
@@ -283,6 +337,9 @@ export function IslandShoreView({
               scarLabel={latestScar?.label ?? null}
               onDone={() => setSoftBeat(null)}
             />
+          ) : null}
+          {partEnter ? (
+            <PartEnterMotifOverlay motif={partEnter.motif} onDone={finishPartEnter} />
           ) : null}
         </>
       ) : null}
@@ -314,7 +371,9 @@ export function IslandShoreView({
               guideLookAt={guideLookAt}
               guideArrows={guideArrows}
               onGuideProject={setGuideProjection}
-              inputFrozen={talkOpen || enteringJar || structureOpen || takeHushOpen}
+              inputFrozen={
+                talkOpen || enteringJar || structureOpen || takeHushOpen || Boolean(partEnter)
+              }
               chapterQuiet={chapterQuiet}
               hushCinemaPhase={takeCinemaPhase}
             />
