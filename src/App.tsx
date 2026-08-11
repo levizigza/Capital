@@ -484,6 +484,7 @@ function App() {
         ) : bootPhase === "teach" ? (
           <AshoreComprehensionTutorial
             key="capital-ashore-teach"
+            character={bootCharacter ?? BASE_VOYAGER}
             onComplete={() => setBootPhase("carpet")}
           />
         ) : (

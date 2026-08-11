@@ -20,6 +20,11 @@ export { IslandTitle } from "./IslandTitle";
 export { ArchipelagoMap3D } from "./ArchipelagoMap3D";
 export { DioramaIslandMesh } from "./DioramaIslandMesh";
 export { CharacterPreview3D } from "./CharacterPreview3D";
+export {
+  VoyagerWalkPracticeStage,
+  WALK_MARKERS,
+  TALK_TARGET,
+} from "./VoyagerWalkPracticeStage";
 export { OutfitterStudio3D } from "./OutfitterStudio3D";
 export { MoneyStructureInteriorView } from "./MoneyStructureInteriorView";
 export { LedgerBankLandmark } from "./LedgerBankLandmark";

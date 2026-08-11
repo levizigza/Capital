@@ -171,6 +171,13 @@ If not, that surface is not iconic yet.
 - **Spine interiors:** Jar · Bank · Tower · Keep architecture; Soft Beat lower-thirds. **Soundtrack files/cues unchanged** (the bangers stay).
 - **Freeze:** outer packs stay off the travel strip; copy refreshed to Capital organ language only.
 
+## Iteration 20 (shipped) — Iconic Ashore teach (see your Voyager)
+
+- **Research bar:** Portal prove-it · Mario body-lesson · BotW vertical slice · Astro toy clarity — see [ashore-teach-design.md](./ashore-teach-design.md).
+- **Practice pad:** `VoyagerWalkPracticeStage` — walk to glowing rings (body must move); approach Piggy ring + opt-in E.
+- **Gameplay literacy:** signature loop beats · four organ paintings (mustFeel) · toolkit verbs · then carpet with your Voyager.
+- Soundtrack beds unchanged.
+
 ## Still deepen (from iconic-later)
 
 PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  
