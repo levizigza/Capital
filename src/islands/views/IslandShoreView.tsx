@@ -36,7 +36,7 @@ import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
-import { nextMainCourseStep, mainCourseProgress, SIDE_TOMFOOLERY } from "../mainCourse";
+import { nextMainCourseStep, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
@@ -45,6 +45,7 @@ import {
   harborScarPlaques,
   organQuietBadge,
   organTakeHushLine,
+  organVerbChip,
   plaqueShelfLine,
 } from "../worldMemory";
 import { moneyOrganForIsland } from "../moneyOrgans";
@@ -142,7 +143,6 @@ export function IslandShoreView({
   );
   const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
-  const courseProg = useMemo(() => mainCourseProgress(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
   const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
@@ -391,13 +391,20 @@ export function IslandShoreView({
               </p>
             ) : null}
             {nextStep ? (
-              <div className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100">
-                <span className="font-bold uppercase tracking-wide text-amber-200">Main course</span>
+              <div
+                className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100"
+                data-testid="shore-next-verb"
+              >
+                <span className="font-bold uppercase tracking-wide text-amber-200">
+                  {organVerbChip(moneyOrganForIsland(island.id)?.id ?? "coin")}
+                </span>
                 {" · "}
-                {nextStep.title} ({courseProg.done}/{courseProg.total})
+                {nextStep.title}
               </div>
             ) : (
-              <div className="mt-1 text-[11px] font-bold text-emerald-200">Main course clear — explore freely</div>
+              <div className="mt-1 text-[11px] font-bold text-emerald-200" data-testid="shore-next-verb">
+                {organVerbChip(moneyOrganForIsland(island.id)?.id ?? "coin")} — explore freely
+              </div>
             )}
           </div>
           )

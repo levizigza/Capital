@@ -15,6 +15,8 @@ import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForIsland } from "../moneyOrgans";
 import { cinemaTimeScale } from "../a11yMotion";
 import { arriveEyebrow } from "../titleVoice";
+import { coldOrganKidSentence } from "../worldMemory";
+import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 export type WorldArriveKind = "carpet_land" | "structure_enter" | "painting_portal";
@@ -51,7 +53,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
       accent: "#fbbf24",
       accent2: "#fde68a",
       motif: "slot",
-      blurb: "Coin holds — Coincraft Cove blooms; save a little, the jar still waits.",
+      blurb: coldOrganKidSentence("coin"),
     };
   }
   if (islandId === PAYCHECK_PENINSULA_ID || structure?.theme === "tower") {
@@ -62,7 +64,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
       accent: "#38bdf8",
       accent2: "#e2e8f0",
       motif: "chute",
-      blurb: "Clock stamps — Paycheck Peninsula locks; umbrella loft ahead.",
+      blurb: coldOrganKidSentence("clock"),
     };
   }
   if (islandId === CREDIT_KINGDOM_ID || structure?.theme === "keep") {
@@ -73,7 +75,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
       accent: "#a78bfa",
       accent2: "#c4b5fd",
       motif: "spiral",
-      blurb: "Spiral weighs — Credit Kingdom steadies; score battlement waits.",
+      blurb: coldOrganKidSentence("spiral"),
     };
   }
   if (islandId === HARBOR_HAVEN_ID || structure?.theme === "bank") {
@@ -84,7 +86,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
       accent: "#f59e0b",
       accent2: "#94a3b8",
       motif: "vault",
-      blurb: "Memory keeps — Harbor Haven fountain, ledger, and Money Carpet remember you.",
+      blurb: coldOrganKidSentence("memory"),
     };
   }
   return {
@@ -116,6 +118,9 @@ export function WorldArriveOverlay({
 
   useEffect(() => {
     const organ = moneyOrganForIsland(islandId);
+    if (kind === "structure_enter") {
+      triggerJuice("accept", { burst: true });
+    }
     if (kind === "structure_enter" && organ) {
       playOrganSfx(organ.id);
       playCapitalSfx("scar_chime");

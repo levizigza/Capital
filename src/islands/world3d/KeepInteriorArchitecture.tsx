@@ -70,7 +70,7 @@ export function KeepInteriorArchitecture() {
       ))}
       <Billboard position={[0, 5.2, -7.3]} follow>
         <SafeText fontSize={0.26} color="#ddd6fe" anchorX="center" outlineWidth={0.02} outlineColor="#1c1917">
-          Score Battlement · Spiral weighs
+          Score Battlement · Spiral withstands
         </SafeText>
       </Billboard>
 

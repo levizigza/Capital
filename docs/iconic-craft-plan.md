@@ -317,6 +317,8 @@ When two pillars fight, **fantasy + signature loop win**.
 
 **Iteration 21:** Harbor civic master plan ([harbor-plaza-plan.md](./harbor-plaza-plan.md)) — Outfitter off pier axis, Bank due-east, door/fountain clearance tests; myth civic sketch; side-shore chip row after Cove Change.
 
+**Iteration 22:** Whole-game iconic thresholds ([whole-game-iconic-pass.md](./whole-game-iconic-pass.md)) — organ vocabulary lock, Ashore anti-checklist, juice/input parity boot→structure exit, shore next-verb, Settings voice.
+
 ---
 
 ## Status board (update as we pass)

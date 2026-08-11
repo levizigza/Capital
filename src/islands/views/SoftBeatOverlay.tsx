@@ -11,6 +11,8 @@ import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
 import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
+import { triggerJuice } from "@/juice";
+import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
@@ -64,6 +66,7 @@ export function SoftBeatOverlay({
   useOverlayEscape(onDone);
 
   useEffect(() => {
+    triggerJuice("accept");
     playOrganSfx(organ.id);
     if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
@@ -134,7 +137,12 @@ export function SoftBeatOverlay({
           {kidSentence}
         </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
-        <GameButton variant="primary" className="mt-4" onClick={onDone} data-testid="soft-beat-leave">
+        <GameButton
+          variant="primary"
+          className="mt-4"
+          data-testid="soft-beat-leave"
+          {...pointerSafeActivate(onDone)}
+        >
           {organ.id === "coin"
             ? "Leave — back into the Jar"
             : organ.id === "clock"

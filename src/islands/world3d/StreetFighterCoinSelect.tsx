@@ -2,6 +2,7 @@ import { SERIES_LEAD_MASCOT_IDS, getMascot } from "../moneyCast";
 import { PLAYABLE_SELECT_CAST } from "../castLooks";
 import { SERIES_SHEET_SPECS } from "../../art/seriesCast/seriesLeadArt";
 import { SeriesCoinFace, hasSeriesCoinFace } from "../../art/seriesCast/SeriesCoinFace";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Props = {
   selectedId: string;
@@ -66,15 +67,7 @@ export function StreetFighterCoinSelect({
                 type="button"
                 role="option"
                 aria-selected={active}
-                onPointerUp={(e) => {
-                  if (e.button !== 0) return;
-                  e.preventDefault();
-                  onPick(id);
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onPick(id);
-                }}
+                {...pointerSafeActivate(() => onPick(id))}
                 onFocus={() => onFocus?.(id)}
                 onMouseEnter={() => onFocus?.(id)}
                 data-testid={`sf-coin-${id}`}

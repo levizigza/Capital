@@ -10,10 +10,18 @@ import { killServiceWorkerForE2e, waitForQaReady } from "./helpers";
  * clear never runs.
  */
 
-async function dismissDay2IfOpen(page: import("@playwright/test").Page) {
-  const hearThem = page.getByRole("button", { name: /I hear them/i });
-  if (await hearThem.isVisible({ timeout: 5_000 }).catch(() => false)) {
-    await hearThem.click({ force: true });
+async function dismissHarborCinemaIfOpen(page: import("@playwright/test").Page) {
+  // Day-2 Soft Beat · share card · spectacle can sit above myth fallback.
+  for (const name of [/I hear them/i, /Leave — find Piggy/i, /Visit the Plinth/i]) {
+    const btn = page.getByRole("button", { name });
+    if (await btn.isVisible({ timeout: 2_500 }).catch(() => false)) {
+      await btn.click({ force: true });
+      await page.waitForTimeout(200);
+    }
+  }
+  const leave = page.getByTestId("day2-echo-leave");
+  if (await leave.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await leave.click({ force: true });
   }
 }
 
@@ -37,9 +45,10 @@ test.describe("Harbor 3D failsafe", () => {
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
     });
-    await dismissDay2IfOpen(page);
+    await dismissHarborCinemaIfOpen(page);
 
     await expect(page.getByTestId("harbor-myth-fallback")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("harbor-civic-sketch")).toBeVisible();
     await expect(page.getByTestId("harbor-3d-shell")).toHaveCount(0);
 
     // Myth still offers a clear next verb (roam may show Talk + Carpet together)
@@ -62,10 +71,11 @@ test.describe("Harbor 3D failsafe", () => {
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
     });
-    await dismissDay2IfOpen(page);
+    await dismissHarborCinemaIfOpen(page);
 
     await expect(page.getByTestId("harbor-myth-fallback")).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId("harbor-myth-fallback")).toContainText(/safe mode/i);
+    await expect(page.getByTestId("harbor-civic-sketch")).toBeVisible();
     await expect(page.getByTestId("harbor-3d-shell")).toHaveCount(0);
   });
 });

@@ -205,7 +205,7 @@ export function TravelMapView({
               className="text-[10px] font-semibold text-white/60"
               data-testid="side-shores-locked-hint"
             >
-              Era side shores wake after Coincraft Change — outer ring on the map.
+              Era side shores wake after Cove Change — outer ring on the map.
             </p>
           )}
           <InputPromptHint action="cancel" className="justify-center text-white/80">

@@ -69,7 +69,7 @@ export default function SettingsPanel({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-xl font-black">⚙️ Settings</div>
+        <div className="text-xl font-black">Harbor Settings</div>
         <GameButton onClick={onClose} variant="outline" size="sm" motionEnabled={false}>
           Close
         </GameButton>
@@ -142,7 +142,9 @@ export default function SettingsPanel({
             />
             <div>
               <div className="text-sm font-medium">Reduced Motion</div>
-              <div className="text-xs text-gray-600">Disable animations and transitions</div>
+              <div className="text-xs text-gray-600">
+                Soften Take mark, Plinth spectacle, Soft Beat, and carpet hop — clearer, not flashy
+              </div>
             </div>
           </label>
 
