@@ -11,6 +11,7 @@ import {
   isHubIslandId,
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
+import { isSideShoreTravelId } from "./spineArchipelago";
 
 /** Inventory flag granted on Harbor escape — also used for carpet/plaza rewards */
 export const HARBOR_FREEDOM_ITEM = "harbor_freedom_seal";
@@ -96,6 +97,11 @@ export function isIslandProgressLocked(island: IslandDefinition, save: IslandSav
     return true;
   }
 
+  // Era side shores open after first Cove Change — first-run stays on the signature loop.
+  if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
+    return true;
+  }
+
   if (island.id === BOSS_ISLAND_ID) {
     return !bossUnlockProgress(save).unlocked;
   }
@@ -111,6 +117,9 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
   }
   if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
     return "Finish Coincraft Change first";
+  }
+  if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
+    return "Finish Coincraft Change — then era shores open";
   }
   if (island.id === BOSS_ISLAND_ID) {
     const prog = bossUnlockProgress(save);

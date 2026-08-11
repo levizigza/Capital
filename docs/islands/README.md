@@ -37,7 +37,7 @@ Each island **must** include before ship:
 | `starter_key_cove` | _(no docs folder — registry park only)_ |
 
 **Gate:** `src/qa/contentValidation.test.ts` fails if a live island pack lacks `story-circle.md`.  
-**Scope gate:** `src/islands/iconicScopeFreeze.test.ts` fails if parked story-circles lose their **PARKED** banner or the travel spine widens.
+**Scope gate:** `src/islands/iconicScopeFreeze.test.ts` fails if the main-quest spine widens, era **SIDE SHORE** story-circles lose their banner, or demo Key Cove loses its park.
 
 ## Quick start (new island)
 

@@ -1,5 +1,5 @@
 ---
-description: Iconic path freeze — depth on Cove→Harbor signature loop; no outer islands or fake multiplayer
+description: Iconic path freeze — depth on Cove→Harbor signature loop; main quest spine stays four-wide; Family Room local
 alwaysApply: true
 ---
 
@@ -7,9 +7,9 @@ alwaysApply: true
 
 While polishing toward iconic territory:
 
-- Do **not** add new outer islands or widen the map beyond Cove → Paycheck → Credit.
+- Do **not** widen the **main quest** beyond Cove → Paycheck → Credit. Era **side shores** may sit on the outer map ring with their own music; they are discoverable extras, not new strip chips.
 - Do **not** build a fake multiplayer backend; Family Room stays local.
 - Do **not** merge Nathan Project / BMO / CBE into Capital.
 - Prefer deepening: Cove Change hush → scar spectacle → Plinth glow → share card → Piggy → day-2 scar echo → **Money Structure interiors** (Coin Jar · Ledger Bank · Payroll Tower · Interest Keep).
 
-See `docs/iconic-path.md`.
+See `docs/iconic-path.md` and `docs/era-shores-restore.md`.

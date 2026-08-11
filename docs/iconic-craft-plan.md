@@ -313,7 +313,7 @@ When two pillars fight, **fantasy + signature loop win**.
 
 | Pass work | Reaffirm freeze. Park a “later” list so feature creep doesn’t eat the loop. |
 
-**Shipped (Pillar 17):** Freeze reaffirmed in code (`assertSpineTravelFrozen` — Harbor · Cove · Paycheck · Credit only). Parked “later” list at `docs/iconic-later.md` (out-of-scope laws + parked content + deferred polish from status Next fixes). Outer island story-circles carry explicit **PARKED** banners. Guarded by `iconicScopeFreeze.test.ts`.
+**Shipped (Pillar 17):** Main-quest strip frozen (`assertSpineTravelFrozen` — Harbor · Cove · Paycheck · Credit). Era **SIDE SHORE** restore on outer ring ([era-shores-restore.md](./era-shores-restore.md)). Later list at `docs/iconic-later.md`. Guarded by `iconicScopeFreeze.test.ts`.
 
 ---
 

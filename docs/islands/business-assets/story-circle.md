@@ -1,9 +1,9 @@
 ﻿# business-assets — Story Circle (draft)
 
-> **PARKED** — Outside the iconic freeze (Harbor · Cove → Paycheck → Credit). Not on the travel map or live loader. See [iconic-later.md](../../iconic-later.md). Do not deepen until the cold-retell MVP holds.
+> **SIDE SHORE** — Discoverable era chapter on the outer Fortune Archipelago ring (not a main-quest strip chip). Soft-locked until Cove Change. Soundtrack via `cueForIsland`. See [era-shores-restore.md](../../era-shores-restore.md) · [iconic-later.md](../../iconic-later.md).
 
 **Island ID:** `business_assets`  
-**Status:** PARKED — outer chapter; not live on Fortune Archipelago spine  
+**Status:** SIDE SHORE — outer ring; Capital-framed; not a main-course strip chip  
 **Canon:** [story-bible.md](../../story-bible.md)
 
 ---

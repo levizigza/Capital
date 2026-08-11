@@ -4,9 +4,11 @@
     {
       "id": "business_assets",
       "name": "Diversify Keep",
-      "description": "Off-spine orbital pack (parked) — Colony Deed Horizon bed kept; not on the travel strip.",
-      "icon": "🏰",
-      "requiredItems": ["da_island_medallion"],
+      "description": "Orbital keep ops \u2014 run the shop from the outer ring. Side shore of Fortune Archipelago.",
+      "icon": "\ud83c\udff0",
+      "requiredItems": [
+        "da_island_medallion"
+      ],
       "provenance": {
         "learning_objectives": [
           "Understand business inventory and cash flow management",
@@ -14,59 +16,78 @@
           "Practice profit-and-loss tracking for a small business",
           "Differentiate revenue from profit"
         ],
-        "mechanics_used": ["resource-management", "budget-allocation", "npc-dialogue-tree", "trade-negotiation"],
+        "mechanics_used": [
+          "resource-management",
+          "budget-allocation",
+          "npc-dialogue-tree",
+          "trade-negotiation"
+        ],
         "originality_notes": "Theme: island bay with workshops and warehouses (not a corporate office sim). Verb: manage inventory + negotiate with NPCs (not spreadsheet simulation). Structure: story-driven quests teaching one concept per quest (not sandbox management). Combines resource management with trade negotiation through NPC-guided scenarios.",
-        "forbidden_references": ["Lemonade Stand", "SimCity", "Tycoon", "AdVenture Capitalist"]
+        "forbidden_references": [
+          "Lemonade Stand",
+          "SimCity",
+          "Tycoon",
+          "AdVenture Capitalist"
+        ]
       },
       "areas": [
         {
           "id": "ba_storefront",
           "name": "Storefront",
           "description": "Your shop's front counter. Manage inventory, set prices, and serve customers.",
-          "icon": "🛍️",
-          "connections": ["ba_back_office", "ba_warehouse"]
+          "icon": "\ud83d\udecd\ufe0f",
+          "connections": [
+            "ba_back_office",
+            "ba_warehouse"
+          ]
         },
         {
           "id": "ba_back_office",
           "name": "Back Office",
           "description": "Desks covered in spreadsheets. Track cash flow, profit margins, and expenses.",
-          "icon": "🖥️",
-          "connections": ["ba_storefront", "ba_warehouse"]
+          "icon": "\ud83d\udda5\ufe0f",
+          "connections": [
+            "ba_storefront",
+            "ba_warehouse"
+          ]
         },
         {
           "id": "ba_warehouse",
           "name": "Warehouse",
           "description": "Shelves of equipment and stock. Learn about assets, depreciation, and write-offs.",
-          "icon": "📦",
-          "connections": ["ba_storefront", "ba_back_office"]
+          "icon": "\ud83d\udce6",
+          "connections": [
+            "ba_storefront",
+            "ba_back_office"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_shop_sam",
           "name": "Shop Owner Sam",
-          "icon": "🧑‍💼",
+          "icon": "\ud83e\uddd1\u200d\ud83d\udcbc",
           "areaId": "ba_storefront",
           "dialogueGraphId": "dlg_sam"
         },
         {
           "id": "npc_accountant_amy",
           "name": "Accountant Amy",
-          "icon": "🧮",
+          "icon": "\ud83e\uddee",
           "areaId": "ba_back_office",
           "dialogueGraphId": "dlg_amy"
         },
         {
           "id": "npc_supplier_steve",
           "name": "Supplier Steve",
-          "icon": "🚚",
+          "icon": "\ud83d\ude9a",
           "areaId": "ba_warehouse",
           "dialogueGraphId": "dlg_steve"
         },
         {
           "id": "npc_tax_tina",
           "name": "Tax Advisor Tina",
-          "icon": "📋",
+          "icon": "\ud83d\udccb",
           "areaId": "ba_back_office",
           "dialogueGraphId": "dlg_tina"
         }
@@ -76,29 +97,37 @@
           "id": "ba_ledger",
           "name": "Business Ledger",
           "description": "A record of all business income and expenses.",
-          "icon": "📒",
-          "location": { "areaId": "ba_back_office" }
+          "icon": "\ud83d\udcd2",
+          "location": {
+            "areaId": "ba_back_office"
+          }
         },
         {
           "id": "ba_equipment",
           "name": "Store Equipment",
-          "description": "A depreciating asset — worth less every year on the books.",
-          "icon": "🔧",
-          "location": { "areaId": "ba_warehouse" }
+          "description": "A depreciating asset \u2014 worth less every year on the books.",
+          "icon": "\ud83d\udd27",
+          "location": {
+            "areaId": "ba_warehouse"
+          }
         },
         {
           "id": "ba_cashflow_report",
           "name": "Cash Flow Report",
           "description": "Shows money in vs money out. Positive cash flow keeps the business alive.",
-          "icon": "💵",
-          "location": { "areaId": "ba_back_office" }
+          "icon": "\ud83d\udcb5",
+          "location": {
+            "areaId": "ba_back_office"
+          }
         },
         {
           "id": "ba_island_medallion",
           "name": "Business Bay Medallion",
           "description": "Proof of business acumen. Unlocks the next island!",
-          "icon": "🏅",
-          "location": { "areaId": "ba_back_office" }
+          "icon": "\ud83c\udfc5",
+          "location": {
+            "areaId": "ba_back_office"
+          }
         }
       ],
       "quests": [
@@ -109,11 +138,26 @@
           "description": "Stock your store, price items for profit, and manage inventory turnover without running out or overstocking.",
           "hint": "Talk to Shop Owner Sam to learn pricing, then negotiate with Supplier Steve for bulk deals.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_shop_sam" },
-            { "type": "talkToNpc", "npcId": "npc_supplier_steve" },
-            { "type": "completeMinigame", "minigameId": "mg_cashflow_sim" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_shop_sam"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_supplier_steve"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_cashflow_sim"
+            }
           ],
-          "rewards": { "coins": 75, "xp": 150, "items": ["ba_ledger"] }
+          "rewards": {
+            "coins": 75,
+            "xp": 150,
+            "items": [
+              "ba_ledger"
+            ]
+          }
         },
         {
           "id": "q_depreciation_101",
@@ -122,11 +166,27 @@
           "description": "Understand how business assets lose value over time and how that affects taxes and cash flow.",
           "hint": "Visit Accountant Amy to learn about cash flow, then see Tax Advisor Tina for depreciation rules.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_accountant_amy" },
-            { "type": "talkToNpc", "npcId": "npc_tax_tina" },
-            { "type": "collectItem", "itemId": "ba_cashflow_report" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_accountant_amy"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_tax_tina"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "ba_cashflow_report"
+            }
           ],
-          "rewards": { "coins": 100, "xp": 200, "items": ["ba_equipment", "ba_island_medallion"] }
+          "rewards": {
+            "coins": 100,
+            "xp": 200,
+            "items": [
+              "ba_equipment",
+              "ba_island_medallion"
+            ]
+          }
         }
       ],
       "dialogues": [
@@ -139,12 +199,36 @@
               "speaker": "Shop Owner Sam",
               "text": "Running a shop is all about margins. Buy low, sell high, and make sure you don't run out of stock OR drown in unsold inventory. Want to learn the ropes?",
               "choices": [
-                { "id": "sm1c1", "text": "Teach me about pricing and inventory!", "nextNodeId": "sm2", "effects": [{ "type": "startQuest", "questId": "q_inventory_hustle" }] },
-                { "id": "sm1c2", "text": "Just looking around.", "nextNodeId": "sm3" }
+                {
+                  "id": "sm1c1",
+                  "text": "Teach me about pricing and inventory!",
+                  "nextNodeId": "sm2",
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_inventory_hustle"
+                    }
+                  ]
+                },
+                {
+                  "id": "sm1c2",
+                  "text": "Just looking around.",
+                  "nextNodeId": "sm3"
+                }
               ]
             },
-            { "id": "sm2", "speaker": "Shop Owner Sam", "text": "Rule of thumb: your markup should cover not just the product cost, but also rent, wages, and a profit margin. Aim for at least 30% gross margin. Now go talk to Supplier Steve about getting inventory.", "end": true },
-            { "id": "sm3", "speaker": "Shop Owner Sam", "text": "Come back anytime — the store's always open!", "end": true }
+            {
+              "id": "sm2",
+              "speaker": "Shop Owner Sam",
+              "text": "Rule of thumb: your markup should cover not just the product cost, but also rent, wages, and a profit margin. Aim for at least 30% gross margin. Now go talk to Supplier Steve about getting inventory.",
+              "end": true
+            },
+            {
+              "id": "sm3",
+              "speaker": "Shop Owner Sam",
+              "text": "Come back anytime \u2014 the store's always open!",
+              "end": true
+            }
           ]
         },
         {
@@ -156,17 +240,46 @@
               "speaker": "Accountant Amy",
               "text": "Cash flow is the lifeblood of any business. Revenue means nothing if you can't pay your bills THIS month. Want to see how it works?",
               "choices": [
-                { "id": "am1c1", "text": "Show me the numbers!", "nextNodeId": "am2", "effects": [{ "type": "startQuest", "questId": "q_depreciation_101" }] },
-                { "id": "am1c2", "text": "What's the difference between profit and cash flow?", "nextNodeId": "am3" }
+                {
+                  "id": "am1c1",
+                  "text": "Show me the numbers!",
+                  "nextNodeId": "am2",
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_depreciation_101"
+                    }
+                  ]
+                },
+                {
+                  "id": "am1c2",
+                  "text": "What's the difference between profit and cash flow?",
+                  "nextNodeId": "am3"
+                }
               ]
             },
-            { "id": "am2", "speaker": "Accountant Amy", "text": "I'll prepare a cash flow report for you. But also talk to Tina about depreciation — it's a non-cash expense that reduces your tax bill. Sounds boring, but it saves real money.", "end": true },
+            {
+              "id": "am2",
+              "speaker": "Accountant Amy",
+              "text": "I'll prepare a cash flow report for you. But also talk to Tina about depreciation \u2014 it's a non-cash expense that reduces your tax bill. Sounds boring, but it saves real money.",
+              "end": true
+            },
             {
               "id": "am3",
               "speaker": "Accountant Amy",
               "text": "Profit is revenue minus expenses on paper. But cash flow is actual money in and out. A business can be 'profitable' on paper but run out of cash if customers pay late. Cash is king!",
               "choices": [
-                { "id": "am3c1", "text": "Let's track my cash flow!", "nextNodeId": "am2", "effects": [{ "type": "startQuest", "questId": "q_depreciation_101" }] }
+                {
+                  "id": "am3c1",
+                  "text": "Let's track my cash flow!",
+                  "nextNodeId": "am2",
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_depreciation_101"
+                    }
+                  ]
+                }
               ]
             }
           ]
@@ -180,13 +293,48 @@
               "speaker": "Supplier Steve",
               "text": "Need stock? I've got three pricing tiers: small batch (high price per unit), bulk (cheaper per unit but more cash upfront), and on-demand (fastest but most expensive). What'll it be?",
               "choices": [
-                { "id": "sv1c1", "text": "Tell me about bulk pricing.", "nextNodeId": "sv2" },
-                { "id": "sv1c2", "text": "What's the smartest approach?", "nextNodeId": "sv3" }
+                {
+                  "id": "sv1c1",
+                  "text": "Tell me about bulk pricing.",
+                  "nextNodeId": "sv2"
+                },
+                {
+                  "id": "sv1c2",
+                  "text": "What's the smartest approach?",
+                  "nextNodeId": "sv3"
+                }
               ]
             },
-            { "id": "sv2", "speaker": "Supplier Steve", "text": "Bulk saves you 25% per unit, but you need to sell it all before it expires or becomes obsolete. Dead inventory is dead money.", "end": true },
-            { "id": "sv3", "speaker": "Supplier Steve", "text": "Start small to test demand, then scale up. The worst mistake is ordering 1,000 units of something nobody wants. Ready to try the cashflow simulator?", "choices": [{ "id": "sv3c1", "text": "Let's simulate!", "nextNodeId": "sv4", "effects": [{ "type": "startMinigame", "minigameId": "mg_cashflow_sim" }] }] },
-            { "id": "sv4", "speaker": "Supplier Steve", "text": "Launching the simulator…", "end": true }
+            {
+              "id": "sv2",
+              "speaker": "Supplier Steve",
+              "text": "Bulk saves you 25% per unit, but you need to sell it all before it expires or becomes obsolete. Dead inventory is dead money.",
+              "end": true
+            },
+            {
+              "id": "sv3",
+              "speaker": "Supplier Steve",
+              "text": "Start small to test demand, then scale up. The worst mistake is ordering 1,000 units of something nobody wants. Ready to try the cashflow simulator?",
+              "choices": [
+                {
+                  "id": "sv3c1",
+                  "text": "Let's simulate!",
+                  "nextNodeId": "sv4",
+                  "effects": [
+                    {
+                      "type": "startMinigame",
+                      "minigameId": "mg_cashflow_sim"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sv4",
+              "speaker": "Supplier Steve",
+              "text": "Launching the simulator\u2026",
+              "end": true
+            }
           ]
         },
         {
@@ -198,17 +346,46 @@
               "speaker": "Tax Advisor Tina",
               "text": "Depreciation is how businesses account for assets losing value over time. A $10,000 machine that lasts 5 years? You can deduct $2,000/year from your taxes. It's like a discount from the government for investing in your business.",
               "choices": [
-                { "id": "tn1c1", "text": "So it saves me money on taxes?", "nextNodeId": "tn2", "effects": [{ "type": "giveItem", "itemId": "ba_cashflow_report" }] },
-                { "id": "tn1c2", "text": "What about write-offs?", "nextNodeId": "tn3" }
+                {
+                  "id": "tn1c1",
+                  "text": "So it saves me money on taxes?",
+                  "nextNodeId": "tn2",
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "ba_cashflow_report"
+                    }
+                  ]
+                },
+                {
+                  "id": "tn1c2",
+                  "text": "What about write-offs?",
+                  "nextNodeId": "tn3"
+                }
               ]
             },
-            { "id": "tn2", "speaker": "Tax Advisor Tina", "text": "Exactly! Here's your cash flow report showing how depreciation affects your bottom line. The equipment isn't worth less in reality — it's an accounting tool that reduces taxable income.", "end": true },
+            {
+              "id": "tn2",
+              "speaker": "Tax Advisor Tina",
+              "text": "Exactly! Here's your cash flow report showing how depreciation affects your bottom line. The equipment isn't worth less in reality \u2014 it's an accounting tool that reduces taxable income.",
+              "end": true
+            },
             {
               "id": "tn3",
               "speaker": "Tax Advisor Tina",
-              "text": "A write-off means you deduct a business expense from your taxable income. But remember — a write-off isn't 'free money.' You still spent the money, you just pay less tax on it. A $1,000 write-off in a 25% tax bracket saves you $250.",
+              "text": "A write-off means you deduct a business expense from your taxable income. But remember \u2014 a write-off isn't 'free money.' You still spent the money, you just pay less tax on it. A $1,000 write-off in a 25% tax bracket saves you $250.",
               "choices": [
-                { "id": "tn3c1", "text": "Got it! Show me the report.", "nextNodeId": "tn2", "effects": [{ "type": "giveItem", "itemId": "ba_cashflow_report" }] }
+                {
+                  "id": "tn3c1",
+                  "text": "Got it! Show me the report.",
+                  "nextNodeId": "tn2",
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "ba_cashflow_report"
+                    }
+                  ]
+                }
               ]
             }
           ]
@@ -219,7 +396,7 @@
           "id": "mg_cashflow_sim",
           "name": "Cash Flow Micro-Sim",
           "description": "Run a small store for 12 simulated months. Balance inventory costs, revenue, and expenses to stay cash-positive.",
-          "icon": "💵",
+          "icon": "\ud83d\udcb5",
           "componentId": "CashFlowSimGame",
           "areaId": "ba_storefront"
         },
@@ -227,7 +404,7 @@
           "id": "mg_price_it_right",
           "name": "Set the Price",
           "description": "Price the products in your store. Slide the price and watch foot traffic and profit move in real time to find the sweet spot.",
-          "icon": "🏷️",
+          "icon": "\ud83c\udff7\ufe0f",
           "componentId": "PriceItRightGame",
           "areaId": "ba_storefront",
           "genre": "simulation",
@@ -235,7 +412,16 @@
           "visualShell": "notebook",
           "estimatedMinutes": 3,
           "modules": [
-            { "id": "PriceConfig", "config": { "product": "your signature item", "emoji": "🥐", "cost": 4, "maxDemand": 50, "chokePrice": 16 } }
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "your signature item",
+                "emoji": "\ud83e\udd50",
+                "cost": 4,
+                "maxDemand": 50,
+                "chokePrice": 16
+              }
+            }
           ]
         }
       ]

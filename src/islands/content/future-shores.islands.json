@@ -4,8 +4,8 @@
     {
       "id": "future_shores",
       "name": "Portfolio Skies",
-      "description": "Off-spine solarpunk pack (parked) — Coin Jar Morning bed kept; spine travel unchanged.",
-      "icon": "🎨",
+      "description": "Solarpunk horizon beyond the spine. Side shore of Fortune Archipelago \u2014 imagine tomorrow\u2019s Memory.",
+      "icon": "\ud83c\udfa8",
       "themeId": "future_shores",
       "provenance": {
         "learning_objectives": [
@@ -13,38 +13,56 @@
           "Experiment with long-horizon goals and risk balance",
           "See how financial literacy can be taught through stylized modern art games"
         ],
-        "mechanics_used": ["party-board", "community-creation", "vibe-code-studio", "diversification"],
-        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors — not unfinished scaffolding alone.",
-        "forbidden_references": ["Mario", "Nintendo", "Monopoly"]
+        "mechanics_used": [
+          "party-board",
+          "community-creation",
+          "vibe-code-studio",
+          "diversification"
+        ],
+        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors \u2014 not unfinished scaffolding alone.",
+        "forbidden_references": [
+          "Mario",
+          "Nintendo",
+          "Monopoly"
+        ]
       },
       "areas": [
         {
           "id": "fs_scaffold",
           "name": "The Scaffold",
-          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished — waiting for your ideas.",
-          "icon": "🚧",
-          "connections": ["fs_blank_canvas", "fs_community_dock"]
+          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished \u2014 waiting for your ideas.",
+          "icon": "\ud83d\udea7",
+          "connections": [
+            "fs_blank_canvas",
+            "fs_community_dock"
+          ]
         },
         {
           "id": "fs_blank_canvas",
           "name": "Blank Canvas Bay",
           "description": "Empty lots marked with chalk grids. Each plot is a game someone hasn't dreamed up yet. Maybe that someone is you.",
-          "icon": "📐",
-          "connections": ["fs_scaffold", "fs_community_dock"]
+          "icon": "\ud83d\udcd0",
+          "connections": [
+            "fs_scaffold",
+            "fs_community_dock"
+          ]
         },
         {
           "id": "fs_community_dock",
           "name": "Community Dock",
           "description": "Where creators moor their prototypes. Open VibeCode Studio from home base to publish levels that can live here someday.",
-          "icon": "⚓",
-          "connections": ["fs_scaffold", "fs_blank_canvas"]
+          "icon": "\u2693",
+          "connections": [
+            "fs_scaffold",
+            "fs_blank_canvas"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_future_keeper",
           "name": "The Keeper",
-          "icon": "🧑‍🎨",
+          "icon": "\ud83e\uddd1\u200d\ud83c\udfa8",
           "areaId": "fs_scaffold",
           "dialogueGraphId": "dlg_future_keeper"
         }
@@ -54,8 +72,10 @@
           "id": "fs_builder_chalk",
           "name": "Builder's Chalk",
           "description": "Mark your territory on the blank canvas.",
-          "icon": "🖍️",
-          "location": { "areaId": "fs_blank_canvas" }
+          "icon": "\ud83d\udd8d\ufe0f",
+          "location": {
+            "areaId": "fs_blank_canvas"
+          }
         }
       ],
       "quests": [
@@ -65,8 +85,14 @@
           "title": "Claim Your Plot",
           "description": "The kids of the future get to finish what we started. Explore Future Shores and pick up builder's chalk.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_future_keeper" },
-            { "type": "collectItem", "itemId": "fs_builder_chalk" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_future_keeper"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "fs_builder_chalk"
+            }
           ],
           "rewards": {
             "xp": 25,
@@ -82,7 +108,7 @@
             {
               "id": "start",
               "speaker": "The Keeper",
-              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn — carve out games for your era in VibeCode Studio.",
+              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn \u2014 carve out games for your era in VibeCode Studio.",
               "choices": [
                 {
                   "id": "c1",
@@ -99,26 +125,36 @@
             {
               "id": "build",
               "speaker": "The Keeper",
-              "text": "Exactly. Sail to the other islands to see how each era looked — Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
+              "text": "Exactly. Sail to the other islands to see how each era looked \u2014 Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
               "end": true,
               "choices": [
                 {
                   "id": "c3",
                   "text": "I'm ready to explore.",
-                  "effects": [{ "type": "startQuest", "questId": "q_fs_claim_plot" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_fs_claim_plot"
+                    }
+                  ]
                 }
               ]
             },
             {
               "id": "old",
               "speaker": "The Keeper",
-              "text": "They're still out there — each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
+              "text": "They're still out there \u2014 each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
               "end": true,
               "choices": [
                 {
                   "id": "c4",
                   "text": "Let me look around.",
-                  "effects": [{ "type": "startQuest", "questId": "q_fs_claim_plot" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_fs_claim_plot"
+                    }
+                  ]
                 }
               ]
             }
@@ -129,8 +165,8 @@
         {
           "id": "mg_fs_diversify",
           "name": "Weather Baskets",
-          "description": "Market weather shifts — rebalance baskets of assets like floating islands in the wind.",
-          "icon": "🧺",
+          "description": "Market weather shifts \u2014 rebalance baskets of assets like floating islands in the wind.",
+          "icon": "\ud83e\uddfa",
           "componentId": "DiversifyBasketsGame",
           "areaId": "fs_blank_canvas",
           "genre": "strategy",
@@ -140,21 +176,29 @@
         {
           "id": "mg_fs_compound",
           "name": "Horizon Snowball",
-          "description": "Watch long-horizon compounding under painterly aurora — patience is the weather pattern.",
-          "icon": "❄️",
+          "description": "Watch long-horizon compounding under painterly aurora \u2014 patience is the weather pattern.",
+          "icon": "\u2744\ufe0f",
           "componentId": "CompoundSnowballGame",
           "areaId": "fs_scaffold",
           "genre": "simulation",
           "complexity": "medium",
           "modules": [
-            { "id": "CompoundConfig", "config": { "principal": 500, "ratePct": 8, "years": 20, "label": "your portfolio" } }
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 500,
+                "ratePct": 8,
+                "years": 20,
+                "label": "your portfolio"
+              }
+            }
           ]
         },
         {
           "id": "mg_fs_budget",
           "name": "Sky Budget",
           "description": "Allocate coins across floating districts before the storm front arrives.",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "componentId": "BudgetSplitterGame",
           "areaId": "fs_community_dock",
           "genre": "strategy",

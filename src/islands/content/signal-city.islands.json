@@ -4,8 +4,8 @@
     {
       "id": "signal_city",
       "name": "Phosphor Reef",
-      "description": "Off-spine biopunk pack (parked) — living gardens bed kept; spine travel stays Cove→Paycheck→Credit.",
-      "icon": "🟢",
+      "description": "Biopunk signal gardens on the outer ring \u2014 listen for living market cues. Side shore of Fortune Archipelago (not a main-quest chip).",
+      "icon": "\ud83d\udfe2",
       "provenance": {
         "learning_objectives": [
           "Understand how credit scores are built and why they matter",
@@ -13,60 +13,83 @@
           "Read simple market indicators like price trends and volume",
           "Distinguish between responsible borrowing and debt traps"
         ],
-        "mechanics_used": ["market-simulation", "quiz-challenge", "npc-dialogue-tree", "portfolio-builder"],
+        "mechanics_used": [
+          "market-simulation",
+          "quiz-challenge",
+          "npc-dialogue-tree",
+          "portfolio-builder"
+        ],
         "originality_notes": "Theme: cyberpunk-inspired signal-tower city (not a trading floor or bank). Verb: decode market signals via NPC intel missions and build a mock portfolio (not day-trading simulation). Structure: investigation-style quests where players gather clues about credit and investing before making decisions (not competitive trading). Combines detective-style NPC quests with simplified portfolio-building puzzles.",
-        "forbidden_references": ["Monopoly", "Cashflow", "Robinhood", "Credit Karma", "Wall Street Survivor", "Stock Market Game"]
+        "forbidden_references": [
+          "Monopoly",
+          "Cashflow",
+          "Robinhood",
+          "Credit Karma",
+          "Wall Street Survivor",
+          "Stock Market Game"
+        ]
       },
       "areas": [
         {
           "id": "sc_signal_plaza",
           "name": "Signal Plaza",
           "description": "The city center. Giant screens flash market tickers and credit tips. A street mentor hangs out by the fountain.",
-          "icon": "📡",
-          "connections": ["sc_credit_lane", "sc_investor_tower"]
+          "icon": "\ud83d\udce1",
+          "connections": [
+            "sc_credit_lane",
+            "sc_investor_tower"
+          ]
         },
         {
           "id": "sc_credit_lane",
           "name": "Credit Lane",
           "description": "A narrow street lined with lending offices and score-tracking kiosks. Learn what makes a score rise or fall.",
-          "icon": "💳",
-          "connections": ["sc_signal_plaza", "sc_investor_tower"]
+          "icon": "\ud83d\udcb3",
+          "connections": [
+            "sc_signal_plaza",
+            "sc_investor_tower"
+          ]
         },
         {
           "id": "sc_investor_tower",
           "name": "Investor Tower",
           "description": "A glass skyscraper where analysts study trends. The observation deck shows the whole market at a glance.",
-          "icon": "🏙️",
-          "connections": ["sc_signal_plaza", "sc_credit_lane"],
-          "requiredItems": ["sc_market_pass"]
+          "icon": "\ud83c\udfd9\ufe0f",
+          "connections": [
+            "sc_signal_plaza",
+            "sc_credit_lane"
+          ],
+          "requiredItems": [
+            "sc_market_pass"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_mentor_max",
           "name": "Mentor Max",
-          "icon": "🕵️",
+          "icon": "\ud83d\udd75\ufe0f",
           "areaId": "sc_signal_plaza",
           "dialogueGraphId": "dlg_mentor_max"
         },
         {
           "id": "npc_credit_cleo",
           "name": "Credit Cleo",
-          "icon": "📈",
+          "icon": "\ud83d\udcc8",
           "areaId": "sc_credit_lane",
           "dialogueGraphId": "dlg_credit_cleo"
         },
         {
           "id": "npc_analyst_ari",
           "name": "Analyst Ari",
-          "icon": "🔬",
+          "icon": "\ud83d\udd2c",
           "areaId": "sc_investor_tower",
           "dialogueGraphId": "dlg_analyst_ari"
         },
         {
           "id": "npc_broker_blake",
           "name": "Broker Blake",
-          "icon": "🤝",
+          "icon": "\ud83e\udd1d",
           "areaId": "sc_investor_tower",
           "dialogueGraphId": "dlg_broker_blake"
         }
@@ -76,22 +99,28 @@
           "id": "sc_market_pass",
           "name": "Market Pass",
           "description": "Grants access to Investor Tower. Earned by proving you understand credit basics.",
-          "icon": "🎫",
-          "location": { "areaId": "sc_credit_lane" }
+          "icon": "\ud83c\udfab",
+          "location": {
+            "areaId": "sc_credit_lane"
+          }
         },
         {
           "id": "sc_credit_report",
           "name": "Credit Report",
           "description": "Your personal credit snapshot. Shows what actions raise or lower your score.",
-          "icon": "📄",
-          "location": { "areaId": "sc_credit_lane" }
+          "icon": "\ud83d\udcc4",
+          "location": {
+            "areaId": "sc_credit_lane"
+          }
         },
         {
           "id": "sc_signal_badge",
           "name": "Signal City Badge",
           "description": "Proof you can read market signals and manage credit responsibly.",
-          "icon": "🎖️",
-          "location": { "areaId": "sc_investor_tower" }
+          "icon": "\ud83c\udf96\ufe0f",
+          "location": {
+            "areaId": "sc_investor_tower"
+          }
         }
       ],
       "quests": [
@@ -102,12 +131,30 @@
           "description": "Meet Mentor Max to learn what credit is, then visit Credit Cleo to see how scores work and earn your Market Pass.",
           "hint": "Start at Signal Plaza, then head to Credit Lane.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_mentor_max" },
-            { "type": "talkToNpc", "npcId": "npc_credit_cleo" },
-            { "type": "collectItem", "itemId": "sc_credit_report" },
-            { "type": "completeMinigame", "minigameId": "mg_signal_scan" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_mentor_max"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_credit_cleo"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "sc_credit_report"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_signal_scan"
+            }
           ],
-          "rewards": { "coins": 50, "xp": 100, "items": ["sc_market_pass"] }
+          "rewards": {
+            "coins": 50,
+            "xp": 100,
+            "items": [
+              "sc_market_pass"
+            ]
+          }
         },
         {
           "id": "q_sc_first_portfolio",
@@ -116,11 +163,26 @@
           "description": "Use your Market Pass to enter Investor Tower. Meet Analyst Ari and Broker Blake to build a practice portfolio.",
           "hint": "You need the Market Pass from Credit Lane before entering Investor Tower.",
           "objectives": [
-            { "type": "collectItem", "itemId": "sc_market_pass" },
-            { "type": "talkToNpc", "npcId": "npc_analyst_ari" },
-            { "type": "talkToNpc", "npcId": "npc_broker_blake" }
+            {
+              "type": "collectItem",
+              "itemId": "sc_market_pass"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_analyst_ari"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_broker_blake"
+            }
           ],
-          "rewards": { "coins": 75, "xp": 150, "items": ["sc_signal_badge"] }
+          "rewards": {
+            "coins": 75,
+            "xp": 150,
+            "items": [
+              "sc_signal_badge"
+            ]
+          }
         }
       ],
       "dialogues": [
@@ -137,15 +199,24 @@
                   "id": "mm1_a",
                   "text": "Let's start with credit!",
                   "nextNodeId": "mm2",
-                  "effects": [{ "type": "startQuest", "questId": "q_sc_credit_101" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_sc_credit_101"
+                    }
+                  ]
                 },
-                { "id": "mm1_b", "text": "I need a minute.", "nextNodeId": "mm3" }
+                {
+                  "id": "mm1_b",
+                  "text": "I need a minute.",
+                  "nextNodeId": "mm3"
+                }
               ]
             },
             {
               "id": "mm2",
               "speaker": "Mentor Max",
-              "text": "Credit is borrowed money you promise to pay back. Your credit score tracks how reliably you keep that promise. Head to Credit Lane and talk to Cleo — she knows scores inside and out.",
+              "text": "Credit is borrowed money you promise to pay back. Your credit score tracks how reliably you keep that promise. Head to Credit Lane and talk to Cleo \u2014 she knows scores inside and out.",
               "end": true
             },
             {
@@ -169,7 +240,12 @@
                   "id": "cleo1_a",
                   "text": "Can I see my credit report?",
                   "nextNodeId": "cleo2",
-                  "effects": [{ "type": "giveItem", "itemId": "sc_credit_report" }]
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "sc_credit_report"
+                    }
+                  ]
                 },
                 {
                   "id": "cleo1_b",
@@ -181,7 +257,7 @@
             {
               "id": "cleo2",
               "speaker": "Credit Cleo",
-              "text": "Here you go! Keep an eye on it. Good habits now mean better options later — lower interest rates, easier approvals. Try the Signal Scanner minigame to test your knowledge!",
+              "text": "Here you go! Keep an eye on it. Good habits now mean better options later \u2014 lower interest rates, easier approvals. Try the Signal Scanner minigame to test your knowledge!",
               "end": true
             },
             {
@@ -199,27 +275,36 @@
             {
               "id": "ari1",
               "speaker": "Analyst Ari",
-              "text": "Welcome to Investor Tower! Investing means putting money into something now, hoping it grows over time. The key is diversification — don't put all your eggs in one basket.",
+              "text": "Welcome to Investor Tower! Investing means putting money into something now, hoping it grows over time. The key is diversification \u2014 don't put all your eggs in one basket.",
               "choices": [
                 {
                   "id": "ari1_a",
                   "text": "How do I diversify?",
                   "nextNodeId": "ari2",
-                  "effects": [{ "type": "startQuest", "questId": "q_sc_first_portfolio" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_sc_first_portfolio"
+                    }
+                  ]
                 },
-                { "id": "ari1_b", "text": "What are the risks?", "nextNodeId": "ari3" }
+                {
+                  "id": "ari1_b",
+                  "text": "What are the risks?",
+                  "nextNodeId": "ari3"
+                }
               ]
             },
             {
               "id": "ari2",
               "speaker": "Analyst Ari",
-              "text": "Spread your investments across different types — some safer, some riskier. That way, if one drops, the others can balance it out. Talk to Broker Blake to try building a practice portfolio!",
+              "text": "Spread your investments across different types \u2014 some safer, some riskier. That way, if one drops, the others can balance it out. Talk to Broker Blake to try building a practice portfolio!",
               "end": true
             },
             {
               "id": "ari3",
               "speaker": "Analyst Ari",
-              "text": "Every investment carries risk — you could lose money. But historically, diversified investments tend to grow over long periods. The trick is patience and balance.",
+              "text": "Every investment carries risk \u2014 you could lose money. But historically, diversified investments tend to grow over long periods. The trick is patience and balance.",
               "end": true
             }
           ]
@@ -254,7 +339,7 @@
             {
               "id": "bb3",
               "speaker": "Broker Blake",
-              "text": "Bonds are the safest, but they grow the slowest. If you're young, you have time to handle some risk — that's when growth stocks make sense. Think long-term!",
+              "text": "Bonds are the safest, but they grow the slowest. If you're young, you have time to handle some risk \u2014 that's when growth stocks make sense. Think long-term!",
               "end": true
             }
           ]
@@ -265,7 +350,7 @@
           "id": "mg_signal_scan",
           "name": "Signal Scanner",
           "description": "Read credit and market signals on screen and answer quick-fire questions about what each signal means.",
-          "icon": "📡",
+          "icon": "\ud83d\udce1",
           "componentId": "SignalScannerGame",
           "areaId": "sc_signal_plaza"
         },
@@ -273,7 +358,7 @@
           "id": "mg_diversify_baskets",
           "name": "Don't Break the Basket",
           "description": "Spread your coins across assets, then weather a live market year. Concentrate and a crash stings; diversify and you ride it out.",
-          "icon": "🧺",
+          "icon": "\ud83e\uddfa",
           "componentId": "DiversifyBasketsGame",
           "areaId": "sc_signal_plaza",
           "genre": "strategy",

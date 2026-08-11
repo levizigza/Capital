@@ -1,7 +1,8 @@
 /**
- * Wave 4 identity freeze — Fortune Archipelago spine only on the map.
- * Harbor + Cove live; Paycheck + Credit as ghosts until unlocked.
- * Genre / asset islands stay off the travel surface (content may still load).
+ * Fortune Archipelago — two travel lanes.
+ * Spine = main quest (Harbor · Cove → Paycheck → Credit).
+ * Side shores = restored era / genre islands with their own music cues.
+ * Demo Key Cove stays parked off the map.
  */
 
 import type { IslandDefinition } from "./types";
@@ -15,7 +16,7 @@ import {
 /** Singular player-facing world name (Capital = product; Fortune = archipelago). */
 export const FORTUNE_ARCHIPELAGO_NAME = "Fortune Archipelago";
 
-/** Frozen travel surface order — hub first, then triangle spine. */
+/** Frozen main-course travel order — hub first, then triangle spine. */
 export const SPINE_TRAVEL_IDS = [
   HARBOR_HAVEN_ID,
   COVE_ISLAND_ID,
@@ -25,17 +26,59 @@ export const SPINE_TRAVEL_IDS = [
 
 export type SpineTravelId = (typeof SPINE_TRAVEL_IDS)[number];
 
+/**
+ * Discoverable era side shores — Capital-framed chapters with per-shore soundtrack.
+ * Outer map ring; soft-locked until first Cove Change.
+ */
+export const SIDE_SHORE_TRAVEL_IDS = [
+  "signal_city",
+  "venture_foundry",
+  "financial_assets",
+  "digital_assets",
+  "business_assets",
+  "intangibles",
+  "future_shores",
+  "real_estate",
+] as const;
+
+export type SideShoreTravelId = (typeof SIDE_SHORE_TRAVEL_IDS)[number];
+
+/** Full carpet / diorama surface = spine ∪ side shores (never demo Key Cove). */
+export const ARCHIPELAGO_MAP_TRAVEL_IDS = [
+  ...SPINE_TRAVEL_IDS,
+  ...SIDE_SHORE_TRAVEL_IDS,
+] as const;
+
 export function isSpineTravelId(id: string | null | undefined): boolean {
   return Boolean(id && (SPINE_TRAVEL_IDS as readonly string[]).includes(id));
 }
 
+export function isSideShoreTravelId(id: string | null | undefined): boolean {
+  return Boolean(id && (SIDE_SHORE_TRAVEL_IDS as readonly string[]).includes(id));
+}
+
+export function isArchipelagoMapTravelId(id: string | null | undefined): boolean {
+  return Boolean(id && (ARCHIPELAGO_MAP_TRAVEL_IDS as readonly string[]).includes(id));
+}
+
+function pickOrdered(
+  islands: IslandDefinition[],
+  ids: readonly string[],
+): IslandDefinition[] {
+  const byId = new Map(islands.map((i) => [i.id, i]));
+  return ids.map((id) => byId.get(id)).filter((i): i is IslandDefinition => Boolean(i));
+}
+
 /**
- * Islands shown on Travel Map + Carpet voyage.
- * Drops genre cities / asset packs until the freeze lifts.
+ * Main-course chips for the travel strip — Harbor + triangle only.
  */
 export function islandsForSpineTravel(islands: IslandDefinition[]): IslandDefinition[] {
-  const byId = new Map(islands.map((i) => [i.id, i]));
-  return SPINE_TRAVEL_IDS.map((id) => byId.get(id)).filter(
-    (i): i is IslandDefinition => Boolean(i),
-  );
+  return pickOrdered(islands, SPINE_TRAVEL_IDS);
+}
+
+/**
+ * Full archipelago for 3D map + carpet voyage (spine + era side shores).
+ */
+export function islandsForArchipelagoMap(islands: IslandDefinition[]): IslandDefinition[] {
+  return pickOrdered(islands, ARCHIPELAGO_MAP_TRAVEL_IDS);
 }

@@ -103,8 +103,8 @@ describe("resolveHarborGuideLookAt", () => {
     { id: "travel", position: [0, 0, 13] as [number, number, number] },
     { id: "outfitter", position: [0, 0, -8] as [number, number, number] },
     { id: "pavilion", position: [-4.5, 0, -9.5] as [number, number, number] },
-    { id: "ledger_bank", position: [2.4, 0, -1.2] as [number, number, number] },
-    { id: "memory", position: [4.0, 0, 1.6] as [number, number, number] },
+    { id: "ledger_bank", position: [7.8, 0, -3.6] as [number, number, number] },
+    { id: "memory", position: [5.8, 0, 4.2] as [number, number, number] },
   ];
 
   it("uses guided highlight first", () => {
@@ -114,7 +114,7 @@ describe("resolveHarborGuideLookAt", () => {
   });
 
   it("defaults to Ledger Bank money machine on free roam", () => {
-    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([2.4, 0, -1.2]);
+    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([7.8, 0, -3.6]);
   });
 
   it("falls back to travel when no bank hotspot", () => {
@@ -131,7 +131,7 @@ describe("resolveHarborGuideLookAt", () => {
   it("points Piggy during homecoming, then Carpet Dock after welcome-back", () => {
     expect(
       resolveHarborGuideLookAt({ hotspots: spots, homecomingPending: true }),
-    ).toEqual([1.4, 0, 0.6]);
+    ).toEqual([-2.8, 0, 2.4]);
     expect(
       resolveHarborGuideLookAt({ hotspots: spots, pointNextPainting: true }),
     ).toEqual([0, 0, 13]);
@@ -144,6 +144,6 @@ describe("resolveHarborGuideLookAt", () => {
         homecomingPending: true,
         pointMemoryPlinth: true,
       }),
-    ).toEqual([4.0, 0, 1.6]);
+    ).toEqual([5.8, 0, 4.2]);
   });
 });

@@ -2,7 +2,8 @@
  * Pillar 7 — Content inventory vs mural thesis.
  *
  * Law (docs/mural-thesis.md): every spine piece names organ · suit verb · cold-retell word.
- * Orphan islands / genre-city packs stay on disk but are PARKED — not live in Arcade / enter.
+ * Era side shores are live on the outer map ring (not main quest); demo Key Cove stays PARKED.
+ * Harbor Arcade stays spine-only.
  */
 
 import {
@@ -12,9 +13,13 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import type { MoneyOrganId } from "./moneyOrgans";
-import { SPINE_TRAVEL_IDS } from "./spineArchipelago";
+import {
+  SIDE_SHORE_TRAVEL_IDS,
+  SPINE_TRAVEL_IDS,
+  type SideShoreTravelId,
+} from "./spineArchipelago";
 
-export type ContentLane = "spine" | "parked";
+export type ContentLane = "spine" | "side" | "parked";
 
 export type SpineContentKind =
   | "island"
@@ -42,33 +47,68 @@ export type SpineContentPiece = {
   notes?: string;
 };
 
-/** Genre / asset / demo islands — loadable JSON may remain; live path must not. */
-export const PARKED_ISLAND_IDS = [
-  "signal_city",
-  "venture_foundry",
-  "financial_assets",
-  "digital_assets",
-  "business_assets",
-  "intangibles",
-  "future_shores",
-  "real_estate",
-  "starter_key_cove",
-] as const;
+/** Still parked off live loader / map — demo Key Cove only. */
+export const PARKED_ISLAND_IDS = ["starter_key_cove"] as const;
 
 export type ParkedIslandId = (typeof PARKED_ISLAND_IDS)[number];
 
-/** Eager-glob paths excluded from live `loadIslandsContent` (plus parked island filter). */
-export const PARKED_CONTENT_PACK_PATHS = new Set([
-  "./demo.islands.json",
-  "./signal-city.islands.json",
-  "./venture-foundry.islands.json",
-  "./financial-assets.islands.json",
-  "./digital-assets.islands.json",
-  "./business-assets.islands.json",
-  "./intangibles.islands.json",
-  "./future-shores.islands.json",
-  "./real-estate.islands.json",
-]);
+/** Eager-glob paths excluded from live `loadIslandsContent` (demo only). */
+export const PARKED_CONTENT_PACK_PATHS = new Set(["./demo.islands.json"]);
+
+/** Capital framing for restored era side shores (map + music, not main strip). */
+export const SIDE_SHORE_CONTENT: Record<
+  SideShoreTravelId,
+  { organ: MoneyOrganId; verb: string; coldRetell: string; notes: string }
+> = {
+  signal_city: {
+    organ: "memory",
+    verb: "Listen",
+    coldRetell: "Memory",
+    notes: "Biopunk signal gardens — cue solarpunk_cove",
+  },
+  venture_foundry: {
+    organ: "clock",
+    verb: "Build",
+    coldRetell: "Clock",
+    notes: "Neon foundry pitches — cue neon_sprawl",
+  },
+  financial_assets: {
+    organ: "coin",
+    verb: "Trade",
+    coldRetell: "Coin",
+    notes: "Scrap-coast markets — cue scrap_coast",
+  },
+  digital_assets: {
+    organ: "clock",
+    verb: "Scan",
+    coldRetell: "Clock",
+    notes: "AI undercity ledgers — cue ai_undercity",
+  },
+  business_assets: {
+    organ: "clock",
+    verb: "Run",
+    coldRetell: "Clock",
+    notes: "Orbital keep ops — cue orbital_keep",
+  },
+  intangibles: {
+    organ: "spiral",
+    verb: "Name",
+    coldRetell: "Spiral",
+    notes: "Nocturne void brands — cue nocturne_void",
+  },
+  future_shores: {
+    organ: "memory",
+    verb: "Imagine",
+    coldRetell: "Memory",
+    notes: "Solarpunk horizon — cue solarpunk_cove",
+  },
+  real_estate: {
+    organ: "coin",
+    verb: "Place",
+    coldRetell: "Coin",
+    notes: "Orbital keep lots — cue orbital_keep",
+  },
+};
 
 export function isParkedIslandId(id: string | null | undefined): boolean {
   return Boolean(id && (PARKED_ISLAND_IDS as readonly string[]).includes(id));
@@ -76,6 +116,10 @@ export function isParkedIslandId(id: string | null | undefined): boolean {
 
 export function isSpineContentIslandId(id: string | null | undefined): boolean {
   return Boolean(id && (SPINE_TRAVEL_IDS as readonly string[]).includes(id));
+}
+
+export function isSideShoreContentIslandId(id: string | null | undefined): boolean {
+  return Boolean(id && (SIDE_SHORE_TRAVEL_IDS as readonly string[]).includes(id));
 }
 
 /**
@@ -469,23 +513,32 @@ export const SPINE_CONTENT_REGISTRY: SpineContentPiece[] = [
     coldRetell: "Memory",
   },
 
-  // —— Parked orphan packs (genre / asset / demo) ——
-  ...PARKED_ISLAND_IDS.map((id): SpineContentPiece => {
-    const packPath =
-      id === "starter_key_cove"
-        ? "src/islands/content/demo.islands.json"
-        : `src/islands/content/${id.replace(/_/g, "-")}.islands.json`;
+  // —— Era side shores (live on outer map ring; not main-strip chips) ——
+  ...SIDE_SHORE_TRAVEL_IDS.map((id): SpineContentPiece => {
+    const meta = SIDE_SHORE_CONTENT[id];
     return {
       id,
-      kind: "pack",
-      path: packPath,
-      lane: "parked",
-      organ: null,
-      verb: "—",
-      coldRetell: "—",
-      notes: "Off Cove→Paycheck→Credit+Harbor spine — parked for Pillar 7",
+      kind: "island",
+      path: `src/islands/content/${id.replace(/_/g, "-")}.islands.json`,
+      lane: "side",
+      organ: meta.organ,
+      verb: meta.verb,
+      coldRetell: meta.coldRetell,
+      notes: meta.notes,
     };
   }),
+
+  // —— Parked demo pack ——
+  ...PARKED_ISLAND_IDS.map((id): SpineContentPiece => ({
+    id,
+    kind: "pack",
+    path: "src/islands/content/demo.islands.json",
+    lane: "parked",
+    organ: null,
+    verb: "—",
+    coldRetell: "—",
+    notes: "Demo Key Cove — stays off Fortune Archipelago map",
+  })),
 
   // —— Parked digression minigames (JSON may remain; Arcade must not lead with them) ——
   ...PARKED_MINIGAME_IDS.map(
@@ -510,15 +563,15 @@ export function spineRegistryPieces(lane?: ContentLane): SpineContentPiece[] {
   return SPINE_CONTENT_REGISTRY.filter((p) => p.lane === lane);
 }
 
-/** Spine rows must carry organ · verb · cold-retell; parked rows must not pretend to. */
+/** Spine + side rows must carry organ · verb · cold-retell; parked rows must not pretend to. */
 export function assertRegistryMuralLaw(pieces = SPINE_CONTENT_REGISTRY): string[] {
   const errors: string[] = [];
   for (const p of pieces) {
-    if (p.lane === "spine") {
-      if (!p.organ) errors.push(`${p.id}: spine piece missing organ`);
-      if (!p.verb || p.verb === "—") errors.push(`${p.id}: spine piece missing verb`);
+    if (p.lane === "spine" || p.lane === "side") {
+      if (!p.organ) errors.push(`${p.id}: ${p.lane} piece missing organ`);
+      if (!p.verb || p.verb === "—") errors.push(`${p.id}: ${p.lane} piece missing verb`);
       if (!p.coldRetell || p.coldRetell === "—") {
-        errors.push(`${p.id}: spine piece missing cold-retell word`);
+        errors.push(`${p.id}: ${p.lane} piece missing cold-retell word`);
       }
     } else if (p.organ != null) {
       errors.push(`${p.id}: parked piece must not claim an organ`);

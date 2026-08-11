@@ -10,8 +10,8 @@ import {
 const modules = import.meta.glob("./*.islands.json", { eager: true });
 
 /**
- * Pillar 7 — demo + genre/asset orphan packs stay on disk for schema tests
- * but are parked out of live Arcade / enter / travel content.
+ * Demo Key Cove stays on disk for schema tests but off the live map.
+ * Era side-shore packs load with the spine so carpet + soundtrack can reach them.
  */
 const LIVE_PACK_DENYLIST = PARKED_CONTENT_PACK_PATHS;
 

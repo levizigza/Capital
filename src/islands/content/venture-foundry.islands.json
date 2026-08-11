@@ -4,8 +4,8 @@
     {
       "id": "venture_foundry",
       "name": "Gridlock Galleria",
-      "description": "Off-spine workshop pack (parked) — neon hustle bed kept; not on the Harbor·Cove·Paycheck·Credit travel strip.",
-      "icon": "🌆",
+      "description": "Neon foundry district \u2014 pitch, budget, and build. Side shore of Fortune Archipelago with its neon sprawl bed.",
+      "icon": "\ud83c\udf06",
       "provenance": {
         "learning_objectives": [
           "Understand the steps from business idea to minimum viable product",
@@ -13,60 +13,84 @@
           "Read a basic profit-and-loss statement",
           "Evaluate funding options: bootstrapping, loans, and equity investment"
         ],
-        "mechanics_used": ["resource-management", "trade-negotiation", "npc-dialogue-tree", "budget-allocation"],
-        "originality_notes": "Theme: industrial foundry district with workshops and pitching stages (not a corporate boardroom or office tycoon). Verb: negotiate with NPC investors and allocate startup budget across departments (not passive empire building). Structure: milestone-based quest chain where each quest represents a startup phase — idea, build, fund, scale (not sandbox or elimination). Combines trade-negotiation with budget-allocation through original NPC mentorship scenarios.",
-        "forbidden_references": ["Monopoly", "Cashflow", "Shark Tank", "Dragons Den", "Lemonade Stand", "AdVenture Capitalist", "SimCity"]
+        "mechanics_used": [
+          "resource-management",
+          "trade-negotiation",
+          "npc-dialogue-tree",
+          "budget-allocation"
+        ],
+        "originality_notes": "Theme: industrial foundry district with workshops and pitching stages (not a corporate boardroom or office tycoon). Verb: negotiate with NPC investors and allocate startup budget across departments (not passive empire building). Structure: milestone-based quest chain where each quest represents a startup phase \u2014 idea, build, fund, scale (not sandbox or elimination). Combines trade-negotiation with budget-allocation through original NPC mentorship scenarios.",
+        "forbidden_references": [
+          "Monopoly",
+          "Cashflow",
+          "Shark Tank",
+          "Dragons Den",
+          "Lemonade Stand",
+          "AdVenture Capitalist",
+          "SimCity"
+        ]
       },
       "areas": [
         {
           "id": "vf_workshop",
           "name": "The Workshop",
           "description": "A gritty maker space with 3D printers, whiteboards, and prototype stations. Ideas become real here.",
-          "icon": "🔧",
-          "connections": ["vf_pitch_stage", "vf_growth_lab"]
+          "icon": "\ud83d\udd27",
+          "connections": [
+            "vf_pitch_stage",
+            "vf_growth_lab"
+          ]
         },
         {
           "id": "vf_pitch_stage",
           "name": "Pitch Stage",
           "description": "A small theater where founders present their ideas to mentors and investors. Bright lights, big stakes.",
-          "icon": "🎤",
-          "connections": ["vf_workshop", "vf_growth_lab"]
+          "icon": "\ud83c\udfa4",
+          "connections": [
+            "vf_workshop",
+            "vf_growth_lab"
+          ]
         },
         {
           "id": "vf_growth_lab",
           "name": "Growth Lab",
           "description": "Screens show revenue dashboards and customer metrics. Scale-up strategists work here around the clock.",
-          "icon": "🚀",
-          "connections": ["vf_workshop", "vf_pitch_stage"],
-          "requiredItems": ["vf_seed_funding"]
+          "icon": "\ud83d\ude80",
+          "connections": [
+            "vf_workshop",
+            "vf_pitch_stage"
+          ],
+          "requiredItems": [
+            "vf_seed_funding"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_founder_fern",
           "name": "Founder Fern",
-          "icon": "💡",
+          "icon": "\ud83d\udca1",
           "areaId": "vf_workshop",
           "dialogueGraphId": "dlg_founder_fern"
         },
         {
           "id": "npc_investor_ike",
           "name": "Investor Ike",
-          "icon": "💼",
+          "icon": "\ud83d\udcbc",
           "areaId": "vf_pitch_stage",
           "dialogueGraphId": "dlg_investor_ike"
         },
         {
           "id": "npc_strategist_sara",
           "name": "Strategist Sara",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "areaId": "vf_growth_lab",
           "dialogueGraphId": "dlg_strategist_sara"
         },
         {
           "id": "npc_mentor_malik",
           "name": "Mentor Malik",
-          "icon": "🎓",
+          "icon": "\ud83c\udf93",
           "areaId": "vf_workshop",
           "dialogueGraphId": "dlg_mentor_malik"
         }
@@ -76,29 +100,37 @@
           "id": "vf_business_plan",
           "name": "Business Plan",
           "description": "A one-page plan covering your idea, target customer, and how you'll make money.",
-          "icon": "📝",
-          "location": { "areaId": "vf_workshop" }
+          "icon": "\ud83d\udcdd",
+          "location": {
+            "areaId": "vf_workshop"
+          }
         },
         {
           "id": "vf_seed_funding",
           "name": "Seed Funding",
-          "description": "Your first round of capital. Use it wisely — it has to last until revenue starts flowing.",
-          "icon": "🌱",
-          "location": { "areaId": "vf_pitch_stage" }
+          "description": "Your first round of capital. Use it wisely \u2014 it has to last until revenue starts flowing.",
+          "icon": "\ud83c\udf31",
+          "location": {
+            "areaId": "vf_pitch_stage"
+          }
         },
         {
           "id": "vf_pnl_sheet",
           "name": "Profit & Loss Sheet",
           "description": "A simple P&L that shows whether your venture is making or losing money.",
-          "icon": "📋",
-          "location": { "areaId": "vf_growth_lab" }
+          "icon": "\ud83d\udccb",
+          "location": {
+            "areaId": "vf_growth_lab"
+          }
         },
         {
           "id": "vf_foundry_badge",
           "name": "Foundry Badge",
           "description": "Awarded to entrepreneurs who complete the full startup journey from idea to growth.",
-          "icon": "🎖️",
-          "location": { "areaId": "vf_growth_lab" }
+          "icon": "\ud83c\udf96\ufe0f",
+          "location": {
+            "areaId": "vf_growth_lab"
+          }
         }
       ],
       "quests": [
@@ -109,12 +141,27 @@
           "description": "Meet Founder Fern in the Workshop to brainstorm a business idea, then work with Mentor Malik to turn it into a one-page business plan.",
           "hint": "Start at The Workshop. Talk to Fern for inspiration, then Malik for structure.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_founder_fern" },
-            { "type": "talkToNpc", "npcId": "npc_mentor_malik" },
-            { "type": "collectItem", "itemId": "vf_business_plan" },
-            { "type": "completeMinigame", "minigameId": "mg_startup_budget" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_founder_fern"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_mentor_malik"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "vf_business_plan"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_startup_budget"
+            }
           ],
-          "rewards": { "coins": 60, "xp": 120 }
+          "rewards": {
+            "coins": 60,
+            "xp": 120
+          }
         },
         {
           "id": "q_vf_pitch_and_grow",
@@ -123,12 +170,31 @@
           "description": "Take your business plan to the Pitch Stage and convince Investor Ike to fund you. Then enter the Growth Lab to learn about scaling.",
           "hint": "You need a Business Plan before pitching. Head to Pitch Stage, then Growth Lab.",
           "objectives": [
-            { "type": "collectItem", "itemId": "vf_business_plan" },
-            { "type": "talkToNpc", "npcId": "npc_investor_ike" },
-            { "type": "collectItem", "itemId": "vf_seed_funding" },
-            { "type": "talkToNpc", "npcId": "npc_strategist_sara" }
+            {
+              "type": "collectItem",
+              "itemId": "vf_business_plan"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_investor_ike"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "vf_seed_funding"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_strategist_sara"
+            }
           ],
-          "rewards": { "coins": 100, "xp": 200, "items": ["vf_pnl_sheet", "vf_foundry_badge"] }
+          "rewards": {
+            "coins": 100,
+            "xp": 200,
+            "items": [
+              "vf_pnl_sheet",
+              "vf_foundry_badge"
+            ]
+          }
         }
       ],
       "dialogues": [
@@ -145,9 +211,18 @@
                   "id": "ff1_a",
                   "text": "I have an idea! Help me develop it.",
                   "nextNodeId": "ff2",
-                  "effects": [{ "type": "startQuest", "questId": "q_vf_idea_to_plan" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_vf_idea_to_plan"
+                    }
+                  ]
                 },
-                { "id": "ff1_b", "text": "I'm still brainstorming.", "nextNodeId": "ff3" }
+                {
+                  "id": "ff1_b",
+                  "text": "I'm still brainstorming.",
+                  "nextNodeId": "ff3"
+                }
               ]
             },
             {
@@ -177,7 +252,12 @@
                   "id": "mk1_a",
                   "text": "Let's write it!",
                   "nextNodeId": "mk2",
-                  "effects": [{ "type": "giveItem", "itemId": "vf_business_plan" }]
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "vf_business_plan"
+                    }
+                  ]
                 },
                 {
                   "id": "mk1_b",
@@ -211,18 +291,29 @@
               "choices": [
                 {
                   "id": "ike1_a",
-                  "text": "Here's my plan — it solves a real problem!",
+                  "text": "Here's my plan \u2014 it solves a real problem!",
                   "nextNodeId": "ike2",
-                  "effects": [{ "type": "giveItem", "itemId": "vf_seed_funding" }],
-                  "requiresItems": ["vf_business_plan"]
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "vf_seed_funding"
+                    }
+                  ],
+                  "requiresItems": [
+                    "vf_business_plan"
+                  ]
                 },
-                { "id": "ike1_b", "text": "What do investors look for?", "nextNodeId": "ike3" }
+                {
+                  "id": "ike1_b",
+                  "text": "What do investors look for?",
+                  "nextNodeId": "ike3"
+                }
               ]
             },
             {
               "id": "ike2",
               "speaker": "Investor Ike",
-              "text": "I like it. Clear problem, clear customer, clear revenue path. Here's your Seed Funding — use it wisely! Head to the Growth Lab to learn how to scale without burning through cash.",
+              "text": "I like it. Clear problem, clear customer, clear revenue path. Here's your Seed Funding \u2014 use it wisely! Head to the Growth Lab to learn how to scale without burning through cash.",
               "end": true
             },
             {
@@ -246,7 +337,12 @@
                   "id": "ss1_a",
                   "text": "Teach me about profit and loss!",
                   "nextNodeId": "ss2",
-                  "effects": [{ "type": "giveItem", "itemId": "vf_pnl_sheet" }]
+                  "effects": [
+                    {
+                      "type": "giveItem",
+                      "itemId": "vf_pnl_sheet"
+                    }
+                  ]
                 },
                 {
                   "id": "ss1_b",
@@ -258,7 +354,7 @@
             {
               "id": "ss2",
               "speaker": "Strategist Sara",
-              "text": "Here's your P&L sheet. Revenue at the top, subtract all costs, and the bottom line is your profit — or loss. Keep this positive and you'll survive. Keep it growing and you'll thrive!",
+              "text": "Here's your P&L sheet. Revenue at the top, subtract all costs, and the bottom line is your profit \u2014 or loss. Keep this positive and you'll survive. Keep it growing and you'll thrive!",
               "end": true
             },
             {
@@ -275,7 +371,7 @@
           "id": "mg_startup_budget",
           "name": "Startup Budget",
           "description": "Allocate a limited seed budget across product development, marketing, operations, and savings. Aim for a balanced spend that survives 12 simulated months.",
-          "icon": "💰",
+          "icon": "\ud83d\udcb0",
           "componentId": "StartupBudgetGame",
           "areaId": "vf_workshop"
         },
@@ -283,7 +379,7 @@
           "id": "mg_price_it_right",
           "name": "Price Your Product",
           "description": "Launch day! Slide your product's price and watch demand and profit react live. Discover the profit-maximizing price.",
-          "icon": "🚀",
+          "icon": "\ud83d\ude80",
           "componentId": "PriceItRightGame",
           "areaId": "vf_workshop",
           "genre": "simulation",
@@ -291,7 +387,16 @@
           "visualShell": "notebook",
           "estimatedMinutes": 3,
           "modules": [
-            { "id": "PriceConfig", "config": { "product": "your app subscription", "emoji": "📱", "cost": 3, "maxDemand": 60, "chokePrice": 25 } }
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "your app subscription",
+                "emoji": "\ud83d\udcf1",
+                "cost": 3,
+                "maxDemand": 60,
+                "chokePrice": 25
+              }
+            }
           ]
         }
       ]
