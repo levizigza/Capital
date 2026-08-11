@@ -164,6 +164,13 @@ If not, that surface is not iconic yet.
 - **First session UI law:** Talk Piggy → Carpet → Cove only — normalize in `getHubGuidedStep` / save sanitize / Piggy graphs / Coin Bag / visual beats; Outfitter chrome is discovery after Ashore.
 - **Research pass:** [harbor-ashore.md](./harbor-ashore.md) Portal one-verb · Asobi introduce→practice→combine · HL learn-by-doing — combine at Cove Take.
 
+## Iteration 19 (shipped) — Pre-carpet comprehension + walk-first Harbor
+
+- **Teach before carpet:** `AshoreComprehensionTutorial` — prove → ← ↑ E, then Harbor jobs + spine organs; Esc/Skip allowed.
+- **Harbor land:** free walk · Piggy wave/bubble · Talk CTA only when near (no spawn ambush). Quiet homecoming still hushes stalls.
+- **Spine interiors:** Jar · Bank · Tower · Keep architecture; Soft Beat lower-thirds. **Soundtrack files/cues unchanged** (the bangers stay).
+- **Freeze:** outer packs stay off the travel strip; copy refreshed to Capital organ language only.
+
 ## Still deepen (from iconic-later)
 
 PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  

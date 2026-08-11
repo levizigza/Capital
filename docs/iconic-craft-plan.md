@@ -351,6 +351,6 @@ When two pillars fight, **fantasy + signature loop win**.
 5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
 6. Commit + note in PR / this board  
 
-**Last shipped:** Pillar **17 — Scope and production** (freeze reaffirmed; later list + PARKED banners).  
+**Last shipped:** Whole-game craft **iter 19 — pre-carpet comprehension + walk-first Harbor** (spine interiors; soundtrack unchanged).  
 
 **Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.

@@ -7,6 +7,7 @@ import React from 'react'
 import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
 import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/views/CapitalOpeningIntro'
 import { BootCastSelect } from '@/islands/views/BootCastSelect'
+import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehensionTutorial'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
@@ -184,8 +185,8 @@ function App() {
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
   const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
-  /** Title mural → cast select → carpet POV flight into Harbor. */
-  const [bootPhase, setBootPhase] = useState<"title" | "cast" | "carpet">("title")
+  /** Title mural → cast → comprehension teach → carpet POV into Harbor. */
+  const [bootPhase, setBootPhase] = useState<"title" | "cast" | "teach" | "carpet">("title")
   const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
 
   // Every full page load: title → cast select → carpet (QA may opt out with skipIntro).
@@ -458,7 +459,7 @@ function App() {
     }
   }
 
-  // Boot: title mural → Street Fighter cast select → Money Carpet to Harbor.
+  // Boot: title → cast → Ashore teach (prove controls) → Money Carpet → Harbor walk.
   if (showCapitalIntro && ISLANDS_ENABLED) {
     return (
       <>
@@ -477,8 +478,13 @@ function App() {
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
               }
-              setBootPhase("carpet")
+              setBootPhase("teach")
             }}
+          />
+        ) : bootPhase === "teach" ? (
+          <AshoreComprehensionTutorial
+            key="capital-ashore-teach"
+            onComplete={() => setBootPhase("carpet")}
           />
         ) : (
           <CarpetOpeningIntro

@@ -97,7 +97,9 @@ import {
   ashorePresenceLine,
   normalizeHubGuidedIntro,
   shouldAutoOpenDailyRitual,
+  shouldForceTalkCta,
   shouldShowCastleCoach,
+  shouldStripPlazaForPresence,
 } from "../harborAshore";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import {
@@ -290,12 +292,25 @@ export function HomeHubView({
   const quietHarbor =
     needsPiggyWelcome && Boolean(save.harborHomecoming?.quietPending);
   const firstMeet = isFirstMeetStep(guidedStep?.id);
-  /** Early Ashore — Talk only; voyage uses Carpet CTA (no Outfitter early chrome). */
+  /** Early Ashore — soft coach; voyage uses Carpet CTA (no Outfitter early chrome). */
   const earlyCastle = Boolean(castleMode && firstMeet);
-  /** First meet or quiet homecoming — Piggy owns the plaza, not a stall checklist. */
+  /** Piggy wave / bubble — first meet + quiet homecoming. */
   const piggyPresence = isPiggyPresenceBeat({
     firstMeet,
     quietHomecoming: quietHarbor,
+  });
+  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach. */
+  const stripPlaza = shouldStripPlazaForPresence({
+    firstMeet,
+    quietHomecoming: quietHarbor,
+  });
+  const nearPiggy =
+    nearNpc?.id === HARBOR_KEEPER_MASCOT_ID ||
+    nearNpc?.id === "guide";
+  const forceTalkCta = shouldForceTalkCta({
+    firstMeet,
+    quietHomecoming: quietHarbor,
+    nearPiggy,
   });
   const fallbackMode = harborFallbackMode({
     firstMeet,
@@ -580,7 +595,7 @@ export function HomeHubView({
 
   // Never pulse Outfitter during Ashore first session (discovery after voyage).
   const showOutfitterHighlight =
-    !piggyPresence &&
+    !stripPlaza &&
     !firstMeet &&
     guidedStep?.id !== "to_dock" &&
     (highlightOutfitter || guidedStep?.highlight === "outfitter");
@@ -591,9 +606,8 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => {
-      // Piggy presence (first meet + quiet homecoming): no stall checklist —
-      // Memory Plinth only; Piggy is the walk-up Talk, not a hotspot grid.
-      if (piggyPresence) {
+      // Quiet homecoming only: hush stalls. First meet keeps the plaza walkable.
+      if (stripPlaza) {
         return [harborMemoryPlinthHotspot({ scarCount: plaques.length })];
       }
       return [
@@ -765,7 +779,7 @@ export function HomeHubView({
     ];
     },
     [
-      piggyPresence,
+      stripPlaza,
       onOpenEditor,
       pavilionOpen,
       marketOpen,
@@ -847,8 +861,8 @@ export function HomeHubView({
   };
 
   const onHarborHotspot = (id: string) => {
-    // First meet / quiet homecoming: Piggy owns the plaza — never open Plinth/stalls.
-    if (piggyPresence) return;
+    // Quiet homecoming hush: Piggy owns the plaza — never open Plinth/stalls.
+    if (stripPlaza) return;
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
       // Discovery only — never a guided Ashore gate.
@@ -944,8 +958,8 @@ export function HomeHubView({
       return;
     }
     if (bankOpen) return;
-    // Piggy presence: Talk always wins — never Memory Plinth / stalls.
-    if (piggyPresence && onTalkNpc) {
+    // Quiet homecoming: Talk wins. First meet: only when near Piggy (opt-in).
+    if (stripPlaza && onTalkNpc) {
       onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
       return;
     }
@@ -963,8 +977,8 @@ export function HomeHubView({
     feltShareOpen,
     trailerOpen,
     echoSurpriseOpen,
+    stripPlaza,
     bankOpen,
-    piggyPresence,
     nearStore,
     nearNpc,
     onTalkNpc,
@@ -1101,7 +1115,7 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  piggyPresenceBeat={piggyPresence}
+                  piggyPresenceBeat={stripPlaza}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
                 />
@@ -1172,13 +1186,13 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          hideHudForCinema ? null : piggyPresence ? (
+          hideHudForCinema ? null : stripPlaza ? (
             <div className="cap-play-hud-left">
               <p
                 className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90"
                 data-testid="harbor-quiet-chip"
               >
-                {firstMeet ? "Harbor Haven" : "Harbor is quiet — Piggy’s here"}
+                Harbor is quiet — Piggy’s here
               </p>
             </div>
           ) : earlyCastle && !showOutfitterChrome ? (
@@ -1245,12 +1259,12 @@ export function HomeHubView({
         bottom={
           hideHudForCinema ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
-            {piggyPresence ? (
+            {firstMeet || stripPlaza ? (
               <p
                 className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow"
                 data-testid="harbor-piggy-presence"
               >
-                {ashorePresenceLine({ firstMeet })}
+                {ashorePresenceLine({ firstMeet: firstMeet && !stripPlaza })}
               </p>
             ) : showTravelChip ? null : (
             <CoinBagBuddyHud
@@ -1260,9 +1274,8 @@ export function HomeHubView({
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />
             )}
-            {/* Single primary action — Ashore: Talk, then voyage CTA (not a stall checklist). */}
-            {piggyPresence ? (
-              onTalkNpc ? (
+            {/* Talk only when near Piggy (or quiet homecoming). No ambush CTA. */}
+            {forceTalkCta && onTalkNpc ? (
                 <button
                   type="button"
                   className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
@@ -1271,13 +1284,8 @@ export function HomeHubView({
                     onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID),
                   )}
                 >
-                  Talk to {nearNpc?.name ?? "Piggy Penny"}
+                  Talk to {nearNpc?.name ?? "Piggy Penny"}?
                 </button>
-              ) : (
-                <p className="text-center text-xs font-medium text-white/80">
-                  Walk to Piggy — press E to talk.
-                </p>
-              )
             ) : showTravelChip ? (
               <button
                 type="button"
@@ -1319,8 +1327,8 @@ export function HomeHubView({
               className="text-center text-[11px] font-semibold text-white/85 drop-shadow"
               data-testid="harbor-controls-whisper"
             >
-              {piggyPresence
-                ? "WASD · E"
+              {firstMeet && !nearPiggy
+                ? "WASD · walk to Piggy · E when near"
                 : showTravelChip
                   ? "Or walk to the Money Carpet"
                   : nearStore
@@ -1341,7 +1349,7 @@ export function HomeHubView({
           guidedStep &&
           shouldShowCastleCoach({
             guidedStepId: guidedStep.id,
-            piggyPresence,
+            quietHomecoming: quietHarbor,
           }) ? (
             <div
               className="pointer-events-none absolute inset-x-0 top-3 z-[5] flex justify-center px-3"

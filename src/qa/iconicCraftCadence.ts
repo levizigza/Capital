@@ -49,7 +49,10 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
     id: "structure_enter",
     step: "Structure enter",
     modes: ["unit", "human"],
-    guards: ["src/islands/world3d/structureInteriorNeverVoid.test.ts"],
+    guards: [
+      "src/islands/world3d/structureInteriorNeverVoid.test.ts",
+      "src/islands/world3d/structureInteriorArchitecture.test.ts",
+    ],
   },
   {
     id: "structure_pads",
@@ -70,6 +73,7 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
     guards: [
       "src/islands/harborAshore.test.ts",
       "src/islands/harborFirstMeet.test.ts",
+      "src/islands/views/ashoreComprehensionTutorial.test.ts",
       "src/islands/story/onboardingNoAhead.test.ts",
       "src/islands/pointerSafeClick.test.ts",
       "e2e/harbor-tutorial.spec.ts",
