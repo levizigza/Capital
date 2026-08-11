@@ -1,9 +1,9 @@
 /**
- * Harbor Ashore — iconic opening tutorial law (redesign).
+ * Harbor Ashore — opening tutorial law.
  *
- * Patterns: Portal one-verb chambers · Half-Life invisible tutorial ·
- * Asobi Design / Nintendo “introduce → practice → combine” → Cove Take.
- * Daily Ritual is Memory organ — after first scar.
+ * Pre-carpet: AshoreComprehensionTutorial (prove WASD / E, Harbor + spine).
+ * Harbor land: free walk · Piggy speech bubble · Talk only when player opts in.
+ * Voyage: Money Carpet → Cove Take (combine).
  *
  * Design: docs/harbor-ashore.md
  */
@@ -25,20 +25,48 @@ export {
   normalizeHubGuidedIntro,
 };
 
-/** First viewport: Talk is the only job — coach card would stack the same verb. */
+/**
+ * Castle coach — soft tip during first meet / voyage.
+ * Never stacks a forced Talk CTA (teach already covered controls).
+ */
 export function shouldShowCastleCoach(opts: {
   guidedStepId?: string | null;
-  piggyPresence?: boolean;
+  /** Quiet homecoming still mutes coach so presence owns the beat */
+  quietHomecoming?: boolean;
 }): boolean {
   if (!opts.guidedStepId || opts.guidedStepId === "done") return false;
-  if (opts.piggyPresence) return false;
+  if (opts.quietHomecoming) return false;
   return true;
 }
 
-/** Short presence copy — one job, no essay. */
+/** Soft presence — walk first; never a modal Talk ambush. */
 export function ashorePresenceLine(opts: { firstMeet: boolean }): string {
-  if (opts.firstMeet) return "Talk to Piggy Penny — she’s by the fountain.";
+  if (opts.firstMeet) {
+    return "Piggy’s waving by the fountain — walk over when you’re ready.";
+  }
   return "Harbor is quiet. Piggy’s by the fountain when you’re ready.";
+}
+
+/**
+ * Strip stall grid only on quiet homecoming (scar hush).
+ * First meet keeps the plaza walkable after the pre-carpet teach.
+ */
+export function shouldStripPlazaForPresence(opts: {
+  firstMeet?: boolean;
+  quietHomecoming?: boolean;
+}): boolean {
+  return Boolean(opts.quietHomecoming);
+}
+
+/** Forced bottom Talk CTA — never on first meet (near-Piggy prompt only). */
+export function shouldForceTalkCta(opts: {
+  firstMeet?: boolean;
+  quietHomecoming?: boolean;
+  nearPiggy?: boolean;
+}): boolean {
+  if (opts.quietHomecoming) return true;
+  if (opts.firstMeet) return Boolean(opts.nearPiggy);
+  return false;
 }
 
 /** Voyage coach — single next verb toward Cove. */
@@ -66,16 +94,12 @@ export function shouldAutoOpenDailyRitual(opts: {
   if (opts.homecomingPending) return false;
   if (opts.guidedActive) return false;
   if (!opts.save.hubGuidedIntro?.didDock) return false;
-  // Whole-game fit: ritual after Cove Change, not before the signature loop.
   if (!hasCompletedCoveChange(opts.save)) return false;
-  // Unshown scars → spectacle owns the plaza (ritual must never race under the lamp).
   const scars = opts.save.harborScars?.length ?? 0;
   const shown = opts.save.scarSpectacle?.shownForCount ?? 0;
   if (scars > shown) return false;
-  // Quiet homecoming until Piggy Talk — same chrome hush as first-meet.
   const hc = opts.save.harborHomecoming;
   if (hc && !hc.piggyTalked) return false;
-  // Day-2 Soft Beat cinema owns the plaza — never steal with the ritual card.
   if (
     ritual.today.rumorId?.startsWith("scar_echo_") &&
     !ritual.today.echoSurpriseSeen

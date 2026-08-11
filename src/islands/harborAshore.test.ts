@@ -5,7 +5,9 @@ import {
   normalizeHubGuidedIntro,
   resolveAshoreCarpetBoot,
   shouldAutoOpenDailyRitual,
+  shouldForceTalkCta,
   shouldShowCastleCoach,
+  shouldStripPlazaForPresence,
 } from "./harborAshore";
 import { advanceHubGuided, createDefaultHubGuidedIntro } from "./story/storyBible";
 import type { IslandSaveV1 } from "./types";
@@ -56,18 +58,37 @@ describe("Harbor Ashore redesign", () => {
     );
   });
 
-  it("hides Castle coach during Piggy presence (one surface)", () => {
+  it("shows soft Castle coach on first meet; mutes only quiet homecoming", () => {
     expect(
-      shouldShowCastleCoach({ guidedStepId: "meet_guide", piggyPresence: true }),
+      shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: false }),
+    ).toBe(true);
+    expect(
+      shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: true }),
     ).toBe(false);
     expect(
-      shouldShowCastleCoach({ guidedStepId: "to_dock", piggyPresence: false }),
+      shouldShowCastleCoach({ guidedStepId: "to_dock", quietHomecoming: false }),
     ).toBe(true);
   });
 
-  it("keeps presence copy short", () => {
-    expect(ashorePresenceLine({ firstMeet: true })).toMatch(/^Talk to Piggy/);
-    expect(ashorePresenceLine({ firstMeet: true }).length).toBeLessThan(64);
+  it("keeps first-meet plaza walkable; Talk CTA only when near Piggy", () => {
+    expect(
+      shouldStripPlazaForPresence({ firstMeet: true, quietHomecoming: false }),
+    ).toBe(false);
+    expect(
+      shouldStripPlazaForPresence({ firstMeet: false, quietHomecoming: true }),
+    ).toBe(true);
+    expect(
+      shouldForceTalkCta({ firstMeet: true, nearPiggy: false }),
+    ).toBe(false);
+    expect(
+      shouldForceTalkCta({ firstMeet: true, nearPiggy: true }),
+    ).toBe(true);
+  });
+
+  it("keeps presence copy short and walk-first", () => {
+    expect(ashorePresenceLine({ firstMeet: true })).toMatch(/fountain/i);
+    expect(ashorePresenceLine({ firstMeet: true })).not.toMatch(/^Talk to Piggy/);
+    expect(ashorePresenceLine({ firstMeet: true }).length).toBeLessThan(80);
   });
 
   it("Daily Ritual waits until Cove Change (Memory organ)", () => {

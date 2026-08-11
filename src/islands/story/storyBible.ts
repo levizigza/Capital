@@ -89,10 +89,11 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "meet_guide",
     storyBeat: "you",
-    // Presence CTA carries this — keep coach short for any leftover surface.
-    coach: "Talk to Piggy Penny.",
-    guideLine: "Piggy Penny: Welcome ashore! I’m your Harbor Keeper.",
-    verb: "Talk",
+    // Soft tip — Talk is opt-in when near Piggy (pre-carpet teach already covered controls).
+    coach: "Walk the plaza — Piggy waves by the fountain.",
+    guideLine:
+      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper — talk when you’re ready.",
+    verb: "Walk",
     highlight: "guide",
   },
   // DEMOTED legacy gates — normalizeHubGuidedIntro remaps onto to_dock.

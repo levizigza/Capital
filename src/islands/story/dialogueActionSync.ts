@@ -28,8 +28,8 @@ export type GuidedVisualBeats = {
 export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   meet_guide: {
     keeperEmote: "wave",
-    keeperBubbleWhenNear: "Piggy Penny: Welcome ashore — talk to me!",
-    bagTip: "Talk to Piggy Penny — soft gold ring by the fountain",
+    keeperBubbleWhenNear: "Piggy Penny: Want to talk? Press E when you’re ready.",
+    bagTip: "Piggy’s waving by the fountain — walk over when you want",
     pulseHotspot: "guide",
   },
   // DEMOTED legacy gates — Ashore remaps onto voyage; beats stay Outfitter-free.

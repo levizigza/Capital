@@ -91,49 +91,41 @@ export function SoftBeatOverlay({
           ? "wall-climb"
           : "teller-step";
 
+  const climbHint =
+    kind === "lookout"
+      ? "Climb the lid — peek from the Coin Jar"
+      : kind === "umbrella"
+        ? "Climb the loft — peek from the Payroll Tower"
+        : kind === "battlement"
+          ? "Climb the wall — peek from Interest Keep"
+          : "Step to the teller — peek from Ledger Bank";
+
   return (
     <div
-      className="pointer-events-auto absolute inset-0 z-[70] flex items-center justify-center bg-[#0f172a]/75 backdrop-blur-[2px]"
+      className="pointer-events-auto absolute inset-0 z-[70] flex items-end justify-center bg-gradient-to-t from-[#0f172a]/90 via-[#0f172a]/35 to-transparent"
       role="dialog"
       aria-label={beat.title}
       data-testid="soft-beat-overlay"
       data-soft-beat={kind}
       data-soft-beat-climb={climbMotif}
+      data-soft-beat-layout="lower-third"
       data-organ={organ.id}
       data-nav-escape="window"
       onClick={onDone}
     >
-      <div
-        className="relative mx-4 max-w-md rounded-2xl border px-6 py-5 text-center text-white shadow-2xl"
-        style={{ borderColor: `${beat.accent}99`, background: "rgba(15,23,42,0.92)" }}
-      >
+      <div className="mb-[10vh] w-full max-w-xl px-5 text-center text-white">
         <p
-          className="text-xs font-bold uppercase tracking-[0.2em]"
+          className="text-xs font-bold uppercase tracking-[0.22em]"
           style={{ color: beat.accent }}
         >
           {softBeatEyebrow(organ.id)} · {organVerbChip(organ.id)}
         </p>
-        {kind === "lookout" ? (
-          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
-            Climb the lid — peek from the Coin Jar
-          </p>
-        ) : null}
-        {kind === "umbrella" ? (
-          <p className="mt-1 text-[11px] font-semibold tracking-wide text-sky-100/80">
-            Climb the loft — peek from the Payroll Tower
-          </p>
-        ) : null}
-        {kind === "battlement" ? (
-          <p className="mt-1 text-[11px] font-semibold tracking-wide text-violet-100/80">
-            Climb the wall — peek from Interest Keep
-          </p>
-        ) : null}
-        {kind === "ledger" ? (
-          <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/80">
-            Step to the teller — peek from Ledger Bank
-          </p>
-        ) : null}
-        <h2 className="mt-2 text-xl font-black sm:text-2xl">{beat.title}</h2>
+        <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/85">
+          {climbHint}
+        </p>
+        <h2 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
+          {beat.title}
+        </h2>
         <p className="mt-3 text-sm text-white/85">{body}</p>
         <p
           className="mt-2 text-sm font-semibold text-amber-100/95"
@@ -142,9 +134,6 @@ export function SoftBeatOverlay({
           {kidSentence}
         </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
-        <p className="mt-2 text-[10px] uppercase tracking-wider text-white/45">
-          {organ.suit} · {organ.metaphor}
-        </p>
         <GameButton variant="primary" className="mt-4" onClick={onDone} data-testid="soft-beat-leave">
           {organ.id === "coin"
             ? "Leave — back into the Jar"

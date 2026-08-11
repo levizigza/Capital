@@ -76,6 +76,18 @@ async function bootToHarbor(page: import("@playwright/test").Page) {
   }
   await expect(page.getByTestId("boot-cast-select")).toHaveCount(0, { timeout: 20_000 });
 
+  // Pre-carpet comprehension teach — Skip proves Esc path; gates covered in unit tests.
+  const teach = page.getByTestId("ashore-comprehension-tutorial");
+  if (await teach.isVisible({ timeout: 8_000 }).catch(() => false)) {
+    const skipTeach = page.getByTestId("ashore-teach-skip");
+    if (await skipTeach.isVisible().catch(() => false)) {
+      await skipTeach.click({ force: true });
+    } else {
+      await page.keyboard.press("Escape");
+    }
+    await expect(teach).toHaveCount(0, { timeout: 10_000 });
+  }
+
   // Carpet opening — Skip if present
   const carpetSkip = page.getByRole("button", { name: /^Skip$/i });
   if (await carpetSkip.isVisible({ timeout: 12_000 }).catch(() => false)) {
@@ -92,44 +104,53 @@ async function bootToHarbor(page: import("@playwright/test").Page) {
 test.describe.configure({ timeout: 120_000 });
 
 test.describe("Harbor Haven tutorial opening", () => {
-  test("Castle Grounds coach + Talk to Piggy after carpet", async ({ page }) => {
+  test("Walk-first Harbor after teach — Piggy tip, no ambush Talk CTA", async ({ page }) => {
     await bootToHarbor(page);
 
-    const coach = page.getByTestId("castle-grounds-coach");
     const myth = page.getByTestId("harbor-myth-fallback");
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
 
-    // Ashore redesign: first-meet hides Castle coach (Talk CTA is the only surface).
-    // Myth fallback still teaches Talk.
+    // First meet: presence tip visible; Talk CTA only when near Piggy (or myth fallback).
     await expect
       .poll(async () => {
-        const talkOk = await talk.isVisible().catch(() => false);
-        const mythTalkOk = await mythTalk.isVisible().catch(() => false);
         const presence = await page
           .getByTestId("harbor-piggy-presence")
           .isVisible()
           .catch(() => false);
         const mythOk = await myth.isVisible().catch(() => false);
-        return (talkOk || mythTalkOk) && (presence || mythOk);
+        const plaza = await page.getByTestId("harbor-plaza").count();
+        return (presence || mythOk) && plaza > 0;
       }, { timeout: 25_000 })
       .toBe(true);
+
+    // Ambush guard: spawn must not force Talk unless myth fallback (no WebGL).
+    const talkAtSpawn = await talk.isVisible().catch(() => false);
+    const mythTalkOk = await mythTalk.isVisible().catch(() => false);
+    if (!mythTalkOk) {
+      expect(talkAtSpawn).toBe(false);
+    }
 
     // Daily Ritual must not steal first-meet (Memory organ waits for Cove Change).
     await expect(page.getByRole("heading", { name: /Harbor Daily Ritual/i })).toHaveCount(0);
 
-    if (await talk.isVisible().catch(() => false)) {
-      await expect(coach).toHaveCount(0);
-      await expect(page.getByTestId("harbor-piggy-presence")).toContainText(
-        /Talk to Piggy|Piggy’s by the fountain/i,
-      );
+    const presence = page.getByTestId("harbor-piggy-presence");
+    if (await presence.isVisible().catch(() => false)) {
+      await expect(presence).toContainText(/fountain|Piggy/i);
       await expect(page.getByTestId("harbor-controls-whisper")).toBeVisible();
-      // evaluate click — avoid pointerup→overlay retarget skipping first listen
+    }
+
+    // Opt-in Talk: near-Piggy CTA, myth fallback, or QA talkNpc (walk-up path).
+    if (await talk.isVisible().catch(() => false)) {
       await talk.evaluate((el) => (el as HTMLElement).click());
-    } else {
+    } else if (await mythTalk.isVisible().catch(() => false)) {
       await expect(myth).toHaveAttribute("data-fallback-mode", "myth_meet");
-      await expect(mythTalk).toBeVisible();
       await mythTalk.evaluate((el) => (el as HTMLElement).click());
+    } else {
+      await page.waitForFunction(() => Boolean(window.__QA__?.talkNpc), null, {
+        timeout: 15_000,
+      });
+      await page.evaluate(() => window.__QA__!.talkNpc("piggy_penny"));
     }
 
     // Piggy Talk Battle — not Memory Plinth stealing the beat
