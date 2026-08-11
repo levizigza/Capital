@@ -38,7 +38,7 @@ Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berm
 
 **Mural thesis:** see [mural-thesis.md](./mural-thesis.md) — living money organs; if it cannot name organ + suit verb, it does not ship on the spine.
 
-This is **structure depth**, not map width — still no new outer islands.
+This is **structure depth** on the main quest. Era **side shores** may ride the outer map ring with their own music — they are not new main-course strip chips. See [era-shores-restore.md](./era-shores-restore.md).
 
 ## Cold playtest checklist
 
@@ -101,17 +101,17 @@ await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spira
 
 ## Freeze (do not ship yet)
 
-- **No new outer islands** beyond the existing triangle spine (Cove → Paycheck → Credit).  
+- **No new main-course islands** beyond Harbor · Cove → Paycheck → Credit. Era **SIDE SHORE** chapters may sit on the outer ring with their own music ([era-shores-restore.md](./era-shores-restore.md)).  
 - **No fake multiplayer backend** (Family Room stays local/device-share).  
 - **No BMO / CBE / Nathan Project** content merged into Capital.  
-- Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over map expansion.
+- Prefer deepening Harbor memory, scars, Piggy/Coin Bag bond, and share moments over widening the main strip.
 
-**Parked “later” sink (Pillar 17):** [iconic-later.md](./iconic-later.md) — put new island ideas and deferred polish there; do not open the map. Guarded by `iconicScopeFreeze.test.ts`.
+**Parked “later” sink (Pillar 17):** [iconic-later.md](./iconic-later.md) — put new *main-course* island ideas and deferred polish there. Guarded by `iconicScopeFreeze.test.ts`.
 
 ## Identity freeze (Wave 4)
 
 - Player-facing world name: **Fortune Archipelago** (Capital = product brand).  
-- Travel map + carpet show **Harbor · Cove · Paycheck · Credit** only — locked spine chips read as ghosts; genre/asset packs stay off the strip.  
+- Travel **strip** = **Harbor · Cove · Paycheck · Credit**; 3D map + carpet also show era **side shores** (soft-locked until Cove Change) with per-shore soundtrack cues.  
 - Phone cold-play: on-screen **Walk** pad on Harbor / shores (coarse pointer).  
 - Signature trailer: mute-friendly captions + Piggy/Coin Bag silhouettes.
 

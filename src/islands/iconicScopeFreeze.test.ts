@@ -7,10 +7,12 @@ import {
   assertSpineTravelFrozen,
   auditIconicLaterDoc,
   auditParkedIslandDocs,
+  auditSideShoreIslandDocs,
   iconicScopeSnapshot,
   parkedIslandDocsSlug,
 } from "./iconicScopeFreeze";
 import { PARKED_ISLAND_IDS } from "./spineContentRegistry";
+import { SIDE_SHORE_TRAVEL_IDS } from "./spineArchipelago";
 import { existsSync, readFileSync } from "node:fs";
 
 const root = join(__dirname, "../..");
@@ -26,9 +28,12 @@ describe("Iconic scope freeze (Pillar 17)", () => {
       "no_foreign_merge",
       "no_map_width",
     ]);
+    expect(ICONIC_FREEZE_LAWS.find((l) => l.id === "no_map_width")?.law).toMatch(
+      /side shores/i,
+    );
   });
 
-  it("freezes travel surface to Harbor · Cove · Paycheck · Credit", () => {
+  it("freezes main-course strip to Harbor · Cove · Paycheck · Credit", () => {
     const audit = assertSpineTravelFrozen();
     expect(audit.ok, audit.reason).toBe(true);
     expect(audit.ids).toEqual([
@@ -46,14 +51,17 @@ describe("Iconic scope freeze (Pillar 17)", () => {
     expect(later.ok).toBe(true);
   });
 
-  it("marks every on-disk parked island story-circle with PARKED", () => {
-    const audit = auditParkedIslandDocs(root);
-    expect(audit.missingFolders, audit.missingFolders.join(", ")).toEqual([]);
-    expect(audit.missingBanner, audit.missingBanner.join(", ")).toEqual([]);
-    expect(audit.present.length).toBeGreaterThanOrEqual(8);
-    // starter_key_cove has no docs folder — still parked in registry
+  it("keeps demo Key Cove parked; era shores carry SIDE SHORE banners", () => {
+    const parked = auditParkedIslandDocs(root);
+    expect(parked.missingFolders, parked.missingFolders.join(", ")).toEqual([]);
+    expect(parked.missingBanner, parked.missingBanner.join(", ")).toEqual([]);
     expect(PARKED_ISLAND_IDS).toContain("starter_key_cove");
     expect(parkedIslandDocsSlug("signal_city")).toBe("signal-city");
+
+    const sides = auditSideShoreIslandDocs(root);
+    expect(sides.missingFolders, sides.missingFolders.join(", ")).toEqual([]);
+    expect(sides.missingBanner, sides.missingBanner.join(", ")).toEqual([]);
+    expect(sides.present.length).toBe(SIDE_SHORE_TRAVEL_IDS.length);
   });
 
   it("cursor freeze rule still names the three hard bans", () => {
@@ -62,12 +70,14 @@ describe("Iconic scope freeze (Pillar 17)", () => {
     expect(rule).toMatch(/Family Room/);
     expect(rule).toMatch(/Nathan|BMO|CBE/);
     expect(rule).toMatch(/iconic-path/);
+    expect(rule).toMatch(/side shore|era shore/i);
   });
 
-  it("scope snapshot stays four-wide spine", () => {
+  it("scope snapshot keeps four-wide spine + eight side shores", () => {
     const snap = iconicScopeSnapshot();
     expect(snap.spineTravelCount).toBe(4);
-    expect(snap.parkedIslandCount).toBeGreaterThanOrEqual(9);
+    expect(snap.sideShoreCount).toBe(8);
+    expect(snap.parkedIslandCount).toBe(1);
     expect(snap.parkedMinigameCount).toBeGreaterThanOrEqual(6);
     expect(snap.freezeLawCount).toBe(4);
   });

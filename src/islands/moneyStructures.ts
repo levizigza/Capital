@@ -97,7 +97,8 @@ export const HARBOR_LEDGER_BANK: MoneyStructureDef = {
   entryVerb: "Step through the brass vault door",
   entryHint: "The vault door swings — stamp, teller, and safe each open a world.",
   enterTransition: "Vault door swinging open…",
-  shorePosition: [2.4, 0, -1.2],
+  /** East commercial block — vault door faces open plaza, not the fountain basin. */
+  shorePosition: [7.8, 0, -3.6],
   exitPosition: [0, 0, 8],
   parts: [
     {

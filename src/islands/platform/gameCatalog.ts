@@ -2,7 +2,7 @@ import type { GameComplexity, GameGenre } from "../themes/islandThemes";
 import type { IslandDefinition, IslandsContent } from "../types";
 import { getIslandTheme } from "../themes/islandThemes";
 import { shellForEra } from "../eraMorph";
-import { isParkedMinigameId } from "../spineContentRegistry";
+import { isParkedMinigameId, isSpineContentIslandId } from "../spineContentRegistry";
 
 export type MinigameVisualShell =
   | "arcade"
@@ -61,6 +61,8 @@ export function buildGameCatalog(content: IslandsContent): CatalogGame[] {
   const games: CatalogGame[] = [];
 
   for (const island of content.islands) {
+    // Harbor Arcade stays spine-only — era side shores keep their toys on-shore.
+    if (!isSpineContentIslandId(island.id)) continue;
     const theme = getIslandTheme(island.id, island.themeId);
     /** Decade lens wins — every minigame on an island shares that era chrome. */
     const islandShell = shellForEra(theme.animationStyle);

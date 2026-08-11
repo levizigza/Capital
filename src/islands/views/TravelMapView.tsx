@@ -11,7 +11,11 @@ import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import { getEffectiveBoatTier, nextBoatTier } from "../boats";
 import { HUB_ISLAND_ID, isIslandLocked } from "../worldMapLayout";
-import { FORTUNE_ARCHIPELAGO_NAME, islandsForSpineTravel } from "../spineArchipelago";
+import {
+  FORTUNE_ARCHIPELAGO_NAME,
+  islandsForArchipelagoMap,
+  islandsForSpineTravel,
+} from "../spineArchipelago";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
@@ -61,7 +65,9 @@ export function TravelMapView({
     [currentId, onStartVoyage],
   );
 
-  const islandList = useMemo(() => islandsForSpineTravel(islands), [islands]);
+  /** Strip = main course only; diorama shows spine + era side shores. */
+  const stripIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
+  const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
 
   return (
     <GameHudLayout
@@ -69,7 +75,7 @@ export function TravelMapView({
       background={
         <div className="absolute inset-0">
           <ArchipelagoMap3D
-            islands={islandList}
+            islands={mapIslands}
             save={save}
             currentId={currentId}
             onSelect={beginVoyage}
@@ -80,7 +86,7 @@ export function TravelMapView({
         <div data-testid="fortune-archipelago-chip">
           <HudChip
             title={FORTUNE_ARCHIPELAGO_NAME}
-            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins}`}
+            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins} · side shores on map`}
           />
         </div>
       }
@@ -95,7 +101,7 @@ export function TravelMapView({
             className="flex w-full gap-2 overflow-x-auto pb-1"
             data-testid="archipelago-island-strip"
           >
-            {islandList.map((island) => {
+            {stripIslands.map((island) => {
               const locked = isIslandLocked(island, save.inventory, save);
               const here = island.id === currentId;
               const theme = getIslandTheme(island.id, island.themeId);

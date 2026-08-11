@@ -74,8 +74,9 @@ function StructurePinBadge({
 }
 
 function mapToScene(node: ArchipelagoNode): [number, number, number] {
-  const x = ((node.mapX - 50) / 38) * SPACING * 1.35;
-  const z = ((node.mapY - 54) / 34) * SPACING * 1.15;
+  // Normalize against outer-ring radii so dual-ring layout keeps visual rhythm.
+  const x = ((node.mapX - 50) / 40) * SPACING * 1.35;
+  const z = ((node.mapY - 54) / 36) * SPACING * 1.15;
   return [x, 0, z];
 }
 
@@ -164,22 +165,26 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
         const locked = isIslandLocked(node.island, save.inventory, save);
         const pos = mapToScene(node);
         const genreLine = genreHudLine(node.island.id);
+        const side = node.ring === "side";
+        const subtitle = side
+          ? `Side shore · ${genreLine ?? era.decade}`
+          : (genreLine ?? era.decade);
         return (
           <group key={node.island.id}>
             <DioramaIslandMesh
               look={look}
               title={node.island.name}
-              subtitle={genreLine ?? era.decade}
+              subtitle={subtitle}
               seed={node.island.id}
               islandId={node.island.id}
               position={pos}
-              scale={1}
+              scale={side ? 0.88 : 1}
               current={node.island.id === currentId}
               locked={locked}
               hideLabels
               onSelect={() => onSelect(node.island.id)}
             />
-            <StructurePinBadge islandId={node.island.id} position={pos} />
+            {!side ? <StructurePinBadge islandId={node.island.id} position={pos} /> : null}
           </group>
         );
       })}

@@ -110,7 +110,7 @@ export function resolveHarborGuideLookAt(opts: {
 
   // Spectacle owns the plaza — Plinth before homecoming Piggy.
   if (opts.pointMemoryPlinth) {
-    return find("memory") ?? ([4.0, 0, 1.6] as GuideLookAt);
+    return find("memory") ?? ([5.8, 0, 4.2] as GuideLookAt);
   }
   if (opts.homecomingPending) return piggy;
   if (opts.pointNextPainting) return find("travel") ?? ([0, 0, 13] as GuideLookAt);

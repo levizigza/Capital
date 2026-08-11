@@ -47,7 +47,7 @@ See [island-design-process.md](./island-design-process.md): **W2 one hero per ar
 
 ## Freeze
 
-No new outer islands. Deepen Harbor + existing triangle shores only ([iconic-path.md](./iconic-path.md)).
+No new main-course islands. Deepen Harbor + triangle shores; era side shores stay outer-ring extras ([iconic-path.md](./iconic-path.md) · [era-shores-restore.md](./era-shores-restore.md)).
 
 ## Playtest gate (ship checklist)
 

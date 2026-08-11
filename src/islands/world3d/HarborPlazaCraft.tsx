@@ -14,28 +14,28 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { plazaLifeAmp } from "../a11yMotion";
 
-/** Raised plaza ring + stepped lip — breaks the pancake silhouette. */
+/** Raised plaza ring + stepped lip — sized so Bank / Arcade / Outfitter sit on stone, not in the basin. */
 export function PlazaTier() {
   return (
     <group>
-      {/* Raised stone disk */}
+      {/* Raised stone disk — civic court around fountain */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]} receiveShadow>
-        <circleGeometry args={[9.2, 56]} />
+        <circleGeometry args={[11.6, 56]} />
         <meshStandardMaterial color="#e7e5e4" roughness={0.82} />
       </mesh>
       {/* Warm sand collar between plaza and shore */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} receiveShadow>
-        <ringGeometry args={[9.2, 12.4, 56]} />
+        <ringGeometry args={[11.6, 15.2, 56]} />
         <meshStandardMaterial color="#f0d9a8" roughness={0.92} />
       </mesh>
       {/* Step lip */}
       <mesh position={[0, 0.08, 0]} receiveShadow>
-        <cylinderGeometry args={[9.25, 9.55, 0.18, 48]} />
+        <cylinderGeometry args={[11.65, 11.95, 0.18, 48]} />
         <meshStandardMaterial color="#d6d3d1" roughness={0.78} />
       </mesh>
-      {/* Inner coin mosaic ring */}
+      {/* Walk-clearance ring — buildings live outside this mosaic */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.135, 0]}>
-        <ringGeometry args={[3.2, 3.55, 40]} />
+        <ringGeometry args={[4.2, 4.55, 40]} />
         <meshStandardMaterial
           color="#fbbf24"
           emissive="#b45309"
@@ -48,15 +48,16 @@ export function PlazaTier() {
   );
 }
 
-/** Coin inlays that draw the eye: pier approach + bank approach. */
+/** Coin inlays that draw the eye: pier → fountain court → Ledger Bank door. */
 export function CoinEyePath() {
   const pierCoins = Array.from({ length: 7 }, (_, i) => {
     const t = (i + 1) / 8;
-    return [0, 0.14, 3.2 + t * 8.6] as [number, number, number];
+    return [0, 0.14, 3.6 + t * 8.2] as [number, number, number];
   });
-  const bankCoins = Array.from({ length: 5 }, (_, i) => {
-    const t = (i + 1) / 6;
-    return [0.35 + t * 1.9, 0.14, -0.2 - t * 0.85] as [number, number, number];
+  // Path from fountain edge toward bank at [7.8, 0, -3.6]
+  const bankCoins = Array.from({ length: 6 }, (_, i) => {
+    const t = (i + 1) / 7;
+    return [1.2 + t * 5.8, 0.14, -0.4 - t * 2.6] as [number, number, number];
   });
   return (
     <group>
@@ -111,11 +112,12 @@ export function ShoreBerms() {
 
 /** Soft pennant banners — tall vertical beats that move. */
 export function HarborBanners() {
+  // Perimeter poles — never in the fountain court or bank doorway.
   const poles: [number, number, number, string][] = [
-    [-4.2, 0, 6.5, "#f472b6"],
-    [4.8, 0, 5.8, "#38bdf8"],
-    [-6.8, 0, -3.5, "#a78bfa"],
-    [6.2, 0, -2.8, "#fbbf24"],
+    [-5.6, 0, 7.4, "#f472b6"],
+    [4.2, 0, 8.0, "#38bdf8"],
+    [-8.4, 0, -5.2, "#a78bfa"],
+    [9.4, 0, -1.8, "#fbbf24"],
   ];
   return (
     <group>

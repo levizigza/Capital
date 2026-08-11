@@ -8,6 +8,7 @@ import {
   isHubIslandId,
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
+import { SIDE_SHORE_TRAVEL_IDS, SPINE_TRAVEL_IDS } from "./spineArchipelago";
 
 export {
   HARBOR_HAVEN_ID,
@@ -22,12 +23,24 @@ export {
 /** World-space radius between hub and outer islands (POV voyage units). */
 export const ARCHIPELAGO_WORLD_RADIUS = 920;
 
+/** Inner ring (spine triangle) — closer to Harbor. */
+export const SPINE_WORLD_RADIUS = ARCHIPELAGO_WORLD_RADIUS * 0.72;
+/** Outer ring (era side shores) — discoverable beyond the spine. */
+export const SIDE_SHORE_WORLD_RADIUS = ARCHIPELAGO_WORLD_RADIUS * 1.12;
+
 /** Map view: hub center (%). */
 export const MAP_HUB = { x: 50, y: 54 };
 
-/** Map view: outer ring ellipse radii (%). */
-export const MAP_RING_RX = 38;
-export const MAP_RING_RY = 34;
+/** Map view: spine ring ellipse radii (%). */
+export const MAP_SPINE_RX = 28;
+export const MAP_SPINE_RY = 24;
+/** Map view: side-shore outer ring ellipse radii (%). */
+export const MAP_SIDE_RX = 40;
+export const MAP_SIDE_RY = 36;
+
+/** @deprecated Prefer MAP_SPINE_* / MAP_SIDE_* — kept for callers expecting legacy names. */
+export const MAP_RING_RX = MAP_SIDE_RX;
+export const MAP_RING_RY = MAP_SIDE_RY;
 
 export type ArchipelagoNode = {
   island: IslandDefinition;
@@ -41,6 +54,8 @@ export type ArchipelagoNode = {
   angle: number;
   themeAccent: string;
   galapagos: GalapagosProfile;
+  /** Dual-ring lane for visual rhythm. */
+  ring: "hub" | "spine" | "side";
 };
 
 export function resolveHubIsland(islands: IslandDefinition[]): IslandDefinition {
@@ -51,6 +66,39 @@ export function resolveHubIsland(islands: IslandDefinition[]): IslandDefinition 
   );
 }
 
+function placeRing(
+  islands: IslandDefinition[],
+  opts: {
+    ring: "spine" | "side";
+    mapRx: number;
+    mapRy: number;
+    worldR: number;
+    startAngle: number;
+  },
+): ArchipelagoNode[] {
+  const count = Math.max(1, islands.length);
+  return islands.map((island, index) => {
+    const angle = opts.startAngle + (index / count) * Math.PI * 2;
+    const theme = getIslandTheme(island.id, island.themeId);
+    return {
+      island,
+      isHub: false,
+      mapX: MAP_HUB.x + Math.cos(angle) * opts.mapRx,
+      mapY: MAP_HUB.y + Math.sin(angle) * opts.mapRy,
+      worldX: Math.sin(angle) * opts.worldR,
+      worldY: -Math.cos(angle) * opts.worldR,
+      angle,
+      themeAccent: theme.accent,
+      galapagos: getGalapagosProfile(island.id),
+      ring: opts.ring,
+    };
+  });
+}
+
+/**
+ * Dual-ring Fortune Archipelago:
+ * Harbor hub · inner spine triangle · outer era side shores.
+ */
 export function buildArchipelagoLayout(islands: IslandDefinition[]): {
   hub: ArchipelagoNode;
   outer: ArchipelagoNode[];
@@ -69,43 +117,39 @@ export function buildArchipelagoLayout(islands: IslandDefinition[]): {
     angle: 0,
     themeAccent: hubTheme.accent,
     galapagos: getGalapagosProfile(hubIsland.id),
+    ring: "hub",
   };
 
-  // Prefer Coincraft Cove as the first outer pin (first painting).
-  const outerIslands = islands
-    .filter((i) => !isHubIslandId(i.id) && i.id !== hubIsland.id)
-    .slice()
-    .sort((a, b) => {
-      if (a.id === "coincraft_cove") return -1;
-      if (b.id === "coincraft_cove") return 1;
-      if (a.id === "paycheck_peninsula") return -1;
-      if (b.id === "paycheck_peninsula") return 1;
-      return a.name.localeCompare(b.name);
-    });
-  const count = Math.max(1, outerIslands.length);
-  const startAngle = -Math.PI / 2;
+  const byId = new Map(islands.map((i) => [i.id, i]));
+  const spineOuter = SPINE_TRAVEL_IDS.map((id) => byId.get(id))
+    .filter((i): i is IslandDefinition => Boolean(i) && i.id !== hubIsland.id);
 
-  const outer: ArchipelagoNode[] = outerIslands.map((island, index) => {
-    const angle = startAngle + (index / count) * Math.PI * 2;
-    const theme = getIslandTheme(island.id, island.themeId);
-    const mapX = MAP_HUB.x + Math.cos(angle) * MAP_RING_RX;
-    const mapY = MAP_HUB.y + Math.sin(angle) * MAP_RING_RY;
-    const worldX = Math.sin(angle) * ARCHIPELAGO_WORLD_RADIUS;
-    const worldY = -Math.cos(angle) * ARCHIPELAGO_WORLD_RADIUS;
+  const sideKnown = SIDE_SHORE_TRAVEL_IDS.map((id) => byId.get(id)).filter(
+    (i): i is IslandDefinition => Boolean(i),
+  );
+  const claimed = new Set([hubIsland.id, ...spineOuter.map((i) => i.id), ...sideKnown.map((i) => i.id)]);
+  const sideExtras = islands
+    .filter((i) => !claimed.has(i.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const sideOuter = [...sideKnown, ...sideExtras];
 
-    return {
-      island,
-      isHub: false,
-      mapX,
-      mapY,
-      worldX,
-      worldY,
-      angle,
-      themeAccent: theme.accent,
-      galapagos: getGalapagosProfile(island.id),
-    };
+  const spineNodes = placeRing(spineOuter, {
+    ring: "spine",
+    mapRx: MAP_SPINE_RX,
+    mapRy: MAP_SPINE_RY,
+    worldR: SPINE_WORLD_RADIUS,
+    startAngle: -Math.PI / 2,
+  });
+  const sideNodes = placeRing(sideOuter, {
+    ring: "side",
+    mapRx: MAP_SIDE_RX,
+    mapRy: MAP_SIDE_RY,
+    worldR: SIDE_SHORE_WORLD_RADIUS,
+    // Offset so side shores don't sit directly behind spine chips.
+    startAngle: -Math.PI / 2 + Math.PI / 8,
   });
 
+  const outer = [...spineNodes, ...sideNodes];
   return { hub, outer, all: [hub, ...outer] };
 }
 

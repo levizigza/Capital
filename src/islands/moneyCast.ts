@@ -653,34 +653,33 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
   return list[h % list.length];
 }
 
-/** Piggy fountain slot — Coin Bag look-at + first-meet spawn anchor. */
-export const HARBOR_PIGGY_POS: [number, number, number] = [1.4, 0, 0.6];
+/** Piggy plaza slot — SW of fountain, clear of basin water (Coin Bag look-at + first-meet). */
+export const HARBOR_PIGGY_POS: [number, number, number] = [-2.8, 0, 2.4];
 
 /** Harbor plaza sample — readable crowd without spawning all 30.
  *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide).
- *  Series leads flank the Memory Courtyard (near Plinth / bank) — never Piggy's fountain slot. */
+ *  Series leads flank the Memory Courtyard (SE Plinth terrace) — never Piggy's fountain slot. */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
-  // Front-and-center for first meet (player spawns ~[0,0,3] facing -Z)
-  { mascotId: "piggy_penny", pos: HARBOR_PIGGY_POS, yaw: 0.15 },
-  // Series leads — terrace by the Memory Plinth, readable after the loop settles
-  { mascotId: "cashwell", pos: [5.6, 0, 0.4], yaw: -0.85 },
-  { mascotId: "cashmere", pos: [6.4, 0, -1.6], yaw: -1.1 },
-  { mascotId: "peso_pedro", pos: [7.0, 0, 1.4], yaw: -1.35 },
-  { mascotId: "fortuna_fernanda", pos: [7.6, 0, -0.8], yaw: -1.5 },
-  { mascotId: "billionaire_bao", pos: [8.2, 0, 2.2], yaw: -1.6 },
-  { mascotId: "jade_fortune", pos: [8.8, 0, -1.2], yaw: -1.7 },
-  { mascotId: "sultan_stacks", pos: [9.4, 0, 1.6], yaw: -1.85 },
-  { mascotId: "dinar_dahlia", pos: [10.0, 0, -0.4], yaw: -2.0 },
-  { mascotId: "mansa_moneybaggs", pos: [10.6, 0, 2.0], yaw: -2.1 },
-  { mascotId: "kandake_kash", pos: [11.2, 0, -1.0], yaw: -2.2 },
-  { mascotId: "moneybagg_bro", pos: [11.8, 0, 1.4], yaw: -2.3 },
-  { mascotId: "mula_mami", pos: [12.4, 0, -0.2], yaw: -2.4 },
-  { mascotId: "coiny", pos: [-5.4, 0, 2.8], yaw: 0.9 },
-  { mascotId: "dollar_dash", pos: [3.8, 0, 6.0], yaw: -2.2 },
-  { mascotId: "budget_bot", pos: [-3.2, 0, -6.6], yaw: 0.4 },
-  { mascotId: "spendy_sue", pos: [-6.0, 0, -2.2], yaw: 1.1 },
-  { mascotId: "vault_vince", pos: [1.5, 0, -7.4], yaw: 0.2 },
-  { mascotId: "tip_jar_tom", pos: [-1.8, 0, 7.2], yaw: 3.0 },
+  { mascotId: "piggy_penny", pos: HARBOR_PIGGY_POS, yaw: 0.35 },
+  // Series leads — SE Memory Courtyard terrace (south of Plinth, clear of Bank door)
+  { mascotId: "cashwell", pos: [4.4, 0, 6.2], yaw: -0.55 },
+  { mascotId: "cashmere", pos: [5.2, 0, 7.0], yaw: -0.75 },
+  { mascotId: "peso_pedro", pos: [6.0, 0, 6.4], yaw: -0.95 },
+  { mascotId: "fortuna_fernanda", pos: [6.8, 0, 7.2], yaw: -1.1 },
+  { mascotId: "billionaire_bao", pos: [7.6, 0, 6.0], yaw: -1.25 },
+  { mascotId: "jade_fortune", pos: [8.4, 0, 7.0], yaw: -1.4 },
+  { mascotId: "sultan_stacks", pos: [9.0, 0, 5.8], yaw: -1.55 },
+  { mascotId: "dinar_dahlia", pos: [9.6, 0, 6.8], yaw: -1.7 },
+  { mascotId: "mansa_moneybaggs", pos: [10.2, 0, 5.6], yaw: -1.85 },
+  { mascotId: "kandake_kash", pos: [10.8, 0, 6.6], yaw: -2.0 },
+  { mascotId: "moneybagg_bro", pos: [11.4, 0, 5.4], yaw: -2.1 },
+  { mascotId: "mula_mami", pos: [12.0, 0, 6.4], yaw: -2.2 },
+  { mascotId: "coiny", pos: [-6.2, 0, 4.0], yaw: 0.9 },
+  { mascotId: "dollar_dash", pos: [2.2, 0, 8.4], yaw: -2.2 },
+  { mascotId: "budget_bot", pos: [-2.8, 0, -7.4], yaw: 0.4 },
+  { mascotId: "spendy_sue", pos: [-8.0, 0, -2.8], yaw: 1.1 },
+  { mascotId: "vault_vince", pos: [1.2, 0, -9.0], yaw: 0.2 },
+  { mascotId: "tip_jar_tom", pos: [-1.8, 0, 9.0], yaw: 3.0 },
 ];
 
 /** Rival captains mapped onto the money cast. */
