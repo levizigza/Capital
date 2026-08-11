@@ -103,7 +103,7 @@ describe("resolveHarborGuideLookAt", () => {
     { id: "travel", position: [0, 0, 13] as [number, number, number] },
     { id: "outfitter", position: [0, 0, -8] as [number, number, number] },
     { id: "pavilion", position: [-4.5, 0, -9.5] as [number, number, number] },
-    { id: "ledger_bank", position: [7.8, 0, -3.6] as [number, number, number] },
+    { id: "ledger_bank", position: [10.2, 0, 1.2] as [number, number, number] },
     { id: "memory", position: [5.8, 0, 4.2] as [number, number, number] },
   ];
 
@@ -114,7 +114,7 @@ describe("resolveHarborGuideLookAt", () => {
   });
 
   it("defaults to Ledger Bank money machine on free roam", () => {
-    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([7.8, 0, -3.6]);
+    expect(resolveHarborGuideLookAt({ hotspots: spots })).toEqual([10.2, 0, 1.2]);
   });
 
   it("falls back to travel when no bank hotspot", () => {

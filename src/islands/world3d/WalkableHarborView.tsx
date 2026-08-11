@@ -30,6 +30,8 @@ import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { EraIslandMesh } from "./EraIslandMesh";
 import { WoodenPier, NatureProps } from "./NatureProps";
+import { hotspotPlazaYaw } from "../harborPlazaPlan";
+import { pointerSafeActivate } from "../pointerSafeClick";
 import { LedgerBankLandmark } from "./LedgerBankLandmark";
 import {
   MoneyCarpetGate,
@@ -101,6 +103,11 @@ export type HarborHotspot = {
   kind?: HarborLandmarkKind;
   /** Signpost accent color */
   accent?: string;
+  /**
+   * Planned façade yaw (radians). Civic buildings use harborPlazaPlan so doors
+   * face the court from a setback — never auto-yaw a vault into the fountain.
+   */
+  yaw?: number;
 };
 
 type Props = {
@@ -675,7 +682,7 @@ function PlazaScene({
       </mesh>
 
       {hotspots.map((h) => {
-        const yaw = Math.atan2(-h.position[0], -h.position[2]);
+        const yaw = hotspotPlazaYaw(h.id, h.position, h.yaw);
         const pulsing = pulseHotspotId === h.id;
         const nearby = nearHotspotId === h.id;
         const kind = h.kind ?? "building";
@@ -1118,20 +1125,12 @@ export function WalkableHarborView({
             data-testid="harbor-skip-3d"
             className="pointer-events-auto relative z-[110] min-h-14 min-w-[16rem] rounded-2xl bg-[#16283b] px-7 py-4 text-base font-black text-white shadow-[4px_4px_0_rgba(22,40,59,0.35)]"
             style={{ touchAction: "manipulation" }}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              escapeToMyth("soft");
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              escapeToMyth("soft");
-            }}
+            {...pointerSafeActivate(() => escapeToMyth("soft"))}
           >
             {ENTER_HARBOR_HAVEN}
           </button>
           <p className="max-w-xs text-[11px] font-medium text-[#16283b]/65">
-            Slow plaza? Tap Enter — myth path still gives Talk Piggy · Carpet · Cove.
+            Don’t wait on 3D — tap Enter for Talk Piggy · Carpet · Cove (plaza sketch included).
           </p>
         </div>
       ) : null}

@@ -48,20 +48,30 @@ export function PlazaTier() {
   );
 }
 
-/** Coin inlays that draw the eye: pier → fountain court → Ledger Bank door. */
+/** Coin inlays: pier → court ring → curve past the basin to Bank / Outfitter doors. */
 export function CoinEyePath() {
-  const pierCoins = Array.from({ length: 7 }, (_, i) => {
-    const t = (i + 1) / 8;
-    return [0, 0.14, 3.6 + t * 8.2] as [number, number, number];
-  });
-  // Path from fountain edge toward bank at [7.8, 0, -3.6]
-  const bankCoins = Array.from({ length: 6 }, (_, i) => {
+  // Pier walk stays on +Z axis until the mosaic ring — never claims a north shop door.
+  const pierCoins = Array.from({ length: 6 }, (_, i) => {
     const t = (i + 1) / 7;
-    return [1.2 + t * 5.8, 0.14, -0.4 - t * 2.6] as [number, number, number];
+    return [0, 0.14, 4.2 + t * 7.6] as [number, number, number];
+  });
+  // Arc east around the fountain to Ledger Bank door apron (~[8.7, 1.2])
+  const bankCoins = Array.from({ length: 7 }, (_, i) => {
+    const t = (i + 1) / 8;
+    const ang = -0.15 + t * 1.35;
+    const r = 5.4 + t * 2.8;
+    return [Math.sin(ang) * r, 0.14, Math.cos(ang) * r * 0.35] as [number, number, number];
+  });
+  // Arc NW to Outfitter (off pier axis) — fountain stays court, not doorway fill
+  const outfitterCoins = Array.from({ length: 5 }, (_, i) => {
+    const t = (i + 1) / 6;
+    const ang = Math.PI * 0.55 + t * 0.7;
+    const r = 5.2 + t * 3.6;
+    return [Math.sin(ang) * r, 0.14, Math.cos(ang) * r] as [number, number, number];
   });
   return (
     <group>
-      {[...pierCoins, ...bankCoins].map((p, i) => (
+      {[...pierCoins, ...bankCoins, ...outfitterCoins].map((p, i) => (
         <mesh key={i} rotation={[-Math.PI / 2, 0, i * 0.4]} position={p} receiveShadow>
           <circleGeometry args={[0.22, 16]} />
           <meshStandardMaterial

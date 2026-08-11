@@ -92,12 +92,12 @@ export const HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   pulseHotspot: "guide",
 };
 
-/** After Piggy’s welcome-back — point the next painting. */
+/** After Piggy’s welcome-back — point the next painting (+ era shores open). */
 export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   keeperEmote: "point",
   keeperBubbleWhenNear:
-    "Piggy Penny: Carpet Dock that way — Paycheck Peninsula is your next painting!",
-  bagTip: "Carpet Dock → Paycheck Peninsula",
+    "Piggy Penny: Carpet Dock that way — Paycheck is next. Era shores woke up on the outer ring too!",
+  bagTip: "Carpet → Paycheck · side shores open",
   pulseHotspot: "travel",
 };
 
