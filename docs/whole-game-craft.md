@@ -178,8 +178,13 @@ If not, that surface is not iconic yet.
 - **Gameplay literacy:** signature loop beats · four organ paintings (mustFeel) · toolkit verbs · then carpet with your Voyager.
 - Soundtrack beds unchanged.
 
+## Iteration 21 (shipped) — Plaza planner + playable myth + side-shore fun
+
+- **Harbor civic plan:** Outfitter off pier axis; Bank due-east; doors cleared of fountain (`harborPlazaPlan` + tests). Coin eye-paths curve around the basin.
+- **Myth fallback:** civic plaza sketch so layout still reads when 3D stalls; Enter Harbor uses pointer-safe activate.
+- **Side shores fun:** after Cove Change, travel UI shows a side-shore chip row + Piggy names outer-ring wake-up.
+- **Playtest:** cold scripts + iconic e2e; human 3D veil must never brick Talk→Carpet→Cove.
+
 ## Still deepen (from iconic-later)
 
-PR **#68** is the ship gate — merge when CI is green. Freeze laws stay.  
-
-Iterate depth next — never new islands first.
+Freeze laws stay (main-quest strip four-wide). Deepen Take / feel / Plinth before new main-course islands.

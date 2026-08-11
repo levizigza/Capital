@@ -36,19 +36,9 @@ Soft lock: side shores unlock after **first Cove Change** (same gate as Paycheck
 
 ## Harbor plaza master plan
 
-Fountain stays at plaza origin `[0,0,0]` as the civic center.
+Canonical layout: **[harbor-plaza-plan.md](./harbor-plaza-plan.md)** · code `harborPlazaPlan.ts`.
 
-| Landmark | Position | Rationale |
-|----------|----------|-----------|
-| Fountain | `0, 0, 0` | Center court |
-| Piggy | `-2.8, 0, 2.4` | SE of fountain, clear of water |
-| Ledger Bank | `7.8, 0, -3.6` | East commercial block — vault door faces plaza, not basin |
-| Memory Plinth | `5.8, 0, 4.2` | SE civic corner |
-| Outfitter | `0, 0, -8.8` | North wall shop |
-| Arcade | `-7.2, 0, -4.2` | West entertainment block |
-| Carpet gate | `0, 0, 12.6` | South departure (unchanged) |
-
-Clearance rule: no building footprint within ~4.5 units of fountain center; doors open onto open pavers, not water.
+Fountain stays court center. Outfitter sits **off** the pier→fountain axis so water never frames a doorway. Ledger Bank is due-east; doors clear the ~4.8u basin ring.
 
 ## Out of scope
 

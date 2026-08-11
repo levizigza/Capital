@@ -15,7 +15,9 @@ import {
   FORTUNE_ARCHIPELAGO_NAME,
   islandsForArchipelagoMap,
   islandsForSpineTravel,
+  SIDE_SHORE_TRAVEL_IDS,
 } from "../spineArchipelago";
+import { hasCompletedCoveChange } from "../chapterLoop";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
@@ -65,9 +67,17 @@ export function TravelMapView({
     [currentId, onStartVoyage],
   );
 
-  /** Strip = main course only; diorama shows spine + era side shores. */
+  /** Strip = main course; side row appears after Cove Change (fun discovery). */
   const stripIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
   const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
+  const sideShoresOpen = hasCompletedCoveChange(save);
+  const sideStrip = useMemo(() => {
+    if (!sideShoresOpen) return [];
+    const byId = new Map(islands.map((i) => [i.id, i]));
+    return SIDE_SHORE_TRAVEL_IDS.map((id) => byId.get(id)).filter(
+      (i): i is IslandDefinition => Boolean(i),
+    );
+  }, [islands, sideShoresOpen]);
 
   return (
     <GameHudLayout
@@ -151,6 +161,53 @@ export function TravelMapView({
               );
             })}
           </div>
+          {sideStrip.length > 0 ? (
+            <div
+              className="flex w-full gap-2 overflow-x-auto pb-1"
+              data-testid="archipelago-side-shore-strip"
+            >
+              {sideStrip.map((island) => {
+                const locked = isIslandLocked(island, save.inventory, save);
+                const here = island.id === currentId;
+                const theme = getIslandTheme(island.id, island.themeId);
+                const lockWhy = locked ? islandLockHint(island, save) : null;
+                return (
+                  <button
+                    key={island.id}
+                    type="button"
+                    data-testid={`side-shore-pin-${island.id}`}
+                    data-locked={locked ? "1" : "0"}
+                    title={lockWhy ?? `Side shore · ${island.name}`}
+                    disabled={locked || here}
+                    {...pointerSafeActivate(() => {
+                      if (!locked && !here) beginVoyage(island.id);
+                    })}
+                    className={`shrink-0 touch-manipulation rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold shadow-md ring-1 transition ${
+                      here
+                        ? "bg-amber-200 text-amber-950 ring-amber-400"
+                        : locked
+                          ? "cursor-not-allowed bg-slate-800/45 text-white/35 ring-white/10"
+                          : "bg-sky-100/95 text-slate-900 ring-sky-300/60 hover:bg-white"
+                    }`}
+                    style={{ borderLeft: `3px solid ${theme.accent}` }}
+                  >
+                    <span className="text-[9px] font-black uppercase tracking-wide opacity-70">
+                      Side
+                    </span>{" "}
+                    {island.name}
+                    {here ? " · here" : ""}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p
+              className="text-[10px] font-semibold text-white/60"
+              data-testid="side-shores-locked-hint"
+            >
+              Era side shores wake after Coincraft Change — outer ring on the map.
+            </p>
+          )}
           <InputPromptHint action="cancel" className="justify-center text-white/80">
             Tap a diorama or chip · Esc back to Harbor
           </InputPromptHint>

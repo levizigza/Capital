@@ -1,5 +1,6 @@
 /**
  * Slow-device Harbor — still a myth composition, never a settings dashboard.
+ * Civic mini-plan keeps fountain as court center (doors off the pier axis).
  */
 
 import {
@@ -16,6 +17,37 @@ type Props = {
   onEnterBank?: () => void;
 };
 
+/** Flat civic sketch — same planner law as 3D Harbor plaza. */
+function CivicPlazaSketch() {
+  return (
+    <div
+      className="relative mx-auto h-36 w-56 overflow-hidden rounded-2xl border-2 border-[#16283b]/25 bg-[#e7e5e4]/90 shadow-[3px_3px_0_rgba(22,40,59,0.2)]"
+      data-testid="harbor-civic-sketch"
+      aria-hidden
+    >
+      {/* Court stone */}
+      <div className="absolute inset-[12%] rounded-full bg-[#f5f5f4]" />
+      {/* Fountain center */}
+      <div className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#38bdf8] ring-4 ring-[#7dd3fc]/80" />
+      {/* Outfitter NNW — off pier axis */}
+      <div className="absolute left-[28%] top-[8%] h-6 w-9 rounded-md bg-[#f9a8d4]" title="Outfitter" />
+      {/* Arcade west */}
+      <div className="absolute left-[6%] top-[38%] h-8 w-6 rounded-md bg-[#a78bfa]" title="Arcade" />
+      {/* Ledger Bank east */}
+      <div className="absolute right-[6%] top-[42%] h-9 w-7 rounded-md bg-[#94a3b8]" title="Ledger Bank" />
+      {/* Plinth SE */}
+      <div className="absolute bottom-[18%] right-[22%] h-5 w-5 rounded-sm bg-[#fde68a]" title="Memory Plinth" />
+      {/* Piggy SW */}
+      <div className="absolute bottom-[22%] left-[28%] h-4 w-4 rounded-full bg-[#86efac]" title="Piggy" />
+      {/* Carpet south */}
+      <div className="absolute bottom-[4%] left-1/2 h-3 w-14 -translate-x-1/2 rounded-full bg-[#f4a629]" title="Money Carpet" />
+      <p className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase tracking-wide text-[#16283b]/55">
+        Court · doors on the rim
+      </p>
+    </div>
+  );
+}
+
 export function HarborMythFallback({
   mode,
   killSwitch,
@@ -27,7 +59,7 @@ export function HarborMythFallback({
 
   return (
     <div
-      className="relative flex h-full w-full flex-col items-center justify-center gap-5 overflow-hidden px-6 text-center"
+      className="relative flex h-full w-full flex-col items-center justify-center gap-4 overflow-hidden px-6 text-center"
       data-testid="harbor-myth-fallback"
       data-fallback-mode={mode}
       style={{
@@ -35,17 +67,8 @@ export function HarborMythFallback({
           "radial-gradient(ellipse 80% 60% at 50% 40%, #bae6fd 0%, #7dd3fc 45%, #38bdf8 100%)",
       }}
     >
-      {/* Soft island silhouette */}
       <div
         className="pointer-events-none absolute bottom-0 left-1/2 h-[28%] w-[120%] -translate-x-1/2 rounded-[100%] bg-[#86efac]/55"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-[18%] left-[18%] h-16 w-16 rounded-full bg-[#4ade80]/70"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute bottom-[20%] right-[22%] h-20 w-20 rounded-full bg-[#22c55e]/55"
         aria-hidden
       />
 
@@ -53,29 +76,19 @@ export function HarborMythFallback({
         Harbor Haven
       </p>
 
+      <CivicPlazaSketch />
+
       {mode === "myth_meet" ? (
         <>
-          <div className="relative" aria-hidden>
-            <div className="flex h-28 w-28 items-center justify-center rounded-[2rem] bg-[#86efac]">
-              <div className="h-14 w-16 rounded-full bg-[#4ade80]" />
-            </div>
-            <div className="absolute -right-2 -top-2 h-10 w-10 rounded-full bg-[#fde68a]" />
-          </div>
           <h2 className="relative max-w-sm text-2xl font-black text-[#16283b]">
             Piggy Penny is waving
           </h2>
           <p className="relative max-w-md text-sm font-medium text-[#16283b]/85">
-            Money is alive here. Walk up and talk — Coin Bag sticks with you.
+            Fountain court center — Piggy on the SW apron. Talk, then board the carpet south.
           </p>
         </>
       ) : mode === "myth_travel" ? (
         <>
-          <div
-            className="relative flex h-24 w-40 items-center justify-center rounded-2xl bg-[#f4a629]"
-            aria-hidden
-          >
-            <div className="h-3 w-28 rounded-full bg-[#16283b]/25" />
-          </div>
           <h2 className="relative max-w-sm text-2xl font-black text-[#16283b]">
             Board the Money Carpet
           </h2>

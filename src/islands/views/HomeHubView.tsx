@@ -31,6 +31,7 @@ import {
   MEMORY_PLINTH_CINEMA_EYE,
   MEMORY_PLINTH_LOOK_AT,
 } from "../harborIcon";
+import { HARBOR_PLAZA, plazaSlotById } from "../harborPlazaPlan";
 import { isHubIslandId } from "../worldMapLayout";
 import { isRoomUnlocked } from "../harborShop";
 import type { PartyItemId } from "../partyItems";
@@ -610,27 +611,35 @@ export function HomeHubView({
       if (stripPlaza) {
         return [harborMemoryPlinthHotspot({ scarCount: plaques.length })];
       }
+      const arcadeSlot = plazaSlotById("arcade")!;
+      const outfitterSlot = plazaSlotById("outfitter")!;
+      const carpetSlot = plazaSlotById("travel")!;
+      const noticeSlot = plazaSlotById("practice")!;
+      const bankSlot = plazaSlotById("ledger_bank");
       return [
-      // —— Plaza heroes (unique meshes) ——
+      // —— Plaza heroes (master plan — see docs/harbor-plaza-plan.md) ——
       {
         id: "arcade",
         label: "Arcade",
         icon: "🕹️",
-        position: [-7.2, 0, -4.2],
+        position: arcadeSlot.position,
+        yaw: arcadeSlot.yaw,
         kind: "arcade",
       },
       {
         id: "outfitter",
         label: "Outfitter",
         icon: "👗",
-        position: [0, 0, -8.8],
+        position: outfitterSlot.position,
+        yaw: outfitterSlot.yaw,
         kind: "outfitter",
       },
       {
         id: "travel",
         label: "Money Carpet",
         icon: "🪄",
-        position: [0, 0, 12.6],
+        position: carpetSlot.position,
+        yaw: carpetSlot.yaw,
         kind: "carpet_gate",
       },
       ...(onPlayHarborBoard && !isKilled("partyBoard")
@@ -639,7 +648,8 @@ export function HomeHubView({
               id: "practice",
               label: "Harbor Board",
               icon: "🎲",
-              position: [-5.0, 0, 5.2],
+              position: noticeSlot.position,
+              yaw: noticeSlot.yaw,
               kind: "notice_board" as const,
             } satisfies HarborHotspot,
           ]
@@ -648,30 +658,35 @@ export function HomeHubView({
               id: "ritual",
               label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
               icon: "☀️",
-              position: [-5.0, 0, 5.2],
+              position: noticeSlot.position,
+              yaw: noticeSlot.yaw,
               kind: "notice_board" as const,
             } satisfies HarborHotspot,
           ]),
       // One Harbor icon — always present (empty shelf → scar-lit after Take)
-      harborMemoryPlinthHotspot({ scarCount: plaques.length }),
+      {
+        ...harborMemoryPlinthHotspot({ scarCount: plaques.length }),
+        yaw: plazaSlotById("memory")?.yaw,
+      },
       // Hide vault during first Piggy meet — E must not steal Talk.
-      ...(ledgerBank && guidedStep?.id !== "meet_guide"
+      ...(ledgerBank && bankSlot && guidedStep?.id !== "meet_guide"
         ? [
             {
               id: "ledger_bank",
               label: ledgerBank.exteriorLabel,
               icon: ledgerBank.icon,
-              position: ledgerBank.shorePosition,
+              position: bankSlot.position,
+              yaw: bankSlot.yaw,
               kind: "money_structure" as const,
             } satisfies HarborHotspot,
           ]
         : []),
-      // —— Utility quays (shared plinths — not lonely posts in empty sand) ——
+      // —— Utility quays (west / east edges — never bank door apron) ——
       {
         id: "capsule",
         label: "Capsule Stall",
         icon: "📦",
-        position: [-9.4, 0, -2.0],
+        position: [-10.2, 0, -1.2],
         kind: "signpost",
         accent: "#a78bfa",
       },
@@ -681,7 +696,7 @@ export function HomeHubView({
               id: "gallery",
               label: "Studio Gallery",
               icon: "🖼️",
-              position: [-9.4, 0, 0.6],
+              position: [-10.2, 0, 1.2],
               kind: "signpost" as const,
               accent: "#f9a8d4",
             } satisfies HarborHotspot,
@@ -691,7 +706,7 @@ export function HomeHubView({
         id: "studio",
         label: "VibeCode",
         icon: "✨",
-        position: [-9.4, 0, 3.2],
+        position: [-10.2, 0, 3.6],
         kind: "signpost",
         accent: "#fde68a",
       },
@@ -699,7 +714,7 @@ export function HomeHubView({
         id: "settings",
         label: "Settings",
         icon: "⚙️",
-        position: [9.1, 0, 3.2],
+        position: [13.2, 0, 4.8],
         kind: "signpost",
         accent: "#94a3b8",
       },
@@ -709,7 +724,7 @@ export function HomeHubView({
               id: "family",
               label: "Family Room",
               icon: "🏠",
-              position: [9.1, 0, 1.4],
+              position: [13.2, 0, 3.2],
               kind: "signpost" as const,
               accent: "#86efac",
             } satisfies HarborHotspot,
@@ -722,7 +737,7 @@ export function HomeHubView({
               id: "ritual",
               label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
               icon: "☀️",
-              position: [-6.4, 0, 6.4],
+              position: [-6.8, 0, 6.8],
               kind: "signpost" as const,
               accent: "#fbbf24",
             } satisfies HarborHotspot,
@@ -734,7 +749,7 @@ export function HomeHubView({
               id: "studio_stele",
               label: "Studio Stele",
               icon: "🗿",
-              position: [9.1, 0, -0.6] as [number, number, number],
+              position: [13.2, 0, 1.0] as [number, number, number],
               kind: "signpost" as const,
               accent: "#c4b5fd",
             } satisfies HarborHotspot,
@@ -746,7 +761,7 @@ export function HomeHubView({
               id: "pavilion",
               label: "Freedom Pavilion",
               icon: "🏆",
-              position: [-9.0, 0, -6.8],
+              position: HARBOR_PLAZA.pavilion,
               kind: "signpost" as const,
               accent: "#fcd34d",
             } satisfies HarborHotspot,
@@ -758,8 +773,7 @@ export function HomeHubView({
               id: "market",
               label: "Pasaran Lane",
               icon: "🧺",
-              /** East of Ledger Bank — market lane, not bank door. */
-              position: [10.6, 0, -5.4],
+              position: HARBOR_PLAZA.market,
               kind: "signpost" as const,
               accent: "#fdba74",
             } satisfies HarborHotspot,
@@ -771,7 +785,7 @@ export function HomeHubView({
               id: "editor",
               label: "Editor",
               icon: "🛠️",
-              position: [9.1, 0, -2.2],
+              position: [13.2, 0, -0.8],
               kind: "signpost" as const,
               accent: "#64748b",
             } satisfies HarborHotspot,
