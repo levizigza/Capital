@@ -116,10 +116,10 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
     return "Need a key item";
   }
   if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
-    return "Finish Coincraft Change first";
+    return "Finish Cove Change first — Coin holds";
   }
   if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
-    return "Finish Coincraft Change — then era shores open";
+    return "Finish Cove Change — then era shores open";
   }
   if (island.id === BOSS_ISLAND_ID) {
     const prog = bossUnlockProgress(save);

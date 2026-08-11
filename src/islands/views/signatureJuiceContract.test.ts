@@ -34,4 +34,26 @@ describe("Signature juice contract", () => {
     expect(carpet).toMatch(/triggerJuice\("complete"/);
     expect(carpet).toMatch(/playCapitalSfx\("harbor_cheer"\)/);
   });
+
+  it("juices structure enter, Soft Beat, day-2, and structure exit", () => {
+    const arrive = readFileSync(join(__dirname, "WorldArriveOverlay.tsx"), "utf8");
+    const soft = readFileSync(join(__dirname, "SoftBeatOverlay.tsx"), "utf8");
+    const day2 = readFileSync(join(__dirname, "Day2EchoOverlay.tsx"), "utf8");
+    const interior = readFileSync(
+      join(__dirname, "../world3d/MoneyStructureInteriorView.tsx"),
+      "utf8",
+    );
+    expect(arrive).toMatch(/triggerJuice\("accept"/);
+    expect(soft).toMatch(/triggerJuice\("accept"/);
+    expect(day2).toMatch(/triggerJuice\("accept"/);
+    expect(interior).toMatch(/triggerJuice\("complete"/);
+    expect(interior).toMatch(/pointerSafeActivate/);
+  });
+
+  it("locks arrive blurbs to organ kid verbs — no stamps/weighs drift", () => {
+    const arrive = readFileSync(join(__dirname, "WorldArriveOverlay.tsx"), "utf8");
+    expect(arrive).toMatch(/coldOrganKidSentence/);
+    expect(arrive).not.toMatch(/Clock stamps/);
+    expect(arrive).not.toMatch(/Spiral weighs/);
+  });
 });

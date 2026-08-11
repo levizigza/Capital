@@ -6,8 +6,10 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
-import { coldOrganKidSentence, day2EchoBody, scarOrganName } from "../worldMemory";
+import { coldOrganKidSentence, day2EchoBody, organVerbChip, scarOrganName } from "../worldMemory";
 import { GameButton } from "@/game-ui";
+import { triggerJuice } from "@/juice";
+import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
 
 type Props = {
@@ -33,11 +35,16 @@ export function Day2EchoOverlay({
   useOverlayEscape(onDismiss);
 
   useEffect(() => {
+    triggerJuice("accept", { burst: true });
     playCapitalSfx("plinth_hum");
     playOrganSfx(organId);
   }, [organId]);
 
   const organWord = scarOrganName(organId);
+  const headline =
+    organId === "coin" || organId === "memory"
+      ? "Memory keeps — the Plinth did not forget"
+      : `${organVerbChip(organId)} — the Plinth did not forget`;
 
   return (
     <div
@@ -62,7 +69,7 @@ export function Day2EchoOverlay({
           Still here · {organWord}
         </p>
         <h2 className="cap-display mt-2 text-xl text-white drop-shadow sm:text-2xl">
-          Memory keeps — the Plinth did not forget
+          {headline}
         </h2>
         <p
           className="mt-2 text-sm font-semibold text-amber-100 drop-shadow"
@@ -73,14 +80,19 @@ export function Day2EchoOverlay({
         <p className="mt-2 text-sm text-white/85 drop-shadow" data-testid="day2-echo-retell">
           {day2EchoBody(scarLabel, organId)}
         </p>
-        <GameButton variant="primary" className="mt-4 w-full" onClick={onVisitPlinth} autoFocus>
+        <GameButton
+          variant="primary"
+          className="mt-4 w-full"
+          autoFocus
+          {...pointerSafeActivate(onVisitPlinth)}
+        >
           Visit the Plinth
         </GameButton>
         <GameButton
           variant="outline"
           className="mt-2 w-full bg-white/10"
           data-testid="day2-echo-leave"
-          onClick={onDismiss}
+          {...pointerSafeActivate(onDismiss)}
         >
           Leave — I hear them
         </GameButton>

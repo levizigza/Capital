@@ -40,4 +40,13 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
     expect(teach).toMatch(/playPlace\(\{\s*kind:\s*"opening"/);
     expect(teach).toMatch(/playOrganSfx/);
   });
+
+  it("uses Leave · Esc and prove-one gates — not SaaS Skip / collect-all", () => {
+    expect(teach).toMatch(/Leave · Esc/);
+    expect(teach).toMatch(/pointerSafeActivate/);
+    expect(teach).toMatch(/Prove one organ|Light one verb/);
+    expect(teach).not.toMatch(/Visit all four/);
+    expect(teach).not.toMatch(/Light all six/);
+    expect(teach).not.toMatch(/>\s*Skip\s*</);
+  });
 });

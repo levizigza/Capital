@@ -17,6 +17,8 @@ import {
   VoyagerWalkPracticeStage,
   WALK_MARKERS,
 } from "../world3d/VoyagerWalkPracticeStage";
+import { pointerSafeActivate } from "../pointerSafeClick";
+import { useInputAction } from "@/input";
 
 export type TeachStepId =
   | "fantasy"
@@ -158,8 +160,11 @@ export function AshoreComprehensionTutorial({
     stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
 
   const loop = LOOP_BEATS[loopBeat]!;
-  const organsComplete = ORGAN_ORDER.every((o) => organsSeen.includes(o));
-  const toolkitComplete = TOOLKIT.every((t) => toolkitLit.includes(t.id));
+  /** Prove one organ / verb — fantasy before collect-all chrome. */
+  const organsComplete = organsSeen.length >= 1;
+  const toolkitComplete = toolkitLit.length >= 1;
+  // Esc · Leave already wired below — keep input action as plaza courtesy alias.
+  useInputAction("cancel", onComplete);
 
   const chamberEyebrow = useMemo(() => {
     const map: Record<TeachStepId, string> = {
@@ -195,9 +200,9 @@ export function AshoreComprehensionTutorial({
           type="button"
           className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/25 hover:bg-white/10"
           data-testid="ashore-teach-skip"
-          onClick={onComplete}
+          {...pointerSafeActivate(onComplete)}
         >
-          Skip
+          Leave · Esc
         </button>
       </header>
 
@@ -240,7 +245,7 @@ export function AshoreComprehensionTutorial({
               type="button"
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
-              onClick={advance}
+              {...pointerSafeActivate(advance)}
             >
               Enter the walk chamber
             </button>
@@ -290,10 +295,10 @@ export function AshoreComprehensionTutorial({
                 type="button"
                 className="mt-4 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
                 data-testid="ashore-teach-talk"
-                onClick={() => {
+                {...pointerSafeActivate(() => {
                   playOrganSfx("memory");
                   setTalked(true);
-                }}
+                })}
               >
                 Talk to Piggy?
               </button>
@@ -330,11 +335,11 @@ export function AshoreComprehensionTutorial({
               type="button"
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
-              onClick={() => {
+              {...pointerSafeActivate(() => {
                 playOrganSfx(loop.organ);
                 if (loopBeat >= LOOP_BEATS.length - 1) advance();
                 else setLoopBeat((n) => n + 1);
-              }}
+              })}
             >
               {loopBeat >= LOOP_BEATS.length - 1 ? "Meet the organs" : "Next beat"}
             </button>
@@ -347,7 +352,7 @@ export function AshoreComprehensionTutorial({
               Fortune Archipelago
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/85">
-              Four living organs. Tap each painting — learn the place, the suit, what you must feel.
+              Four living organs. Prove one painting — the rest wait on the map.
             </p>
             <ul
               className="mt-5 grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2"
@@ -361,12 +366,12 @@ export function AshoreComprehensionTutorial({
                     <button
                       type="button"
                       data-testid={`ashore-organ-${id}`}
-                      onClick={() => {
+                      {...pointerSafeActivate(() => {
                         playOrganSfx(id);
                         setOrgansSeen((prev) =>
                           prev.includes(id) ? prev : [...prev, id],
                         );
-                      }}
+                      })}
                       className={`w-full rounded-xl px-4 py-3 text-left ring-1 transition ${
                         seen
                           ? "bg-white/15 ring-amber-200/50"
@@ -391,9 +396,9 @@ export function AshoreComprehensionTutorial({
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
               data-testid="ashore-teach-continue"
               disabled={!organsComplete}
-              onClick={advance}
+              {...pointerSafeActivate(advance)}
             >
-              {organsComplete ? "Your toolkit" : `Visit all four (${organsSeen.length}/4)`}
+              {organsComplete ? "Your toolkit" : "Prove one organ"}
             </button>
           </>
         ) : null}
@@ -404,7 +409,7 @@ export function AshoreComprehensionTutorial({
               What you can do
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Illuminate every verb — these are the moves of a Voyager.
+              Light one Voyager verb — the rest you’ll learn by doing.
             </p>
             <ul className="mt-5 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
               {TOOLKIT.map((t) => {
@@ -414,11 +419,11 @@ export function AshoreComprehensionTutorial({
                     <button
                       type="button"
                       data-testid={`ashore-tool-${t.id}`}
-                      onClick={() =>
+                      {...pointerSafeActivate(() =>
                         setToolkitLit((prev) =>
                           prev.includes(t.id) ? prev : [...prev, t.id],
-                        )
-                      }
+                        ),
+                      )}
                       className={`w-full rounded-xl px-3 py-3 text-left ring-1 ${
                         lit
                           ? "bg-amber-400/20 ring-amber-200/60"
@@ -437,9 +442,9 @@ export function AshoreComprehensionTutorial({
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
               data-testid="ashore-teach-continue"
               disabled={!toolkitComplete}
-              onClick={advance}
+              {...pointerSafeActivate(advance)}
             >
-              {toolkitComplete ? "Board the Money Carpet" : `Light all six (${toolkitLit.length}/6)`}
+              {toolkitComplete ? "Board the Money Carpet" : "Light one verb"}
             </button>
           </>
         ) : null}
@@ -457,7 +462,7 @@ export function AshoreComprehensionTutorial({
               type="button"
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
-              onClick={onComplete}
+              {...pointerSafeActivate(onComplete)}
             >
               Launch carpet · {voyager.name || "Voyager"}
             </button>
@@ -467,7 +472,7 @@ export function AshoreComprehensionTutorial({
 
       <footer className="relative z-[2] px-4 pb-4 text-center">
         <p className="text-[11px] uppercase tracking-wider text-white/45">
-          Chamber {index + 1} / {STEPS.length} · Esc skips
+          Chamber {index + 1} / {STEPS.length} · Esc · Leave
         </p>
         <div className="mx-auto mt-2 flex max-w-md justify-center gap-1.5">
           {STEPS.map((id, i) => (

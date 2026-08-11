@@ -30,6 +30,8 @@ import { JarInteriorArchitecture } from "./JarInteriorArchitecture";
 import { BankInteriorArchitecture } from "./BankInteriorArchitecture";
 import { TowerInteriorArchitecture } from "./TowerInteriorArchitecture";
 import { KeepInteriorArchitecture } from "./KeepInteriorArchitecture";
+import { triggerJuice } from "@/juice";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Close the vault" : "Return · Memory plaza";
@@ -383,25 +385,36 @@ export function MoneyStructureInteriorView({
     };
   }, [organ.id, structure.theme, structure.islandId]);
 
+  const leaveStructure = () => {
+    if (inputFrozen) return;
+    triggerJuice("complete");
+    onExit();
+  };
+  const openPart = (part: MoneyStructurePart) => {
+    if (inputFrozen) return;
+    triggerJuice("accept");
+    onEnterPart(part);
+  };
+
   useInputAction("cancel", () => {
     if (inputFrozen) return;
-    onExit();
+    leaveStructure();
   });
   useInputAction("confirm", () => {
     if (inputFrozen) return;
     if (nearId === "exit") {
-      onExit();
+      leaveStructure();
       return;
     }
-    if (nearPart) onEnterPart(nearPart);
+    if (nearPart) openPart(nearPart);
   });
   useInputAction("interact", () => {
     if (inputFrozen) return;
     if (nearId === "exit") {
-      onExit();
+      leaveStructure();
       return;
     }
-    if (nearPart) onEnterPart(nearPart);
+    if (nearPart) openPart(nearPart);
   });
 
   const shell = structureShell(structure.theme);
@@ -462,7 +475,13 @@ export function MoneyStructureInteriorView({
           </div>
         }
         topRight={
-          <GameButton variant="outline" size="sm" onClick={onExit} disabled={inputFrozen}>
+          <GameButton
+            variant="outline"
+            size="sm"
+            disabled={inputFrozen}
+            data-testid="money-structure-exit"
+            {...pointerSafeActivate(leaveStructure)}
+          >
             {structureExitLabel(structure.theme)}
           </GameButton>
         }
@@ -479,14 +498,18 @@ export function MoneyStructureInteriorView({
                 variant="primary"
                 className="mt-2"
                 data-testid="money-structure-enter-part"
-                onClick={() => onEnterPart(nearPart)}
+                {...pointerSafeActivate(() => openPart(nearPart))}
               >
                 Open · {nearPart.label}
               </GameButton>
             </div>
           ) : nearId === "exit" ? (
             <div className="flex justify-center">
-              <GameButton variant="primary" onClick={onExit}>
+              <GameButton
+                variant="primary"
+                data-testid="money-structure-return"
+                {...pointerSafeActivate(leaveStructure)}
+              >
                 {structureReturnLabel(structure.theme)}
               </GameButton>
             </div>

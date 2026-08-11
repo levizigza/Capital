@@ -178,6 +178,16 @@ If not, that surface is not iconic yet.
 - **Gameplay literacy:** signature loop beats · four organ paintings (mustFeel) · toolkit verbs · then carpet with your Voyager.
 - Soundtrack beds unchanged.
 
+## Iteration 22 (shipped) — Whole-game iconic thresholds
+
+See [whole-game-iconic-pass.md](./whole-game-iconic-pass.md).
+
+- Organ kid verbs locked on arrive / Keep / travel hints (holds · shelters · withstands · keeps)
+- Ashore teach: Leave · Esc, prove-one organs/toolkit, pointer-safe CTAs
+- Juice + pointer-safe on Soft Beat · day-2 · structure enter/exit · cast select
+- Shore HUD next-verb uses organ chip (not Main course n/m)
+- Settings reduced motion names Take / Plinth / Soft Beat
+
 ## Iteration 21 (shipped) — Plaza planner + playable myth + side-shore fun
 
 - **Harbor civic plan:** Outfitter off pier axis; Bank due-east; doors cleared of fountain (`harborPlazaPlan` + tests). Coin eye-paths curve around the basin.
