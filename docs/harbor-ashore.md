@@ -1,6 +1,6 @@
 # Harbor Ashore — opening tutorial
 
-**Purpose:** Teach Capital with *play* before the Money Carpet — see your Voyager move, learn the loop and organs, then land on a walkable Harbor.
+**Purpose:** Teach Capital with *play* before the Money Carpet — see your Voyager move, learn the loop and spine paintings (where games live), then land on a walkable Harbor.
 
 **Canon:** [ashore-teach-design.md](./ashore-teach-design.md) · [iconic-path.md](./iconic-path.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md)  
 **Code:** `AshoreComprehensionTutorial.tsx` · `VoyagerWalkPracticeStage.tsx` · `harborAshore.ts` · `App.tsx`
