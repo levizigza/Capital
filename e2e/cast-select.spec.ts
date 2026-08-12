@@ -1,11 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Street Fighter coin board → 3D customize → carpet.
+ * Street Fighter coin board → 3D customize → Ashore Teach.
  * Locks the dock/tab hit path that GUI agents sometimes miss.
  */
 test.describe("Street Fighter cast select", () => {
-  test("12 coins, customize tabs, and board carpet", async ({ page }) => {
+  test("12 coins, customize tabs, and continue to Ashore Teach", async ({ page }) => {
     await page.goto("/?replayIntro=1");
     const skip = page.getByRole("button", { name: /^Skip$/i });
     if (await skip.isVisible({ timeout: 5_000 }).catch(() => false)) {
