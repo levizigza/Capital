@@ -223,6 +223,7 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
     guards: [
       "src/islands/save.test.ts",
       "src/islands/world3d/harborLoadFailsafe.test.ts",
+      "src/islands/views/playableIslandsContract.test.ts",
       "e2e/harbor-3d-failsafe.spec.ts",
     ],
   },

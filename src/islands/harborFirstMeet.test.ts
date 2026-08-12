@@ -31,10 +31,10 @@ describe("harbor first meet (Wave 1)", () => {
     ).toBe("myth_meet");
   });
 
-  it("myth_meet only offers Talk — no carpet/bank detour", () => {
+  it("myth_meet leads with Talk but still offers Carpet (no soft-lock)", () => {
     expect(mythFallbackActions("myth_meet")).toEqual({
       talkPiggy: true,
-      carpet: false,
+      carpet: true,
       bank: false,
     });
   });

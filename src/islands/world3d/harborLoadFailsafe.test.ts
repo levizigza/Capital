@@ -61,4 +61,10 @@ describe("Harbor load failsafe contract", () => {
     const allowCanvas = probeOk;
     expect(allowCanvas).toBe(false);
   });
+
+  it("HomeHub suppresses HUD chrome while plaza is still loading", () => {
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/hideHudForHarborLoad/);
+    expect(hub).toMatch(/harbor-skip-3d|onPlazaReady/);
+  });
 });

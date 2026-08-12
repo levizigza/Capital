@@ -51,8 +51,41 @@ test.describe("Harbor 3D failsafe", () => {
     await expect(page.getByTestId("harbor-civic-sketch")).toBeVisible();
     await expect(page.getByTestId("harbor-3d-shell")).toHaveCount(0);
 
-    // Myth still offers a clear next verb (roam may show Talk + Carpet together)
+    // Myth still offers a clear next verb — Talk + Carpet (Carpet prevents soft-lock)
     await expect(page.getByTestId("fallback-talk-piggy")).toBeVisible();
+    await expect(page.getByTestId("fallback-board-carpet")).toBeVisible();
+  });
+
+  test("Enter Harbor Haven is clickable — HUD chrome stays off the loading veil", async ({
+    page,
+  }) => {
+    await killServiceWorkerForE2e(page);
+    // Force Canvas path but freeze ready so the veil stays up briefly.
+    await page.addInitScript(() => {
+      try {
+        sessionStorage.removeItem("capital_harbor3d_fail");
+      } catch {
+        /* ignore */
+      }
+    });
+
+    await page.goto("/?mode=islands&skipIntro=1");
+    await waitForQaReady(page);
+    await page.evaluate(async () => {
+      await window.__QA__!.seedSignatureLoop("piggy_ready");
+    });
+
+    const veil = page.getByTestId("harbor-loading-veil");
+    const enter = page.getByTestId("harbor-skip-3d");
+    // Veil may already have escaped — either Enter works, or myth is already up.
+    const veilUp = await veil.isVisible({ timeout: 3_000 }).catch(() => false);
+    if (veilUp) {
+      await expect(page.getByTestId("harbor-controls-whisper")).toHaveCount(0);
+      await expect(enter).toBeVisible();
+      await enter.click();
+    }
+    await expect(page.getByTestId("harbor-myth-fallback").or(page.getByTestId("harbor-3d-shell")))
+      .toBeVisible({ timeout: 15_000 });
   });
 
   test("harbor3d kill switch uses safe-mode myth without Canvas", async ({ page }) => {

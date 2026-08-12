@@ -844,6 +844,11 @@ export function HomeHubView({
     (spectacleOpen && spectaclePhase != null && spectaclePhase !== "hush");
   /** Hide chrome that steals clicks from Soft Beat / share lower-thirds. */
   const hideHudForCinema = spectacleOpen || feltShareOpen || echoSurpriseOpen || trailerOpen;
+  /**
+   * Loading veil lives in the HUD background (z-0). Footer/header are z-10 and
+   * were stealing taps from “Enter Harbor Haven” — keep chrome off until plazaReady.
+   */
+  const hideHudForHarborLoad = !plazaReady && !hideHudForCinema;
 
   const openOutfitter = () => {
     setDraft(voyager);
@@ -1201,7 +1206,7 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          hideHudForCinema ? null : stripPlaza ? (
+          hideHudForCinema || hideHudForHarborLoad ? null : stripPlaza ? (
             <div className="cap-play-hud-left">
               <p
                 className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90"
@@ -1253,7 +1258,11 @@ export function HomeHubView({
           )
         }
         topRight={
-          hideHudForCinema || quietHarbor || earlyCastle || firstMeet ? null : (
+          hideHudForCinema ||
+          hideHudForHarborLoad ||
+          quietHarbor ||
+          earlyCastle ||
+          firstMeet ? null : (
           <div className="flex items-center gap-1.5">
             {/* Learning profile lives in Settings — plaza stays myth, not SaaS rank chip */}
             {showLeaveChrome ? (
@@ -1272,7 +1281,7 @@ export function HomeHubView({
           )
         }
         bottom={
-          hideHudForCinema ? null : (
+          hideHudForCinema || hideHudForHarborLoad ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
             {firstMeet || stripPlaza ? (
               <p
@@ -1357,7 +1366,7 @@ export function HomeHubView({
         }
       >
         {/* Pass-through stage — harbor canvas must receive clicks; no stacked center banners */}
-        {hideHudForCinema ? null : (
+        {hideHudForCinema || hideHudForHarborLoad ? null : (
         <div data-hud-pass className="flex h-full min-h-0 flex-col">
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode &&
@@ -1384,6 +1393,7 @@ export function HomeHubView({
       </GameHudLayout>
       <TouchWalkPad
         enabled={
+          plazaReady &&
           !talkOpen &&
           !spectacleOpen &&
           !feltShareOpen &&

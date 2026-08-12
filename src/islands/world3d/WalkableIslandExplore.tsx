@@ -1091,11 +1091,11 @@ export function WalkableIslandExplore({
     if (ready) return;
     const hint = window.setTimeout(() => {
       setLoadHint("Still landing… finishing without waiting on 3D.");
-    }, 5_000);
-    // Never leave shore on an infinite loading veil
+    }, 1_200);
+    // Match Harbor gate — playable shore under ~2.5s, not a 9s dead veil.
     const failsafe = window.setTimeout(() => {
       if (!readyRef.current) setReady(true);
-    }, 9_000);
+    }, 2_400);
     return () => {
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
