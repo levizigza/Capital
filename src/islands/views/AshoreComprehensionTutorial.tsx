@@ -20,6 +20,14 @@ import {
 } from "../world3d/VoyagerWalkPracticeStage";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useInputAction } from "@/input";
+import {
+  LoopBeatShowcase,
+  ReadyCarpetShowcase,
+  SpinePaintingPortal,
+  ToolkitVerbShowcase,
+  type LoopBeatId,
+  type ToolkitVerbId,
+} from "./AshoreTeachShowcases";
 
 export type TeachStepId =
   | "fantasy"
@@ -40,31 +48,36 @@ const STEPS: TeachStepId[] = [
   "ready",
 ];
 
-/** Signature loop — place names first so kids know where the game lives. */
-const LOOP_BEATS = [
+/** Signature loop — each beat shows the in-game look, not only a caption. */
+const LOOP_BEATS: {
+  id: LoopBeatId;
+  title: string;
+  line: string;
+  organ: MoneyOrganId;
+}[] = [
   {
     id: "harbor",
     title: "Harbor Haven",
     line: "Your home plaza. Talk to Piggy when you choose. The Money Carpet waits at the south pier.",
-    organ: "memory" as MoneyOrganId,
+    organ: "memory",
   },
   {
     id: "carpet",
     title: "Money Carpet",
     line: "Board a painting from the Carpet Dock. First painting: Coincraft Cove — that is where the first game lives.",
-    organ: "coin" as MoneyOrganId,
+    organ: "coin",
   },
   {
     id: "take",
     title: "Cove Take",
     line: "On Cove you play, then choose jar or treat. You cannot put it back — Harbor will feel that Take.",
-    organ: "coin" as MoneyOrganId,
+    organ: "coin",
   },
   {
     id: "return",
     title: "Harbor remembers",
     line: "Carpet home. The Memory Plinth glows with your scar. Piggy names what changed. Then the next painting opens.",
-    organ: "memory" as MoneyOrganId,
+    organ: "memory",
   },
 ];
 
@@ -110,7 +123,7 @@ const SPINE_PAINTINGS: {
 ];
 
 /** Toolkit = verbs not already proved in Walk/Talk chambers (Hermans elegancy). */
-const TOOLKIT = [
+const TOOLKIT: { id: ToolkitVerbId; label: string; detail: string }[] = [
   {
     id: "enter",
     label: "Enter",
@@ -138,7 +151,9 @@ export function AshoreComprehensionTutorial({
   const [talked, setTalked] = useState(false);
   const [loopBeat, setLoopBeat] = useState(0);
   const [organsSeen, setOrgansSeen] = useState<MoneyOrganId[]>([]);
-  const [toolkitLit, setToolkitLit] = useState<string[]>([]);
+  const [focusedOrgan, setFocusedOrgan] = useState<MoneyOrganId | null>(null);
+  const [toolkitLit, setToolkitLit] = useState<ToolkitVerbId[]>([]);
+  const [focusedTool, setFocusedTool] = useState<ToolkitVerbId | null>(null);
   const reduced = prefersReducedMotion();
 
   useEffect(() => {
@@ -280,13 +295,22 @@ export function AshoreComprehensionTutorial({
               Money is alive here
             </h1>
             <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
+            <div
+              className="mt-3 flex justify-center gap-2"
+              data-testid="ashore-fantasy-paintings"
+              aria-hidden
+            >
+              {SPINE_PAINTINGS.map((p) => (
+                <SpinePaintingPortal key={p.organ} organ={p.organ} lit={p.organ === "coin"} />
+              ))}
+            </div>
             <p className="mt-2 max-w-md text-sm text-amber-100/80">
-              That Voyager on the pad is you. Next: walk them — then you’ll see the paintings
-              where the games live.
+              That Voyager on the pad is you. The four paintings above are where the games live —
+              next you’ll walk them, then open each look for real.
             </p>
             <button
               type="button"
-              className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
               {...pointerSafeActivate(advance)}
             >
@@ -359,11 +383,15 @@ export function AshoreComprehensionTutorial({
             <h1 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
               {loop.title}
             </h1>
-            <p className="mt-3 max-w-lg text-base text-white/85">{loop.line}</p>
-            <div className="mt-6 flex max-w-lg flex-wrap justify-center gap-2">
+            <p className="mt-2 max-w-lg text-sm text-white/85">{loop.line}</p>
+            <div className="mt-4 w-full">
+              <LoopBeatShowcase beatId={loop.id} />
+            </div>
+            <div className="mt-4 flex max-w-lg flex-wrap justify-center gap-2">
               {LOOP_BEATS.map((b, i) => (
-                <span
+                <button
                   key={b.id}
+                  type="button"
                   className={`rounded-full px-3 py-1 text-[11px] font-bold ${
                     i === loopBeat
                       ? "bg-amber-400 text-[#1c1917]"
@@ -371,14 +399,19 @@ export function AshoreComprehensionTutorial({
                         ? "bg-white/20 text-white"
                         : "bg-white/5 text-white/40"
                   }`}
+                  data-testid={`ashore-loop-beat-${b.id}`}
+                  {...pointerSafeActivate(() => {
+                    playOrganSfx(b.organ);
+                    setLoopBeat(i);
+                  })}
                 >
                   {b.title}
-                </span>
+                </button>
               ))}
             </div>
             <button
               type="button"
-              className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
               {...pointerSafeActivate(() => {
                 playOrganSfx(loop.organ);
@@ -399,17 +432,55 @@ export function AshoreComprehensionTutorial({
               Where the games live
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/85">
-              Four paintings on the Money Carpet. Each card shows the place and the real Take —
-              prove any painting to continue. Cove is first.
+              Tap a painting to see how it looks on the Carpet — place, landmark, and real Take.
+              Prove any painting to continue. Cove is first.
             </p>
+            {focusedOrgan ? (
+              <div
+                className="mt-4 flex w-full max-w-lg flex-col items-center gap-3 sm:flex-row sm:items-end sm:justify-center"
+                data-testid="ashore-painting-focus"
+                data-focus-organ={focusedOrgan}
+              >
+                <SpinePaintingPortal organ={focusedOrgan} lit large />
+                <div className="max-w-xs text-left">
+                  <p
+                    className="text-xl font-black"
+                    style={{ color: MONEY_ORGANS[focusedOrgan].accentHint }}
+                  >
+                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.place}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-white/80">
+                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.role}
+                  </p>
+                  <p className="mt-2 text-[12px] leading-snug text-white/75">
+                    Play here:{" "}
+                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.playWhere}
+                  </p>
+                  <p className="mt-1.5 text-[11px] italic text-amber-100/80">
+                    {coldOrganKidSentence(focusedOrgan)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div
+                className="mt-4 flex justify-center gap-3"
+                data-testid="ashore-painting-focus"
+                data-focus-organ="none"
+              >
+                {SPINE_PAINTINGS.map((p) => (
+                  <SpinePaintingPortal key={p.organ} organ={p.organ} />
+                ))}
+              </div>
+            )}
             <ul
-              className="mt-5 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2"
+              className="mt-4 grid w-full max-w-2xl grid-cols-2 gap-2 sm:grid-cols-4"
               data-testid="ashore-teach-organs"
               data-gallery="spine-paintings"
             >
               {SPINE_PAINTINGS.map((painting) => {
                 const organ = MONEY_ORGANS[painting.organ];
                 const seen = organsSeen.includes(painting.organ);
+                const focused = focusedOrgan === painting.organ;
                 return (
                   <li key={painting.organ}>
                     <button
@@ -418,55 +489,32 @@ export function AshoreComprehensionTutorial({
                       data-painting-place={painting.place}
                       {...pointerSafeActivate(() => {
                         playOrganSfx(painting.organ);
+                        setFocusedOrgan(painting.organ);
                         setOrgansSeen((prev) =>
                           prev.includes(painting.organ)
                             ? prev
                             : [...prev, painting.organ],
                         );
                       })}
-                      className={`w-full overflow-hidden rounded-xl text-left ring-1 transition ${
-                        seen
-                          ? "bg-white/15 ring-amber-200/50"
-                          : "bg-white/5 ring-white/15 hover:bg-white/10"
+                      className={`flex w-full flex-col items-center gap-2 overflow-hidden rounded-xl px-2 py-3 ring-1 transition ${
+                        focused
+                          ? "bg-white/20 ring-amber-200/70"
+                          : seen
+                            ? "bg-white/10 ring-amber-200/40"
+                            : "bg-white/5 ring-white/15 hover:bg-white/10"
                       }`}
                     >
-                      {/* Painting frame — place first, not abstract organ jargon */}
-                      <div
-                        className="relative px-4 pb-3 pt-3"
-                        style={{
-                          borderTop: `5px solid ${organ.accentHint}`,
-                          background: `linear-gradient(165deg, ${organ.accentHint}33 0%, transparent 55%)`,
-                        }}
+                      <SpinePaintingPortal organ={painting.organ} lit={seen || focused} />
+                      <span
+                        className="text-center text-[11px] font-black leading-tight"
+                        style={{ color: organ.accentHint }}
                       >
-                        <div className="flex items-baseline justify-between gap-2">
-                          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
-                            {painting.order === "Always"
-                              ? "Home"
-                              : `Painting · ${painting.order}`}
-                          </span>
-                          <span
-                            className="text-[10px] font-bold uppercase tracking-wide"
-                            style={{ color: organ.accentHint }}
-                          >
-                            {organVerbChip(painting.organ)}
-                          </span>
-                        </div>
-                        <span
-                          className="mt-1 block text-lg font-black tracking-tight"
-                          style={{ color: organ.accentHint }}
-                        >
-                          {painting.place}
-                        </span>
-                        <span className="mt-0.5 block text-xs font-semibold text-white/80">
-                          {painting.role}
-                        </span>
-                        <span className="mt-2 block text-[11px] leading-snug text-white/70">
-                          Play here: {painting.playWhere}
-                        </span>
-                        <span className="mt-1.5 block text-[11px] italic text-amber-100/75">
-                          {coldOrganKidSentence(painting.organ)}
-                        </span>
-                      </div>
+                        {painting.place}
+                      </span>
+                      <span className="text-[9px] font-bold uppercase tracking-wide text-white/50">
+                        {painting.order === "Always" ? "Home" : painting.order} ·{" "}
+                        {organVerbChip(painting.organ)}
+                      </span>
                     </button>
                   </li>
                 );
@@ -477,7 +525,7 @@ export function AshoreComprehensionTutorial({
             </p>
             <button
               type="button"
-              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
+              className="mt-4 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
               data-testid="ashore-teach-continue"
               disabled={!organsComplete}
               {...pointerSafeActivate(advance)}
@@ -493,26 +541,35 @@ export function AshoreComprehensionTutorial({
               What you can do
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Walk and Talk you already proved. Light one more verb — Takes live on the shore;
-              Soft Beats are quiet peeks inside the machines.
+              Walk and Talk you already proved. Light a verb to see how it looks — Takes on the
+              shore; Soft Beats are quiet peeks inside the machines.
             </p>
-            <ul className="mt-5 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
+            <div className="mt-4 w-full">
+              <ToolkitVerbShowcase verb={focusedTool} />
+            </div>
+            <ul className="mt-4 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
               {TOOLKIT.map((t) => {
                 const lit = toolkitLit.includes(t.id);
+                const focused = focusedTool === t.id;
                 return (
                   <li key={t.id}>
                     <button
                       type="button"
                       data-testid={`ashore-tool-${t.id}`}
-                      {...pointerSafeActivate(() =>
+                      {...pointerSafeActivate(() => {
+                        setFocusedTool(t.id);
                         setToolkitLit((prev) =>
                           prev.includes(t.id) ? prev : [...prev, t.id],
-                        ),
-                      )}
+                        );
+                        if (t.id === "enter" || t.id === "take") playOrganSfx("coin");
+                        else playOrganSfx("memory");
+                      })}
                       className={`w-full rounded-xl px-3 py-3 text-left ring-1 ${
-                        lit
-                          ? "bg-amber-400/20 ring-amber-200/60"
-                          : "bg-white/5 ring-white/15 hover:bg-white/10"
+                        focused
+                          ? "bg-amber-400/25 ring-amber-200/70"
+                          : lit
+                            ? "bg-amber-400/15 ring-amber-200/50"
+                            : "bg-white/5 ring-white/15 hover:bg-white/10"
                       }`}
                     >
                       <span className="text-sm font-black text-amber-100">{t.label}</span>
@@ -524,7 +581,7 @@ export function AshoreComprehensionTutorial({
             </ul>
             <button
               type="button"
-              className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
+              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
               data-testid="ashore-teach-continue"
               disabled={!toolkitComplete}
               {...pointerSafeActivate(advance)}
@@ -539,33 +596,42 @@ export function AshoreComprehensionTutorial({
             <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
               Board the Money Carpet
             </h1>
-            <p className="mt-3 max-w-lg text-base text-white/85">
-              You’ll land on Harbor Haven. Talk to Piggy at the fountain, then walk south to the
-              Carpet Dock. Board the{" "}
-              <span className="font-bold text-amber-100">Coincraft Cove</span> painting — that’s
-              where your first game waits.
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board
+              the lit <span className="font-bold text-amber-100">Coincraft Cove</span> painting —
+              your first game.
             </p>
+            <div className="mt-4 w-full">
+              <ReadyCarpetShowcase />
+            </div>
             <ul
-              className="mt-4 flex w-full max-w-lg flex-wrap justify-center gap-2"
+              className="mt-3 flex w-full max-w-lg flex-wrap justify-center gap-2"
               data-testid="ashore-teach-route"
               aria-label="Main painting route"
             >
               {SPINE_PAINTINGS.filter((p) => p.organ !== "memory").map((p) => (
-                <li
-                  key={p.organ}
-                  className="rounded-lg px-3 py-1.5 text-[11px] font-bold ring-1 ring-white/20"
-                  style={{
-                    color: MONEY_ORGANS[p.organ].accentHint,
-                    background: `${MONEY_ORGANS[p.organ].accentHint}22`,
-                  }}
-                >
-                  {p.order} · {p.place}
+                <li key={p.organ}>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 ring-1 ring-white/20"
+                    style={{
+                      color: MONEY_ORGANS[p.organ].accentHint,
+                      background: `${MONEY_ORGANS[p.organ].accentHint}22`,
+                    }}
+                    data-testid={`ashore-ready-route-${p.organ}`}
+                    {...pointerSafeActivate(() => playOrganSfx(p.organ))}
+                  >
+                    <SpinePaintingPortal organ={p.organ} lit={p.organ === "coin"} />
+                    <span className="text-[11px] font-bold">
+                      {p.order} · {p.place}
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>
             <button
               type="button"
-              className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
               data-testid="ashore-teach-continue"
               {...pointerSafeActivate(onComplete)}
             >

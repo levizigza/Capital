@@ -55,6 +55,23 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
     expect(teach).toMatch(/Prove one painting/);
   });
 
+  it("showcases in-game looks for loop, paintings, toolkit, and carpet", () => {
+    const show = readFileSync(join(__dirname, "AshoreTeachShowcases.tsx"), "utf8");
+    expect(teach).toMatch(/AshoreTeachShowcases/);
+    expect(teach).toMatch(/LoopBeatShowcase/);
+    expect(teach).toMatch(/SpinePaintingPortal/);
+    expect(teach).toMatch(/ToolkitVerbShowcase/);
+    expect(teach).toMatch(/ReadyCarpetShowcase/);
+    expect(teach).toMatch(/ashore-fantasy-paintings/);
+    expect(show).toMatch(/ashore-painting-portal/);
+    expect(show).toMatch(/ashore-loop-showcase/);
+    expect(show).toMatch(/ashore-toolkit-showcase/);
+    expect(show).toMatch(/ashore-ready-showcase/);
+    expect(show).toMatch(/drawMemoryPlinthSilhouette/);
+    expect(show).toMatch(/data-painting-hero/);
+    expect(show).toMatch(/Jar before treat/);
+  });
+
   it("keeps opening music bed and organ stingers", () => {
     expect(teach).toMatch(/playPlace\(\{\s*kind:\s*"opening"/);
     expect(teach).toMatch(/playOrganSfx/);
