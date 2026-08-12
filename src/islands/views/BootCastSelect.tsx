@@ -101,8 +101,8 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
           {stage === "select"
-            ? "Meet your Voyager. Click a coin face to see them in 3D — then dress them, or board the carpet now."
-            : "Dress your Voyager on the mirror — then board the Money Carpet to Harbor Haven."}
+            ? "Meet your Voyager. Click a coin face to see them in 3D — then dress them, or continue to Ashore Teach."
+            : "Dress your Voyager on the mirror — then continue to Ashore Teach before the Money Carpet."}
         </p>
       </header>
 
@@ -165,7 +165,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                 )}
                 data-testid="boot-board-carpet-now"
               >
-                {busy ? "Boarding…" : "Board Money Carpet now →"}
+                {busy ? "Continuing…" : "Continue to Ashore Teach →"}
               </button>
             </div>
           ) : (
@@ -176,7 +176,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               hideCompanion
               preview="none"
               chrome="dark"
-              saveLabel={busy ? "Boarding…" : "Board the Money Carpet →"}
+              saveLabel={busy ? "Continuing…" : "Continue to Ashore Teach →"}
               cancelLabel="← Back to coin faces"
               saveTestId="boot-board-carpet"
               cancelTestId="boot-cancel-look"

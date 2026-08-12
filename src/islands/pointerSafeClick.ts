@@ -21,6 +21,7 @@ export function pointerSafeActivate(
 ) {
   return {
     onPointerUp: (e: ActivateEvent) => {
+      // Some hosts omit `button` on synthetic pointerup — treat as primary.
       if ((e.button ?? 0) !== 0) return;
       e.preventDefault();
       if (opts?.stopPropagation) e.stopPropagation();

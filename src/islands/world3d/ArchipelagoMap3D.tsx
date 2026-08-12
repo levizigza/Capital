@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -17,6 +17,7 @@ import { DioramaIslandMesh } from "./DioramaIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { moneyStructureForIsland } from "../moneyStructures";
+import { HARBOR_3D_FAIL_KEY, HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
 
 type Props = {
   islands: Parameters<typeof buildArchipelagoLayout>[0];
@@ -208,46 +209,81 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [skipCanvas, setSkipCanvas] = useState(() => {
+    try {
+      return sessionStorage.getItem(HARBOR_3D_FAIL_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+  const readyRef = useRef(ready);
+  readyRef.current = ready;
+  useEffect(() => {
+    if (skipCanvas) return;
+    const t = window.setTimeout(() => {
+      if (!readyRef.current) setSkipCanvas(true);
+    }, HARBOR_HARD_FAILSAFE_MS);
+    return () => window.clearTimeout(t);
+  }, [skipCanvas]);
+
+  const pick = (id: string) => {
+    const node = islands.find((i) => i.id === id);
+    if (node && isIslandLocked(node, save.inventory, save)) return;
+    // Current island is a valid pick — TravelMapView returns to plaza.
+    if (id !== currentId) setHint(id);
+    onSelect(id);
+  };
+
   return (
     <div className="relative h-full w-full overflow-hidden" data-testid="archipelago-map-3d">
-      {!ready ? (
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c4a6e] text-sm font-bold text-white/70">
-          Loading 3D archipelago map…
+      {skipCanvas ? (
+        <div
+          className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-2 bg-[#0c4a6e] px-4 text-center"
+          data-testid="archipelago-map-flat"
+        >
+          <p className="text-sm font-bold text-white/85">Fortune Archipelago</p>
+          <p className="max-w-sm text-xs font-medium text-white/65">
+            3D map is resting — use the island chips below to board the Money Carpet.
+          </p>
         </div>
-      ) : null}
-      <Canvas
-        shadows
-        dpr={reduced ? [1, 1] : [1, 1.25]}
-        camera={{ position: [0, 16.5, 18.5], fov: 42, near: 0.1, far: 200 }}
-        className="absolute inset-0 z-[2]"
-        gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-        onCreated={({ gl }) => {
-          gl.setClearColor("#0c4a6e", 1);
-          setReady(true);
-        }}
-      >
-        <Suspense fallback={<MapFallbackPlate />}>
-          <MapScene
-            islands={islands}
-            save={save}
-            currentId={currentId}
-            onSelect={(id) => {
-              if (id === currentId) return;
-              const node = islands.find((i) => i.id === id);
-              if (node && isIslandLocked(node, save.inventory, save)) return;
-              setHint(id);
-              onSelect(id);
+      ) : (
+        <>
+          {!ready ? (
+            <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c4a6e] text-sm font-bold text-white/70">
+              Loading 3D archipelago map…
+            </div>
+          ) : null}
+          <Canvas
+            shadows
+            dpr={reduced ? [1, 1] : [1, 1.25]}
+            camera={{ position: [0, 16.5, 18.5], fov: 42, near: 0.1, far: 200 }}
+            className="absolute inset-0 z-[2]"
+            gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+            onCreated={({ gl }) => {
+              gl.setClearColor("#0c4a6e", 1);
+              setReady(true);
             }}
-          />
-        </Suspense>
-      </Canvas>
+          >
+            <Suspense fallback={<MapFallbackPlate />}>
+              <MapScene
+                islands={islands}
+                save={save}
+                currentId={currentId}
+                onSelect={pick}
+              />
+            </Suspense>
+          </Canvas>
+        </>
+      )}
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/35 to-transparent px-4 pb-8 pt-2 text-center">
-        <p className="text-[11px] font-semibold text-white/80">Tap an island to fly</p>
+        <p className="text-[11px] font-semibold text-white/80">
+          {skipCanvas ? "Tap an island chip below" : "Tap an island to fly"}
+        </p>
       </div>
 
       {hint ? (

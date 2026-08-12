@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { ASHORE_SPINE_PAINTING_PLACES } from "./AshoreComprehensionTutorial";
 
 describe("Ashore comprehension tutorial (iconic chambers)", () => {
   const app = readFileSync(join(__dirname, "../../App.tsx"), "utf8");
@@ -36,6 +37,24 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
     expect(pad).toMatch(/Piggy/);
   });
 
+  it("shows spine paintings with place names and where to play", () => {
+    expect(ASHORE_SPINE_PAINTING_PLACES).toEqual([
+      "Harbor Haven",
+      "Coincraft Cove",
+      "Paycheck Peninsula",
+      "Credit Kingdom",
+    ]);
+    expect(teach).toMatch(/Where the games live/);
+    expect(teach).toMatch(/spine-paintings/);
+    expect(teach).toMatch(/Play here:/);
+    expect(teach).toMatch(/Coincraft Cove/);
+    expect(teach).toMatch(/Payroll Tower/);
+    expect(teach).toMatch(/Interest Keep/);
+    expect(teach).toMatch(/coldOrganKidSentence/);
+    expect(teach).toMatch(/ashore-teach-route/);
+    expect(teach).toMatch(/Prove one painting/);
+  });
+
   it("keeps opening music bed and organ stingers", () => {
     expect(teach).toMatch(/playPlace\(\{\s*kind:\s*"opening"/);
     expect(teach).toMatch(/playOrganSfx/);
@@ -44,7 +63,7 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
   it("uses Leave · Esc and prove-one gates — not SaaS Skip / collect-all", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
-    expect(teach).toMatch(/Prove one organ|Light one verb/);
+    expect(teach).toMatch(/Prove one painting|Light one verb/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);

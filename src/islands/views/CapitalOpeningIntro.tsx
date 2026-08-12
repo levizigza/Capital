@@ -9,6 +9,7 @@ import {
 } from "framer-motion";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playOpeningFoley } from "../audio/openingAudio";
+import { pointerSafeActivate } from "../pointerSafeClick";
 
 type Props = {
   onComplete: () => void;
@@ -479,10 +480,10 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 <button
                   type="button"
                   className="cap-enter-boat"
-                  onClick={() => {
+                  {...pointerSafeActivate(() => {
                     ensureOpeningAudio();
                     enter();
-                  }}
+                  })}
                   autoFocus
                   data-testid="opening-choose-voyager"
                 >
@@ -506,11 +507,12 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
           <button
             type="button"
             className="cap-opening-caption__skip"
-            onClick={() => {
+            data-testid="opening-skip-mural"
+            {...pointerSafeActivate(() => {
               ensureOpeningAudio();
               setStage("reveal");
               playOpeningFoley("title_reveal");
-            }}
+            })}
           >
             Skip
           </button>

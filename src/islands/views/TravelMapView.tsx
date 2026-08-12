@@ -59,12 +59,16 @@ export function TravelMapView({
   const nextBoat = nextBoatTier(userProfile.totalCoins);
   const currentId = save.currentIslandId ?? HUB_ISLAND_ID;
 
+  /** Current pin = go home (Harbor). Never a dead disabled click. */
   const beginVoyage = useCallback(
     (islandId: string) => {
-      if (islandId === currentId) return;
+      if (islandId === currentId) {
+        onBack();
+        return;
+      }
       onStartVoyage(islandId);
     },
-    [currentId, onStartVoyage],
+    [currentId, onBack, onStartVoyage],
   );
 
   /** Strip = main course; side row appears after Cove Change (fun discovery). */
@@ -122,19 +126,20 @@ export function TravelMapView({
                   type="button"
                   data-testid={`island-pin-${island.id}`}
                   data-locked={locked ? "1" : "0"}
+                  data-here={here ? "1" : "0"}
                   title={
                     lockWhy ??
                     (here
-                      ? "You are here · Harbor"
+                      ? "You are here · return to plaza"
                       : `Board carpet · ${island.name}`)
                   }
-                  disabled={locked || here}
+                  disabled={locked}
                   {...pointerSafeActivate(() => {
-                    if (!locked && !here) beginVoyage(island.id);
+                    if (!locked) beginVoyage(island.id);
                   })}
                   className={`shrink-0 touch-manipulation rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
                     here
-                      ? "bg-amber-200 text-amber-950 ring-amber-400"
+                      ? "bg-amber-200 text-amber-950 ring-amber-400 hover:bg-amber-100"
                       : locked
                         ? "cursor-not-allowed bg-slate-800/55 text-white/40 ring-white/10 opacity-70"
                         : "bg-white/90 text-slate-900 ring-white/40 hover:bg-white"
@@ -177,14 +182,20 @@ export function TravelMapView({
                     type="button"
                     data-testid={`side-shore-pin-${island.id}`}
                     data-locked={locked ? "1" : "0"}
-                    title={lockWhy ?? `Side shore · ${island.name}`}
-                    disabled={locked || here}
+                    data-here={here ? "1" : "0"}
+                    title={
+                      lockWhy ??
+                      (here
+                        ? "You are here · return to shore"
+                        : `Side shore · ${island.name}`)
+                    }
+                    disabled={locked}
                     {...pointerSafeActivate(() => {
-                      if (!locked && !here) beginVoyage(island.id);
+                      if (!locked) beginVoyage(island.id);
                     })}
                     className={`shrink-0 touch-manipulation rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold shadow-md ring-1 transition ${
                       here
-                        ? "bg-amber-200 text-amber-950 ring-amber-400"
+                        ? "bg-amber-200 text-amber-950 ring-amber-400 hover:bg-amber-100"
                         : locked
                           ? "cursor-not-allowed bg-slate-800/45 text-white/35 ring-white/10"
                           : "bg-sky-100/95 text-slate-900 ring-sky-300/60 hover:bg-white"

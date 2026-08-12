@@ -75,7 +75,9 @@ export function mythFallbackActions(mode: HarborFallbackMode): {
   carpet: boolean;
   bank: boolean;
 } {
-  if (mode === "myth_meet") return { talkPiggy: true, carpet: false, bank: false };
+  // myth_meet still leads with Talk, but always offers Carpet so a broken Talk
+  // Battle / pointer host cannot soft-lock the whole Archipelago.
+  if (mode === "myth_meet") return { talkPiggy: true, carpet: true, bank: false };
   if (mode === "myth_travel") return { talkPiggy: false, carpet: true, bank: false };
   return { talkPiggy: true, carpet: true, bank: true };
 }

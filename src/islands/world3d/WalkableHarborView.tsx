@@ -978,6 +978,22 @@ export function WalkableHarborView({
     let mountTimer: number | undefined;
     let canvasWatch: number | undefined;
 
+    /** Worker / importScripts failures on Pages — bail to myth instead of a dead veil. */
+    const onWindowError = (ev: ErrorEvent) => {
+      const msg = String(ev.message || ev.error || "");
+      if (/importScripts|Worker|rehydrate|OffscreenCanvas/i.test(msg)) {
+        escapeToMyth("sticky");
+      }
+    };
+    const onRejection = (ev: PromiseRejectionEvent) => {
+      const msg = String(ev.reason?.message || ev.reason || "");
+      if (/importScripts|Worker|rehydrate|OffscreenCanvas/i.test(msg)) {
+        escapeToMyth("sticky");
+      }
+    };
+    window.addEventListener("error", onWindowError);
+    window.addEventListener("unhandledrejection", onRejection);
+
     const probeWebGL = (): boolean => {
       try {
         const c = document.createElement("canvas");
@@ -1035,6 +1051,8 @@ export function WalkableHarborView({
     }, HARBOR_HARD_FAILSAFE_MS);
     return () => {
       cancelled = true;
+      window.removeEventListener("error", onWindowError);
+      window.removeEventListener("unhandledrejection", onRejection);
       if (idleId !== undefined) {
         const cic = (
           window as Window & { cancelIdleCallback?: (id: number) => void }
