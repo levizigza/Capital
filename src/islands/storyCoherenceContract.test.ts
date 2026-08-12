@@ -53,7 +53,7 @@ describe("story coherence contract", () => {
 
   it("Paycheck story-circle docs drop Dotgraph Atoll", () => {
     const doc = readFileSync(
-      join(__dirname, "../docs/islands/paycheck-peninsula/story-circle.md"),
+      join(__dirname, "../../docs/islands/paycheck-peninsula/story-circle.md"),
       "utf8",
     );
     expect(doc).not.toMatch(/Dotgraph/);

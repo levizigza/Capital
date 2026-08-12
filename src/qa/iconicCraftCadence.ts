@@ -210,7 +210,10 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
   {
     pillar: 12,
     name: "Story",
-    guards: ["src/islands/storyColdRetell.test.ts"],
+    guards: [
+      "src/islands/storyColdRetell.test.ts",
+      "src/islands/storyCoherenceContract.test.ts",
+    ],
   },
   {
     pillar: 13,
