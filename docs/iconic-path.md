@@ -72,12 +72,14 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
 **After the loop — six questions (write answers in the PR / board):**
 
-1. Did the player misunderstand what to do?  
+1. Did the player misunderstand what to do? *(Presentation — did the puzzle explain itself?)*  
 2. Did anything feel unfair?  
-3. Did anything feel repetitive without a new beat?  
+3. Did anything feel repetitive without a new beat? *(Aspiration)*  
 4. Did the game ignore a clear ability the player already had?  
-5. Did the player get lost (place or goal)?  
+5. Did the player get lost (place or goal)? *(Presentation — were all pieces shown?)*  
 6. Did the moment feel fun, or only functional?
+
+Craft lens: [puzzle-explorable-craft.md](./puzzle-explorable-craft.md) (Hermans — Presentation · Elegancy · Aspiration).
 
 **Harbor Ashore (redesign):** see [harbor-ashore.md](./harbor-ashore.md) — Talk → Carpet → Cove; Daily Ritual only after Cove Change. Early chrome hides Leave / CASH / stall grid until Talk is done.
 

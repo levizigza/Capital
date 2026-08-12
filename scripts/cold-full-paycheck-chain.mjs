@@ -189,7 +189,7 @@ async function main() {
     await page.waitForTimeout(280);
     const protect = page
       .locator('[data-testid^="talk-choice-"]')
-      .filter({ hasText: /Protect|fountain/i })
+      .filter({ hasText: /Umbrella before glitter/i })
       .first();
     await protect.waitFor({ state: "visible", timeout: 8_000 });
     await protect.evaluate((el) => el.click());

@@ -90,34 +90,33 @@ const SPINE_PAINTINGS: {
     organ: "coin",
     place: "Coincraft Cove",
     role: "First painting · first game",
-    playWhere: "Shore games → Coin Jar — jar or treat Take",
+    playWhere: "Keeper Kira at the Savings Lighthouse — jar before treat, or treat before jar",
     order: "1st",
   },
   {
     organ: "clock",
     place: "Paycheck Peninsula",
     role: "Second painting",
-    playWhere: "Payroll Tower — umbrella loft vs glitter Take",
+    playWhere: "Vendor Vee on Main Street — umbrella before glitter, or glitter ate the umbrella",
     order: "2nd",
   },
   {
     organ: "spiral",
     place: "Credit Kingdom",
     role: "Third painting",
-    playWhere: "Interest Keep — wait beats haste Take",
+    playWhere: "Rex in Debt Canyon — waited the spiral, or haste fed the spiral",
     order: "3rd",
   },
 ];
 
+/** Toolkit = verbs not already proved in Walk/Talk chambers (Hermans elegancy). */
 const TOOLKIT = [
-  { id: "walk", label: "Walk", detail: "WASD on Harbor plaza and island shores" },
-  { id: "talk", label: "Talk", detail: "E near Piggy or friends — only when you choose" },
   {
     id: "enter",
     label: "Enter",
-    detail: "Coin Jar · Payroll Tower · Interest Keep · Ledger Bank",
+    detail: "Coin Jar · Payroll Tower · Interest Keep · Ledger Bank (Soft Beat peeks vs arcade pads)",
   },
-  { id: "take", label: "Take", detail: "Irreversible choice on a painting shore" },
+  { id: "take", label: "Take", detail: "Irreversible fork on the painting shore — not inside the Soft Beat" },
   { id: "return", label: "Return", detail: "Carpet home — Harbor’s Plinth keeps the scar" },
   { id: "share", label: "Share", detail: "Freeze the Plinth — your social object" },
 ];
@@ -400,8 +399,8 @@ export function AshoreComprehensionTutorial({
               Where the games live
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/85">
-              Four paintings on the Money Carpet. Tap one to hear its organ — prove any painting to
-              continue. Cove is where you play first.
+              Four paintings on the Money Carpet. Each card shows the place and the real Take —
+              prove any painting to continue. Cove is first.
             </p>
             <ul
               className="mt-5 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2"
@@ -494,8 +493,8 @@ export function AshoreComprehensionTutorial({
               What you can do
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Light one Voyager verb. Games live inside painting shores and money structures —
-              Jar, Tower, Keep.
+              Walk and Talk you already proved. Light one more verb — Takes live on the shore;
+              Soft Beats are quiet peeks inside the machines.
             </p>
             <ul className="mt-5 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
               {TOOLKIT.map((t) => {

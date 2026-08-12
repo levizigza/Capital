@@ -71,6 +71,9 @@ describe("Pillar 12 story cold retell", () => {
     expect(soft).toMatch(/Climb the wall/);
     expect(soft).toMatch(/Step to the teller/);
     expect(soft).not.toMatch(/After the Coin Take/);
+    // Soft Beat aspiration — structure peek, not Harbor retell / re-Take
+    expect(soft).not.toMatch(/Harbor felt that/);
+    expect(soft).toMatch(/Not a second Take/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(day2).toMatch(/day2-echo-kid-sentence/);
     expect(day2).toMatch(/Memory keeps — the Plinth did not forget/);
