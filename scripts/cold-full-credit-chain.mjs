@@ -235,7 +235,7 @@ async function main() {
     await page.waitForTimeout(280);
     const wait = page
       .locator('[data-testid^="talk-choice-"]')
-      .filter({ hasText: /Wait and rebuild|no rush/i })
+      .filter({ hasText: /Waited the spiral/i })
       .first();
     await wait.waitFor({ state: "visible", timeout: 8_000 });
     await wait.evaluate((el) => el.click());

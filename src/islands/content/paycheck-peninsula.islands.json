@@ -248,18 +248,18 @@
             {
               "id": "vv1",
               "speaker": "Vendor Vee",
-              "text": "The fountain broke — and my stall has a glitter sale TODAY. This is the Take: protect your rainy-day coins, or spend the stash on wants and hope nothing else breaks?",
+              "text": "The fountain broke — and my stall has a glitter sale TODAY. This is the Take: umbrella before glitter, or glitter ate the umbrella?",
               "choices": [
                 {
                   "id": "vv_protect",
-                  "text": "Protect the fund — fountain first.",
+                  "text": "Umbrella before glitter",
                   "nextNodeId": "vv_protect_end",
                   "effects": [
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
                       "choiceId": "protect",
-                      "label": "Protected rainy-day over a glitter sale"
+                      "label": "Umbrella before glitter"
                     },
                     {
                       "type": "addScar",
@@ -274,14 +274,14 @@
                 },
                 {
                   "id": "vv_spend",
-                  "text": "Spend the stash — I'll rebuild later.",
+                  "text": "Glitter ate the umbrella",
                   "nextNodeId": "vv_spend_end",
                   "effects": [
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
                       "choiceId": "spend",
-                      "label": "Spent the emergency stash on wants"
+                      "label": "Glitter ate the umbrella"
                     },
                     {
                       "type": "addScar",

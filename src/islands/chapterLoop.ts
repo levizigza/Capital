@@ -205,13 +205,13 @@ export function buildPaycheckChangeReplayTimeline(opts: {
         action: {
           eventTitle: "Vendor Vee's fountain vs glitter",
           chosenLabel: protectedFund
-            ? "Protected rainy-day — fountain first"
-            : "Spent the stash on the glitter sale",
+            ? "Umbrella before glitter"
+            : "Glitter ate the umbrella",
           chosenIndex: protectedFund ? 0 : 1,
         },
         alternatives: protectedFund
-          ? ["Spend the emergency stash on wants"]
-          : ["Protect the fund — fountain first"],
+          ? ["Glitter ate the umbrella"]
+          : ["Umbrella before glitter"],
         stateDiff: protectedFund ? "Umbrella plaque" : "Glitter plaza mark",
         explanation: protectedFund
           ? "Surprises don't ask permission. Keeping an umbrella is the Change beat."

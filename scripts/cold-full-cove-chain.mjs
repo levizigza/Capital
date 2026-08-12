@@ -333,7 +333,7 @@ async function main() {
     await page.waitForTimeout(300);
     const jar = page
       .locator('[data-testid^="talk-choice-"]')
-      .filter({ hasText: /Jar first/i })
+      .filter({ hasText: /Jar before treat/i })
       .first();
     await jar.waitFor({ state: "visible", timeout: 8_000 });
     await jar.evaluate((el) => el.click());

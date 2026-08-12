@@ -17,32 +17,33 @@ import { useOverlayEscape } from "./useOverlayEscape";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
+/** Soft Beat = structure-depth aspiration (Hermans): quiet peek, not a re-Take or Harbor retell. */
 const BEATS: Record<
   SoftBeatKind,
   { title: string; line: string; hushLine: string; accent: string }
 > = {
   lookout: {
     title: "Lid Lookout",
-    line: "Cove looks tiny — the Coin holds. Save a little; the jar still waits.",
-    hushLine: "Quiet — Coin holds. Even the lid listens. Harbor felt that.",
+    line: "From the lid the jar’s weight settles — Coin holds what Cove chose. Look — then leave.",
+    hushLine: "Quiet under the lid — the jar remembers. Not a second Take.",
     accent: "#fbbf24",
   },
   umbrella: {
     title: "Umbrella Loft",
-    line: "Rainy-day loft — the Clock shelters. Keep a little dry for later.",
-    hushLine: "Quiet — Clock shelters. Fly home — Harbor felt that.",
+    line: "From the loft Main Street looks dry or thin — Clock shelters what Paycheck chose. Look — then leave.",
+    hushLine: "Quiet in the loft — the Clock remembers. Not a second Take.",
     accent: "#38bdf8",
   },
   battlement: {
     title: "Score Battlement",
-    line: "The Spiral withstands — on-time history beats haste.",
-    hushLine: "Quiet — Spiral withstands. Interest leaves footprints on the Plinth.",
+    line: "From the wall the coil cools or tightens — Spiral withstands what Credit chose. Look — then leave.",
+    hushLine: "Quiet on the wall — the Spiral remembers. Not a second Take.",
     accent: "#a78bfa",
   },
   ledger: {
     title: "Teller Window",
-    line: "Memory keeps — the ledger remembers every jar and stamp.",
-    hushLine: "Quiet — Memory keeps your plaque. Money is alive here.",
+    line: "Under glass every jar and stamp hums — Memory keeps. Look — then leave.",
+    hushLine: "Quiet at the marble — Memory keeps your plaque. Look — then leave.",
     accent: "#f59e0b",
   },
 };

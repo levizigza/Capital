@@ -212,7 +212,7 @@
             {
               "id": "aa2",
               "speaker": "Artisan Alma",
-              "text": "Keep the brushes. Glitter can wait. Then walk to the lighthouse — Kira's Take sticks forever: jar first, or treat first. That's Coin Hold. Paycheck Coast teaches the three payday buckets later.",
+              "text": "Keep the brushes. Glitter can wait. Then walk to the lighthouse — Kira's Take sticks forever: jar before treat, or treat before jar. That's Coin Hold.",
               "end": true
             },
             {
@@ -230,11 +230,11 @@
             {
               "id": "kk1",
               "speaker": "Keeper Kira",
-              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This is a Take — it sticks forever. Jar first, or treat yourself at Shelly's stall first?",
+              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This is a Take — it sticks forever. Jar before treat, or treat before jar?",
               "choices": [
                 {
                   "id": "kk1_a",
-                  "text": "Jar first — a Take that sticks.",
+                  "text": "Jar before treat",
                   "nextNodeId": "kk2",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -242,7 +242,7 @@
                       "type": "setIrreversible",
                       "key": "cove_save_vs_spend",
                       "choiceId": "save",
-                      "label": "Chose the savings jar first"
+                      "label": "Jar before treat"
                     },
                     {
                       "type": "addScar",
@@ -256,7 +256,7 @@
                 },
                 {
                   "id": "kk1_spend",
-                  "text": "Treat first — a Take that sticks.",
+                  "text": "Treat before jar",
                   "nextNodeId": "kk2_spend",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -264,7 +264,7 @@
                       "type": "setIrreversible",
                       "key": "cove_save_vs_spend",
                       "choiceId": "spend",
-                      "label": "Chose a treat before the jar"
+                      "label": "Treat before jar"
                     },
                     {
                       "type": "addScar",

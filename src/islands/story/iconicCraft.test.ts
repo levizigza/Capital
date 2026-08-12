@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   createDefaultHubGuidedIntro,
   advanceHubGuided,
@@ -125,6 +127,10 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(labels).toContain("Jar before treat");
     expect(labels).toContain("Treat before jar");
     expect(take?.text).toMatch(/Take/i);
+    // Hermans elegancy — choice buttons speak plaque vocabulary
+    const choiceText = (take?.choices ?? []).map((c) => c.text);
+    expect(choiceText).toContain("Jar before treat");
+    expect(choiceText).toContain("Treat before jar");
   });
 
   it("uses day-after echo rumor when scar is from a prior day", () => {
@@ -156,15 +162,17 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     const content = loadIslandsContent();
     const pay = content.islands.find((i) => i.id === "paycheck_peninsula");
     const credit = content.islands.find((i) => i.id === "credit_kingdom");
-    const payLabels = (pay?.dialogues ?? [])
+    const payChoices = (pay?.dialogues ?? [])
       .flatMap((d) => d.nodes)
-      .flatMap((n) => n.choices ?? [])
+      .flatMap((n) => n.choices ?? []);
+    const creditChoices = (credit?.dialogues ?? [])
+      .flatMap((d) => d.nodes)
+      .flatMap((n) => n.choices ?? []);
+    const payLabels = payChoices
       .flatMap((c) => c.effects ?? [])
       .filter((e) => e.type === "addScar")
       .map((e) => (e.type === "addScar" ? e.label : ""));
-    const creditLabels = (credit?.dialogues ?? [])
-      .flatMap((d) => d.nodes)
-      .flatMap((n) => n.choices ?? [])
+    const creditLabels = creditChoices
       .flatMap((c) => c.effects ?? [])
       .filter((e) => e.type === "addScar")
       .map((e) => (e.type === "addScar" ? e.label : ""));
@@ -172,6 +180,20 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(payLabels).toContain("Glitter ate the umbrella");
     expect(creditLabels).toContain("Waited the spiral");
     expect(creditLabels).toContain("Haste fed the spiral");
+    // Hermans elegancy — choice buttons = plaque vocabulary
+    expect(payChoices.map((c) => c.text)).toEqual(
+      expect.arrayContaining(["Umbrella before glitter", "Glitter ate the umbrella"]),
+    );
+    expect(creditChoices.map((c) => c.text)).toEqual(
+      expect.arrayContaining(["Waited the spiral", "Haste fed the spiral"]),
+    );
+  });
+
+  it("Money Structure entryHints split arcade worlds from Soft Beat peeks", () => {
+    const structs = readFileSync(join(__dirname, "../moneyStructures.ts"), "utf8");
+    expect(structs).toMatch(/quiet peek/);
+    expect(structs).toMatch(/arcade worlds/);
+    expect(structs).not.toMatch(/each open a world/);
   });
 
   it("ships one Harbor icon — Memory Plinth ledger silhouette always placeable", () => {

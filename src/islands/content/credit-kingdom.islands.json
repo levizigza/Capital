@@ -164,18 +164,18 @@
             {
               "id": "r_fork",
               "speaker": "Rex the Collector",
-              "text": "You felt the signals. Now the Ordeal choice — it stains Harbor. Wait and rebuild with on-time shards, or rush a high-APR loan for speed?",
+              "text": "You felt the signals. Now the Ordeal choice — it stains Harbor. Waited the spiral, or haste fed the spiral?",
               "choices": [
                 {
                   "id": "r_wait",
-                  "text": "Wait and rebuild — no rush loan.",
+                  "text": "Waited the spiral",
                   "nextNodeId": "r_done",
                   "effects": [
                     {
                       "type": "setIrreversible",
                       "key": "credit_borrow_vs_wait",
                       "choiceId": "wait",
-                      "label": "Waited instead of rushing a loan"
+                      "label": "Waited the spiral"
                     },
                     {
                       "type": "addScar",
@@ -190,14 +190,14 @@
                 },
                 {
                   "id": "r_borrow",
-                  "text": "Rush the loan — I need speed.",
+                  "text": "Haste fed the spiral",
                   "nextNodeId": "r_done_rush",
                   "effects": [
                     {
                       "type": "setIrreversible",
                       "key": "credit_borrow_vs_wait",
                       "choiceId": "borrow",
-                      "label": "Rushed a high-APR loan"
+                      "label": "Haste fed the spiral"
                     },
                     {
                       "type": "addScar",

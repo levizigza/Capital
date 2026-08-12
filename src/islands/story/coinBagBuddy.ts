@@ -165,7 +165,8 @@ export function coinBagHarborTip(
   }
   return {
     tip: "Ledger Bank — walk into the vault!",
-    coach: "That brass bank on the plaza is a money machine. Stamp, teller, and safe each open a world.",
+    coach:
+      "That brass bank is a money machine. Stamp and safe open arcade worlds; the teller is a quiet peek.",
   };
 }
 
@@ -209,7 +210,7 @@ export function coinBagIslandTip(
         return {
           tip: "Payroll Tower — climb the chute!",
           coach:
-            "That glowing tower is a money machine. Bucket press, time clock, and umbrella loft each open a world.",
+            "That glowing tower is a money machine. Bucket press and time clock open arcade worlds; umbrella loft is a quiet peek.",
           track: "main",
         };
       }
@@ -225,7 +226,7 @@ export function coinBagIslandTip(
         if (!have.includes("talk:npc_vendor_vee") || !have.includes("item:pp_rainy_day_fund")) {
           return {
             tip: "Vendor Vee — fountain vs glitter",
-            coach: "This is the Take. Protect the umbrella, or spend the stash. Harbor will remember.",
+            coach: "This is the Take. Umbrella before glitter, or glitter ate the umbrella. Harbor will remember.",
             track: "main",
           };
         }
@@ -252,7 +253,7 @@ export function coinBagIslandTip(
         return {
           tip: "Interest Keep — spiral the gate!",
           coach:
-            "That ruined keep is a money machine. Anvil, dispatch, and battlement each open a world.",
+            "That ruined keep is a money machine. Anvil and dispatch open arcade worlds; battlement is a quiet peek.",
           track: "main",
         };
       }
