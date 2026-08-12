@@ -41,7 +41,7 @@ const BEATS: Record<
   },
   ledger: {
     title: "Teller Window",
-    line: "Memory keeps — the ledger remembers every jar and stamp.",
+    line: "Memory keeps — the ledger remembers every plaque on the Plinth.",
     hushLine: "Quiet — Memory keeps your plaque. Money is alive here.",
     accent: "#f59e0b",
   },

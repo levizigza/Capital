@@ -27,10 +27,14 @@ describe("Harbor progression contract", () => {
 
   it("wires share + homecoming to name newly open painting", () => {
     const share = readFileSync(join(__dirname, "HarborFeltShareOverlay.tsx"), "utf8");
+    const hub = readFileSync(join(__dirname, "HomeHubView.tsx"), "utf8");
     const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
     expect(share).toMatch(/harbor-felt-newly-true/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(share).toMatch(/nextPaintingAfterScar/);
+    expect(hub).toMatch(/nextPaintingAfterScar/);
+    expect(hub).toMatch(/nextPaintingName/);
+    expect(hub).not.toMatch(/nextPaintingHint: pointNextPainting \? "Paycheck Peninsula"/);
     expect(app).toMatch(/newly open on the Carpet/);
     expect(app).toMatch(/The Coin holds — save a little/);
   });

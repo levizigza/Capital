@@ -41,6 +41,7 @@ import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
 import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
+import { isSpineContentIslandId } from "../spineContentRegistry";
 import {
   harborScarPlaques,
   organQuietBadge,
@@ -148,6 +149,8 @@ export function IslandShoreView({
   const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
   const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
   const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
+  const spineShore = isSpineContentIslandId(island.id);
+  const shoreOrgan = moneyOrganForIsland(island.id)?.id ?? "coin";
 
   useEffect(() => {
     syncWorldPlace({
@@ -365,26 +368,28 @@ export function IslandShoreView({
               <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
             <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {genre ? (
+              {spineShore || !genre ? (
+                <>
+                  {biome.label} — {culture.cultureName}
+                  {" · "}
+                  {culture.vibe}
+                </>
+              ) : (
                 <>
                   <span className="font-bold text-amber-200">{genre.canonName}</span>
                   {" · "}
                   {district?.districtName ?? genre.cityLabel}
                   {" — "}
                   {culture.cultureName}
-                </>
-              ) : (
-                <>
-                  {biome.label} — {culture.cultureName}
+                  {" · "}
+                  {district?.feel ?? culture.vibe}
                 </>
               )}
-              {" · "}
-              {district?.feel ?? culture.vibe}
             </p>
-            {genreBlurb ? (
+            {!spineShore && genreBlurb ? (
               <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
             ) : null}
-            {genre ? (
+            {!spineShore && genre ? (
               <p className="max-w-md text-[10px] text-white/55 drop-shadow">
                 Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
                 {genre.signatureMachines.slice(0, 2).join(" · ")}
@@ -396,14 +401,14 @@ export function IslandShoreView({
                 data-testid="shore-next-verb"
               >
                 <span className="font-bold uppercase tracking-wide text-amber-200">
-                  {organVerbChip(moneyOrganForIsland(island.id)?.id ?? "coin")}
+                  {organVerbChip(shoreOrgan)}
                 </span>
                 {" · "}
                 {nextStep.title}
               </div>
             ) : (
               <div className="mt-1 text-[11px] font-bold text-emerald-200" data-testid="shore-next-verb">
-                {organVerbChip(moneyOrganForIsland(island.id)?.id ?? "coin")} — explore freely
+                {organVerbChip(shoreOrgan)} — explore freely
               </div>
             )}
           </div>

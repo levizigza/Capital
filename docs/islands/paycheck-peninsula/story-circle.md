@@ -1,7 +1,7 @@
-# Paycheck Peninsula (Dotgraph Atoll) — Story Circle (Island 2)
+# Paycheck Peninsula — Story Circle (Island 2)
 
 **Island ID:** `paycheck_peninsula`  
-**Map name:** Dotgraph Atoll  
+**Map name:** Paycheck Peninsula  
 **Role:** Second painting — budget from a fixed paycheck after Cove Change  
 **Unlock:** Complete Coincraft Cove quest `q_cc_save_or_spend`  
 **Change quest:** `q_pp_rainy_day` (`PAYCHECK_CHANGE_QUEST_ID`)  
@@ -13,9 +13,9 @@
 
 ## 8 beats
 
-| # | Beat | In Dotgraph | IDs | Kid one-liner |
-|---|------|-------------|-----|---------------|
-| 1 | **You** | Land on Main Street after Harbor Change | area `pp_main_street` | “I’m at Dotgraph.” |
+| # | Beat | On shore | IDs | Kid one-liner |
+|---|------|----------|-----|---------------|
+| 1 | **You** | Land on Main Street after Harbor Change | area `pp_main_street` | “I’m at Paycheck Peninsula.” |
 | 2 | **Need** | Payroll Pat: turn a paycheck into a plan | `npc_payroll_pat`, `dlg_payroll_pat` | “I got paid — now what?” |
 | 3 | **Go** | Accept budgeting quests; enter Budget Bureau | `pp_budget_bureau`, startQuest | “Let’s plan.” |
 | 4 | **Search** | Sort expenses, talk to Priya / Carlos / Vee | minigames + NPCs | “I try budgets.” |
@@ -38,15 +38,4 @@
 ## Handoff from Cove
 
 Players unlock this island only after Cove’s save-or-spend **Change** beat.  
-Main course `second_painting` completes only when `q_pp_rainy_day` is done — not a lone minigame.
-
----
-
-## Completeness gate
-
-- [x] Content JSON with areas, NPCs, quests, dialogues, minigames  
-- [x] Progress gate after `q_cc_save_or_spend`  
-- [x] Chapter play view + quest-aware Coin Bag  
-- [x] Irreversible Take + scars + Harbor homecoming  
-- [x] Main course done = Change quest  
-- [x] Fits Story Bible (no second myth)
+Piggy names Coin holds, then points Carpet → Paycheck. Era side shores stay map-only discovery.

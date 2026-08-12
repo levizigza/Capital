@@ -41,7 +41,11 @@ type ArriveTheme = {
   blurb: string;
 };
 
-function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
+function themeForIsland(
+  islandId: string,
+  kind: WorldArriveKind,
+  islandName?: string,
+): ArriveTheme {
   const structure = moneyStructureForIsland(islandId);
   const organ = moneyOrganForIsland(islandId);
   const eyebrow = arriveEyebrow(islandId, kind, organ?.id);
@@ -89,6 +93,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
       blurb: coldOrganKidSentence("memory"),
     };
   }
+  const place = islandName?.trim() || "This shore";
   return {
     id: "default",
     eyebrow,
@@ -96,7 +101,7 @@ function themeForIsland(islandId: string, kind: WorldArriveKind): ArriveTheme {
     accent: "#34d399",
     accent2: "#6ee7b7",
     motif: "portal",
-    blurb: `${islandId} unfolds like a toy diorama.`,
+    blurb: `${place} opens on the outer ring — quiet discovery.`,
   };
 }
 
@@ -112,7 +117,10 @@ export function WorldArriveOverlay({
   durationMs = 1600,
   onDone,
 }: Props) {
-  const theme = useMemo(() => themeForIsland(islandId, kind), [islandId, kind]);
+  const theme = useMemo(
+    () => themeForIsland(islandId, kind, islandName),
+    [islandId, kind, islandName],
+  );
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
   useOverlayEscape(onDone);
 

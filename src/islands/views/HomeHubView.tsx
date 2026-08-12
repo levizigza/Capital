@@ -48,7 +48,7 @@ import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBu
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
-import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
+import { hasCompletedCoveChange } from "../chapterLoop";
 import { canOpenSignatureCinema } from "../signatureCinemaGate";
 import {
   harborScarPlaques,
@@ -58,6 +58,7 @@ import {
   scarOrganId,
   coldRetellLine,
   plaqueShelfLine,
+  nextPaintingAfterScar,
 } from "../worldMemory";
 import {
   dailyRumorText,
@@ -285,7 +286,6 @@ export function HomeHubView({
     updateA11y({ ...a11y, guideArrows: !guideArrows });
   }, [a11y, updateA11y, guideArrows]);
 
-  const peninsulaChapterDone = hasCompletedPaycheckChange(save);
   const needsPiggyWelcome =
     Boolean(save.harborHomecoming) &&
     !save.harborHomecoming?.piggyTalked &&
@@ -324,12 +324,19 @@ export function HomeHubView({
   const showTravelChip =
     !quietHarbor && Boolean(castleMode) && guidedStep?.id === "to_dock";
   const showLeaveChrome = !quietHarbor && !castleMode;
-  const pointNextPainting =
-    hasCompletedCoveChange(save) &&
-    Boolean(save.harborHomecoming?.piggyTalked) &&
-    !peninsulaChapterDone;
 
   const plaques = harborScarPlaques(save);
+  const latestPlaqueForHint = plaques[plaques.length - 1] ?? null;
+  const nextPaintingName = latestPlaqueForHint
+    ? nextPaintingAfterScar(latestPlaqueForHint)
+    : hasCompletedCoveChange(save)
+      ? "Paycheck Peninsula"
+      : null;
+  /** Organ-aware next painting after Piggy names the Take (era shores stay map-only). */
+  const pointNextPainting =
+    Boolean(nextPaintingName) &&
+    Boolean(save.harborHomecoming?.piggyTalked) &&
+    !needsPiggyWelcome;
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   const stanceLine = stanceGreetingHint(save.stance);
@@ -356,6 +363,7 @@ export function HomeHubView({
     guidedStepId: guidedStep?.id,
     homecomingPending: needsPiggyWelcome,
     pointNextPainting,
+    nextPaintingName,
     scarSpectacleActive: spectacleOpen,
     // Share freeze keeps Plinth pulse alive even after the 14s glow timer.
     plinthGlowActive: (plinthGlow || feltShareOpen) && !spectacleOpen,
@@ -575,7 +583,7 @@ export function HomeHubView({
     homecomingPending: needsPiggyWelcome,
     homecomingMessage: save.harborHomecoming?.message,
     pavilionUnlocked: coinBagShouldPointPavilion(save),
-    nextPaintingHint: pointNextPainting ? "Paycheck Peninsula" : null,
+    nextPaintingHint: pointNextPainting ? nextPaintingName : null,
     bondStrain,
     latestScarLabel: latestPlaque?.label ?? null,
     plinthGlow: plinthGlow || feltShareOpen,

@@ -96,7 +96,7 @@ export function TravelMapView({
         <div data-testid="fortune-archipelago-chip">
           <HudChip
             title={FORTUNE_ARCHIPELAGO_NAME}
-            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins} · side shores on map`}
+            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins}`}
           />
         </div>
       }

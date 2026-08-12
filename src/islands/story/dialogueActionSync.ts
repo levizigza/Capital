@@ -92,14 +92,25 @@ export const HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   pulseHotspot: "guide",
 };
 
-/** After Piggy’s welcome-back — point the next painting (+ era shores open). */
-export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
-  keeperEmote: "point",
-  keeperBubbleWhenNear:
-    "Piggy Penny: Carpet Dock that way — Paycheck is next. Era shores woke up on the outer ring too!",
-  bagTip: "Carpet → Paycheck · side shores open",
-  pulseHotspot: "travel",
-};
+/** After Piggy’s welcome-back — point the next spine painting (era shores stay map-only). */
+export function postHomecomingVisualBeats(nextPainting: string): GuidedVisualBeats {
+  const short =
+    nextPainting === "Paycheck Peninsula"
+      ? "Paycheck"
+      : nextPainting === "Credit Kingdom"
+        ? "Credit"
+        : nextPainting;
+  return {
+    keeperEmote: "point",
+    keeperBubbleWhenNear: `Piggy Penny: Carpet Dock that way — ${short} is next.`,
+    bagTip: `Carpet → ${short}`,
+    pulseHotspot: "travel",
+  };
+}
+
+/** @deprecated Prefer postHomecomingVisualBeats(nextPainting) — Cove→Paycheck default. */
+export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats =
+  postHomecomingVisualBeats("Paycheck Peninsula");
 
 /** Plaza reacts when a new scar lands — money is alive. */
 export const SCAR_SPECTACLE_VISUAL_BEATS: GuidedVisualBeats = {
@@ -129,8 +140,10 @@ export function guidedVisualBeats(stepId?: string | null): GuidedVisualBeats {
 export function resolveHarborVisualBeats(opts: {
   guidedStepId?: string | null;
   homecomingPending?: boolean;
-  /** Cove Change done, Piggy already talked — nudge next painting */
+  /** Spine Take done, Piggy already talked — nudge next painting */
   pointNextPainting?: boolean;
+  /** Organ-aware next painting name (Paycheck / Credit) */
+  nextPaintingName?: string | null;
   scarSpectacleActive?: boolean;
   /** Memory Plinth still pulsing after spectacle */
   plinthGlowActive?: boolean;
@@ -141,6 +154,8 @@ export function resolveHarborVisualBeats(opts: {
   if (opts.scarSpectacleActive) return SCAR_SPECTACLE_VISUAL_BEATS;
   if (opts.plinthGlowActive) return PLINTH_GLOW_VISUAL_BEATS;
   if (opts.homecomingPending) return HOMECOMING_VISUAL_BEATS;
-  if (opts.pointNextPainting) return POST_HOMECOMING_VISUAL_BEATS;
+  if (opts.pointNextPainting) {
+    return postHomecomingVisualBeats(opts.nextPaintingName || "Paycheck Peninsula");
+  }
   return guidedVisualBeats(opts.guidedStepId);
 }

@@ -477,12 +477,20 @@ export function piggyHomecomingGraph(
         islandId: latestScar.islandId ?? "",
       })
     : null;
+  const organBond =
+    latestOrgan === "clock"
+      ? "That's the Clock shelters beat — umbrella before glitter."
+      : latestOrgan === "spiral"
+        ? "That's the Spiral withstands beat — wait beats haste."
+        : latestOrgan === "coin"
+          ? "That's the Change beat — earn fair, then choose."
+          : "Harbor felt that — Memory keeps your Take on the Plinth.";
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
       ? "Three homecomings. Cove, Paycheck, Kingdom — I trust your pouch, and you."
       : opts?.bondBeat && opts.bondBeat >= 2
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
-        : "That's the Change beat — earn fair, then choose.";
+        : organBond;
 
   const phase =
     (opts?.bondBeat ?? 0) >= 3

@@ -49,7 +49,7 @@ import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveAdaptiveBuddyTip } from "../gameSystems";
 import { getIslandCulture } from "../islandCulture";
 import { partitionIslandQuests, questTrack, trackLabel } from "../questTracks";
-import { mainCourseProgress, nextMainCourseStep, worldSideQuests } from "../mainCourse";
+import { nextMainCourseStep, worldSideQuests } from "../mainCourse";
 
 type IslandSection = "explore" | "quests" | "bag";
 
@@ -199,7 +199,6 @@ function QuestLogPanel({
   onStartQuest,
 }: Pick<IslandPlayViewProps, "island" | "save" | "learningProfile" | "objectiveKey" | "onStartQuest">) {
   const { main, side } = partitionIslandQuests(island.quests);
-  const courseProg = mainCourseProgress(save);
   const nextStep = nextMainCourseStep(save);
   const worldSides = worldSideQuests();
 
@@ -214,16 +213,7 @@ function QuestLogPanel({
             Campaign · Story Circle
           </div>
           <div className="mt-0.5 text-sm font-semibold text-amber-950">
-            {nextStep ? (
-              <>
-                Next Main Quest: {nextStep.title}{" "}
-                <span className="font-normal text-amber-800/90">
-                  ({courseProg.done}/{courseProg.total})
-                </span>
-              </>
-            ) : (
-              <>Main course clear — explore freely ({courseProg.done}/{courseProg.total})</>
-            )}
+            {nextStep ? <>Next: {nextStep.title}</> : <>Story clear — explore freely</>}
           </div>
           {nextStep ? (
             <p className="mt-1 text-xs text-amber-900/80">{nextStep.blurb}</p>

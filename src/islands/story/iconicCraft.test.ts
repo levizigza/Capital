@@ -8,6 +8,7 @@ import {
   SCAR_SPECTACLE_VISUAL_BEATS,
   PLINTH_GLOW_VISUAL_BEATS,
   HOMECOMING_VISUAL_BEATS,
+  postHomecomingVisualBeats,
 } from "./dialogueActionSync";
 import { coinBagHarborTip } from "./coinBagBuddy";
 import { piggyHomecomingGraph } from "./harborTalks";
@@ -96,9 +97,49 @@ describe("iconic craft — Piggy / Coin Bag bond", () => {
         { label: "B", islandId: "paycheck_peninsula" },
       ],
     });
-    expect(first.nodes.some((n) => /Change beat|patched|proud/i.test(n.text))).toBe(true);
+    expect(first.nodes.some((n) => /Change beat|patched|proud|Memory keeps/i.test(n.text))).toBe(
+      true,
+    );
     expect(third.nodes.some((n) => /Three homecomings|family|trust/i.test(n.text))).toBe(true);
     expect(strain.nodes.some((n) => /worried|harder mark/i.test(n.text))).toBe(true);
+  });
+
+  it("names Clock / Spiral bonds — never Cove earn-fair on every homecoming", () => {
+    const clock = piggyHomecomingGraph("Piggy Penny: The Clock shelters.", {
+      scars: [
+        {
+          id: "pp_protector_plaque",
+          islandId: "paycheck_peninsula",
+          label: "Umbrella before glitter",
+        },
+      ],
+    });
+    const spiral = piggyHomecomingGraph("Piggy Penny: The Spiral withstands.", {
+      scars: [
+        {
+          id: "credit_patience_plaque",
+          islandId: "credit_kingdom",
+          label: "Waited the spiral",
+        },
+      ],
+    });
+    expect(clock.nodes.some((n) => /Clock shelters beat/i.test(n.text))).toBe(true);
+    expect(clock.nodes.some((n) => /earn fair, then choose/i.test(n.text))).toBe(false);
+    expect(spiral.nodes.some((n) => /Spiral withstands beat/i.test(n.text))).toBe(true);
+    expect(spiral.nodes.some((n) => /earn fair, then choose/i.test(n.text))).toBe(false);
+  });
+
+  it("post-homecoming points organ-aware next painting — no era-shore pitch", () => {
+    const pay = postHomecomingVisualBeats("Paycheck Peninsula");
+    const credit = resolveHarborVisualBeats({
+      pointNextPainting: true,
+      nextPaintingName: "Credit Kingdom",
+    });
+    expect(pay.bagTip).toMatch(/Carpet → Paycheck/);
+    expect(pay.bagTip).not.toMatch(/side shores/i);
+    expect(pay.keeperBubbleWhenNear).not.toMatch(/era shores/i);
+    expect(credit.bagTip).toMatch(/Carpet → Credit/);
+    expect(credit.keeperBubbleWhenNear).toMatch(/Credit is next/);
   });
 });
 
