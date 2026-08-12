@@ -61,7 +61,7 @@ export function CourseWorldOverlay({
       <PartyArenaWorld
         island={island}
         character={character}
-        title={title ?? (main ? `Main Course · ${island.name}` : `Side world · ${island.name}`)}
+        title={title ?? island.name}
         durationSec={main ? 55 : 45}
         goalCoins={main ? 8 : 6}
         onComplete={onComplete}
@@ -69,7 +69,7 @@ export function CourseWorldOverlay({
       />
 
       <div className="pointer-events-none absolute left-1/2 top-20 z-20 -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-        {main ? "Main course painting" : "Optional tomfoolery"} · {era.eraLabel}
+        {main ? "Painting" : "Optional digression"} · {era.eraLabel}
       </div>
     </div>
   );

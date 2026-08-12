@@ -19,9 +19,9 @@
 | 2 | Walk | Reach three glowing markers (right · left · forward) with WASD — body must move |
 | 3 | Talk | Walk into Piggy’s ring, press E when the prompt appears |
 | 4 | Loop | Step through Harbor → Carpet → Cove Take → Harbor remembers |
-| 5 | Organs | Visit all four organ paintings (Memory · Coin · Clock · Spiral) |
-| 6 | Toolkit | Illuminate Walk · Talk · Enter · Take · Return · Share |
-| 7 | Carpet | Board with your Voyager |
+| 5 | Organs | Prove one organ painting (Memory · Coin · Clock · Spiral) — rest wait on the map |
+| 6 | Toolkit | Light one Voyager verb (Walk · Talk · Enter · Take · Return · Share) |
+| 7 | Carpet | Board with your Voyager — Harbor first, then Cove |
 
 ## Out of scope (Harbor still owns)
 

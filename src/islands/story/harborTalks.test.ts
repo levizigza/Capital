@@ -70,6 +70,25 @@ describe("harborTalks", () => {
     expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Memory keeps/);
   });
 
+  it("names Clock shelters + Credit unlock after Paycheck scar homecoming", () => {
+    const g = piggyHomecomingGraph(
+      "Piggy Penny: The Clock shelters — wait under the umbrella before glitter.",
+      {
+        scars: [
+          {
+            id: "pp_protector_plaque",
+            islandId: "paycheck_peninsula",
+            label: "Umbrella before glitter",
+          },
+        ],
+      },
+    );
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Clock shelters/);
+    expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Clock shelters beat|umbrella/i);
+    expect(g.nodes.find((n) => n.id === "h2")?.text).not.toMatch(/earn fair, then choose/);
+    expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Credit Kingdom/);
+  });
+
   it("gives distinct tip beats per mascot role", () => {
     const piggy = resolveProfileText(harborTipPreview("piggy_penny"), "apprentice");
     const spendy = resolveProfileText(harborTipPreview("spendy_sue"), "apprentice");

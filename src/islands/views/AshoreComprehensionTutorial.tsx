@@ -1,6 +1,6 @@
 /**
  * Ashore Teach — iconic pre-carpet chambers.
- * Portal prove-it pad (see your Voyager) → Talk opt-in → loop → organs → toolkit → carpet.
+ * Portal prove-it pad (see your Voyager) → Talk opt-in → loop (Talk→Carpet→Cove) → organs → toolkit → carpet.
  * Design: docs/ashore-teach-design.md
  */
 

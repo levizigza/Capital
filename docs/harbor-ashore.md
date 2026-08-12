@@ -12,8 +12,8 @@
 | Pattern | Rule in Capital |
 |---------|-----------------|
 | Body does the lesson | Walk rings require VoyagerMesh displacement — not a lone keypress |
-| One verb per chamber | Walk → Talk → Loop → Organs → Toolkit → Carpet |
-| Vertical slice of the game | Signature loop told before Harbor (Harbor → Take → Harbor remembers) |
+| One verb per chamber | Walk → Talk → Loop (Talk→Carpet→Cove) → Organs → Toolkit → Carpet |
+| Vertical slice of the game | Signature loop before Harbor (Harbor → Carpet → Cove Take → Harbor remembers) |
 | Opt-in social | Talk chamber: enter Piggy’s ring, then E |
 | Fantasy first | Mural thesis + living-money pad before chrome |
 

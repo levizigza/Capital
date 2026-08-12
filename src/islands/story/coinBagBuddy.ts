@@ -193,9 +193,9 @@ export function coinBagIslandTip(
           island.id === "coincraft_cove"
             ? "One verb left: board the Money Carpet. Piggy will feel the Take."
             : island.id === "paycheck_peninsula"
-            ? "One verb left: carpet home. Harbor is listening for the Clock Take."
+            ? "One verb left: carpet home. Harbor felt that — the Clock shelters."
             : island.id === "credit_kingdom"
-              ? "One verb left: carpet home. Interest stays quiet until Harbor."
+              ? "One verb left: carpet home. Harbor felt that — the Spiral withstands."
               : "One verb left: carpet home — Harbor felt that.",
         track: "main",
       };

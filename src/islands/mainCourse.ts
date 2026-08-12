@@ -45,7 +45,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "harbor_grounds",
     track: "main",
-    title: "Harbor Haven · Castle Grounds",
+    title: "Harbor Haven",
     blurb: "Walk, talk, become you — learn the verbs before any painting.",
     placeId: HUB_ISLAND_ID,
     done: (s) => !!s.onboardingComplete && !!s.character,
@@ -53,8 +53,8 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "first_painting",
     track: "main",
-    title: "Coincraft Cove · First Painting",
-    blurb: "Dive the first course world. Earn fair. Choose save or spend.",
+    title: "Coincraft Cove",
+    blurb: "Dive the first painting. Earn fair. Choose save or spend.",
     placeId: COVE_ISLAND_ID,
     paintingId: "mg_coin_catcher",
     done: (s) => hasCompletedCoveChange(s),
@@ -62,7 +62,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "second_painting",
     track: "main",
-    title: "Paycheck Peninsula · Budget Course",
+    title: "Paycheck Peninsula",
     blurb: "Allocate a paycheck, then face the rainy-day Take — protect or spend.",
     placeId: PAYCHECK_PENINSULA_ID,
     paintingId: "mg_budget_split",
@@ -71,7 +71,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "freedom_seal",
     track: "main",
-    title: "Freedom Seal · Return Changed",
+    title: "Freedom Seal",
     blurb: "Come home with proof — Harbor opens the Pavilion.",
     placeId: HUB_ISLAND_ID,
     done: (s) => hasHarborFreedom(s),
@@ -79,7 +79,7 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "boss_ordeal",
     track: "main",
-    title: "Credit Kingdom · Ordeal",
+    title: "Credit Kingdom",
     blurb: "Face The Debt Collector’s storm. Clear First Recovery — interest feeds on haste.",
     placeId: BOSS_ISLAND_ID,
     done: (s) => Boolean(s.questStatus[CREDIT_ORDEAL_QUEST_ID]?.completed),
