@@ -1,6 +1,6 @@
 /**
  * Ashore Teach — iconic pre-carpet chambers.
- * Portal prove-it pad (see your Voyager) → Talk opt-in → loop → organs → toolkit → carpet.
+ * Portal prove-it pad → Talk opt-in → loop → paintings (islands) → toolkit → carpet.
  * Design: docs/ashore-teach-design.md
  */
 
@@ -10,6 +10,7 @@ import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playOrganSfx } from "../audio/capitalSfx";
 import { MONEY_ORGANS, MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
+import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
 import {
@@ -39,43 +40,87 @@ const STEPS: TeachStepId[] = [
   "ready",
 ];
 
+/** Signature loop — place names first so kids know where the game lives. */
 const LOOP_BEATS = [
   {
     id: "harbor",
     title: "Harbor Haven",
-    line: "Home. Memory keeps what you did. Talk to Piggy when you choose — then board the Money Carpet.",
+    line: "Your home plaza. Talk to Piggy when you choose. The Money Carpet waits at the south pier.",
     organ: "memory" as MoneyOrganId,
   },
   {
     id: "carpet",
     title: "Money Carpet",
-    line: "Ride a painting to a living organ. Cove first — Coin holds, then you Take.",
+    line: "Board a painting from the Carpet Dock. First painting: Coincraft Cove — that is where the first game lives.",
     organ: "coin" as MoneyOrganId,
   },
   {
     id: "take",
-    title: "The Take",
-    line: "An irreversible money choice. Jar or treat — you cannot put it back.",
+    title: "Cove Take",
+    line: "On Cove you play, then choose jar or treat. You cannot put it back — Harbor will feel that Take.",
     organ: "coin" as MoneyOrganId,
   },
   {
     id: "return",
     title: "Harbor remembers",
-    line: "Fly home. The Plinth glows. Share the scar. Piggy names what changed. That is the game.",
+    line: "Carpet home. The Memory Plinth glows with your scar. Piggy names what changed. Then the next painting opens.",
     organ: "memory" as MoneyOrganId,
   },
 ];
 
-const TOOLKIT = [
-  { id: "walk", label: "Walk", detail: "WASD · explore plazas & shores" },
-  { id: "talk", label: "Talk", detail: "E near friends — only when you choose" },
-  { id: "enter", label: "Enter", detail: "Coin Jar · Ledger Bank · Tower · Keep" },
-  { id: "take", label: "Take", detail: "Irreversible choice Harbor will name" },
-  { id: "return", label: "Return", detail: "Carpet home — Memory keeps the scar" },
-  { id: "share", label: "Share", detail: "Freeze the Plinth — your social object" },
+/**
+ * Spine paintings — where you go to play.
+ * Visual gallery so Ashore is not abstract organ jargon alone.
+ */
+const SPINE_PAINTINGS: {
+  organ: MoneyOrganId;
+  place: string;
+  role: string;
+  playWhere: string;
+  order: string;
+}[] = [
+  {
+    organ: "memory",
+    place: "Harbor Haven",
+    role: "Home plaza",
+    playWhere: "Fountain · Piggy · Memory Plinth · Carpet Dock south",
+    order: "Always",
+  },
+  {
+    organ: "coin",
+    place: "Coincraft Cove",
+    role: "First painting · first game",
+    playWhere: "Shore games → Coin Jar — jar or treat Take",
+    order: "1st",
+  },
+  {
+    organ: "clock",
+    place: "Paycheck Peninsula",
+    role: "Second painting",
+    playWhere: "Payroll Tower — umbrella loft vs glitter Take",
+    order: "2nd",
+  },
+  {
+    organ: "spiral",
+    place: "Credit Kingdom",
+    role: "Third painting",
+    playWhere: "Interest Keep — wait beats haste Take",
+    order: "3rd",
+  },
 ];
 
-const ORGAN_ORDER: MoneyOrganId[] = ["memory", "coin", "clock", "spiral"];
+const TOOLKIT = [
+  { id: "walk", label: "Walk", detail: "WASD on Harbor plaza and island shores" },
+  { id: "talk", label: "Talk", detail: "E near Piggy or friends — only when you choose" },
+  {
+    id: "enter",
+    label: "Enter",
+    detail: "Coin Jar · Payroll Tower · Interest Keep · Ledger Bank",
+  },
+  { id: "take", label: "Take", detail: "Irreversible choice on a painting shore" },
+  { id: "return", label: "Return", detail: "Carpet home — Harbor’s Plinth keeps the scar" },
+  { id: "share", label: "Share", detail: "Freeze the Plinth — your social object" },
+];
 
 type Props = {
   character?: CapitalCharacter | null;
@@ -160,10 +205,9 @@ export function AshoreComprehensionTutorial({
     stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
 
   const loop = LOOP_BEATS[loopBeat]!;
-  /** Prove one organ / verb — fantasy before collect-all chrome. */
+  /** Prove one painting — rest wait on the Carpet map. */
   const organsComplete = organsSeen.length >= 1;
   const toolkitComplete = toolkitLit.length >= 1;
-  // Esc · Leave already wired below — keep input action as plaza courtesy alias.
   useInputAction("cancel", onComplete);
 
   const chamberEyebrow = useMemo(() => {
@@ -172,7 +216,7 @@ export function AshoreComprehensionTutorial({
       walk: "Chamber 2 · Walk",
       talk: "Chamber 3 · Talk",
       loop: "Chamber 4 · The Loop",
-      organs: "Chamber 5 · Organs",
+      organs: "Chamber 5 · Paintings",
       toolkit: "Chamber 6 · Toolkit",
       ready: "Chamber 7 · Carpet",
     };
@@ -206,7 +250,6 @@ export function AshoreComprehensionTutorial({
         </button>
       </header>
 
-      {/* Practice pad — Voyager must be visible for walk/talk/fantasy/ready */}
       {showPad ? (
         <div className="relative z-[1] mx-auto w-full max-w-3xl flex-1 min-h-[42vh] px-3 sm:min-h-[48vh]">
           <VoyagerWalkPracticeStage
@@ -229,7 +272,7 @@ export function AshoreComprehensionTutorial({
 
       <main
         className={`relative z-[2] flex flex-col items-center px-5 pb-4 text-center ${
-          showPad ? "pt-3" : "flex-1 justify-center pt-6"
+          showPad ? "pt-3" : "flex-1 justify-center overflow-y-auto pt-4"
         }`}
       >
         {stepId === "fantasy" ? (
@@ -239,7 +282,8 @@ export function AshoreComprehensionTutorial({
             </h1>
             <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
             <p className="mt-2 max-w-md text-sm text-amber-100/80">
-              That Voyager on the pad is you. Next chamber: make them walk.
+              That Voyager on the pad is you. Next: walk them — then you’ll see the paintings
+              where the games live.
             </p>
             <button
               type="button"
@@ -258,7 +302,8 @@ export function AshoreComprehensionTutorial({
               Walk your Voyager
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Reach every glowing ring — watch your body move. WASD or arrows.
+              Reach every glowing ring — this is how you explore Harbor and every painting shore.
+              WASD or arrows.
             </p>
             <p
               className="mt-3 text-sm font-bold text-amber-100"
@@ -277,7 +322,8 @@ export function AshoreComprehensionTutorial({
               Talk when you choose
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Walk into Piggy’s pink ring. Nothing ambushes you — press E only when you’re ready.
+              On Harbor, Piggy waits by the fountain. Walk into the pink ring — press E only when
+              you’re ready. Nothing ambushes you.
             </p>
             <p
               className="mt-3 text-sm font-bold text-amber-100"
@@ -285,7 +331,7 @@ export function AshoreComprehensionTutorial({
               data-gate="talk-near"
             >
               {talked
-                ? "Piggy: Harbor remembers — I’ll wait by the fountain."
+                ? "Piggy: I’ll wait by the fountain — then the Carpet Dock south."
                 : nearTalk
                   ? "Press E to talk"
                   : "Walk to Piggy"}
@@ -309,7 +355,7 @@ export function AshoreComprehensionTutorial({
         {stepId === "loop" ? (
           <>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
-              Signature loop · {loopBeat + 1}/{LOOP_BEATS.length}
+              How you play · {loopBeat + 1}/{LOOP_BEATS.length}
             </p>
             <h1 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
               {loop.title}
@@ -341,7 +387,9 @@ export function AshoreComprehensionTutorial({
                 else setLoopBeat((n) => n + 1);
               })}
             >
-              {loopBeat >= LOOP_BEATS.length - 1 ? "Meet the organs" : "Next beat"}
+              {loopBeat >= LOOP_BEATS.length - 1
+                ? "See the paintings"
+                : "Next place"}
             </button>
           </>
         ) : null}
@@ -349,56 +397,93 @@ export function AshoreComprehensionTutorial({
         {stepId === "organs" ? (
           <>
             <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
-              Fortune Archipelago
+              Where the games live
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/85">
-              Four living organs. Prove one painting — the rest wait on the map.
+              Four paintings on the Money Carpet. Tap one to hear its organ — prove any painting to
+              continue. Cove is where you play first.
             </p>
             <ul
-              className="mt-5 grid w-full max-w-2xl grid-cols-1 gap-2 sm:grid-cols-2"
+              className="mt-5 grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2"
               data-testid="ashore-teach-organs"
+              data-gallery="spine-paintings"
             >
-              {ORGAN_ORDER.map((id) => {
-                const organ = MONEY_ORGANS[id];
-                const seen = organsSeen.includes(id);
+              {SPINE_PAINTINGS.map((painting) => {
+                const organ = MONEY_ORGANS[painting.organ];
+                const seen = organsSeen.includes(painting.organ);
                 return (
-                  <li key={id}>
+                  <li key={painting.organ}>
                     <button
                       type="button"
-                      data-testid={`ashore-organ-${id}`}
+                      data-testid={`ashore-organ-${painting.organ}`}
+                      data-painting-place={painting.place}
                       {...pointerSafeActivate(() => {
-                        playOrganSfx(id);
+                        playOrganSfx(painting.organ);
                         setOrgansSeen((prev) =>
-                          prev.includes(id) ? prev : [...prev, id],
+                          prev.includes(painting.organ)
+                            ? prev
+                            : [...prev, painting.organ],
                         );
                       })}
-                      className={`w-full rounded-xl px-4 py-3 text-left ring-1 transition ${
+                      className={`w-full overflow-hidden rounded-xl text-left ring-1 transition ${
                         seen
                           ? "bg-white/15 ring-amber-200/50"
                           : "bg-white/5 ring-white/15 hover:bg-white/10"
                       }`}
-                      style={{ borderLeft: `4px solid ${organ.accentHint}` }}
                     >
-                      <span className="text-sm font-black" style={{ color: organ.accentHint }}>
-                        {organ.name} · {organ.suit}
-                      </span>
-                      <span className="mt-1 block text-xs text-white/80">{organ.metaphor}</span>
-                      <span className="mt-1 block text-[11px] text-white/55">
-                        Must feel: {organ.mustFeel}
-                      </span>
+                      {/* Painting frame — place first, not abstract organ jargon */}
+                      <div
+                        className="relative px-4 pb-3 pt-3"
+                        style={{
+                          borderTop: `5px solid ${organ.accentHint}`,
+                          background: `linear-gradient(165deg, ${organ.accentHint}33 0%, transparent 55%)`,
+                        }}
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
+                            {painting.order === "Always"
+                              ? "Home"
+                              : `Painting · ${painting.order}`}
+                          </span>
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-wide"
+                            style={{ color: organ.accentHint }}
+                          >
+                            {organVerbChip(painting.organ)}
+                          </span>
+                        </div>
+                        <span
+                          className="mt-1 block text-lg font-black tracking-tight"
+                          style={{ color: organ.accentHint }}
+                        >
+                          {painting.place}
+                        </span>
+                        <span className="mt-0.5 block text-xs font-semibold text-white/80">
+                          {painting.role}
+                        </span>
+                        <span className="mt-2 block text-[11px] leading-snug text-white/70">
+                          Play here: {painting.playWhere}
+                        </span>
+                        <span className="mt-1.5 block text-[11px] italic text-amber-100/75">
+                          {coldOrganKidSentence(painting.organ)}
+                        </span>
+                      </div>
                     </button>
                   </li>
                 );
               })}
             </ul>
+            <p className="mt-3 max-w-md text-[11px] text-white/55">
+              Route: Harbor → Carpet → Cove → Harbor → Paycheck → Harbor → Credit
+            </p>
             <button
               type="button"
-              className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
+              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
               data-testid="ashore-teach-continue"
               disabled={!organsComplete}
               {...pointerSafeActivate(advance)}
             >
-              {organsComplete ? "Your toolkit" : "Prove one organ"}
+              {organsComplete ? "Your toolkit" : "Prove one painting"}
             </button>
           </>
         ) : null}
@@ -409,7 +494,8 @@ export function AshoreComprehensionTutorial({
               What you can do
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
-              Light one Voyager verb — the rest you’ll learn by doing.
+              Light one Voyager verb. Games live inside painting shores and money structures —
+              Jar, Tower, Keep.
             </p>
             <ul className="mt-5 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
               {TOOLKIT.map((t) => {
@@ -455,9 +541,29 @@ export function AshoreComprehensionTutorial({
               Board the Money Carpet
             </h1>
             <p className="mt-3 max-w-lg text-base text-white/85">
-              You’ll land on Harbor Haven. Walk free. Talk to Piggy when you want. Then ride to
-              Coincraft Cove — make a Take Harbor will remember.
+              You’ll land on Harbor Haven. Talk to Piggy at the fountain, then walk south to the
+              Carpet Dock. Board the{" "}
+              <span className="font-bold text-amber-100">Coincraft Cove</span> painting — that’s
+              where your first game waits.
             </p>
+            <ul
+              className="mt-4 flex w-full max-w-lg flex-wrap justify-center gap-2"
+              data-testid="ashore-teach-route"
+              aria-label="Main painting route"
+            >
+              {SPINE_PAINTINGS.filter((p) => p.organ !== "memory").map((p) => (
+                <li
+                  key={p.organ}
+                  className="rounded-lg px-3 py-1.5 text-[11px] font-bold ring-1 ring-white/20"
+                  style={{
+                    color: MONEY_ORGANS[p.organ].accentHint,
+                    background: `${MONEY_ORGANS[p.organ].accentHint}22`,
+                  }}
+                >
+                  {p.order} · {p.place}
+                </li>
+              ))}
+            </ul>
             <button
               type="button"
               className="mt-6 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
@@ -488,3 +594,6 @@ export function AshoreComprehensionTutorial({
     </div>
   );
 }
+
+/** Exported for unit contracts — spine painting gallery copy. */
+export const ASHORE_SPINE_PAINTING_PLACES = SPINE_PAINTINGS.map((p) => p.place);
