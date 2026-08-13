@@ -1,6 +1,6 @@
 /**
- * Ashore Teach — iconic pre-carpet chambers.
- * Portal prove-it pad → Talk opt-in → loop → paintings (islands) → toolkit → carpet.
+ * Ashore Teach — expanded pre-carpet chambers.
+ * One idea per page + dedicated interactive visual (no cramped multi-topic strips).
  * Design: docs/ashore-teach-design.md
  */
 
@@ -9,8 +9,7 @@ import type { CapitalCharacter } from "../character";
 import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playOrganSfx } from "../audio/capitalSfx";
-import { MONEY_ORGANS, MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
-import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
+import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
 import {
@@ -21,123 +20,65 @@ import {
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useInputAction } from "@/input";
 import {
-  LoopBeatShowcase,
+  CarpetDockShowcase,
+  EnterStructuresShowcase,
+  HarborHomeShowcase,
+  PAINTING_LESSONS,
+  PaintingLessonShowcase,
   ReadyCarpetShowcase,
-  SpinePaintingPortal,
-  ToolkitVerbShowcase,
-  type LoopBeatId,
-  type ToolkitVerbId,
+  ReturnScarShowcase,
+  ShareCardShowcase,
+  type HarborSpotId,
+  type StructurePadId,
 } from "./AshoreTeachShowcases";
 
 export type TeachStepId =
   | "fantasy"
   | "walk"
   | "talk"
-  | "loop"
-  | "organs"
-  | "toolkit"
+  | "harbor"
+  | "carpet"
+  | "cove"
+  | "paycheck"
+  | "credit"
+  | "return_scar"
+  | "enter"
+  | "share"
   | "ready";
 
 const STEPS: TeachStepId[] = [
   "fantasy",
   "walk",
   "talk",
-  "loop",
-  "organs",
-  "toolkit",
+  "harbor",
+  "carpet",
+  "cove",
+  "paycheck",
+  "credit",
+  "return_scar",
+  "enter",
+  "share",
   "ready",
 ];
 
-/** Signature loop — each beat shows the in-game look, not only a caption. */
-const LOOP_BEATS: {
-  id: LoopBeatId;
-  title: string;
-  line: string;
-  organ: MoneyOrganId;
-}[] = [
-  {
-    id: "harbor",
-    title: "Harbor Haven",
-    line: "Your home plaza. Talk to Piggy when you choose. The Money Carpet waits at the south pier.",
-    organ: "memory",
-  },
-  {
-    id: "carpet",
-    title: "Money Carpet",
-    line: "Board a painting from the Carpet Dock. First painting: Coincraft Cove — that is where the first game lives.",
-    organ: "coin",
-  },
-  {
-    id: "take",
-    title: "Cove Take",
-    line: "On Cove you play, then choose jar or treat. You cannot put it back — Harbor will feel that Take.",
-    organ: "coin",
-  },
-  {
-    id: "return",
-    title: "Harbor remembers",
-    line: "Carpet home. The Memory Plinth glows with your scar. Piggy names what changed. Then the next painting opens.",
-    organ: "memory",
-  },
-];
-
-/**
- * Spine paintings — where you go to play.
- * Visual gallery so Ashore is not abstract organ jargon alone.
- */
+/** Spine places — one chamber each after Harbor (exported for contracts). */
 const SPINE_PAINTINGS: {
   organ: MoneyOrganId;
   place: string;
-  role: string;
-  playWhere: string;
-  order: string;
 }[] = [
-  {
-    organ: "memory",
-    place: "Harbor Haven",
-    role: "Home plaza",
-    playWhere: "Fountain · Piggy · Memory Plinth · Carpet Dock south",
-    order: "Always",
-  },
-  {
-    organ: "coin",
-    place: "Coincraft Cove",
-    role: "First painting · first game",
-    playWhere: "Keeper Kira at the Savings Lighthouse — jar before treat, or treat before jar",
-    order: "1st",
-  },
-  {
-    organ: "clock",
-    place: "Paycheck Peninsula",
-    role: "Second painting",
-    playWhere: "Vendor Vee on Main Street — umbrella before glitter, or glitter ate the umbrella",
-    order: "2nd",
-  },
-  {
-    organ: "spiral",
-    place: "Credit Kingdom",
-    role: "Third painting",
-    playWhere: "Rex in Debt Canyon — waited the spiral, or haste fed the spiral",
-    order: "3rd",
-  },
-];
-
-/** Toolkit = verbs not already proved in Walk/Talk chambers (Hermans elegancy). */
-const TOOLKIT: { id: ToolkitVerbId; label: string; detail: string }[] = [
-  {
-    id: "enter",
-    label: "Enter",
-    detail: "Coin Jar · Payroll Tower · Interest Keep · Ledger Bank (Soft Beat peeks vs arcade pads)",
-  },
-  { id: "take", label: "Take", detail: "Irreversible fork on the painting shore — not inside the Soft Beat" },
-  { id: "return", label: "Return", detail: "Carpet home — Harbor’s Plinth keeps the scar" },
-  { id: "share", label: "Share", detail: "Freeze the Plinth — your social object" },
+  { organ: "memory", place: "Harbor Haven" },
+  { organ: "coin", place: "Coincraft Cove" },
+  { organ: "clock", place: "Paycheck Peninsula" },
+  { organ: "spiral", place: "Credit Kingdom" },
 ];
 
 type Props = {
   character?: CapitalCharacter | null;
   onComplete: () => void;
 };
+
+const CTA =
+  "mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40";
 
 export function AshoreComprehensionTutorial({
   character,
@@ -149,11 +90,14 @@ export function AshoreComprehensionTutorial({
   const [claimed, setClaimed] = useState<string[]>([]);
   const [nearTalk, setNearTalk] = useState(false);
   const [talked, setTalked] = useState(false);
-  const [loopBeat, setLoopBeat] = useState(0);
-  const [organsSeen, setOrgansSeen] = useState<MoneyOrganId[]>([]);
-  const [focusedOrgan, setFocusedOrgan] = useState<MoneyOrganId | null>(null);
-  const [toolkitLit, setToolkitLit] = useState<ToolkitVerbId[]>([]);
-  const [focusedTool, setFocusedTool] = useState<ToolkitVerbId | null>(null);
+  const [harborLit, setHarborLit] = useState<HarborSpotId[]>([]);
+  const [carpetBoarded, setCarpetBoarded] = useState(false);
+  const [coveFork, setCoveFork] = useState<string | null>(null);
+  const [payFork, setPayFork] = useState<string | null>(null);
+  const [creditFork, setCreditFork] = useState<string | null>(null);
+  const [scarGlowed, setScarGlowed] = useState(false);
+  const [enterLit, setEnterLit] = useState<StructurePadId[]>([]);
+  const [shareFrozen, setShareFrozen] = useState(false);
   const reduced = prefersReducedMotion();
 
   useEffect(() => {
@@ -174,6 +118,9 @@ export function AshoreComprehensionTutorial({
   }, []);
 
   const walkDone = WALK_MARKERS.every((m) => claimed.includes(m.id));
+  const harborDone = harborLit.length >= 3;
+  const enterDone = enterLit.length >= 2;
+  const plaquePreview = coveFork ?? "Jar before treat";
 
   useEffect(() => {
     if (stepId === "walk" && walkDone) {
@@ -218,10 +165,6 @@ export function AshoreComprehensionTutorial({
   const padMode =
     stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
 
-  const loop = LOOP_BEATS[loopBeat]!;
-  /** Prove one painting — rest wait on the Carpet map. */
-  const organsComplete = organsSeen.length >= 1;
-  const toolkitComplete = toolkitLit.length >= 1;
   useInputAction("cancel", onComplete);
 
   const chamberEyebrow = useMemo(() => {
@@ -229,13 +172,25 @@ export function AshoreComprehensionTutorial({
       fantasy: "Chamber 1 · Fantasy",
       walk: "Chamber 2 · Walk",
       talk: "Chamber 3 · Talk",
-      loop: "Chamber 4 · The Loop",
-      organs: "Chamber 5 · Paintings",
-      toolkit: "Chamber 6 · Toolkit",
-      ready: "Chamber 7 · Carpet",
+      harbor: "Chamber 4 · Harbor Haven",
+      carpet: "Chamber 5 · Money Carpet",
+      cove: "Chamber 6 · Coincraft Cove",
+      paycheck: "Chamber 7 · Paycheck Peninsula",
+      credit: "Chamber 8 · Credit Kingdom",
+      return_scar: "Chamber 9 · Harbor remembers",
+      enter: "Chamber 10 · Enter machines",
+      share: "Chamber 11 · Share",
+      ready: "Chamber 12 · Board",
     };
     return map[stepId];
   }, [stepId]);
+
+  const lightHarbor = (id: HarborSpotId) => {
+    setHarborLit((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
+  const lightEnter = (id: StructurePadId) => {
+    setEnterLit((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  };
 
   return (
     <div
@@ -286,7 +241,7 @@ export function AshoreComprehensionTutorial({
 
       <main
         className={`relative z-[2] flex flex-col items-center px-5 pb-4 text-center ${
-          showPad ? "pt-3" : "flex-1 justify-center overflow-y-auto pt-4"
+          showPad ? "pt-3" : "flex-1 justify-start overflow-y-auto pt-2 sm:justify-center"
         }`}
       >
         {stepId === "fantasy" ? (
@@ -295,22 +250,14 @@ export function AshoreComprehensionTutorial({
               Money is alive here
             </h1>
             <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
-            <div
-              className="mt-3 flex justify-center gap-2"
-              data-testid="ashore-fantasy-paintings"
-              aria-hidden
-            >
-              {SPINE_PAINTINGS.map((p) => (
-                <SpinePaintingPortal key={p.organ} organ={p.organ} lit={p.organ === "coin"} />
-              ))}
-            </div>
-            <p className="mt-2 max-w-md text-sm text-amber-100/80">
-              That Voyager on the pad is you. The four paintings above are where the games live —
-              next you’ll walk them, then open each look for real.
+            <p className="mt-3 max-w-md text-sm text-amber-100/85">
+              That Voyager on the pad is you — {voyager.name || "your cast"}. Next you’ll walk and
+              talk with your body. Then each place gets its own chamber: Harbor, Carpet, Cove,
+              Paycheck, Credit, and what Harbor remembers.
             </p>
             <button
               type="button"
-              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              className={CTA}
               data-testid="ashore-teach-continue"
               {...pointerSafeActivate(advance)}
             >
@@ -326,7 +273,7 @@ export function AshoreComprehensionTutorial({
             </h1>
             <p className="mt-2 max-w-md text-sm text-white/85">
               Reach every glowing ring — this is how you explore Harbor and every painting shore.
-              WASD or arrows.
+              WASD or arrows on desktop; the stick on phone.
             </p>
             <p
               className="mt-3 text-sm font-bold text-amber-100"
@@ -362,7 +309,7 @@ export function AshoreComprehensionTutorial({
             {nearTalk && !talked ? (
               <button
                 type="button"
-                className="mt-4 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+                className={CTA}
                 data-testid="ashore-teach-talk"
                 {...pointerSafeActivate(() => {
                   playOrganSfx("memory");
@@ -375,218 +322,226 @@ export function AshoreComprehensionTutorial({
           </>
         ) : null}
 
-        {stepId === "loop" ? (
-          <>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-200/90">
-              How you play · {loopBeat + 1}/{LOOP_BEATS.length}
-            </p>
-            <h1 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
-              {loop.title}
-            </h1>
-            <p className="mt-2 max-w-lg text-sm text-white/85">{loop.line}</p>
-            <div className="mt-4 w-full">
-              <LoopBeatShowcase beatId={loop.id} />
-            </div>
-            <div className="mt-4 flex max-w-lg flex-wrap justify-center gap-2">
-              {LOOP_BEATS.map((b, i) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className={`rounded-full px-3 py-1 text-[11px] font-bold ${
-                    i === loopBeat
-                      ? "bg-amber-400 text-[#1c1917]"
-                      : i < loopBeat
-                        ? "bg-white/20 text-white"
-                        : "bg-white/5 text-white/40"
-                  }`}
-                  data-testid={`ashore-loop-beat-${b.id}`}
-                  {...pointerSafeActivate(() => {
-                    playOrganSfx(b.organ);
-                    setLoopBeat(i);
-                  })}
-                >
-                  {b.title}
-                </button>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
-              data-testid="ashore-teach-continue"
-              {...pointerSafeActivate(() => {
-                playOrganSfx(loop.organ);
-                if (loopBeat >= LOOP_BEATS.length - 1) advance();
-                else setLoopBeat((n) => n + 1);
-              })}
-            >
-              {loopBeat >= LOOP_BEATS.length - 1
-                ? "See the paintings"
-                : "Next place"}
-            </button>
-          </>
-        ) : null}
-
-        {stepId === "organs" ? (
+        {stepId === "harbor" ? (
           <>
             <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
-              Where the games live
+              Harbor Haven is home
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/85">
-              Tap a painting to see how it looks on the Carpet — place, landmark, and real Take.
-              Prove any painting to continue. Cove is first.
+              Your plaza never leaves. Light all three landmarks — Piggy at the fountain, the Memory
+              Plinth that keeps scars, and the Carpet Dock south where paintings wait.
             </p>
-            {focusedOrgan ? (
-              <div
-                className="mt-4 flex w-full max-w-lg flex-col items-center gap-3 sm:flex-row sm:items-end sm:justify-center"
-                data-testid="ashore-painting-focus"
-                data-focus-organ={focusedOrgan}
-              >
-                <SpinePaintingPortal organ={focusedOrgan} lit large />
-                <div className="max-w-xs text-left">
-                  <p
-                    className="text-xl font-black"
-                    style={{ color: MONEY_ORGANS[focusedOrgan].accentHint }}
-                  >
-                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.place}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold text-white/80">
-                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.role}
-                  </p>
-                  <p className="mt-2 text-[12px] leading-snug text-white/75">
-                    Play here:{" "}
-                    {SPINE_PAINTINGS.find((p) => p.organ === focusedOrgan)?.playWhere}
-                  </p>
-                  <p className="mt-1.5 text-[11px] italic text-amber-100/80">
-                    {coldOrganKidSentence(focusedOrgan)}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div
-                className="mt-4 flex justify-center gap-3"
-                data-testid="ashore-painting-focus"
-                data-focus-organ="none"
-              >
-                {SPINE_PAINTINGS.map((p) => (
-                  <SpinePaintingPortal key={p.organ} organ={p.organ} />
-                ))}
-              </div>
-            )}
-            <ul
-              className="mt-4 grid w-full max-w-2xl grid-cols-2 gap-2 sm:grid-cols-4"
-              data-testid="ashore-teach-organs"
-              data-gallery="spine-paintings"
-            >
-              {SPINE_PAINTINGS.map((painting) => {
-                const organ = MONEY_ORGANS[painting.organ];
-                const seen = organsSeen.includes(painting.organ);
-                const focused = focusedOrgan === painting.organ;
-                return (
-                  <li key={painting.organ}>
-                    <button
-                      type="button"
-                      data-testid={`ashore-organ-${painting.organ}`}
-                      data-painting-place={painting.place}
-                      {...pointerSafeActivate(() => {
-                        playOrganSfx(painting.organ);
-                        setFocusedOrgan(painting.organ);
-                        setOrgansSeen((prev) =>
-                          prev.includes(painting.organ)
-                            ? prev
-                            : [...prev, painting.organ],
-                        );
-                      })}
-                      className={`flex w-full flex-col items-center gap-2 overflow-hidden rounded-xl px-2 py-3 ring-1 transition ${
-                        focused
-                          ? "bg-white/20 ring-amber-200/70"
-                          : seen
-                            ? "bg-white/10 ring-amber-200/40"
-                            : "bg-white/5 ring-white/15 hover:bg-white/10"
-                      }`}
-                    >
-                      <SpinePaintingPortal organ={painting.organ} lit={seen || focused} />
-                      <span
-                        className="text-center text-[11px] font-black leading-tight"
-                        style={{ color: organ.accentHint }}
-                      >
-                        {painting.place}
-                      </span>
-                      <span className="text-[9px] font-bold uppercase tracking-wide text-white/50">
-                        {painting.order === "Always" ? "Home" : painting.order} ·{" "}
-                        {organVerbChip(painting.organ)}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            <p className="mt-3 max-w-md text-[11px] text-white/55">
-              Route: Harbor → Carpet → Cove → Harbor → Paycheck → Harbor → Credit
+            <div className="mt-4 w-full">
+              <HarborHomeShowcase lit={harborLit} onLight={lightHarbor} />
+            </div>
+            <p className="mt-3 text-sm font-bold text-amber-100" data-testid="ashore-teach-gate">
+              {harborLit.length}/3 landmarks · {harborDone ? "Harbor clear" : "Tap each spot"}
             </p>
             <button
               type="button"
-              className="mt-4 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
+              className={CTA}
               data-testid="ashore-teach-continue"
-              disabled={!organsComplete}
+              disabled={!harborDone}
               {...pointerSafeActivate(advance)}
             >
-              {organsComplete ? "Your toolkit" : "Prove one painting"}
+              {harborDone ? "Meet the Money Carpet" : "Light all three"}
             </button>
           </>
         ) : null}
 
-        {stepId === "toolkit" ? (
+        {stepId === "carpet" ? (
           <>
             <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
-              What you can do
+              Board a living painting
             </h1>
-            <p className="mt-2 max-w-md text-sm text-white/85">
-              Walk and Talk you already proved. Light a verb to see how it looks — Takes on the
-              shore; Soft Beats are quiet peeks inside the machines.
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              The Money Carpet is your voyage vehicle. At the Dock, Cove is lit first — Paycheck and
+              Credit stay dim until you’ve played the earlier painting.
             </p>
             <div className="mt-4 w-full">
-              <ToolkitVerbShowcase verb={focusedTool} />
+              <CarpetDockShowcase
+                boarded={carpetBoarded}
+                onBoard={() => setCarpetBoarded(true)}
+              />
             </div>
-            <ul className="mt-4 grid w-full max-w-lg grid-cols-2 gap-2" data-testid="ashore-teach-toolkit">
-              {TOOLKIT.map((t) => {
-                const lit = toolkitLit.includes(t.id);
-                const focused = focusedTool === t.id;
-                return (
-                  <li key={t.id}>
-                    <button
-                      type="button"
-                      data-testid={`ashore-tool-${t.id}`}
-                      {...pointerSafeActivate(() => {
-                        setFocusedTool(t.id);
-                        setToolkitLit((prev) =>
-                          prev.includes(t.id) ? prev : [...prev, t.id],
-                        );
-                        if (t.id === "enter" || t.id === "take") playOrganSfx("coin");
-                        else playOrganSfx("memory");
-                      })}
-                      className={`w-full rounded-xl px-3 py-3 text-left ring-1 ${
-                        focused
-                          ? "bg-amber-400/25 ring-amber-200/70"
-                          : lit
-                            ? "bg-amber-400/15 ring-amber-200/50"
-                            : "bg-white/5 ring-white/15 hover:bg-white/10"
-                      }`}
-                    >
-                      <span className="text-sm font-black text-amber-100">{t.label}</span>
-                      <span className="mt-0.5 block text-[11px] text-white/70">{t.detail}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
             <button
               type="button"
-              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40"
+              className={CTA}
               data-testid="ashore-teach-continue"
-              disabled={!toolkitComplete}
+              disabled={!carpetBoarded}
+              {...pointerSafeActivate(() => {
+                playOrganSfx("coin");
+                advance();
+              })}
+            >
+              {carpetBoarded ? "Open Coincraft Cove" : "Board Cove first"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "cove" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              First painting · first game
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              Coincraft Cove is where you earn fair coins, then meet Keeper Kira’s irreversible Take.
+              Practice the fork — the plaque words stick for real later.
+            </p>
+            <div className="mt-4 w-full">
+              <PaintingLessonShowcase
+                lesson={PAINTING_LESSONS.coin}
+                chosen={coveFork}
+                onChoose={setCoveFork}
+              />
+            </div>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!coveFork}
               {...pointerSafeActivate(advance)}
             >
-              {toolkitComplete ? "Board the Money Carpet" : "Light one verb"}
+              {coveFork ? "Next painting · Paycheck" : "Practice one Take fork"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "paycheck" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              Second painting · payday pressure
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              Paycheck Peninsula stamps needs, wants, and savings — then Vendor Vee’s fountain vs
+              glitter Take. Different organ from Cove’s jar.
+            </p>
+            <div className="mt-4 w-full">
+              <PaintingLessonShowcase
+                lesson={PAINTING_LESSONS.clock}
+                chosen={payFork}
+                onChoose={setPayFork}
+              />
+            </div>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!payFork}
+              {...pointerSafeActivate(advance)}
+            >
+              {payFork ? "Next painting · Credit" : "Practice one Take fork"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "credit" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              Third painting · interest gravity
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              Credit Kingdom’s Interest Keep pulls. Rex teaches signals — then the Ordeal: wait the
+              spiral, or haste feeds it.
+            </p>
+            <div className="mt-4 w-full">
+              <PaintingLessonShowcase
+                lesson={PAINTING_LESSONS.spiral}
+                chosen={creditFork}
+                onChoose={setCreditFork}
+              />
+            </div>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!creditFork}
+              {...pointerSafeActivate(advance)}
+            >
+              {creditFork ? "How Harbor remembers" : "Practice one Take fork"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "return_scar" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              Harbor remembers
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              After any Take you carpet home. The Memory Plinth glows with your plaque — that is the
+              Change. You practiced “{plaquePreview}” on Cove; for real it would live here.
+            </p>
+            <div className="mt-4 w-full">
+              <ReturnScarShowcase
+                plaque={plaquePreview}
+                glowed={scarGlowed}
+                onGlow={() => setScarGlowed(true)}
+              />
+            </div>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!scarGlowed}
+              {...pointerSafeActivate(advance)}
+            >
+              {scarGlowed ? "Enter the money machines" : "Feel the Plinth glow"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "enter" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              Enter the machines
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              Coin Jar, Ledger Bank, Payroll Tower, Interest Keep — walk inside. Light both pad
+              types so you never confuse a Soft Beat peek with a Take.
+            </p>
+            <div className="mt-4 w-full">
+              <EnterStructuresShowcase lit={enterLit} onLit={lightEnter} />
+            </div>
+            <p className="mt-3 text-sm font-bold text-amber-100" data-testid="ashore-teach-gate">
+              {enterLit.length}/2 pad types · {enterDone ? "Clear" : "Tap Arcade and Soft Beat"}
+            </p>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!enterDone}
+              {...pointerSafeActivate(advance)}
+            >
+              {enterDone ? "Your share card" : "Light both pad types"}
+            </button>
+          </>
+        ) : null}
+
+        {stepId === "share" ? (
+          <>
+            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+              Share what Harbor felt
+            </h1>
+            <p className="mt-2 max-w-lg text-sm text-white/85">
+              After the Plinth spectacle you can freeze a “Harbor felt that” card — portable Memory.
+              Tap to practice the freeze.
+            </p>
+            <div className="mt-4 w-full">
+              <ShareCardShowcase
+                frozen={shareFrozen}
+                plaque={plaquePreview}
+                onFreeze={() => setShareFrozen(true)}
+              />
+            </div>
+            <button
+              type="button"
+              className={CTA}
+              data-testid="ashore-teach-continue"
+              disabled={!shareFrozen}
+              {...pointerSafeActivate(advance)}
+            >
+              {shareFrozen ? "Board for real" : "Freeze the share card"}
             </button>
           </>
         ) : null}
@@ -599,7 +554,7 @@ export function AshoreComprehensionTutorial({
             <p className="mt-2 max-w-lg text-sm text-white/85">
               You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board
               the lit <span className="font-bold text-amber-100">Coincraft Cove</span> painting —
-              your first game.
+              your first real game. Route stays Harbor → Cove → Harbor → Paycheck → Harbor → Credit.
             </p>
             <div className="mt-4 w-full">
               <ReadyCarpetShowcase />
@@ -610,28 +565,17 @@ export function AshoreComprehensionTutorial({
               aria-label="Main painting route"
             >
               {SPINE_PAINTINGS.filter((p) => p.organ !== "memory").map((p) => (
-                <li key={p.organ}>
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 rounded-lg px-2 py-1.5 ring-1 ring-white/20"
-                    style={{
-                      color: MONEY_ORGANS[p.organ].accentHint,
-                      background: `${MONEY_ORGANS[p.organ].accentHint}22`,
-                    }}
-                    data-testid={`ashore-ready-route-${p.organ}`}
-                    {...pointerSafeActivate(() => playOrganSfx(p.organ))}
-                  >
-                    <SpinePaintingPortal organ={p.organ} lit={p.organ === "coin"} />
-                    <span className="text-[11px] font-bold">
-                      {p.order} · {p.place}
-                    </span>
-                  </button>
+                <li
+                  key={p.organ}
+                  className="rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-white/20"
+                >
+                  {p.place}
                 </li>
               ))}
             </ul>
             <button
               type="button"
-              className="mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+              className={CTA}
               data-testid="ashore-teach-continue"
               {...pointerSafeActivate(onComplete)}
             >
@@ -645,11 +589,11 @@ export function AshoreComprehensionTutorial({
         <p className="text-[11px] uppercase tracking-wider text-white/45">
           Chamber {index + 1} / {STEPS.length} · Esc · Leave
         </p>
-        <div className="mx-auto mt-2 flex max-w-md justify-center gap-1.5">
+        <div className="mx-auto mt-2 flex max-w-xl justify-center gap-1">
           {STEPS.map((id, i) => (
             <span
               key={id}
-              className={`h-1.5 flex-1 max-w-8 rounded-full ${
+              className={`h-1.5 flex-1 max-w-6 rounded-full ${
                 i <= index ? "bg-amber-300" : "bg-white/20"
               }`}
             />
@@ -660,5 +604,6 @@ export function AshoreComprehensionTutorial({
   );
 }
 
-/** Exported for unit contracts — spine painting gallery copy. */
+/** Exported for unit contracts — spine painting places. */
 export const ASHORE_SPINE_PAINTING_PLACES = SPINE_PAINTINGS.map((p) => p.place);
+export const ASHORE_TEACH_STEP_COUNT = STEPS.length;
