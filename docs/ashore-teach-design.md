@@ -1,43 +1,42 @@
-# Ashore Teach — iconic design (iter 22)
+# Ashore Teach — Chamber 00 (iter 23)
 
-**Goal:** A pre-carpet **course** that feels like playing Capital — longer, one idea per chamber, each with a dedicated interactive visual.  
-**North stars:** Portal (prove in the room) · Mario 1-1 (body does the lesson) · BotW Plateau (vertical slice) · Astro Bot (toy clarity) · Hermans Presentation (show the pieces).
+**Goal:** Short prove-it pad before Carpet — then the **first Cove→Harbor loop is the tutorial**.  
+**Research:** [ashore-tutorial-research.md](./ashore-tutorial-research.md)  
+**North stars:** Portal checklist → twist · Mario body-lesson · BotW teach-when-needed · Astro toy clarity · Hermans elegancy.
 
 ## Laws
 
-1. **See your Voyager** — Walk / Talk / Board gates require visible body motion on the practice pad.
-2. **One idea per chamber** — never cram Harbor + four paintings + toolkit into one strip under the pad.
-3. **Talk = show** — anything named gets a full-chamber showcase of how it looks in-game (`AshoreTeachShowcases.tsx`).
-4. **Fantasy before chrome** — “Money is alive” + your Voyager before place lessons.
-5. **Each painting earns a page** — Cove · Paycheck · Credit each have a large portal + practice Take fork (does not stick).
-6. **Take site ≠ Soft Beat peek** — forks name Kira / Vee / Rex plaque vocabulary; Enter chamber teaches arcade vs Soft Beat.
-7. **No map widen** — still Harbor · Cove → Paycheck → Credit only.
-8. **Soundtrack stays** — organ stingers; opening bed.
+1. **≤5 chambers** — Fantasy · Walk · Talk · Dock · Launch. No triangle glossary slides.
+2. **Body proves** — Walk rings / Talk near+E / Dock boards Cove / Fantasy pokes an organ toy.
+3. **One sentence of copy** per chamber when possible; fantasy may add mural thesis.
+4. **Teach when needed** — Take · Plinth · Share · Soft Beat · Paycheck · Credit teach in the real world after earned.
+5. **No map widen** — Harbor · Cove → Paycheck → Credit strip only.
+6. **Leave · Esc** — veterans may skip; lands viable.
+7. **Soundtrack stays** — organ stingers; opening bed.
 
-## Chamber sequence (12)
+## Chamber sequence (5)
 
-| # | Chamber | Prove / interact |
-|---|---------|------------------|
-| 1 | Fantasy | Continue — Voyager + mural thesis only |
-| 2 | Walk | Reach three glowing markers (WASD / stick) |
-| 3 | Talk | Pink ring → E (or Talk button) |
-| 4 | Harbor Haven | Light Piggy · Plinth · Carpet Dock |
-| 5 | Money Carpet | Tap-board the lit Cove painting |
-| 6 | Coincraft Cove | Practice Take fork (jar / treat) |
-| 7 | Paycheck Peninsula | Practice Take fork (umbrella / glitter) |
-| 8 | Credit Kingdom | Practice Take fork (wait / haste) |
-| 9 | Harbor remembers | Tap Plinth — scar glow with plaque preview |
-| 10 | Enter machines | Light Arcade pads + Soft Beat peeks |
-| 11 | Share | Freeze “Harbor felt that” card |
-| 12 | Board | Launch carpet with Voyager — Cove first |
+| # | Chamber | Prove |
+|---|---------|-------|
+| 1 | Fantasy | Poke Memory or Coin toy (living money) + see Voyager |
+| 2 | Walk | Reach three glowing markers |
+| 3 | Talk | Pink ring → E |
+| 4 | Carpet Dock | Tap-board lit Cove painting |
+| 5 | Launch | Board carpet → Harbor, then Cove for real |
 
-## Out of scope (Harbor still owns)
+## Out of scope (organic teach later)
 
-Outfitter deep customization, Daily Ritual, stall shopping — discovery after Ashore.
+| Lesson | Where |
+|--------|--------|
+| Take fork | Cove · Keeper Kira (real scar) |
+| Harbor remembers | First carpet home + spectacle |
+| Share | Post-spectacle |
+| Soft Beat vs arcade | First Coin Jar enter |
+| Paycheck / Credit | When those paintings unlock |
 
 ## Code
 
-- `AshoreComprehensionTutorial.tsx` — 12-chamber director
-- `AshoreTeachShowcases.tsx` — Harbor / Carpet / painting lessons / return / enter / share visuals
-- `VoyagerWalkPracticeStage.tsx` — 3D pad (markers, Piggy ring, VoyagerMesh)
+- `AshoreComprehensionTutorial.tsx` — Chamber-00 director (`data-teach-mode="chamber-00"`)
+- `AshoreTeachShowcases.tsx` — Fantasy toys · Dock · Launch
+- `VoyagerWalkPracticeStage.tsx` — 3D pad
 - Boot: `App.tsx` passes `bootCharacter` into teach

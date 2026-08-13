@@ -27,6 +27,11 @@ Each painting teaches a **new** facet of living money (Coin holds → Clock shel
 | Structure entryHint | Arcade pads open worlds; Soft Beat pad = quiet peek |
 | Spectacle / share | One job: Harbor proves Memory / newly true painting |
 
+## Ashore implication
+
+Ashore should be Hermans-elegant: smallest prove-it setup for the next ten minutes.  
+Teaching all three Takes + Enter + Share as slides before the first voyage is an Aspiration failure (longer repaint). See [ashore-tutorial-research.md](./ashore-tutorial-research.md).
+
 ## Freeze
 
 Main-quest strip stays Harbor · Cove → Paycheck → Credit. No fake multiplayer. No foreign merges.
