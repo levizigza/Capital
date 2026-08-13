@@ -1,30 +1,35 @@
-# Ashore Teach — iconic design (iter 21)
+# Ashore Teach — iconic design (iter 22)
 
-**Goal:** A pre-carpet chamber that feels like *playing Capital*, not reading a FAQ.  
-**North stars:** Portal (prove in the room) · Mario 1-1 (body does the lesson) · BotW Plateau (vertical slice of the loop) · Astro Bot (toy clarity).
+**Goal:** A pre-carpet **course** that feels like playing Capital — longer, one idea per chamber, each with a dedicated interactive visual.  
+**North stars:** Portal (prove in the room) · Mario 1-1 (body does the lesson) · BotW Plateau (vertical slice) · Astro Bot (toy clarity) · Hermans Presentation (show the pieces).
 
 ## Laws
 
-1. **See your Voyager** — every control gate requires visible body motion on a practice pad.
-2. **One verb per chamber** — walk markers → approach Talk → understand the loop → meet the paintings.
-3. **Fantasy before chrome** — “Money is alive” and the signature loop before button legends.
-4. **Show where games live** — Chamber 5 is a painting gallery (Harbor · Cove · Paycheck · Credit) with play-here lines, not abstract organ jargon alone.
-5. **Talk = show** — anything named (painting, Plinth, Carpet, Take fork, Share card, Money Structure) gets a visual showcase of how it looks in-game (`AshoreTeachShowcases.tsx`).
-6. **Take site ≠ Soft Beat peek** — play-here names the real fork (Kira / Vee / Rex), not Lid / Loft / Battlement. Hermans: [puzzle-explorable-craft.md](./puzzle-explorable-craft.md).
-7. **No map widen** — pad is a local Canvas; Harbor / Cove / Paycheck / Credit stay the only travel spine.
-8. **Soundtrack stays** — organ stingers on gallery; beds unchanged.
+1. **See your Voyager** — Walk / Talk / Board gates require visible body motion on the practice pad.
+2. **One idea per chamber** — never cram Harbor + four paintings + toolkit into one strip under the pad.
+3. **Talk = show** — anything named gets a full-chamber showcase of how it looks in-game (`AshoreTeachShowcases.tsx`).
+4. **Fantasy before chrome** — “Money is alive” + your Voyager before place lessons.
+5. **Each painting earns a page** — Cove · Paycheck · Credit each have a large portal + practice Take fork (does not stick).
+6. **Take site ≠ Soft Beat peek** — forks name Kira / Vee / Rex plaque vocabulary; Enter chamber teaches arcade vs Soft Beat.
+7. **No map widen** — still Harbor · Cove → Paycheck → Credit only.
+8. **Soundtrack stays** — organ stingers; opening bed.
 
-## Chamber sequence
+## Chamber sequence (12)
 
-| # | Chamber | Prove |
-|---|---------|-------|
-| 1 | Fantasy | Continue after seeing Voyager on the living-money pad |
-| 2 | Walk | Reach three glowing markers (right · left · forward) with WASD — body must move |
-| 3 | Talk | Walk into Piggy’s ring, press E when the prompt appears |
-| 4 | Loop | Step through Harbor → Carpet → Cove Take → Harbor remembers — each beat shows Plinth / gate / jar fork / scar glow |
-| 5 | Paintings | Tap a framed painting portal (jar · tower · keep · plinth) — prove one with place + play-here |
-| 6 | Toolkit | Light one new verb; showcase shows Enter structures / Take fork / Return carpet→Plinth / Share card |
-| 7 | Carpet | Board with your Voyager — Carpet Dock composition with Cove painting lit |
+| # | Chamber | Prove / interact |
+|---|---------|------------------|
+| 1 | Fantasy | Continue — Voyager + mural thesis only |
+| 2 | Walk | Reach three glowing markers (WASD / stick) |
+| 3 | Talk | Pink ring → E (or Talk button) |
+| 4 | Harbor Haven | Light Piggy · Plinth · Carpet Dock |
+| 5 | Money Carpet | Tap-board the lit Cove painting |
+| 6 | Coincraft Cove | Practice Take fork (jar / treat) |
+| 7 | Paycheck Peninsula | Practice Take fork (umbrella / glitter) |
+| 8 | Credit Kingdom | Practice Take fork (wait / haste) |
+| 9 | Harbor remembers | Tap Plinth — scar glow with plaque preview |
+| 10 | Enter machines | Light Arcade pads + Soft Beat peeks |
+| 11 | Share | Freeze “Harbor felt that” card |
+| 12 | Board | Launch carpet with Voyager — Cove first |
 
 ## Out of scope (Harbor still owns)
 
@@ -32,7 +37,7 @@ Outfitter deep customization, Daily Ritual, stall shopping — discovery after A
 
 ## Code
 
-- `AshoreComprehensionTutorial.tsx` — chamber director + HUD + spine painting gallery
-- `AshoreTeachShowcases.tsx` — painting portals, loop/toolkit/ready visuals (gate · play_pad · Plinth language)
+- `AshoreComprehensionTutorial.tsx` — 12-chamber director
+- `AshoreTeachShowcases.tsx` — Harbor / Carpet / painting lessons / return / enter / share visuals
 - `VoyagerWalkPracticeStage.tsx` — 3D pad (markers, Piggy ring, VoyagerMesh)
 - Boot: `App.tsx` passes `bootCharacter` into teach

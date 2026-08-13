@@ -22,7 +22,7 @@
 ## Boot path
 
 ```
-Title → Cast → Ashore teach (7 chambers) → Money Carpet → Harbor plaza
+Title → Cast → Ashore teach (12 chambers) → Money Carpet → Harbor plaza
 ```
 
 Soundtrack cues unchanged (`soundtrackCatalog` / `public/audio/soundtrack/*.ogg`).
