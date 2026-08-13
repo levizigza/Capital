@@ -6,7 +6,7 @@ import {
   ASHORE_TEACH_STEP_COUNT,
 } from "./AshoreComprehensionTutorial";
 
-describe("Ashore comprehension tutorial (iconic chambers)", () => {
+describe("Ashore comprehension tutorial (Chamber 00)", () => {
   const app = readFileSync(join(__dirname, "../../App.tsx"), "utf8");
   const teach = readFileSync(
     join(__dirname, "AshoreComprehensionTutorial.tsx"),
@@ -26,21 +26,25 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
     expect(app).toMatch(/setBootPhase\("carpet"\)/);
   });
 
-  it("expands into one-idea chambers with body prove for walk/talk", () => {
-    expect(ASHORE_TEACH_STEP_COUNT).toBeGreaterThanOrEqual(12);
-    expect(teach).toMatch(/VoyagerWalkPracticeStage/);
+  it("keeps Chamber 00 to five prove-it steps", () => {
+    expect(ASHORE_TEACH_STEP_COUNT).toBe(5);
+    expect(teach).toMatch(/data-teach-mode="chamber-00"/);
     expect(teach).toMatch(/"fantasy"/);
     expect(teach).toMatch(/"walk"/);
     expect(teach).toMatch(/"talk"/);
-    expect(teach).toMatch(/"harbor"/);
-    expect(teach).toMatch(/"carpet"/);
-    expect(teach).toMatch(/"cove"/);
-    expect(teach).toMatch(/"paycheck"/);
-    expect(teach).toMatch(/"credit"/);
-    expect(teach).toMatch(/"return_scar"/);
-    expect(teach).toMatch(/"enter"/);
-    expect(teach).toMatch(/"share"/);
+    expect(teach).toMatch(/"dock"/);
     expect(teach).toMatch(/"ready"/);
+    expect(teach).not.toMatch(/"paycheck"/);
+    expect(teach).not.toMatch(/"credit"/);
+    expect(teach).not.toMatch(/"return_scar"/);
+    expect(teach).not.toMatch(/"enter"/);
+    expect(teach).not.toMatch(/PaintingLessonShowcase/);
+    expect(teach).not.toMatch(/ShareCardShowcase/);
+    expect(teach).not.toMatch(/EnterStructuresShowcase/);
+  });
+
+  it("teaches with visible Voyager walk pad and marker claims", () => {
+    expect(teach).toMatch(/VoyagerWalkPracticeStage/);
     expect(teach).toMatch(/MURAL_THESIS/);
     expect(teach).toMatch(/ashore-comprehension-tutorial/);
     expect(pad).toMatch(/VoyagerMesh/);
@@ -49,45 +53,23 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
     expect(pad).toMatch(/Piggy/);
   });
 
-  it("gives each spine painting its own lesson chamber", () => {
+  it("fantasy pokes organ toys; dock boards Cove; launch names first voyage", () => {
     expect(ASHORE_SPINE_PAINTING_PLACES).toEqual([
       "Harbor Haven",
       "Coincraft Cove",
       "Paycheck Peninsula",
       "Credit Kingdom",
     ]);
-    expect(teach).toMatch(/PAINTING_LESSONS/);
-    expect(teach).toMatch(/PaintingLessonShowcase/);
-    expect(teach).toMatch(/First painting · first game/);
-    expect(teach).toMatch(/Second painting · payday pressure/);
-    expect(teach).toMatch(/Third painting · interest gravity/);
-    expect(teach).toMatch(/ashore-teach-route/);
-    expect(show).toMatch(/Jar before treat/);
-    expect(show).toMatch(/Umbrella before glitter/);
-    expect(show).toMatch(/Waited the spiral/);
-    expect(show).toMatch(/Practice the Take/);
-    expect(show).toMatch(/Keeper Kira/);
-    expect(show).toMatch(/Vendor Vee/);
-    expect(show).toMatch(/Rex the Collector/);
-  });
-
-  it("showcases Harbor, Carpet, Plinth return, Enter, and Share as dedicated visuals", () => {
-    expect(teach).toMatch(/HarborHomeShowcase/);
+    expect(teach).toMatch(/FantasyOrganToys/);
     expect(teach).toMatch(/CarpetDockShowcase/);
-    expect(teach).toMatch(/ReturnScarShowcase/);
-    expect(teach).toMatch(/EnterStructuresShowcase/);
-    expect(teach).toMatch(/ShareCardShowcase/);
     expect(teach).toMatch(/ReadyCarpetShowcase/);
-    expect(teach).not.toMatch(/ashore-fantasy-paintings/);
-    expect(show).toMatch(/ashore-harbor-showcase/);
+    expect(teach).toMatch(/ashore-teach-route/);
+    expect(teach).toMatch(/Harbor, then Cove/);
+    expect(show).toMatch(/ashore-fantasy-toys/);
     expect(show).toMatch(/ashore-carpet-showcase/);
-    expect(show).toMatch(/ashore-painting-lesson/);
-    expect(show).toMatch(/ashore-return-showcase/);
-    expect(show).toMatch(/ashore-enter-showcase/);
-    expect(show).toMatch(/ashore-share-showcase/);
+    expect(show).toMatch(/ashore-carpet-board-cove/);
+    expect(show).toMatch(/ashore-ready-showcase/);
     expect(show).toMatch(/drawMemoryPlinthSilhouette/);
-    expect(show).toMatch(/Soft Beat peeks/);
-    expect(show).toMatch(/Arcade pads/);
   });
 
   it("keeps opening music bed and organ stingers", () => {
@@ -98,7 +80,7 @@ describe("Ashore comprehension tutorial (iconic chambers)", () => {
   it("uses Leave · Esc and prove gates — not SaaS Skip / collect-all", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
-    expect(teach).toMatch(/Practice one Take fork|Light all three|Board Cove first/);
+    expect(teach).toMatch(/Poke a living-money toy|Board Cove first/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);

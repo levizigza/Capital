@@ -1,28 +1,32 @@
 # Harbor Ashore — opening tutorial
 
-**Purpose:** Teach Capital with *play* before the Money Carpet — see your Voyager move, learn the loop and spine paintings (where games live), then land on a walkable Harbor.
+**Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 
-**Canon:** [ashore-teach-design.md](./ashore-teach-design.md) · [iconic-path.md](./iconic-path.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md)  
+**Canon:** [ashore-teach-design.md](./ashore-teach-design.md) · [ashore-tutorial-research.md](./ashore-tutorial-research.md) · [iconic-path.md](./iconic-path.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md)  
 **Code:** `AshoreComprehensionTutorial.tsx` · `VoyagerWalkPracticeStage.tsx` · `harborAshore.ts` · `App.tsx`
 
 ---
 
-## Research bar (Portal · Mario · BotW · Astro)
+## Research bar (Portal · Mario · BotW · Astro · Hermans)
+
+Full write-up: [ashore-tutorial-research.md](./ashore-tutorial-research.md).
 
 | Pattern | Rule in Capital |
 |---------|-----------------|
-| Body does the lesson | Walk rings require VoyagerMesh displacement — not a lone keypress |
-| One verb per chamber | Walk → Talk → Loop → Organs → Toolkit → Carpet |
-| Vertical slice of the game | Signature loop told before Harbor (Harbor → Take → Harbor remembers) |
-| Opt-in social | Talk chamber: enter Piggy’s ring, then E |
-| Fantasy first | Mural thesis + living-money pad before chrome |
+| Body does the lesson | Walk rings require VoyagerMesh displacement |
+| One verb per chamber | Five Ashore proves only — no Paycheck/Credit/Share slides |
+| Vertical slice | Signature loop *played* on first Cove→Harbor |
+| Opt-in social | Talk: enter Piggy’s ring, then E |
+| Fantasy first | Mural thesis + pokeable organ toys |
+| Teach when needed | Soft Beat / Share / later organs after earned |
 
 ---
 
 ## Boot path
 
 ```
-Title → Cast → Ashore teach (12 chambers) → Money Carpet → Harbor plaza
+Title → Cast → Ashore teach (5 chambers) → Money Carpet → Harbor plaza
+  → Cove (first game + real Take) → Harbor remembers (spectacle + share)
 ```
 
 Soundtrack cues unchanged (`soundtrackCatalog` / `public/audio/soundtrack/*.ogg`).
