@@ -3,6 +3,8 @@
 **Goal:** A pre-carpet **course** that feels like playing Capital — longer, one idea per chamber, each with a dedicated interactive visual.  
 **North stars:** Portal (prove in the room) · Mario 1-1 (body does the lesson) · BotW Plateau (vertical slice) · Astro Bot (toy clarity) · Hermans Presentation (show the pieces).
 
+**Deep research (iter 23):** [ashore-tutorial-research.md](./ashore-tutorial-research.md) — diagnosis of the 12-chamber course + recommended shrink to Chamber-00 (≤5 prove-it pages; first Cove→Harbor *is* the tutorial).
+
 ## Laws
 
 1. **See your Voyager** — Walk / Talk / Board gates require visible body motion on the practice pad.
