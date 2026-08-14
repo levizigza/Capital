@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   harborPriceMultiplier,
   harborWeatherMood,
+  paydayIncomeMultiplier,
   scaleHarborPrice,
   skyIntentFromCashflow,
 } from "./harborWeather";
@@ -33,5 +34,6 @@ describe("harborWeather", () => {
     expect(scaleHarborPrice(100, withLedger(5, 40))).toBeLessThan(100);
     expect(skyIntentFromCashflow(-5)).toBe("night");
     expect(skyIntentFromCashflow(50)).toBe("day");
+    expect(paydayIncomeMultiplier(harborWeatherMood(withLedger(80, 10)))).toBe(1.1);
   });
 });

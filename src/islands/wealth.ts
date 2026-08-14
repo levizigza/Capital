@@ -1,8 +1,12 @@
 /**
- * Wealth ranks — you start flat broke and climb as you earn coins (points).
- * Thresholds line up with the boat tiers so the two systems tell one story:
- * the richer you get, the bigger your boat and the fancier your rank.
+ * Progress metaphor — carpet/boat tier ONLY.
+ * Wealth ranks used to duplicate boat minCoins thresholds (poor design value).
+ * Canon: GAME_DESIGN_COMPLEXITY.md — merge wealth → carpet.
  */
+
+import { BOAT_TIERS, getBoatTier, nextBoatTier, type BoatTier } from "./boats";
+
+/** @deprecated Alias — carpet tier is the single coin-progress label. */
 export type WealthRank = {
   id: string;
   min: number;
@@ -10,35 +14,28 @@ export type WealthRank = {
   label: string;
 };
 
-export const WEALTH_RANKS: WealthRank[] = [
-  { id: "broke", min: 0, emoji: "🥫", label: "Flat broke" },
-  { id: "scraping", min: 100, emoji: "🪙", label: "Scraping by" },
-  { id: "getting-by", min: 500, emoji: "💵", label: "Getting by" },
-  { id: "comfortable", min: 2_000, emoji: "💰", label: "Comfortable" },
-  { id: "well-off", min: 10_000, emoji: "🏦", label: "Well-off" },
-  { id: "wealthy", min: 50_000, emoji: "💎", label: "Wealthy" },
-  { id: "tycoon", min: 200_000, emoji: "👑", label: "Tycoon" },
-];
+function tierAsRank(t: BoatTier): WealthRank {
+  return { id: t.id, min: t.minCoins, emoji: t.emoji, label: t.label };
+}
+
+/** Same thresholds as BOAT_TIERS — one story for pouch progress. */
+export const WEALTH_RANKS: WealthRank[] = BOAT_TIERS.map(tierAsRank);
 
 export function getWealthRank(totalCoins: number): WealthRank {
-  let rank = WEALTH_RANKS[0];
-  for (const r of WEALTH_RANKS) {
-    if (totalCoins >= r.min) rank = r;
-    else break;
-  }
-  return rank;
+  return tierAsRank(getBoatTier(totalCoins));
 }
 
 export function nextWealthRank(totalCoins: number): WealthRank | null {
-  return WEALTH_RANKS.find((r) => r.min > totalCoins) ?? null;
+  const next = nextBoatTier(totalCoins);
+  return next ? tierAsRank(next) : null;
 }
 
-/** 0..1 progress from the current rank toward the next one. */
+/** 0..1 progress from the current carpet tier toward the next one. */
 export function wealthProgress(totalCoins: number): number {
-  const current = getWealthRank(totalCoins);
-  const next = nextWealthRank(totalCoins);
+  const current = getBoatTier(totalCoins);
+  const next = nextBoatTier(totalCoins);
   if (!next) return 1;
-  const span = next.min - current.min;
+  const span = next.minCoins - current.minCoins;
   if (span <= 0) return 1;
-  return Math.min(1, Math.max(0, (totalCoins - current.min) / span));
+  return Math.min(1, Math.max(0, (totalCoins - current.minCoins) / span));
 }

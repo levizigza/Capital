@@ -12,14 +12,18 @@ export function harborCashflow(save: IslandSaveV1): number {
   return netCashflow(ensureLedger(save.voyagerLedger));
 }
 
-export function harborWeatherMood(save: IslandSaveV1): HarborWeatherMood {
-  const cf = harborCashflow(save);
-  const hasteScar = (save.harborScars ?? []).some((s) => s.id.includes("haste") || s.id.includes("risk"));
+/** Mood from cashflow alone — used by board Pay Day without full save. */
+export function moodFromCashflow(cf: number, hasteScar = false): HarborWeatherMood {
   if (hasteScar && cf < 20) return "storm";
   if (cf >= 40) return "boom";
   if (cf >= 15) return "fair";
   if (cf >= 0) return "tight";
   return "storm";
+}
+
+export function harborWeatherMood(save: IslandSaveV1): HarborWeatherMood {
+  const hasteScar = (save.harborScars ?? []).some((s) => s.id.includes("haste") || s.id.includes("risk"));
+  return moodFromCashflow(harborCashflow(save), hasteScar);
 }
 
 /** Sky intent driven by ledger health (mixed with director elsewhere). */
@@ -63,6 +67,24 @@ export function weatherCoachLine(mood: HarborWeatherMood): string {
       return "Sky’s a bit grey. Locals soften prices while cashflow recovers.";
     case "storm":
       return "Fog hugs the dock. Interest storms elsewhere — Harbor cuts prices to help.";
+  }
+}
+
+/**
+ * Soft Pay Day income mult from the SAME weather fiction as shops/sky.
+ * Unifies orphan boom/recession multipliers (GAME_DESIGN_COMPLEXITY.md).
+ * Mild — creates decisions without spreadsheet realism.
+ */
+export function paydayIncomeMultiplier(mood: HarborWeatherMood): number {
+  switch (mood) {
+    case "boom":
+      return 1.1;
+    case "fair":
+      return 1;
+    case "tight":
+      return 0.95;
+    case "storm":
+      return 0.9;
   }
 }
 

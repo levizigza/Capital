@@ -172,8 +172,46 @@ export function computeEffectiveWeight(
 }
 
 /**
- * Advance the economy by one turn. Returns a new EconomyState.
- * If the phase duration has been reached, a transition roll happens.
+ * Advance economy by syncing to Harbor cashflow weather (not Markov RNG).
+ * Preserves event-weight tables while killing dual-weather cognitive load.
+ * Canon: GAME_DESIGN_COMPLEXITY.md
+ */
+export function syncEconomyToHarborMood(
+  state: EconomyState,
+  mood: "boom" | "fair" | "tight" | "storm",
+): EconomyState {
+  const phase = economyPhaseFromHarborMood(mood);
+  const nextTotalTurns = state.totalTurns + 1;
+  if (phase === state.phase) {
+    return {
+      ...state,
+      turnsInPhase: state.turnsInPhase + 1,
+      totalTurns: nextTotalTurns,
+    };
+  }
+  return {
+    phase,
+    turnsInPhase: 0,
+    totalTurns: nextTotalTurns,
+    phaseHistory: [
+      ...state.phaseHistory,
+      { phase, startedAtTurn: nextTotalTurns },
+    ],
+  };
+}
+
+/** Map Harbor weather → legacy phase buckets for event-weight tables. */
+export function economyPhaseFromHarborMood(
+  mood: "boom" | "fair" | "tight" | "storm",
+): EconomyPhase {
+  if (mood === "boom") return "boom";
+  if (mood === "storm" || mood === "tight") return "recession";
+  return "normal";
+}
+
+/**
+ * @deprecated Prefer syncEconomyToHarborMood — Markov dual weather had poor design value.
+ * Kept for tests / digression minigames that still call advance explicitly.
  */
 export function advanceEconomy(
   state: EconomyState,
@@ -182,7 +220,6 @@ export function advanceEconomy(
   const nextTurnsInPhase = state.turnsInPhase + 1;
   const nextTotalTurns = state.totalTurns + 1;
 
-  // Check if it's time for a phase transition
   if (nextTurnsInPhase >= phaseDuration) {
     const newPhase = rollPhaseTransition(state.phase);
     return {
@@ -214,5 +251,5 @@ function rollPhaseTransition(current: EconomyPhase): EconomyPhase {
     if (roll <= cumulative) return phase;
   }
 
-  return "normal"; // fallback
+  return "normal";
 }

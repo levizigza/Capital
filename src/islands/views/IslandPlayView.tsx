@@ -1,4 +1,4 @@
-import { Suspense, lazy, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -33,11 +33,6 @@ import type {
   QuestObjective,
 } from "../types";
 
-const LazyEconomyWeather = lazy(() => import("../EconomyWeatherIndicator"));
-const LazySkillStatsPanel = lazy(() => import("../SkillStatsPanel"));
-
-import { createDefaultEconomyState } from "../economy";
-import { createDefaultSkillStats } from "../skillStats";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";
 import { getIslandTheme } from "../themes/islandThemes";
 import { getAnimationStyle, isHomeLook, type AnimationStyleId } from "../animationStyles";
@@ -583,14 +578,6 @@ export function IslandPlayView({
             </div>
           </GamePanel>
         ) : null}
-
-        <Suspense fallback={null}>
-          <LazySkillStatsPanel
-            stats={(save.skillStats ?? createDefaultSkillStats()).current}
-            history={(save.skillStats ?? createDefaultSkillStats()).history}
-            compact
-          />
-        </Suspense>
 
         {compact ? (
           <>
