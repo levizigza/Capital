@@ -1,7 +1,6 @@
 /**
  * Soft Beat lookouts — quiet “see the world you changed” toys inside Money Structures.
- * Not a minigame dump — a hush moment before the storm / after a Take.
- * Organ-true: Coin Lid · Memory Teller · Clock Loft · Spiral Battlement.
+ * Curiosity: fork vistas, Teller cross-index, return peeks (see curiosityDiscovery.ts).
  */
 
 import { useEffect } from "react";
@@ -14,6 +13,7 @@ import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
+import type { SoftBeatCuriosityView } from "../curiosityDiscovery";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -53,6 +53,8 @@ type Props = {
   hushActive?: boolean;
   /** Latest plaque label — living receipt inside the Soft Beat */
   scarLabel?: string | null;
+  /** Curiosity resolution — fork vista / cross-index / foreshadow */
+  curiosity?: SoftBeatCuriosityView | null;
   onDone: () => void;
 };
 
@@ -60,6 +62,7 @@ export function SoftBeatOverlay({
   kind,
   hushActive = false,
   scarLabel = null,
+  curiosity = null,
   onDone,
 }: Props) {
   const beat = BEATS[kind];
@@ -77,7 +80,10 @@ export function SoftBeatOverlay({
     return () => window.clearTimeout(t);
   }, [hushActive, onDone, organ.id]);
 
-  const body = hushActive ? beat.hushLine : beat.line;
+  const forkOrForeshadow = curiosity?.vistaLine ?? curiosity?.foreshadowLine;
+  const body = hushActive
+    ? beat.hushLine
+    : forkOrForeshadow ?? beat.line;
   const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
@@ -113,6 +119,7 @@ export function SoftBeatOverlay({
       data-soft-beat={kind}
       data-soft-beat-climb={climbMotif}
       data-soft-beat-layout="lower-third"
+      data-soft-beat-fork={curiosity?.vistaLine ? "1" : "0"}
       data-organ={organ.id}
       data-nav-escape="window"
       onClick={onDone}
@@ -126,17 +133,36 @@ export function SoftBeatOverlay({
         </p>
         <p className="mt-1 text-[11px] font-semibold tracking-wide text-amber-100/85">
           {climbHint}
+          {curiosity?.isReturnPeek ? " · return peek" : ""}
         </p>
         <h2 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
           {beat.title}
         </h2>
-        <p className="mt-3 text-sm text-white/85">{body}</p>
+        <p className="mt-3 text-sm text-white/85" data-testid="soft-beat-body">
+          {body}
+        </p>
+        {curiosity?.crossIndexLine ? (
+          <p
+            className="mt-2 text-sm font-semibold text-amber-50/95"
+            data-testid="soft-beat-cross-index"
+          >
+            {curiosity.crossIndexLine}
+          </p>
+        ) : null}
         <p
           className="mt-2 text-sm font-semibold text-amber-100/95"
           data-testid="soft-beat-retell"
         >
           {kidSentence}
         </p>
+        {curiosity?.strategyHint ? (
+          <p
+            className="mt-2 text-xs text-sky-100/90"
+            data-testid="soft-beat-strategy"
+          >
+            {curiosity.strategyHint}
+          </p>
+        ) : null}
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
         <GameButton
           variant="primary"

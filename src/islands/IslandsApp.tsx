@@ -73,6 +73,7 @@ import {
   bumpWeeklyTalk,
   bumpWeeklyStudio,
   DAILY_RITUAL_REWARD_COINS,
+  localDayKey,
 } from "./harborRitual";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
@@ -146,6 +147,13 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import {
+  markAffinityShelfInsight,
+  markDealReceiptInsight,
+  recordSoftBeatPeek,
+  recordWeatherOrganInsight,
+} from "./curiosityDiscovery";
+import type { SoftBeatKind } from "./views/SoftBeatOverlay";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -736,6 +744,43 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const onSyncHarborRitual = useCallback(() => {
     updateSave((prev) => syncHarborRitual(prev));
+  }, [updateSave]);
+
+  const onSoftBeatPeek = useCallback(
+    (kind: SoftBeatKind) => {
+      let resourceCoins = 0;
+      let discoveryNote: string | null = null;
+      updateSave((prev) => {
+        const result = recordSoftBeatPeek(prev, kind);
+        resourceCoins = result.resourceCoins;
+        discoveryNote = result.discoveryNote;
+        return result.save;
+      });
+      if (resourceCoins > 0) {
+        setUserProfile((prev) => ({
+          ...prev,
+          totalCoins: prev.totalCoins + resourceCoins,
+        }));
+      }
+      if (discoveryNote) {
+        toast.message(discoveryNote, {
+          description:
+            resourceCoins > 0
+              ? `Curiosity thank-you · +${resourceCoins} coins`
+              : "Investigation rewarded — Soft Beats deepen after Takes.",
+        });
+      }
+    },
+    [setUserProfile, updateSave],
+  );
+
+  const onCuriositySync = useCallback(() => {
+    updateSave((prev) => {
+      let next = recordWeatherOrganInsight(prev, localDayKey());
+      next = markAffinityShelfInsight(next);
+      next = markDealReceiptInsight(next);
+      return next;
+    });
   }, [updateSave]);
 
   const onClaimRitualPayday = useCallback(() => {
@@ -2187,6 +2232,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onClaimRitualReward={onClaimRitualReward}
             onMarkRitualRumor={onMarkRitualRumor}
             onMarkRitualGreeted={onMarkRitualGreeted}
+            onSoftBeatPeek={onSoftBeatPeek}
+            onCuriositySync={onCuriositySync}
             onStudioGalleryOpened={onStudioGalleryOpened}
             onMarkScarSpectacle={(scarCount) => {
               updateSave((prev) => ({
@@ -2296,6 +2343,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onEnterArea={(areaId) => void enterArea(areaId)}
               onStartQuest={(questId) => void startQuest(questId)}
               talkOpen={dialogueState.open}
+              onSoftBeatPeek={onSoftBeatPeek}
             />
           </IslandThemeProvider>
         ) : view === "explore" && activeIsland ? (

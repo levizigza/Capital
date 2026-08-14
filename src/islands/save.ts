@@ -112,6 +112,9 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   if (parsed.stance && typeof parsed.stance === "object") {
     sanitized.stance = parsed.stance as IslandSaveV1["stance"];
   }
+  if (parsed.curiosity && typeof parsed.curiosity === "object") {
+    sanitized.curiosity = parsed.curiosity as IslandSaveV1["curiosity"];
+  }
   if (parsed.npcMemory && typeof parsed.npcMemory === "object") {
     sanitized.npcMemory = parsed.npcMemory as IslandSaveV1["npcMemory"];
   }
