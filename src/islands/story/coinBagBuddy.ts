@@ -16,6 +16,7 @@ import { questTrack, trackCoachPrefix } from "../questTracks";
 import { hasHarborFreedom } from "../progressGates";
 import { isRoomUnlocked } from "../harborShop";
 import { HUB_ISLAND_ID, isHubIslandId } from "../islandIds";
+import { primaryProgressionTip } from "../progressionGoals";
 
 export type CoinBagBuddyTip = {
   /** Short line for 3D bubble / HUD */
@@ -73,6 +74,8 @@ export function coinBagHarborTip(
     day2Echo?: boolean;
     /** Freedom Seal carpet tier label (plaza read) */
     carpetTierLabel?: string | null;
+    /** Save for nested short/medium/long whisper (no checklist HUD) */
+    progressionSave?: IslandSaveV1 | null;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -163,6 +166,15 @@ export function coinBagHarborTip(
       coach: "Our island adventure is paused — resume anytime.",
     };
   }
+
+  const progTip = opts?.progressionSave ? primaryProgressionTip(opts.progressionSave) : null;
+  if (progTip) {
+    return {
+      tip: progTip,
+      coach: "One voyage goal at a time — short feeds medium, medium unlocks long. No XP ladder.",
+    };
+  }
+
   return {
     tip: "Ledger Bank — walk into the vault!",
     coach:

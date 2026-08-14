@@ -581,6 +581,7 @@ export function HomeHubView({
     plinthGlow: plinthGlow || feltShareOpen,
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
+    progressionSave: save,
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1587,8 +1588,7 @@ export function HomeHubView({
       >
         <div className="space-y-4 text-left">
           <p className="text-sm text-muted-foreground text-center">
-            Streak {save.harborRitual?.streak ?? 1} day
-            {(save.harborRitual?.streak ?? 1) === 1 ? "" : "s"} — show up, listen, collect.
+            Today’s Harbor check-in — rumor + Pay Day (Freedom streak lives on the ledger, not a visit counter).
           </p>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
             <p className="font-bold">Mascot rumor</p>

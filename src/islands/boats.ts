@@ -1,6 +1,8 @@
 /**
- * Money Magic Carpet tiers — earn coins, upgrade your ride between islands.
- * Harbor escape unlocks at least the Fortune flyer look.
+ * Money Magic Carpet tiers — ride look between islands.
+ * Progression story ends at Fortune flyer (Freedom floor).
+ * Mint / vault / royal are optional vanity polish — no new places.
+ * @see docs/GAME_DESIGN_PROGRESSION.md
  */
 
 import type { IslandSaveV1 } from "./types";
@@ -26,6 +28,9 @@ export const BOAT_TIERS: BoatTier[] = [
   { id: "vault_soar", minCoins: 10_000, emoji: "🏆", label: "Vault soarer", scale: 1.35 },
   { id: "royal_ride", minCoins: 50_000, emoji: "👑", label: "Royal money carpet", scale: 1.6 },
 ];
+
+/** Progression story ends here — higher tiers are vanity look only. */
+export const CARPET_PROGRESSION_CAP_ID = "fortune_flyer";
 
 export function getBoatTier(totalCoins: number): BoatTier {
   let tier = BOAT_TIERS[0]!;

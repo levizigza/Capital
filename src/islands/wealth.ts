@@ -1,7 +1,7 @@
 /**
- * Wealth ranks — you start flat broke and climb as you earn coins (points).
- * Thresholds line up with the boat tiers so the two systems tell one story:
- * the richer you get, the bigger your boat and the fancier your rank.
+ * Wealth ranks — STATUS chrome only (labels from lifetime coins).
+ * Not progression: no island / room / Credit gates. HUD no longer shows the ladder.
+ * @see docs/GAME_DESIGN_PROGRESSION.md
  */
 export type WealthRank = {
   id: string;
