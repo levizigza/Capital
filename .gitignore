@@ -46,3 +46,6 @@ dev-log.txt
 playwright-report/
 test-results/
 dev-log.txt
+
+# local sim reports
+artifacts/
