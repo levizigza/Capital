@@ -37,4 +37,27 @@ export {
   MAX_ANALYTICS_EVENTS,
 } from "./export";
 
+export { scrubAnalyticsPayload, ANALYTICS_BANNED_KEYS } from "./privacy";
+export { GAME_METRIC_INVESTIGATIONS, metricForEvent } from "./gameMetrics";
+export {
+  trackSessionHeartbeat,
+  trackCoreLoopCycle,
+  trackLocationOutcome,
+  trackResourceDelta,
+  trackStrategySelected,
+  trackFeatureUsed,
+  trackAbandonPoint,
+  trackProgressionMilestone,
+  trackDecisionMade,
+  trackRetryAttempt,
+  trackSystemInteracted,
+  resetGameplayTelemetryCounters,
+} from "./trackGameplay";
+export { featureFromHubModal } from "./schemas";
+export type {
+  FeatureId,
+  CoreLoopPhase,
+  ProgressionMilestoneId,
+} from "./schemas";
+
 export { default as AnalyticsExportView } from "./AnalyticsExportView";

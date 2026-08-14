@@ -75,7 +75,10 @@ Motion, SFX, music stingers, collect feedback, and readable UI at every tier. Pr
 | **Time to first quest** | Hub enter → `quest_started` | < 3 min median |
 | **Replay engagement** | % sessions opening decision replay after quest | ≥ 30% (stretch) |
 
-Instrument via existing Islands analytics (`island_entered`, `quest_*`, `minigame_*`, `dialogue_*`, `settings_changed`).
+Instrument via Islands gameplay telemetry — see [GAME_METRICS.md](./GAME_METRICS.md).  
+Stable events include `island_entered`, `quest_*`, `minigame_*`, `dialogue_*`, `core_loop_cycle`, `resource_delta`, `progression_milestone`, …  
+
+**Never treat a metric as proof of enjoyment.** Numbers flag surfaces to playtest.
 
 ---
 

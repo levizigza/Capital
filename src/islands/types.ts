@@ -13,9 +13,15 @@ export type ProfileText = string | { explorer?: string; apprentice?: string; str
 /** A numeric field that supports per-profile variants. Plain number = same for all profiles. */
 export type ProfileNumber = number | { explorer?: number; apprentice?: number; strategist?: number };
 
+/**
+ * Stable Islands gameplay telemetry catalog.
+ * Names are append-only — do not rename; add new events instead.
+ * @see docs/GAME_METRICS.md
+ */
 export type AnalyticsEventName =
   | "session_started"
   | "session_ended"
+  | "session_heartbeat"
   | "screen_enter"
   | "screen_exit"
   | "tutorial_started"
@@ -38,7 +44,28 @@ export type AnalyticsEventName =
   | "settings_changed"
   | "character_saved"
   | "onboarding_completed"
-  | "hint_escalated";
+  | "hint_escalated"
+  | "harbor_purchase"
+  /** Signature-loop phase tick (Take → Harbor felt → Soft Beat → clear). */
+  | "core_loop_cycle"
+  /** Success / failure / abandon at a named location. */
+  | "location_outcome"
+  /** Coins / XP / stars delta — ids + amounts only. */
+  | "resource_delta"
+  /** Irreversible / Soft Beat / shop strategy fork (choice ids, never free text). */
+  | "strategy_selected"
+  /** Hub / structure / studio feature opens. */
+  | "feature_used"
+  /** Explicit quit / leave / cancel investigation points. */
+  | "abandon_point"
+  /** Spine unlocks / chapter clears (velocity = Δelapsed between milestones). */
+  | "progression_milestone"
+  /** Player decision (dialogue / irreversible / board / shop). */
+  | "decision_made"
+  /** Generalized retry (minigame_retry remains for board skill checks). */
+  | "retry_attempt"
+  /** Cross-system touch (organ, weather, Soft Beat, Family Room, Talk). */
+  | "system_interacted";
 
 export type AnalyticsEvent = {
   id: string;

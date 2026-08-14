@@ -4,6 +4,7 @@ import type { AnalyticsEvent, AnalyticsEventName } from "./types";
 
 import { MAX_ANALYTICS_EVENTS, ANALYTICS_KV_KEY } from "./analytics/export";
 import { getOrStartSession, sessionContext } from "./analytics/session";
+import { scrubAnalyticsPayload } from "./analytics/privacy";
 
 export interface AnalyticsSink {
   emit: (event: AnalyticsEvent) => void | Promise<void>;
@@ -46,10 +47,10 @@ export class AnalyticsClient {
       id: uuidv4(),
       ts: new Date().toISOString(),
       name,
-      payload: {
+      payload: scrubAnalyticsPayload({
         ...sessionContext(),
         ...payload,
-      },
+      }),
     };
 
     await Promise.allSettled(this.sinks.map((s) => s.emit(event)));
