@@ -50,6 +50,7 @@ import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLoop";
 import { canOpenSignatureCinema } from "../signatureCinemaGate";
+import { trackCoreLoopFirstSuccess } from "../ftueTelemetry";
 import {
   harborScarPlaques,
   stanceGreetingHint,
@@ -439,6 +440,10 @@ export function HomeHubView({
     setPlinthGlow(true);
     setFeltShareOpen(true);
     playCapitalSfx("plinth_hum");
+    trackCoreLoopFirstSuccess({
+      scarCount: plaques.length,
+      via: "scar_spectacle",
+    });
   }, [plaques.length, onMarkScarSpectacle]);
 
   useEffect(() => {

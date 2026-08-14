@@ -27,6 +27,15 @@ export type {
 } from "./funnel";
 
 export {
+  analyzeFtueFunnel,
+  FTUE_STEPS,
+  FTUE_STEP_COUNT,
+  shouldSkipAshoreTeach,
+  trackCoreLoopFirstSuccess,
+} from "../ftueTelemetry";
+export type { FtueFunnelAnalysis, FtueStepId } from "../ftueTelemetry";
+
+export {
   loadAnalyticsEvents,
   clearAnalyticsEvents,
   exportAnalyticsCsv,

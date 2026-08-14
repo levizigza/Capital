@@ -5,6 +5,8 @@ export const FUNNEL_WINDOW_MS = 5 * 60 * 1000;
 /** Ordered onboarding funnel stages (first 5 minutes). */
 export const FUNNEL_STAGES = [
   { id: "session_started", label: "Session started", event: "session_started" },
+  { id: "ftue_started", label: "FTUE started", event: "ftue_started" },
+  { id: "ftue_completed", label: "FTUE completed", event: "ftue_completed" },
   { id: "hub", label: "Home hub", screen: "islands_hub" },
   { id: "travel", label: "Travel map", screen: "islands_travel" },
   { id: "island", label: "Entered island", event: "island_entered" },
@@ -12,6 +14,7 @@ export const FUNNEL_STAGES = [
   { id: "quest", label: "Quest started", event: "quest_started" },
   { id: "minigame", label: "Minigame started", event: "minigame_started" },
   { id: "minigame_done", label: "Minigame completed", event: "minigame_completed" },
+  { id: "core_loop", label: "First core-loop success", event: "core_loop_first_success" },
   { id: "tutorial", label: "Tutorial completed", event: "tutorial_completed" },
 ] as const;
 
