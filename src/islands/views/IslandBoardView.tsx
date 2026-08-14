@@ -280,7 +280,7 @@ export function IslandBoardView({
       onLaunchMinigame,
       onUpdatePartyState,
       runRivalTurns,
-      save.voyagerLedger,
+      save,
       userProfile.totalCoins,
     ],
   );
