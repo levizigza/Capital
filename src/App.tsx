@@ -8,6 +8,7 @@ import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
 import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/views/CapitalOpeningIntro'
 import { BootCastSelect } from '@/islands/views/BootCastSelect'
 import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehensionTutorial'
+import { shouldSkipAshoreTeach } from '@/islands/ftueTelemetry'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
@@ -478,7 +479,8 @@ function App() {
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
               }
-              setBootPhase("teach")
+              // Experienced players skip explicit Ashore guidance.
+              setBootPhase(shouldSkipAshoreTeach() ? "carpet" : "teach")
             }}
           />
         ) : bootPhase === "teach" ? (
