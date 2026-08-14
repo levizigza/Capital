@@ -221,7 +221,7 @@ export function IslandBoardView({
       let working = { ...state };
 
       if (result.passedStart) {
-        applyPayload(resolvePassStart(boardMode, save.voyagerLedger));
+        applyPayload(resolvePassStart(boardMode, save.voyagerLedger, save));
       }
 
       if (space.type === "minigame" && space.minigameId) {
@@ -238,7 +238,7 @@ export function IslandBoardView({
         working,
         userProfile.totalCoins,
         save.voyagerLedger,
-        { trackHarborEscape: tracksHarborEscape(boardMode) },
+        { trackHarborEscape: tracksHarborEscape(boardMode), save },
       );
       working = next;
       onUpdatePartyState(working);

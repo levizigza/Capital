@@ -146,6 +146,9 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { harborWeatherMood } from "./harborWeather";
+import { composePaydayMultiplier } from "./systemInteractions";
+import { scarOrganId } from "./worldMemory";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -742,7 +745,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     let applied: number | null = null;
     updateSave((prev) => {
       if (prev.harborRitual?.today.paydayDone) return prev;
-      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
+      const lastScar = (prev.harborScars ?? []).at(-1);
+      const mult = composePaydayMultiplier({
+        weatherMood: harborWeatherMood(prev),
+        organStain: lastScar ? scarOrganId(lastScar) : null,
+      });
+      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), mult, {
         trackHarborEscape: true,
       });
       applied = coins;
