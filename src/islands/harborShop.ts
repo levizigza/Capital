@@ -1,12 +1,14 @@
 /**
  * Harbor Haven spend loop — coins leave the pouch for real upgrades.
- * Capsule items, carpet polish, and plaza passes sink wealth into progress.
+ * Capsules create board decisions; carpet polish past Fortune flyer is vanity look only.
+ * @see docs/GAME_DESIGN_PROGRESSION.md
  */
 
 import type { IslandSaveV1 } from "./types";
 import type { PartyItemId } from "./partyItems";
 import { PARTY_ITEMS, MAX_PARTY_ITEMS } from "./partyItems";
-import { BOAT_TIERS, getBoatTier, type BoatTier } from "./boats";
+import { BOAT_TIERS, CARPET_PROGRESSION_CAP_ID, getBoatTier, type BoatTier } from "./boats";
+export { CARPET_PROGRESSION_CAP_ID } from "./boats";
 import { hasHarborFreedom, type PlazaRoomId } from "./progressGates";
 import { HUB_ISLAND_ID } from "./worldMapLayout";
 import { scaleHarborPrice } from "./harborWeather";
@@ -76,16 +78,21 @@ export function resolveHarborBoatTier(totalCoins: number, save?: IslandSaveV1 | 
 export function nextPurchasableCarpet(
   totalCoins: number,
   save: IslandSaveV1,
-): { tier: BoatTier; price: number } | null {
+  opts?: { includeVanity?: boolean },
+): { tier: BoatTier; price: number; vanity?: boolean } | null {
   const current = resolveHarborBoatTier(totalCoins, save);
   const idx = BOAT_TIERS.findIndex((t) => t.id === current.id);
   const next = BOAT_TIERS[idx + 1];
   if (!next) return null;
+  const capIdx = BOAT_TIERS.findIndex((t) => t.id === CARPET_PROGRESSION_CAP_ID);
+  const nextIdx = idx + 1;
+  const vanity = nextIdx > capIdx;
+  if (vanity && !opts?.includeVanity) return null;
   const price = scaleHarborPrice(
     Math.max(50, Math.round(next.minCoins * CARPET_POLISH_MARKUP)),
     save,
   );
-  return { tier: next, price };
+  return { tier: next, price, vanity };
 }
 
 /** Capsule offers with cashflow-reactive prices. */

@@ -159,19 +159,25 @@ export function CapsuleStudioOverlay({
               Carpet polish
             </div>
             {(() => {
-              const next = nextPurchasableCarpet(userProfile.totalCoins, save);
+              const next = nextPurchasableCarpet(userProfile.totalCoins, save, {
+                includeVanity: true,
+              });
               if (!next) {
                 return <p className="text-sm text-muted-foreground">Your carpet is maxed out.</p>;
               }
               const can = userProfile.totalCoins >= next.price;
+              const isVanity = Boolean(next.vanity);
               return (
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <div className="text-sm font-bold">
-                      {next.tier.emoji} Unlock {next.tier.label}
+                      {next.tier.emoji}{" "}
+                      {isVanity ? `Polish ${next.tier.label}` : `Unlock ${next.tier.label}`}
                     </div>
                     <div className="text-[11px] text-muted-foreground">
-                      Early unlock — cheaper than earning every coin for the tier.
+                      {isVanity
+                        ? "Optional look only — no new islands or rooms."
+                        : "Ride upgrade — progression story ends at Fortune flyer."}
                     </div>
                     {!can ? (
                       <div className="text-[11px] font-semibold text-amber-800">

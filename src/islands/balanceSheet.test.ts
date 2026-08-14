@@ -17,6 +17,7 @@ import {
   HARBOR_ESCAPE_TARGET,
   applyPayday,
   createDefaultVoyagerLedger,
+  ensureLedger,
   freedomPlazaChip,
   netCashflow,
 } from "./voyagerLedger";
@@ -124,6 +125,17 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     const next = nextPurchasableCarpet(0, save);
     expect(next?.tier.id).toBe("coin_carpet");
     expect(next?.price).toBe(50);
+  });
+
+  it("carpet progression stops at fortune_flyer — higher tiers are vanity-only", () => {
+    const save = createDefaultIslandSave();
+    save.voyagerLedger = { ...ensureLedger(save.voyagerLedger), harborEscaped: true };
+    save.inventory = [...save.inventory, "harbor_freedom_seal"];
+    const prog = nextPurchasableCarpet(500, save);
+    expect(prog).toBeNull();
+    const vanity = nextPurchasableCarpet(500, save, { includeVanity: true });
+    expect(vanity?.tier.id).toBe("mint_magic");
+    expect(vanity?.vanity).toBe(true);
   });
 
   it("plaza Seal chase chip stays readable after pouch dips into deals", () => {

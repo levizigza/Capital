@@ -2,6 +2,8 @@
 
 Capital’s north star for this phase: make **one money choice** feel unforgettable.
 
+See also: [GAME_DESIGN_PROGRESSION.md](./GAME_DESIGN_PROGRESSION.md) — skill / knowledge / access vs number-only chrome.
+
 ## Signature loop (protect this)
 
 1. Coincraft Cove irreversible Take  

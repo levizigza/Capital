@@ -33,10 +33,8 @@ import type {
   QuestObjective,
 } from "../types";
 
-const LazyEconomyWeather = lazy(() => import("../EconomyWeatherIndicator"));
 const LazySkillStatsPanel = lazy(() => import("../SkillStatsPanel"));
 
-import { createDefaultEconomyState } from "../economy";
 import { createDefaultSkillStats } from "../skillStats";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";
 import { getIslandTheme } from "../themes/islandThemes";
@@ -584,13 +582,16 @@ export function IslandPlayView({
           </GamePanel>
         ) : null}
 
-        <Suspense fallback={null}>
-          <LazySkillStatsPanel
-            stats={(save.skillStats ?? createDefaultSkillStats()).current}
-            history={(save.skillStats ?? createDefaultSkillStats()).history}
-            compact
-          />
-        </Suspense>
+        {typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("skills") === "1" ? (
+          <Suspense fallback={null}>
+            <LazySkillStatsPanel
+              stats={(save.skillStats ?? createDefaultSkillStats()).current}
+              history={(save.skillStats ?? createDefaultSkillStats()).history}
+              compact
+            />
+          </Suspense>
+        ) : null}
 
         {compact ? (
           <>
