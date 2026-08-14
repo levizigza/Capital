@@ -30,6 +30,8 @@ import {
   type BoardEconomyMode,
 } from "./boardEconomy";
 import { getIslandTheme } from "./themes/islandThemes";
+import { storyBeats } from "./storySim";
+import type { StoryEvent } from "./storySim";
 
 function pickUnusedHolding(
   kind: LedgerHolding["kind"],
@@ -109,6 +111,8 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Emergent story beats to append on the save (storySim) */
+  storyHints?: Array<Omit<import("./storySim").StoryEvent, "id" | "ts">>;
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -421,9 +425,15 @@ export function resolvePassStart(
 ): SpaceResolvePayload {
   if (usesCashflowPassStart(mode)) {
     const trackEscape = tracksHarborEscape(mode);
-    const { ledger, coins, escapedNow } = applyPayday(ensureLedger(ledgerIn), 1, {
+    const prev = ensureLedger(ledgerIn);
+    const prevStreak = prev.positivePaydayStreak;
+    const { ledger, coins, escapedNow } = applyPayday(prev, 1, {
       trackHarborEscape: trackEscape,
     });
+    const hints: Array<Omit<StoryEvent, "id" | "ts">> = [
+      storyBeats.payday(coins, ledger.positivePaydayStreak, Boolean(escapedNow)),
+    ];
+    if (coins < 0 && prevStreak > 0) hints.push(storyBeats.streakBroke());
     return {
       coins,
       xp: 3,
@@ -433,6 +443,7 @@ export function resolvePassStart(
           ? `Pay Day! Monthly cashflow credited (+${coins} coins).`
           : `Pay Day shortfall (${coins} coins). Grow income or cut expenses!`,
       ledger,
+      storyHints: hints,
     };
   }
   return {
@@ -475,6 +486,7 @@ export function resolvePlayerSpace(
       let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, 1, {
         trackHarborEscape: opts?.trackHarborEscape ?? false,
       });
+      const prevStreak = ledger.positivePaydayStreak;
       if (next.buffs?.doubleCoinsNext && coins > 0) {
         coins *= 2;
         next.buffs = { ...next.buffs, doubleCoinsNext: false };
@@ -491,6 +503,17 @@ export function resolvePlayerSpace(
       payload.coins = coins;
       payload.xp = 5;
       payload.ledger = nextLedger;
+      const hints: Array<Omit<StoryEvent, "id" | "ts">> = [
+        storyBeats.payday(
+          coins,
+          nextLedger.positivePaydayStreak,
+          Boolean(escapedNow),
+        ),
+      ];
+      if (coins < 0 && prevStreak > 0) {
+        hints.push(storyBeats.streakBroke());
+      }
+      payload.storyHints = hints;
       break;
     }
     case "bill": {
@@ -527,6 +550,9 @@ export function resolvePlayerSpace(
       ledger = addHolding(ledger, trap);
       payload.ledger = ledger;
       payload.message = `Debt Trap! ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo).`;
+      payload.storyHints = [
+        storyBeats.debtTrap(trap.name, trap.monthlyAmount, trap.id),
+      ];
       break;
     }
     case "coins":
@@ -553,6 +579,7 @@ export function resolvePlayerSpace(
         payload.coins = -cost;
         payload.star = true;
         payload.message = `You bought a Ledger Seal for ${cost} coins!`;
+        payload.storyHints = [storyBeats.sealEarned()];
       } else {
         payload.message = `Seal costs ${cost} coins — earn more, then claim it.`;
       }
@@ -591,10 +618,12 @@ export function resolvePlayerSpace(
       if (next.buffs?.bailoutReady || next.buffs?.shielded) {
         next.buffs = { ...next.buffs, bailoutReady: false, shielded: false };
         payload.message = "Emergency Ledger / Bailout Buoy saved you from The Collector!";
+        payload.storyHints = [storyBeats.collectorBlocked()];
       } else {
         const loss = Math.abs(space.coinReward ?? 12);
         payload.coins = -loss;
         payload.message = space.eventText ?? COLLECTOR_MESSAGES[0]!;
+        payload.storyHints = [storyBeats.collectorHit(-loss)];
       }
       break;
     }

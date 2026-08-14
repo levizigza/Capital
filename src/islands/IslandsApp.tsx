@@ -146,6 +146,13 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import {
+  appendStoryEvent,
+  maybeRecordWeatherStorm,
+  storyBeats,
+  type StoryEvent,
+} from "./storySim";
+import { harborWeatherMood } from "./harborWeather";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -522,6 +529,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         else if (purchase.kind === "carpet") next = applyCarpetPolish(prev, purchase.tierId);
         else if (purchase.kind === "plaza_pass") next = applyPlazaPass(prev, purchase.room);
         else if (purchase.kind === "companion") next = applyCompanionPurchase(prev, purchase.companionId);
+        next = appendStoryEvent(
+          next,
+          storyBeats.shopPurchase(purchase.kind, purchase.price),
+        );
         const guided = next.hubGuidedIntro ?? createDefaultHubGuidedIntro();
         return {
           ...next,
@@ -710,6 +721,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       message: string;
       itemTip?: string;
       ledger?: import("./voyagerLedger").VoyagerLedger;
+      storyHints?: Array<Omit<StoryEvent, "id" | "ts">>;
     }) => {
       if (payload.coins || payload.xp) {
         setUserProfile((prev) => ({
@@ -721,13 +733,27 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (payload.star && activeIslandId) {
         awardPartyStar(activeIslandId);
       }
-      if (payload.ledger) {
+      if (payload.ledger || payload.storyHints?.length) {
         updateSave((prev) => {
-          const next = {
-            ...prev,
-            voyagerLedger: payload.ledger,
-          };
-          return withHarborFreedomRewards(next);
+          let next = payload.ledger
+            ? { ...prev, voyagerLedger: payload.ledger }
+            : prev;
+          for (const hint of payload.storyHints ?? []) {
+            next = appendStoryEvent(next, {
+              ...hint,
+              islandId: hint.islandId ?? activeIslandId ?? undefined,
+            });
+          }
+          next = withHarborFreedomRewards(next);
+          const mood = harborWeatherMood(next);
+          if (mood === "storm") {
+            next = maybeRecordWeatherStorm(
+              next,
+              mood,
+              "cashflow or haste scar darkened the dock.",
+            );
+          }
+          return next;
         });
       }
     },
@@ -742,16 +768,34 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     let applied: number | null = null;
     updateSave((prev) => {
       if (prev.harborRitual?.today.paydayDone) return prev;
-      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
+      const before = ensureLedger(prev.voyagerLedger);
+      const prevStreak = before.positivePaydayStreak;
+      const { ledger, coins } = applyPayday(before, 1, {
         trackHarborEscape: true,
       });
       applied = coins;
-      return markPaydayDone(
+      let next = markPaydayDone(
         withHarborFreedomRewards({
           ...prev,
           voyagerLedger: ledger,
         }),
       );
+      next = appendStoryEvent(
+        next,
+        storyBeats.payday(coins, ledger.positivePaydayStreak, ledger.harborEscaped && !before.harborEscaped),
+      );
+      if (coins < 0 && prevStreak > 0) {
+        next = appendStoryEvent(next, storyBeats.streakBroke());
+      }
+      const mood = harborWeatherMood(next);
+      if (mood === "storm") {
+        next = maybeRecordWeatherStorm(
+          next,
+          mood,
+          "ritual Pay Day left the plaza in fog.",
+        );
+      }
+      return next;
     });
     if (applied !== null) {
       setUserProfile((prev) => ({
@@ -1391,7 +1435,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               stance[stanceAxis] = Math.max(0, (stance[stanceAxis] ?? 0) + stanceDelta);
             }
             const quiet = scarTriggersChapterQuiet(effect.id);
-            return {
+            let next: IslandSaveV1 = {
               ...prev,
               stance,
               chapterQuietPending: quiet ? true : prev.chapterQuietPending,
@@ -1407,6 +1451,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               ].slice(-24),
             };
+            next = appendStoryEvent(
+              next,
+              storyBeats.scarPlaque(
+                effect.label,
+                effect.id,
+                activeIsland?.id ?? HUB_ISLAND_ID,
+              ),
+            );
+            return next;
           });
         }
       }
@@ -1689,13 +1742,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           if (masteryGateId) {
             ledger = markMasteryClear(ledger, masteryGateId);
           }
-          return {
+          let next = {
             ...prev,
             completedMinigames: uniq([...prev.completedMinigames, mgId]),
             skillStats: updatedSkillStats,
             economyState: updatedEconomy,
             voyagerLedger: ledger,
           };
+          next = appendStoryEvent(
+            next,
+            storyBeats.minigameClear(mgId, activeIsland.id),
+          );
+          return next;
         });
         await completeObjective({ type: "completeMinigame", minigameId: mgId });
         applyBoardReward(source, clearFirst);
@@ -1795,6 +1853,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
         const mgName =
           activeIsland.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
+        updateSave((prev) =>
+          appendStoryEvent(prev, storyBeats.minigameFail(mgId, activeIsland.id)),
+        );
         setPendingMinigameFail({
           mgId,
           source,

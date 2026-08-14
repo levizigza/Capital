@@ -290,6 +290,11 @@ export type IslandSaveV1 = {
   irreversibleChoices?: Record<string, import("./worldMemory").IrreversibleChoiceRecord>;
   /** Soft personality axes derived from money choices */
   stance?: import("./worldMemory").VoyagerStance;
+  /**
+   * Emergent story log — ACTION→…→OUTCOME chains (not scripted Take cinema).
+   * See storySim.ts / GAME_DESIGN_STORY_SIM.md.
+   */
+  storyLog?: import("./storySim").StoryEvent[];
   /** Per-NPC talk memory for greeting branches */
   npcMemory?: Record<string, import("./worldMemory").NpcMemoryEntry>;
   /** Daily Harbor ritual + weekly archipelago challenge */

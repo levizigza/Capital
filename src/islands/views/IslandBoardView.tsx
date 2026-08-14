@@ -43,6 +43,7 @@ import { resolveAdaptiveBuddyTip } from "../gameSystems";
 import { getIslandCulture } from "../islandCulture";
 import { getBoardEconomyMode, tracksHarborEscape, usesCashflowPassStart } from "../boardEconomy";
 import { isHomeLook } from "../animationStyles";
+import { storyBeats } from "../storySim";
 
 export type IslandBoardViewProps = {
   island: IslandDefinition;
@@ -58,6 +59,7 @@ export type IslandBoardViewProps = {
     message: string;
     itemTip?: string;
     ledger?: import("../voyagerLedger").VoyagerLedger;
+    storyHints?: Array<Omit<import("../storySim").StoryEvent, "id" | "ts">>;
   }) => void;
   onBoardBoat: () => void;
   onOpenArchipelago: () => void;
@@ -164,6 +166,7 @@ export function IslandBoardView({
         message: payload.message,
         itemTip: tip,
         ledger: payload.ledger,
+        storyHints: payload.storyHints,
       });
       if (payload.message) setEventMessage(payload.message);
     },
@@ -199,12 +202,19 @@ export function IslandBoardView({
       onUpdatePartyState(next);
 
       if (sim.playerCoinDelta !== 0) {
+        const raider =
+          sim.summaries.find((s) => s.playerCoinDelta !== 0)?.rivalId ?? "rival";
         onSpaceReward({
           coins: sim.playerCoinDelta,
           message:
             sim.playerCoinDelta < 0
               ? `Rivals raided your pouch for ${Math.abs(sim.playerCoinDelta)} coins.`
               : "",
+          storyHints: [
+            sim.playerShieldConsumed
+              ? storyBeats.rivalRaidBlocked(raider, island.id)
+              : storyBeats.rivalRaid(raider, sim.playerCoinDelta, island.id),
+          ],
         });
       }
 
@@ -212,7 +222,7 @@ export function IslandBoardView({
       setPhase("idle");
       setMoveResult(null);
     },
-    [boardMode, onSpaceReward, onUpdatePartyState, reduced, userProfile.totalCoins],
+    [boardMode, island.id, onSpaceReward, onUpdatePartyState, reduced, userProfile.totalCoins],
   );
 
   const resolveLanding = useCallback(
@@ -289,10 +299,23 @@ export function IslandBoardView({
             xp: 8,
             ledger: result.ledger,
             message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
+            storyHints: [
+              storyBeats.acceptedDeal(
+                offer.name,
+                offer.purchaseCost,
+                offer.monthlyAmount,
+                offer.id,
+                island.id,
+              ),
+            ],
           });
         }
       } else {
-        setEventMessage(`Passed on ${offer.name}. Patience is a cashflow skill too.`);
+        applyPayload({
+          coins: 0,
+          message: `Passed on ${offer.name}. Patience is a cashflow skill too.`,
+          storyHints: [storyBeats.passedDeal(offer.name, island.id)],
+        });
       }
 
       void runRivalTurns(state);

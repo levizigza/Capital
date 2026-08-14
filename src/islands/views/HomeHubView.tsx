@@ -89,7 +89,9 @@ import {
   type SpectacleCinemaPhase,
 } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { StorySimStrip } from "./StorySimStrip";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
+import { buildStoryTimeline } from "../storySim";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
 import { Day2EchoOverlay } from "./Day2EchoOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
@@ -333,6 +335,7 @@ export function HomeHubView({
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   const stanceLine = stanceGreetingHint(save.stance);
+  const voyageStory = buildStoryTimeline(save);
   const bondStrain =
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
@@ -1016,6 +1019,7 @@ export function HomeHubView({
 
   return (
     <>
+      <StorySimStrip save={save} />
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -1494,6 +1498,39 @@ export function HomeHubView({
           <p className="text-sm text-muted-foreground text-center">
             Harbor remembers by organ — Coin · Clock · Spiral · Memory.
           </p>
+          {voyageStory.bestRetell ? (
+            <div
+              className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2"
+              data-testid="voyage-log-best"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-wide text-rose-800/80">
+                Voyage Log · you won’t believe
+              </p>
+              <p className="mt-1 text-sm font-semibold text-rose-950">{voyageStory.chains[0]?.headline}</p>
+              <p className="mt-1 text-xs leading-snug text-rose-900/90">{voyageStory.bestRetell}</p>
+            </div>
+          ) : null}
+          {voyageStory.entries.length > 0 ? (
+            <div className="space-y-2" data-testid="voyage-log-timeline">
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                Recent simulation
+              </p>
+              <ul className="max-h-40 space-y-1.5 overflow-y-auto text-xs">
+                {voyageStory.entries.slice(0, 12).map((entry) => (
+                  <li
+                    key={entry.event.id}
+                    className="rounded-lg border border-border/60 bg-background/80 px-2 py-1.5"
+                    data-story-beat={entry.event.beat}
+                  >
+                    <span className="font-bold text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {entry.event.beat}
+                    </span>
+                    <span className="mt-0.5 block text-[var(--cap-ink)]">{entry.event.summary}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {latestPlaque ? (
             <p
               className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-950"
