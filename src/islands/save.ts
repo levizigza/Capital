@@ -118,6 +118,9 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   if (parsed.harborRitual && typeof parsed.harborRitual === "object") {
     sanitized.harborRitual = parsed.harborRitual as IslandSaveV1["harborRitual"];
   }
+  if (parsed.curiosity && typeof parsed.curiosity === "object") {
+    sanitized.curiosity = parsed.curiosity as IslandSaveV1["curiosity"];
+  }
   if (typeof parsed.onboardingComplete === "boolean") {
     sanitized.onboardingComplete = parsed.onboardingComplete;
   }

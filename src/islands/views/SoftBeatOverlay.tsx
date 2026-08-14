@@ -1,7 +1,6 @@
 /**
  * Soft Beat lookouts — quiet “see the world you changed” toys inside Money Structures.
- * Not a minigame dump — a hush moment before the storm / after a Take.
- * Organ-true: Coin Lid · Memory Teller · Clock Loft · Spiral Battlement.
+ * Layered secrets: fork vistas / teller cross-index / system whispers (see secretArchitecture).
  */
 
 import { useEffect } from "react";
@@ -53,6 +52,11 @@ type Props = {
   hushActive?: boolean;
   /** Latest plaque label — living receipt inside the Soft Beat */
   scarLabel?: string | null;
+  /** Level 2+ secret lines from secretArchitecture */
+  vistaLine?: string | null;
+  crossIndexLine?: string | null;
+  strategyHint?: string | null;
+  foreshadowLine?: string | null;
   onDone: () => void;
 };
 
@@ -60,6 +64,10 @@ export function SoftBeatOverlay({
   kind,
   hushActive = false,
   scarLabel = null,
+  vistaLine = null,
+  crossIndexLine = null,
+  strategyHint = null,
+  foreshadowLine = null,
   onDone,
 }: Props) {
   const beat = BEATS[kind];
@@ -77,7 +85,9 @@ export function SoftBeatOverlay({
     return () => window.clearTimeout(t);
   }, [hushActive, onDone, organ.id]);
 
-  const body = hushActive ? beat.hushLine : beat.line;
+  const body = hushActive
+    ? beat.hushLine
+    : vistaLine || crossIndexLine || foreshadowLine || beat.line;
   const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
@@ -104,6 +114,15 @@ export function SoftBeatOverlay({
           ? "Climb the wall — peek from Interest Keep"
           : "Step to the teller — peek from Ledger Bank";
 
+  const leaveLabel =
+    organ.id === "coin"
+      ? "Leave — back into the Jar"
+      : organ.id === "clock"
+        ? "Leave — back to the Clock loft"
+        : organ.id === "spiral"
+          ? "Leave — back to the Spiral"
+          : "Leave — back to the ledger";
+
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[70] flex items-end justify-center bg-gradient-to-t from-[#0f172a]/90 via-[#0f172a]/35 to-transparent"
@@ -113,6 +132,7 @@ export function SoftBeatOverlay({
       data-soft-beat={kind}
       data-soft-beat-climb={climbMotif}
       data-soft-beat-layout="lower-third"
+      data-soft-beat-secret={vistaLine || crossIndexLine ? "1" : "0"}
       data-organ={organ.id}
       data-nav-escape="window"
       onClick={onDone}
@@ -130,7 +150,9 @@ export function SoftBeatOverlay({
         <h2 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
           {beat.title}
         </h2>
-        <p className="mt-3 text-sm text-white/85">{body}</p>
+        <p className="mt-3 text-sm text-white/85" data-testid="soft-beat-body">
+          {body}
+        </p>
         <p
           className="mt-2 text-sm font-semibold text-amber-100/95"
           data-testid="soft-beat-retell"
@@ -138,19 +160,26 @@ export function SoftBeatOverlay({
           {kidSentence}
         </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
+        {vistaLine && crossIndexLine && body !== crossIndexLine ? (
+          <p className="mt-2 text-xs text-white/70" data-testid="soft-beat-cross-index">
+            {crossIndexLine}
+          </p>
+        ) : null}
+        {strategyHint ? (
+          <p
+            className="mt-2 text-[11px] font-semibold text-emerald-100/90"
+            data-testid="soft-beat-strategy"
+          >
+            {strategyHint}
+          </p>
+        ) : null}
         <GameButton
           variant="primary"
           className="mt-4"
           data-testid="soft-beat-leave"
           {...pointerSafeActivate(onDone)}
         >
-          {organ.id === "coin"
-            ? "Leave — back into the Jar"
-            : organ.id === "clock"
-              ? "Leave — back to the Clock loft"
-              : organ.id === "spiral"
-                ? "Leave — back to the Spiral"
-                : "Leave — back to the ledger"}
+          {leaveLabel}
         </GameButton>
         <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
       </div>

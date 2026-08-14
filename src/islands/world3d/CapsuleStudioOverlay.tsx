@@ -13,7 +13,7 @@ import {
   nextPurchasableCarpet,
   plazaPassPriceForSave,
 } from "../harborShop";
-import { weatherCoachLine, harborWeatherMood } from "../harborWeather";
+import { weatherOrganCoachLine } from "../secretArchitecture";
 import { CapsuleStudio3D } from "./CapsuleStudio3D";
 
 export type CapsulePurchase =
@@ -45,7 +45,7 @@ export function CapsuleStudioOverlay({
 }: Props) {
   const offers = capsuleOffersForSave(save);
   const plazaPassPrice = plazaPassPriceForSave(save);
-  const weatherLine = weatherCoachLine(harborWeatherMood(save));
+  const weatherLine = weatherOrganCoachLine(save);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

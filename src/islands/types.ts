@@ -294,6 +294,8 @@ export type IslandSaveV1 = {
   npcMemory?: Record<string, import("./worldMemory").NpcMemoryEntry>;
   /** Daily Harbor ritual + weekly archipelago challenge */
   harborRitual?: import("./harborRitual").HarborRitualState;
+  /** Soft layered secrets / Soft Beat peeks (never gates Credit) */
+  curiosity?: import("./secretArchitecture").CuriosityDiscoveryState;
   /**
    * Fortune Archipelago party state per island:
    * position, Ledger Seals, Fortune Capsules, rival captains, session turns.
