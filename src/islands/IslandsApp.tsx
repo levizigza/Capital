@@ -61,6 +61,11 @@ import {
   recordNpcTalk,
   scarTriggersChapterQuiet,
 } from "./worldMemory";
+import {
+  identityGreetingLine,
+  recordDealAccepted,
+  recordDealPassed,
+} from "./emergentIdentity";
 import { CREDIT_REX_GRAPH_ID, creditRexStartNodeId } from "./creditEncounter";
 import {
   syncHarborRitual,
@@ -710,6 +715,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       message: string;
       itemTip?: string;
       ledger?: import("./voyagerLedger").VoyagerLedger;
+      dealOutcome?: "accept" | "pass";
     }) => {
       if (payload.coins || payload.xp) {
         setUserProfile((prev) => ({
@@ -721,12 +727,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (payload.star && activeIslandId) {
         awardPartyStar(activeIslandId);
       }
-      if (payload.ledger) {
+      if (payload.ledger || payload.dealOutcome) {
         updateSave((prev) => {
-          const next = {
-            ...prev,
-            voyagerLedger: payload.ledger,
-          };
+          let next = payload.ledger
+            ? { ...prev, voyagerLedger: payload.ledger }
+            : prev;
+          if (payload.dealOutcome === "accept") next = recordDealAccepted(next);
+          if (payload.dealOutcome === "pass") next = recordDealPassed(next);
           return withHarborFreedomRewards(next);
         });
       }
@@ -1253,7 +1260,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
         ),
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: identityGreetingLine(save ?? ({} as IslandSaveV1)) ?? stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
@@ -1458,7 +1465,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         homecoming: save?.harborHomecoming,
         scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
         bondBeat: save?.piggyBondHomecomings ?? 0,
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: identityGreetingLine(save ?? ({} as IslandSaveV1)) ?? stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
       });
     }

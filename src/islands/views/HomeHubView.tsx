@@ -83,6 +83,13 @@ import {
   roomPinnedLevels,
   familyPlaqueMythLine,
 } from "../familyRoom";
+import {
+  deriveEmergentIdentity,
+  identityGreetingLine,
+  identityPlinthLine,
+  identitySoftBeatLine,
+  identityWeatherLine,
+} from "../emergentIdentity";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import {
   ScarSpectacleOverlay,
@@ -332,7 +339,9 @@ export function HomeHubView({
   const plaques = harborScarPlaques(save);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
-  const stanceLine = stanceGreetingHint(save.stance);
+  const emergent = deriveEmergentIdentity(save);
+  const stanceLine = identityGreetingLine(save) ?? stanceGreetingHint(save.stance);
+  const plinthIdentity = identityPlinthLine(save);
   const bondStrain =
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
@@ -1041,6 +1050,7 @@ export function HomeHubView({
               kind={bankSoftBeat}
               hushActive={plaques.length > 0}
               scarLabel={latestPlaque?.label ?? null}
+              identityLine={identitySoftBeatLine(save, bankSoftBeat)}
               onDone={() => setBankSoftBeat(null)}
             />
           ) : null}
@@ -1502,6 +1512,19 @@ export function HomeHubView({
               {coldRetellLine(latestPlaque)}
             </p>
           ) : null}
+          {plinthIdentity ? (
+            <p
+              className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-950"
+              data-testid="emergent-identity-plinth"
+            >
+              {plinthIdentity}
+              {emergent.id !== "unsettled" ? (
+                <span className="mt-1 block text-xs font-normal text-violet-800/90">
+                  {emergent.philosophy}
+                </span>
+              ) : null}
+            </p>
+          ) : null}
           {stanceLine ? (
             <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-950">
               {stanceLine}
@@ -1912,7 +1935,7 @@ export function HomeHubView({
             </>
           )}
           <p className="text-center text-xs text-muted-foreground">
-            {weatherCoachLine(harborWeatherMood(save))}
+            {identityWeatherLine(save, weatherCoachLine(harborWeatherMood(save)))}
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza

@@ -36,6 +36,7 @@ import {
   type SpaceResolvePayload,
 } from "../partyBoard";
 import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
+import { identityDealCounsel } from "../emergentIdentity";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -58,6 +59,7 @@ export type IslandBoardViewProps = {
     message: string;
     itemTip?: string;
     ledger?: import("../voyagerLedger").VoyagerLedger;
+    dealOutcome?: "accept" | "pass";
   }) => void;
   onBoardBoat: () => void;
   onOpenArchipelago: () => void;
@@ -156,7 +158,7 @@ export function IslandBoardView({
   const tokenLayout = BOARD_LAYOUT[displayPosition] ?? BOARD_LAYOUT[0]!;
 
   const applyPayload = useCallback(
-    (payload: SpaceResolvePayload, tip?: string) => {
+    (payload: SpaceResolvePayload & { dealOutcome?: "accept" | "pass" }, tip?: string) => {
       onSpaceReward({
         coins: payload.coins,
         xp: payload.xp,
@@ -164,6 +166,7 @@ export function IslandBoardView({
         message: payload.message,
         itemTip: tip,
         ledger: payload.ledger,
+        dealOutcome: payload.dealOutcome,
       });
       if (payload.message) setEventMessage(payload.message);
     },
@@ -289,10 +292,15 @@ export function IslandBoardView({
             xp: 8,
             ledger: result.ledger,
             message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
+            dealOutcome: "accept",
           });
         }
       } else {
-        setEventMessage(`Passed on ${offer.name}. Patience is a cashflow skill too.`);
+        applyPayload({
+          coins: 0,
+          message: `Passed on ${offer.name}. ${identityDealCounsel(save)}`,
+          dealOutcome: "pass",
+        });
       }
 
       void runRivalTurns(state);
@@ -658,6 +666,9 @@ export function IslandBoardView({
                       {userProfile.totalCoins < dealOffer.purchaseCost
                         ? " — not enough yet (you can pass)."
                         : ""}
+                    </p>
+                    <p className="mt-2 text-xs text-cyan-900/90" data-testid="identity-deal-counsel">
+                      {identityDealCounsel(save)}
                     </p>
                   </div>
                 </div>
