@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { resolveSoftBeatCuriosity } from "../curiosityDiscovery";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -75,6 +76,8 @@ export type IslandShoreViewProps = {
   onStartQuest: (questId: string) => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
+  /** Soft Beat peek recorded (curiosity discovery) */
+  onSoftBeatPeek?: (kind: SoftBeatKind) => void;
 };
 
 /**
@@ -99,6 +102,7 @@ export function IslandShoreView({
   onEnterArea,
   onStartQuest,
   talkOpen = false,
+  onSoftBeatPeek,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
@@ -281,7 +285,11 @@ export function IslandShoreView({
               kind={softBeat}
               hushActive={chapterQuiet}
               scarLabel={latestScar?.label ?? null}
-              onDone={() => setSoftBeat(null)}
+              curiosity={resolveSoftBeatCuriosity(save, softBeat)}
+              onDone={() => {
+                onSoftBeatPeek?.(softBeat);
+                setSoftBeat(null);
+              }}
             />
           ) : null}
         </>

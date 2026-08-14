@@ -83,13 +83,20 @@ import {
   roomPinnedLevels,
   familyPlaqueMythLine,
 } from "../familyRoom";
-import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
+import { harborWeatherMood, weatherFogParams } from "../harborWeather";
 import {
   ScarSpectacleOverlay,
   type SpectacleCinemaPhase,
 } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { CuriosityShelfStrip } from "./CuriosityShelfStrip";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
+import {
+  affinityShelfLine,
+  dealPlazaReceiptTip,
+  resolveSoftBeatCuriosity,
+  weatherOrganCoachLine,
+} from "../curiosityDiscovery";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
 import { Day2EchoOverlay } from "./Day2EchoOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
@@ -190,6 +197,10 @@ export type HomeHubViewProps = {
   onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** Soft Beat peek recorded (curiosity discovery) */
+  onSoftBeatPeek?: (kind: SoftBeatKind) => void;
+  /** Soft plaza curiosity sync (weather / affinity / deals) — never forced */
+  onCuriositySync?: () => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -236,6 +247,8 @@ export function HomeHubView({
   onMarkEchoSurprise,
   onClearChapterQuiet,
   onPlayStructureMinigame,
+  onSoftBeatPeek,
+  onCuriositySync,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -333,6 +346,9 @@ export function HomeHubView({
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   const stanceLine = stanceGreetingHint(save.stance);
+  const affinityLine = affinityShelfLine(save, HARBOR_KEEPER_MASCOT_ID) ??
+    affinityShelfLine(save, "guide");
+  const dealReceipt = dealPlazaReceiptTip(save);
   const bondStrain =
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
@@ -392,7 +408,8 @@ export function HomeHubView({
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
     gameEvents.emit("world.entered", { place: "harbor", ecosystemMotion: "mixed" });
     onSyncHarborRitual?.();
-  }, [onSyncHarborRitual]);
+    onCuriositySync?.();
+  }, [onSyncHarborRitual, onCuriositySync]);
 
   useEffect(() => {
     if (save.chapterQuietPending) onClearChapterQuiet?.();
@@ -1016,6 +1033,7 @@ export function HomeHubView({
 
   return (
     <>
+      <CuriosityShelfStrip save={save} />
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -1041,7 +1059,11 @@ export function HomeHubView({
               kind={bankSoftBeat}
               hushActive={plaques.length > 0}
               scarLabel={latestPlaque?.label ?? null}
-              onDone={() => setBankSoftBeat(null)}
+              curiosity={resolveSoftBeatCuriosity(save, bankSoftBeat)}
+              onDone={() => {
+                onSoftBeatPeek?.(bankSoftBeat);
+                setBankSoftBeat(null);
+              }}
             />
           ) : null}
         </>
@@ -1507,6 +1529,22 @@ export function HomeHubView({
               {stanceLine}
             </p>
           ) : null}
+          {affinityLine ? (
+            <p
+              className="rounded-xl border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-950"
+              data-testid="curiosity-affinity-line"
+            >
+              {affinityLine}
+            </p>
+          ) : null}
+          {dealReceipt ? (
+            <p
+              className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-950"
+              data-testid="curiosity-deal-receipt"
+            >
+              {dealReceipt}
+            </p>
+          ) : null}
           <div className="space-y-4">
             {plaqueGroups.map((group) => (
               <div key={group.chapter}>
@@ -1912,7 +1950,7 @@ export function HomeHubView({
             </>
           )}
           <p className="text-center text-xs text-muted-foreground">
-            {weatherCoachLine(harborWeatherMood(save))}
+            {weatherOrganCoachLine(save)}
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza
