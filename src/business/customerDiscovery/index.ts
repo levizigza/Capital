@@ -1,0 +1,17 @@
+export {
+  type EvidenceKind,
+  type SegmentId,
+  type ScoreDimension,
+  type DimScore,
+  type DiscoveryClaim,
+  type SegmentScorecard,
+  SCORE_WEIGHTS,
+  SEED_CLAIMS,
+  SEED_SCORECARDS,
+  PRODUCT_FIT_GATE,
+  compositeFromScores,
+  claimsByKind,
+  assertCompositesMatch,
+  provisionalLead,
+  fitGatedLead,
+} from "./store";
