@@ -1,7 +1,11 @@
 # Islands path — risk / reward audit
 
+> Canon rules + shipped relationships: [GAME_DESIGN_RISK_REWARD.md](./GAME_DESIGN_RISK_REWARD.md).
+
 Scope: Harbor → Cove → Paycheck → Credit (not legacy structured mode).  
 Focus: major actions where reward, loss, uncertainty, foresight, horizon, and recovery interact.
+
+**Shipped on this pass:** Take→ledger residue · liability borrow/buyout/walk · storm markup · bank needs assets · Soft Beat paydown.
 
 ---
 

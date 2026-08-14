@@ -36,6 +36,10 @@ import {
   type SpaceResolvePayload,
 } from "../partyBoard";
 import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
+import {
+  resolveLiabilityTrapChoice,
+  type LiabilityTrapOffer,
+} from "../riskReward";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -140,6 +144,8 @@ export function IslandBoardView({
   const [pendingDoubleRoll, setPendingDoubleRoll] = useState(false);
   const [dealOffer, setDealOffer] = useState<DealOffer | null>(null);
   const [dealPartyState, setDealPartyState] = useState<PartyIslandState | null>(null);
+  const [liabilityOffer, setLiabilityOffer] = useState<LiabilityTrapOffer | null>(null);
+  const [liabilityPartyState, setLiabilityPartyState] = useState<PartyIslandState | null>(null);
 
   useEffect(() => {
     setDisplayPosition(party.position);
@@ -256,6 +262,13 @@ export function IslandBoardView({
         return;
       }
 
+      if (payload.pendingLiability) {
+        setLiabilityOffer(payload.pendingLiability);
+        setLiabilityPartyState(working);
+        setPhase("idle");
+        return;
+      }
+
       await runRivalTurns(working);
     },
     [
@@ -307,6 +320,44 @@ export function IslandBoardView({
     ],
   );
 
+  const resolveLiabilityOffer = useCallback(
+    (choice: "borrow" | "buyout" | "walk") => {
+      if (!liabilityOffer || !liabilityPartyState) return;
+      const offer = liabilityOffer;
+      const state = liabilityPartyState;
+      setLiabilityOffer(null);
+      setLiabilityPartyState(null);
+
+      const result = resolveLiabilityTrapChoice(
+        save.voyagerLedger,
+        offer,
+        choice,
+        userProfile.totalCoins,
+      );
+      if (!result.ok) {
+        setEventMessage(result.message);
+        setLiabilityOffer(offer);
+        setLiabilityPartyState(state);
+        return;
+      }
+      applyPayload({
+        coins: result.coins,
+        xp: 6,
+        ledger: result.ledger,
+        message: result.message,
+      });
+      void runRivalTurns(state);
+    },
+    [
+      applyPayload,
+      liabilityOffer,
+      liabilityPartyState,
+      runRivalTurns,
+      save.voyagerLedger,
+      userProfile.totalCoins,
+    ],
+  );
+
   const animateMove = useCallback(
     async (result: BoardMoveResult, state: PartyIslandState) => {
       setPhase("moving");
@@ -327,7 +378,7 @@ export function IslandBoardView({
   );
 
   const handleRoll = useCallback(async () => {
-    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer) return;
+    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer || liabilityOffer) return;
     if (party.turnsRemaining === 0) {
       setEventMessage("Session complete! Compare Ledger Seals with your rivals, then float on.");
       return;
@@ -356,6 +407,7 @@ export function IslandBoardView({
     board,
     boardLocked,
     dealOffer,
+    liabilityOffer,
     minigameCount,
     party,
     pendingDoubleRoll,
@@ -365,7 +417,7 @@ export function IslandBoardView({
 
   const handleUseItem = useCallback(
     (itemId: PartyItemId) => {
-      if (phase !== "idle" || boardLocked || dealOffer) return;
+      if (phase !== "idle" || boardLocked || dealOffer || liabilityOffer) return;
       const { next, payload, extraSteps } = usePartyItem(itemId, party, userProfile.totalCoins);
       onUpdatePartyState(next);
       applyPayload(payload, getPartyItem(itemId)?.moneyTip);
@@ -375,10 +427,19 @@ export function IslandBoardView({
         setEventMessage("Twin Tallies ready — your next roll uses two dice!");
       }
     },
-    [applyPayload, boardLocked, dealOffer, onUpdatePartyState, party, phase, userProfile.totalCoins],
+    [
+      applyPayload,
+      boardLocked,
+      dealOffer,
+      liabilityOffer,
+      onUpdatePartyState,
+      party,
+      phase,
+      userProfile.totalCoins,
+    ],
   );
 
-  const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
+  const busy = phase !== "idle" || boardLocked || Boolean(dealOffer) || Boolean(liabilityOffer);
   const boardSkin = era.boardSkinClass;
   const culture = getIslandCulture(island);
   const buddy = resolveAdaptiveBuddyTip({
@@ -672,6 +733,74 @@ export function IslandBoardView({
                     onClick={() => resolveDealOffer(true)}
                   >
                     Buy deal
+                  </GameButton>
+                </div>
+              </GamePanel>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {liabilityOffer ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <GamePanel
+                title="Debt Trap"
+                padding="default"
+                className="border-rose-300 bg-rose-50/90"
+                data-testid="harbor-liability-offer"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-3xl">{liabilityOffer.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-black text-[var(--cap-ink)]">{liabilityOffer.name}</div>
+                    <p className="text-sm text-[var(--cap-ink-soft)]">
+                      Higher cash now means lasting exposure. Pick a fork — no silent punishment.
+                    </p>
+                    <ul className="mt-2 space-y-1 text-xs text-[var(--cap-ink-soft)]">
+                      <li>
+                        <b>Borrow</b> +{liabilityOffer.borrowCoins} coins → −$
+                        {liabilityOffer.monthlyAmount}/mo
+                      </li>
+                      <li>
+                        <b>Buy out</b> pay {liabilityOffer.buyoutCost} coins → no monthly trap
+                      </li>
+                      <li>
+                        <b>Walk</b> one-time −{liabilityOffer.walkBill} coins → no holding
+                      </li>
+                    </ul>
+                    <p className="mt-1 text-xs text-[var(--cap-ink-soft)]">
+                      Your pouch: 🪙 {userProfile.totalCoins}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <GameButton
+                    variant="primary"
+                    className="flex-1"
+                    data-testid="harbor-liability-borrow"
+                    onClick={() => resolveLiabilityOffer("borrow")}
+                  >
+                    Borrow
+                  </GameButton>
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-liability-buyout"
+                    onClick={() => resolveLiabilityOffer("buyout")}
+                  >
+                    Buy out
+                  </GameButton>
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-liability-walk"
+                    onClick={() => resolveLiabilityOffer("walk")}
+                  >
+                    Walk
                   </GameButton>
                 </div>
               </GamePanel>

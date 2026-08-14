@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { softBeatRecoveryOffer } from "../riskReward";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -75,6 +76,8 @@ export type IslandShoreViewProps = {
   onStartQuest: (questId: string) => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
+  /** Soft Beat paydown — spend coins, clear Take liability, keep scar */
+  onSoftBeatPaydown?: (holdingId: string) => { ok: boolean; message: string };
 };
 
 /**
@@ -99,6 +102,7 @@ export function IslandShoreView({
   onEnterArea,
   onStartQuest,
   talkOpen = false,
+  onSoftBeatPaydown,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
@@ -116,6 +120,9 @@ export function IslandShoreView({
   const [guideProjection, setGuideProjection] = useState<GuideProjection | null>(null);
   const chapterQuiet = Boolean(save.chapterQuietPending);
   const latestScar = harborScarPlaques(save).at(-1) ?? null;
+  const beatRecovery = softBeat
+    ? softBeatRecoveryOffer(save, softBeat)
+    : null;
 
   // World cinema after Talk dismisses — never under the Talk Battle card.
   useEffect(() => {
@@ -281,6 +288,19 @@ export function IslandShoreView({
               kind={softBeat}
               hushActive={chapterQuiet}
               scarLabel={latestScar?.label ?? null}
+              recovery={
+                beatRecovery && onSoftBeatPaydown
+                  ? {
+                      blurb: beatRecovery.blurb,
+                      cost: beatRecovery.cost,
+                      canAfford: userProfile.totalCoins >= beatRecovery.cost,
+                      onPay: () => {
+                        const result = onSoftBeatPaydown(beatRecovery.holdingId);
+                        if (result.ok) setSoftBeat(null);
+                      },
+                    }
+                  : null
+              }
               onDone={() => setSoftBeat(null)}
             />
           ) : null}

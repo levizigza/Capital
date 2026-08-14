@@ -11,7 +11,6 @@ import { MAX_PARTY_ITEMS, pickRandomPartyItem, type PartyItemId } from "./partyI
 import { createDefaultRivals, type RivalBoardState } from "./partyRivals";
 import {
   HARBOR_DEALS,
-  addHolding,
   applyBill,
   applyPayday,
   dealPurchaseCost,
@@ -20,6 +19,7 @@ import {
   type LedgerHolding,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import { bankInterestCoins, toLiabilityTrapOffer } from "./riskReward";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -109,6 +109,8 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Interactive liability trap — borrow / buyout / walk */
+  pendingLiability?: import("./riskReward").LiabilityTrapOffer;
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -524,27 +526,36 @@ export function resolvePlayerSpace(
         payload.message = "You already carry every Harbor liability — watch that cashflow!";
         break;
       }
-      ledger = addHolding(ledger, trap);
-      payload.ledger = ledger;
-      payload.message = `Debt Trap! ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo).`;
+      payload.pendingLiability = toLiabilityTrapOffer(trap);
+      payload.message = `Debt Trap on the table: ${trap.icon} ${trap.name} — borrow coins now, buy out, or walk with a one-time bill.`;
       break;
     }
     case "coins":
-    case "lucky":
-    case "bank": {
+    case "lucky": {
       let coins = space.coinReward ?? 10;
       if (next.buffs?.doubleCoinsNext) {
         coins *= 2;
         next.buffs = { ...next.buffs, doubleCoinsNext: false };
         payload.message = `Dividend Magnet! Doubled to ${coins} coins.`;
       } else {
-        payload.message =
-          space.type === "bank"
-            ? `Island Bank interest: +${coins} coins.`
-            : `You collected ${coins} coins!`;
+        payload.message = `You collected ${coins} coins!`;
       }
       payload.coins = coins;
       payload.xp = 5;
+      break;
+    }
+    case "bank": {
+      const interest = bankInterestCoins(ledger);
+      let coins = interest.coins;
+      if (coins > 0 && next.buffs?.doubleCoinsNext) {
+        coins *= 2;
+        next.buffs = { ...next.buffs, doubleCoinsNext: false };
+        payload.message = `Dividend Magnet! Island Bank interest doubled to +${coins} coins.`;
+      } else {
+        payload.message = interest.message;
+      }
+      payload.coins = coins;
+      payload.xp = coins > 0 ? 5 : 2;
       break;
     }
     case "seal": {
