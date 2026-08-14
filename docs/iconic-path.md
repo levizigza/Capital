@@ -2,6 +2,8 @@
 
 Capital’s north star for this phase: make **one money choice** feel unforgettable.
 
+**Design constitution:** [`CAPITAL_DESIGN_BIBLE.md`](./CAPITAL_DESIGN_BIBLE.md) — fantasy, loop, pillars, economy/progression, social, metrics, feature approval, and the ship question: *Does this help Capital generate a more interesting player story?*
+
 ## Signature loop (protect this)
 
 1. Coincraft Cove irreversible Take  
