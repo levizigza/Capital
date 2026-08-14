@@ -146,6 +146,7 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { applyScarLedgerResidue } from "./replayVariation";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -1391,9 +1392,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               stance[stanceAxis] = Math.max(0, (stance[stanceAxis] ?? 0) + stanceDelta);
             }
             const quiet = scarTriggersChapterQuiet(effect.id);
+            const voyagerLedger = applyScarLedgerResidue(prev.voyagerLedger, effect.id);
             return {
               ...prev,
               stance,
+              voyagerLedger,
               chapterQuietPending: quiet ? true : prev.chapterQuietPending,
               harborScars: [
                 ...scars,
