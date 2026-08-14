@@ -83,7 +83,13 @@ import {
   roomPinnedLevels,
   familyPlaqueMythLine,
 } from "../familyRoom";
-import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
+import { harborWeatherMood, weatherFogParams } from "../harborWeather";
+import {
+  communityOrganShelfLine,
+  dealPlazaReceiptTip,
+  resolveSoftBeatSecrets,
+  weatherOrganCoachLine,
+} from "../secretArchitecture";
 import {
   ScarSpectacleOverlay,
   type SpectacleCinemaPhase,
@@ -190,6 +196,14 @@ export type HomeHubViewProps = {
   onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** Soft Beat peek → layered secret insights (+ optional tiny coins) */
+  onSecretSoftBeatPeek?: (kind: SoftBeatKind) => void;
+  /** Level 3 — weather × organ heard on plaza / ritual / stall */
+  onWeatherOrganHeard?: () => void;
+  /** Level 4 — household organ shelf revealed in Family Room */
+  onCommunityShelfSeen?: () => void;
+  /** Level 3 — Freedom Pavilion names a board asset receipt */
+  onDealReceiptSeen?: () => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -236,6 +250,10 @@ export function HomeHubView({
   onMarkEchoSurprise,
   onClearChapterQuiet,
   onPlayStructureMinigame,
+  onSecretSoftBeatPeek,
+  onWeatherOrganHeard,
+  onCommunityShelfSeen,
+  onDealReceiptSeen,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -376,6 +394,9 @@ export function HomeHubView({
   const latestPlaque = plaques[plaques.length - 1] ?? null;
   const latestOrgan = latestPlaque ? scarOrganId(latestPlaque) : null;
   const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
+  const communityMyth = communityOrganShelfLine(save, getActiveFamilyRoom());
+  const dealReceipt = dealPlazaReceiptTip(save);
+  const weatherOrganLine = weatherOrganCoachLine(save);
   const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
   const scarEcho =
     latestPlaque != null
@@ -392,7 +413,16 @@ export function HomeHubView({
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
     gameEvents.emit("world.entered", { place: "harbor", ecosystemMotion: "mixed" });
     onSyncHarborRitual?.();
-  }, [onSyncHarborRitual]);
+    onWeatherOrganHeard?.();
+  }, [onSyncHarborRitual, onWeatherOrganHeard]);
+
+  useEffect(() => {
+    if (hubModal === "family" && communityMyth) onCommunityShelfSeen?.();
+  }, [hubModal, communityMyth, onCommunityShelfSeen]);
+
+  useEffect(() => {
+    if (hubModal === "pavilion" && dealReceipt) onDealReceiptSeen?.();
+  }, [hubModal, dealReceipt, onDealReceiptSeen]);
 
   useEffect(() => {
     if (save.chapterQuietPending) onClearChapterQuiet?.();
@@ -1039,9 +1069,21 @@ export function HomeHubView({
           {bankSoftBeat ? (
             <SoftBeatOverlay
               kind={bankSoftBeat}
-              hushActive={plaques.length > 0}
+              hushActive={Boolean(save.chapterQuietPending)}
               scarLabel={latestPlaque?.label ?? null}
-              onDone={() => setBankSoftBeat(null)}
+              {...(() => {
+                const v = resolveSoftBeatSecrets(save, bankSoftBeat);
+                return {
+                  vistaLine: v.vistaLine,
+                  crossIndexLine: v.crossIndexLine,
+                  strategyHint: v.strategyHint,
+                  foreshadowLine: v.foreshadowLine,
+                };
+              })()}
+              onDone={() => {
+                onSecretSoftBeatPeek?.(bankSoftBeat);
+                setBankSoftBeat(null);
+              }}
             />
           ) : null}
         </>
@@ -1466,6 +1508,14 @@ export function HomeHubView({
             This wing opens when your Harbor ledger proves Freedom. Your carpet already got a boost —
             polish it further at the Capsule Stall anytime.
           </p>
+          {dealReceipt ? (
+            <p
+              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-950"
+              data-testid="deal-plaza-receipt"
+            >
+              {dealReceipt}
+            </p>
+          ) : null}
           <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950">
             {boat.emoji} Current carpet: {boat.label}
           </div>
@@ -1589,6 +1639,12 @@ export function HomeHubView({
           <p className="text-sm text-muted-foreground text-center">
             Streak {save.harborRitual?.streak ?? 1} day
             {(save.harborRitual?.streak ?? 1) === 1 ? "" : "s"} — show up, listen, collect.
+          </p>
+          <p
+            className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-center text-xs text-slate-800"
+            data-testid="harbor-weather-coach"
+          >
+            {weatherOrganLine}
           </p>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
             <p className="font-bold">Mascot rumor</p>
@@ -1794,6 +1850,14 @@ export function HomeHubView({
               After a Cove Take, this room will name your plaque — still local, still myth.
             </p>
           )}
+          {communityMyth ? (
+            <p
+              className="rounded-xl border border-indigo-200/60 bg-indigo-50 px-3 py-2 text-center text-sm text-indigo-950"
+              data-testid="family-community-shelf"
+            >
+              {communityMyth}
+            </p>
+          ) : null}
           {familyRoom ? (
             <>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
@@ -1911,8 +1975,8 @@ export function HomeHubView({
               </div>
             </>
           )}
-          <p className="text-center text-xs text-muted-foreground">
-            {weatherCoachLine(harborWeatherMood(save))}
+          <p className="text-center text-xs text-muted-foreground" data-testid="family-weather-coach">
+            {weatherOrganLine}
           </p>
           <GameButton variant="primary" className="w-full" onClick={() => setHubModal(null)}>
             Back to plaza

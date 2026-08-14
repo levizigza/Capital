@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { resolveSoftBeatSecrets } from "../secretArchitecture";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -73,6 +74,8 @@ export type IslandShoreViewProps = {
   onOpenHub: () => void;
   onEnterArea: (areaId: string) => void;
   onStartQuest: (questId: string) => void;
+  /** Soft Beat peek → layered secret insights */
+  onSecretSoftBeatPeek?: (kind: SoftBeatKind) => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
 };
@@ -98,6 +101,7 @@ export function IslandShoreView({
   onOpenHub,
   onEnterArea,
   onStartQuest,
+  onSecretSoftBeatPeek,
   talkOpen = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
@@ -281,7 +285,19 @@ export function IslandShoreView({
               kind={softBeat}
               hushActive={chapterQuiet}
               scarLabel={latestScar?.label ?? null}
-              onDone={() => setSoftBeat(null)}
+              {...(() => {
+                const v = resolveSoftBeatSecrets(save, softBeat);
+                return {
+                  vistaLine: v.vistaLine,
+                  crossIndexLine: v.crossIndexLine,
+                  strategyHint: v.strategyHint,
+                  foreshadowLine: v.foreshadowLine,
+                };
+              })()}
+              onDone={() => {
+                onSecretSoftBeatPeek?.(softBeat);
+                setSoftBeat(null);
+              }}
             />
           ) : null}
         </>

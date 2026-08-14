@@ -77,6 +77,17 @@ import {
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
 import { cn } from "@/lib/utils";
+import {
+  affinityShelfLine,
+  markAffinityShelfInsight,
+  markCommunityShelfInsight,
+  markDealReceiptInsight,
+  recordSoftBeatPeek,
+  recordWeatherOrganInsight,
+} from "./secretArchitecture";
+import { localDayKey } from "./harborRitual";
+import { getActiveFamilyRoom } from "./familyRoom";
+import type { SoftBeatKind } from "./views/SoftBeatOverlay";
 
 import type { UserProfile } from "@/App";
 
@@ -798,6 +809,45 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     updateSave((prev) => markEchoSurpriseSeen(prev));
   }, [updateSave]);
 
+  const onSecretSoftBeatPeek = useCallback(
+    (kind: SoftBeatKind) => {
+      let note: string | null = null;
+      let coins = 0;
+      updateSave((prev) => {
+        const result = recordSoftBeatPeek(prev, kind);
+        note = result.discoveryNote;
+        coins = result.resourceCoins;
+        let next = result.save;
+        if (coins > 0) {
+          // coins applied via setUserProfile below
+        }
+        return next;
+      });
+      if (coins > 0) {
+        setUserProfile((prev) => ({
+          ...prev,
+          totalCoins: prev.totalCoins + coins,
+        }));
+        toast.message(`Soft Beat thank-you · +${coins} coins`);
+      } else if (note) {
+        toast.message(note);
+      }
+    },
+    [setUserProfile, updateSave],
+  );
+
+  const onWeatherOrganHeard = useCallback(() => {
+    updateSave((prev) => recordWeatherOrganInsight(prev, localDayKey()));
+  }, [updateSave]);
+
+  const onCommunityShelfSeen = useCallback(() => {
+    updateSave((prev) => markCommunityShelfInsight(prev, getActiveFamilyRoom()));
+  }, [updateSave]);
+
+  const onDealReceiptSeen = useCallback(() => {
+    updateSave((prev) => markDealReceiptInsight(prev));
+  }, [updateSave]);
+
   const onStudioGalleryOpened = useCallback(() => {
     updateSave((prev) => bumpWeeklyStudio(prev));
   }, [updateSave]);
@@ -1516,9 +1566,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         save?.harborHomecoming &&
         !save.harborHomecoming.piggyTalked &&
         (save.harborHomecoming.pending || save.harborHomecoming.celebrated);
+      const choiceId = lastTalkChoiceRef.current ?? undefined;
+      lastTalkChoiceRef.current = null;
+      let affinityNote: string | null = null;
       updateSave((prev) => {
-        let next = recordNpcTalk(prev, npcId, lastTalkChoiceRef.current ?? undefined);
-        lastTalkChoiceRef.current = null;
+        let next = recordNpcTalk(prev, npcId, choiceId);
         if (welcomedPiggy) {
           next = {
             ...next,
@@ -1533,8 +1585,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           };
         }
         next = bumpWeeklyTalk(next);
+        next = markAffinityShelfInsight(next);
+        affinityNote = affinityShelfLine(next, npcId);
         return next;
       });
+      if (affinityNote) toast.message(affinityNote);
     } else {
       lastTalkChoiceRef.current = null;
     }
@@ -2217,6 +2272,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 source: "money_structure",
               });
             }}
+            onSecretSoftBeatPeek={onSecretSoftBeatPeek}
+            onWeatherOrganHeard={onWeatherOrganHeard}
+            onCommunityShelfSeen={onCommunityShelfSeen}
+            onDealReceiptSeen={onDealReceiptSeen}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}
@@ -2295,6 +2354,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onOpenHub={() => setView("home")}
               onEnterArea={(areaId) => void enterArea(areaId)}
               onStartQuest={(questId) => void startQuest(questId)}
+              onSecretSoftBeatPeek={onSecretSoftBeatPeek}
               talkOpen={dialogueState.open}
             />
           </IslandThemeProvider>
