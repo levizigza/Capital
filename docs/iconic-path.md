@@ -2,6 +2,8 @@
 
 Capital’s north star for this phase: make **one money choice** feel unforgettable.
 
+See also: [GAME_DESIGN_SOCIAL.md](./GAME_DESIGN_SOCIAL.md) — humans only when they change the game (local Family Room; no fake multiplayer).
+
 ## Signature loop (protect this)
 
 1. Coincraft Cove irreversible Take  

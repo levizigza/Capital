@@ -82,6 +82,14 @@ import {
   pinLevelToRoom,
   roomPinnedLevels,
   familyPlaqueMythLine,
+  postFamilyChallenge,
+  clearFamilyChallenge,
+  completeFamilyChallenge,
+  recordShareWitness,
+  familyChallengeBlurb,
+  familyWitnessMythLine,
+  FAMILY_CHALLENGE_KIND_LABEL,
+  type FamilyChallengeKind,
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import {
@@ -1175,6 +1183,20 @@ export function HomeHubView({
                       setFeltShareOpen(false);
                     }}
                     onKeepWalking={() => setFeltShareOpen(false)}
+                    onWitness={({ witnessName, reaction }) => {
+                      const active = getActiveFamilyRoom();
+                      if (!active) {
+                        toast.message("Join a Family Room first — witness stamps stay local");
+                        return;
+                      }
+                      const room = recordShareWitness({
+                        witnessName,
+                        reaction,
+                        scarLabel: latestPlaque.label,
+                      });
+                      setFamilyRoom(room);
+                      toast.message("Witness stamped — soft myth only");
+                    }}
                   />
                 ) : null}
                 {echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen ? (
@@ -1794,6 +1816,14 @@ export function HomeHubView({
               After a Cove Take, this room will name your plaque — still local, still myth.
             </p>
           )}
+          {familyWitnessMythLine(familyRoom?.witnesses?.[0]) ? (
+            <p
+              className="rounded-xl border border-sky-200/60 bg-sky-50 px-3 py-2 text-center text-sm text-sky-950"
+              data-testid="family-witness-myth"
+            >
+              {familyWitnessMythLine(familyRoom?.witnesses?.[0])}
+            </p>
+          ) : null}
           {familyRoom ? (
             <>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
@@ -1804,6 +1834,82 @@ export function HomeHubView({
                   {familyRoom.members.length === 1 ? "" : "s"}:{" "}
                   {familyRoom.members.map((m) => m.name).join(", ")}
                 </p>
+              </div>
+              <div
+                className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950"
+                data-testid="family-challenge-panel"
+              >
+                <p className="font-bold">Household challenge</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  One human-authored goal — voluntary clears, no leaderboard.
+                </p>
+                {familyRoom.challenge ? (
+                  <>
+                    <p className="mt-2 font-semibold" data-testid="family-challenge-blurb">
+                      {familyChallengeBlurb(familyRoom.challenge)}
+                    </p>
+                    <ul className="mt-1 text-xs">
+                      {familyRoom.challenge.completions.map((c) => (
+                        <li key={`${c.name}-${c.at}`}>✓ {c.name}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-2 flex gap-2">
+                      <GameButton
+                        variant="primary"
+                        className="flex-1"
+                        data-testid="family-challenge-complete"
+                        onClick={() => {
+                          const room = completeFamilyChallenge(voyager.name || "Voyager");
+                          setFamilyRoom(room);
+                          toast.message("Marked clear — no ranking");
+                        }}
+                      >
+                        I cleared it
+                      </GameButton>
+                      <GameButton
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const room = clearFamilyChallenge();
+                          setFamilyRoom(room);
+                          toast.message("Challenge cleared");
+                        }}
+                      >
+                        Retire
+                      </GameButton>
+                    </div>
+                  </>
+                ) : (
+                  <div className="mt-2 space-y-2">
+                    {(Object.keys(FAMILY_CHALLENGE_KIND_LABEL) as FamilyChallengeKind[]).map(
+                      (kind) => (
+                        <GameButton
+                          key={kind}
+                          variant="outline"
+                          className="w-full"
+                          data-testid={`family-challenge-post-${kind}`}
+                          onClick={() => {
+                            const pinned = roomPinnedLevels(familyRoom)[0];
+                            const room = postFamilyChallenge({
+                              authorName: voyager.name || "Host",
+                              kind,
+                              targetLabel:
+                                kind === "studio_clear" && pinned
+                                  ? `Clear “${pinned.title}”`
+                                  : FAMILY_CHALLENGE_KIND_LABEL[kind],
+                              targetLevelId:
+                                kind === "studio_clear" ? pinned?.id : undefined,
+                            });
+                            setFamilyRoom(room);
+                            toast.message("Challenge posted for the household");
+                          }}
+                        >
+                          Set: {FAMILY_CHALLENGE_KIND_LABEL[kind]}
+                        </GameButton>
+                      ),
+                    )}
+                  </div>
+                )}
               </div>
               <ul className="space-y-1 text-sm">
                 {roomPinnedLevels(familyRoom).map((lvl) => (

@@ -28,6 +28,27 @@ export type FamilyMember = {
   joinedAt: string;
 };
 
+export type FamilyChallengeKind = "studio_clear" | "freedom_seal" | "cove_take";
+
+export type FamilyChallenge = {
+  id: string;
+  authorName: string;
+  kind: FamilyChallengeKind;
+  targetLabel: string;
+  targetLevelId?: string;
+  createdAt: string;
+  completions: Array<{ name: string; at: string }>;
+};
+
+export type FamilyWitnessReaction = "cheer" | "caution" | "curious";
+
+export type FamilyWitness = {
+  witnessName: string;
+  reaction: FamilyWitnessReaction;
+  scarLabel: string;
+  at: string;
+};
+
 export type FamilyRoom = {
   code: string;
   name: string;
@@ -36,6 +57,10 @@ export type FamilyRoom = {
   members: FamilyMember[];
   /** Community level ids pinned for this room */
   pinnedLevelIds: string[];
+  /** One active human-authored household goal (no ranking). */
+  challenge?: FamilyChallenge | null;
+  /** Soft share reactions — observation, not power. */
+  witnesses?: FamilyWitness[];
 };
 
 function randomCode(): string {
@@ -99,6 +124,8 @@ export function createFamilyRoom(name: string, hostName: string): FamilyRoom {
       },
     ],
     pinnedLevelIds: [],
+    challenge: null,
+    witnesses: [],
   };
   const index = loadIndex();
   index[code] = room;
@@ -193,4 +220,101 @@ export function familyPlaqueMythLine(
       ? organId
       : organFromPlaqueLabel(label);
   return `The ${organVerbChip(organ)} — Harbor remembered: “${label}.” Local myth — and so do you.`;
+}
+
+function persistRoom(room: FamilyRoom): FamilyRoom {
+  const index = loadIndex();
+  index[room.code] = room;
+  saveIndex(index);
+  return room;
+}
+
+export const FAMILY_CHALLENGE_KIND_LABEL: Record<FamilyChallengeKind, string> = {
+  studio_clear: "Clear a pinned Studio voyage",
+  freedom_seal: "Earn the Freedom Seal",
+  cove_take: "Finish the Cove Take",
+};
+
+/** Replace the single active challenge — human sets what matters; no ladder. */
+export function postFamilyChallenge(opts: {
+  authorName: string;
+  kind: FamilyChallengeKind;
+  targetLabel?: string;
+  targetLevelId?: string;
+}): FamilyRoom | null {
+  const room = getActiveFamilyRoom();
+  if (!room) return null;
+  const authorName = sanitizePlainText(opts.authorName, 64) || "Host";
+  const targetLabel =
+    sanitizePlainText(opts.targetLabel, 120) || FAMILY_CHALLENGE_KIND_LABEL[opts.kind];
+  const challenge: FamilyChallenge = {
+    id: `ch_${Date.now().toString(36)}`,
+    authorName,
+    kind: opts.kind,
+    targetLabel,
+    targetLevelId: opts.targetLevelId
+      ? sanitizePlainText(opts.targetLevelId, 128) || undefined
+      : undefined,
+    createdAt: new Date().toISOString(),
+    completions: [],
+  };
+  return persistRoom({ ...room, challenge });
+}
+
+export function clearFamilyChallenge(): FamilyRoom | null {
+  const room = getActiveFamilyRoom();
+  if (!room) return null;
+  return persistRoom({ ...room, challenge: null });
+}
+
+/** Voluntary complete — unique by name; never ranks members. */
+export function completeFamilyChallenge(memberName: string): FamilyRoom | null {
+  const room = getActiveFamilyRoom();
+  if (!room?.challenge) return null;
+  const name = sanitizePlainText(memberName, 64) || "Voyager";
+  const existing = room.challenge.completions;
+  if (existing.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
+    return room;
+  }
+  if (existing.length >= 32) return room;
+  const challenge: FamilyChallenge = {
+    ...room.challenge,
+    completions: [...existing, { name, at: new Date().toISOString() }],
+  };
+  return persistRoom({ ...room, challenge });
+}
+
+export const WITNESS_REACTION_LABEL: Record<FamilyWitnessReaction, string> = {
+  cheer: "Cheered the Take",
+  caution: "Urged caution",
+  curious: "Asked what happens next",
+};
+
+/** Inbound human judgment on a share — soft myth only. */
+export function recordShareWitness(opts: {
+  witnessName: string;
+  reaction: FamilyWitnessReaction;
+  scarLabel: string;
+}): FamilyRoom | null {
+  const room = getActiveFamilyRoom();
+  if (!room) return null;
+  const witness: FamilyWitness = {
+    witnessName: sanitizePlainText(opts.witnessName, 64) || "Witness",
+    reaction: opts.reaction,
+    scarLabel: sanitizePlainText(opts.scarLabel, 120) || "a Take",
+    at: new Date().toISOString(),
+  };
+  const witnesses = [witness, ...(room.witnesses ?? [])].slice(0, 24);
+  return persistRoom({ ...room, witnesses });
+}
+
+export function familyWitnessMythLine(witness: FamilyWitness | null | undefined): string | null {
+  if (!witness) return null;
+  return `${witness.witnessName} ${WITNESS_REACTION_LABEL[witness.reaction].toLowerCase()} on “${witness.scarLabel}.”`;
+}
+
+export function familyChallengeBlurb(challenge: FamilyChallenge | null | undefined): string | null {
+  if (!challenge) return null;
+  const n = challenge.completions.length;
+  return `${challenge.authorName} set: ${challenge.targetLabel} — ${n} household clear${n === 1 ? "" : "s"} (no ranking).`;
 }
