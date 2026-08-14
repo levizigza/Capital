@@ -43,6 +43,7 @@ import { resolveAdaptiveBuddyTip } from "../gameSystems";
 import { getIslandCulture } from "../islandCulture";
 import { getBoardEconomyMode, tracksHarborEscape, usesCashflowPassStart } from "../boardEconomy";
 import { isHomeLook } from "../animationStyles";
+import { playActionFeedback } from "../actionFeedback";
 
 export type IslandBoardViewProps = {
   island: IslandDefinition;
@@ -283,6 +284,7 @@ export function IslandBoardView({
             `Need ${offer.purchaseCost} coins for ${offer.name} — earn more, then catch the next Deal.`,
           );
         } else {
+          playActionFeedback("deal_accept");
           const result = acceptDeal(ensureLedger(save.voyagerLedger), offer);
           applyPayload({
             coins: result.coins,
@@ -292,6 +294,7 @@ export function IslandBoardView({
           });
         }
       } else {
+        playActionFeedback("deal_pass");
         setEventMessage(`Passed on ${offer.name}. Patience is a cashflow skill too.`);
       }
 
@@ -333,6 +336,7 @@ export function IslandBoardView({
       return;
     }
 
+    playActionFeedback("dice_roll");
     setPhase("rolling");
     setEventMessage(null);
     setRivalLog([]);

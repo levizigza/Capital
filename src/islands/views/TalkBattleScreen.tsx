@@ -26,6 +26,7 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { playActionFeedback } from "../actionFeedback";
 
 /** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
 const TALK_INPUT_ARM_MS = 220;
@@ -140,6 +141,7 @@ export function TalkBattleScreen({
   const chooseReply = useCallback(
     (choiceId: string) => {
       if (!inputArmed.current) return;
+      playActionFeedback("talk_choice");
       onChoice(choiceId);
     },
     [onChoice],

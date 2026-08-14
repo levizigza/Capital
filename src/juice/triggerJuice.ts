@@ -1,6 +1,7 @@
 /**
  * Imperative juice — SFX + viewport nudge/shake + optional burst particles.
  * Signature cinema (Take → Plinth → share) and fail chrome call this.
+ * Layer flags let actionFeedback stack Capital SFX without double beeps.
  */
 
 import { prefersReducedMotion } from "@/islands/a11yMotion";
@@ -25,7 +26,6 @@ function viewportEl(): HTMLElement | null {
 
 function pulseClass(el: HTMLElement, cls: string, ms: number) {
   el.classList.remove(cls);
-  // Force reflow so re-triggering the same class restarts the animation.
   void el.offsetWidth;
   el.classList.add(cls);
   window.setTimeout(() => el.classList.remove(cls), ms);
@@ -35,6 +35,7 @@ function spawnBurst(opts: JuiceTriggerOptions, level: JuiceLevel) {
   if (level === "off") return;
   if (level === "low" && !opts.burst) return;
   if (prefersReducedMotion()) return;
+  if (opts.layers?.burst === false) return;
 
   const count = level === "high" ? 8 : 4;
   const originX = opts.x ?? (typeof window !== "undefined" ? window.innerWidth * 0.5 : 0);
@@ -64,33 +65,48 @@ function bounceTarget(target?: HTMLElement | null) {
   window.setTimeout(() => target.classList.remove("juice-ui-bounce"), 240);
 }
 
+function layerOn(
+  opts: JuiceTriggerOptions,
+  key: "sfx" | "motion" | "burst" | "shake",
+  fallback: boolean,
+): boolean {
+  const v = opts.layers?.[key];
+  return v === undefined ? fallback : v;
+}
+
 /** Fire juice for a named game-feel event. Safe to call outside React. */
 export function triggerJuice(event: JuiceEvent, opts: JuiceTriggerOptions = {}): void {
   const level = effectiveLevel();
   if (level === "off") return;
 
   const vp = viewportEl();
+  const sfx = layerOn(opts, "sfx", true);
+  const motion = layerOn(opts, "motion", true);
 
   switch (event) {
     case "accept":
-      juiceSfx.playAccept(level);
-      bounceTarget(opts.target);
+      if (sfx) juiceSfx.playAccept(level);
+      if (motion) bounceTarget(opts.target);
       break;
     case "complete":
-      juiceSfx.playComplete(level);
-      if (vp && level === "high") pulseClass(vp, "juice-nudge-active", 400);
-      spawnBurst(opts, level);
-      bounceTarget(opts.target);
+      if (sfx) juiceSfx.playComplete(level);
+      if (motion && vp && level === "high") pulseClass(vp, "juice-nudge-active", 400);
+      if (layerOn(opts, "burst", true)) spawnBurst(opts, level);
+      if (motion) bounceTarget(opts.target);
       break;
     case "fail":
-      juiceSfx.playFail(level);
-      if (vp && level === "high") pulseClass(vp, "juice-shake-active", 450);
+      if (sfx) juiceSfx.playFail(level);
+      if (layerOn(opts, "shake", level === "high") && vp && level === "high") {
+        pulseClass(vp, "juice-shake-active", 450);
+      }
       break;
     case "reward":
-      juiceSfx.playReward(level);
-      if (vp && level === "high") pulseClass(vp, "juice-nudge-active", 400);
-      spawnBurst({ ...opts, burst: opts.burst ?? true }, level);
-      bounceTarget(opts.target);
+      if (sfx) juiceSfx.playReward(level);
+      if (motion && vp && level === "high") pulseClass(vp, "juice-nudge-active", 400);
+      if (layerOn(opts, "burst", opts.burst ?? true)) {
+        spawnBurst({ ...opts, burst: opts.burst ?? true }, level);
+      }
+      if (motion) bounceTarget(opts.target);
       break;
     default:
       break;
