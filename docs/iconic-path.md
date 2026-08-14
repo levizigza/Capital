@@ -211,6 +211,8 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 
+**Complexity cut:** when surface feels thick, cut meters/menus first — see [`COMPLEXITY_CUT_REVIEW.md`](./COMPLEXITY_CUT_REVIEW.md) (~30% mechanical surface, richer Take · Soft Beat · scar interactions).
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Series cast (Cashwell Capital)

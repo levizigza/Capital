@@ -24,6 +24,8 @@ Cutting ~30% means:
 
 Net strategic depth: **increases** — players feel Take → Harbor → Soft Beat → Freedom as one conversation, not five curricula.
 
+**Rule of thumb:** if a system does not change a Take, Soft Beat, scar, Freedom CF, or Plinth truth within one session, it is a cut candidate.
+
 ---
 
 ## Inventory snapshot (what we’re cutting against)
@@ -102,7 +104,7 @@ Depth impact key:
 
 ---
 
-### 6. Do **not** wire boom/recession into Harbor Pay Day
+### 6. Do **not** wire boom/recession into Harbor · Pay Day
 
 | | |
 |--|--|
