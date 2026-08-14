@@ -7,11 +7,10 @@
  */
 
 import type { IslandDefinition, IslandId, IslandSaveV1, MinigameId } from "./types";
-import { MAX_PARTY_ITEMS, pickRandomPartyItem, type PartyItemId } from "./partyItems";
+import { MAX_PARTY_ITEMS, type PartyItemId } from "./partyItems";
 import { createDefaultRivals, type RivalBoardState } from "./partyRivals";
 import {
   HARBOR_DEALS,
-  addHolding,
   applyBill,
   applyPayday,
   dealPurchaseCost,
@@ -20,6 +19,13 @@ import {
   type LedgerHolding,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import {
+  boardSessionSeed,
+  patternForBoardSession,
+  pickCapsuleChoices,
+  toLiabilityTrapOffer,
+  toLuckyWindfallOffer,
+} from "./replayVariation";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -76,9 +82,13 @@ export type PartyIslandState = {
     doubleCoinsNext?: boolean;
     shielded?: boolean;
     bailoutReady?: boolean;
+    /** Windfall banked for next Pay Day (lucky fork) */
+    bankedWindfall?: number;
   };
   rivals?: RivalBoardState[];
   turnsRemaining?: number;
+  /** Session seed — rotates board + rivals; stable within a run */
+  sessionSeed?: number;
 };
 
 export type BoardMoveResult = {
@@ -109,6 +119,12 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Liability trap — borrow / buyout / walk */
+  pendingLiability?: import("./replayVariation").LiabilityTrapOffer;
+  /** Windfall — spend all vs bank half */
+  pendingLucky?: import("./replayVariation").LuckyWindfallOffer;
+  /** Capsule — pick 1 of 2 */
+  pendingCapsule?: { options: [import("./partyItems").PartyItemId, import("./partyItems").PartyItemId] };
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -165,27 +181,30 @@ export function advancePosition(current: number, steps: number, boardSize = BOAR
   return (current + steps) % boardSize;
 }
 
-export function emptyPartyState(): PartyIslandState {
+export function emptyPartyState(seed = Date.now()): PartyIslandState {
   return {
     position: 0,
     turnsPlayed: 0,
     stars: 0,
     items: [],
     buffs: {},
-    rivals: createDefaultRivals(2),
+    rivals: createDefaultRivals(2, seed),
     turnsRemaining: DEFAULT_PARTY_TURNS,
+    sessionSeed: seed,
   };
 }
 
 export function getPartyState(save: IslandSaveV1, islandId: IslandId): PartyIslandState {
   const raw = save.partyBoard?.[islandId];
   if (!raw) return emptyPartyState();
+  const seed = raw.sessionSeed ?? Date.now();
   return {
-    ...emptyPartyState(),
+    ...emptyPartyState(seed),
     ...raw,
+    sessionSeed: seed,
     items: raw.items ?? [],
     buffs: raw.buffs ?? {},
-    rivals: (raw.rivals ?? createDefaultRivals(2)).map((r, i) => ({
+    rivals: (raw.rivals ?? createDefaultRivals(2, seed)).map((r, i) => ({
       id: r.id,
       position: r.position,
       coins: r.coins,
@@ -199,7 +218,10 @@ export function getPartyState(save: IslandSaveV1, islandId: IslandId): PartyIsla
   };
 }
 
-export function buildBoardForIsland(island: IslandDefinition): BoardSpace[] {
+export function buildBoardForIsland(
+  island: IslandDefinition,
+  opts?: { seed?: number; economyPhase?: import("./economy").EconomyPhase | null },
+): BoardSpace[] {
   const minigames = island.minigames ?? [];
   const spaces: BoardSpace[] = [];
   const mode = getBoardEconomyMode(island);
@@ -215,7 +237,12 @@ export function buildBoardForIsland(island: IslandDefinition): BoardSpace[] {
     eventText: flavor.startEvent,
   });
 
-  const pattern = cashflow ? CASHFLOW_SPACE_PATTERN : PARTY_SPACE_PATTERN;
+  const base = cashflow ? CASHFLOW_SPACE_PATTERN : PARTY_SPACE_PATTERN;
+  const seed = boardSessionSeed(island.id, opts?.seed ?? 1);
+  const pattern = patternForBoardSession(base, {
+    seed,
+    phase: opts?.economyPhase,
+  });
 
   let mgIdx = 0;
   for (let i = 1; i < BOARD_SIZE; i++) {
@@ -448,7 +475,7 @@ export function resolvePlayerSpace(
   state: PartyIslandState,
   playerCoins: number,
   ledgerIn?: VoyagerLedger | null,
-  opts?: { trackHarborEscape?: boolean },
+  opts?: { trackHarborEscape?: boolean; sessionSeed?: number },
 ): { next: PartyIslandState; payload: SpaceResolvePayload } {
   const next: PartyIslandState = {
     ...state,
@@ -459,34 +486,32 @@ export function resolvePlayerSpace(
   const payload: SpaceResolvePayload = { coins: 0, message: "" };
   let ledger = ensureLedger(ledgerIn);
 
-  const addItem = (id: PartyItemId) => {
-    const items = next.items ?? [];
-    if (items.length >= MAX_PARTY_ITEMS) {
-      payload.message = `Capsule full! You already hold ${MAX_PARTY_ITEMS} items.`;
-      return;
-    }
-    items.push(id);
-    next.items = items;
-    payload.itemGained = id;
-  };
-
   switch (space.type) {
     case "payday": {
       let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, 1, {
         trackHarborEscape: opts?.trackHarborEscape ?? false,
       });
+      const banked = next.buffs?.bankedWindfall ?? 0;
+      if (banked > 0) {
+        coins += banked;
+        next.buffs = { ...next.buffs, bankedWindfall: 0 };
+      }
       if (next.buffs?.doubleCoinsNext && coins > 0) {
         coins *= 2;
         next.buffs = { ...next.buffs, doubleCoinsNext: false };
         payload.message = escapedNow
           ? `Dividend Magnet Pay Day (+${coins}) — Harbor escape unlocked!`
-          : `Dividend Magnet! Pay Day doubled to +${coins} coins.`;
+          : banked > 0
+            ? `Dividend Magnet + banked windfall! Pay Day +${coins}.`
+            : `Dividend Magnet! Pay Day doubled to +${coins} coins.`;
       } else {
         payload.message = escapedNow
           ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
-          : coins >= 0
-            ? `Pay Day: +${coins} coins from monthly cashflow.`
-            : `Pay Day shortfall: ${coins} coins.`;
+          : banked > 0
+            ? `Pay Day + banked windfall: +${coins} coins.`
+            : coins >= 0
+              ? `Pay Day: +${coins} coins from monthly cashflow.`
+              : `Pay Day shortfall: ${coins} coins.`;
       }
       payload.coins = coins;
       payload.xp = 5;
@@ -524,13 +549,11 @@ export function resolvePlayerSpace(
         payload.message = "You already carry every Harbor liability — watch that cashflow!";
         break;
       }
-      ledger = addHolding(ledger, trap);
-      payload.ledger = ledger;
-      payload.message = `Debt Trap! ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo).`;
+      payload.pendingLiability = toLiabilityTrapOffer(trap);
+      payload.message = `Debt Trap: ${trap.icon} ${trap.name} — borrow, buy out, or walk.`;
       break;
     }
     case "coins":
-    case "lucky":
     case "bank": {
       let coins = space.coinReward ?? 10;
       if (next.buffs?.doubleCoinsNext) {
@@ -547,6 +570,18 @@ export function resolvePlayerSpace(
       payload.xp = 5;
       break;
     }
+    case "lucky": {
+      const amount = space.coinReward ?? 20;
+      const offer = toLuckyWindfallOffer(
+        next.buffs?.doubleCoinsNext ? amount * 2 : amount,
+      );
+      if (next.buffs?.doubleCoinsNext) {
+        next.buffs = { ...next.buffs, doubleCoinsNext: false };
+      }
+      payload.pendingLucky = offer;
+      payload.message = `Windfall ${offer.amount}! Spend it all now, or bank half for next Pay Day.`;
+      break;
+    }
     case "seal": {
       const cost = space.coinReward ?? 20;
       if (playerCoins >= cost) {
@@ -559,12 +594,13 @@ export function resolvePlayerSpace(
       break;
     }
     case "capsule": {
-      const item = pickRandomPartyItem(next.items);
-      addItem(item);
-      if (payload.itemGained) {
-        payload.message = `Fortune Capsule: you got a new item!`;
-        payload.xp = 3;
-      }
+      const options = pickCapsuleChoices(
+        next.items ?? [],
+        opts?.sessionSeed ?? state.sessionSeed ?? Math.floor(Math.random() * 1e9),
+      );
+      payload.pendingCapsule = { options };
+      payload.message = `Fortune Capsule: pick one item — RNG nominates, you decide.`;
+      payload.xp = 3;
       break;
     }
     case "raid": {

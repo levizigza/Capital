@@ -36,6 +36,11 @@ import {
   type SpaceResolvePayload,
 } from "../partyBoard";
 import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
+import {
+  resolveLiabilityTrapChoice,
+  type LiabilityTrapOffer,
+  type LuckyWindfallOffer,
+} from "../replayVariation";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -116,8 +121,15 @@ export function IslandBoardView({
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
   const boardMode = getBoardEconomyMode(island);
-  const board = useMemo(() => buildBoardForIsland(island), [island]);
   const party = getPartyState(save, island.id);
+  const board = useMemo(
+    () =>
+      buildBoardForIsland(island, {
+        seed: party.sessionSeed ?? 1,
+        economyPhase: save.economyState?.phase,
+      }),
+    [island, party.sessionSeed, save.economyState?.phase],
+  );
   const minigameCount = island.minigames?.length ?? 0;
   const [eraArrive, setEraArrive] = useState(!isHomeLook(theme.animationStyle));
 
@@ -140,6 +152,14 @@ export function IslandBoardView({
   const [pendingDoubleRoll, setPendingDoubleRoll] = useState(false);
   const [dealOffer, setDealOffer] = useState<DealOffer | null>(null);
   const [dealPartyState, setDealPartyState] = useState<PartyIslandState | null>(null);
+  const [liabilityOffer, setLiabilityOffer] = useState<LiabilityTrapOffer | null>(null);
+  const [liabilityPartyState, setLiabilityPartyState] = useState<PartyIslandState | null>(null);
+  const [luckyOffer, setLuckyOffer] = useState<LuckyWindfallOffer | null>(null);
+  const [luckyPartyState, setLuckyPartyState] = useState<PartyIslandState | null>(null);
+  const [capsuleOptions, setCapsuleOptions] = useState<
+    [PartyItemId, PartyItemId] | null
+  >(null);
+  const [capsulePartyState, setCapsulePartyState] = useState<PartyIslandState | null>(null);
 
   useEffect(() => {
     setDisplayPosition(party.position);
@@ -221,7 +241,18 @@ export function IslandBoardView({
       let working = { ...state };
 
       if (result.passedStart) {
-        applyPayload(resolvePassStart(boardMode, save.voyagerLedger));
+        const pass = resolvePassStart(boardMode, save.voyagerLedger);
+        const banked = working.buffs?.bankedWindfall ?? 0;
+        if (banked > 0) {
+          pass.coins = (pass.coins ?? 0) + banked;
+          pass.message = `${pass.message} Banked windfall +${banked}.`;
+          working = {
+            ...working,
+            buffs: { ...working.buffs, bankedWindfall: 0 },
+          };
+          onUpdatePartyState(working);
+        }
+        applyPayload(pass);
       }
 
       if (space.type === "minigame" && space.minigameId) {
@@ -238,7 +269,10 @@ export function IslandBoardView({
         working,
         userProfile.totalCoins,
         save.voyagerLedger,
-        { trackHarborEscape: tracksHarborEscape(boardMode) },
+        {
+          trackHarborEscape: tracksHarborEscape(boardMode),
+          sessionSeed: working.sessionSeed,
+        },
       );
       working = next;
       onUpdatePartyState(working);
@@ -252,6 +286,24 @@ export function IslandBoardView({
       if (payload.pendingDeal) {
         setDealOffer(payload.pendingDeal);
         setDealPartyState(working);
+        setPhase("idle");
+        return;
+      }
+      if (payload.pendingLiability) {
+        setLiabilityOffer(payload.pendingLiability);
+        setLiabilityPartyState(working);
+        setPhase("idle");
+        return;
+      }
+      if (payload.pendingLucky) {
+        setLuckyOffer(payload.pendingLucky);
+        setLuckyPartyState(working);
+        setPhase("idle");
+        return;
+      }
+      if (payload.pendingCapsule) {
+        setCapsuleOptions(payload.pendingCapsule.options);
+        setCapsulePartyState(working);
         setPhase("idle");
         return;
       }
@@ -307,6 +359,108 @@ export function IslandBoardView({
     ],
   );
 
+  const resolveLiabilityOffer = useCallback(
+    (choice: "borrow" | "buyout" | "walk") => {
+      if (!liabilityOffer || !liabilityPartyState) return;
+      const offer = liabilityOffer;
+      const state = liabilityPartyState;
+      setLiabilityOffer(null);
+      setLiabilityPartyState(null);
+      const result = resolveLiabilityTrapChoice(
+        save.voyagerLedger,
+        offer,
+        choice,
+        userProfile.totalCoins,
+      );
+      if (!result.ok) {
+        setEventMessage(result.message);
+        setLiabilityOffer(offer);
+        setLiabilityPartyState(state);
+        return;
+      }
+      applyPayload({
+        coins: result.coins,
+        xp: 6,
+        ledger: result.ledger,
+        message: result.message,
+      });
+      void runRivalTurns(state);
+    },
+    [
+      applyPayload,
+      liabilityOffer,
+      liabilityPartyState,
+      runRivalTurns,
+      save.voyagerLedger,
+      userProfile.totalCoins,
+    ],
+  );
+
+  const resolveLuckyOffer = useCallback(
+    (mode: "spend" | "bank") => {
+      if (!luckyOffer || !luckyPartyState) return;
+      const offer = luckyOffer;
+      const state = luckyPartyState;
+      setLuckyOffer(null);
+      setLuckyPartyState(null);
+      if (mode === "spend") {
+        applyPayload({
+          coins: offer.spendAll,
+          xp: 5,
+          message: `Spent the windfall — +${offer.spendAll} coins now.`,
+        });
+      } else {
+        const nextState: PartyIslandState = {
+          ...state,
+          buffs: {
+            ...state.buffs,
+            bankedWindfall: (state.buffs?.bankedWindfall ?? 0) + offer.bankLater,
+          },
+        };
+        onUpdatePartyState(nextState);
+        applyPayload({
+          coins: offer.bankNow,
+          xp: 5,
+          message: `Banked half — +${offer.bankNow} now, +${offer.bankLater} on next Pay Day.`,
+        });
+        void runRivalTurns(nextState);
+        return;
+      }
+      void runRivalTurns(state);
+    },
+    [applyPayload, luckyOffer, luckyPartyState, onUpdatePartyState, runRivalTurns],
+  );
+
+  const resolveCapsulePick = useCallback(
+    (itemId: PartyItemId) => {
+      if (!capsuleOptions || !capsulePartyState) return;
+      const state = capsulePartyState;
+      setCapsuleOptions(null);
+      setCapsulePartyState(null);
+      const items = [...(state.items ?? [])];
+      if (items.length >= 3) {
+        setEventMessage("Capsule full — spend an item before claiming another.");
+        void runRivalTurns(state);
+        return;
+      }
+      items.push(itemId);
+      const nextState = { ...state, items };
+      onUpdatePartyState(nextState);
+      const tip = getPartyItem(itemId)?.moneyTip;
+      applyPayload(
+        {
+          coins: 0,
+          xp: 3,
+          itemGained: itemId,
+          message: `Capsule pick: ${getPartyItem(itemId)?.icon ?? ""} ${getPartyItem(itemId)?.name ?? itemId}.`,
+        },
+        tip,
+      );
+      void runRivalTurns(nextState);
+    },
+    [applyPayload, capsuleOptions, capsulePartyState, onUpdatePartyState, runRivalTurns],
+  );
+
   const animateMove = useCallback(
     async (result: BoardMoveResult, state: PartyIslandState) => {
       setPhase("moving");
@@ -327,7 +481,8 @@ export function IslandBoardView({
   );
 
   const handleRoll = useCallback(async () => {
-    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer) return;
+    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer || liabilityOffer || luckyOffer || capsuleOptions)
+      return;
     if (party.turnsRemaining === 0) {
       setEventMessage("Session complete! Compare Ledger Seals with your rivals, then float on.");
       return;
@@ -355,7 +510,10 @@ export function IslandBoardView({
     animateMove,
     board,
     boardLocked,
+    capsuleOptions,
     dealOffer,
+    liabilityOffer,
+    luckyOffer,
     minigameCount,
     party,
     pendingDoubleRoll,
@@ -365,7 +523,8 @@ export function IslandBoardView({
 
   const handleUseItem = useCallback(
     (itemId: PartyItemId) => {
-      if (phase !== "idle" || boardLocked || dealOffer) return;
+      if (phase !== "idle" || boardLocked || dealOffer || liabilityOffer || luckyOffer || capsuleOptions)
+        return;
       const { next, payload, extraSteps } = usePartyItem(itemId, party, userProfile.totalCoins);
       onUpdatePartyState(next);
       applyPayload(payload, getPartyItem(itemId)?.moneyTip);
@@ -378,7 +537,13 @@ export function IslandBoardView({
     [applyPayload, boardLocked, dealOffer, onUpdatePartyState, party, phase, userProfile.totalCoins],
   );
 
-  const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
+  const busy =
+    phase !== "idle" ||
+    boardLocked ||
+    Boolean(dealOffer) ||
+    Boolean(liabilityOffer) ||
+    Boolean(luckyOffer) ||
+    Boolean(capsuleOptions);
   const boardSkin = era.boardSkinClass;
   const culture = getIslandCulture(island);
   const buddy = resolveAdaptiveBuddyTip({
@@ -590,12 +755,18 @@ export function IslandBoardView({
                     })}
                   </div>
                 )}
-                {(party.buffs?.shielded || party.buffs?.doubleCoinsNext || party.buffs?.bailoutReady) && (
+                {(party.buffs?.shielded ||
+                  party.buffs?.doubleCoinsNext ||
+                  party.buffs?.bailoutReady ||
+                  (party.buffs?.bankedWindfall ?? 0) > 0) && (
                   <p className="mt-2 text-xs text-emerald-800">
                     Buffs:
                     {party.buffs.shielded ? " 🛡️ Shield " : ""}
                     {party.buffs.doubleCoinsNext ? " 🧲 Magnet " : ""}
                     {party.buffs.bailoutReady ? " 🛟 Bailout" : ""}
+                    {party.buffs.bankedWindfall
+                      ? ` 🏦 Banked ${party.buffs.bankedWindfall}`
+                      : ""}
                   </p>
                 )}
               </GamePanel>
@@ -673,6 +844,100 @@ export function IslandBoardView({
                   >
                     Buy deal
                   </GameButton>
+                </div>
+              </GamePanel>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {liabilityOffer ? (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <GamePanel
+                title="Debt Trap"
+                padding="default"
+                className="border-rose-300 bg-rose-50/90"
+                data-testid="harbor-liability-offer"
+              >
+                <p className="text-sm text-[var(--cap-ink-soft)]">
+                  {liabilityOffer.icon} <b>{liabilityOffer.name}</b> — RNG landed you here; you choose the exposure.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <GameButton variant="primary" className="flex-1" onClick={() => resolveLiabilityOffer("borrow")}>
+                    Borrow +{liabilityOffer.borrowCoins}
+                  </GameButton>
+                  <GameButton variant="outline" className="flex-1" onClick={() => resolveLiabilityOffer("buyout")}>
+                    Buy out {liabilityOffer.buyoutCost}
+                  </GameButton>
+                  <GameButton variant="outline" className="flex-1" onClick={() => resolveLiabilityOffer("walk")}>
+                    Walk −{liabilityOffer.walkBill}
+                  </GameButton>
+                </div>
+              </GamePanel>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {luckyOffer ? (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <GamePanel
+                title="Windfall"
+                padding="default"
+                className="border-emerald-300 bg-emerald-50/90"
+                data-testid="harbor-lucky-offer"
+              >
+                <p className="text-sm text-[var(--cap-ink-soft)]">
+                  Luck found {luckyOffer.amount} coins — spending or banking is the skill.
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <GameButton
+                    variant="primary"
+                    className="flex-1"
+                    data-testid="harbor-lucky-spend"
+                    onClick={() => resolveLuckyOffer("spend")}
+                  >
+                    Spend all +{luckyOffer.spendAll}
+                  </GameButton>
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-lucky-bank"
+                    onClick={() => resolveLuckyOffer("bank")}
+                  >
+                    Bank half (+{luckyOffer.bankNow} now / +{luckyOffer.bankLater} Pay Day)
+                  </GameButton>
+                </div>
+              </GamePanel>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {capsuleOptions ? (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <GamePanel
+                title="Fortune Capsule"
+                padding="default"
+                className="border-violet-300 bg-violet-50/90"
+                data-testid="harbor-capsule-pick"
+              >
+                <p className="text-sm text-[var(--cap-ink-soft)]">Pick one — RNG nominates, you decide.</p>
+                <div className="mt-3 flex gap-2">
+                  {capsuleOptions.map((id) => {
+                    const def = getPartyItem(id);
+                    return (
+                      <GameButton
+                        key={id}
+                        variant="primary"
+                        className="flex-1"
+                        data-testid={`harbor-capsule-pick-${id}`}
+                        onClick={() => resolveCapsulePick(id)}
+                      >
+                        {def?.icon} {def?.name ?? id}
+                      </GameButton>
+                    );
+                  })}
                 </div>
               </GamePanel>
             </motion.div>

@@ -2,6 +2,8 @@
 
 Capital’s north star for this phase: make **one money choice** feel unforgettable.
 
+See also: [GAME_DESIGN_REPLAYABILITY.md](./GAME_DESIGN_REPLAYABILITY.md) — possibility vs authored repetition.
+
 ## Signature loop (protect this)
 
 1. Coincraft Cove irreversible Take  

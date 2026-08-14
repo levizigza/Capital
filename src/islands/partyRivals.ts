@@ -89,11 +89,27 @@ export type RivalBoardState = {
   monthlyExpenses: number;
 };
 
-export function createDefaultRivals(count = 2): RivalBoardState[] {
-  const picked = RIVAL_CAPTAINS.slice(0, Math.min(count, RIVAL_CAPTAINS.length));
+export function createDefaultRivals(count = 2, seed = Date.now()): RivalBoardState[] {
+  // Session roster from full pool — not always Sally+Hank (possibility, not new content).
+  const rngSeed = seed >>> 0 || 1;
+  let s = rngSeed;
+  const rng = () => {
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const pool = [...RIVAL_CAPTAINS];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    const a = pool[i]!;
+    pool[i] = pool[j]!;
+    pool[j] = a;
+  }
+  const picked = pool.slice(0, Math.min(count, pool.length));
   return picked.map((r, i) => ({
     id: r.id,
-    position: (i * 3) % 16,
+    position: (i * 3 + (seed % 5)) % 16,
     coins: 20 + i * 5,
     seals: 0,
     items: [],

@@ -310,9 +310,11 @@ export type IslandSaveV1 = {
         doubleCoinsNext?: boolean;
         shielded?: boolean;
         bailoutReady?: boolean;
+        bankedWindfall?: number;
       };
       rivals?: import("./partyRivals").RivalBoardState[];
       turnsRemaining?: number;
+      sessionSeed?: number;
     }
   >;
 };
