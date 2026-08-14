@@ -52,7 +52,6 @@ import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLo
 import { canOpenSignatureCinema } from "../signatureCinemaGate";
 import {
   harborScarPlaques,
-  stanceGreetingHint,
   groupScarsByChapter,
   scarChapterTitle,
   scarOrganId,
@@ -82,6 +81,14 @@ import {
   pinLevelToRoom,
   roomPinnedLevels,
   familyPlaqueMythLine,
+  postFamilyChallenge,
+  clearFamilyChallenge,
+  completeFamilyChallenge,
+  recordShareWitness,
+  familyChallengeBlurb,
+  familyWitnessMythLine,
+  FAMILY_CHALLENGE_KIND_LABEL,
+  type FamilyChallengeKind,
 } from "../familyRoom";
 import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
 import {
@@ -332,7 +339,8 @@ export function HomeHubView({
   const plaques = harborScarPlaques(save);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
-  const stanceLine = stanceGreetingHint(save.stance);
+  // Design Bible: stance stays silent — no Plinth stance chrome.
+
   const bondStrain =
     plaques.length >= 2 && (save.piggyBondHomecomings ?? 0) < 2;
 
@@ -604,6 +612,8 @@ export function HomeHubView({
   const pavilionOpen = isRoomUnlocked(save, "pavilion");
 
   const marketOpen = isRoomUnlocked(save, "market");
+  /** Design Bible: Arcade / Studio / Ritual magnets after Cove Change only. */
+  const sideMagnetsOpen = hasCompletedCoveChange(save);
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => {
@@ -618,14 +628,18 @@ export function HomeHubView({
       const bankSlot = plazaSlotById("ledger_bank");
       return [
       // —— Plaza heroes (master plan — see docs/harbor-plaza-plan.md) ——
-      {
-        id: "arcade",
-        label: "Arcade",
-        icon: "🕹️",
-        position: arcadeSlot.position,
-        yaw: arcadeSlot.yaw,
-        kind: "arcade",
-      },
+      ...(sideMagnetsOpen
+        ? [
+            {
+              id: "arcade",
+              label: "Arcade",
+              icon: "🕹️",
+              position: arcadeSlot.position,
+              yaw: arcadeSlot.yaw,
+              kind: "arcade" as const,
+            } satisfies HarborHotspot,
+          ]
+        : []),
       {
         id: "outfitter",
         label: "Outfitter",
@@ -653,16 +667,18 @@ export function HomeHubView({
               kind: "notice_board" as const,
             } satisfies HarborHotspot,
           ]
-        : [
-            {
-              id: "ritual",
-              label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
-              icon: "☀️",
-              position: noticeSlot.position,
-              yaw: noticeSlot.yaw,
-              kind: "notice_board" as const,
-            } satisfies HarborHotspot,
-          ]),
+        : sideMagnetsOpen
+          ? [
+              {
+                id: "ritual",
+                label: ritualNeedsAttention(save) ? "Daily Ritual" : "Weekly Challenge",
+                icon: "☀️",
+                position: noticeSlot.position,
+                yaw: noticeSlot.yaw,
+                kind: "notice_board" as const,
+              } satisfies HarborHotspot,
+            ]
+          : []),
       // One Harbor icon — always present (empty shelf → scar-lit after Take)
       {
         ...harborMemoryPlinthHotspot({ scarCount: plaques.length }),
@@ -690,7 +706,7 @@ export function HomeHubView({
         kind: "signpost",
         accent: "#a78bfa",
       },
-      ...(!isKilled("studioGallery")
+      ...(sideMagnetsOpen && !isKilled("studioGallery")
         ? [
             {
               id: "gallery",
@@ -702,14 +718,18 @@ export function HomeHubView({
             } satisfies HarborHotspot,
           ]
         : []),
-      {
-        id: "studio",
-        label: "VibeCode",
-        icon: "✨",
-        position: [-10.2, 0, 3.6],
-        kind: "signpost",
-        accent: "#fde68a",
-      },
+      ...(sideMagnetsOpen
+        ? [
+            {
+              id: "studio",
+              label: "VibeCode",
+              icon: "✨",
+              position: [-10.2, 0, 3.6],
+              kind: "signpost" as const,
+              accent: "#fde68a",
+            } satisfies HarborHotspot,
+          ]
+        : []),
       {
         id: "settings",
         label: "Settings",
@@ -731,7 +751,7 @@ export function HomeHubView({
           ]
         : []),
       // Ritual stays reachable when practice board owns the notice mesh
-      ...(onPlayHarborBoard && !isKilled("partyBoard")
+      ...(sideMagnetsOpen && onPlayHarborBoard && !isKilled("partyBoard")
         ? [
             {
               id: "ritual",
@@ -743,7 +763,7 @@ export function HomeHubView({
             } satisfies HarborHotspot,
           ]
         : []),
-      ...(studioMarks.length > 0
+      ...(sideMagnetsOpen && studioMarks.length > 0
         ? [
             {
               id: "studio_stele",
@@ -798,6 +818,7 @@ export function HomeHubView({
       onOpenEditor,
       pavilionOpen,
       marketOpen,
+      sideMagnetsOpen,
       onPlayHarborBoard,
       plaques.length,
       studioMarks.length,
@@ -1175,6 +1196,20 @@ export function HomeHubView({
                       setFeltShareOpen(false);
                     }}
                     onKeepWalking={() => setFeltShareOpen(false)}
+                    onWitness={({ witnessName, reaction }) => {
+                      const active = getActiveFamilyRoom();
+                      if (!active) {
+                        toast.message("Join a Family Room first — witness stamps stay local");
+                        return;
+                      }
+                      const room = recordShareWitness({
+                        witnessName,
+                        reaction,
+                        scarLabel: latestPlaque.label,
+                      });
+                      setFamilyRoom(room);
+                      toast.message("Witness stamped — soft myth only");
+                    }}
                   />
                 ) : null}
                 {echoSurpriseOpen && !spectacleOpen && !feltShareOpen && !trailerOpen ? (
@@ -1502,11 +1537,7 @@ export function HomeHubView({
               {coldRetellLine(latestPlaque)}
             </p>
           ) : null}
-          {stanceLine ? (
-            <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-950">
-              {stanceLine}
-            </p>
-          ) : null}
+          {/* Design Bible: stance chrome demoted — organs + plaques only on the Plinth. */}
           <div className="space-y-4">
             {plaqueGroups.map((group) => (
               <div key={group.chapter}>
@@ -1794,6 +1825,14 @@ export function HomeHubView({
               After a Cove Take, this room will name your plaque — still local, still myth.
             </p>
           )}
+          {familyWitnessMythLine(familyRoom?.witnesses?.[0]) ? (
+            <p
+              className="rounded-xl border border-sky-200/60 bg-sky-50 px-3 py-2 text-center text-sm text-sky-950"
+              data-testid="family-witness-myth"
+            >
+              {familyWitnessMythLine(familyRoom?.witnesses?.[0])}
+            </p>
+          ) : null}
           {familyRoom ? (
             <>
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
@@ -1804,6 +1843,82 @@ export function HomeHubView({
                   {familyRoom.members.length === 1 ? "" : "s"}:{" "}
                   {familyRoom.members.map((m) => m.name).join(", ")}
                 </p>
+              </div>
+              <div
+                className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950"
+                data-testid="family-challenge-panel"
+              >
+                <p className="font-bold">Household challenge</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  One human-authored goal — voluntary clears, no leaderboard.
+                </p>
+                {familyRoom.challenge ? (
+                  <>
+                    <p className="mt-2 font-semibold" data-testid="family-challenge-blurb">
+                      {familyChallengeBlurb(familyRoom.challenge)}
+                    </p>
+                    <ul className="mt-1 text-xs">
+                      {familyRoom.challenge.completions.map((c) => (
+                        <li key={`${c.name}-${c.at}`}>✓ {c.name}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-2 flex gap-2">
+                      <GameButton
+                        variant="primary"
+                        className="flex-1"
+                        data-testid="family-challenge-complete"
+                        onClick={() => {
+                          const room = completeFamilyChallenge(voyager.name || "Voyager");
+                          setFamilyRoom(room);
+                          toast.message("Marked clear — no ranking");
+                        }}
+                      >
+                        I cleared it
+                      </GameButton>
+                      <GameButton
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const room = clearFamilyChallenge();
+                          setFamilyRoom(room);
+                          toast.message("Challenge cleared");
+                        }}
+                      >
+                        Retire
+                      </GameButton>
+                    </div>
+                  </>
+                ) : (
+                  <div className="mt-2 space-y-2">
+                    {(Object.keys(FAMILY_CHALLENGE_KIND_LABEL) as FamilyChallengeKind[]).map(
+                      (kind) => (
+                        <GameButton
+                          key={kind}
+                          variant="outline"
+                          className="w-full"
+                          data-testid={`family-challenge-post-${kind}`}
+                          onClick={() => {
+                            const pinned = roomPinnedLevels(familyRoom)[0];
+                            const room = postFamilyChallenge({
+                              authorName: voyager.name || "Host",
+                              kind,
+                              targetLabel:
+                                kind === "studio_clear" && pinned
+                                  ? `Clear “${pinned.title}”`
+                                  : FAMILY_CHALLENGE_KIND_LABEL[kind],
+                              targetLevelId:
+                                kind === "studio_clear" ? pinned?.id : undefined,
+                            });
+                            setFamilyRoom(room);
+                            toast.message("Challenge posted for the household");
+                          }}
+                        >
+                          Set: {FAMILY_CHALLENGE_KIND_LABEL[kind]}
+                        </GameButton>
+                      ),
+                    )}
+                  </div>
+                )}
               </div>
               <ul className="space-y-1 text-sm">
                 {roomPinnedLevels(familyRoom).map((lvl) => (

@@ -48,8 +48,8 @@ export function PartyRewardOverlay({ reward, minigameName, onContinue }: PartyRe
         <p className="mt-3 text-sm text-[var(--cap-ink)]">{reward.message}</p>
         <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm font-bold">
           {reward.coins > 0 ? <span>🪙 +{reward.coins}</span> : null}
-          {reward.xp > 0 ? <span>✨ +{reward.xp} XP</span> : null}
-          {reward.starEarned ? <span>⭐ +1 Star</span> : null}
+          {/* Design Bible: hide Islands XP chrome — Memory / Board Stars are the felt progress. */}
+          {reward.starEarned ? <span>⭐ +1 Board Star</span> : null}
         </div>
         <GameButton variant="primary" className="mt-5 w-full" onClick={onContinue} autoFocus>
           Back to Board

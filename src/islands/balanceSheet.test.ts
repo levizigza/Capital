@@ -111,7 +111,7 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     expect(third.ledger.harborEscaped).toBe(true);
   });
 
-  it("plaza pass and first Ledger Seal stay soft sinks after Cove", () => {
+  it("plaza pass and first Board Star stay soft sinks after Cove", () => {
     expect(PLAZA_PASS_PRICE).toBe(80);
     const sealCost = 20; // partyBoard seal space coinReward
     const postCoveMin = coveQuestCoins() + computeMinigameReward(true, 20, true, false).coins;

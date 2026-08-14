@@ -329,7 +329,7 @@ export function IslandBoardView({
   const handleRoll = useCallback(async () => {
     if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer) return;
     if (party.turnsRemaining === 0) {
-      setEventMessage("Session complete! Compare Ledger Seals with your rivals, then float on.");
+      setEventMessage("Session complete! Compare Board Stars with your rivals, then float on.");
       return;
     }
 
@@ -602,7 +602,7 @@ export function IslandBoardView({
 
               <GamePanel title="How Fortune Party works" padding="default">
                 <ul className="text-sm space-y-1 text-gray-700 list-disc pl-4">
-                  <li>Roll, move, and race rival captains for <strong>Ledger Seals</strong>.</li>
+                  <li>Roll, move, and race rival captains for <strong>Board Stars</strong>.</li>
                   <li>Minigame spaces teach money skills in this era&apos;s art style.</li>
                   <li>Capsules let you raid, shield, fog, or compound — with money tips.</li>
                   <li>Collector spaces = surprise fees. Chance is part of the lesson.</li>

@@ -296,14 +296,14 @@ export type IslandSaveV1 = {
   harborRitual?: import("./harborRitual").HarborRitualState;
   /**
    * Fortune Archipelago party state per island:
-   * position, Ledger Seals, Fortune Capsules, rival captains, session turns.
+   * position, Board Stars, Fortune Capsules, rival captains, session turns.
    */
   partyBoard?: Record<
     IslandId,
     {
       position: number;
       turnsPlayed: number;
-      /** Ledger Seals earned on this island */
+      /** Board Stars earned on this island (party score — not Freedom Seal) */
       stars: number;
       items?: import("./partyItems").PartyItemId[];
       buffs?: {
