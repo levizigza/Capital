@@ -290,6 +290,11 @@ export type IslandSaveV1 = {
   irreversibleChoices?: Record<string, import("./worldMemory").IrreversibleChoiceRecord>;
   /** Soft personality axes derived from money choices */
   stance?: import("./worldMemory").VoyagerStance;
+  /**
+   * Soft Beat → next Pay Day arm (meaningful choices).
+   * Consumed on ritual or board Pay Day.
+   */
+  armedSoftBeat?: import("./meaningfulChoices").ArmedSoftBeat;
   /** Per-NPC talk memory for greeting branches */
   npcMemory?: Record<string, import("./worldMemory").NpcMemoryEntry>;
   /** Daily Harbor ritual + weekly archipelago challenge */

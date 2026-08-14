@@ -145,7 +145,15 @@ import {
 } from "@/qa/signatureLoop";
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
-import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import {
+  applyPaydayWithChoices,
+  armSoftBeatForPayDay,
+  clearArmedSoftBeat,
+  isVanityHarborPurchase,
+  pauseFreedomStreakForVanity,
+} from "./meaningfulChoices";
+import type { SoftBeatKind } from "./views/SoftBeatOverlay";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -522,6 +530,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         else if (purchase.kind === "carpet") next = applyCarpetPolish(prev, purchase.tierId);
         else if (purchase.kind === "plaza_pass") next = applyPlazaPass(prev, purchase.room);
         else if (purchase.kind === "companion") next = applyCompanionPurchase(prev, purchase.companionId);
+        if (isVanityHarborPurchase(purchase.kind) && next.voyagerLedger) {
+          next = {
+            ...next,
+            voyagerLedger: pauseFreedomStreakForVanity(next.voyagerLedger),
+          };
+        }
         const guided = next.hubGuidedIntro ?? createDefaultHubGuidedIntro();
         return {
           ...next,
@@ -710,6 +724,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       message: string;
       itemTip?: string;
       ledger?: import("./voyagerLedger").VoyagerLedger;
+      consumedSoftBeat?: boolean;
     }) => {
       if (payload.coins || payload.xp) {
         setUserProfile((prev) => ({
@@ -721,12 +736,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (payload.star && activeIslandId) {
         awardPartyStar(activeIslandId);
       }
-      if (payload.ledger) {
+      if (payload.ledger || payload.consumedSoftBeat) {
         updateSave((prev) => {
-          const next = {
-            ...prev,
-            voyagerLedger: payload.ledger,
-          };
+          let next = payload.ledger
+            ? { ...prev, voyagerLedger: payload.ledger }
+            : prev;
+          if (payload.consumedSoftBeat) next = clearArmedSoftBeat(next);
           return withHarborFreedomRewards(next);
         });
       }
@@ -740,18 +755,27 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const onClaimRitualPayday = useCallback(() => {
     let applied: number | null = null;
+    let buffNote: string | undefined;
     updateSave((prev) => {
       if (prev.harborRitual?.today.paydayDone) return prev;
-      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
-        trackHarborEscape: true,
-      });
+      const { ledger, coins, buffLabel } = applyPaydayWithChoices(
+        ensureLedger(prev.voyagerLedger),
+        {
+          trackHarborEscape: true,
+          armed: prev.armedSoftBeat,
+          stance: prev.stance,
+        },
+      );
       applied = coins;
-      return markPaydayDone(
+      buffNote = buffLabel;
+      let next = markPaydayDone(
         withHarborFreedomRewards({
           ...prev,
           voyagerLedger: ledger,
         }),
       );
+      if (prev.armedSoftBeat) next = clearArmedSoftBeat(next);
+      return next;
     });
     if (applied !== null) {
       setUserProfile((prev) => ({
@@ -760,10 +784,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       }));
       toast.message(
         applied >= 0 ? `Pay Day +${applied} coins` : `Pay Day shortfall ${applied}`,
-        { description: "Ledger cashflow hit your pouch." },
+        {
+          description: buffNote
+            ? `${buffNote} — ledger cashflow hit your pouch.`
+            : "Ledger cashflow hit your pouch.",
+        },
       );
     }
   }, [setUserProfile, updateSave]);
+
+  const onSoftBeatComplete = useCallback(
+    (kind: SoftBeatKind) => {
+      updateSave((prev) => armSoftBeatForPayDay(prev, kind));
+      toast.message("Soft Beat armed", {
+        description: "Your next Pay Day will carry this organ’s temper.",
+      });
+    },
+    [updateSave],
+  );
 
   const onClaimRitualReward = useCallback(() => {
     let claimed = false;
@@ -2187,6 +2225,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onClaimRitualReward={onClaimRitualReward}
             onMarkRitualRumor={onMarkRitualRumor}
             onMarkRitualGreeted={onMarkRitualGreeted}
+            onSoftBeatComplete={onSoftBeatComplete}
             onStudioGalleryOpened={onStudioGalleryOpened}
             onMarkScarSpectacle={(scarCount) => {
               updateSave((prev) => ({
@@ -2296,6 +2335,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onEnterArea={(areaId) => void enterArea(areaId)}
               onStartQuest={(questId) => void startQuest(questId)}
               talkOpen={dialogueState.open}
+              onSoftBeatComplete={onSoftBeatComplete}
             />
           </IslandThemeProvider>
         ) : view === "explore" && activeIsland ? (

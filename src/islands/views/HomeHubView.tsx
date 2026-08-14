@@ -89,6 +89,7 @@ import {
   type SpectacleCinemaPhase,
 } from "./ScarSpectacleOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { ChoicesCounselStrip } from "./ChoicesCounselStrip";
 import { SignatureTrailerOverlay } from "./SignatureTrailerOverlay";
 import { HarborFeltShareOverlay } from "./HarborFeltShareOverlay";
 import { Day2EchoOverlay } from "./Day2EchoOverlay";
@@ -190,6 +191,8 @@ export type HomeHubViewProps = {
   onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** Soft Beat completed — arms next Pay Day */
+  onSoftBeatComplete?: (kind: SoftBeatKind) => void;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -236,6 +239,7 @@ export function HomeHubView({
   onMarkEchoSurprise,
   onClearChapterQuiet,
   onPlayStructureMinigame,
+  onSoftBeatComplete,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -1016,6 +1020,7 @@ export function HomeHubView({
 
   return (
     <>
+      <ChoicesCounselStrip save={save} />
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -1041,7 +1046,10 @@ export function HomeHubView({
               kind={bankSoftBeat}
               hushActive={plaques.length > 0}
               scarLabel={latestPlaque?.label ?? null}
-              onDone={() => setBankSoftBeat(null)}
+              onDone={() => {
+                onSoftBeatComplete?.(bankSoftBeat);
+                setBankSoftBeat(null);
+              }}
             />
           ) : null}
         </>

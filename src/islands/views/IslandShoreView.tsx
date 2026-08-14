@@ -75,6 +75,8 @@ export type IslandShoreViewProps = {
   onStartQuest: (questId: string) => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
+  /** Soft Beat completed — arms next Pay Day */
+  onSoftBeatComplete?: (kind: SoftBeatKind) => void;
 };
 
 /**
@@ -99,6 +101,7 @@ export function IslandShoreView({
   onEnterArea,
   onStartQuest,
   talkOpen = false,
+  onSoftBeatComplete,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
@@ -281,7 +284,10 @@ export function IslandShoreView({
               kind={softBeat}
               hushActive={chapterQuiet}
               scarLabel={latestScar?.label ?? null}
-              onDone={() => setSoftBeat(null)}
+              onDone={() => {
+                onSoftBeatComplete?.(softBeat);
+                setSoftBeat(null);
+              }}
             />
           ) : null}
         </>
