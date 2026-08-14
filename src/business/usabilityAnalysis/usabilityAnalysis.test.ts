@@ -89,7 +89,7 @@ describe("usabilityAnalysis", () => {
     expect(frequencyScoreFromCount(1, 4)).toBe(1);
     expect(frequencyScoreFromCount(2, 4)).toBe(4); // 50% → band 4
     expect(frequencyScoreFromCount(2, 10)).toBe(2); // 20% → band 2
-    expect(frequencyScoreFromCount(3, 4)).toBe(4);
+    expect(frequencyScoreFromCount(3, 4)).toBe(5); // 75% → band 5
     expect(frequencyScoreFromCount(4, 4)).toBe(5);
   });
 
