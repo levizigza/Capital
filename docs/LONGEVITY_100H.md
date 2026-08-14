@@ -4,7 +4,8 @@
 
 **Law:** Do **not** fix longevity by adding grind, XP sinks, more main-course islands, or fake online retention. Longevity = **mastery · interaction · uncertainty · expression · social dynamics · emergence**.
 
-**Canon:** [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [COMPLEXITY_CUT_REVIEW.md](./COMPLEXITY_CUT_REVIEW.md) (when present) · freeze: Harbor · Cove → Paycheck → Credit; Family Room local.
+**Canon:** [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · freeze: Harbor · Cove → Paycheck → Credit; Family Room local.  
+**Sibling audits:** complexity cut · replayability · social · identity (branch docs when present) — this file is the 100h player lens.
 
 **Honest frame:** Capital’s iconic bar is a **short unforgettable spine**, not a 100h campaign. Session targets in [game-pillars.md](./game-pillars.md) are 10–30 minutes. A 100h life only stays alive if **existing systems keep producing new situations** — not if we stretch the same Take three times.
 
@@ -281,7 +282,7 @@ If a proposal only adds **time**, cut it. If it adds **judgment**, keep it.
 
 ## Relationship to complexity cut
 
-[COMPLEXITY_CUT_REVIEW.md](./COMPLEXITY_CUT_REVIEW.md) removes **hollow surface**. This doc says what to **do with the attention you free**: deepen interactions among Take · Soft Beat · CF · weather · Plinth · Family Room.
+When a complexity-cut review is present, it removes **hollow surface**. This doc says what to **do with the attention you free**: deepen interactions among Take · Soft Beat · CF · weather · Plinth · Family Room.
 
 Cut affinity/XP chrome → spend craft on fork vistas and local social judgment.  
 Fewer systems, richer interactions — that **is** the 100h plan.
