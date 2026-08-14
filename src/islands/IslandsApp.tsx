@@ -41,6 +41,7 @@ import {
   resolveTakeFailFlavor,
   type MinigameFailCopy,
 } from "./minigameFail";
+import { moneyOrganForIsland } from "./moneyOrgans";
 import { toast } from "sonner";
 import {
   findHarborNpc,
@@ -1807,6 +1808,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             takeFlavor: resolveTakeFailFlavor({
               irreversibleChoices: save?.irreversibleChoices,
             }),
+            organId: moneyOrganForIsland(activeIsland.id)?.id ?? null,
           }),
         });
         setActiveMinigameId(null);
