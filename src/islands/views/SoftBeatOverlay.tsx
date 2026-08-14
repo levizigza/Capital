@@ -53,6 +53,8 @@ type Props = {
   hushActive?: boolean;
   /** Latest plaque label — living receipt inside the Soft Beat */
   scarLabel?: string | null;
+  /** Emergent identity vista (behavior-derived) */
+  identityLine?: string | null;
   onDone: () => void;
 };
 
@@ -60,6 +62,7 @@ export function SoftBeatOverlay({
   kind,
   hushActive = false,
   scarLabel = null,
+  identityLine = null,
   onDone,
 }: Props) {
   const beat = BEATS[kind];
@@ -77,7 +80,9 @@ export function SoftBeatOverlay({
     return () => window.clearTimeout(t);
   }, [hushActive, onDone, organ.id]);
 
-  const body = hushActive ? beat.hushLine : beat.line;
+  const body = hushActive
+    ? beat.hushLine
+    : identityLine ?? beat.line;
   const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
@@ -130,7 +135,14 @@ export function SoftBeatOverlay({
         <h2 className="mt-2 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
           {beat.title}
         </h2>
-        <p className="mt-3 text-sm text-white/85">{body}</p>
+        <p className="mt-3 text-sm text-white/85" data-testid="soft-beat-body">
+          {body}
+        </p>
+        {identityLine && !hushActive ? (
+          <p className="sr-only" data-testid="soft-beat-identity">
+            {identityLine}
+          </p>
+        ) : null}
         <p
           className="mt-2 text-sm font-semibold text-amber-100/95"
           data-testid="soft-beat-retell"

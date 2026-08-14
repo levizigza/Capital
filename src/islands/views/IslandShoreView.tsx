@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { identitySoftBeatLine } from "../emergentIdentity";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -281,6 +282,7 @@ export function IslandShoreView({
               kind={softBeat}
               hushActive={chapterQuiet}
               scarLabel={latestScar?.label ?? null}
+              identityLine={identitySoftBeatLine(save, softBeat)}
               onDone={() => setSoftBeat(null)}
             />
           ) : null}
