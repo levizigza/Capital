@@ -16,10 +16,12 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  netCashflow,
   type DealOffer,
   type LedgerHolding,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import { moodFromCashflow, paydayIncomeMultiplier } from "./harborWeather";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -421,12 +423,14 @@ export function resolvePassStart(
 ): SpaceResolvePayload {
   if (usesCashflowPassStart(mode)) {
     const trackEscape = tracksHarborEscape(mode);
-    const { ledger, coins, escapedNow } = applyPayday(ensureLedger(ledgerIn), 1, {
+    const ledger0 = ensureLedger(ledgerIn);
+    const mult = paydayIncomeMultiplier(moodFromCashflow(netCashflow(ledger0)));
+    const { ledger, coins, escapedNow } = applyPayday(ledger0, mult, {
       trackHarborEscape: trackEscape,
     });
     return {
       coins,
-      xp: 3,
+      xp: 0,
       message: escapedNow
         ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
         : coins >= 0
@@ -437,7 +441,7 @@ export function resolvePassStart(
   }
   return {
     coins: HARBOR_DIVIDEND,
-    xp: 2,
+    xp: 0,
     message: `Harbor dividend: +${HARBOR_DIVIDEND} coins (salary day)!`,
   };
 }
@@ -472,7 +476,8 @@ export function resolvePlayerSpace(
 
   switch (space.type) {
     case "payday": {
-      let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, 1, {
+      const mult = paydayIncomeMultiplier(moodFromCashflow(netCashflow(ledger)));
+      let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, mult, {
         trackHarborEscape: opts?.trackHarborEscape ?? false,
       });
       if (next.buffs?.doubleCoinsNext && coins > 0) {
@@ -489,7 +494,7 @@ export function resolvePlayerSpace(
             : `Pay Day shortfall: ${coins} coins.`;
       }
       payload.coins = coins;
-      payload.xp = 5;
+      payload.xp = 0;
       payload.ledger = nextLedger;
       break;
     }

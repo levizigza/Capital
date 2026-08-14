@@ -134,7 +134,7 @@ import {
 } from "./skillStats";
 import {
   createDefaultEconomyState,
-  advanceEconomy,
+  syncEconomyToHarborMood,
 } from "./economy";
 import { useFxOptional } from "@/fx";
 import { mountQABridge } from "@/qa/qaBridge";
@@ -163,6 +163,7 @@ import {
 } from "./story/hubGuidedIntro";
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
+import { harborWeatherMood, paydayIncomeMultiplier } from "./harborWeather";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -742,9 +743,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     let applied: number | null = null;
     updateSave((prev) => {
       if (prev.harborRitual?.today.paydayDone) return prev;
-      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
-        trackHarborEscape: true,
-      });
+      const { ledger, coins } = applyPayday(
+        ensureLedger(prev.voyagerLedger),
+        paydayIncomeMultiplier(harborWeatherMood(prev)),
+        {
+          trackHarborEscape: true,
+        },
+      );
       applied = coins;
       return markPaydayDone(
         withHarborFreedomRewards({
@@ -1684,7 +1689,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             ? applySkillChanges(skillStats, timeline.skillChanges)
             : skillStats;
           const economy = prev.economyState ?? createDefaultEconomyState();
-          const updatedEconomy = advanceEconomy(economy);
+          const updatedEconomy = syncEconomyToHarborMood(
+            economy,
+            harborWeatherMood(prev),
+          );
           let ledger = ensureLedger(prev.voyagerLedger);
           if (masteryGateId) {
             ledger = markMasteryClear(ledger, masteryGateId);
@@ -1840,7 +1848,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         ? applySkillChanges(skillStats, timeline.skillChanges)
         : skillStats;
       const economy = prev.economyState ?? createDefaultEconomyState();
-      const updatedEconomy = advanceEconomy(economy);
+      const updatedEconomy = syncEconomyToHarborMood(economy, harborWeatherMood(prev));
       return {
         ...prev,
         completedMinigames: uniq([...prev.completedMinigames, mgId]),
