@@ -1,0 +1,84 @@
+{
+  "id": "sess-20260814-03",
+  "cycleId": "cycle-00-baseline",
+  "date": "2026-08-14",
+  "facilitator": "craft-desk",
+  "playerLabel": "P-charlie",
+  "playerProfile": "adult solo · returning · desktop · reduced motion",
+  "device": "desktop",
+  "reducedMotion": true,
+  "source": "desk_synthesis",
+  "startCondition": "fresh profile + OS reduced motion (synthesized mute/RM checklist themes)",
+  "goalPrompt": "Finish one Change and share something.",
+  "moments": [
+    {
+      "id": "mom-c1",
+      "at": "02:00",
+      "momentCode": "take_hush",
+      "attempted": "Watched for flashy stingers after Take",
+      "believedWouldHappen": "Big juice fanfare",
+      "actuallyHappened": "Softer cinema timings under reduced motion; still readable captions",
+      "reactions": ["hesitation"],
+      "notes": "Asked if sound was broken; volume was on"
+    },
+    {
+      "id": "mom-c2",
+      "at": "04:10",
+      "momentCode": "scar_spectacle",
+      "attempted": "Looked for a share button in settings",
+      "believedWouldHappen": "Share buried in a menu",
+      "actuallyHappened": "Share freeze-frame after Plinth spectacle",
+      "reactions": ["smile", "delight"],
+      "notes": "Smiled at PNG preview"
+    },
+    {
+      "id": "mom-c3",
+      "at": "05:00",
+      "momentCode": "plinth_share",
+      "attempted": "Downloaded the card",
+      "believedWouldHappen": "Would force an account login",
+      "actuallyHappened": "Local download / share sheet path without account",
+      "reactions": ["smile"],
+      "notes": ""
+    },
+    {
+      "id": "mom-c4",
+      "at": "06:30",
+      "momentCode": "soft_beat",
+      "attempted": "Opened Teller Soft Beat after reading ‘peek’ language in craft docs mentally — in-world still skipped Lid",
+      "believedWouldHappen": "Soft Beat is advanced optional lore",
+      "actuallyHappened": "Skipped; went to Travel map instead",
+      "reactions": ["ignored_intent", "unexpected_strategy"],
+      "notes": "Invented ‘open the whole map now’ as the post-Change goal"
+    },
+    {
+      "id": "mom-c5",
+      "at": "07:10",
+      "momentCode": "travel_map",
+      "attempted": "Opened travel to Paycheck immediately",
+      "believedWouldHappen": "Full triangle unlocked after one Take",
+      "actuallyHappened": "Map showed gates; Paycheck not the immediate teach",
+      "reactions": ["confusion", "frustration"],
+      "notes": "Width impulse vs iconic depth law"
+    }
+  ],
+  "sixQuestions": {
+    "misunderstoodWhatToDo": "Post-Change goal felt like ‘open the map’ not Soft Beat.",
+    "feltUnfair": "Map gates felt unclear for a second.",
+    "repetitiveWithoutNewBeat": "No.",
+    "ignoredPlayerAbility": "Share worked without account — good.",
+    "gotLost": "Only when hunting Soft Beat language that wasn’t on plaza.",
+    "funOrOnlyFunctional": "Share beat was fun; RM Take felt quieter but still a beat."
+  },
+  "triage": [
+    {
+      "id": "tri-c-mapwidth",
+      "basedOn": ["mom-c5"],
+      "observation": "After first Change, player opened Travel seeking Paycheck immediately.",
+      "interpretation": "Map affordance competes with Soft Beat / Piggy presence on the depth path.",
+      "proposedFix": "Do not widen map. Strengthen post-Change plaza magnet (Piggy/Plinth) before Travel reads as the next verb.",
+      "disposition": "investigate"
+    }
+  ],
+  "rawNotes": "Desk synthesis from iconic freeze + share/RM checklist. Unexpected strategy = map-first after Change."
+}

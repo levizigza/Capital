@@ -1,0 +1,84 @@
+{
+  "id": "sess-20260814-01",
+  "cycleId": "cycle-00-baseline",
+  "date": "2026-08-14",
+  "facilitator": "craft-desk",
+  "playerLabel": "P-alpha",
+  "playerProfile": "parent+kid proxy · first-time · desktop",
+  "device": "desktop",
+  "reducedMotion": false,
+  "source": "desk_synthesis",
+  "startCondition": "fresh profile (synthesized from ashore-tutorial-research + harbor-tutorial e2e themes)",
+  "goalPrompt": "Play until Harbor remembers something you did.",
+  "moments": [
+    {
+      "id": "mom-a1",
+      "at": "01:20",
+      "momentCode": "ashore_piggy_talk",
+      "attempted": "Looked for a menu or checklist after landing on Harbor",
+      "believedWouldHappen": "A tutorial checklist would tell me where the shops are",
+      "actuallyHappened": "Quiet plaza; Piggy pulsed; no Outfitter/Capsule coach in first Talk",
+      "reactions": ["hesitation", "confusion"],
+      "notes": "Reached for UI chrome that intentional Ashore law hides"
+    },
+    {
+      "id": "mom-a2",
+      "at": "02:40",
+      "momentCode": "carpet_to_cove",
+      "attempted": "Boarded the Money Carpet after Piggy Talk",
+      "believedWouldHappen": "Free-flight explore of the whole map",
+      "actuallyHappened": "Short carpet rail toward Cove",
+      "reactions": ["smile", "delight"],
+      "notes": "Rail felt intentional once underway"
+    },
+    {
+      "id": "mom-a3",
+      "at": "05:10",
+      "momentCode": "cove_take",
+      "attempted": "Chose treat path in Keeper talk",
+      "believedWouldHappen": "Could undo the spend later in a menu",
+      "actuallyHappened": "Irreversible Take + hush cinema; no undo",
+      "reactions": ["hesitation", "confusion"],
+      "notes": "Asked aloud if there was a reload"
+    },
+    {
+      "id": "mom-a4",
+      "at": "07:00",
+      "momentCode": "scar_spectacle",
+      "attempted": "Waited for a popup explaining the plaque",
+      "believedWouldHappen": "Modal card with quest complete",
+      "actuallyHappened": "Plinth camera lock + Harbor felt captions",
+      "reactions": ["smile", "delight"],
+      "notes": "Smiled when Plinth pulsed"
+    },
+    {
+      "id": "mom-a5",
+      "at": "08:30",
+      "momentCode": "soft_beat",
+      "attempted": "Walked past Coin Jar Soft Beat pad without climbing",
+      "believedWouldHappen": "Optional decoration / not part of the story",
+      "actuallyHappened": "Pad readable but ignored; never opened Lid Lookout",
+      "reactions": ["ignored_intent"],
+      "notes": "Intended Soft Beat teach deferred — player never found it"
+    }
+  ],
+  "sixQuestions": {
+    "misunderstoodWhatToDo": "At Harbor spawn looked for a checklist instead of Piggy.",
+    "feltUnfair": "Treat choice felt permanent without warning tone.",
+    "repetitiveWithoutNewBeat": "No.",
+    "ignoredPlayerAbility": "Could walk everywhere but didn’t know Soft Beat pads mattered.",
+    "gotLost": "Briefly on Harbor before noticing Piggy pulse.",
+    "funOrOnlyFunctional": "Spectacle felt fun; early Harbor felt empty-functional."
+  },
+  "triage": [
+    {
+      "id": "tri-a-softbeat",
+      "basedOn": ["mom-a5"],
+      "observation": "Player never climbed a Soft Beat pad after first Change.",
+      "interpretation": "Soft Beat reads as optional decoration when unlabeled.",
+      "proposedFix": "One stronger diegetic beacon after first plaque — not a coach modal.",
+      "disposition": "investigate"
+    }
+  ],
+  "rawNotes": "Desk synthesis from docs/ashore-tutorial-research.md failure modes + iconic-path quiet chrome law. Not a live recording."
+}

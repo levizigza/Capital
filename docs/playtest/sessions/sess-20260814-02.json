@@ -1,0 +1,84 @@
+{
+  "id": "sess-20260814-02",
+  "cycleId": "cycle-00-baseline",
+  "date": "2026-08-14",
+  "facilitator": "craft-desk",
+  "playerLabel": "P-bravo",
+  "playerProfile": "teen proxy · first-time · phone",
+  "device": "phone",
+  "reducedMotion": false,
+  "source": "desk_synthesis",
+  "startCondition": "fresh profile (synthesized from iconic-path checklist friction + harbor-3d themes)",
+  "goalPrompt": "Make a money choice and see if the town notices.",
+  "moments": [
+    {
+      "id": "mom-b1",
+      "at": "00:50",
+      "momentCode": "ashore_piggy_talk",
+      "attempted": "Tapped the bank door before talking to Piggy",
+      "believedWouldHappen": "Tutorial would force the bank / shops first",
+      "actuallyHappened": "Could enter Ledger Bank; first-meet still wanted Piggy Talk",
+      "reactions": ["unexpected_strategy", "hesitation"],
+      "notes": "Invented shop-first path"
+    },
+    {
+      "id": "mom-b2",
+      "at": "03:15",
+      "momentCode": "cove_take",
+      "attempted": "Picked jar/save",
+      "believedWouldHappen": "Immediate coin reward popup",
+      "actuallyHappened": "World hush + organ line; coins not the hero beat",
+      "reactions": ["confusion", "hesitation"],
+      "notes": "Looked at HUD for +coins"
+    },
+    {
+      "id": "mom-b3",
+      "at": "04:40",
+      "momentCode": "scar_spectacle",
+      "attempted": "Dismissed looking for skip",
+      "believedWouldHappen": "Cutscene skip like other games",
+      "actuallyHappened": "Esc/Leave available; stayed for Plinth lock",
+      "reactions": ["hesitation", "smile"],
+      "notes": "Smiled at ‘Harbor felt that’"
+    },
+    {
+      "id": "mom-b4",
+      "at": "06:00",
+      "momentCode": "daily_ritual",
+      "attempted": "Opened anything that looked like a daily login",
+      "believedWouldHappen": "Streak checklist would be the main loop",
+      "actuallyHappened": "Ritual stays discovery; did not auto-open over spectacle in correct build",
+      "reactions": ["ignored_intent"],
+      "notes": "Player hunted ritual; intended path was Plinth/Piggy"
+    },
+    {
+      "id": "mom-b5",
+      "at": "07:20",
+      "momentCode": "soft_beat",
+      "attempted": "Ignored loft/lid glow after returning to structures",
+      "believedWouldHappen": "Probably another Take or quiz",
+      "actuallyHappened": "Never entered Soft Beat; feared a second irreversible choice",
+      "reactions": ["ignored_intent", "confusion"],
+      "notes": "Belief Soft Beat = re-Take"
+    }
+  ],
+  "sixQuestions": {
+    "misunderstoodWhatToDo": "Thought shops/rituals were the tutorial.",
+    "feltUnfair": "No.",
+    "repetitiveWithoutNewBeat": "Worried Soft Beat would repeat the Take.",
+    "ignoredPlayerAbility": "Could open bank early — game didn’t stop me.",
+    "gotLost": "On phone UI density after homecoming.",
+    "funOrOnlyFunctional": "Spectacle fun; ritual hunt felt busywork-shaped."
+  },
+  "triage": [
+    {
+      "id": "tri-b-bankfirst",
+      "basedOn": ["mom-b1"],
+      "observation": "Player entered Ledger Bank before first Piggy Talk.",
+      "interpretation": "Bank hotspot competes with guide pulse on phone.",
+      "proposedFix": "Keep allowed — but ensure Piggy pulse remains louder than bank until meet_guide completes.",
+      "disposition": "park"
+    }
+  ],
+  "rawNotes": "Desk synthesis. Soft Beat = re-Take fear also appears in iconic Soft Beat craft notes."
+}
