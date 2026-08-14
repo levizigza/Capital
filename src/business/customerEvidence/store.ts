@@ -56,7 +56,7 @@ export interface CustomerEvidenceRecord {
 /** Leading / pitch questions that must never appear in guides or live scripts. */
 export const FORBIDDEN_INTERVIEW_QUESTIONS: RegExp[] = [
   /would you use capital/i,
-  /wouldn'?t this be useful/i,
+  /wouldn[''\u2019]?t this be useful/i,
   /would you pay \$?\d+/i,
   /would you pay \$10/i,
   /do you love this/i,
