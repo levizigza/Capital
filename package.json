@@ -31,7 +31,8 @@
         "optimize": "vite optimize",
         "preview": "vite preview",
         "billing:dev": "npm run dev --prefix server/billing",
-        "billing:test": "npm test --prefix server/billing"
+        "billing:test": "npm test --prefix server/billing",
+        "payment-qa": "npm run payment-qa:report --prefix server/billing"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",
