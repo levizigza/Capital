@@ -4,6 +4,9 @@ Sandbox / Test mode only unless founder has approved live.
 
 Official card reference: [Stripe testing](https://docs.stripe.com/testing)
 
+**Adversarial Payment QA (launch gate):** see `docs/PAYMENT_QA_MANUAL.md` and `docs/PAYMENT_QA_REPORT.md`.  
+Run: `npm run payment-qa:report --prefix server/billing` — exit code 2 blocks live.
+
 ---
 
 ## Environment

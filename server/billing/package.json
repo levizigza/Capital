@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "test:payment-qa": "node --test test/payment-qa/*.test.js",
+    "payment-qa:report": "node scripts/payment-qa-report.mjs"
   },
   "engines": {
     "node": ">=20"
