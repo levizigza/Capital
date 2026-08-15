@@ -25,6 +25,8 @@ dist-ssr
 *.sw?
 
 .env
+server/billing/.env
+server/billing/data/
 **/agent-eval-report*
 packages
 pids
