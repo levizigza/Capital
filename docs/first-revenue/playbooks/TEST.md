@@ -2,6 +2,8 @@
 
 Prerequisite: interview completed or founder waives into TEST.
 
+**Lean target:** watch **~5** matching users (not 50 analytics sessions).
+
 ## Protocol (≈20–30 min)
 
 1. Caregiver + child (if comfortable) on Harbor.  
@@ -16,5 +18,5 @@ Reach signature moment **without** facilitator rescue.
 ## Record
 
 - Ledger `USER_TEST`  
-- Friction → LEARN / FIX queue  
+- Largest friction → LEARN / single FIX  
 - `npm run first-revenue:dashboard`

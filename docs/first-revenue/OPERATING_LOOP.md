@@ -2,43 +2,45 @@
 
 **Objective:** Help Capital reach **repeatable real customer payments** from people who get enough value to **remain** customers.
 
+**North-star milestone (now):** one matching **stranger** uses Capital → feels value → pays via **Stripe Payment Link** → **comes back**.  
+See [LEAN_PATH.md](./LEAN_PATH.md).
+
 **Success metric:** paying customers who remain customers.  
-**Not success:** leads, traffic, followers, free accounts.
+**Not success:** leads, traffic, followers, free accounts, or finishing an AI-company diagram.
 
-Agents and humans follow this sequence. Do **not** skip ahead to acquisition scale.
+## Prefer the lean stack
 
-| # | Step | Allowed actions | Forbidden | Exit criteria |
-|---|------|-----------------|-----------|---------------|
-| 1 | **IDENTIFY** | Pick strongest customer hypothesis | Pursuing all segments at once | One active hypothesis in orchestrator state |
-| 2 | **FIND** | Warm intros / opt-in lists founder-approved | Cold spam, scraped DMs, bought lists without approval | ≥5 named prospects in queue (or founder Escalation) |
-| 3 | **TALK** | Problem discovery interviews | Pitching Capital as the answer first | Interview notes + ledger `INTERVIEWED` |
-| 4 | **TEST** | Observe Harbor→Cove (or agreed path) | Guiding past every friction | User-test notes + ledger `USER_TEST` |
-| 5 | **LEARN** | Cluster pain, objection, friction | Inventing quotes | `topPain` / `topObjection` / `topProductFriction` filled from evidence |
-| 6 | **FIX** | Recommend **smallest** product correction | Large roadmap rewrites as first move | One fix in `productFixQueue` with acceptance check |
-| 7 | **OFFER** | Present **approved** paid offer only | Unapproved prices/promises | Ledger `OFFERED` + founder-approved offer id |
-| 8 | **COLLECT** | Simplest approved Stripe path (test first) | Live charges without approval; custom card UI unless required | Ledger `PAID` via trusted payment state |
-| 9 | **ACTIVATE** | Ensure promised value in first session | “Thanks for paying” email as activation | Ledger `ACTIVATED` per definition |
-| 10 | **RETAIN** | Check return per definition | Declaring win on payment day | Ledger `RETAINED` or explicit churn note |
-| 11 | **MEASURE** | Update ledger + dashboard | Vanity dashboards | Stages recorded; weekly revenue report regenerable |
-| 12 | **REPEAT** | Next single experiment | Scaling on signups alone | New `nextExperiment` only after measure |
+Lead Finder → User Recruiter → User Testing → Sales Copilot → **Stripe Payment Link (quick revenue)**  
+
+Do **not** block first revenue on building every corporate agent.
+
+## Sequence (still gated)
+
+| # | Step | Lean target | Forbidden | Exit criteria |
+|---|------|-------------|-----------|---------------|
+| 1 | **IDENTIFY** | One hypothesis (S1 families) | All segments at once | Active hypothesis set |
+| 2 | **FIND** | **~20** plausible people | Cold spam / unapproved lists | Queue of ~20 founder-ok names |
+| 3 | **TALK** | **Handful** of interviews | Pitch-first | Notes + ledger `INTERVIEWED` |
+| 4 | **TEST** | Watch **~5** use Capital | Facilitator completes the lesson | Notes + ledger `USER_TEST` |
+| 5 | **LEARN** | Recurring pain / friction | Invented quotes | topPain / friction filled |
+| 6 | **FIX** | **Smallest** product correction | Mega-roadmap as first move | One fix shipped or scheduled |
+| 7 | **OFFER** | Approved paid offer only | Unapproved prices | Ledger `OFFERED` |
+| 8 | **COLLECT** | **Payment Link** (simplest) | Live without founder OK | Trusted `PAID` |
+| 9 | **ACTIVATE** | Promised value fast | Receipt email as “activation” | `ACTIVATED` |
+| 10 | **RETAIN** | They return | Win declared on pay day | `RETAINED` or churn noted |
+| 11 | **MEASURE** | Dashboard + ledger | Vanity KPIs | Stages recorded |
+| 12 | **REPEAT** | Same lean loop | Scale on signups alone | Next single experiment |
 
 ## Coordination
 
 | System | Role |
 |--------|------|
-| `docs/revenue-intelligence/` | Lifecycle counts, source economics, weekly one-experiment |
-| `docs/first-revenue/` | Orchestrator state, dashboard, escalations, playbooks |
-| Stripe billing (when present) | Collect path; sandbox until founder live approval |
-| Product / Harbor loop | Activation + retention evidence |
+| [LEAN_PATH.md](./LEAN_PATH.md) | What to build/use first |
+| [CASH_STRIPE_CA.md](./CASH_STRIPE_CA.md) | Canada payout / settlement timing |
+| `docs/revenue-intelligence/` | Funnel economics |
+| Stripe Payment Link | First-dollar collect path |
+| Harbor→Cove | Activation evidence |
 
 ## Founder escalation
 
-Escalate (do not guess) when:
-
-- Contacting people not on an approved list  
-- Approving/changing price or offer copy  
-- Enabling live payments or spending money  
-- Promising features, school deals, or timelines  
-- Choosing between segments after conflicting evidence  
-
-Log items in `data/orchestrator-state.json` → `founderEscalations` and surface them on `FIRST_REVENUE_DASHBOARD.md`.
+Escalate when contacting people, approving price/offer, enabling live payments, or spending money. Logged on `FIRST_REVENUE_DASHBOARD.md`.

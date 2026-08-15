@@ -10,6 +10,15 @@ describe("first revenue dashboard", () => {
         currency: "USD",
       },
       state: {
+        milestoneNow:
+          "One stranger matching S1 uses Capital, pays via Payment Link, and comes back.",
+        leanStack: [
+          "lead_finder",
+          "user_recruiter",
+          "user_testing",
+          "sales_copilot",
+          "stripe_payment_link",
+        ],
         activeHypothesis: {
           id: "S1_families_6_11",
           label: "Families with kids ~6–11",
@@ -18,8 +27,8 @@ describe("first revenue dashboard", () => {
           confidence: "low",
         },
         nextExperiment: {
-          id: "EXP_INTERVIEW_5_S1",
-          title: "Five interviews",
+          id: "EXP_ONE_STRANGER_LEAN_LOOP",
+          title: "Lean loop once",
         },
         currentStep: "FIND",
         steps: {
@@ -36,7 +45,13 @@ describe("first revenue dashboard", () => {
             decisionNeeded: "Who to contact?",
           },
         ],
-        paymentPath: { preferred: "stripe_checkout_test", liveAllowed: false },
+        paymentPath: { preferred: "stripe_payment_link", liveAllowed: false },
+        stripeCanadaCash: {
+          source: "https://docs.stripe.com/payouts",
+          initialSettlement: "7 calendar days",
+          defaultSubsequentSettlement: "3 business days",
+          firstPayoutCommon: "7–14 days after first successful live payment",
+        },
         activationDefinition: "Cove Take",
         retentionDefinition: "D7 return",
         approvedOfferId: null,
@@ -46,9 +61,12 @@ describe("first revenue dashboard", () => {
     assert.equal(counts.PAID, 0);
     assert.equal(counts.RETAINED, 0);
     assert.ok(markdown.includes("Families with kids ~6–11"));
-    assert.ok(markdown.includes("EXP_INTERVIEW_5_S1"));
-    assert.ok(markdown.includes("ESC_FIND_WARM_LIST"));
+    assert.ok(markdown.includes("EXP_ONE_STRANGER_LEAN_LOOP"));
+    assert.ok(markdown.includes("Milestone now"));
+    assert.ok(markdown.includes("stripe_payment_link"));
+    assert.ok(markdown.includes("7 calendar days"));
     assert.ok(markdown.includes("paying retained customers"));
+    assert.ok(markdown.includes("ESC_FIND_WARM_LIST"));
     assert.deepEqual(openEscalationIds, ["ESC_FIND_WARM_LIST"]);
     assert.equal(markdown.includes("10,000 visitors"), false);
   });

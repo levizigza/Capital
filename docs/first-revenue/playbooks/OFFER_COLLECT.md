@@ -1,23 +1,28 @@
-# Offer + Collect (gated)
+# Offer + Collect (Payment Link first)
 
 ## Gates
 
-1. Founder sets `approvedOfferId` in orchestrator state **and** `approvedForSale: true` on the offer in the ledger.  
-2. Payment path is test/sandbox until `ESC_LIVE_PAYMENTS` is closed.  
-3. Prospect is `QUALIFIED` (or founder explicitly allows exception).
+1. Founder sets `approvedOfferId` **and** ledger offer `approvedForSale: true`.  
+2. Prefer **Stripe Payment Link** for first revenue (quick path). Checkout is optional later.  
+3. Test/sandbox until `ESC_LIVE_PAYMENTS` is closed.  
+4. Prospect is `QUALIFIED` (or founder allows an exception after a strong test).
 
-## Collect path (simplest approved)
+## Collect path
 
-Prefer **Stripe Checkout (test)** or **Payment Link (test)** — whichever the founder marks in `paymentPath.preferred`.
+1. Create Product/Price in Stripe Dashboard (Test, then Live when approved).  
+2. Create **Payment Link** for that price.  
+3. Sales Copilot / human sends the link after the offer conversation — no card data in Capital.  
+4. Record ledger `OFFERED` → `CHECKOUT_STARTED` (link opened if known) → `PAID` only when payment is real.
 
 Do not:
 
 - Invent discounts  
-- Take card data into Capital UI  
-- Flip live mode without `FOUNDER_APPROVED_LIVE`
+- Build custom card UI for first dollar  
+- Enable live mode without founder approval  
+- Treat Dashboard “succeeded” as bank cash (see [CASH_STRIPE_CA.md](../CASH_STRIPE_CA.md))
 
 ## After pay
 
-1. Ledger `PAID` + `revenueUsd` only when payment is trusted.  
-2. Immediately run **ACTIVATE** checklist (Harbor→Cove).  
-3. Schedule **RETAIN** check (D7).
+1. Ledger `PAID` + `revenueUsd`.  
+2. **ACTIVATE** immediately (Harbor→Cove).  
+3. **RETAIN** check by D7 — this closes the one-stranger milestone only if they return.

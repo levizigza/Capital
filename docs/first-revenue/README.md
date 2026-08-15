@@ -1,17 +1,20 @@
 # First Revenue Orchestrator
 
-Coordinates Capital toward **repeatable real customer payments** without spam, unapproved spend, or unapproved promises.
+Coordinates Capital toward **one stranger who pays and comes back** — then repeatable retained payments.
 
-## Start here
+**Read first:** [LEAN_PATH.md](./LEAN_PATH.md) · [OPERATING_LOOP.md](./OPERATING_LOOP.md) · [CASH_STRIPE_CA.md](./CASH_STRIPE_CA.md)
 
-1. Read [OPERATING_LOOP.md](./OPERATING_LOOP.md)  
-2. Open [FIRST_REVENUE_DASHBOARD.md](../FIRST_REVENUE_DASHBOARD.md)  
-3. Resolve open **founder escalations** before FIND / OFFER / COLLECT  
-4. Run playbooks: [TALK](./playbooks/TALK.md) → [TEST](./playbooks/TEST.md) → [OFFER_COLLECT](./playbooks/OFFER_COLLECT.md)
+## Priority stack (now)
+
+Lead Finder → User Recruiter → User Testing → Sales Copilot → **Stripe Payment Link**
+
+Do not wait for a fifteen-agent “AI company” before earning a dollar.
+
+## Commands
 
 ```bash
 npm run first-revenue:test
-npm run first-revenue:dashboard
+npm run first-revenue:dashboard   # regenerates docs/FIRST_REVENUE_DASHBOARD.md
 ```
 
 State: `data/orchestrator-state.json`  

@@ -1,8 +1,18 @@
 # First Revenue Dashboard
 
 **Objective:** repeatable real customer payments from customers who remain.
-**Success metric:** paying retained customers — not leads, traffic, followers, or free accounts.
+**Success metric:** paying retained customers — not leads, traffic, followers, free accounts, or “AI company finished.”
 **Updated:** 2026-08-15
+
+## Milestone now
+
+> One stranger matching S1 uses Capital, experiences value, pays via Stripe Payment Link, and comes back.
+
+## Lean stack (build/use first)
+
+1. `lead_finder` · 2. `user_recruiter` · 3. `user_testing` · 4. `sales_copilot` · 5. `stripe_payment_link`
+
+Full loop: find ~20 → interview handful → test ~5 → fix largest friction → offer → **Payment Link** → pay → return → repeat. See `docs/first-revenue/LEAN_PATH.md`.
 
 ## Customer hypothesis
 
@@ -35,8 +45,8 @@
 
 ## Next experiment (exactly one)
 
-- **ID:** `EXP_INTERVIEW_5_S1`
-- **Experiment:** Complete 5 problem interviews with S1 family caregivers before any paid acquisition scale
+- **ID:** `EXP_ONE_STRANGER_LEAN_LOOP`
+- **Experiment:** Run the lean loop once: find ~20 plausible S1 people → interview a handful → watch ~5 use Capital → fix largest friction → Payment Link offer → one stranger pays and returns
 - **Orchestrator step focus:** `FIND`
 
 > Do not start a second experiment until this one is measured. Do not scale acquisition before retention is understood.
@@ -46,47 +56,50 @@
 | Step | Status |
 |------|--------|
 | IDENTIFY | complete |
-| FIND | blocked_founder — Need founder-approved warm intros or opt-in list; no cold spam. |
-| TALK | pending (target 5) |
-| TEST | pending (target 3) |
+| FIND | blocked_founder (target 20) — Lead Finder: ~20 plausible S1 people from founder-approved warm/opt-in sources only. |
+| TALK | pending (target 5) — Handful of problem interviews |
+| TEST | pending (target 5) — Watch ~5 target users use Capital |
 | LEARN | pending |
-| FIX | pending |
-| OFFER | blocked_founder — OFFER_FOUNDING_FAMILY approvedForSale=false |
-| COLLECT | blocked_founder — Sandbox only until founder approves live payments |
+| FIX | pending — Smallest fix for largest friction only |
+| OFFER | blocked_founder — OFFER_FOUNDING_FAMILY approvedForSale=false — Sales Copilot helps after tests |
+| COLLECT | blocked_founder — Stripe Payment Link preferred; sandbox until founder approves live |
 | ACTIVATE | pending |
 | RETAIN | pending |
-| MEASURE | active — Ledger + this dashboard |
-| REPEAT | pending |
+| MEASURE | active — Ledger + dashboard |
+| REPEAT | pending — Only after one stranger pays and returns — or explicit fail/learn |
 
 ## Founder escalations (open)
 
 ### ESC_FIND_WARM_LIST
 
-- **Summary:** Approve a warm-intro or opt-in list for S1 interviews (no autonomous outreach).
-- **Decision needed:** Which 5–10 people may we contact, and who sends the first message?
+- **Summary:** Approve sources for ~20 plausible S1 names (warm intros / opt-in). No autonomous outreach.
+- **Decision needed:** Which lists or people may we use, and who sends the first recruiting messages?
 - **Status:** open
 
 ### ESC_APPROVE_OFFER
 
-- **Summary:** Approve OFFER_FOUNDING_FAMILY (or alternate) for sale before any OFFER/COLLECT step.
-- **Decision needed:** Confirm offer, Stripe test price id, and whether Payment Link or Checkout is the approved collect path.
+- **Summary:** Approve OFFER_FOUNDING_FAMILY (or alternate) and a live/test Payment Link.
+- **Decision needed:** Confirm offer copy, Stripe price, and Payment Link as the collect path for first dollar.
 - **Status:** open
 
 ### ESC_LIVE_PAYMENTS
 
-- **Summary:** Live Stripe requires explicit founder approval (FOUNDER_APPROVED_LIVE).
-- **Decision needed:** Keep sandbox until Payment QA blockers cleared and first retained sandbox/test learnings exist.
+- **Summary:** Live Stripe Payment Link requires founder approval; plan cash for CA settlement delay.
+- **Decision needed:** Approve live only when ready; expect first payout often 7–14 days after first live charge (see CASH_STRIPE_CA.md).
 - **Status:** open
 
 ## Definitions
 
-- **Activation:** Within first session after pay: reach Harbor and complete Cove irreversible Take (or documented equivalent signature moment) without facilitator rescue.
+- **Activation:** Within first session after pay (or during test preview): reach Harbor and complete Cove irreversible Take (or documented equivalent) without facilitator rescue.
 - **Retention:** Return visit within 7 days with any Harbor/Cove progress beyond first session.
-- **Collect path:** stripe_checkout_test (liveAllowed=false)
+- **Collect path:** stripe_payment_link (liveAllowed=false)
 - **Approved offer id:** _none — escalate ESC_APPROVE_OFFER_
+- **Canada cash (Stripe docs):** initial settlement 7 calendar days; subsequent default 3 business days; first payout commonly 7–14 days after first successful live payment. Source: https://docs.stripe.com/payouts
 
 ## Hard rules
 
+- Do not wait for the full AI-company stack before seeking first revenue
+- Prefer Lead Finder → Recruiter → User Testing → Sales Copilot → Stripe Payment Link
 - Do not autonomously spam prospects
 - Do not make pricing or feature promises without founder approval
 - Do not spend money without founder approval

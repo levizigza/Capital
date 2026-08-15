@@ -1,15 +1,32 @@
 {
-  "version": 1,
+  "version": 2,
   "objective": "Repeatable real customer payments from customers who receive enough value to remain customers.",
   "successMetric": "PAYING_RETAINED_CUSTOMERS",
-  "antiMetrics": ["leads", "traffic", "followers", "free_accounts"],
+  "milestoneNow": "One stranger matching S1 uses Capital, experiences value, pays via Stripe Payment Link, and comes back.",
+  "antiMetrics": [
+    "leads",
+    "traffic",
+    "followers",
+    "free_accounts",
+    "agents_shipped",
+    "ai_company_completeness"
+  ],
   "hardRules": [
+    "Do not wait for the full AI-company stack before seeking first revenue",
+    "Prefer Lead Finder → Recruiter → User Testing → Sales Copilot → Stripe Payment Link",
     "Do not autonomously spam prospects",
     "Do not make pricing or feature promises without founder approval",
     "Do not spend money without founder approval",
     "Do not enable Stripe live mode without FOUNDER_APPROVED_LIVE",
     "Do not scale acquisition before retention is understood",
     "Do not recommend scaling on signups alone"
+  ],
+  "leanStack": [
+    "lead_finder",
+    "user_recruiter",
+    "user_testing",
+    "sales_copilot",
+    "stripe_payment_link"
   ],
   "activeHypothesis": {
     "id": "S1_families_6_11",
@@ -36,17 +53,27 @@
   "currentStep": "FIND",
   "steps": {
     "IDENTIFY": { "status": "complete", "completedAt": "2026-08-15" },
-    "FIND": { "status": "blocked_founder", "note": "Need founder-approved warm intros or opt-in list; no cold spam." },
-    "TALK": { "status": "pending", "target": 5 },
-    "TEST": { "status": "pending", "target": 3 },
+    "FIND": {
+      "status": "blocked_founder",
+      "target": 20,
+      "note": "Lead Finder: ~20 plausible S1 people from founder-approved warm/opt-in sources only."
+    },
+    "TALK": { "status": "pending", "target": 5, "note": "Handful of problem interviews" },
+    "TEST": { "status": "pending", "target": 5, "note": "Watch ~5 target users use Capital" },
     "LEARN": { "status": "pending" },
-    "FIX": { "status": "pending" },
-    "OFFER": { "status": "blocked_founder", "note": "OFFER_FOUNDING_FAMILY approvedForSale=false" },
-    "COLLECT": { "status": "blocked_founder", "note": "Sandbox only until founder approves live payments" },
+    "FIX": { "status": "pending", "note": "Smallest fix for largest friction only" },
+    "OFFER": {
+      "status": "blocked_founder",
+      "note": "OFFER_FOUNDING_FAMILY approvedForSale=false — Sales Copilot helps after tests"
+    },
+    "COLLECT": {
+      "status": "blocked_founder",
+      "note": "Stripe Payment Link preferred; sandbox until founder approves live"
+    },
     "ACTIVATE": { "status": "pending" },
     "RETAIN": { "status": "pending" },
-    "MEASURE": { "status": "active", "note": "Ledger + this dashboard" },
-    "REPEAT": { "status": "pending" }
+    "MEASURE": { "status": "active", "note": "Ledger + dashboard" },
+    "REPEAT": { "status": "pending", "note": "Only after one stranger pays and returns — or explicit fail/learn" }
   },
   "learning": {
     "topObjection": null,
@@ -58,38 +85,45 @@
   },
   "approvedOfferId": null,
   "paymentPath": {
-    "preferred": "stripe_checkout_test",
-    "alternates": ["stripe_payment_link_test"],
-    "liveAllowed": false
+    "preferred": "stripe_payment_link",
+    "alternates": ["stripe_checkout"],
+    "liveAllowed": false,
+    "cashPlanning": "docs/first-revenue/CASH_STRIPE_CA.md"
   },
-  "activationDefinition": "Within first session after pay: reach Harbor and complete Cove irreversible Take (or documented equivalent signature moment) without facilitator rescue.",
+  "stripeCanadaCash": {
+    "source": "https://docs.stripe.com/payouts",
+    "initialSettlement": "7 calendar days",
+    "defaultSubsequentSettlement": "3 business days",
+    "firstPayoutCommon": "7–14 days after first successful live payment"
+  },
+  "activationDefinition": "Within first session after pay (or during test preview): reach Harbor and complete Cove irreversible Take (or documented equivalent) without facilitator rescue.",
   "retentionDefinition": "Return visit within 7 days with any Harbor/Cove progress beyond first session.",
   "nextExperiment": {
-    "id": "EXP_INTERVIEW_5_S1",
-    "title": "Complete 5 problem interviews with S1 family caregivers before any paid acquisition scale",
-    "source": "revenue-intelligence + first-revenue orchestrator"
+    "id": "EXP_ONE_STRANGER_LEAN_LOOP",
+    "title": "Run the lean loop once: find ~20 plausible S1 people → interview a handful → watch ~5 use Capital → fix largest friction → Payment Link offer → one stranger pays and returns",
+    "source": "founder priority — YC-style first customers before AI-company scale"
   },
   "founderEscalations": [
     {
       "id": "ESC_FIND_WARM_LIST",
       "createdAt": "2026-08-15",
       "status": "open",
-      "summary": "Approve a warm-intro or opt-in list for S1 interviews (no autonomous outreach).",
-      "decisionNeeded": "Which 5–10 people may we contact, and who sends the first message?"
+      "summary": "Approve sources for ~20 plausible S1 names (warm intros / opt-in). No autonomous outreach.",
+      "decisionNeeded": "Which lists or people may we use, and who sends the first recruiting messages?"
     },
     {
       "id": "ESC_APPROVE_OFFER",
       "createdAt": "2026-08-15",
       "status": "open",
-      "summary": "Approve OFFER_FOUNDING_FAMILY (or alternate) for sale before any OFFER/COLLECT step.",
-      "decisionNeeded": "Confirm offer, Stripe test price id, and whether Payment Link or Checkout is the approved collect path."
+      "summary": "Approve OFFER_FOUNDING_FAMILY (or alternate) and a live/test Payment Link.",
+      "decisionNeeded": "Confirm offer copy, Stripe price, and Payment Link as the collect path for first dollar."
     },
     {
       "id": "ESC_LIVE_PAYMENTS",
       "createdAt": "2026-08-15",
       "status": "open",
-      "summary": "Live Stripe requires explicit founder approval (FOUNDER_APPROVED_LIVE).",
-      "decisionNeeded": "Keep sandbox until Payment QA blockers cleared and first retained sandbox/test learnings exist."
+      "summary": "Live Stripe Payment Link requires founder approval; plan cash for CA settlement delay.",
+      "decisionNeeded": "Approve live only when ready; expect first payout often 7–14 days after first live charge (see CASH_STRIPE_CA.md)."
     }
   ],
   "prospectQueue": [],

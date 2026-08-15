@@ -38,7 +38,7 @@ function deriveCurrentStep(state, counts) {
   // Prefer explicit state; otherwise infer earliest incomplete step.
   if (state.currentStep) return state.currentStep;
   if (counts.INTERVIEWED < 5) return "TALK";
-  if (counts.USER_TEST < 3) return "TEST";
+  if (counts.USER_TEST < 5) return "TEST";
   if (counts.PAID === 0) return "OFFER";
   if (counts.ACTIVATED < counts.PAID) return "ACTIVATE";
   if (counts.RETAINED < counts.PAID) return "RETAIN";
@@ -59,9 +59,27 @@ export function buildDashboard({ ledger, state }) {
   lines.push(`# First Revenue Dashboard`);
   lines.push(``);
   lines.push(`**Objective:** repeatable real customer payments from customers who remain.`);
-  lines.push(`**Success metric:** paying retained customers — not leads, traffic, followers, or free accounts.`);
+  lines.push(`**Success metric:** paying retained customers — not leads, traffic, followers, free accounts, or “AI company finished.”`);
   lines.push(`**Updated:** ${new Date().toISOString().slice(0, 10)}`);
   lines.push(``);
+  if (state.milestoneNow) {
+    lines.push(`## Milestone now`);
+    lines.push(``);
+    lines.push(`> ${state.milestoneNow}`);
+    lines.push(``);
+  }
+  if (state.leanStack?.length) {
+    lines.push(`## Lean stack (build/use first)`);
+    lines.push(``);
+    lines.push(
+      state.leanStack.map((s, i) => `${i + 1}. \`${s}\``).join(" · "),
+    );
+    lines.push(``);
+    lines.push(
+      `Full loop: find ~20 → interview handful → test ~5 → fix largest friction → offer → **Payment Link** → pay → return → repeat. See \`docs/first-revenue/LEAN_PATH.md\`.`,
+    );
+    lines.push(``);
+  }
   lines.push(`## Customer hypothesis`);
   lines.push(``);
   lines.push(`| Field | Value |`);
@@ -145,6 +163,11 @@ export function buildDashboard({ ledger, state }) {
   lines.push(
     `- **Approved offer id:** ${state.approvedOfferId ?? "_none — escalate ESC_APPROVE_OFFER_"}`,
   );
+  if (state.stripeCanadaCash) {
+    lines.push(
+      `- **Canada cash (Stripe docs):** initial settlement ${state.stripeCanadaCash.initialSettlement}; subsequent default ${state.stripeCanadaCash.defaultSubsequentSettlement}; first payout commonly ${state.stripeCanadaCash.firstPayoutCommon}. Source: ${state.stripeCanadaCash.source}`,
+    );
+  }
   lines.push(``);
 
   lines.push(`## Hard rules`);
