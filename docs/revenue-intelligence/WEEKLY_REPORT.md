@@ -14,6 +14,7 @@ Check: 100 visitors → 10 retained payers scores above 10,000 visitors → 0 re
 - Honesty rule: only observed counts are non-zero. Hypotheses live in docs, not inflated metrics.
 - As of this seed, Capital has no verified paid+retained customers in-repo.
 - Upstream vanity (visitors) must not outrank retained paying customers.
+- First-revenue priority: lean Payment Link loop (see docs/first-revenue/LEAN_PATH.md) — not full AI-company automation.
 
 ## Lifecycle funnel
 
