@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "objective": "Repeatable real customer payments from customers who receive enough value to remain customers.",
+  "successMetric": "PAYING_RETAINED_CUSTOMERS",
+  "antiMetrics": ["leads", "traffic", "followers", "free_accounts"],
+  "hardRules": [
+    "Do not autonomously spam prospects",
+    "Do not make pricing or feature promises without founder approval",
+    "Do not spend money without founder approval",
+    "Do not enable Stripe live mode without FOUNDER_APPROVED_LIVE",
+    "Do not scale acquisition before retention is understood",
+    "Do not recommend scaling on signups alone"
+  ],
+  "activeHypothesis": {
+    "id": "S1_families_6_11",
+    "label": "Families with kids ~6–11 learning money habits together",
+    "whyStrongest": "Matches Capital’s Harbor→Cove signature loop (caregiver + child co-play). Homeschool (S2) is secondary until S1 interviews confirm or refute.",
+    "status": "hypothesis",
+    "confidence": "low",
+    "chosenAt": "2026-08-15"
+  },
+  "secondaryHypotheses": [
+    {
+      "id": "S2_homeschool",
+      "label": "Homeschool families",
+      "status": "deferred",
+      "note": "Pursue only after S1 interview evidence or explicit founder redirect."
+    },
+    {
+      "id": "S3_teachers",
+      "label": "Teachers / class pilots",
+      "status": "deferred",
+      "note": "B2B sales cycle; not first-revenue path."
+    }
+  ],
+  "currentStep": "FIND",
+  "steps": {
+    "IDENTIFY": { "status": "complete", "completedAt": "2026-08-15" },
+    "FIND": { "status": "blocked_founder", "note": "Need founder-approved warm intros or opt-in list; no cold spam." },
+    "TALK": { "status": "pending", "target": 5 },
+    "TEST": { "status": "pending", "target": 3 },
+    "LEARN": { "status": "pending" },
+    "FIX": { "status": "pending" },
+    "OFFER": { "status": "blocked_founder", "note": "OFFER_FOUNDING_FAMILY approvedForSale=false" },
+    "COLLECT": { "status": "blocked_founder", "note": "Sandbox only until founder approves live payments" },
+    "ACTIVATE": { "status": "pending" },
+    "RETAIN": { "status": "pending" },
+    "MEASURE": { "status": "active", "note": "Ledger + this dashboard" },
+    "REPEAT": { "status": "pending" }
+  },
+  "learning": {
+    "topObjection": null,
+    "topPain": null,
+    "topProductFriction": null,
+    "notes": [
+      "No interviews or user tests recorded in ledger yet — learning fields intentionally null."
+    ]
+  },
+  "approvedOfferId": null,
+  "paymentPath": {
+    "preferred": "stripe_checkout_test",
+    "alternates": ["stripe_payment_link_test"],
+    "liveAllowed": false
+  },
+  "activationDefinition": "Within first session after pay: reach Harbor and complete Cove irreversible Take (or documented equivalent signature moment) without facilitator rescue.",
+  "retentionDefinition": "Return visit within 7 days with any Harbor/Cove progress beyond first session.",
+  "nextExperiment": {
+    "id": "EXP_INTERVIEW_5_S1",
+    "title": "Complete 5 problem interviews with S1 family caregivers before any paid acquisition scale",
+    "source": "revenue-intelligence + first-revenue orchestrator"
+  },
+  "founderEscalations": [
+    {
+      "id": "ESC_FIND_WARM_LIST",
+      "createdAt": "2026-08-15",
+      "status": "open",
+      "summary": "Approve a warm-intro or opt-in list for S1 interviews (no autonomous outreach).",
+      "decisionNeeded": "Which 5–10 people may we contact, and who sends the first message?"
+    },
+    {
+      "id": "ESC_APPROVE_OFFER",
+      "createdAt": "2026-08-15",
+      "status": "open",
+      "summary": "Approve OFFER_FOUNDING_FAMILY (or alternate) for sale before any OFFER/COLLECT step.",
+      "decisionNeeded": "Confirm offer, Stripe test price id, and whether Payment Link or Checkout is the approved collect path."
+    },
+    {
+      "id": "ESC_LIVE_PAYMENTS",
+      "createdAt": "2026-08-15",
+      "status": "open",
+      "summary": "Live Stripe requires explicit founder approval (FOUNDER_APPROVED_LIVE).",
+      "decisionNeeded": "Keep sandbox until Payment QA blockers cleared and first retained sandbox/test learnings exist."
+    }
+  ],
+  "prospectQueue": [],
+  "productFixQueue": []
+}

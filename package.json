@@ -31,7 +31,9 @@
         "optimize": "vite optimize",
         "preview": "vite preview",
         "revenue:test": "npm test --prefix tools/revenue-intelligence",
-        "revenue:report": "npm run report --prefix tools/revenue-intelligence"
+        "revenue:report": "npm run report --prefix tools/revenue-intelligence",
+        "first-revenue:test": "npm test --prefix tools/first-revenue",
+        "first-revenue:dashboard": "npm run dashboard --prefix tools/first-revenue"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",
