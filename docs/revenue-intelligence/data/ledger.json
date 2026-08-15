@@ -1,0 +1,102 @@
+{
+  "$schema": "./schema.json",
+  "version": 1,
+  "product": "Capital",
+  "currency": "USD",
+  "weekOf": "2026-08-11",
+  "notes": [
+    "Honesty rule: only observed counts are non-zero. Hypotheses live in docs, not inflated metrics.",
+    "As of this seed, Capital has no verified paid+retained customers in-repo.",
+    "Upstream vanity (visitors) must not outrank retained paying customers."
+  ],
+  "segments": [
+    {
+      "id": "S1_families_6_11",
+      "label": "Families with kids ~6–11",
+      "hypothesis": true
+    },
+    {
+      "id": "S2_homeschool",
+      "label": "Homeschool families",
+      "hypothesis": true
+    },
+    {
+      "id": "S3_teachers",
+      "label": "Teachers / class pilots",
+      "hypothesis": true
+    }
+  ],
+  "offers": [
+    {
+      "id": "OFFER_FOUNDING_FAMILY",
+      "label": "Founding Family Access (one-time)",
+      "priceIdEnv": "STRIPE_PRICE_FOUNDING_FAMILY",
+      "listPriceUsd": null,
+      "listPriceNote": "Price lives in Stripe; do not hardcode in app. Hypothesis ~$29 USD for planning only.",
+      "hypothesisListPriceUsd": 29,
+      "approvedForSale": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "src_organic_direct",
+      "label": "Organic / direct (GH Pages, word of mouth)",
+      "channel": "organic"
+    },
+    {
+      "id": "src_reddit_parenting",
+      "label": "Reddit parenting / learning threads (manual)",
+      "channel": "community"
+    },
+    {
+      "id": "src_homeschool_fb",
+      "label": "Homeschool Facebook groups (manual, policy-safe)",
+      "channel": "community"
+    },
+    {
+      "id": "src_library_cu",
+      "label": "Library / credit-union family programs",
+      "channel": "partners"
+    },
+    {
+      "id": "src_founder_network",
+      "label": "Founder network warm intros",
+      "channel": "outbound"
+    }
+  ],
+  "costs": [
+    {
+      "sourceId": "src_reddit_parenting",
+      "weekOf": "2026-08-11",
+      "amountUsd": 0,
+      "note": "Time-only; no ad spend recorded"
+    },
+    {
+      "sourceId": "src_homeschool_fb",
+      "weekOf": "2026-08-11",
+      "amountUsd": 0,
+      "note": "Time-only; no ad spend recorded"
+    },
+    {
+      "sourceId": "src_library_cu",
+      "weekOf": "2026-08-11",
+      "amountUsd": 0,
+      "note": "No partner fees yet"
+    },
+    {
+      "sourceId": "src_founder_network",
+      "weekOf": "2026-08-11",
+      "amountUsd": 0,
+      "note": "Warm intros; no paid tools attributed"
+    },
+    {
+      "sourceId": "src_organic_direct",
+      "weekOf": "2026-08-11",
+      "amountUsd": 0,
+      "note": "Hosting negligible; not attributed as acquisition spend"
+    }
+  ],
+  "variableCostPerPaidUsd": 0,
+  "grossMarginAssumption": null,
+  "people": []
+}
