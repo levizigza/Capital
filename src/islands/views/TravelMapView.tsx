@@ -3,28 +3,25 @@ import { useCallback, useMemo } from "react";
 import {
   GameHudLayout,
   GameButton,
-  HudChip,
 } from "@/game-ui";
 import { useInputAction, InputPromptHint } from "@/input";
 
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
-import { getEffectiveBoatTier, nextBoatTier } from "../boats";
+import { nextBoatTier } from "../boats";
 import { HUB_ISLAND_ID, isIslandLocked } from "../worldMapLayout";
 import {
   FORTUNE_ARCHIPELAGO_NAME,
   islandsForArchipelagoMap,
   islandsForSpineTravel,
-  SIDE_SHORE_TRAVEL_IDS,
 } from "../spineArchipelago";
-import { hasCompletedCoveChange } from "../chapterLoop";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { pointerSafeActivate } from "../pointerSafeClick";
 
-/** Compact structure label for the strip — Jar / Tower / Keep / Bank. */
+/** Compact structure label for the spine strip. */
 function structurePinGlyph(islandId: string): string {
   const theme = moneyStructureForIsland(islandId)?.theme;
   if (theme === "jar") return "Jar";
@@ -43,8 +40,8 @@ export type TravelMapViewProps = {
 };
 
 /**
- * Archipelago travel — 3D floating diorama map + visible island strip
- * (strip stays usable even if WebGL hiccups).
+ * Archipelago travel — one Seed of Life composition.
+ * Map owns names + geometry; HUD is brand + spine strip only.
  */
 export function TravelMapView({
   userProfile,
@@ -55,11 +52,9 @@ export function TravelMapView({
 }: TravelMapViewProps) {
   useInputAction("cancel", onBack);
 
-  const boat = getEffectiveBoatTier(userProfile.totalCoins, save);
   const nextBoat = nextBoatTier(userProfile.totalCoins);
   const currentId = save.currentIslandId ?? HUB_ISLAND_ID;
 
-  /** Current pin = go home (Harbor). Never a dead disabled click. */
   const beginVoyage = useCallback(
     (islandId: string) => {
       if (islandId === currentId) {
@@ -71,23 +66,14 @@ export function TravelMapView({
     [currentId, onBack, onStartVoyage],
   );
 
-  /** Strip = main course; side row appears after Cove Change (fun discovery). */
   const stripIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
   const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
-  const sideShoresOpen = hasCompletedCoveChange(save);
-  const sideStrip = useMemo(() => {
-    if (!sideShoresOpen) return [];
-    const byId = new Map(islands.map((i) => [i.id, i]));
-    return SIDE_SHORE_TRAVEL_IDS.map((id) => byId.get(id)).filter(
-      (i): i is IslandDefinition => Boolean(i),
-    );
-  }, [islands, sideShoresOpen]);
 
   return (
     <GameHudLayout
       className="!bg-transparent"
       background={
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" data-testid="travel-map-sacred-stage">
           <ArchipelagoMap3D
             islands={mapIslands}
             save={save}
@@ -97,11 +83,13 @@ export function TravelMapView({
         </div>
       }
       topLeft={
-        <div data-testid="fortune-archipelago-chip">
-          <HudChip
-            title={FORTUNE_ARCHIPELAGO_NAME}
-            subtitle={`${boat.emoji} ${boat.label} · 🪙 ${userProfile.totalCoins} · side shores on map`}
-          />
+        <div data-testid="fortune-archipelago-chip" className="pl-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-100/90">
+            Capital
+          </p>
+          <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-xl font-black tracking-tight text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)] sm:text-2xl">
+            {FORTUNE_ARCHIPELAGO_NAME}
+          </h1>
         </div>
       }
       topRight={
@@ -110,9 +98,9 @@ export function TravelMapView({
         </GameButton>
       }
       bottom={
-        <div className="flex w-full max-w-4xl flex-col items-center gap-2 px-3 pb-1">
+        <div className="relative z-30 mx-auto flex w-full max-w-2xl flex-col items-center gap-2 px-3 pb-2">
           <div
-            className="flex w-full gap-2 overflow-x-auto pb-1"
+            className="flex w-full justify-center gap-2 overflow-x-auto pb-0.5"
             data-testid="archipelago-island-strip"
           >
             {stripIslands.map((island) => {
@@ -137,94 +125,31 @@ export function TravelMapView({
                   {...pointerSafeActivate(() => {
                     if (!locked) beginVoyage(island.id);
                   })}
-                  className={`shrink-0 touch-manipulation rounded-xl px-3 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
+                  className={`shrink-0 touch-manipulation rounded-full px-3.5 py-2 text-left text-xs font-bold shadow-md ring-1 transition ${
                     here
                       ? "bg-amber-200 text-amber-950 ring-amber-400 hover:bg-amber-100"
                       : locked
-                        ? "cursor-not-allowed bg-slate-800/55 text-white/40 ring-white/10 opacity-70"
-                        : "bg-white/90 text-slate-900 ring-white/40 hover:bg-white"
+                        ? "cursor-not-allowed bg-slate-900/50 text-white/35 ring-white/10"
+                        : "bg-white/88 text-slate-900 ring-white/35 hover:bg-white"
                   }`}
-                  style={{ borderLeft: `4px solid ${theme.accent}` }}
+                  style={{ boxShadow: here ? `inset 3px 0 0 ${theme.accent}` : undefined }}
                   data-ghost={locked ? "1" : "0"}
                 >
-                  <div className="flex items-baseline gap-1.5">
-                    <span
-                      className="rounded bg-black/10 px-1 py-0.5 text-[9px] font-black uppercase tracking-wide opacity-80"
-                      aria-hidden
-                    >
-                      {locked ? "···" : structurePinGlyph(island.id)}
-                    </span>
-                    <span>
-                      {island.name}
-                      {here ? " · here" : locked ? " · ghost" : ""}
-                    </span>
-                  </div>
-                  {lockWhy ? (
-                    <div className="mt-0.5 text-[10px] font-semibold opacity-80">{lockWhy}</div>
-                  ) : null}
+                  <span className="text-[9px] font-black uppercase tracking-wide opacity-70">
+                    {locked ? "···" : structurePinGlyph(island.id)}
+                  </span>{" "}
+                  {island.name}
+                  {here ? " · here" : ""}
                 </button>
               );
             })}
           </div>
-          {sideStrip.length > 0 ? (
-            <div
-              className="flex w-full gap-2 overflow-x-auto pb-1"
-              data-testid="archipelago-side-shore-strip"
-            >
-              {sideStrip.map((island) => {
-                const locked = isIslandLocked(island, save.inventory, save);
-                const here = island.id === currentId;
-                const theme = getIslandTheme(island.id, island.themeId);
-                const lockWhy = locked ? islandLockHint(island, save) : null;
-                return (
-                  <button
-                    key={island.id}
-                    type="button"
-                    data-testid={`side-shore-pin-${island.id}`}
-                    data-locked={locked ? "1" : "0"}
-                    data-here={here ? "1" : "0"}
-                    title={
-                      lockWhy ??
-                      (here
-                        ? "You are here · return to shore"
-                        : `Side shore · ${island.name}`)
-                    }
-                    disabled={locked}
-                    {...pointerSafeActivate(() => {
-                      if (!locked) beginVoyage(island.id);
-                    })}
-                    className={`shrink-0 touch-manipulation rounded-xl px-2.5 py-1.5 text-left text-[11px] font-bold shadow-md ring-1 transition ${
-                      here
-                        ? "bg-amber-200 text-amber-950 ring-amber-400 hover:bg-amber-100"
-                        : locked
-                          ? "cursor-not-allowed bg-slate-800/45 text-white/35 ring-white/10"
-                          : "bg-sky-100/95 text-slate-900 ring-sky-300/60 hover:bg-white"
-                    }`}
-                    style={{ borderLeft: `3px solid ${theme.accent}` }}
-                  >
-                    <span className="text-[9px] font-black uppercase tracking-wide opacity-70">
-                      Side
-                    </span>{" "}
-                    {island.name}
-                    {here ? " · here" : ""}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <p
-              className="text-[10px] font-semibold text-white/60"
-              data-testid="side-shores-locked-hint"
-            >
-              Era side shores wake after Cove Change — outer ring on the map.
-            </p>
-          )}
-          <InputPromptHint action="cancel" className="justify-center text-white/80">
-            Tap a diorama or chip · Esc back to Harbor
+          <InputPromptHint action="cancel" className="justify-center text-white/70">
+            Spine voyage · Esc Harbor
           </InputPromptHint>
           {nextBoat ? (
-            <p className="text-[10px] font-medium text-white/65">
-              {nextBoat.minCoins - userProfile.totalCoins} coins to unlock {nextBoat.label}
+            <p className="text-[10px] font-medium text-white/55">
+              {nextBoat.minCoins - userProfile.totalCoins} coins · {nextBoat.label}
             </p>
           ) : null}
         </div>

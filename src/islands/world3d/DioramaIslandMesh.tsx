@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Billboard, Text, ContactShadows } from "@react-three/drei";
+import { ContactShadows, Html } from "@react-three/drei";
 import * as THREE from "three";
 import type { EraLook3D } from "./eraLooks";
 import { getMapDioramaKit, type MapArchStyle, type MapEcologyStyle, type MapDioramaKit } from "./mapDioramaKits";
@@ -18,7 +18,7 @@ type Props = {
   /** Island id drives architecture + ecology kit */
   islandId?: string;
   onSelect?: () => void;
-  /** Skip drei Text labels (avoids font Suspense blanking the map) */
+  /** Skip nameplate (legacy; map prefers HTML labels) */
   hideLabels?: boolean;
 };
 
@@ -604,36 +604,30 @@ export function DioramaIslandMesh({
       )}
 
       {!hideLabels ? (
-        <Billboard position={[0, 2.65, 0]} follow>
-          <mesh position={[0, 0, -0.02]}>
-            <planeGeometry args={[2.8, locked || subtitle ? 0.85 : 0.55]} />
-            <meshBasicMaterial color="#fef3c7" transparent opacity={0.92} depthWrite={false} />
-          </mesh>
-          <Text
-            fontSize={0.28}
-            color="#16283b"
-            anchorX="center"
-            anchorY="middle"
-            outlineWidth={0.015}
-            outlineColor="#ffffff"
-            position={[0, subtitle || locked ? 0.12 : 0, 0]}
+        <Html
+          position={[0, 2.55, 0]}
+          center
+          distanceFactor={12}
+          style={{ pointerEvents: "none" }}
+          zIndexRange={[20, 0]}
+        >
+          <div
+            className="pointer-events-none flex max-w-[8.5rem] flex-col items-center rounded-full bg-[#0f172a]/82 px-2.5 py-1 text-center backdrop-blur-[2px] ring-1 ring-white/30"
+            data-testid={islandId ? `map-island-label-${islandId}` : "map-island-label"}
           >
-            {locked ? `🔒 ${title}` : title}
-          </Text>
-          {(subtitle || current) && (
-            <Text
-              fontSize={0.16}
-              color={look.accent}
-              anchorX="center"
-              anchorY="middle"
-              position={[0, -0.18, 0]}
-              outlineWidth={0.01}
-              outlineColor="#16283b"
-            >
-              {current ? "You are here" : subtitle || ""}
-            </Text>
-          )}
-        </Billboard>
+            <span className="whitespace-nowrap text-[10px] font-black leading-tight text-white">
+              {locked ? `🔒 ${title}` : title}
+            </span>
+            {current || subtitle ? (
+              <span
+                className="mt-0.5 text-[8px] font-bold uppercase tracking-wide"
+                style={{ color: current ? "#fbbf24" : look.accent }}
+              >
+                {current ? "Here" : subtitle}
+              </span>
+            ) : null}
+          </div>
+        </Html>
       ) : null}
     </group>
   );
