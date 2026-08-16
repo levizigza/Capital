@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
 
 import type { IslandSaveV1 } from "../types";
@@ -18,6 +19,9 @@ import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { HARBOR_3D_FAIL_KEY, HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
+import { hasCompletedCoveChange } from "../chapterLoop";
+import { HARBOR_HAVEN_ID } from "../islandIds";
+import { prefersReducedMotion } from "../a11yMotion";
 
 type Props = {
   islands: Parameters<typeof buildArchipelagoLayout>[0];
@@ -27,7 +31,26 @@ type Props = {
 };
 
 const LOOK = getEraLook3D("capital-default");
-const SPACING = 6.4;
+/** Scene spacing — tight so dioramas nest (sacred-geometry overlap). */
+export const ARCHIPELAGO_MAP_SPACING = 3.85;
+
+const START_CUE_KEY = "capital_map_harbor_start_cue_v1";
+
+function startCueDismissed(): boolean {
+  try {
+    return sessionStorage.getItem(START_CUE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function dismissStartCue() {
+  try {
+    sessionStorage.setItem(START_CUE_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
 
 /** Tiny Money Structure silhouette chip above each diorama pin. */
 function StructurePinBadge({
@@ -74,10 +97,10 @@ function StructurePinBadge({
   );
 }
 
-function mapToScene(node: ArchipelagoNode): [number, number, number] {
+export function mapNodeToScene(node: ArchipelagoNode): [number, number, number] {
   // Normalize against outer-ring radii so dual-ring layout keeps visual rhythm.
-  const x = ((node.mapX - 50) / 40) * SPACING * 1.35;
-  const z = ((node.mapY - 54) / 36) * SPACING * 1.15;
+  const x = ((node.mapX - 50) / 24) * ARCHIPELAGO_MAP_SPACING * 1.2;
+  const z = ((node.mapY - 54) / 21) * ARCHIPELAGO_MAP_SPACING * 1.05;
   return [x, 0, z];
 }
 
@@ -91,13 +114,13 @@ function RouteRibbon({
   const geom = useMemo(() => {
     const a = new THREE.Vector3(from[0], 0.25, from[2]);
     const c = new THREE.Vector3(to[0], 0.25, to[2]);
-    const b = new THREE.Vector3((from[0] + to[0]) / 2, 0.55, (from[2] + to[2]) / 2 - 0.8);
+    const b = new THREE.Vector3((from[0] + to[0]) / 2, 0.55, (from[2] + to[2]) / 2 - 0.45);
     const curve = new THREE.CatmullRomCurve3([a, b, c]);
-    return new THREE.TubeGeometry(curve, 24, 0.045, 6, false);
+    return new THREE.TubeGeometry(curve, 24, 0.04, 6, false);
   }, [from, to]);
   return (
     <mesh geometry={geom}>
-      <meshStandardMaterial color="#a7f3d0" transparent opacity={0.45} roughness={0.4} metalness={0.1} />
+      <meshStandardMaterial color="#a7f3d0" transparent opacity={0.4} roughness={0.4} metalness={0.1} />
     </mesh>
   );
 }
@@ -105,9 +128,9 @@ function RouteRibbon({
 function MapCamera() {
   const { camera } = useThree();
   useFrame(() => {
-    // Pull back so spaced dioramas stay in frame after Ledgerlight scale experiments
-    camera.position.lerp(new THREE.Vector3(0, 16.5, 18.5), 0.08);
-    camera.lookAt(0, 0.2, 0);
+    // Closer framing for nested sacred-geometry ring
+    camera.position.lerp(new THREE.Vector3(0, 11.5, 12.8), 0.08);
+    camera.lookAt(0, 0.35, 0);
   });
   return null;
 }
@@ -115,29 +138,77 @@ function MapCamera() {
 function MapFallbackPlate() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]}>
-      <circleGeometry args={[18, 48]} />
+      <circleGeometry args={[14, 48]} />
       <meshStandardMaterial color="#0e7490" roughness={0.95} />
     </mesh>
   );
 }
 
-function MapScene({ islands, save, currentId, onSelect }: Props) {
+/** First-start cue — red arrow + Click here on Harbor Haven. */
+function HarborStartCue({
+  position,
+  visible,
+}: {
+  position: [number, number, number];
+  visible: boolean;
+}) {
+  if (!visible) return null;
+  const reduced = prefersReducedMotion();
+  return (
+    <Html
+      position={[position[0], position[1] + 4.15, position[2]]}
+      center
+      distanceFactor={10}
+      style={{ pointerEvents: "none" }}
+      zIndexRange={[40, 0]}
+    >
+      <div
+        className="pointer-events-none flex flex-col items-center gap-0.5"
+        data-testid="harbor-map-start-cue"
+      >
+        <div
+          className={`text-[2rem] leading-none text-[#ef4444] drop-shadow-[0_2px_0_#7f1d1d] ${
+            reduced ? "" : "animate-bounce"
+          }`}
+          aria-hidden
+        >
+          ▼
+        </div>
+        <div className="rounded-xl border-2 border-[#7f1d1d] bg-[#dc2626] px-3 py-1.5 text-center shadow-[3px_3px_0_#7f1d1d]">
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/90">
+            Click here
+          </p>
+          <p className="text-xs font-black text-white">Harbor Haven</p>
+          <p className="text-[9px] font-semibold text-white/85">Start your journey</p>
+        </div>
+      </div>
+    </Html>
+  );
+}
+
+function MapScene({
+  islands,
+  save,
+  currentId,
+  onSelect,
+  showHarborCue,
+}: Props & { showHarborCue: boolean }) {
   const layout = useMemo(() => buildArchipelagoLayout(islands), [islands]);
-  const hubPos = mapToScene(layout.hub);
+  const hubPos = mapNodeToScene(layout.hub);
 
   return (
     <>
       <WorldLighting
-        look={{ ...LOOK, fogNear: 18, fogFar: 90, skyMode: "day" }}
+        look={{ ...LOOK, fogNear: 14, fogFar: 70, skyMode: "day" }}
         contactShadows={false}
         shadowMapSize={512}
         compactScene
       />
-      <OceanWater color="#0e7490" shading="harbor" size={120} calm />
+      <OceanWater color="#0e7490" shading="harbor" size={90} calm />
       <MapCamera />
 
       {layout.outer.map((node) => {
-        const to = mapToScene(node);
+        const to = mapNodeToScene(node);
         const from: [number, number, number] = [hubPos[0], 0.2, hubPos[2]];
         const dest: [number, number, number] = [to[0], 0.2, to[2]];
         return <RouteRibbon key={`route-${node.island.id}`} from={from} to={dest} />;
@@ -146,25 +217,25 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
       <DioramaIslandMesh
         look={LOOK}
         title={layout.hub.island.name}
-        subtitle="Harbor Haven"
+        subtitle="Harbor Haven · start"
         seed={layout.hub.island.id}
         islandId={layout.hub.island.id}
         position={hubPos}
-        scale={1.15}
+        scale={1.28}
         current={layout.hub.island.id === currentId}
         selected={layout.hub.island.id === currentId}
         locked={isIslandLocked(layout.hub.island, save.inventory, save)}
-        hideLabels
         onSelect={() => onSelect(layout.hub.island.id)}
       />
       <StructurePinBadge islandId={layout.hub.island.id} position={hubPos} />
+      <HarborStartCue position={hubPos} visible={showHarborCue} />
 
       {layout.outer.map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
         const era = getAnimationStyle(theme.animationStyle);
         const look = getIslandLook3D(node.island.id, theme.animationStyle);
         const locked = isIslandLocked(node.island, save.inventory, save);
-        const pos = mapToScene(node);
+        const pos = mapNodeToScene(node);
         const genreLine = genreHudLine(node.island.id);
         const side = node.ring === "side";
         const subtitle = side
@@ -179,36 +250,27 @@ function MapScene({ islands, save, currentId, onSelect }: Props) {
               seed={node.island.id}
               islandId={node.island.id}
               position={pos}
-              scale={side ? 0.88 : 1}
+              scale={side ? 0.95 : 1.08}
               current={node.island.id === currentId}
               locked={locked}
-              hideLabels
               onSelect={() => onSelect(node.island.id)}
             />
             {!side ? <StructurePinBadge islandId={node.island.id} position={pos} /> : null}
           </group>
         );
       })}
-
-      <mesh position={[6.5, 3.2, -2]} rotation={[0, -0.6, 0.15]}>
-        <boxGeometry args={[0.55, 0.12, 0.18]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.4} metalness={0.2} />
-      </mesh>
-      <mesh position={[6.5, 3.2, -2]} rotation={[0, -0.6, 0.15]}>
-        <boxGeometry args={[0.12, 0.04, 0.55]} />
-        <meshStandardMaterial color="#e2e8f0" roughness={0.45} />
-      </mesh>
     </>
   );
 }
 
 /**
  * Full-screen 3D isometric archipelago map — floating diorama islands.
- * Labels live in TravelMapView HUD (HTML) so font Suspense can't blank WebGL.
+ * Island names use HTML billboards (no font Suspense blanking WebGL).
  */
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [cueOn, setCueOn] = useState(() => !startCueDismissed());
   const [skipCanvas, setSkipCanvas] = useState(() => {
     try {
       return sessionStorage.getItem(HARBOR_3D_FAIL_KEY) === "1";
@@ -219,6 +281,9 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const earlyJourney = !hasCompletedCoveChange(save);
+  const showHarborCue = cueOn && earlyJourney;
 
   const readyRef = useRef(ready);
   readyRef.current = ready;
@@ -233,6 +298,10 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const pick = (id: string) => {
     const node = islands.find((i) => i.id === id);
     if (node && isIslandLocked(node, save.inventory, save)) return;
+    if (id === HARBOR_HAVEN_ID || id === currentId) {
+      dismissStartCue();
+      setCueOn(false);
+    }
     // Current island is a valid pick — TravelMapView returns to plaza.
     if (id !== currentId) setHint(id);
     onSelect(id);
@@ -249,6 +318,14 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
           <p className="max-w-sm text-xs font-medium text-white/65">
             3D map is resting — use the island chips below to board the Money Carpet.
           </p>
+          {showHarborCue ? (
+            <p
+              className="mt-2 rounded-lg bg-red-600 px-3 py-2 text-xs font-black text-white"
+              data-testid="harbor-map-start-cue-flat"
+            >
+              Click Harbor Haven below · start your journey
+            </p>
+          ) : null}
         </div>
       ) : (
         <>
@@ -260,7 +337,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
           <Canvas
             shadows
             dpr={reduced ? [1, 1] : [1, 1.25]}
-            camera={{ position: [0, 16.5, 18.5], fov: 42, near: 0.1, far: 200 }}
+            camera={{ position: [0, 11.5, 12.8], fov: 42, near: 0.1, far: 200 }}
             className="absolute inset-0 z-[2]"
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             onCreated={({ gl }) => {
@@ -274,6 +351,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
                 save={save}
                 currentId={currentId}
                 onSelect={pick}
+                showHarborCue={showHarborCue}
               />
             </Suspense>
           </Canvas>
@@ -282,7 +360,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/35 to-transparent px-4 pb-8 pt-2 text-center">
         <p className="text-[11px] font-semibold text-white/80">
-          {skipCanvas ? "Tap an island chip below" : "Tap an island to fly"}
+          {skipCanvas ? "Tap an island chip below" : "Tap a named island to fly"}
         </p>
       </div>
 

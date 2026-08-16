@@ -31,12 +31,15 @@ export const SIDE_SHORE_WORLD_RADIUS = ARCHIPELAGO_WORLD_RADIUS * 1.12;
 /** Map view: hub center (%). */
 export const MAP_HUB = { x: 50, y: 54 };
 
-/** Map view: spine ring ellipse radii (%). */
-export const MAP_SPINE_RX = 28;
-export const MAP_SPINE_RY = 24;
+/**
+ * Sacred-geometry dual ring — tight enough that dioramas nest / overlap
+ * (vesica-style), not a sparse grid. φ-ish ratios between spine and side.
+ */
+export const MAP_SPINE_RX = 15;
+export const MAP_SPINE_RY = 13;
 /** Map view: side-shore outer ring ellipse radii (%). */
-export const MAP_SIDE_RX = 40;
-export const MAP_SIDE_RY = 36;
+export const MAP_SIDE_RX = 24;
+export const MAP_SIDE_RY = 21;
 
 /** @deprecated Prefer MAP_SPINE_* / MAP_SIDE_* — kept for callers expecting legacy names. */
 export const MAP_RING_RX = MAP_SIDE_RX;
