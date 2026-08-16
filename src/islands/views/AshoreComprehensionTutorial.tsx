@@ -174,7 +174,7 @@ export function AshoreComprehensionTutorial({
           "radial-gradient(ellipse 85% 65% at 50% 30%, #1e3a5f 0%, #0f172a 52%, #020617 100%)",
       }}
     >
-      <header className="relative z-[2] flex shrink-0 items-center justify-between px-4 py-3 sm:px-6">
+      <header className="relative z-[2] flex shrink-0 items-center justify-between px-4 py-3 pr-16 sm:px-6 sm:pr-20">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-200/90">
             Capital · Ashore Teach
