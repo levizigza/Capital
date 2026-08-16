@@ -27,6 +27,7 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
     expect(copy.body.toLowerCase()).toMatch(/no shame|still teach/);
     expect(copy.hint).toMatch(/12/);
     expect(copy.hint).toMatch(/35/);
+    expect(copy.hint).toMatch(/\?/);
     expect(copy.walkLabel).toMatch(/structure/i);
     expect(copy.retryLabel).toBe("Retry");
   });
