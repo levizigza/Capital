@@ -1,8 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Ashore Teach Chamber 1 must never soft-lock: toys + Continue stay on the
- * sticky prove dock; one poke unlocks Enter the walk chamber.
+ * Iconic Ashore — poke a living-money toy; room morphs to Walk (no Continue homework).
  */
 async function wipeVault(page: import("@playwright/test").Page) {
   await page.goto("/?replayIntro=1");
@@ -45,7 +44,6 @@ async function bootToTeach(page: import("@playwright/test").Page) {
   }
   await expect(page.getByTestId("boot-cast-select")).toBeVisible({ timeout: 20_000 });
 
-  // Prefer select-stage Continue — never open Customize for this gate.
   const boardNow = page.getByTestId("boot-board-carpet-now");
   const boardLook = page.getByTestId("boot-board-carpet");
   if (await boardNow.isVisible({ timeout: 2_000 }).catch(() => false)) {
@@ -59,43 +57,31 @@ async function bootToTeach(page: import("@playwright/test").Page) {
   });
 }
 
-test.describe("Ashore Teach Chamber 1 navigation", () => {
-  test("prove dock keeps toys + Continue; poke advances to Walk", async ({ page }) => {
+test.describe("Iconic Ashore seed chamber", () => {
+  test("spectacle toys in viewport; poke auto-morphs to Walk", async ({ page }) => {
     await bootToTeach(page);
 
     const teach = page.getByTestId("ashore-comprehension-tutorial");
     await expect(teach).toHaveAttribute("data-teach-step", "fantasy");
+    await expect(teach).toHaveAttribute("data-iconic", "seed-chamber");
+    await expect(page.getByTestId("ashore-iconic-title")).toContainText(/Money is alive here/i);
 
-    const dock = page.getByTestId("ashore-teach-prove-dock");
-    await expect(dock).toBeVisible();
-    await expect(page.getByTestId("ashore-fantasy-toys")).toBeVisible();
+    const toys = page.getByTestId("ashore-fantasy-toys");
+    await expect(toys).toBeVisible();
+    await expect(toys).toHaveAttribute("data-spectacle", "1");
     await expect(page.getByTestId("ashore-fantasy-toy-memory")).toBeVisible();
-    await expect(page.getByTestId("ashore-fantasy-toy-coin")).toBeVisible();
 
-    const continueBtn = page.getByTestId("ashore-teach-continue");
-    await expect(continueBtn).toBeVisible();
-    await expect(continueBtn).toHaveAttribute("aria-disabled", "true");
-    await expect(continueBtn).toContainText(/Poke a living-money toy/i);
-
-    // Toys + CTA must share the viewport (sticky dock) — not clipped below fold.
-    const toyBox = await page.getByTestId("ashore-fantasy-toys").boundingBox();
-    const ctaBox = await continueBtn.boundingBox();
-    expect(toyBox).toBeTruthy();
-    expect(ctaBox).toBeTruthy();
+    const toyBox = await toys.boundingBox();
     const vp = page.viewportSize();
+    expect(toyBox).toBeTruthy();
     expect(vp).toBeTruthy();
     expect(toyBox!.y + toyBox!.height).toBeLessThanOrEqual(vp!.height + 2);
-    expect(ctaBox!.y + ctaBox!.height).toBeLessThanOrEqual(vp!.height + 2);
 
     await page.getByTestId("ashore-fantasy-toy-memory").evaluate((el) => {
       (el as HTMLElement).click();
     });
 
-    await expect(continueBtn).toHaveAttribute("aria-disabled", "false");
-    await expect(continueBtn).toContainText(/Enter the walk chamber/i);
-
-    await continueBtn.evaluate((el) => (el as HTMLElement).click());
     await expect(teach).toHaveAttribute("data-teach-step", "walk", { timeout: 8_000 });
-    await expect(page.getByTestId("ashore-teach-gate")).toContainText(/rings/i);
+    await expect(page.getByTestId("ashore-teach-gate")).toBeVisible();
   });
 });
