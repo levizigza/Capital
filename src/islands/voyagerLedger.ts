@@ -16,6 +16,11 @@ export type LedgerHolding = {
   icon: string;
   /** One-time pouch cost to acquire (assets / deals) */
   purchaseCost?: number;
+  /**
+   * Pay Days until this asset’s monthlyAmount counts (storm / tight settle).
+   * Meaningful-choices relationship — not a permanent APR nerf.
+   */
+  settlingPaydays?: number;
 };
 
 /** Harbor escape: sustain strong cashflow for several Pay Days in a row */

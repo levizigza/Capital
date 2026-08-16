@@ -14,13 +14,17 @@ import {
   HARBOR_DEALS,
   addHolding,
   applyBill,
-  applyPayday,
   dealPurchaseCost,
   ensureLedger,
   type DealOffer,
   type LedgerHolding,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import {
+  applyPaydayWithChoices,
+  type ArmedSoftBeat,
+} from "./meaningfulChoices";
+import type { VoyagerStance } from "./worldMemory";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -110,6 +114,8 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Soft Beat arm was consumed on this Pay Day */
+  consumedSoftBeat?: boolean;
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -415,25 +421,39 @@ export function spaceAccent(type: BoardSpaceType): string {
   }
 }
 
+export type PayDayChoiceOpts = {
+  trackHarborEscape?: boolean;
+  armed?: ArmedSoftBeat | null;
+  stance?: VoyagerStance | null;
+};
+
 /** Pass-start payout — cashflow boards use Voyager Ledger; party boards get a flat dividend. */
 export function resolvePassStart(
   mode: BoardEconomyMode,
   ledgerIn?: VoyagerLedger | null,
+  choiceOpts?: Omit<PayDayChoiceOpts, "trackHarborEscape">,
 ): SpaceResolvePayload {
   if (usesCashflowPassStart(mode)) {
     const trackEscape = tracksHarborEscape(mode);
-    const { ledger, coins, escapedNow } = applyPayday(ensureLedger(ledgerIn), 1, {
-      trackHarborEscape: trackEscape,
-    });
+    const { ledger, coins, escapedNow, buffLabel } = applyPaydayWithChoices(
+      ensureLedger(ledgerIn),
+      {
+        trackHarborEscape: trackEscape,
+        armed: choiceOpts?.armed,
+        stance: choiceOpts?.stance,
+      },
+    );
+    const buff = buffLabel ? ` ${buffLabel}.` : "";
     return {
       coins,
       xp: 3,
       message: escapedNow
-        ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
+        ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.${buff}`
         : coins >= 0
-          ? `Pay Day! Monthly cashflow credited (+${coins} coins).`
-          : `Pay Day shortfall (${coins} coins). Grow income or cut expenses!`,
+          ? `Pay Day! Monthly cashflow credited (+${coins} coins).${buff}`
+          : `Pay Day shortfall (${coins} coins). Grow income or cut expenses!${buff}`,
       ledger,
+      consumedSoftBeat: Boolean(choiceOpts?.armed),
     };
   }
   return {
@@ -449,7 +469,7 @@ export function resolvePlayerSpace(
   state: PartyIslandState,
   playerCoins: number,
   ledgerIn?: VoyagerLedger | null,
-  opts?: { trackHarborEscape?: boolean },
+  opts?: PayDayChoiceOpts,
 ): { next: PartyIslandState; payload: SpaceResolvePayload } {
   const next: PartyIslandState = {
     ...state,
@@ -473,25 +493,32 @@ export function resolvePlayerSpace(
 
   switch (space.type) {
     case "payday": {
-      let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, 1, {
-        trackHarborEscape: opts?.trackHarborEscape ?? false,
-      });
+      let { ledger: nextLedger, coins, escapedNow, buffLabel } = applyPaydayWithChoices(
+        ledger,
+        {
+          trackHarborEscape: opts?.trackHarborEscape ?? false,
+          armed: opts?.armed,
+          stance: opts?.stance,
+        },
+      );
+      const buff = buffLabel ? ` ${buffLabel}.` : "";
       if (next.buffs?.doubleCoinsNext && coins > 0) {
         coins *= 2;
         next.buffs = { ...next.buffs, doubleCoinsNext: false };
         payload.message = escapedNow
-          ? `Dividend Magnet Pay Day (+${coins}) — Harbor escape unlocked!`
-          : `Dividend Magnet! Pay Day doubled to +${coins} coins.`;
+          ? `Dividend Magnet Pay Day (+${coins}) — Harbor escape unlocked!${buff}`
+          : `Dividend Magnet! Pay Day doubled to +${coins} coins.${buff}`;
       } else {
         payload.message = escapedNow
-          ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
+          ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.${buff}`
           : coins >= 0
-            ? `Pay Day: +${coins} coins from monthly cashflow.`
-            : `Pay Day shortfall: ${coins} coins.`;
+            ? `Pay Day: +${coins} coins from monthly cashflow.${buff}`
+            : `Pay Day shortfall: ${coins} coins.${buff}`;
       }
       payload.coins = coins;
       payload.xp = 5;
       payload.ledger = nextLedger;
+      payload.consumedSoftBeat = Boolean(opts?.armed);
       break;
     }
     case "bill": {
@@ -523,6 +550,16 @@ export function resolvePlayerSpace(
       const trap = pickUnusedHolding("liability", owned);
       if (!trap) {
         payload.message = "You already carry every Harbor liability — watch that cashflow!";
+        break;
+      }
+      // Emergency Ledger / Bailout absorbs Debt Trap — capsule becomes the counterstrategy.
+      if (next.buffs?.bailoutReady || next.buffs?.shielded) {
+        next.buffs = {
+          ...next.buffs,
+          bailoutReady: false,
+          shielded: false,
+        };
+        payload.message = `Emergency Ledger absorbed ${trap.icon} ${trap.name} — liability never stuck.`;
         break;
       }
       ledger = addHolding(ledger, trap);

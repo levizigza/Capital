@@ -112,6 +112,9 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   if (parsed.stance && typeof parsed.stance === "object") {
     sanitized.stance = parsed.stance as IslandSaveV1["stance"];
   }
+  if (parsed.armedSoftBeat && typeof parsed.armedSoftBeat === "object") {
+    sanitized.armedSoftBeat = parsed.armedSoftBeat as IslandSaveV1["armedSoftBeat"];
+  }
   if (parsed.npcMemory && typeof parsed.npcMemory === "object") {
     sanitized.npcMemory = parsed.npcMemory as IslandSaveV1["npcMemory"];
   }

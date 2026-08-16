@@ -35,7 +35,12 @@ import {
   type PartyIslandState,
   type SpaceResolvePayload,
 } from "../partyBoard";
-import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
+import { ensureLedger, netCashflow, type DealOffer } from "../voyagerLedger";
+import {
+  acceptDealWithContext,
+  dealChoiceCounsel,
+  moodForSave,
+} from "../meaningfulChoices";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -58,6 +63,7 @@ export type IslandBoardViewProps = {
     message: string;
     itemTip?: string;
     ledger?: import("../voyagerLedger").VoyagerLedger;
+    consumedSoftBeat?: boolean;
   }) => void;
   onBoardBoat: () => void;
   onOpenArchipelago: () => void;
@@ -164,6 +170,7 @@ export function IslandBoardView({
         message: payload.message,
         itemTip: tip,
         ledger: payload.ledger,
+        consumedSoftBeat: payload.consumedSoftBeat,
       });
       if (payload.message) setEventMessage(payload.message);
     },
@@ -221,7 +228,12 @@ export function IslandBoardView({
       let working = { ...state };
 
       if (result.passedStart) {
-        applyPayload(resolvePassStart(boardMode, save.voyagerLedger));
+        applyPayload(
+          resolvePassStart(boardMode, save.voyagerLedger, {
+            armed: save.armedSoftBeat,
+            stance: save.stance,
+          }),
+        );
       }
 
       if (space.type === "minigame" && space.minigameId) {
@@ -238,7 +250,11 @@ export function IslandBoardView({
         working,
         userProfile.totalCoins,
         save.voyagerLedger,
-        { trackHarborEscape: tracksHarborEscape(boardMode) },
+        {
+          trackHarborEscape: tracksHarborEscape(boardMode),
+          armed: save.armedSoftBeat,
+          stance: save.stance,
+        },
       );
       working = next;
       onUpdatePartyState(working);
@@ -264,7 +280,7 @@ export function IslandBoardView({
       onLaunchMinigame,
       onUpdatePartyState,
       runRivalTurns,
-      save.voyagerLedger,
+      save,
       userProfile.totalCoins,
     ],
   );
@@ -276,6 +292,9 @@ export function IslandBoardView({
       const state = dealPartyState;
       setDealOffer(null);
       setDealPartyState(null);
+      const mood = moodForSave(save);
+      const ledger = ensureLedger(save.voyagerLedger);
+      const hasEmergencyBuff = Boolean(state.buffs?.bailoutReady || state.buffs?.shielded);
 
       if (accept) {
         if (userProfile.totalCoins < offer.purchaseCost) {
@@ -283,16 +302,32 @@ export function IslandBoardView({
             `Need ${offer.purchaseCost} coins for ${offer.name} — earn more, then catch the next Deal.`,
           );
         } else {
-          const result = acceptDeal(ensureLedger(save.voyagerLedger), offer);
+          const result = acceptDealWithContext(ledger, offer, {
+            mood,
+            stance: save.stance,
+          });
+          const settleNote =
+            result.settlingPaydays > 0
+              ? ` Settling ${result.settlingPaydays} Pay Day in ${mood} weather.`
+              : "";
           applyPayload({
             coins: result.coins,
             xp: 8,
             ledger: result.ledger,
-            message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
+            message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.${settleNote}`,
           });
         }
       } else {
-        setEventMessage(`Passed on ${offer.name}. Patience is a cashflow skill too.`);
+        const tip = dealChoiceCounsel({
+          cashflow: netCashflow(ledger),
+          pouch: userProfile.totalCoins,
+          cost: offer.purchaseCost,
+          monthly: offer.monthlyAmount,
+          mood,
+          stance: save.stance,
+          hasEmergencyBuff,
+        });
+        setEventMessage(`Passed on ${offer.name}. ${tip.tip}`);
       }
 
       void runRivalTurns(state);
@@ -302,7 +337,7 @@ export function IslandBoardView({
       dealOffer,
       dealPartyState,
       runRivalTurns,
-      save.voyagerLedger,
+      save,
       userProfile.totalCoins,
     ],
   );
@@ -658,6 +693,21 @@ export function IslandBoardView({
                       {userProfile.totalCoins < dealOffer.purchaseCost
                         ? " — not enough yet (you can pass)."
                         : ""}
+                    </p>
+                    <p className="mt-2 text-xs text-cyan-900/90" data-testid="harbor-deal-counsel">
+                      {
+                        dealChoiceCounsel({
+                          cashflow: netCashflow(ensureLedger(save.voyagerLedger)),
+                          pouch: userProfile.totalCoins,
+                          cost: dealOffer.purchaseCost,
+                          monthly: dealOffer.monthlyAmount,
+                          mood: moodForSave(save),
+                          stance: save.stance,
+                          hasEmergencyBuff: Boolean(
+                            party.buffs?.bailoutReady || party.buffs?.shielded,
+                          ),
+                        }).tip
+                      }
                     </p>
                   </div>
                 </div>
