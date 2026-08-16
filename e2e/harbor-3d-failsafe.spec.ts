@@ -25,7 +25,7 @@ async function dismissHarborCinemaIfOpen(page: import("@playwright/test").Page) 
   }
 }
 
-test.describe.configure({ timeout: 90_000 });
+test.describe.configure({ timeout: 90_000, mode: "serial" });
 
 test.describe("Harbor 3D failsafe", () => {
   test("sticky capital_harbor3d_fail skips Canvas and keeps myth playable", async ({
@@ -44,6 +44,8 @@ test.describe("Harbor 3D failsafe", () => {
     await waitForQaReady(page);
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
+      // Ensure Harbor hub (not a leftover shore explore) before asserting myth.
+      window.__QA__!.openHub();
     });
     await dismissHarborCinemaIfOpen(page);
 
@@ -103,6 +105,7 @@ test.describe("Harbor 3D failsafe", () => {
     await waitForQaReady(page);
     await page.evaluate(async () => {
       await window.__QA__!.seedSignatureLoop("day2_echo");
+      window.__QA__!.openHub();
     });
     await dismissHarborCinemaIfOpen(page);
 

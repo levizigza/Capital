@@ -11,6 +11,7 @@ import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
 import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
+import { softBeatScarVistaLine } from "@/design/designBible";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
@@ -77,14 +78,17 @@ export function SoftBeatOverlay({
     return () => window.clearTimeout(t);
   }, [hushActive, onDone, organ.id]);
 
-  const body = hushActive ? beat.hushLine : beat.line;
+  const vista = softBeatScarVistaLine(kind, scarLabel);
+  const body = hushActive ? beat.hushLine : (vista ?? beat.line);
   const kidSentence = coldOrganKidSentence(organ.id);
   const receipt =
     scarLabel && hushActive
       ? `“${scarLabel}” already lives on the Memory Plinth.`
-      : scarLabel && kind === "ledger"
+      : scarLabel && kind === "ledger" && !vista
         ? `“${scarLabel}” is written in the marble.`
-        : null;
+        : scarLabel && vista && !hushActive
+          ? `Look — then leave. The Plinth still keeps this Take.`
+          : null;
 
   const climbMotif =
     kind === "lookout"

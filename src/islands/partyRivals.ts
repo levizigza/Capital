@@ -217,7 +217,7 @@ export function simulateRivalRound(
     } else if (spaceKind === (cashflow ? 4 : 1)) {
       rival.seals += 1;
       rival.coins = Math.max(0, rival.coins - 15);
-      message += ` Claimed a Ledger Seal.`;
+      message += ` Claimed a Board Star.`;
     } else if (spaceKind === (cashflow ? 5 : 2)) {
       const steal = 5 + Math.floor(roll / 2);
       if (shield) {

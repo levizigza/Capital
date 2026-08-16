@@ -87,10 +87,13 @@ test.describe("Islands smoke", () => {
       })
       .toBe("coincraft_cove");
 
-    // Minigame via QA bridge
+    // Minigame via QA bridge (ModularMinigame is lazy — allow chunk load)
     await page.evaluate(() => window.__QA__?.startMinigame("mg_coin_sort"));
-    await expect(page.getByTestId("minigame-modal")).toBeVisible();
-    await expect(page.getByText("Coin Sort Challenge")).toBeVisible();
+    await expect(page.getByTestId("minigame-modal")).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText("Coin Sort Challenge")).toBeVisible({ timeout: 30_000 });
+    await expect(
+      page.getByRole("button", { name: /Sort Crates/i }).first(),
+    ).toBeVisible({ timeout: 15_000 });
 
     const earnBtn = page.getByRole("button", { name: /Sort Crates|Earn/i }).first();
     if (await earnBtn.isVisible()) {

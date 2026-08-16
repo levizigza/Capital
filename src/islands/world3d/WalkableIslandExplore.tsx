@@ -1123,10 +1123,19 @@ export function WalkableIslandExplore({
     <div className="relative h-full w-full overflow-hidden" data-testid="island-shore-explore">
       {!ready ? (
         <div
-          className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center px-4 text-center text-sm font-bold"
+          className="absolute inset-0 z-[10] flex flex-col items-center justify-center gap-3 px-4 text-center"
           style={{ background: look.skyTop, color: look.accent }}
+          data-testid="island-shore-loading"
         >
-          {loadHint}
+          <p className="text-sm font-bold">{loadHint}</p>
+          <button
+            type="button"
+            className="pointer-events-auto min-h-11 rounded-xl border-2 border-[#1c1917] bg-[#f4b942] px-5 py-2.5 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917]"
+            data-testid="island-shore-enter-now"
+            onClick={() => setReady(true)}
+          >
+            Enter shore now
+          </button>
         </div>
       ) : null}
       <Canvas

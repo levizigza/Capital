@@ -34,10 +34,8 @@ import type {
 } from "../types";
 
 const LazyEconomyWeather = lazy(() => import("../EconomyWeatherIndicator"));
-const LazySkillStatsPanel = lazy(() => import("../SkillStatsPanel"));
 
 import { createDefaultEconomyState } from "../economy";
-import { createDefaultSkillStats } from "../skillStats";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";
 import { getIslandTheme } from "../themes/islandThemes";
 import { getAnimationStyle, isHomeLook, type AnimationStyleId } from "../animationStyles";
@@ -584,13 +582,7 @@ export function IslandPlayView({
           </GamePanel>
         ) : null}
 
-        <Suspense fallback={null}>
-          <LazySkillStatsPanel
-            stats={(save.skillStats ?? createDefaultSkillStats()).current}
-            history={(save.skillStats ?? createDefaultSkillStats()).history}
-            compact
-          />
-        </Suspense>
+        {/* Design Bible: skill-stats RPG panel demoted — organs / CF / Soft Beat are mastery. */}
 
         {compact ? (
           <>

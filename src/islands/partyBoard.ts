@@ -3,7 +3,8 @@
  *
  * Core loop (Fortune Party–style, financially themed):
  *   Roll → Move → Resolve space → Optional minigame → Rival turns → repeat
- * Win condition for an island session: most Ledger Seals after N turns (or free play).
+ * Win condition for an island session: most Board Stars after N turns (or free play).
+ * (Design Bible: never call these Freedom / Ledger Seals — Freedom Seal is CF escape only.)
  */
 
 import type { IslandDefinition, IslandId, IslandSaveV1, MinigameId } from "./types";
@@ -299,10 +300,10 @@ export function buildBoardForIsland(island: IslandDefinition): BoardSpace[] {
         spaces.push({
           index: i,
           type: "seal",
-          label: "Ledger Seal",
+          label: "Board Star",
           icon: "🏅",
           coinReward: 20,
-          eventText: "Spend coins to claim a Ledger Seal — or earn one by winning a minigame!",
+          eventText: "Spend coins to claim a Board Star — or earn one by winning a minigame!",
         });
         break;
       case "lucky":
@@ -552,7 +553,7 @@ export function resolvePlayerSpace(
       if (playerCoins >= cost) {
         payload.coins = -cost;
         payload.star = true;
-        payload.message = `You bought a Ledger Seal for ${cost} coins!`;
+        payload.message = `You bought a Board Star for ${cost} coins!`;
       } else {
         payload.message = `Seal costs ${cost} coins — earn more, then claim it.`;
       }
@@ -637,7 +638,7 @@ export function computeMinigameReward(
     xp: baseXp,
     starEarned,
     message: starEarned
-      ? "Victory! You earned a Ledger Seal on this island."
+      ? "Victory! You earned a Board Star on this island."
       : "Minigame cleared! Coins added to your pouch.",
   };
 }

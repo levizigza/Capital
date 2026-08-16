@@ -323,6 +323,7 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
   const m = getMascot(mascotId);
   const gid = `dlg_harbor_${mascotId}`;
   const beat = tipFor(mascotId);
+  // Design Bible: no hollow yes/later fake choice — one continue into the tip.
   return {
     id: gid,
     startNodeId: "n1",
@@ -331,28 +332,19 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
         id: "n1",
         speaker: m.name,
         text: {
-          explorer: `Hi! I’m ${m.name}. ${m.tagline} Want a tiny money tip?`,
-          apprentice: `${m.name} here. ${m.tagline} Got a minute for a Harbor tip?`,
-          strategist: `${m.name}. ${m.tagline} Quick beat before you sail?`,
+          explorer: `Hi! I’m ${m.name}. ${m.tagline}`,
+          apprentice: `${m.name} here. ${m.tagline}`,
+          strategist: `${m.name}. ${m.tagline}`,
         },
         choices: [
           {
-            id: "yes",
+            id: "hear",
             text: {
-              explorer: "Yes please!",
-              apprentice: "Sure — tip me.",
-              strategist: "Go ahead.",
+              explorer: "What do you notice?",
+              apprentice: "What’s on your mind?",
+              strategist: "Read the plaza.",
             },
             nextNodeId: "n2",
-          },
-          {
-            id: "later",
-            text: {
-              explorer: "Maybe later!",
-              apprentice: "Catch you later.",
-              strategist: "Not now.",
-            },
-            nextNodeId: "n3",
           },
         ],
       },
@@ -360,7 +352,17 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
         id: "n2",
         speaker: m.name,
         text: beat.tip,
-        end: true,
+        choices: [
+          {
+            id: "ok",
+            text: {
+              explorer: "Thanks!",
+              apprentice: "Got it.",
+              strategist: "Noted.",
+            },
+            nextNodeId: "n3",
+          },
+        ],
       },
       {
         id: "n3",

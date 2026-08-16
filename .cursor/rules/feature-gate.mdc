@@ -1,0 +1,20 @@
+---
+description: Run the Capital feature gate before implementing new features
+alwaysApply: true
+---
+
+# Feature gate (before implementation)
+
+Before building a **new** Capital feature, evaluate it with `docs/FEATURE_GATE.md` / `src/design/featureGate.ts`.
+
+Score **0–5** on value (fantasy, loop, decisions, systems, emergence, mastery, expression, replay, social, stories) and costs (cognitive, UI, tech, balance, maintenance, content). Compare **VALUE SCORE** vs **COST SCORE**.
+
+**Reject** when:
+
+- Main justification is “other games have this”
+- VALUE &lt; COST
+- Freeze broken (main-quest width / fake MP / foreign merge)
+
+**Prefer** features that improve **several existing systems** at once.
+
+Do not start implementation on `reject` or `park` without an explicit human override recorded in the PR.

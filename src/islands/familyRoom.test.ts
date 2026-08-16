@@ -3,11 +3,17 @@ import {
   createFamilyRoom,
   exportFamilyRoomJson,
   familyPlaqueMythLine,
+  familyChallengeBlurb,
+  familyWitnessMythLine,
   getActiveFamilyRoom,
   importFamilyRoomJson,
   joinFamilyRoom,
   leaveFamilyRoom,
   pinLevelToRoom,
+  postFamilyChallenge,
+  completeFamilyChallenge,
+  clearFamilyChallenge,
+  recordShareWitness,
 } from "./familyRoom";
 
 describe("familyRoom", () => {
@@ -68,5 +74,36 @@ describe("familyRoom", () => {
     expect(familyPlaqueMythLine("Waited the spiral", "spiral")).toMatch(/Spiral withstands/);
     expect(familyPlaqueMythLine(null)).toBeNull();
     expect(familyPlaqueMythLine("  ")).toBeNull();
+  });
+
+  it("posts one household challenge with voluntary unique completes — no ranking", () => {
+    createFamilyRoom("Challenge Harbor", "Sam");
+    const posted = postFamilyChallenge({
+      authorName: "Sam",
+      kind: "cove_take",
+    });
+    expect(posted?.challenge?.kind).toBe("cove_take");
+    expect(familyChallengeBlurb(posted?.challenge)).toMatch(/Sam set/);
+
+    completeFamilyChallenge("Alex");
+    completeFamilyChallenge("Alex"); // idempotent
+    const room = getActiveFamilyRoom();
+    expect(room?.challenge?.completions).toHaveLength(1);
+    expect(room?.challenge?.completions[0]?.name).toBe("Alex");
+
+    clearFamilyChallenge();
+    expect(getActiveFamilyRoom()?.challenge).toBeNull();
+  });
+
+  it("records share witnesses as soft myth without power tools", () => {
+    createFamilyRoom("Witness Harbor", "Sam");
+    const room = recordShareWitness({
+      witnessName: "Parent",
+      reaction: "caution",
+      scarLabel: "Jar before treat",
+    });
+    expect(room?.witnesses?.[0]?.reaction).toBe("caution");
+    expect(familyWitnessMythLine(room?.witnesses?.[0])).toMatch(/Parent/);
+    expect(familyWitnessMythLine(room?.witnesses?.[0])).toMatch(/caution/i);
   });
 });

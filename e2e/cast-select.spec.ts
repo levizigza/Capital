@@ -52,6 +52,8 @@ test.describe("Street Fighter cast select", () => {
     await expect(page.getByTestId("boot-cast-select")).toHaveAttribute("data-stage", "select");
 
     await page.getByTestId("sf-coin-peso_pedro").click();
+    await expect(page.getByTestId("boot-cast-select")).toHaveAttribute("data-stage", "select");
+    await page.getByTestId("boot-customize-look").click();
     await expect(page.getByTestId("boot-cast-select")).toHaveAttribute("data-stage", "look");
     await expect(page.getByTestId("character-creator-snap")).toContainText("Peso Pedro");
 

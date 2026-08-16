@@ -4,7 +4,7 @@
  * the PNG freezes in the lower band — not a centered settings card.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GameButton } from "@/game-ui";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import type { MoneyOrganId } from "../moneyOrgans";
@@ -18,6 +18,8 @@ import {
 } from "../worldMemory";
 import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
+import type { FamilyWitnessReaction } from "../familyRoom";
+import { WITNESS_REACTION_LABEL } from "../familyRoom";
 
 type Props = {
   scarLabel: string;
@@ -28,6 +30,11 @@ type Props = {
   previewUrl: string | null;
   onShare: () => void;
   onKeepWalking: () => void;
+  /**
+   * Hand the device to someone nearby — their judgment is the social play.
+   * Soft stamp only; never edits ledger/scar.
+   */
+  onWitness?: (opts: { witnessName: string; reaction: FamilyWitnessReaction }) => void;
 };
 
 export function HarborFeltShareOverlay({
@@ -38,8 +45,12 @@ export function HarborFeltShareOverlay({
   previewUrl,
   onShare,
   onKeepWalking,
+  onWitness,
 }: Props) {
   const organ = organId ?? "memory";
+  const [witnessOpen, setWitnessOpen] = useState(false);
+  const [witnessName, setWitnessName] = useState("");
+  const [witnessDone, setWitnessDone] = useState(false);
   const retell = coldRetellLine({
     id: scarMeta?.id ?? "",
     islandId: scarMeta?.islandId ?? "",
@@ -56,6 +67,15 @@ export function HarborFeltShareOverlay({
     playCapitalSfx("plinth_hum");
   }, [organ]);
 
+  const stampWitness = (reaction: FamilyWitnessReaction) => {
+    if (!onWitness) return;
+    onWitness({
+      witnessName: witnessName.trim() || "Someone nearby",
+      reaction,
+    });
+    setWitnessDone(true);
+    setWitnessOpen(false);
+  };
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[45] flex flex-col"
@@ -171,6 +191,58 @@ export function HarborFeltShareOverlay({
               Leave — find Piggy
             </GameButton>
           </div>
+          {onWitness ? (
+            <div className="mt-3 text-left" data-testid="harbor-felt-witness">
+              {witnessDone ? (
+                <p className="text-center text-[11px] font-semibold text-amber-100/90">
+                  Witness stamped — soft myth only. Your plaque stays yours.
+                </p>
+              ) : witnessOpen ? (
+                <div className="rounded-xl border border-white/20 bg-black/35 px-3 py-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-amber-100/90">
+                    Hand the device — their judgment is the play
+                  </p>
+                  <input
+                    className="mt-2 w-full rounded border border-white/20 bg-white/10 px-2 py-1 text-sm text-white placeholder:text-white/40"
+                    placeholder="Their name"
+                    value={witnessName}
+                    onChange={(e) => setWitnessName(e.target.value)}
+                    data-testid="harbor-felt-witness-name"
+                    maxLength={64}
+                  />
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(["cheer", "caution", "curious"] as const).map((r) => (
+                      <GameButton
+                        key={r}
+                        variant="outline"
+                        className="flex-1 border-white/30 bg-white/10 text-white"
+                        data-testid={`harbor-felt-witness-${r}`}
+                        onClick={() => stampWitness(r)}
+                      >
+                        {WITNESS_REACTION_LABEL[r]}
+                      </GameButton>
+                    ))}
+                  </div>
+                  <GameButton
+                    variant="ghost"
+                    className="mt-1 w-full text-white/70"
+                    onClick={() => setWitnessOpen(false)}
+                  >
+                    Cancel
+                  </GameButton>
+                </div>
+              ) : (
+                <GameButton
+                  variant="ghost"
+                  className="w-full text-amber-50/90"
+                  data-testid="harbor-felt-witness-open"
+                  onClick={() => setWitnessOpen(true)}
+                >
+                  Someone nearby? Ask them to stamp
+                </GameButton>
+              )}
+            </div>
+          ) : null}
           <p className="mt-2 text-[11px] font-semibold tracking-wide text-white/80">Esc · Leave</p>
         </div>
       </div>
