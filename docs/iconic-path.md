@@ -83,6 +83,8 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 5. Did the player get lost (place or goal)? *(Presentation — were all pieces shown?)*  
 6. Did the moment feel fun, or only functional?
 
+**Structured human sessions:** see [playtest/README.md](./playtest/README.md) — capture attempted / believed / actual; separate OBSERVATION · INTERPRETATION · PROPOSED FIX; compile recurring patterns into [`playtest/PLAYTEST_FINDINGS.md`](./playtest/PLAYTEST_FINDINGS.md) after each cycle (`npm run playtest:findings`). Do not fix every individual complaint.
+
 Craft lens: [puzzle-explorable-craft.md](./puzzle-explorable-craft.md) (Hermans — Presentation · Elegancy · Aspiration).
 
 **Harbor Ashore (redesign):** see [harbor-ashore.md](./harbor-ashore.md) — Talk → Carpet → Cove; Daily Ritual only after Cove Change. Early chrome hides Leave / CASH / stall grid until Talk is done.
