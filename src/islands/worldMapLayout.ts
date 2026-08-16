@@ -9,6 +9,12 @@ import {
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
 import { SIDE_SHORE_TRAVEL_IDS, SPINE_TRAVEL_IDS } from "./spineArchipelago";
+import {
+  PHI_INV,
+  SEED_HUB,
+  SEED_SIDE_R,
+  SEED_SPINE_R,
+} from "./sacredGeometry";
 
 export {
   HARBOR_HAVEN_ID,
@@ -28,18 +34,18 @@ export const SPINE_WORLD_RADIUS = ARCHIPELAGO_WORLD_RADIUS * 0.72;
 /** Outer ring (era side shores) — discoverable beyond the spine. */
 export const SIDE_SHORE_WORLD_RADIUS = ARCHIPELAGO_WORLD_RADIUS * 1.12;
 
-/** Map view: hub center (%). */
-export const MAP_HUB = { x: 50, y: 54 };
+/** Map view: hub center (%) — Seed of Life. */
+export const MAP_HUB = { ...SEED_HUB };
 
 /**
- * Sacred-geometry dual ring — tight enough that dioramas nest / overlap
- * (vesica-style), not a sparse grid. φ-ish ratios between spine and side.
+ * Sacred-geometry dual ring (Seed of Life):
+ * spine nest · side ring at φ · dioramas overlap, not a sparse grid.
  */
-export const MAP_SPINE_RX = 15;
-export const MAP_SPINE_RY = 13;
+export const MAP_SPINE_RX = SEED_SPINE_R;
+export const MAP_SPINE_RY = SEED_SPINE_R * PHI_INV;
 /** Map view: side-shore outer ring ellipse radii (%). */
-export const MAP_SIDE_RX = 24;
-export const MAP_SIDE_RY = 21;
+export const MAP_SIDE_RX = SEED_SIDE_R;
+export const MAP_SIDE_RY = SEED_SIDE_R * PHI_INV;
 
 /** @deprecated Prefer MAP_SPINE_* / MAP_SIDE_* — kept for callers expecting legacy names. */
 export const MAP_RING_RX = MAP_SIDE_RX;

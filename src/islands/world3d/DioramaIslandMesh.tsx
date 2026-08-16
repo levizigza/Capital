@@ -605,29 +605,25 @@ export function DioramaIslandMesh({
 
       {!hideLabels ? (
         <Html
-          position={[0, 2.75, 0]}
+          position={[0, 2.55, 0]}
           center
-          distanceFactor={11}
+          distanceFactor={12}
           style={{ pointerEvents: "none" }}
           zIndexRange={[20, 0]}
         >
           <div
-            className="pointer-events-none flex min-w-[5.5rem] max-w-[9rem] flex-col items-center rounded-lg bg-[#fffbeb]/95 px-2 py-1 text-center shadow-[2px_2px_0_rgba(22,40,59,0.35)] ring-1 ring-[#16283b]/35"
+            className="pointer-events-none flex max-w-[7.5rem] flex-col items-center rounded-full bg-[#0f172a]/78 px-2.5 py-1 text-center backdrop-blur-[2px] ring-1 ring-white/25"
             data-testid={islandId ? `map-island-label-${islandId}` : "map-island-label"}
           >
-            <span className="text-[11px] font-black leading-tight text-[#16283b]">
+            <span className="text-[10px] font-black leading-tight text-white">
               {locked ? `🔒 ${title}` : title}
             </span>
-            {current ? (
-              <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">
-                You are here
-              </span>
-            ) : subtitle ? (
+            {current || subtitle ? (
               <span
-                className="mt-0.5 text-[9px] font-bold leading-tight"
-                style={{ color: look.accent }}
+                className="mt-0.5 text-[8px] font-bold uppercase tracking-wide"
+                style={{ color: current ? "#fbbf24" : look.accent }}
               >
-                {subtitle}
+                {current ? "Here" : subtitle}
               </span>
             ) : null}
           </div>

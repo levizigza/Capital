@@ -82,8 +82,17 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
       style={{ color: "#fff" }}
     >
       <header className="relative z-10 shrink-0 px-3 pb-1 pt-3 sm:px-5 sm:pt-4">
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 h-40 w-40 -translate-x-1/2 rounded-full opacity-30"
+          aria-hidden
+          data-sacred="seed-of-life"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, transparent 38%, rgba(167,243,208,0.7) 39%, transparent 41%), radial-gradient(circle at 50% 18%, transparent 38%, rgba(253,230,138,0.45) 39%, transparent 41%), radial-gradient(circle at 50% 82%, transparent 38%, rgba(253,230,138,0.45) 39%, transparent 41%)",
+          }}
+        />
         <p
-          className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200"
+          className="relative text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200"
           style={{ color: "#fde68a" }}
         >
           Capital · Fortune Archipelago

@@ -967,25 +967,63 @@ html.capital-intro-active body {
   align-items: center;
   justify-content: flex-end;
   text-align: center;
-  padding: 0 1.5rem 2rem;
+  /* Golden section — brand plate sits near φ⁻² from the top of the reveal band */
+  padding: 0 1.5rem max(1.25rem, env(safe-area-inset-bottom, 0px));
   z-index: 7;
   pointer-events: none;
   background: linear-gradient(
     to top,
-    rgba(6, 12, 20, 0.96) 0%,
-    rgba(6, 12, 20, 0.72) 42%,
+    rgba(6, 12, 20, 0.94) 0%,
+    rgba(6, 12, 20, 0.55) 38.2%,
     transparent 100%
   );
 }
 .cap-opening-reveal__plate {
   pointer-events: auto;
+  position: relative;
   width: min(100%, 560px);
   background: transparent;
   backdrop-filter: none;
   border-radius: 0;
-  padding: 0.5rem 0.75rem 0.85rem;
+  padding: 1.25rem 0.75rem 0.85rem;
   border: none;
   box-shadow: none;
+  isolation: isolate;
+}
+/* Seed of Life — quiet geometry behind brand (title screens share this language) */
+.cap-opening-reveal__plate::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(72vw, 22rem);
+  height: min(72vw, 22rem);
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.22;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 31%, rgba(167, 243, 208, 0.85) 32%, transparent 33%),
+    radial-gradient(circle at 50% 18%, transparent 31%, rgba(167, 243, 208, 0.55) 32%, transparent 33%),
+    radial-gradient(circle at 50% 82%, transparent 31%, rgba(167, 243, 208, 0.55) 32%, transparent 33%),
+    radial-gradient(circle at 22% 34%, transparent 31%, rgba(167, 243, 208, 0.45) 32%, transparent 33%),
+    radial-gradient(circle at 78% 34%, transparent 31%, rgba(167, 243, 208, 0.45) 32%, transparent 33%),
+    radial-gradient(circle at 22% 66%, transparent 31%, rgba(167, 243, 208, 0.45) 32%, transparent 33%),
+    radial-gradient(circle at 78% 66%, transparent 31%, rgba(167, 243, 208, 0.45) 32%, transparent 33%);
+}
+.cap-opening-reveal__plate::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(42vw, 13rem);
+  height: min(42vw, 13rem);
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  border: 1px solid rgba(253, 230, 138, 0.28);
+  box-shadow: 0 0 0 1px rgba(167, 243, 208, 0.12);
 }
 .cap-opening-mark {
   margin: 0 0 0.55rem;
