@@ -1,8 +1,8 @@
 /**
  * Ashore Teach — iconic Chamber 00.
  * One living-money room that morphs: Alive → Walk → Talk → Board → Launch.
- * First Cove→Harbor loop in the real game is the rest of the tutorial.
- * Design: docs/ashore-teach-design.md · docs/ashore-tutorial-research.md
+ * Toys live in the 3D pad; one whisper; Leave · Esc. Real tutorial = first Cove→Harbor.
+ * Criteria: docs/ashore-iconic-criteria.md · Design: docs/ashore-teach-design.md
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,20 +10,17 @@ import type { CapitalCharacter } from "../character";
 import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playOrganSfx } from "../audio/capitalSfx";
-import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
+import { type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
 import {
   TALK_TARGET,
   VoyagerWalkPracticeStage,
   WALK_MARKERS,
+  type PracticeMode,
 } from "../world3d/VoyagerWalkPracticeStage";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useInputAction } from "@/input";
-import {
-  CarpetDockShowcase,
-  FantasyOrganToys,
-} from "./AshoreTeachShowcases";
 
 export type TeachStepId = "fantasy" | "walk" | "talk" | "dock" | "ready";
 
@@ -44,6 +41,14 @@ type Props = {
 
 const LAUNCH_CTA =
   "min-h-12 w-full max-w-sm rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]";
+
+function chamberMode(stepId: TeachStepId): PracticeMode {
+  if (stepId === "fantasy") return "fantasy";
+  if (stepId === "walk") return "walk";
+  if (stepId === "talk") return "talk";
+  if (stepId === "dock") return "dock";
+  return "showcase";
+}
 
 export function AshoreComprehensionTutorial({
   character,
@@ -74,6 +79,10 @@ export function AshoreComprehensionTutorial({
 
   const onClaimMarker = useCallback((id: string) => {
     setClaimed((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
+
+  const pokeFantasy = useCallback((id: MoneyOrganId) => {
+    setFantasyPoked((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }, []);
 
   const walkDone = WALK_MARKERS.every((m) => claimed.includes(m.id));
@@ -133,10 +142,6 @@ export function AshoreComprehensionTutorial({
     return () => window.removeEventListener("keydown", onKey);
   }, [onComplete]);
 
-  const showPad = stepId === "fantasy" || stepId === "walk" || stepId === "talk";
-  const padMode =
-    stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
-
   useInputAction("cancel", onComplete);
 
   const line = useMemo(() => {
@@ -158,7 +163,7 @@ export function AshoreComprehensionTutorial({
     if (stepId === "dock") {
       return carpetBoarded
         ? "Cove first. Harbor will remember."
-        : "Board the lit Cove painting.";
+        : "Board the glowing Cove carpet.";
     }
     return "Harbor Haven, then Coincraft Cove.";
   }, [
@@ -171,156 +176,134 @@ export function AshoreComprehensionTutorial({
     walkDone,
   ]);
 
-  const pokeFantasy = (id: MoneyOrganId) => {
-    setFantasyPoked((prev) => (prev.includes(id) ? prev : [...prev, id]));
-  };
+  const padMode = chamberMode(stepId);
+  const showPad = stepId !== "ready";
+  const showMobilePad =
+    stepId === "fantasy" ||
+    stepId === "walk" ||
+    stepId === "talk" ||
+    stepId === "dock";
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex flex-col overflow-hidden text-white"
+      className="fixed inset-0 z-[80] overflow-hidden text-white"
       data-testid="ashore-comprehension-tutorial"
       data-teach-step={stepId}
       data-teach-mode="chamber-00"
       data-iconic="seed-chamber"
-      style={{
-        background:
-          "radial-gradient(ellipse 70% 55% at 50% 42%, #1e3a5f 0%, #0c1929 45%, #020617 100%)",
-      }}
+      data-sacred="seed-of-life"
     >
-      {/* Seed of Life — quiet geometry behind the living room */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-[38%] z-0 h-[min(92vw,34rem)] w-[min(92vw,34rem)] -translate-x-1/2 -translate-y-1/2 opacity-30"
-        aria-hidden
-        data-sacred="seed-of-life"
-        style={{
-          background: `
-            radial-gradient(circle at 50% 50%, transparent 31%, rgba(167,243,208,0.9) 32%, transparent 33.5%),
-            radial-gradient(circle at 50% 18%, transparent 31%, rgba(167,243,208,0.55) 32%, transparent 33.5%),
-            radial-gradient(circle at 50% 82%, transparent 31%, rgba(167,243,208,0.55) 32%, transparent 33.5%),
-            radial-gradient(circle at 22% 34%, transparent 31%, rgba(253,230,138,0.4) 32%, transparent 33.5%),
-            radial-gradient(circle at 78% 34%, transparent 31%, rgba(253,230,138,0.4) 32%, transparent 33.5%),
-            radial-gradient(circle at 22% 66%, transparent 31%, rgba(253,230,138,0.4) 32%, transparent 33.5%),
-            radial-gradient(circle at 78% 66%, transparent 31%, rgba(253,230,138,0.4) 32%, transparent 33.5%)
-          `,
-        }}
-      />
-
-      <header className="relative z-[2] flex shrink-0 items-start justify-between px-4 py-3 pr-16 sm:px-6 sm:pr-20">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200/85">
-            Capital
-          </p>
-          <h1
-            className="mt-1 font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black tracking-tight text-white sm:text-3xl"
-            data-testid="ashore-iconic-title"
-          >
-            {stepId === "fantasy"
-              ? "Money is alive here"
-              : stepId === "dock" || stepId === "ready"
-                ? "Board Cove"
-                : "Inside living money"}
-          </h1>
-          {stepId === "fantasy" && !fantasyDone ? (
-            <p className="mt-1 max-w-md text-sm text-white/75">{MURAL_THESIS}</p>
+      {/* Full-bleed living chamber — one composition */}
+      {showPad ? (
+        <div className="absolute inset-0" data-testid="ashore-teach-scroll">
+          <VoyagerWalkPracticeStage
+            character={voyager}
+            mode={padMode}
+            claimed={claimed}
+            onClaimMarker={onClaimMarker}
+            talkTarget={TALK_TARGET}
+            nearTalk={nearTalk}
+            onNearTalkChange={setNearTalk}
+            fantasyPoked={fantasyPoked}
+            onPokeOrgan={pokeFantasy}
+            carpetBoarded={carpetBoarded}
+            onBoardCove={() => {
+              setCarpetBoarded(true);
+            }}
+            className="h-full w-full"
+          />
+          {showMobilePad && !reduced ? (
+            <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
+              <TouchWalkPad />
+            </div>
           ) : null}
-        </div>
-        <button
-          type="button"
-          className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/65 ring-1 ring-white/20 hover:bg-white/10"
-          data-testid="ashore-teach-skip"
-          {...pointerSafeActivate(onComplete)}
-        >
-          Leave · Esc
-        </button>
-      </header>
-
-      {/* Full-bleed prove stage — the room, not a card */}
-      <div
-        className="relative z-[1] mx-auto flex min-h-0 w-full max-w-4xl flex-1 flex-col px-3"
-        data-testid="ashore-teach-scroll"
-      >
-        {showPad ? (
-          <div className="relative min-h-0 flex-1">
-            <VoyagerWalkPracticeStage
-              character={voyager}
-              mode={padMode}
-              claimed={claimed}
-              onClaimMarker={onClaimMarker}
-              talkTarget={TALK_TARGET}
-              nearTalk={nearTalk}
-              onNearTalkChange={setNearTalk}
-              className="h-full min-h-[42vh] overflow-hidden rounded-[1.5rem] ring-1 ring-amber-200/20 sm:min-h-[48vh]"
-            />
-            {(stepId === "walk" || stepId === "talk") && !reduced ? (
-              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
-                <TouchWalkPad />
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        {stepId === "dock" ? (
-          <div
-            className="flex min-h-0 flex-1 flex-col items-center justify-center py-2"
-            data-testid="ashore-teach-prove-dock"
-          >
-            <CarpetDockShowcase
-              boarded={carpetBoarded}
-              onBoard={() => {
-                playOrganSfx("coin");
-                setCarpetBoarded(true);
-              }}
-            />
-          </div>
-        ) : null}
-
-        {stepId === "ready" ? (
-          <div
-            className="flex min-h-0 flex-1 flex-col items-center justify-center gap-5 px-4 text-center"
-            data-testid="ashore-teach-prove-dock"
-          >
-            <p className="max-w-md text-base text-white/85">
-              Land on <span className="font-bold text-amber-100">Harbor Haven</span>. Your Cove
-              choice will stain home — that’s the real lesson.
-            </p>
-            <ul
-              className="flex flex-wrap justify-center gap-2"
-              data-testid="ashore-teach-route"
-              aria-label="First voyage"
+          {/* A11y + e2e hit targets — visuals are the 3D toys / carpet */}
+          {stepId === "fantasy" ? (
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center gap-8"
+              data-testid="ashore-fantasy-toys"
+              data-spectacle="1"
+              aria-hidden={false}
             >
-              <li className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-white/20">
-                Harbor Haven
-              </li>
-              <li className="rounded-full bg-amber-400/25 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-amber-200/50">
-                Coincraft Cove
-              </li>
-            </ul>
+              <button
+                type="button"
+                className="pointer-events-auto h-14 w-14 rounded-full opacity-[0.01]"
+                data-testid="ashore-fantasy-toy-memory"
+                aria-label="Poke Memory organ"
+                {...pointerSafeActivate(() => pokeFantasy("memory"))}
+              />
+              <button
+                type="button"
+                className="pointer-events-auto h-14 w-14 rounded-full opacity-[0.01]"
+                data-testid="ashore-fantasy-toy-coin"
+                aria-label="Poke Coin organ"
+                {...pointerSafeActivate(() => pokeFantasy("coin"))}
+              />
+            </div>
+          ) : null}
+          {stepId === "dock" && !carpetBoarded ? (
             <button
               type="button"
-              className={LAUNCH_CTA}
-              data-testid="ashore-teach-continue"
-              {...pointerSafeActivate(onComplete)}
-            >
-              Launch carpet · {voyager.name || "Voyager"}
-            </button>
-          </div>
-        ) : null}
-      </div>
+              className="pointer-events-auto absolute bottom-[28%] left-1/2 z-[4] h-16 w-40 -translate-x-1/2 rounded-full opacity-[0.01]"
+              data-testid="ashore-carpet-board-cove"
+              aria-label="Board Coincraft Cove carpet"
+              {...pointerSafeActivate(() => {
+                playOrganSfx("coin");
+                setCarpetBoarded(true);
+              })}
+            />
+          ) : null}
+        </div>
+      ) : null}
 
-      {/* Golden-section lower third — one line + in-world toys */}
-      <div className="relative z-[3] flex shrink-0 flex-col items-center gap-3 px-4 pb-4 pt-2">
-        {stepId === "fantasy" ? (
-          <FantasyOrganToys
-            poked={fantasyPoked}
-            onPoke={pokeFantasy}
-            spectacle
-          />
-        ) : null}
-
-        {stepId === "talk" && nearTalk && !talked ? (
+      {stepId === "ready" ? (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-[radial-gradient(ellipse_70%_55%_at_50%_42%,#1e3a5f_0%,#0c1929_45%,#020617_100%)] px-4 text-center"
+          data-testid="ashore-teach-prove-dock"
+        >
+          <p className="max-w-md text-base text-white/85">
+            Land on <span className="font-bold text-amber-100">Harbor Haven</span>. Your Cove
+            choice will stain home — that’s the real lesson.
+          </p>
+          <ul
+            className="flex flex-wrap justify-center gap-2"
+            data-testid="ashore-teach-route"
+            aria-label="First voyage"
+          >
+            <li className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-white/20">
+              Harbor Haven
+            </li>
+            <li className="rounded-full bg-amber-400/25 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-amber-200/50">
+              Coincraft Cove
+            </li>
+          </ul>
           <button
             type="button"
             className={LAUNCH_CTA}
+            data-testid="ashore-teach-continue"
+            {...pointerSafeActivate(onComplete)}
+          >
+            Launch carpet · {voyager.name || "Voyager"}
+          </button>
+        </div>
+      ) : null}
+
+      {/* Leave — always reachable */}
+      <button
+        type="button"
+        className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-[5] rounded-lg bg-black/35 px-3 py-1.5 text-xs font-semibold text-white/80 ring-1 ring-white/25 backdrop-blur-sm hover:bg-black/50"
+        data-testid="ashore-teach-skip"
+        {...pointerSafeActivate(onComplete)}
+      >
+        Leave · Esc
+      </button>
+
+      {/* One whisper — no petal chrome, no homework strip */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[4] flex flex-col items-center gap-3 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6">
+        {stepId === "talk" && nearTalk && !talked ? (
+          <button
+            type="button"
+            className={`pointer-events-auto ${LAUNCH_CTA}`}
             data-testid="ashore-teach-talk"
             {...pointerSafeActivate(() => {
               playOrganSfx("memory");
@@ -332,7 +315,7 @@ export function AshoreComprehensionTutorial({
         ) : null}
 
         <p
-          className="max-w-lg text-center text-sm font-semibold text-amber-50/90 sm:text-base"
+          className="max-w-lg rounded-full bg-black/45 px-4 py-2 text-center text-sm font-semibold text-amber-50/95 shadow-[0_8px_28px_rgba(0,0,0,0.25)] backdrop-blur-md sm:text-base"
           data-testid="ashore-teach-gate"
           data-gate={
             stepId === "walk"
@@ -341,32 +324,34 @@ export function AshoreComprehensionTutorial({
                 ? "talk-near"
                 : stepId
           }
+          role="status"
         >
-          {stepId === "walk"
-            ? `${claimed.length}/${WALK_MARKERS.length} · ${line}`
-            : line}
+          {line}
         </p>
 
-        {/* Seed petals — progress without “Chamber 3/5” chrome */}
-        <div
-          className="flex items-center justify-center gap-2"
-          aria-label={`Beat ${index + 1} of ${STEPS.length}`}
-        >
-          {STEPS.map((id, i) => (
-            <span
-              key={id}
-              className={`h-2 w-2 rounded-full transition ${
-                i < index
-                  ? "bg-amber-300"
-                  : i === index
-                    ? "scale-125 bg-amber-200 ring-2 ring-amber-100/50"
-                    : "bg-white/20"
-              }`}
-            />
-          ))}
-        </div>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Esc · Leave</p>
+        {stepId !== "ready" &&
+        ((stepId === "fantasy" && !fantasyDone) ||
+          (stepId === "walk" && !walkDone) ||
+          (stepId === "talk" && !talked) ||
+          (stepId === "dock" && !carpetBoarded)) ? (
+          <button
+            type="button"
+            className="pointer-events-auto text-[0.65rem] text-white/35 underline-offset-2 hover:text-white/60 hover:underline"
+            data-testid="ashore-teach-skip-beat"
+            {...pointerSafeActivate(advance)}
+          >
+            Skip this beat
+          </button>
+        ) : null}
       </div>
+
+      <h1 className="sr-only" data-testid="ashore-iconic-title">
+        {stepId === "fantasy"
+          ? "Money is alive here"
+          : stepId === "dock" || stepId === "ready"
+            ? "Board Cove"
+            : "Inside living money"}
+      </h1>
     </div>
   );
 }

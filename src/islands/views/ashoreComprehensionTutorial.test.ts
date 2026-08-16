@@ -16,9 +16,12 @@ describe("Ashore comprehension tutorial (iconic Chamber 00)", () => {
     join(__dirname, "../world3d/VoyagerWalkPracticeStage.tsx"),
     "utf8",
   );
-  const show = readFileSync(join(__dirname, "AshoreTeachShowcases.tsx"), "utf8");
   const design = readFileSync(
     join(__dirname, "../../../docs/ashore-teach-design.md"),
+    "utf8",
+  );
+  const criteria = readFileSync(
+    join(__dirname, "../../../docs/ashore-iconic-criteria.md"),
     "utf8",
   );
 
@@ -51,7 +54,6 @@ describe("Ashore comprehension tutorial (iconic Chamber 00)", () => {
 
   it("teaches with full-bleed Voyager pad and marker claims", () => {
     expect(teach).toMatch(/VoyagerWalkPracticeStage/);
-    expect(teach).toMatch(/MURAL_THESIS/);
     expect(teach).toMatch(/ashore-comprehension-tutorial/);
     expect(pad).toMatch(/VoyagerMesh/);
     expect(pad).toMatch(/mergeWalkIntent|stepWalkVelocity/);
@@ -59,45 +61,49 @@ describe("Ashore comprehension tutorial (iconic Chamber 00)", () => {
     expect(pad).toMatch(/Piggy/);
   });
 
-  it("fantasy pokes organ toys; dock boards Cove; launch names first voyage", () => {
+  it("fantasy pokes in-world organ toys; dock boards MoneyCarpet Cove", () => {
     expect(ASHORE_SPINE_PAINTING_PLACES).toEqual([
       "Harbor Haven",
       "Coincraft Cove",
       "Paycheck Peninsula",
       "Credit Kingdom",
     ]);
-    expect(teach).toMatch(/FantasyOrganToys/);
-    expect(teach).toMatch(/CarpetDockShowcase/);
+    expect(teach).not.toMatch(/FantasyOrganToys/);
+    expect(teach).not.toMatch(/CarpetDockShowcase/);
+    expect(teach).toMatch(/onPokeOrgan/);
+    expect(teach).toMatch(/onBoardCove/);
     expect(teach).toMatch(/ashore-teach-route/);
     expect(teach).toMatch(/Coincraft Cove/);
-    expect(show).toMatch(/ashore-fantasy-toys/);
-    expect(show).toMatch(/ashore-carpet-showcase/);
-    expect(show).toMatch(/ashore-carpet-board-cove/);
-    expect(show).toMatch(/drawMemoryPlinthSilhouette/);
+    expect(pad).toMatch(/OrganToyMesh|ORGAN_TOYS/);
+    expect(pad).toMatch(/MoneyCarpet/);
+    expect(pad).toMatch(/CoveCarpetGate/);
+    expect(pad).toMatch(/mode === "fantasy"/);
+    expect(pad).toMatch(/mode === "dock"/);
   });
 
   it("keeps opening music bed and organ stingers", () => {
     expect(teach).toMatch(/playPlace\(\{\s*kind:\s*"opening"/);
     expect(teach).toMatch(/playOrganSfx/);
+    expect(pad).toMatch(/playOrganSfx/);
   });
 
   it("uses Leave · Esc and body proves — not SaaS Skip / collect-all", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
-    expect(teach).toMatch(/Poke living money|Board the lit Cove/);
+    expect(teach).toMatch(/Poke living money|Board the glowing Cove/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);
   });
 
-  it("auto-advances after fantasy poke — no homework Continue chrome", () => {
+  it("auto-advances after fantasy poke — invisible FTUE, no homework Continue", () => {
     expect(teach).toMatch(/data-iconic="seed-chamber"/);
     expect(teach).toMatch(/data-sacred="seed-of-life"/);
-    expect(teach).toMatch(/spectacle/);
     expect(teach).toMatch(/fantasyDone/);
     expect(teach).toMatch(/setTimeout\(advance/);
     expect(teach).not.toMatch(/Enter the walk chamber/);
     expect(teach).not.toMatch(/Chamber 1 · Fantasy/);
-    expect(show).toMatch(/data-spectacle/);
+    expect(teach).not.toMatch(/Seed petals/);
+    expect(criteria).toMatch(/Toys in the world/);
   });
 });

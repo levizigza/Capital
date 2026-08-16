@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Iconic Ashore — poke a living-money toy; room morphs to Walk (no Continue homework).
+ * Iconic Ashore — poke living money (in-world); room morphs to Walk (no Continue homework).
  */
 async function wipeVault(page: import("@playwright/test").Page) {
   await page.goto("/?replayIntro=1");
@@ -58,7 +58,7 @@ async function bootToTeach(page: import("@playwright/test").Page) {
 }
 
 test.describe("Iconic Ashore seed chamber", () => {
-  test("spectacle toys in viewport; poke auto-morphs to Walk", async ({ page }) => {
+  test("full-bleed 3D chamber; poke auto-morphs to Walk", async ({ page }) => {
     await bootToTeach(page);
 
     const teach = page.getByTestId("ashore-comprehension-tutorial");
@@ -66,22 +66,29 @@ test.describe("Iconic Ashore seed chamber", () => {
     await expect(teach).toHaveAttribute("data-iconic", "seed-chamber");
     await expect(page.getByTestId("ashore-iconic-title")).toContainText(/Money is alive here/i);
 
-    const toys = page.getByTestId("ashore-fantasy-toys");
-    await expect(toys).toBeVisible();
-    await expect(toys).toHaveAttribute("data-spectacle", "1");
-    await expect(page.getByTestId("ashore-fantasy-toy-memory")).toBeVisible();
+    const pad = page.getByTestId("voyager-walk-practice");
+    await expect(pad).toBeVisible();
+    await expect(pad).toHaveAttribute("data-practice-mode", "fantasy");
 
-    const toyBox = await toys.boundingBox();
+    const padBox = await pad.boundingBox();
     const vp = page.viewportSize();
-    expect(toyBox).toBeTruthy();
+    expect(padBox).toBeTruthy();
     expect(vp).toBeTruthy();
-    expect(toyBox!.y + toyBox!.height).toBeLessThanOrEqual(vp!.height + 2);
+    // Full-bleed: practice stage fills most of the viewport
+    expect(padBox!.height).toBeGreaterThan(vp!.height * 0.7);
+    expect(padBox!.width).toBeGreaterThan(vp!.width * 0.7);
 
+    await expect(page.getByTestId("ashore-fantasy-toys")).toHaveAttribute(
+      "data-spectacle",
+      "1",
+    );
     await page.getByTestId("ashore-fantasy-toy-memory").evaluate((el) => {
       (el as HTMLElement).click();
     });
 
     await expect(teach).toHaveAttribute("data-teach-step", "walk", { timeout: 8_000 });
+    await expect(pad).toHaveAttribute("data-practice-mode", "walk");
     await expect(page.getByTestId("ashore-teach-gate")).toBeVisible();
+    await expect(page.getByTestId("ashore-teach-skip")).toContainText(/Leave/i);
   });
 });
