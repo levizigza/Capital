@@ -2,6 +2,7 @@
  * Soft Beat lookouts — quiet “see the world you changed” toys inside Money Structures.
  * Not a minigame dump — a hush moment before the storm / after a Take.
  * Organ-true: Coin Lid · Memory Teller · Clock Loft · Spiral Battlement.
+ * Optional paydown: clear Take liability without erasing the scar.
  */
 
 import { useEffect } from "react";
@@ -54,6 +55,16 @@ type Props = {
   hushActive?: boolean;
   /** Latest plaque label — living receipt inside the Soft Beat */
   scarLabel?: string | null;
+  /**
+   * Optional paydown — clears matching Take liability; scar stays.
+   * When set, Soft Beat waits for Pay / Leave (no auto-dismiss).
+   */
+  recovery?: {
+    blurb: string;
+    cost: number;
+    canAfford: boolean;
+    onPay: () => void;
+  } | null;
   onDone: () => void;
 };
 
@@ -61,6 +72,7 @@ export function SoftBeatOverlay({
   kind,
   hushActive = false,
   scarLabel = null,
+  recovery = null,
   onDone,
 }: Props) {
   const beat = BEATS[kind];
@@ -73,10 +85,11 @@ export function SoftBeatOverlay({
     if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
+    if (recovery) return;
     const scale = cinemaTimeScale();
     const t = window.setTimeout(onDone, Math.round((hushActive ? 5200 : 4200) * scale));
     return () => window.clearTimeout(t);
-  }, [hushActive, onDone, organ.id]);
+  }, [hushActive, onDone, organ.id, recovery]);
 
   const vista = softBeatScarVistaLine(kind, scarLabel);
   const body = hushActive ? beat.hushLine : (vista ?? beat.line);
@@ -108,6 +121,15 @@ export function SoftBeatOverlay({
           ? "Climb the wall — peek from Interest Keep"
           : "Step to the teller — peek from Ledger Bank";
 
+  const leaveLabel =
+    organ.id === "coin"
+      ? "Leave — back into the Jar"
+      : organ.id === "clock"
+        ? "Leave — back to the Clock loft"
+        : organ.id === "spiral"
+          ? "Leave — back to the Spiral"
+          : "Leave — back to the ledger";
+
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[70] flex items-end justify-center bg-gradient-to-t from-[#0f172a]/90 via-[#0f172a]/35 to-transparent"
@@ -119,7 +141,10 @@ export function SoftBeatOverlay({
       data-soft-beat-layout="lower-third"
       data-organ={organ.id}
       data-nav-escape="window"
-      onClick={onDone}
+      data-soft-beat-recovery={recovery ? "1" : "0"}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !recovery) onDone();
+      }}
     >
       <div className="mb-[10vh] w-full max-w-xl px-5 text-center text-white">
         <p
@@ -142,20 +167,46 @@ export function SoftBeatOverlay({
           {kidSentence}
         </p>
         {receipt ? <p className="mt-2 text-xs text-white/65">{receipt}</p> : null}
-        <GameButton
-          variant="primary"
-          className="mt-4"
-          data-testid="soft-beat-leave"
-          {...pointerSafeActivate(onDone)}
-        >
-          {organ.id === "coin"
-            ? "Leave — back into the Jar"
-            : organ.id === "clock"
-              ? "Leave — back to the Clock loft"
-              : organ.id === "spiral"
-                ? "Leave — back to the Spiral"
-                : "Leave — back to the ledger"}
-        </GameButton>
+        {recovery ? (
+          <div
+            className="mt-4 rounded-xl border border-white/25 bg-black/35 px-3 py-3 text-left"
+            data-testid="soft-beat-recovery"
+          >
+            <p className="text-sm font-semibold text-amber-50">Pay down without erasing</p>
+            <p className="mt-1 text-xs text-white/80">{recovery.blurb}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <GameButton
+                variant="primary"
+                className="flex-1"
+                data-testid="soft-beat-paydown"
+                disabled={!recovery.canAfford}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  recovery.onPay();
+                }}
+              >
+                Pay {recovery.cost} · clear −$/mo
+              </GameButton>
+              <GameButton
+                variant="outline"
+                className="flex-1"
+                data-testid="soft-beat-leave"
+                {...pointerSafeActivate(onDone)}
+              >
+                Leave — keep the weight
+              </GameButton>
+            </div>
+          </div>
+        ) : (
+          <GameButton
+            variant="primary"
+            className="mt-4"
+            data-testid="soft-beat-leave"
+            {...pointerSafeActivate(onDone)}
+          >
+            {leaveLabel}
+          </GameButton>
+        )}
         <p className="mt-2 text-[10px] tracking-wide text-white/45">Esc · Leave</p>
       </div>
     </div>

@@ -2,7 +2,7 @@
  * Harbor world reactivity — cashflow → sky mood + shop prices.
  */
 
-import { netCashflow, ensureLedger, type VoyagerLedger } from "./voyagerLedger";
+import { netCashflow, ensureLedger } from "./voyagerLedger";
 import type { IslandSaveV1 } from "./types";
 import type { SkyMode } from "./world3d/ledgerlight";
 
@@ -32,20 +32,22 @@ export function skyIntentFromCashflow(cashflow: number, failPressure = 0): SkyMo
 }
 
 /**
- * Soft price multiplier from cashflow — boom = slight markup, tight = small discount
- * so Harbor feels alive without pay-to-win (never below 0.85 or above 1.15).
+ * Soft price multiplier from cashflow.
+ * Storm / tight mark up shops — interest weather costs, it does not subsidize.
+ * Boom can still mark up slightly when flush.
+ * @see docs/GAME_DESIGN_RISK_REWARD.md
  */
 export function harborPriceMultiplier(save: IslandSaveV1): number {
   const mood = harborWeatherMood(save);
   switch (mood) {
     case "boom":
-      return 1.1;
+      return 1.08;
     case "fair":
       return 1;
     case "tight":
-      return 0.92;
+      return 1.06;
     case "storm":
-      return 0.85;
+      return 1.15;
   }
 }
 
@@ -60,9 +62,9 @@ export function weatherCoachLine(mood: HarborWeatherMood): string {
     case "fair":
       return "Fair weather on the plaza. Prices are steady.";
     case "tight":
-      return "Sky’s a bit grey. Locals soften prices while cashflow recovers.";
+      return "Sky’s a bit grey. Interest pressure nudges prices up — rebuild cashflow.";
     case "storm":
-      return "Fog hugs the dock. Interest storms elsewhere — Harbor cuts prices to help.";
+      return "Fog hugs the dock. Interest weather marks up the plaza — earn or wait it out.";
   }
 }
 

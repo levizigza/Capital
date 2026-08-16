@@ -146,6 +146,7 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { applyScarLedgerResidue, applySoftBeatPaydown } from "./riskReward";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -535,6 +536,31 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return true;
     },
     [setUserProfile, updateSave],
+  );
+
+  const handleSoftBeatPaydown = useCallback(
+    (holdingId: string): { ok: boolean; message: string } => {
+      const result = applySoftBeatPaydown(
+        save ?? createDefaultIslandSave(),
+        holdingId,
+        userProfile.totalCoins,
+      );
+      if (!result.ok) {
+        toast.message(result.message);
+        return { ok: false, message: result.message };
+      }
+      setUserProfile((prev) => ({
+        ...prev,
+        totalCoins: Math.max(0, prev.totalCoins + result.coins),
+      }));
+      updateSave((prev) => ({
+        ...prev,
+        voyagerLedger: result.save.voyagerLedger,
+      }));
+      toast.success(result.message);
+      return { ok: true, message: result.message };
+    },
+    [save, setUserProfile, updateSave, userProfile.totalCoins],
   );
 
   const onHubGuidedEvent = useCallback(
@@ -1391,9 +1417,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               stance[stanceAxis] = Math.max(0, (stance[stanceAxis] ?? 0) + stanceDelta);
             }
             const quiet = scarTriggersChapterQuiet(effect.id);
+            const voyagerLedger = applyScarLedgerResidue(prev.voyagerLedger, effect.id);
             return {
               ...prev,
               stance,
+              voyagerLedger,
               chapterQuietPending: quiet ? true : prev.chapterQuietPending,
               harborScars: [
                 ...scars,
@@ -2296,6 +2324,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               onEnterArea={(areaId) => void enterArea(areaId)}
               onStartQuest={(questId) => void startQuest(questId)}
               talkOpen={dialogueState.open}
+              onSoftBeatPaydown={handleSoftBeatPaydown}
             />
           </IslandThemeProvider>
         ) : view === "explore" && activeIsland ? (
