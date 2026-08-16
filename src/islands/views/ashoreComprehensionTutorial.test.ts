@@ -85,4 +85,14 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);
   });
+
+  it("keeps Fantasy toys + Continue on a sticky prove dock (no below-fold soft-lock)", () => {
+    expect(teach).toMatch(/ashore-teach-prove-dock/);
+    expect(teach).toMatch(/ashore-teach-scroll/);
+    expect(teach).toMatch(/compactPad/);
+    expect(teach).toMatch(/aria-disabled=\{!fantasyDone\}/);
+    expect(teach).toMatch(/setToyNudge\(true\)/);
+    expect(show).toMatch(/Tap to poke/);
+    expect(show).toMatch(/data-nudge/);
+  });
 });

@@ -44,7 +44,9 @@ type Props = {
 };
 
 const CTA =
-  "mt-5 min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] disabled:opacity-40";
+  "mt-3 min-h-12 w-full max-w-sm rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-8 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]";
+
+const CTA_MUTED = `${CTA} opacity-55`;
 
 export function AshoreComprehensionTutorial({
   character,
@@ -58,6 +60,8 @@ export function AshoreComprehensionTutorial({
   const [talked, setTalked] = useState(false);
   const [fantasyPoked, setFantasyPoked] = useState<MoneyOrganId[]>([]);
   const [carpetBoarded, setCarpetBoarded] = useState(false);
+  const [toyNudge, setToyNudge] = useState(false);
+  const [dockNudge, setDockNudge] = useState(false);
   const reduced = prefersReducedMotion();
 
   useEffect(() => {
@@ -71,6 +75,8 @@ export function AshoreComprehensionTutorial({
       return;
     }
     setIndex((i) => i + 1);
+    setToyNudge(false);
+    setDockNudge(false);
   }, [index, onComplete]);
 
   const onClaimMarker = useCallback((id: string) => {
@@ -119,10 +125,25 @@ export function AshoreComprehensionTutorial({
     return () => window.removeEventListener("keydown", onKey);
   }, [onComplete]);
 
+  /** Clear nudge pulse after it has drawn the eye. */
+  useEffect(() => {
+    if (!toyNudge) return;
+    const t = window.setTimeout(() => setToyNudge(false), 1600);
+    return () => window.clearTimeout(t);
+  }, [toyNudge]);
+
+  useEffect(() => {
+    if (!dockNudge) return;
+    const t = window.setTimeout(() => setDockNudge(false), 1600);
+    return () => window.clearTimeout(t);
+  }, [dockNudge]);
+
   const showPad =
     stepId === "fantasy" || stepId === "walk" || stepId === "talk" || stepId === "ready";
   const padMode =
     stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
+  /** Fantasy keeps Voyager as a preview — never let the stage clip the prove dock. */
+  const compactPad = stepId === "fantasy" || stepId === "ready";
 
   useInputAction("cancel", onComplete);
 
@@ -138,12 +159,13 @@ export function AshoreComprehensionTutorial({
   }, [stepId]);
 
   const pokeFantasy = (id: MoneyOrganId) => {
+    setToyNudge(false);
     setFantasyPoked((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex flex-col text-white"
+      className="fixed inset-0 z-[80] flex flex-col overflow-hidden text-white"
       data-testid="ashore-comprehension-tutorial"
       data-teach-step={stepId}
       data-teach-mode="chamber-00"
@@ -152,7 +174,7 @@ export function AshoreComprehensionTutorial({
           "radial-gradient(ellipse 85% 65% at 50% 30%, #1e3a5f 0%, #0f172a 52%, #020617 100%)",
       }}
     >
-      <header className="relative z-[2] flex items-center justify-between px-4 py-3 sm:px-6">
+      <header className="relative z-[2] flex shrink-0 items-center justify-between px-4 py-3 sm:px-6">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-200/90">
             Capital · Ashore Teach
@@ -169,163 +191,214 @@ export function AshoreComprehensionTutorial({
         </button>
       </header>
 
-      {showPad ? (
-        <div className="relative z-[1] mx-auto w-full max-w-3xl flex-1 min-h-[42vh] px-3 sm:min-h-[48vh]">
-          <VoyagerWalkPracticeStage
-            character={voyager}
-            mode={padMode}
-            claimed={claimed}
-            onClaimMarker={onClaimMarker}
-            talkTarget={TALK_TARGET}
-            nearTalk={nearTalk}
-            onNearTalkChange={setNearTalk}
-            className="h-full min-h-[42vh] overflow-hidden rounded-2xl ring-1 ring-amber-200/25 sm:min-h-[48vh]"
-          />
-          {(stepId === "walk" || stepId === "talk") && !reduced ? (
-            <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
-              <TouchWalkPad />
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      <main
-        className={`relative z-[2] flex flex-col items-center px-5 pb-4 text-center ${
-          showPad ? "pt-3" : "flex-1 justify-center overflow-y-auto pt-2"
-        }`}
+      <div
+        className="relative z-[1] flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
+        data-testid="ashore-teach-scroll"
       >
-        {stepId === "fantasy" ? (
-          <>
-            <h1 className="max-w-xl font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
-              Money is alive here
-            </h1>
-            <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
-            <p className="mt-2 max-w-md text-sm text-amber-100/85">
-              That Voyager is you — {voyager.name || "your cast"}. Poke a living-money toy, then
-              walk.
-            </p>
-            <FantasyOrganToys poked={fantasyPoked} onPoke={pokeFantasy} />
-            <button
-              type="button"
-              className={CTA}
-              data-testid="ashore-teach-continue"
-              disabled={!fantasyDone}
-              {...pointerSafeActivate(advance)}
-            >
-              {fantasyDone ? "Enter the walk chamber" : "Poke a living-money toy"}
-            </button>
-          </>
+        {showPad ? (
+          <div
+            className={`relative mx-auto w-full max-w-3xl shrink-0 px-3 ${
+              compactPad
+                ? "max-h-[30vh] min-h-[22vh] sm:max-h-[34vh]"
+                : "min-h-[38vh] flex-1 sm:min-h-[44vh]"
+            }`}
+          >
+            <VoyagerWalkPracticeStage
+              character={voyager}
+              mode={padMode}
+              claimed={claimed}
+              onClaimMarker={onClaimMarker}
+              talkTarget={TALK_TARGET}
+              nearTalk={nearTalk}
+              onNearTalkChange={setNearTalk}
+              className={`h-full overflow-hidden rounded-2xl ring-1 ring-amber-200/25 ${
+                compactPad ? "min-h-[22vh] max-h-[30vh] sm:max-h-[34vh]" : "min-h-[38vh] sm:min-h-[44vh]"
+              }`}
+            />
+            {(stepId === "walk" || stepId === "talk") && !reduced ? (
+              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
+                <TouchWalkPad />
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
-        {stepId === "walk" ? (
-          <>
-            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
-              Walk your Voyager
-            </h1>
-            <p className="mt-2 max-w-md text-sm text-white/85">
-              Reach every glowing ring — this is how you explore Harbor. WASD or arrows.
-            </p>
-            <p
-              className="mt-3 text-sm font-bold text-amber-100"
-              data-testid="ashore-teach-gate"
-              data-gate="walk-markers"
-            >
-              {claimed.length}/{WALK_MARKERS.length} rings ·{" "}
-              {walkDone ? "Chamber clear" : "Step into the light"}
-            </p>
-          </>
-        ) : null}
+        <main
+          className={`relative z-[2] flex flex-col items-center px-5 pb-3 text-center ${
+            showPad ? "shrink-0 pt-3" : "flex-1 justify-center pt-2"
+          }`}
+        >
+          {stepId === "fantasy" ? (
+            <>
+              <h1 className="max-w-xl font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
+                Money is alive here
+              </h1>
+              <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
+              <p className="mt-2 max-w-md text-sm text-amber-100/85">
+                That Voyager is you — {voyager.name || "your cast"}. Poke a living-money toy below,
+                then walk.
+              </p>
+            </>
+          ) : null}
 
-        {stepId === "talk" ? (
-          <>
-            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
-              Talk when you choose
-            </h1>
-            <p className="mt-2 max-w-md text-sm text-white/85">
-              Piggy waits by the fountain. Walk into the pink ring — press E only when you’re ready.
-            </p>
-            <p
-              className="mt-3 text-sm font-bold text-amber-100"
-              data-testid="ashore-teach-gate"
-              data-gate="talk-near"
-            >
-              {talked
-                ? "Piggy: Meet me at Harbor — then the Carpet Dock south."
-                : nearTalk
-                  ? "Press E to talk"
-                  : "Walk to Piggy"}
-            </p>
-            {nearTalk && !talked ? (
+          {stepId === "walk" ? (
+            <>
+              <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
+                Walk your Voyager
+              </h1>
+              <p className="mt-2 max-w-md text-sm text-white/85">
+                Reach every glowing ring — this is how you explore Harbor. WASD or arrows.
+              </p>
+              <p
+                className="mt-3 text-sm font-bold text-amber-100"
+                data-testid="ashore-teach-gate"
+                data-gate="walk-markers"
+              >
+                {claimed.length}/{WALK_MARKERS.length} rings ·{" "}
+                {walkDone ? "Chamber clear" : "Step into the light"}
+              </p>
+            </>
+          ) : null}
+
+          {stepId === "talk" ? (
+            <>
+              <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-2xl font-black sm:text-3xl">
+                Talk when you choose
+              </h1>
+              <p className="mt-2 max-w-md text-sm text-white/85">
+                Piggy waits by the fountain. Walk into the pink ring — press E only when you’re ready.
+              </p>
+              <p
+                className="mt-3 text-sm font-bold text-amber-100"
+                data-testid="ashore-teach-gate"
+                data-gate="talk-near"
+              >
+                {talked
+                  ? "Piggy: Meet me at Harbor — then the Carpet Dock south."
+                  : nearTalk
+                    ? "Press E to talk"
+                    : "Walk to Piggy"}
+              </p>
+              {nearTalk && !talked ? (
+                <button
+                  type="button"
+                  className={CTA}
+                  data-testid="ashore-teach-talk"
+                  {...pointerSafeActivate(() => {
+                    playOrganSfx("memory");
+                    setTalked(true);
+                  })}
+                >
+                  Talk to Piggy?
+                </button>
+              ) : null}
+            </>
+          ) : null}
+
+          {stepId === "dock" ? (
+            <>
+              <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
+                Board a living painting
+              </h1>
+              <p className="mt-2 max-w-lg text-sm text-white/85">
+                The Money Carpet is your voyage vehicle. Cove is lit first — that’s where your first
+                game waits.
+              </p>
+              <div
+                className={`mt-4 w-full ${dockNudge ? "animate-pulse" : ""}`}
+                data-dock-nudge={dockNudge ? "1" : "0"}
+              >
+                <CarpetDockShowcase
+                  boarded={carpetBoarded}
+                  onBoard={() => {
+                    setDockNudge(false);
+                    setCarpetBoarded(true);
+                  }}
+                />
+              </div>
+            </>
+          ) : null}
+
+          {stepId === "ready" ? (
+            <>
+              <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
+                Harbor, then Cove
+              </h1>
+              <p className="mt-2 max-w-lg text-sm text-white/85">
+                You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board{" "}
+                <span className="font-bold text-amber-100">Coincraft Cove</span>. Your choice there
+                will stain Harbor — that’s the real lesson.
+              </p>
+              <div className="mt-4 w-full">
+                <ReadyCarpetShowcase />
+              </div>
+              <ul
+                className="mt-3 flex w-full max-w-lg flex-wrap justify-center gap-2"
+                data-testid="ashore-teach-route"
+                aria-label="First voyage"
+              >
+                <li className="rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-white/20">
+                  Harbor Haven
+                </li>
+                <li className="rounded-lg bg-amber-400/25 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-amber-200/50">
+                  Coincraft Cove
+                </li>
+              </ul>
+            </>
+          ) : null}
+        </main>
+      </div>
+
+      {/* Prove dock — always on-screen so Chamber 1 / Dock never soft-lock below the fold */}
+      {(stepId === "fantasy" || stepId === "dock" || stepId === "ready") && (
+        <div
+          className="relative z-[3] flex shrink-0 flex-col items-center border-t border-amber-200/20 bg-[#020617]/95 px-4 pb-3 pt-3 backdrop-blur-sm"
+          data-testid="ashore-teach-prove-dock"
+        >
+          {stepId === "fantasy" ? (
+            <>
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100/80">
+                {fantasyDone ? "Toy lit · continue" : "Tap a living-money toy"}
+              </p>
+              <FantasyOrganToys poked={fantasyPoked} onPoke={pokeFantasy} nudge={toyNudge} />
               <button
                 type="button"
-                className={CTA}
-                data-testid="ashore-teach-talk"
+                className={fantasyDone ? CTA : CTA_MUTED}
+                data-testid="ashore-teach-continue"
+                aria-disabled={!fantasyDone}
                 {...pointerSafeActivate(() => {
-                  playOrganSfx("memory");
-                  setTalked(true);
+                  if (!fantasyDone) {
+                    setToyNudge(true);
+                    return;
+                  }
+                  advance();
                 })}
               >
-                Talk to Piggy?
+                {fantasyDone ? "Enter the walk chamber" : "Poke a living-money toy"}
               </button>
-            ) : null}
-          </>
-        ) : null}
+            </>
+          ) : null}
 
-        {stepId === "dock" ? (
-          <>
-            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black">
-              Board a living painting
-            </h1>
-            <p className="mt-2 max-w-lg text-sm text-white/85">
-              The Money Carpet is your voyage vehicle. Cove is lit first — that’s where your first
-              game waits.
-            </p>
-            <div className="mt-4 w-full">
-              <CarpetDockShowcase
-                boarded={carpetBoarded}
-                onBoard={() => setCarpetBoarded(true)}
-              />
-            </div>
+          {stepId === "dock" ? (
             <button
               type="button"
-              className={CTA}
+              className={carpetBoarded ? CTA : CTA_MUTED}
               data-testid="ashore-teach-continue"
-              disabled={!carpetBoarded}
+              aria-disabled={!carpetBoarded}
               {...pointerSafeActivate(() => {
+                if (!carpetBoarded) {
+                  setDockNudge(true);
+                  return;
+                }
                 playOrganSfx("coin");
                 advance();
               })}
             >
               {carpetBoarded ? "Ready to launch" : "Board Cove first"}
             </button>
-          </>
-        ) : null}
+          ) : null}
 
-        {stepId === "ready" ? (
-          <>
-            <h1 className="font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
-              Harbor, then Cove
-            </h1>
-            <p className="mt-2 max-w-lg text-sm text-white/85">
-              You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board{" "}
-              <span className="font-bold text-amber-100">Coincraft Cove</span>. Your choice there
-              will stain Harbor — that’s the real lesson.
-            </p>
-            <div className="mt-4 w-full">
-              <ReadyCarpetShowcase />
-            </div>
-            <ul
-              className="mt-3 flex w-full max-w-lg flex-wrap justify-center gap-2"
-              data-testid="ashore-teach-route"
-              aria-label="First voyage"
-            >
-              <li className="rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-white/20">
-                Harbor Haven
-              </li>
-              <li className="rounded-lg bg-amber-400/25 px-3 py-1.5 text-[11px] font-bold text-amber-100 ring-1 ring-amber-200/50">
-                Coincraft Cove
-              </li>
-            </ul>
+          {stepId === "ready" ? (
             <button
               type="button"
               className={CTA}
@@ -334,11 +407,11 @@ export function AshoreComprehensionTutorial({
             >
               Launch carpet · {voyager.name || "Voyager"}
             </button>
-          </>
-        ) : null}
-      </main>
+          ) : null}
+        </div>
+      )}
 
-      <footer className="relative z-[2] px-4 pb-4 text-center">
+      <footer className="relative z-[2] shrink-0 px-4 pb-3 pt-1 text-center">
         <p className="text-[11px] uppercase tracking-wider text-white/45">
           Chamber {index + 1} / {STEPS.length} · Esc · Leave
         </p>
@@ -346,7 +419,7 @@ export function AshoreComprehensionTutorial({
           {STEPS.map((id, i) => (
             <span
               key={id}
-              className={`h-1.5 flex-1 max-w-10 rounded-full ${
+              className={`h-1.5 max-w-10 flex-1 rounded-full ${
                 i <= index ? "bg-amber-300" : "bg-white/20"
               }`}
             />

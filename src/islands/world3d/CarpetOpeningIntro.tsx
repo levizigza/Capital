@@ -262,8 +262,20 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
       data-testid="carpet-opening-intro"
     >
       {!ready ? (
-        <div className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center bg-[#0c1622] text-sm font-bold text-white/70">
-          Unfolding the Money Carpet…
+        <div
+          className="absolute inset-0 z-[30] flex flex-col items-center justify-center gap-4 bg-[#0c1622] px-6 text-center"
+          data-testid="carpet-opening-loading"
+        >
+          <p className="text-sm font-bold text-white/70">Unfolding the Money Carpet…</p>
+          <button
+            type="button"
+            className="min-h-12 rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-7 py-3 text-sm font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917]"
+            data-testid="carpet-opening-enter-now"
+            onClick={finish}
+          >
+            Enter Harbor now
+          </button>
+          <p className="text-[11px] font-medium text-white/45">Esc also lands · never wait forever</p>
         </div>
       ) : null}
       <Canvas
@@ -283,7 +295,7 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
         </Suspense>
       </Canvas>
 
-      {phase === "fly" ? (
+      {phase === "fly" && ready ? (
         <>
           <div className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/50 to-transparent px-4 pb-14 pt-6 text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-amber-200/90">
@@ -315,9 +327,10 @@ export function CarpetOpeningIntro({ onComplete, character }: Props) {
             <button
               type="button"
               className="pointer-events-auto text-[11px] font-bold uppercase tracking-[0.2em] text-white/55 underline-offset-2 hover:text-white/90 hover:underline"
+              data-testid="carpet-opening-skip"
               onClick={finish}
             >
-              Skip
+              Skip · Enter Harbor
             </button>
           </div>
         </>
