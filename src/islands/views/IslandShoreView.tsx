@@ -32,6 +32,7 @@ import { moneyStructureForIsland, type MoneyStructurePart } from "../moneyStruct
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
+import { playActionFeedback } from "../actionFeedback";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
@@ -224,6 +225,12 @@ export function IslandShoreView({
     (hotspotId: string) => {
       const h = hotspots.find((x) => x.id === hotspotId);
       if (!h) return;
+      // Collect owns its economy feedback — skip generic hotspot chirp.
+      if (h.kind === "item" && h.refId) {
+        if (!save.inventory.includes(h.refId)) onCollectItem(h.refId as ItemId);
+        return;
+      }
+      playActionFeedback("hotspot_activate");
       if (h.kind === "pier") {
         onOpenTravel();
         return;
@@ -246,10 +253,6 @@ export function IslandShoreView({
       }
       if (h.kind === "money_structure") {
         enterStructure();
-        return;
-      }
-      if (h.kind === "item" && h.refId) {
-        if (!save.inventory.includes(h.refId)) onCollectItem(h.refId as ItemId);
         return;
       }
     },

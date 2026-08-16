@@ -118,6 +118,8 @@ import {
 } from "../harborFirstMeet";
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
+import { playActionFeedback } from "../actionFeedback";
+import { triggerJuice } from "@/juice";
 import { capitalMusic } from "../audio/capitalMusic";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
@@ -904,6 +906,14 @@ export function HomeHubView({
   const onHarborHotspot = (id: string) => {
     // Quiet homecoming hush: Piggy owns the plaza — never open Plinth/stalls.
     if (stripPlaza) return;
+    if (id === "memory") {
+      // Identity hum owns the ear — bounce without juice beep.
+      playCapitalSfx("plinth_hum");
+      triggerJuice("accept", { layers: { sfx: false, burst: false, shake: false } });
+      setHubModal("memory");
+      return;
+    }
+    playActionFeedback("hotspot_activate");
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
       // Discovery only — never a guided Ashore gate.
@@ -929,9 +939,6 @@ export function HomeHubView({
       setHubModal("pavilion");
     } else if (id === "market") {
       setHubModal("market");
-    } else if (id === "memory") {
-      playCapitalSfx("plinth_hum");
-      setHubModal("memory");
     } else if (id === "studio_stele") {
       setHubModal("studio_stele");
     } else if (id === "practice" && onPlayHarborBoard) {
@@ -964,7 +971,14 @@ export function HomeHubView({
 
   const onNearChange = useCallback(
     (id: string | null, label: string | null) => {
-      setNearStore(id && label ? { id, label } : null);
+      setNearStore((prev) => {
+        if (id && label && prev?.id !== id) {
+          queueMicrotask(() =>
+            playActionFeedback("near_enter", { throttleKey: `near:${id}` }),
+          );
+        }
+        return id && label ? { id, label } : null;
+      });
       if (id === "outfitter") onHubGuidedEvent("near_outfitter");
       if (id === "travel") onHubGuidedEvent("near_dock");
       if (id === "capsule") onHubGuidedEvent("capsule_visit");

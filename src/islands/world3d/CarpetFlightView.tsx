@@ -44,8 +44,7 @@ import {
   isWithinArrive,
   railStartPose,
 } from "./carpetVoyageRail";
-import { triggerJuice } from "@/juice";
-import { playCapitalSfx } from "../audio/capitalSfx";
+import { playActionFeedback } from "../actionFeedback";
 
 type Props = {
   userProfile: UserProfile;
@@ -143,9 +142,8 @@ function FlightRig({
       s.speed = RAIL_SPEED;
       rush.current = true;
       keys.current.boost = true;
-      // Feel — rail hop reads as a ride, not a silent teleport.
-      triggerJuice("accept");
-      playCapitalSfx("scar_chime");
+      // Feel — rail hop reads as a ride, not a silent teleport (not scar_chime).
+      playActionFeedback("carpet_rail");
     } else {
       s.heading = Math.atan2(preferred.pos.x - s.x, preferred.pos.z - s.z);
     }
@@ -310,8 +308,7 @@ function FlightRig({
       });
       if (isWithinArrive(s.x, s.z, voyageTarget.pos.x, voyageTarget.pos.z)) {
         s.arrived = true;
-        triggerJuice("complete", { burst: true });
-        playCapitalSfx("harbor_cheer");
+        playActionFeedback("carpet_land");
         onArrive(targetId);
       }
     } else if (nearest) {
@@ -324,6 +321,7 @@ function FlightRig({
       });
       if (nearestDist < CARPET_ARRIVE_RADIUS) {
         s.arrived = true;
+        playActionFeedback("carpet_land");
         onArrive(nearest.node.island.id);
       }
     }

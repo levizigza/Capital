@@ -146,6 +146,7 @@ import {
 import { computeMinigameReward, getPartyState } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
 import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { playActionFeedback } from "./actionFeedback";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -516,6 +517,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         return { ...prev, totalCoins: prev.totalCoins - purchase.price };
       });
       if (!charged) return false;
+      playActionFeedback("shop_purchase");
       updateSave((prev) => {
         let next = prev;
         if (purchase.kind === "capsule") next = applyCapsulePurchase(prev, purchase.itemId);
@@ -754,6 +756,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       );
     });
     if (applied !== null) {
+      playActionFeedback("payday_claim");
       setUserProfile((prev) => ({
         ...prev,
         totalCoins: Math.max(0, prev.totalCoins + applied!),
@@ -1185,6 +1188,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
       await analytics.track("item_collected", { islandId: island.id, itemId });
 
+      playActionFeedback("collect_item");
       updateSave((prev) => {
         if (prev.inventory.includes(itemId)) return prev;
         return {
@@ -1198,6 +1202,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       });
 
       await completeObjective({ type: "collectItem", itemId });
+      toast.message(`Collected ${item.name}`, {
+        description: "In your pouch — check quests if it was needed.",
+      });
       return true;
     },
     [activeIsland, activeIslandId, completeObjective, content, updateSave]
@@ -1262,9 +1269,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         graphId === CREDIT_REX_GRAPH_ID ? creditRexStartNodeId(save) : undefined;
 
       setDialogueState({ open: true, graphId, nodeId, npcId });
-      // Quiet homecoming reward sting — Piggy presence, not a checklist modal.
+      // Quiet homecoming reward sting — Piggy owns the ear (no double confirm beep).
       if (graphId === "dlg_harbor_piggy_penny_homecoming") {
         playCapitalSfx("piggy_homecoming");
+      } else {
+        playActionFeedback("talk_open");
       }
 
       void trackScreenEnter(`dialogue:${npcId}`, {

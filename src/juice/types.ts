@@ -10,7 +10,18 @@ export type JuiceTriggerOptions = {
   target?: HTMLElement | null;
   /** Force burst even at low (complete/reward) */
   burst?: boolean;
+  /**
+   * Layer switches — reusable feedback architecture.
+   * Defaults: sfx+motion on; burst follows event; shake only on fail@high.
+   */
+  layers?: {
+    sfx?: boolean;
+    motion?: boolean;
+    burst?: boolean;
+    shake?: boolean;
+  };
 };
+
 
 export type BurstParticle = {
   id: string;
