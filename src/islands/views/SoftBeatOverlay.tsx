@@ -15,6 +15,11 @@ import { softBeatScarVistaLine } from "@/design/designBible";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
+import {
+  trackCoreLoopCycle,
+  trackFeatureUsed,
+  trackSystemInteracted,
+} from "../analytics/trackGameplay";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -73,10 +78,13 @@ export function SoftBeatOverlay({
     if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
+    trackFeatureUsed({ feature: "soft_beat", action: "peek" });
+    trackSystemInteracted({ system: "soft_beat", action: "peek", refId: kind });
+    trackCoreLoopCycle({ phase: "soft_beat", refId: kind });
     const scale = cinemaTimeScale();
     const t = window.setTimeout(onDone, Math.round((hushActive ? 5200 : 4200) * scale));
     return () => window.clearTimeout(t);
-  }, [hushActive, onDone, organ.id]);
+  }, [hushActive, onDone, organ.id, kind]);
 
   const vista = softBeatScarVistaLine(kind, scarLabel);
   const body = hushActive ? beat.hushLine : (vista ?? beat.line);

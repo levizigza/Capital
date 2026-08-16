@@ -82,6 +82,21 @@ import type { UserProfile } from "@/App";
 
 import { analytics } from "./analytics";
 import { trackScreenEnter, trackScreenExit } from "./analytics/screenTracking";
+import {
+  featureFromHubModal,
+  trackAbandonPoint,
+  trackCoreLoopCycle,
+  trackDecisionMade,
+  trackFeatureUsed,
+  trackLocationOutcome,
+  trackProgressionMilestone,
+  trackResourceDelta,
+  trackRetryAttempt,
+  trackSessionHeartbeat,
+  trackStrategySelected,
+  trackSystemInteracted,
+} from "./analytics";
+import { getCurrentScreen, getElapsedMs } from "./analytics/session";
 import { loadIslandsContent, getIslandById, invalidateContentCache, ISLANDS_CONTENT_RELOAD_EVENT } from "./content/loader";
 import { loadIslandSave, persistIslandSave, createDefaultIslandSave } from "./save";
 import type {
@@ -263,7 +278,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   /** Last Talk Battle choice id — flushed into npcMemory on finishTalk */
   const lastTalkChoiceRef = useRef<string | null>(null);
 
-  const [hubModal, setHubModal] = useState<
+  type HubModal =
     | "outfitter"
     | "capsule"
     | "settings"
@@ -273,8 +288,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     | "ritual"
     | "gallery"
     | "family"
-    | null
-  >(null);
+    | "studio_stele"
+    | null;
+  const [hubModal, setHubModalState] = useState<HubModal>(null);
+  const setHubModal = useCallback((m: HubModal) => {
+    setHubModalState(m);
+    const feature = featureFromHubModal(m);
+    if (feature) {
+      trackFeatureUsed({ feature, action: "open" });
+      if (feature === "family_room") {
+        trackSystemInteracted({ system: "family_room", action: "open" });
+      } else if (feature === "memory_plinth") {
+        trackSystemInteracted({ system: "plinth", action: "open" });
+      } else if (feature === "capsule_stall") {
+        trackSystemInteracted({ system: "capsule", action: "open" });
+      } else if (feature === "freedom_pavilion") {
+        trackSystemInteracted({ system: "freedom", action: "open" });
+        trackProgressionMilestone({ milestone: "harbor_freedom" });
+      } else if (feature === "daily_ritual") {
+        trackCoreLoopCycle({ phase: "ritual" });
+      }
+    }
+  }, []);
   const [devCheatsOpen, setDevCheatsOpen] = useState(false);
   const [activeMinigameId, setActiveMinigameId] = useState<MinigameId | null>(null);
   const [minigameSource, setMinigameSource] = useState<MinigameSource>(null);
@@ -306,7 +341,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     persistAccessibilitySettings(next);
     capitalMusic.setEnabled(next.musicEnabled !== false);
     capitalMusic.setVolume(next.musicVolume ?? 0.42);
-    analytics.track("settings_changed", { ...next });
+    // Enum / boolean flags only — never dump free-text settings bags.
+    analytics.track("settings_changed", {
+      textSize: next.textSize,
+      reducedMotion: next.reducedMotion,
+      highContrast: next.highContrast,
+      guideArrows: next.guideArrows,
+      musicEnabled: next.musicEnabled !== false,
+    });
   }, []);
 
   useEffect(() => {
@@ -411,6 +453,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     })();
   }, [save, analyticsSessionReady]);
 
+  /** Session length heartbeats — idle / hidden sessions are investigation signals. */
+  useEffect(() => {
+    if (!analyticsSessionReady) return;
+    const beat = () => trackSessionHeartbeat(document.visibilityState === "visible");
+    beat();
+    const id = window.setInterval(beat, 60_000);
+    const onVis = () => {
+      if (document.visibilityState === "hidden") {
+        trackAbandonPoint({ surface: getCurrentScreen() ?? "unknown", reason: "visibility_hidden" });
+      }
+      beat();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [analyticsSessionReady]);
+
   useEffect(() => {
     if (!save || !analyticsSessionReady) return;
     const screen =
@@ -429,14 +490,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       view,
       islandId: activeIslandId ?? undefined,
     });
+    if (view === "travel") trackFeatureUsed({ feature: "travel_map", action: "open" });
+    if (view === "arcade") trackFeatureUsed({ feature: "arcade", action: "open" });
+    if (view === "studio") trackFeatureUsed({ feature: "studio", action: "open" });
   }, [view, activeIslandId, save, analyticsSessionReady]);
 
   const handleExit = useCallback(async () => {
+    trackAbandonPoint({
+      surface: getCurrentScreen() ?? "islands_exit",
+      reason: "user_exit",
+      islandId: activeIslandId ?? undefined,
+    });
     await trackScreenExit("user_exit");
     await analytics.track("islands_exit", {});
-    await analytics.track("session_ended", { reason: "user_exit" });
+    await analytics.track("session_ended", {
+      reason: "user_exit",
+      durationMs: getElapsedMs(),
+    });
     onExit();
-  }, [onExit]);
+  }, [activeIslandId, onExit]);
 
   /**
    * Apply save updates synchronously through saveRef, then mirror into React state.
@@ -531,7 +603,35 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               : guided,
         };
       });
-      void analytics.track("harbor_purchase", { kind: purchase.kind, price: purchase.price });
+      void analytics.track("harbor_purchase", {
+        kind: purchase.kind,
+        price: purchase.price,
+        itemId:
+          purchase.kind === "capsule"
+            ? purchase.itemId
+            : purchase.kind === "carpet"
+              ? purchase.tierId
+              : purchase.kind === "companion"
+                ? purchase.companionId
+                : purchase.kind === "plaza_pass"
+                  ? purchase.room
+                  : undefined,
+      });
+      trackResourceDelta({
+        resource: "coins",
+        delta: -purchase.price,
+        reason: "harbor_purchase",
+      });
+      trackDecisionMade({
+        domain: "shop",
+        decisionId: purchase.kind,
+        contextId:
+          purchase.kind === "capsule"
+            ? purchase.itemId
+            : purchase.kind === "carpet"
+              ? purchase.tierId
+              : undefined,
+      });
       return true;
     },
     [setUserProfile, updateSave],
@@ -607,6 +707,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       ),
     }));
     void analytics.track("onboarding_completed", { via: "ashore_land" });
+    trackProgressionMilestone({ milestone: "onboarding_done" });
     // Ashore law: land Harbor Talk Piggy → Carpet → Cove (no Outfitter-card hero).
     setActiveIslandId(HUB_ISLAND_ID);
     setView("home");
@@ -667,8 +768,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     });
     if (!save.onboardingComplete) {
       void analytics.track("onboarding_completed", { via: "carpet_boot" });
+      trackProgressionMilestone({ milestone: "onboarding_done" });
     }
     void analytics.track("island_entered", { islandId: HUB_ISLAND_ID, via: "carpet_boot" });
+    trackProgressionMilestone({ milestone: "first_island", islandId: HUB_ISLAND_ID });
     setActiveIslandId(HUB_ISLAND_ID);
     setView("home");
   }, [save, bootLandHub, bootHubHandled, content, updateSave, userProfile.name]);
@@ -758,6 +861,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         ...prev,
         totalCoins: Math.max(0, prev.totalCoins + applied!),
       }));
+      trackResourceDelta({
+        resource: "coins",
+        delta: applied!,
+        reason: "ritual_payday",
+      });
+      trackCoreLoopCycle({ phase: "ritual", refId: "payday" });
+      trackFeatureUsed({ feature: "daily_ritual", action: "claim" });
       toast.message(
         applied >= 0 ? `Pay Day +${applied} coins` : `Pay Day shortfall ${applied}`,
         { description: "Ledger cashflow hit your pouch." },
@@ -780,6 +890,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         ...prev,
         totalCoins: prev.totalCoins + DAILY_RITUAL_REWARD_COINS,
       }));
+      trackResourceDelta({
+        resource: "coins",
+        delta: DAILY_RITUAL_REWARD_COINS,
+        reason: "ritual_bonus",
+      });
+      trackFeatureUsed({ feature: "daily_ritual", action: "claim" });
       toast.message(`+${DAILY_RITUAL_REWARD_COINS} ritual coins`, {
         description: "Tiny thank-you for showing up today — never pay-to-win.",
       });
@@ -998,12 +1114,28 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!shouldComplete) return;
 
       await analytics.track("quest_completed", { islandId: activeIsland.id, questId });
+      trackLocationOutcome({
+        locationKind: "quest",
+        locationId: questId,
+        outcome: "success",
+        islandId: activeIsland.id,
+      });
+      trackCoreLoopCycle({
+        phase: "quest_clear",
+        islandId: activeIsland.id,
+        refId: questId,
+      });
 
       if (TUTORIAL_QUEST_IDS.has(questId)) {
         await analytics.track("tutorial_completed", {
           questId,
           islandId: activeIsland.id,
           source: "tutorial_quest",
+        });
+        trackProgressionMilestone({
+          milestone: "tutorial_done",
+          islandId: activeIsland.id,
+          questId,
         });
       } else {
         const completedCount = Object.values(save?.questStatus ?? {}).filter((q) => q.completed).length;
@@ -1013,7 +1145,34 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             islandId: activeIsland.id,
             source: "first_quest",
           });
+          trackProgressionMilestone({
+            milestone: "first_quest",
+            islandId: activeIsland.id,
+            questId,
+          });
         }
+      }
+
+      if (questId === COVE_CHANGE_QUEST_ID) {
+        trackProgressionMilestone({
+          milestone: "cove_change",
+          islandId: activeIsland.id,
+          questId,
+        });
+      }
+      if (questId === PAYCHECK_CHANGE_QUEST_ID) {
+        trackProgressionMilestone({
+          milestone: "paycheck_change",
+          islandId: activeIsland.id,
+          questId,
+        });
+      }
+      if (questId === CREDIT_ORDEAL_QUEST_ID) {
+        trackProgressionMilestone({
+          milestone: "credit_ordeal",
+          islandId: activeIsland.id,
+          questId,
+        });
       }
 
       const rewards = quest.rewards;
@@ -1023,6 +1182,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           totalCoins: prev.totalCoins + (rewards.coins || 0),
           xp: prev.xp + (rewards.xp || 0),
         }));
+        if (rewards.coins) {
+          trackResourceDelta({
+            resource: "coins",
+            delta: rewards.coins,
+            reason: "quest_reward",
+            islandId: activeIsland.id,
+          });
+        }
+        if (rewards.xp) {
+          trackResourceDelta({
+            resource: "xp",
+            delta: rewards.xp,
+            reason: "quest_reward",
+            islandId: activeIsland.id,
+          });
+        }
       }
 
       if (rewards?.items && rewards.items.length > 0) {
@@ -1364,8 +1539,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
         if (effect.type === "setIrreversible") {
+          let recorded = false;
           updateSave((prev) => {
             if (prev.irreversibleChoices?.[effect.key]) return prev;
+            recorded = true;
             return {
               ...prev,
               irreversibleChoices: {
@@ -1379,11 +1556,39 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               },
             };
           });
+          if (recorded) {
+            trackStrategySelected({
+              domain: "irreversible",
+              strategyId: effect.choiceId,
+              contextId: effect.key,
+              islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+            });
+            trackDecisionMade({
+              domain: "irreversible",
+              decisionId: effect.choiceId,
+              contextId: effect.key,
+              islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+            });
+            trackCoreLoopCycle({
+              phase: "take",
+              islandId: activeIsland?.id,
+              refId: effect.key,
+              bumpIndex: true,
+            });
+            trackLocationOutcome({
+              locationKind: "take",
+              locationId: effect.key,
+              outcome: "success",
+              islandId: activeIsland?.id,
+            });
+          }
         }
         if (effect.type === "addScar") {
+          let recordedScar = false;
           updateSave((prev) => {
             const scars = prev.harborScars ?? [];
             if (scars.some((s) => s.id === effect.id)) return prev;
+            recordedScar = true;
             const stanceAxis = effect.stance as "saver" | "spender" | "risk" | undefined;
             const stanceDelta = typeof effect.stanceDelta === "number" ? effect.stanceDelta : 1;
             const stance = { ...(prev.stance ?? { saver: 0, spender: 0, risk: 0 }) };
@@ -1408,6 +1613,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               ].slice(-24),
             };
           });
+          if (recordedScar) {
+            trackSystemInteracted({
+              system: "scar_spectacle",
+              action: "record",
+              refId: effect.id,
+              islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+            });
+            trackCoreLoopCycle({
+              phase: "harbor_felt",
+              islandId: activeIsland?.id,
+              refId: effect.id,
+            });
+          }
         }
       }
     },
@@ -1569,6 +1787,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         nodeId: dialogueNode.id,
         choiceId,
       });
+      trackDecisionMade({
+        domain: "dialogue",
+        decisionId: choiceId,
+        contextId: dialogueNode.id,
+        islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+      });
+      trackSystemInteracted({
+        system: "talk",
+        action: "choice",
+        refId: dialogueGraph.id,
+        islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+      });
 
       await applyDialogueEffects(choice.effects as any);
 
@@ -1582,8 +1812,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   );
 
   const closeDialogue = useCallback(() => {
+    trackAbandonPoint({
+      surface: `dialogue:${dialogueState.npcId ?? "unknown"}`,
+      reason: "dialogue_skip",
+      islandId: activeIslandId ?? undefined,
+    });
     finishTalk();
-  }, [finishTalk]);
+  }, [activeIslandId, dialogueState.npcId, finishTalk]);
 
   const onDialogueContinue = useCallback(() => {
     // No choices left on this node — end the Talk Battle
@@ -1604,6 +1839,18 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       minigameId: activeMinigameId,
       islandId: activeIsland?.id,
       reason: "abandoned",
+      durationMs,
+    });
+    trackAbandonPoint({
+      surface: `minigame:${activeMinigameId}`,
+      reason: "minigame_leave",
+      islandId: activeIsland?.id,
+    });
+    trackLocationOutcome({
+      locationKind: "minigame",
+      locationId: activeMinigameId,
+      outcome: "abandon",
+      islandId: activeIsland?.id,
       durationMs,
     });
     setActiveMinigameId(null);
@@ -1656,6 +1903,26 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         successRate: perf.attempts > 0 ? (perf.successes / perf.attempts).toFixed(2) : "0",
         source: source ?? undefined,
       });
+      trackLocationOutcome({
+        locationKind: "minigame",
+        locationId: activeMinigameId,
+        outcome: questSuccess ? "success" : "failure",
+        islandId: activeIsland.id,
+        durationMs,
+      });
+      if (questSuccess) {
+        trackCoreLoopCycle({
+          phase: source === "board" ? "board_clear" : "quest_clear",
+          islandId: activeIsland.id,
+          refId: activeMinigameId,
+        });
+        if (save.completedMinigames.length === 0) {
+          trackProgressionMilestone({
+            milestone: "first_minigame_clear",
+            islandId: activeIsland.id,
+          });
+        }
+      }
 
       const applyBoardReward = (fromSource: MinigameSource, clearFirst: boolean) => {
         if (fromSource !== "board") return;
@@ -1665,8 +1932,30 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           totalCoins: prev.totalCoins + reward.coins,
           xp: prev.xp + reward.xp,
         }));
+        if (reward.coins) {
+          trackResourceDelta({
+            resource: "coins",
+            delta: reward.coins,
+            reason: "minigame_reward",
+            islandId: activeIsland.id,
+          });
+        }
+        if (reward.xp) {
+          trackResourceDelta({
+            resource: "xp",
+            delta: reward.xp,
+            reason: "minigame_reward",
+            islandId: activeIsland.id,
+          });
+        }
         if (reward.starEarned) {
           awardPartyStar(activeIsland.id);
+          trackResourceDelta({
+            resource: "stars",
+            delta: 1,
+            reason: "party_star",
+            islandId: activeIsland.id,
+          });
         }
         setPendingBoardReward(reward);
         setPendingBoardMinigameName(
@@ -1759,6 +2048,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           minigameId: activeMinigameId,
           attempt: perf.attempts,
         });
+        trackRetryAttempt({
+          context: "minigame",
+          targetId: activeMinigameId,
+          attempt: perf.attempts,
+          islandId: activeIsland.id,
+        });
 
         const relatedQuests = activeIsland.quests.filter((q) =>
           q.objectives.some((o) => o.type === "completeMinigame" && o.minigameId === activeMinigameId)
@@ -1791,6 +2086,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             totalCoins: prev.totalCoins + consolation.coins,
             xp: prev.xp + consolation.xp,
           }));
+          if (consolation.coins) {
+            trackResourceDelta({
+              resource: "coins",
+              delta: consolation.coins,
+              reason: "minigame_consolation",
+              islandId: activeIsland.id,
+            });
+          }
         }
 
         const mgName =
@@ -2196,8 +2499,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   lastShownAt: new Date().toISOString(),
                 },
               }));
+              trackFeatureUsed({ feature: "scar_spectacle", action: "peek" });
+              trackSystemInteracted({
+                system: "scar_spectacle",
+                action: "show",
+                refId: String(scarCount),
+              });
+              trackCoreLoopCycle({ phase: "harbor_felt", refId: `scar_${scarCount}` });
             }}
-            onMarkEchoSurprise={onMarkEchoSurprise}
+            onMarkEchoSurprise={() => {
+              onMarkEchoSurprise();
+              trackFeatureUsed({ feature: "day2_echo", action: "peek" });
+              trackSystemInteracted({ system: "day2_echo", action: "show" });
+            }}
             onClearChapterQuiet={() =>
               updateSave((prev) =>
                 prev.chapterQuietPending ? { ...prev, chapterQuietPending: false } : prev,
