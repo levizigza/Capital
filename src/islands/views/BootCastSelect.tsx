@@ -48,11 +48,6 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
     setDraft(sheetLookForBase(id, resolvePickName(id, draft, defaultName)));
   };
 
-  const pickAndCustomize = (id: string) => {
-    pickFighter(id);
-    setStage("look");
-  };
-
   const boardCarpet = (from: CapitalCharacter = draft) => {
     if (busy) return;
     setBusy(true);
@@ -101,7 +96,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
           {stage === "select"
-            ? "Meet your Voyager. Click a coin face to see them in 3D — then dress them, or continue to Ashore Teach."
+            ? "Meet your Voyager. Tap a coin face to choose — continue to Ashore Teach, or customize first."
             : "Dress your Voyager on the mirror — then continue to Ashore Teach before the Money Carpet."}
         </p>
       </header>
@@ -112,7 +107,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
             selectedId={draft.base}
             ids={SERIES_LEAD_MASCOT_IDS}
             onFocus={pickFighter}
-            onPick={pickAndCustomize}
+            onPick={pickFighter}
             className="absolute inset-0"
           />
         ) : (
@@ -147,25 +142,31 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               </div>
               <button
                 type="button"
-                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                {...pointerSafeActivate(() => setStage("look"))}
-                data-testid="boot-customize-look"
-              >
-                Customize {mascot.name} →
-              </button>
-              <button
-                type="button"
                 disabled={busy}
-                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-amber-100/40 bg-white/10 px-4 py-3 text-sm font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-white/15 active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-40"
+                className="min-h-12 w-full touch-manipulation rounded-2xl border-2 border-[#1c1917] bg-[#f4b942] px-4 py-3 text-base font-black text-[#1c1917] shadow-[3px_3px_0_#1c1917] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-40"
                 {...pointerSafeActivate(
                   () => {
                     if (!busy) boardCarpet();
                   },
                   { stopPropagation: true },
                 )}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    if (!busy) boardCarpet();
+                  }
+                }}
                 data-testid="boot-board-carpet-now"
               >
                 {busy ? "Continuing…" : "Continue to Ashore Teach →"}
+              </button>
+              <button
+                type="button"
+                className="min-h-11 w-full touch-manipulation rounded-2xl border-2 border-amber-100/40 bg-white/10 px-4 py-2.5 text-sm font-black text-white shadow-[2px_2px_0_rgba(0,0,0,0.35)] backdrop-blur-sm hover:bg-white/15 active:translate-x-[1px] active:translate-y-[1px]"
+                {...pointerSafeActivate(() => setStage("look"))}
+                data-testid="boot-customize-look"
+              >
+                Customize {mascot.name} (optional)
               </button>
             </div>
           ) : (

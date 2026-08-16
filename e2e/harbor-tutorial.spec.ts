@@ -88,10 +88,20 @@ async function bootToHarbor(page: import("@playwright/test").Page) {
     await expect(teach).toHaveCount(0, { timeout: 10_000 });
   }
 
-  // Carpet opening — Skip if present
-  const carpetSkip = page.getByRole("button", { name: /^Skip$/i });
-  if (await carpetSkip.isVisible({ timeout: 12_000 }).catch(() => false)) {
-    await carpetSkip.click({ force: true });
+  // Carpet opening — Enter Harbor / Skip if present
+  const carpetEnter = page.getByTestId("carpet-opening-enter-now");
+  if (await carpetEnter.isVisible({ timeout: 3_000 }).catch(() => false)) {
+    await carpetEnter.click({ force: true });
+  } else {
+    const carpetSkip = page.getByTestId("carpet-opening-skip");
+    if (await carpetSkip.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await carpetSkip.click({ force: true });
+    } else {
+      const carpetSkipLegacy = page.getByRole("button", { name: /^Skip/i });
+      if (await carpetSkipLegacy.isVisible({ timeout: 4_000 }).catch(() => false)) {
+        await carpetSkipLegacy.click({ force: true });
+      }
+    }
   }
 
   // Loading veil may appear briefly — Enter is always safe
