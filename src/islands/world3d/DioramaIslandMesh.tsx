@@ -612,10 +612,10 @@ export function DioramaIslandMesh({
           zIndexRange={[20, 0]}
         >
           <div
-            className="pointer-events-none flex max-w-[7.5rem] flex-col items-center rounded-full bg-[#0f172a]/78 px-2.5 py-1 text-center backdrop-blur-[2px] ring-1 ring-white/25"
+            className="pointer-events-none flex max-w-[8.5rem] flex-col items-center rounded-full bg-[#0f172a]/82 px-2.5 py-1 text-center backdrop-blur-[2px] ring-1 ring-white/30"
             data-testid={islandId ? `map-island-label-${islandId}` : "map-island-label"}
           >
-            <span className="text-[10px] font-black leading-tight text-white">
+            <span className="whitespace-nowrap text-[10px] font-black leading-tight text-white">
               {locked ? `🔒 ${title}` : title}
             </span>
             {current || subtitle ? (

@@ -112,29 +112,33 @@ export function mapNodeToScene(node: ArchipelagoNode): [number, number, number] 
 /** Quiet Seed of Life rings under the archipelago — geometry, not HUD chrome. */
 function SeedOfLifeGuides() {
   const reduced = prefersReducedMotion();
-  const spineR = (SEED_SPINE_R / MAP_SIDE_RX) * ARCHIPELAGO_MAP_SPACING * PHI * 0.92;
-  const sideR = (SEED_SIDE_R / MAP_SIDE_RX) * ARCHIPELAGO_MAP_SPACING * PHI * 0.92;
+  const spineR = (SEED_SPINE_R / MAP_SIDE_RX) * ARCHIPELAGO_MAP_SPACING * PHI * 0.95;
+  const sideR = (SEED_SIDE_R / MAP_SIDE_RX) * ARCHIPELAGO_MAP_SPACING * PHI * 0.95;
   const petalR = spineR;
   return (
-    <group position={[0, 0.02, 0]} data-sacred="seed-of-life">
+    <group position={[0, 0.03, 0]} data-sacred="seed-of-life">
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[spineR * 0.96, spineR, 64]} />
-        <meshBasicMaterial color="#a7f3d0" transparent opacity={0.22} side={THREE.DoubleSide} />
+        <circleGeometry args={[sideR * 1.02, 64]} />
+        <meshBasicMaterial color="#042f2e" transparent opacity={0.35} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[sideR * 0.97, sideR, 64]} />
-        <meshBasicMaterial color="#99f6e4" transparent opacity={0.14} side={THREE.DoubleSide} />
+        <ringGeometry args={[spineR * 0.94, spineR, 64]} />
+        <meshBasicMaterial color="#a7f3d0" transparent opacity={0.38} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[sideR * 0.96, sideR, 64]} />
+        <meshBasicMaterial color="#99f6e4" transparent opacity={0.28} side={THREE.DoubleSide} />
       </mesh>
       {SEED_PETAL_ANGLES.map((angle, i) => {
-        const cx = Math.cos(angle) * petalR * 0.55;
-        const cz = Math.sin(angle) * petalR * 0.55;
+        const cx = Math.cos(angle) * petalR * 0.58;
+        const cz = Math.sin(angle) * petalR * 0.58;
         return (
-          <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.01, cz]}>
-            <ringGeometry args={[petalR * 0.92, petalR, 48]} />
+          <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.015, cz]}>
+            <ringGeometry args={[petalR * 0.9, petalR, 48]} />
             <meshBasicMaterial
               color="#6ee7b7"
               transparent
-              opacity={reduced ? 0.08 : 0.11}
+              opacity={reduced ? 0.12 : 0.2}
               side={THREE.DoubleSide}
             />
           </mesh>
@@ -258,12 +262,12 @@ function MapScene({
 
       <DioramaIslandMesh
         look={LOOK}
-        title={layout.hub.island.name}
-        subtitle={layout.hub.island.id === currentId ? "You are here" : "Start"}
+        title="Harbor Haven"
+        subtitle={layout.hub.island.id === currentId ? "Here" : "Start"}
         seed={layout.hub.island.id}
         islandId={layout.hub.island.id}
         position={hubPos}
-        scale={1.32}
+        scale={1.38}
         current={layout.hub.island.id === currentId}
         selected={layout.hub.island.id === currentId}
         locked={isIslandLocked(layout.hub.island, save.inventory, save)}
@@ -286,7 +290,7 @@ function MapScene({
               seed={node.island.id}
               islandId={node.island.id}
               position={pos}
-              scale={1.1}
+              scale={1.05}
               current={node.island.id === currentId}
               locked={locked}
               onSelect={() => onSelect(node.island.id)}

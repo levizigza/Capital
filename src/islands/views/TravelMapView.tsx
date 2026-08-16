@@ -98,7 +98,7 @@ export function TravelMapView({
         </GameButton>
       }
       bottom={
-        <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-2 px-3 pb-2">
+        <div className="relative z-30 mx-auto flex w-full max-w-2xl flex-col items-center gap-2 px-3 pb-2">
           <div
             className="flex w-full justify-center gap-2 overflow-x-auto pb-0.5"
             data-testid="archipelago-island-strip"
