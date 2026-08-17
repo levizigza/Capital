@@ -21,4 +21,21 @@ Ashore is **finished** only when every row is Pass. Re-score after each iteratio
 
 ## Review log
 
-- **2026-08-16** — In-world toys + MoneyCarpet dock; HTML FantasyOrganToys / CarpetDockShowcase removed from primary path; criteria re-scored Pass×12. Ship only after unit + ashore e2e green.
+- **2026-08-16 a** — In-world toys + MoneyCarpet dock; HTML FantasyOrganToys / CarpetDockShowcase removed; unit + ashore e2e green.
+- **2026-08-16 b** — Vault/sky + Seed pillars; billboard homework labels removed; whisper soft; dock carpet readable in screenshots.
+- **2026-08-16 c** — Coin medallion face-corrected; Dev Errors starts collapsed so first viewport stays composition-first.
+
+| # | Status after visual shots |
+|---|---------------------------|
+| 1 Fantasy first | Pass |
+| 2 Show, don’t narrate | Pass |
+| 3 Body proves | Pass |
+| 4 Toys in the world | Pass |
+| 5 Art matches game | Pass (MoneyCarpet dock) |
+| 6 Invisible tutorial | Pass (Leave · whisper only) |
+| 7 One composition | Pass |
+| 8 One idea → use it | Pass |
+| 9 Navigable | Pass |
+| 10 Aesthetic | Pass (sky · pillars · Seed floor · motes) |
+| 11 Informative | Pass |
+| 12 Interactive | Pass |

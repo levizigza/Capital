@@ -335,9 +335,9 @@ function OrganToyMesh({
           </>
         ) : (
           <>
-            {/* Coin organ — standing gold medallion, face toward camera */}
-            <mesh castShadow rotation={[0.15, 0, 0.08]}>
-              <cylinderGeometry args={[0.55, 0.55, 0.12, 36]} />
+            {/* Coin organ — disc face toward camera (+Z) */}
+            <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.58, 0.58, 0.12, 40]} />
               <meshStandardMaterial
                 color="#fbbf24"
                 emissive={lit ? accent : "#b45309"}
@@ -346,8 +346,8 @@ function OrganToyMesh({
                 roughness={0.18}
               />
             </mesh>
-            <mesh rotation={[0.15, 0, 0.08]} position={[0, 0, 0.07]}>
-              <circleGeometry args={[0.32, 32]} />
+            <mesh position={[0, 0, 0.07]}>
+              <circleGeometry args={[0.34, 36]} />
               <meshStandardMaterial
                 color="#fffbeb"
                 emissive="#fcd34d"
@@ -356,8 +356,8 @@ function OrganToyMesh({
                 roughness={0.3}
               />
             </mesh>
-            <mesh position={[0, -0.58, 0]}>
-              <cylinderGeometry args={[0.32, 0.4, 0.18, 20]} />
+            <mesh position={[0, -0.62, 0]}>
+              <cylinderGeometry args={[0.28, 0.36, 0.2, 20]} />
               <meshStandardMaterial color="#78350f" metalness={0.4} roughness={0.4} />
             </mesh>
           </>

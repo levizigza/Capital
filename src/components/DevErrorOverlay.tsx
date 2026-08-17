@@ -36,7 +36,7 @@ function formatConsoleArgs(args: unknown[]): { message: string; stack?: string }
 
 export function DevErrorOverlay() {
   const [entries, setEntries] = useState<OverlayErrorEntry[]>([]);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [filter, setFilter] = useState("");
   const originalConsole = useRef<{ error?: typeof console.error; warn?: typeof console.warn }>({});
