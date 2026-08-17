@@ -13,6 +13,7 @@ import { playOrganSfx } from "../audio/capitalSfx";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
+import { CharacterAvatar } from "./CharacterAvatar";
 import {
   TALK_TARGET,
   VoyagerWalkPracticeStage,
@@ -138,12 +139,10 @@ export function AshoreComprehensionTutorial({
     return () => window.clearTimeout(t);
   }, [dockNudge]);
 
-  const showPad =
-    stepId === "fantasy" || stepId === "walk" || stepId === "talk" || stepId === "ready";
-  const padMode =
-    stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
-  /** Fantasy keeps Voyager as a preview — never let the stage clip the prove dock. */
-  const compactPad = stepId === "fantasy" || stepId === "ready";
+  const showPad = stepId === "walk" || stepId === "talk";
+  const padMode = stepId === "walk" ? "walk" : "talk";
+  /** Fantasy / Launch use 2D Voyager preview — never stack another WebGL canvas on boot. */
+  const showVoyagerPreview = stepId === "fantasy" || stepId === "ready";
 
   useInputAction("cancel", onComplete);
 
@@ -195,14 +194,22 @@ export function AshoreComprehensionTutorial({
         className="relative z-[1] flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
         data-testid="ashore-teach-scroll"
       >
-        {showPad ? (
+        {showVoyagerPreview ? (
           <div
-            className={`relative mx-auto w-full max-w-3xl shrink-0 px-3 ${
-              compactPad
-                ? "max-h-[30vh] min-h-[22vh] sm:max-h-[34vh]"
-                : "min-h-[38vh] flex-1 sm:min-h-[44vh]"
-            }`}
+            className="mx-auto flex w-full max-w-3xl shrink-0 flex-col items-center gap-2 px-3 pt-1"
+            data-testid="ashore-voyager-preview"
           >
+            <div className="rounded-full bg-white/10 p-2 ring-2 ring-amber-200/40">
+              <CharacterAvatar character={voyager} size={96} />
+            </div>
+            <p className="text-xs font-semibold text-amber-100/90">
+              {voyager.name || "Voyager"} — that’s you
+            </p>
+          </div>
+        ) : null}
+
+        {showPad ? (
+          <div className="relative mx-auto w-full max-w-3xl min-h-[38vh] flex-1 shrink-0 px-3 sm:min-h-[44vh]">
             <VoyagerWalkPracticeStage
               character={voyager}
               mode={padMode}
@@ -211,11 +218,9 @@ export function AshoreComprehensionTutorial({
               talkTarget={TALK_TARGET}
               nearTalk={nearTalk}
               onNearTalkChange={setNearTalk}
-              className={`h-full overflow-hidden rounded-2xl ring-1 ring-amber-200/25 ${
-                compactPad ? "min-h-[22vh] max-h-[30vh] sm:max-h-[34vh]" : "min-h-[38vh] sm:min-h-[44vh]"
-              }`}
+              className="h-full min-h-[38vh] overflow-hidden rounded-2xl ring-1 ring-amber-200/25 sm:min-h-[44vh]"
             />
-            {(stepId === "walk" || stepId === "talk") && !reduced ? (
+            {!reduced ? (
               <div className="pointer-events-auto absolute bottom-3 right-5 z-[3]">
                 <TouchWalkPad />
               </div>

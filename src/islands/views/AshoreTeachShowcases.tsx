@@ -223,17 +223,17 @@ export function FantasyOrganToys({
             data-testid={`ashore-fantasy-toy-${t.id}`}
             aria-pressed={lit}
             aria-label={`Poke ${t.label}`}
-            className={`flex min-h-[7.5rem] min-w-[6.5rem] flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
+            className={`flex min-h-[7.5rem] min-w-[6.5rem] touch-manipulation flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
               lit
                 ? "bg-white/15 ring-amber-200/70"
                 : nudge
                   ? "bg-amber-400/20 ring-amber-200/90 hover:bg-amber-400/30"
                   : "bg-white/10 ring-white/35 hover:bg-white/15"
             }`}
-            {...pointerSafeActivate(() => {
+            onClick={() => {
               playOrganSfx(t.id);
               onPoke(t.id);
-            })}
+            }}
           >
             <SpinePaintingPortal organ={t.id} lit={lit} size="sm" />
             <span className="text-[11px] font-bold" style={{ color: accent }}>
