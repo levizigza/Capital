@@ -75,7 +75,7 @@ describe("Pillar 12 story cold retell", () => {
     expect(soft).toMatch(/Not a second Take/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(day2).toMatch(/day2-echo-kid-sentence/);
-    expect(day2).toMatch(/Memory keeps — the Plinth did not forget/);
+    expect(day2).toMatch(/Still here — the Plinth did not forget you/);
     expect(spectacle).toMatch(/scar-spectacle-kid-sentence/);
     expect(spectacle).toMatch(/coldOrganKidSentence/);
     expect(talks).toMatch(/coldOrganKidSentence/);

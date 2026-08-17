@@ -35,7 +35,7 @@ export function Day2EchoOverlay({
   useOverlayEscape(onDismiss);
 
   useEffect(() => {
-    triggerJuice("accept", { burst: true });
+    triggerJuice("complete", { burst: true });
     playCapitalSfx("plinth_hum");
     playOrganSfx(organId);
   }, [organId]);
@@ -43,8 +43,8 @@ export function Day2EchoOverlay({
   const organWord = scarOrganName(organId);
   const headline =
     organId === "coin" || organId === "memory"
-      ? "Memory keeps — the Plinth did not forget"
-      : `${organVerbChip(organId)} — the Plinth did not forget`;
+      ? "Still here — the Plinth did not forget you"
+      : `Still here — ${organVerbChip(organId)} overnight`;
 
   return (
     <div

@@ -293,15 +293,15 @@ export function organQuietBadge(organ: MoneyOrganId): string {
 export function day2EchoBody(scarLabel: string, organ: MoneyOrganId): string {
   const chip = organVerbChip(organ);
   if (organ === "clock") {
-    return `The ${chip} — locals still stamp “${scarLabel}.” Yesterday sticks as today’s weather.`;
+    return `You wake and the plaza still wears “${scarLabel}.” The ${chip} — rain or shelter is now weather, not a quiz.`;
   }
   if (organ === "spiral") {
-    return `The ${chip} — locals still weigh “${scarLabel}.” Yesterday sticks as today’s weather.`;
+    return `You wake and the canyon still hums “${scarLabel}.” The ${chip} — haste or wait left overnight footprints.`;
   }
   if (organ === "memory") {
-    return `${chip} — locals still name “${scarLabel}” on the Plinth. Yesterday sticks as today’s weather.`;
+    return `You wake and the Plinth still holds “${scarLabel}.” ${chip} — Harbor did not sleep it off.`;
   }
-  return `The ${chip} — locals still tip their jars about “${scarLabel}.” Yesterday sticks as today’s weather.`;
+  return `You wake and tip jars still click “${scarLabel}.” The ${chip} — yesterday’s Take is today’s greeting.`;
 }
 
 /** Daily Harbor rumor that carries the organ word. */

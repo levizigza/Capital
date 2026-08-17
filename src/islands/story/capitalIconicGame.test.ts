@@ -67,4 +67,39 @@ describe("iconic whole-game criteria contracts", () => {
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "paycheck_inbox_storm")).toBe(true);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "credit_collector_rumor")).toBe(true);
   });
+
+  it("ships Harbor digression scars on every era side shore", () => {
+    const scars = [
+      "vf_foundry_listen",
+      "fa_portfolio_peek",
+      "da_wharf_listen",
+      "ba_shop_browse",
+      "in_ip_glance",
+      "fs_scaffold_look",
+      "re_auction_watch",
+      "sc_signal_listen",
+    ];
+    const contentBlob = [
+      "venture-foundry",
+      "financial-assets",
+      "digital-assets",
+      "business-assets",
+      "intangibles",
+      "future-shores",
+      "real-estate",
+      "signal-city",
+    ]
+      .map((slug) =>
+        readFileSync(join(__dirname, `../content/${slug}.islands.json`), "utf8"),
+      )
+      .join("\n");
+    for (const id of scars) {
+      expect(contentBlob).toMatch(new RegExp(id));
+    }
+    const mem = readFileSync(join(__dirname, "../worldMemory.ts"), "utf8");
+    expect(mem).toMatch(/foundry_listen/);
+    expect(mem).toMatch(/portfolio_peek/);
+    expect(mem).toMatch(/auction_watch/);
+    expect(SIDE_TOMFOOLERY.some((s) => s.id === "signal_reef_listen")).toBe(true);
+  });
 });

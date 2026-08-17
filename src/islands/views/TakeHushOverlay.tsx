@@ -62,6 +62,7 @@ export function TakeHushOverlay({
     const tLine = window.setTimeout(() => {
       setPhase("line");
       onPhaseChange?.("line");
+      triggerJuice("accept", { burst: true });
     }, t.revealMs);
 
     // doneMs (not holdEndMs) — cold unseeded path needs the Carpet CTA beat.
