@@ -998,19 +998,18 @@ function ShoreScene({
         />
       )}
 
-      <IslandTitle
-        title={island.name}
-        subtitle={
-          chapterQuiet
-            ? "Quiet after the Take · fly home changed"
-            : genreLine
+      {chapterQuiet ? null : (
+        <IslandTitle
+          title={island.name}
+          subtitle={
+            genreLine
               ? `${genreLine} · ${culture.cultureName}`
               : `${biome.label} · ${culture.cultureName}`
-        }
-        height={shoreScale(8.2)}
-        accent={chapterQuiet ? "#94a3b8" : look.accent}
-      />
-
+          }
+          height={shoreScale(8.2)}
+          accent={look.accent}
+        />
+      )}
       {ambients.map((res) => (
         <AmbientCritter
           key={res.id}

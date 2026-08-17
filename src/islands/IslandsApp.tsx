@@ -52,7 +52,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { playCapitalSfx } from "./audio/capitalSfx";
-import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper } from "./softBeatArm";
+import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper, softBeatArmConsumesOnChoice } from "./softBeatArm";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
@@ -1581,14 +1581,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         nodeId: dialogueNode.id,
         choiceId,
       });
-      const armed = consumeSoftBeatArm();
-      if (armed) {
-        void analytics.track("core_loop_beat", {
-          beat: "soft_beat_consumed",
-          kind: armed,
-          choiceId,
-        });
-        void analytics.track("take_foreshadow", { kind: armed, choiceId });
+      const armedPeek = peekSoftBeatArm();
+      if (armedPeek && softBeatArmConsumesOnChoice({ effects: choice.effects })) {
+        const armed = consumeSoftBeatArm();
+        if (armed) {
+          void analytics.track("core_loop_beat", {
+            beat: "soft_beat_consumed",
+            kind: armed,
+            choiceId,
+          });
+          void analytics.track("take_foreshadow", { kind: armed, choiceId });
+        }
       }
 
       await applyDialogueEffects(choice.effects as any);
@@ -1722,6 +1725,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             skillStats: updatedSkillStats,
             economyState: updatedEconomy,
             voyagerLedger: ledger,
+            harborScars:
+              mgId === "mg_inbox_storm" &&
+              !(prev.harborScars ?? []).some((s) => s.id === "pp_inbox_storm")
+                ? [
+                    ...(prev.harborScars ?? []),
+                    {
+                      id: "pp_inbox_storm",
+                      islandId: activeIsland.id,
+                      choiceId: "inbox_clear",
+                      label: "Cleared the Inbox Storm",
+                      kind: "npc_tone" as const,
+                      createdAt: new Date().toISOString(),
+                    },
+                  ]
+                : prev.harborScars,
           };
         });
         await completeObjective({ type: "completeMinigame", minigameId: mgId });
@@ -1918,11 +1936,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const handleMasteryFailed = useCallback(() => {
     if (!pendingMastery) return;
     const { mgId, source } = pendingMastery;
+    const mgName =
+      activeIsland?.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
     setPendingMastery(null);
-    setMinigameSource(source);
-    setActiveMinigameId(mgId);
-    setMinigameStartedAt(Date.now());
-  }, [pendingMastery]);
+    setPendingMinigameFail({
+      mgId,
+      source,
+      copy: minigameFailCopy({
+        reason: "objective_not_met",
+        minigameName: `${mgName} mastery`,
+        source,
+        takeFlavor: resolveTakeFailFlavor({
+          irreversibleChoices: save?.irreversibleChoices,
+        }),
+        organId: moneyOrganForIsland(activeIsland?.id)?.id ?? null,
+        minigameId: mgId,
+      }),
+    });
+  }, [activeIsland, pendingMastery, save?.irreversibleChoices]);
 
   const handleMinigameFailRetry = useCallback(() => {
     if (!pendingMinigameFail) return;
@@ -2414,6 +2445,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 : (activeIsland?.id ?? save?.currentIslandId ?? HUB_ISLAND_ID)
             }
             softBeatArmWhisper={softBeatArmWhisper(peekSoftBeatArm())}
+            softBeatArmKind={peekSoftBeatArm()}
             onChoice={(id) => void onDialogueChoice(id)}
             onContinue={onDialogueContinue}
             onSkip={closeDialogue}

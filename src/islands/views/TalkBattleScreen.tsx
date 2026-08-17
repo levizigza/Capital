@@ -28,6 +28,11 @@ import {
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { triggerJuice } from "@/juice";
+import {
+  peekSoftBeatArm,
+  softBeatArmChoiceSuffix,
+} from "../softBeatArm";
+import type { SoftBeatKind } from "./SoftBeatOverlay";
 
 /** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
 const TALK_INPUT_ARM_MS = 220;
@@ -44,6 +49,8 @@ export type TalkBattleProps = {
   placeId?: string | null;
   /** Soft Beat arm foreshadow — multiplicative organ chemistry */
   softBeatArmWhisper?: string | null;
+  /** Armed Soft Beat kind — appends organ suffix on Take / digression rows */
+  softBeatArmKind?: SoftBeatKind | null;
   onChoice: (choiceId: string) => void;
   onContinue: () => void;
   onSkip: () => void;
@@ -94,6 +101,7 @@ export function TalkBattleScreen({
   learningProfile,
   placeId = HARBOR_HAVEN_ID,
   softBeatArmWhisper = null,
+  softBeatArmKind = null,
   onChoice,
   onContinue,
   onSkip,
@@ -107,6 +115,7 @@ export function TalkBattleScreen({
   const organ = moneyOrganForIsland(placeId);
   const organChip = organ ? organVerbChip(organ.id) : null;
   const accent = organAccent(placeId);
+  const armKind = softBeatArmKind ?? peekSoftBeatArm();
 
   // Reset to listen whenever the dialogue node changes
   useEffect(() => {
@@ -310,7 +319,10 @@ export function TalkBattleScreen({
           ) : (
             <div className="max-h-[42vh] space-y-2 overflow-y-auto px-4 py-3">
               <p className="mb-1 text-sm font-medium text-[#4b5c6e] line-clamp-2">{body}</p>
-              {choices.map((choice: DialogueChoice) => (
+              {choices.map((choice: DialogueChoice) => {
+                const base = resolveProfileText(choice.text, learningProfile);
+                const suffix = softBeatArmChoiceSuffix(armKind, choice.effects);
+                return (
                 <button
                   key={choice.id}
                   type="button"
@@ -318,10 +330,12 @@ export function TalkBattleScreen({
                   style={{ borderLeftWidth: 6, borderLeftColor: accent }}
                   {...pointerSafeActivate(() => chooseReply(choice.id))}
                   data-testid={`talk-choice-${choice.id}`}
+                  data-soft-beat-armed={suffix ? "1" : "0"}
                 >
-                  {resolveProfileText(choice.text, learningProfile)}
+                  {suffix ? `${base}${suffix}` : base}
                 </button>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

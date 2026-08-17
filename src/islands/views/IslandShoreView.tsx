@@ -23,6 +23,7 @@ import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
+import { peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
@@ -158,7 +159,14 @@ export function IslandShoreView({
     });
   }, [island.id, culture.ecosystemMotion]);
 
-  const structuralBuddy = coinBagIslandTip(save, island);
+  const armWhisper = softBeatArmWhisper(peekSoftBeatArm());
+  const structuralBuddy =
+    armWhisper && !chapterQuiet
+      ? {
+          tip: armWhisper,
+          coach: "Soft Beat armed your next Talk — organ chemistry on this shore too.",
+        }
+      : coinBagIslandTip(save, island);
   const buddy = resolveAdaptiveBuddyTip({
     save,
     profileId: learningProfile,
@@ -341,10 +349,6 @@ export function IslandShoreView({
         topLeft={
           takeHushOpen ? null : chapterQuiet ? (
             <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-2xl">{island.icon}</span>
-                <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
-              </div>
               <HudBadge className="mt-1 bg-slate-900/80 text-white" data-testid="shore-take-hush">
                 {organQuietBadge(organ?.id ?? "coin")}
               </HudBadge>

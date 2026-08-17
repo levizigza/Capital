@@ -46,7 +46,7 @@ import {
 import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
-import { digressionScarGaps } from "../digressionShelf";
+import { digressionScarGaps, digressionShelfRows } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -342,6 +342,7 @@ export function HomeHubView({
 
   const plaques = harborScarPlaques(save);
   const talkScars = harborTalkScars(save);
+  const digressionShelf = useMemo(() => digressionShelfRows(save), [save]);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   // Design Bible: stance stays silent — no Plinth stance chrome.
@@ -616,6 +617,7 @@ export function HomeHubView({
       hasCompletedCoveChange(save) &&
       digressionScarGaps(save) === 0 &&
       !pointNextPainting,
+    witnessMyth: familyWitnessMythLine(getActiveFamilyRoom()?.witnesses?.[0]),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1598,6 +1600,41 @@ export function HomeHubView({
                 </ul>
               </div>
             ))}
+          </div>
+          <div data-testid="digression-myth-shelf" className="space-y-2">
+            <p className="text-xs font-black uppercase tracking-wide text-stone-500">
+              Side rumors ·{" "}
+              {digressionShelf.filter((r) => r.filled).length}/
+              {digressionShelf.length}
+            </p>
+            <ul className="grid gap-1.5 sm:grid-cols-2">
+              {digressionShelf.map((row) => (
+                <li
+                  key={row.label}
+                  className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
+                    row.filled
+                      ? "border-amber-200 bg-amber-50 text-amber-950"
+                      : "border-dashed border-stone-300 bg-stone-50/80 text-stone-400"
+                  }`}
+                  data-testid={
+                    row.filled
+                      ? `digression-slot-filled-${row.scarId}`
+                      : "digression-slot-empty"
+                  }
+                >
+                  {row.filled ? `✓ ${row.label}` : `· ${row.label}`}
+                  {row.scarLabel ? (
+                    <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                      “{row.scarLabel}”
+                    </span>
+                  ) : (
+                    <span className="mt-0.5 block text-[10px] font-medium opacity-70">
+                      Not heard yet
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
           {plaques.length > 0 ? (
             <GameButton

@@ -138,10 +138,13 @@ export function isDigressionScar(scar: Pick<HarborScar, "id" | "kind">): boolean
   const id = scar.id.toLowerCase();
   return (
     id.startsWith("cc_shell_") ||
+    id.startsWith("pp_tip_") ||
+    id.startsWith("pp_inbox_") ||
     id.startsWith("ck_collector_") ||
     id.includes("shell_patience") ||
     id.includes("shell_impulse") ||
-    id.includes("collector_rumor")
+    id.includes("collector_rumor") ||
+    id.includes("inbox_storm")
   );
 }
 
@@ -393,6 +396,9 @@ export function plazaScarGossipLine(
   if (id.includes("tip_rush") || id === "pp_tip_rush") {
     return `${talks}Tip jar still jingled your name — you tipped before the stamp. “${scar.label}.” Haste left a footprint.${stanceBit}`;
   }
+  if (id.includes("inbox_storm") || id === "pp_inbox_storm") {
+    return `${talks}Main Street still floods soft about it — you cleared the Inbox Storm. “${scar.label}.” Clock practice left a footprint.${stanceBit}`;
+  }
   if (id.includes("collector_lean") || id === "ck_collector_lean") {
     return `${talks}Canyon wind still names the lean — you edged toward Bank haste. “${scar.label}.” Listening isn’t paying, but leaning leaves weather.${stanceBit}`;
   }
@@ -483,6 +489,9 @@ export function piggyScarWeightLine(
   }
   if (id.includes("tip_rush") || id === "pp_tip_rush") {
     return `You tipped before the stamp. That jingle… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("inbox_storm") || id === "pp_inbox_storm") {
+    return `You cleared the Inbox Storm on Main Street. That Clock practice… Harbor soft-names it. “${scar.label}.”`;
   }
   if (id.includes("collector_lean") || id === "ck_collector_lean") {
     return `Word from the canyon reached me first. Leaning into that pitch leaves a colder chill — not shame, weather with teeth. “${scar.label}.”`;

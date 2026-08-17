@@ -39,3 +39,26 @@ export function softBeatArmWhisper(kind: SoftBeatKind | null): string | null {
   if (kind === "battlement") return "Battlement armed — next Talk carries Spiral wait";
   return "Teller armed — next Talk carries Memory keep";
 }
+
+/**
+ * Burn the arm only on Take / digression stakes — not plaza gossip chit-chat.
+ * Effects: setIrreversible (spine Take) or addScar (digression / plaque).
+ */
+export function softBeatArmConsumesOnChoice(opts: {
+  effects?: ReadonlyArray<{ type: string }> | null;
+}): boolean {
+  const effects = opts.effects ?? [];
+  return effects.some((e) => e.type === "setIrreversible" || e.type === "addScar");
+}
+
+/** Append organ chemistry to Take / digression choice rows while armed. */
+export function softBeatArmChoiceSuffix(
+  kind: SoftBeatKind | null,
+  effects?: ReadonlyArray<{ type: string }> | null,
+): string | null {
+  if (!kind || !softBeatArmConsumesOnChoice({ effects })) return null;
+  if (kind === "lookout") return " · Coin hush still armed";
+  if (kind === "umbrella") return " · Clock shelter still armed";
+  if (kind === "battlement") return " · Spiral wait still armed";
+  return " · Memory keep still armed";
+}

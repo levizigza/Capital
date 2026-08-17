@@ -85,6 +85,8 @@ export function coinBagHarborTip(
     digressionGaps?: number | null;
     /** After Freedom — whisper Capsule Studio invent-inside-the-game */
     studioOpenHint?: boolean;
+    /** Family Witness myth — Freeze-alt relatedness on the plaza */
+    witnessMyth?: string | null;
   },
 ): CoinBagBuddyTip {
   const tip = coinBagHarborTipRaw(guided, opts);
@@ -222,6 +224,16 @@ function coinBagHarborTipRaw(
       track: "side",
     };
   }
+
+  // Freeze-alt relatedness — never override homecoming / scar / Soft Beat.
+  if (opts?.witnessMyth) {
+    return {
+      tip: opts.witnessMyth,
+      coach: "Someone nearby stamped a Witness — soft myth only. Family Room keeps it local.",
+      track: "side",
+    };
+  }
+
   return {
     tip: "Ledger Bank — walk into the vault!",
     coach:

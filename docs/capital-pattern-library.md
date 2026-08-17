@@ -19,12 +19,12 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 4 | Teach by letting players play | Body-first Ashore / Cove Take; no lecture wall | **Pass** — iconic Ashore + quiet chrome |
 | 5 | Immediate unmistakable feedback | Every verb answers (anim / SFX / juice / state) | **Pass** — signature + everyday verbs |
 | 6 | Player feels responsible for success | Takes + digression forks + mastery clears | **Pass** |
-| 7 | Failure contains information | Fail overlay names organ + next verb; stay put | **Pass** — organ hints · structure stay-put |
+| 7 | Failure contains information | Fail overlay names organ + next verb; stay put | **Pass** — organ hints · mastery fail overlay · structure stay-put |
 | 8 | Challenge → possibility, not helplessness | Retry · Soft Beat · digression alternate paths | **Pass** |
 | 9 | Frontier of competence | Soft Beat → next painting → Credit mastery  n/3 | **Pass** |
 | 10 | Meaningful agency | Irreversible Takes + patience/haste digressions | **Pass** — cost foreshadow on Take rows |
 | 11 | Different solutions to same problem | Saver/spender · wait/haste · linger/rush | **Pass** |
-| 12 | Multiplicative > additive content | Organs × scars × gossip × Soft Beat arm | **Pass** — Soft Beat arm visible in Talk Battle |
+| 12 | Multiplicative > additive content | Organs × scars × gossip × Soft Beat arm | **Pass** — Soft Beat arm on Take/digression rows; gossip does not burn arm |
 | 13 | One mechanic × many systems | Scar → Plinth · gossip · Piggy · share · day-2 | **Pass** |
 | 14 | Rules > special cases | Organ verbs consistent across shores | **Pass** |
 | 15 | Curiosity generates gameplay | Digressions · toys · Soft Beat peeks | **Pass** |
@@ -40,7 +40,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 25 | Emergent outcomes | Digression × plaza gossip × stance | **Pass** |
 | 26 | Self-expression | Character · Take stance · digression forks · share PNG | **Pass** |
 | 27 | Collection intelligent | Digression scars + plaques | **Pass** |
-| 28 | Incomplete sets | Empty rumor slots on myth shelf | **Pass** — digressionScarGaps |
+| 28 | Incomplete sets | Empty rumor slots on myth shelf | **Pass** — Plinth myth shelf + Inbox Storm slot |
 | 29 | World remembers player | Scars · gossip · Piggy · day-2 · npc talks | **Pass** |
 | 30 | Coherent fantasy | Living money organs everywhere | **Pass** |
 | 31 | Powerful identity | Coin Bag · Piggy · Plinth · organs | **Pass** |
@@ -126,6 +126,8 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 2026-08-17 pass B | Studio invent-inside whisper (#48) | Machine Pass× library in-scope; **Hold** #94 human |
 | 2026-08-17 pass C | Soft Beat stay-until-Leave · Talk arm foreshadow · affinity cut · dwell_stuck · Paycheck tip fork | Re-score #51/#12/#87/#90; still **Hold** #94 |
 | 2026-08-17 pass D | First-meet harbor-quiet-chip · Credit Collector cost foreshadow | Boot quiet chrome measurable; still **Hold** #94 |
+| 2026-08-17 pass E | Digression myth shelf on Plinth · shore Soft Beat arm · organ fail SFX · toy juice · hush title strip · Inbox Storm scar · Witness plaza tip | Freeze-alt relatedness + collection visible; still **Hold** #94 |
+| 2026-08-17 pass F | Soft Beat arm burns only on Take/digression · choice-row organ suffix · Inbox Storm shelf slot · mastery fail organ overlay · Credit haste fail flavor · Witness tip demoted | Soft Beat chemistry reaches Ordeal; still **Hold** #94 |
 | **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
 
 See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.

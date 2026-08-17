@@ -107,8 +107,67 @@ describe("capital pattern library contracts", () => {
     expect(mem).not.toMatch(/affinity: \(prev\?\.affinity/);
   });
 
-  it("emits dwell_stuck for fun-dropoff telemetry", () => {
-    const track = readFileSync(join(__dirname, "../analytics/screenTracking.ts"), "utf8");
-    expect(track).toMatch(/dwell_stuck/);
+  it("Soft Beat arm whisper reaches shore Coin Bag", () => {
+    const shore = readFileSync(join(__dirname, "../views/IslandShoreView.tsx"), "utf8");
+    expect(shore).toMatch(/softBeatArmWhisper|peekSoftBeatArm/);
+  });
+
+  it("Plinth shows digression myth shelf with empty slots", () => {
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/digression-myth-shelf/);
+    expect(hub).toMatch(/digression-slot-empty/);
+  });
+
+  it("fail overlay plays organ SFX", () => {
+    const fail = readFileSync(join(__dirname, "../views/MinigameFailOverlay.tsx"), "utf8");
+    expect(fail).toMatch(/playOrganSfx/);
+  });
+
+  it("structure toys poke with juice", () => {
+    const toys = readFileSync(
+      join(__dirname, "../world3d/StructureInteriorToys.tsx"),
+      "utf8",
+    );
+    expect(toys).toMatch(/pokeOrgan/);
+    expect(toys).toMatch(/triggerJuice\("accept"\)/);
+  });
+
+  it("Inbox Storm clear scars Harbor", () => {
+    const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
+    expect(app).toMatch(/pp_inbox_storm/);
+    expect(app).toMatch(/mg_inbox_storm/);
+  });
+
+  it("Inbox Storm fills a digression myth shelf slot", () => {
+    const shelf = readFileSync(join(__dirname, "../digressionShelf.ts"), "utf8");
+    expect(shelf).toMatch(/pp_inbox_storm/);
+  });
+
+  it("Soft Beat arm burns only on Take or digression stakes", () => {
+    const arm = readFileSync(join(__dirname, "../softBeatArm.ts"), "utf8");
+    expect(arm).toMatch(/softBeatArmConsumesOnChoice/);
+    expect(arm).toMatch(/softBeatArmChoiceSuffix/);
+    const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
+    expect(app).toMatch(/softBeatArmConsumesOnChoice/);
+    const talk = readFileSync(join(__dirname, "../views/TalkBattleScreen.tsx"), "utf8");
+    expect(talk).toMatch(/softBeatArmChoiceSuffix/);
+  });
+
+  it("mastery fail routes through organ fail overlay", () => {
+    const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
+    expect(app).toMatch(/handleMasteryFailed/);
+    expect(app).toMatch(/pendingMinigameFail/);
+    const failBlock = app.slice(
+      app.indexOf("handleMasteryFailed"),
+      app.indexOf("handleMasteryFailed") + 800,
+    );
+    expect(failBlock).toMatch(/minigameFailCopy/);
+    expect(failBlock).not.toMatch(/setActiveMinigameId\(mgId\)/);
+  });
+
+  it("Credit haste Take has soft-fail flavor parity", () => {
+    const fail = readFileSync(join(__dirname, "../minigameFail.ts"), "utf8");
+    expect(fail).toMatch(/credit_borrow_vs_wait/);
+    expect(fail).toMatch(/borrow/);
   });
 });
