@@ -387,6 +387,9 @@ export function plazaScarGossipLine(
   if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
     return `${talks}Someone at the tip jars keeps clinking your name — you bought Shelly’s shell want. “${scar.label}.” Pretty cost a story.${stanceBit}`;
   }
+  if (id.includes("collector_lean") || id === "ck_collector_lean") {
+    return `${talks}Canyon wind still names the lean — you edged toward Bank haste. “${scar.label}.” Listening isn’t paying, but leaning leaves weather.${stanceBit}`;
+  }
   if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
     return `${talks}Canyon wind carried it here — you stood in the Collector’s pitch. “${scar.label}.” Listening isn’t paying, but Harbor still gossiped.${stanceBit}`;
   }
@@ -468,6 +471,9 @@ export function piggyScarWeightLine(
   }
   if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
     return `Harbor gossiped soft about the shell you bought. I don’t scold — I just… felt it with you. “${scar.label}.”`;
+  }
+  if (id.includes("collector_lean") || id === "ck_collector_lean") {
+    return `Word from the canyon reached me first. Leaning into that pitch leaves a colder chill — not shame, weather with teeth. “${scar.label}.”`;
   }
   if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
     return `Word from the canyon reached me first. Standing in that pitch leaves a chill — not shame, just weather. “${scar.label}.”`;

@@ -260,7 +260,29 @@
               "choices": [
                 {
                   "id": "dc1_rumor",
-                  "text": "I’m only listening — digression.",
+                  "text": "Digression — hear the pitch or lean in?",
+                  "nextNodeId": "dc_fork"
+                },
+                {
+                  "id": "dc1_defy",
+                  "text": "I rebuild trust — I don't feed interest haste.",
+                  "nextNodeId": "dc2"
+                },
+                {
+                  "id": "dc1_flee",
+                  "text": "I walk away.",
+                  "nextNodeId": "dc3"
+                }
+              ]
+            },
+            {
+              "id": "dc_fork",
+              "speaker": "The Debt Collector",
+              "text": "Interest loves an audience. Stand and listen — or lean into the Bank’s haste?",
+              "choices": [
+                {
+                  "id": "dc_listen",
+                  "text": "Only listening — I don’t pay panic.",
                   "nextNodeId": "dc_rumor_done",
                   "effects": [
                     { "type": "startQuest", "questId": "q_ck_collector_rumor" },
@@ -276,14 +298,21 @@
                   ]
                 },
                 {
-                  "id": "dc1_defy",
-                  "text": "I rebuild trust — I don't feed interest haste.",
-                  "nextNodeId": "dc2"
-                },
-                {
-                  "id": "dc1_flee",
-                  "text": "I walk away.",
-                  "nextNodeId": "dc3"
+                  "id": "dc_lean",
+                  "text": "Lean in — show me the haste.",
+                  "nextNodeId": "dc_lean_done",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_ck_collector_rumor" },
+                    { "type": "completeQuest", "questId": "q_ck_collector_rumor" },
+                    {
+                      "type": "addScar",
+                      "id": "ck_collector_lean",
+                      "label": "Leaned into Bank of Obligation haste",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
                 }
               ]
             },
@@ -291,6 +320,12 @@
               "id": "dc_rumor_done",
               "speaker": "The Debt Collector",
               "text": "Listening is not paying. Interest still compounds. Harbor will whisper that you stood in my canyon.",
+              "end": true
+            },
+            {
+              "id": "dc_lean_done",
+              "speaker": "The Debt Collector",
+              "text": "Good. Panic pays first. Harbor will gossip that you leaned toward the coil — Spiral still waits for the real Ordeal.",
               "end": true
             },
             {

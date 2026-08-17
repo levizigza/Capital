@@ -154,11 +154,11 @@ export function TravelMapView({
               className="max-w-md text-center text-[10px] font-medium text-sky-100/75"
               data-testid="travel-free-roam-whisper"
             >
-              Free roam · outer side shores are open — stray anytime; main story stays on the spine
+              Free roam · side shores whisper — stray, choose, leave footprints; spine stays Cove → Paycheck → Credit
             </p>
           ) : (
             <p className="max-w-md text-center text-[10px] font-medium text-white/45">
-              Finish Cove Change to open free-roam side shores
+              Finish Cove Change — then the outer ring opens for free stray
             </p>
           )}
           {nextBoat ? (

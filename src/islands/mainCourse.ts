@@ -108,7 +108,7 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     id: "credit_collector_rumor",
     track: "side",
     title: "Credit · Collector Rumor",
-    blurb: "Optional canyon digression — hear the Bank pitch; Harbor may gossip.",
+    blurb: "Optional canyon digression — listen or lean into Bank haste; Harbor gossips either way.",
     placeId: BOSS_ISLAND_ID,
     done: (s) => Boolean(s.questStatus["q_ck_collector_rumor"]?.completed),
   },

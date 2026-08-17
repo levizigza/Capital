@@ -66,6 +66,13 @@ describe("iconic whole-game criteria contracts", () => {
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "cove_shell_want")).toBe(true);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "paycheck_inbox_storm")).toBe(true);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "credit_collector_rumor")).toBe(true);
+    const credit = readFileSync(
+      join(__dirname, "../content/credit-kingdom.islands.json"),
+      "utf8",
+    );
+    expect(credit).toMatch(/ck_collector_rumor/);
+    expect(credit).toMatch(/ck_collector_lean/);
+    expect(credit).toMatch(/dc_fork/);
   });
 
   it("ships Harbor digression scars on every era side shore", () => {
