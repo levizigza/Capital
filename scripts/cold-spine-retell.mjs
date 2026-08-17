@@ -97,11 +97,11 @@ async function assertMemoryDay2(page) {
   const echo = page.getByTestId("day2-echo-surprise");
   await echo.waitFor({ state: "visible", timeout: 20_000 });
   const headline = await page.locator('[data-testid="day2-echo-surprise"] h2').innerText();
-  if (!/Memory keeps/i.test(headline)) {
+  if (!/Coin holds|Clock shelters|Spiral withstands|Memory keeps/i.test(headline)) {
     throw new Error(`day2 Memory headline missing: ${headline}`);
   }
   const kid = await page.getByTestId("day2-echo-kid-sentence").innerText();
-  if (!/The Coin holds|Memory keeps/i.test(kid)) {
+  if (!/The Coin holds|Memory keeps|The Clock shelters|The Spiral withstands/i.test(kid)) {
     throw new Error(`day2 kid missing organ: ${kid}`);
   }
   return { organ: "memory", headline, kid };

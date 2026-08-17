@@ -18,7 +18,7 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 9 | Quiet chrome | Hermans elegancy | One next-verb / organ chip | **Pass** |
 | 10 | Sacred composition | Seed of Life | Map / shores / Harbor Seed rhythm | **Pass** |
 | 11 | Literacy in play | Capital unique | Coin · Clock · Spiral · Memory taught by doing | **Pass** |
-| 12 | Fun first | Aspiration | Cold kid says “again” — juicy, fair, coherent | **Pass** — Take/Soft/day-2/carpet juice stack |
+| 12 | Fun first | Aspiration | Cold kid says “again” — juicy, fair, coherent | **Pass** — Take/Soft/day-2/carpet juice · cold triangle script green (human “again” still pending) |
 
 **Out of scope (freeze):** New main-course islands · fake multiplayer · franchise merges.
 

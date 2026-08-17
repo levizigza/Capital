@@ -41,10 +41,8 @@ export function Day2EchoOverlay({
   }, [organId]);
 
   const organWord = scarOrganName(organId);
-  const headline =
-    organId === "coin" || organId === "memory"
-      ? "Still here — the Plinth did not forget you"
-      : `Still here — ${organVerbChip(organId)} overnight`;
+  const verbChip = organVerbChip(organId);
+  const headline = `Still here — ${verbChip} overnight`;
 
   return (
     <div

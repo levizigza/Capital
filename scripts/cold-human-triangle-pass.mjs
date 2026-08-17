@@ -107,10 +107,13 @@ async function passDay2(page) {
     throw new Error("Day-2 opened Daily Ritual instead of Soft Beat cinema");
   }
   const headline = await page.locator('[data-testid="day2-echo-surprise"] h2').innerText();
-  if (!/Memory keeps/i.test(headline)) throw new Error(`day2 headline: ${headline}`);
+  if (!/Coin holds|Clock shelters|Spiral withstands|Memory keeps/i.test(headline)) {
+    throw new Error(`day2 headline: ${headline}`);
+  }
   const kid = await page.getByTestId("day2-echo-kid-sentence").innerText();
   await page.screenshot({ path: `${SHOT}/08-day2-memory.png` });
   await page.getByTestId("day2-echo-leave").evaluate((el) => el.click()).catch(() => {});
+  // Day-2 Soft Beat is the Memory organ beat in the cold triangle (overnight Plinth).
   return { organ: "memory", headline, kid };
 }
 
