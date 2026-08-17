@@ -393,6 +393,27 @@ export function plazaScarGossipLine(
   if (id.includes("signal_listen") || id === "sc_signal_listen") {
     return `${talks}Reef lights still blink your name — you listened on Phosphor before you rushed. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
   }
+  if (id.includes("foundry_listen") || id === "vf_foundry_listen") {
+    return `${talks}Neon Workshop still hums your name — you wandered Gridlock before you pitched. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("portfolio_peek") || id === "fa_portfolio_peek") {
+    return `${talks}Market Street still tips about it — you peeked at the boards before you traded. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("wharf_listen") || id === "da_wharf_listen") {
+    return `${talks}Wallet Wharf still clicks your name — you listened before you signed keys. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("shop_browse") || id === "ba_shop_browse") {
+    return `${talks}Keep aisles still murmur it — you browsed the shop floor before you stocked. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("ip_glance") || id === "in_ip_glance") {
+    return `${talks}Gallery glass still names you — you glanced at IP before you filed. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("scaffold_look") || id === "fs_scaffold_look") {
+    return `${talks}Scaffold poles still lean your way — you looked before you claimed a plot. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("auction_watch") || id === "re_auction_watch") {
+    return `${talks}Auction Yard still hammers soft about it — you watched before you bid. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
 
   if (isDigressionScar(scar)) {
     return `${talks}Side-street rumor: “${scar.label}.” Not a Plinth plaque — still a footprint on the plaza.${stanceBit}`;
@@ -429,6 +450,27 @@ export function piggyScarWeightLine(
   }
   if (id.includes("signal_listen") || id === "sc_signal_listen") {
     return `You wandered the Reef and listened first. That patience… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("foundry_listen") || id === "vf_foundry_listen") {
+    return `You lingered in the foundry before pitching. That patience… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("portfolio_peek") || id === "fa_portfolio_peek") {
+    return `You peeked at Market Street boards first. That quiet… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("wharf_listen") || id === "da_wharf_listen") {
+    return `You listened on the Wharf before keys. That care… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("shop_browse") || id === "ba_shop_browse") {
+    return `You browsed the shop floor before stocking. That pause… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("ip_glance") || id === "in_ip_glance") {
+    return `You glanced at the IP gallery first. That naming… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("scaffold_look") || id === "fs_scaffold_look") {
+    return `You studied unfinished scaffolding before claiming. That imagination… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("auction_watch") || id === "re_auction_watch") {
+    return `You watched the auction before raising a paddle. That chill… Harbor soft-names it. “${scar.label}.”`;
   }
   if (isDigressionScar(scar)) {
     return `Side roads write on Harbor too. “${scar.label}.” I kept the feeling — not a lesson.`;

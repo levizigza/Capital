@@ -213,6 +213,21 @@
                   ]
                 },
                 {
+                  "id": "ir1_listen",
+                  "text": "Just glance at the IP gallery — digression.",
+                  "nextNodeId": "ir_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "in_ip_glance",
+                      "label": "Glanced at Intangible Isle IP gallery",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "ir1c2",
                   "text": "What's the difference between them?",
                   "nextNodeId": "ir3"
@@ -223,6 +238,12 @@
               "id": "ir2",
               "speaker": "Inventor Iris",
               "text": "A patent protects inventions (20 years). A trademark protects brand names and logos (forever, if renewed). A copyright protects creative works like music and code (your lifetime + 70 years). Talk to Lawyer Leon for the legal details!",
+              "end": true
+            },
+            {
+              "id": "ir_listen_done",
+              "speaker": "Inventor Iris",
+              "text": "Naming ideas before you file is a money skill. Harbor may gossip that you lingered in the gallery.",
               "end": true
             },
             {

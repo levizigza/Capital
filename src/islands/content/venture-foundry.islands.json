@@ -219,6 +219,21 @@
                   ]
                 },
                 {
+                  "id": "ff1_listen",
+                  "text": "Just look around the foundry — digression.",
+                  "nextNodeId": "ff_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "vf_foundry_listen",
+                      "label": "Wandered Gridlock foundry floors",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "ff1_b",
                   "text": "I'm still brainstorming.",
                   "nextNodeId": "ff3"
@@ -229,6 +244,12 @@
               "id": "ff2",
               "speaker": "Founder Fern",
               "text": "Awesome! First question: who is your customer? Second: what problem do you solve for them? Third: how will you make money? Answer those three and you've got the bones of a business. Go see Mentor Malik to write it up!",
+              "end": true
+            },
+            {
+              "id": "ff_listen_done",
+              "speaker": "Founder Fern",
+              "text": "Watching makers before you pitch is a money skill. Harbor may gossip that you lingered in the foundry.",
               "end": true
             },
             {

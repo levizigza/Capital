@@ -29,4 +29,5 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 2026-08-17 start | Gaps on 5, 6, 9, Credit door | Criteria locked |
 | 2026-08-17 pass A | 1–4,7–8,10–11 improving; **5** Shell Want + Inbox + Collector Rumor; **9** shore quiet; Credit mastery named | Still short of GTA4 NPC density (#6), BotW roam breadth (#4 partial), TLOU2 full emotional spine (#2 partial), Fun cold “again” (#12) |
 | 2026-08-17 pass B | Digression scars in plaza talk (#6↑); free-roam shore/travel honesty (#4↑); emotional spectacle/retell (#2↑); `test:iconic` + iconic e2e green with VITE_QA | Still not Pass×12 — need denser streets, juicier Soft Beats, human cold triangle fun |
+| 2026-08-17 pass C | **5↑** Harbor-Memory digression scars on every era side shore (vf/fa/da/ba/in/fs/re + Reef); SIDE_TOMFOOLERY done-checks via `harborScars`; gossip + Piggy lines | Still not Pass×12 — streets denser but not GTA4; Soft Beats / cold “again” still open |
 | **Ship iconic?** | **No** — keep iterating until every row Pass without caveats |

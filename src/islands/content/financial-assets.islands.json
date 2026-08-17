@@ -261,11 +261,32 @@
                   ]
                 },
                 {
+                  "id": "p1_listen",
+                  "text": "Just peek at the boards — digression.",
+                  "nextNodeId": "p_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fa_portfolio_peek",
+                      "label": "Peeked at Market Street boards",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "p1c2",
                   "text": "Just browsing for now.",
                   "nextNodeId": "p3"
                 }
               ]
+            },
+            {
+              "id": "p_listen_done",
+              "speaker": "Penny the Trader",
+              "text": "Looking before you trade is a money skill. Harbor may gossip that you peeked at the boards.",
+              "end": true
             },
             {
               "id": "p2",

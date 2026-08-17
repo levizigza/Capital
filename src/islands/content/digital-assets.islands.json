@@ -218,6 +218,21 @@
                   ]
                 },
                 {
+                  "id": "s1_listen",
+                  "text": "Just look around the wharf — digression.",
+                  "nextNodeId": "s_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "da_wharf_listen",
+                      "label": "Listened at Wallet Wharf",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "s1c2",
                   "text": "What's a private key?",
                   "nextNodeId": "s3"
@@ -228,6 +243,12 @@
               "id": "s2",
               "speaker": "Satoshi the Guide",
               "text": "Here's your seed phrase — 12 random words that can recover your wallet. Never share it! Now head to Exchange Plaza to make your first trade.",
+              "end": true
+            },
+            {
+              "id": "s_listen_done",
+              "speaker": "Satoshi the Guide",
+              "text": "Hearing the wharf before you sign is a money skill. Harbor may gossip that you listened first.",
               "end": true
             },
             {

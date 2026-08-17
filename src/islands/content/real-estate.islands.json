@@ -211,6 +211,21 @@
                   ]
                 },
                 {
+                  "id": "aa1_listen",
+                  "text": "Just watch the auction — digression.",
+                  "nextNodeId": "aa_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "re_auction_watch",
+                      "label": "Watched Real Estate Row auction",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "aa1c2",
                   "text": "Not right now.",
                   "nextNodeId": "aa3"
@@ -221,6 +236,12 @@
               "id": "aa2",
               "speaker": "Auctioneer Al",
               "text": "The key is knowing the After-Repair Value (ARV). That's what the property will be worth after renovations. Never bid more than 70% of ARV minus repair costs. Now go talk to Flipper Fiona — she's the renovation expert.",
+              "end": true
+            },
+            {
+              "id": "aa_listen_done",
+              "speaker": "Auctioneer Al",
+              "text": "Watching bids before you raise a paddle is a money skill. Harbor may gossip that you stood in the yard.",
               "end": true
             },
             {

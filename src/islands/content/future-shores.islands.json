@@ -116,11 +116,32 @@
                   "nextNodeId": "build"
                 },
                 {
+                  "id": "c_listen",
+                  "text": "Just look at the scaffolding — digression.",
+                  "nextNodeId": "listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fs_scaffold_look",
+                      "label": "Looked over Portfolio Skies scaffolding",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "c2",
                   "text": "What happened to the old islands?",
                   "nextNodeId": "old"
                 }
               ]
+            },
+            {
+              "id": "listen_done",
+              "speaker": "The Keeper",
+              "text": "Standing in unfinished space before you claim it is a money skill. Harbor may gossip that you studied the scaffolding.",
+              "end": true
             },
             {
               "id": "build",

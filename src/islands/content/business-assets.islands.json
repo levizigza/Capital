@@ -211,6 +211,21 @@
                   ]
                 },
                 {
+                  "id": "sm1_listen",
+                  "text": "Just browse the shop floor — digression.",
+                  "nextNodeId": "sm_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "ba_shop_browse",
+                      "label": "Browsed Diversify Keep shop floor",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "sm1c2",
                   "text": "Just looking around.",
                   "nextNodeId": "sm3"
@@ -221,6 +236,12 @@
               "id": "sm2",
               "speaker": "Shop Owner Sam",
               "text": "Rule of thumb: your markup should cover not just the product cost, but also rent, wages, and a profit margin. Aim for at least 30% gross margin. Now go talk to Supplier Steve about getting inventory.",
+              "end": true
+            },
+            {
+              "id": "sm_listen_done",
+              "speaker": "Shop Owner Sam",
+              "text": "Browsing margins before you stock is a money skill. Harbor may gossip that you wandered the shop.",
               "end": true
             },
             {
