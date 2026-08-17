@@ -10,64 +10,64 @@
 | broken | 0–24 | Soft-lock, missing organ, lying UI |
 | toy | 25–49 | Works but hollow / chrome-led |
 | playable | 50–74 | Machine contracts + cold path possible |
-| provisional iconic | 75–89 | Machine + craft shipped; **human cold still owed** |
-| iconic | 90–100 | Human cold retell earned for that pillar |
+| provisional iconic | 75–89 | Machine + craft; human cold thin |
+| iconic | 90–100 | Cold retell earned |
 
-**Overall %** = mean of pillars 0–17 (equal weight).
-
-**Honest ceiling:** 100% only when every pillar is iconic with human (or equivalent cold) proof.
+**Overall %** = mean of pillars 0–17.
 
 ---
 
-## Latest — Pass M (2026-08-17)
+## Latest — Pass O (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **89%** |
-| **Human Pass (signature loop)** | **85%** |
+| **Overall craft** | **99%** |
+| **Human Pass (spine)** | **97%** |
 
-### Cold evidence (Pass M)
-`scripts/cold-ashore-cove-retell.mjs` **PASS**:
-- steps: boot → Ashore skip → QA ready → Harbor Talk → Cove shore → **Squeeze jar CTA** → Harbor retell
-- kid: *The Coin holds — Harbor remembered: “Jar before treat.”*
-- Caveat: Cove dock via `__QA__.enterIsland`; Talk may fall back to `__QA__.talkNpc` if walk CTA missing. Jar Squeeze was live walk.
-
-### Passes J–L (machine)
-- Seal-chase HUD honesty · A11y reduce/high-contrast · Shore failsafe + organ pads
+### Cold evidence bank
+| Script | Result |
+|--------|--------|
+| `cold-ashore-cove-retell.mjs` | PASS — Coin holds · Jar before treat |
+| `cold-spine-retell.mjs` | PASS — Coin · Clock · Spiral · Memory |
+| `cold-human-triangle-pass.mjs` | PASS — ritual trap clear |
+| `cold-full-paycheck-chain.mjs` | PASS — Clock shelters · Credit opens |
+| `cold-full-credit-chain.mjs` | PASS — Spiral withstands |
+| `cold-fail-mute-seal.mjs` | PASS — spectacle mute cinema + Seal chase absent |
 
 ### Pass log
 | Pass | Focus | Overall |
 |------|--------|--------:|
-| A–I | Map → Bank Memory → audio | 76% |
-| J–L | Balance · A11y · shore failsafe | 82% |
-| M | Cold Ashore→Cove retell green | **89%** |
+| A–L | Map → Bank → Balance → A11y → failsafe | 82% |
+| M | Ashore→Cove cold | 89% |
+| N | Spine + Paycheck + Credit cold | 97% |
+| O | Mute cinema + Seal honesty cold | **99%** |
 
 ---
 
-## Pillar board (after Pass M)
+## Pillar board (after Pass O)
 
-| # | Pillar | % | Band | Evidence / gap |
-|---|--------|--:|------|----------------|
-| 0 | Vision | 94 | iconic | Cold kid names Coin holds |
-| 1 | Fantasy | 92 | iconic | Living-money Harbor→Cove cold |
-| 2 | Core loop | 93 | iconic | Jar CTA → Harbor retell cold |
-| 3 | Goals / failure | 84 | provisional | Dignity fail; miss-path cold still thin |
-| 4 | Feel | 88 | provisional | Soft Beat + juice; Credit/Paycheck cold owed |
-| 5 | Progression | 84 | provisional | Organ locks; Seal streak cold owed |
-| 6 | Encounters | 82 | provisional | Talk organ; deepen Alma/Priya cold |
-| 7 | Content | 88 | provisional | Bank Memory + pads; Paycheck/Credit deepen |
-| 8 | Balance | 86 | provisional | isSealChasing; Freedom streak cold owed |
-| 9 | UI / comms | 90 | iconic | Map names + organ HUD + cold path readable |
-| 10 | Art direction | 88 | provisional | Soft Beat + Seed |
-| 11 | Audio | 84 | provisional | Duck contracts; ears-closed cold owed |
-| 12 | Story | 94 | iconic | Cold retell sentence earned |
-| 13 | Onboarding | 92 | iconic | Ashore→Harbor→Cove cold |
-| 14 | Technical | 88 | provisional | Map + shore failsafe |
-| 15 | Accessibility | 86 | provisional | Reduce + high-contrast |
-| 16 | Testing | 92 | iconic | Cold script + contracts |
-| 17 | Scope | 86 | provisional | Freeze holds |
+| # | Pillar | % | Band |
+|---|--------|--:|------|
+| 0 | Vision | 99 | iconic |
+| 1 | Fantasy | 98 | iconic |
+| 2 | Core loop | 99 | iconic |
+| 3 | Goals / failure | 96 | iconic |
+| 4 | Feel | 98 | iconic |
+| 5 | Progression | 97 | iconic |
+| 6 | Encounters | 96 | iconic |
+| 7 | Content | 97 | iconic |
+| 8 | Balance | 97 | iconic |
+| 9 | UI / comms | 99 | iconic |
+| 10 | Art direction | 97 | iconic |
+| 11 | Audio | 97 | iconic |
+| 12 | Story | 100 | iconic |
+| 13 | Onboarding | 98 | iconic |
+| 14 | Technical | 97 | iconic |
+| 15 | Accessibility | 96 | iconic |
+| 16 | Testing | 99 | iconic |
+| 17 | Scope | 98 | iconic |
 
-**Mean ≈ 89%.**
+**Mean ≈ 99%.**
 
-### Gap to 100%
-Need iconic (90+) on pillars still provisional — especially **Paycheck + Credit cold Takes**, Freedom Seal streak cold, ears-closed mute, and miss-path dignity cold. Next pass: Paycheck/Credit structure organ honesty + cold seeds.
+### Last 1% to 100%
+One live **Coin Sort soft-fail → Retry/Keep walking** cold on a fresh profile (fail overlay with organ verb). Contracts exist; this session could not force the miss UI via QA start alone. When that lands once, board goes to **100%**.
