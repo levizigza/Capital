@@ -43,7 +43,7 @@ const BEATS: Record<
   },
   ledger: {
     title: "Teller Window",
-    line: "Under glass every jar and stamp hums — Memory keeps. This is why Harbor felt that. Look — then leave.",
+    line: "Under glass every jar and stamp hums — Memory keeps. This is why the plaza remembers. Look — then leave.",
     hushLine: "Quiet at the marble. Memory keeps your plaque without a lecture. Look — then leave.",
     accent: "#f59e0b",
   },
