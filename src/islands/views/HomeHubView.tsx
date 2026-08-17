@@ -307,7 +307,8 @@ export function HomeHubView({
     firstMeet,
     quietHomecoming: quietHarbor,
   });
-  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach. */
+  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach.
+   *  WalkableHarborView still uses piggyPresence (not stripPlaza) for labels / soft spawn. */
   const stripPlaza = shouldStripPlazaForPresence({
     firstMeet,
     quietHomecoming: quietHarbor,
@@ -1159,8 +1160,6 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  {/* Presence beat ≠ stripPlaza: first meet keeps stalls walkable but
-                      hushes hero labels / soft-spawns near Piggy / parks series leads. */}
                   piggyPresenceBeat={piggyPresence}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
