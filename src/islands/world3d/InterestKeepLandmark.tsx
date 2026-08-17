@@ -9,6 +9,7 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
+import { ShoreSoftBeatBeacon } from "./ShoreSoftBeatBeacon";
 
 type CinemaPhase = "hush" | "mark" | "line";
 
@@ -137,7 +138,9 @@ export function InterestKeepLandmark({
         />
       </mesh>
 
-      <Billboard position={[0, 4.2, 0]} follow>
+      <ShoreSoftBeatBeacon y={4.45} accent="#fb7185" hushActive={hushActive} />
+
+      <Billboard position={[0, 5.05, 0]} follow>
         <SafeText
           fontSize={0.28}
           color={hushActive ? "#e7e5e4" : "#fff1f2"}
@@ -152,7 +155,7 @@ export function InterestKeepLandmark({
               ? "Quiet after the Take"
               : active
                 ? "Enter · interest spiral"
-                : label}
+                : `${label} · Soft Beat battlement`}
         </SafeText>
       </Billboard>
     </group>

@@ -18,12 +18,16 @@
 
 ---
 
-## Latest — Pass C (2026-08-17)
+## Latest — Pass D (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **66%** |
+| **Overall craft** | **68%** |
 | **Human Pass** | **0%** |
+
+### Pass D shipped (Feel + Art)
+- `ShoreSoftBeatBeacon` on Cove Jar · Paycheck Tower · Credit Keep exteriors
+- Distance labels name Soft Beat (lid / loft / battlement)
 
 ### Pass C shipped (Core loop)
 - Take hush **line** phase is caption-only (no bordered modal card)
@@ -39,7 +43,7 @@
 
 ---
 
-## Pillar board (after Pass C)
+## Pillar board (after Pass D)
 
 | # | Pillar | % | Band | Evidence / gap |
 |---|--------|--:|------|----------------|
@@ -47,22 +51,22 @@
 | 1 | Fantasy | 72 | playable↑ | Genre + early ledger chrome parked; cold Ashore→Cove owed |
 | 2 | Core loop | 70 | playable↑ | Hush captions + Carpet coach; human micro-loop owed |
 | 3 | Goals / failure | 66 | playable | Dignity fail paths; miss-path cold owed |
-| 4 | Feel | 64 | playable | Juice on Take/Plinth; Soft Beat shore next |
+| 4 | Feel | 72 | playable↑ | Shore Soft Beat crown beacons |
 | 5 | Progression | 63 | playable | Seals + carpet tier; kid retell owed |
 | 6 | Encounters | 64 | playable | Alma / Priya / Scanner; deepen Talk organs |
 | 7 | Content | 67 | playable | spineContentRegistry; no map widen |
 | 8 | Balance | 62 | playable | Cove→Freedom sheet |
 | 9 | UI / comms | 74 | playable↑ | Map names + cue + flat Seed + shore organ HUD |
-| 10 | Art direction | 71 | playable↑ | Sacred Seed + named dioramas |
+| 10 | Art direction | 74 | playable↑ | Soft Beat shore distance + Seed map |
 | 11 | Audio | 60 | playable | Stingers; share duck cold owed |
 | 12 | Story | 63 | playable↑ | Organ shore lines; human retell owed |
 | 13 | Onboarding | 70 | provisional | Tutorial solid for now; Human Pass 0 |
 | 14 | Technical | 69 | playable | Map fail key split |
-| 15 | Accessibility | 63 | playable | Reduce paths |
-| 16 | Testing | 71 | provisional | New map/fantasy/loop contracts |
+| 15 | Accessibility | 64 | playable | Beacon respects reduce |
+| 16 | Testing | 72 | provisional | New map/fantasy/loop/beacon contracts |
 | 17 | Scope | 72 | provisional | Freeze holds |
 
-**Mean ≈ 66%.**
+**Mean ≈ 68%.**
 
 ---
 
@@ -73,5 +77,7 @@
 | A | Archipelago islands + names + Harbor cue + flat Seed | ~58% → **62%** |
 | B | Spine organ shore + defer Harbor ledger | 62% → **64%** |
 | C | Take hush captions + Carpet coach | 64% → **66%** |
+| D | Shore Soft Beat crown beacons | 66% → **68%** |
 
-Next: Goals/failure + Feel Soft Beat shore beacons, then Progression cold gates — report % after each. Human Pass stays 0 until cold retell.
+Next: Goals/failure miss-path honesty + Progression Seal cold gates — report % after each. Human Pass stays 0 until cold retell.
+
