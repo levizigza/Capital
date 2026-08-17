@@ -198,7 +198,7 @@
             {
               "id": "aa1",
               "speaker": "Artisan Alma",
-              "text": "Oh, you have a Coin Pouch! My craft bench is a mess — brushes that feed real work, and glitter that just sparkles. Help me clear a path to Keeper Kira?",
+              "text": "Oh — a Coin Pouch! Fair coins earned. My bench is a mess: brushes that feed real work, glitter that just sparkles. Clear a path to Keeper Kira?",
               "choices": [
                 {
                   "id": "aa1_a",
@@ -212,13 +212,13 @@
             {
               "id": "aa2",
               "speaker": "Artisan Alma",
-              "text": "Keep the brushes. Glitter can wait. Then walk to the lighthouse — Kira's Take sticks forever: jar before treat, or treat before jar. That's Coin Hold.",
+              "text": "Keep the brushes. Glitter can wait. Then walk to the Savings Lighthouse — Kira will ask one question that sticks. Harbor will feel the answer.",
               "end": true
             },
             {
               "id": "aa3",
               "speaker": "Artisan Alma",
-              "text": "No rush. Come back when you're ready for the jar path.",
+              "text": "No rush. Come back when you’re ready for the lighthouse.",
               "end": true
             }
           ]
@@ -230,7 +230,7 @@
             {
               "id": "kk1",
               "speaker": "Keeper Kira",
-              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This is a Take — it sticks forever. Jar before treat, or treat before jar?",
+              "text": "You earned fair coins. One choice now — it sticks forever, and Harbor will remember. Jar before treat, or treat before jar?",
               "choices": [
                 {
                   "id": "kk1_a",
@@ -282,19 +282,19 @@
             {
               "id": "kk2",
               "speaker": "Keeper Kira",
-              "text": "Here's your Savings Jar. Harbor already felt that — board the carpet home when the hush settles.",
+              "text": "Jar first. Here’s your Savings Jar — the hush is already settling. Board the carpet home; Piggy will feel what you chose.",
               "end": true
             },
             {
               "id": "kk2_spend",
               "speaker": "Keeper Kira",
-              "text": "You still get a jar — and Harbor already felt the treat came first. Board the carpet home when the hush settles.",
+              "text": "Treat first — you still get a jar, and Harbor already felt that. Board the carpet home when the hush settles.",
               "end": true
             },
             {
               "id": "kk3",
               "speaker": "Keeper Kira",
-              "text": "The lighthouse will be here when you're ready!",
+              "text": "The lighthouse will wait. When you’re ready, the choice still sticks.",
               "end": true
             }
           ]

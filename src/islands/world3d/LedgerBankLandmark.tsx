@@ -20,7 +20,6 @@ export function LedgerBankLandmark({
   position,
   active = false,
   guided = false,
-  label = "Ledger Bank",
 }: Props) {
   const dial = useRef<THREE.Mesh>(null);
   const doorGlow = useRef<THREE.Mesh>(null);
@@ -142,9 +141,9 @@ export function LedgerBankLandmark({
         <meshStandardMaterial color="#78350f" metalness={0.55} />
       </mesh>
 
-      <Billboard position={[0, 5.0, 0]} follow>
-        {/* Parent plaza yaw can leave troika mirrored in local/dev Text. */}
-        <group scale={[-1, 1, 1]}>
+      {/* Name lives on the plaza hotspot billboard when near — avoid stacked/mirrored Troika. */}
+      {active ? (
+        <Billboard position={[0, 5.0, 0]} follow>
           <SafeText
             fontSize={0.32}
             color="#fffbeb"
@@ -153,10 +152,10 @@ export function LedgerBankLandmark({
             outlineWidth={0.028}
             outlineColor="#0f172a"
           >
-            {active ? "Enter · vault door" : label}
+            Enter · vault door
           </SafeText>
-        </group>
-      </Billboard>
+        </Billboard>
+      ) : null}
     </group>
   );
 }

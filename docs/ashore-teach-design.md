@@ -30,11 +30,16 @@
 
 | Lesson | Where |
 |--------|--------|
-| Take fork | Cove · Keeper Kira (real scar) |
-| Harbor remembers | First carpet home + spectacle |
+| Harbor remembers | First carpet home + spectacle *(wired; cold human still Gap)* |
 | Share | Post-spectacle |
 | Soft Beat vs arcade | First Coin Jar enter |
 | Paycheck / Credit | When those paintings unlock |
+
+## Organic twist (in world — Chamber 00 combine)
+
+| Lesson | Where |
+|--------|--------|
+| Take fork | Cove · Keeper Kira — jar before treat / treat before jar · hush · carpet home |
 
 ## Code
 

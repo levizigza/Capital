@@ -212,10 +212,10 @@ Telemetry (if added later): drop-off chamber index, Leave·Esc rate, time-to-fir
 
 1. **Done:** Ashore shrunk to 5 prove-it chambers (Fantasy · Walk · Talk · Dock · Launch).  
 2. **Done:** Dock boards lit Cove painting; Fantasy pokes organ toys.  
-3. **In-world:** Cove Take → Harbor spectacle + Share remain the twist tutorial.  
+3. **In-world (crafted):** Cove Take → Harbor spectacle + Share is the twist tutorial — Alma/Kira copy + Coin Bag name the fork; cold human still Gap.  
 4. **Later:** Soft Beat vs arcade teach inside first Coin Jar enter.  
 5. **Done:** Share freeze removed from Ashore.  
-6. **Next:** cold playtest pass bar in §5.
+6. **Next:** cold playtest pass bar in §5 (Harbor labels decluttered; presence beat wires soft meet).
 
 Freeze unchanged: Harbor · Cove → Paycheck → Credit strip; Family Room local; no foreign merges.
 

@@ -143,7 +143,7 @@ export function buildCoveChangeReplayTimeline(opts: {
         alternatives: ["Walked away"],
         stateDiff: "Quest started",
         explanation:
-          "Alma clears the path to the jar Take — Coin Hold, not Paycheck's three payday buckets.",
+          "Alma clears the path to the jar-or-treat choice — Cove’s Coin organ, not Paycheck’s three payday buckets.",
       },
       {
         timestamp: now,

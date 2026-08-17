@@ -1,6 +1,6 @@
 # Harbor Ashore — opening tutorial
 
-**Honest status (2026-08-17):** **Still Gap — closer.** Boot soft-locks fixed; full Chamber-00 → Harbor cold script can complete. First-meet still needs human polish (label clutter / Plinth mirror). Do **not** mark Pass until a cold human completes Title → Ashore → Harbor → Cove Take and can retell: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
+**Honest status (2026-08-17):** **Still Gap — closer.** Boot soft-locks fixed; Chamber-00 → Harbor cold script can complete. First-meet Plinth mirror / hero-label clutter fixed (presence beat hushes billboards; no X-flip Troika). Cove Take dialogue + Coin Bag tips frame the Portal twist. Do **not** mark Pass until a cold human completes Title → Ashore → Harbor → Cove Take and can retell: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
 
 **Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 

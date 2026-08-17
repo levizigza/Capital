@@ -71,7 +71,7 @@ export function shouldForceTalkCta(opts: {
 
 /** Voyage coach — single next verb toward Cove. */
 export function ashoreVoyageCoach(): string {
-  return "Board the Money Carpet — Coincraft Cove is your first painting.";
+  return "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.";
 }
 
 export function ashoreVoyageVerb(): string {

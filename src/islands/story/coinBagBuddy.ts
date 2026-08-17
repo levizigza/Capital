@@ -29,7 +29,7 @@ export type CoinBagBuddyTip = {
 /** Voyage tip — shared by to_dock + demoted legacy gate ids. */
 const VOYAGE_TIP: CoinBagBuddyTip = {
   tip: "Money Carpet → Coincraft Cove",
-  coach: "Board the carpet with me. First painting!",
+  coach: "Board with me. Fair coins first — then one choice Harbor feels.",
 };
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
@@ -265,9 +265,28 @@ export function coinBagIslandTip(
         return {
           tip: "Captain Penny — First Coins",
           coach:
-            "Talk to Captain Penny at the harbor. Earn fair coins, then the Giant Coin Jar Take waits.",
+            "Talk to Captain Penny at the dock. Earn fair coins — then Alma clears the path to Kira’s choice.",
           track: "main",
         };
+      }
+      const saveSpend = save.questStatus["q_cc_save_or_spend"];
+      if (saveSpend?.started && !saveSpend.completed) {
+        const have = saveSpend.completedObjectives ?? [];
+        if (!have.includes("talk:npc_artisan_alma")) {
+          return {
+            tip: "Artisan Alma — Craft Market",
+            coach: "Clear brushes vs glitter. She points the lighthouse — the choice that sticks.",
+            track: "main",
+          };
+        }
+        if (!have.includes("talk:npc_keeper_kira") || !have.includes("item:cc_savings_jar")) {
+          return {
+            tip: "Keeper Kira — Savings Lighthouse",
+            coach:
+              "This is the twist: jar before treat, or treat before jar. Harbor will remember.",
+            track: "main",
+          };
+        }
       }
     }
 

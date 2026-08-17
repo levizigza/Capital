@@ -101,7 +101,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "walk_outfitter",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",
@@ -110,7 +110,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "become_you",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",
@@ -119,7 +119,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "tiny_spend",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",
@@ -128,7 +128,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "practice_optional",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",
@@ -137,8 +137,8 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "to_dock",
     storyBeat: "go",
-    // Critical path after Talk (Harbor Ashore) — one voyage verb.
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    // Critical path after Talk (Harbor Ashore) — one voyage verb + twist foreshadow.
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",
@@ -147,7 +147,7 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "first_island",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach: "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.",
     guideLine:
       "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
     verb: "Board carpet",

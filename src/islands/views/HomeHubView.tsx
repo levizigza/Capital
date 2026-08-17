@@ -1159,7 +1159,9 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  piggyPresenceBeat={stripPlaza}
+                  {/* Presence beat ≠ stripPlaza: first meet keeps stalls walkable but
+                      hushes hero labels / soft-spawns near Piggy / parks series leads. */}
+                  piggyPresenceBeat={piggyPresence}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
                 />

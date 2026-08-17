@@ -11,7 +11,7 @@ import {
   PLINTH_GLOW_VISUAL_BEATS,
   HOMECOMING_VISUAL_BEATS,
 } from "./dialogueActionSync";
-import { coinBagHarborTip } from "./coinBagBuddy";
+import { coinBagHarborTip, coinBagIslandTip } from "./coinBagBuddy";
 import { piggyHomecomingGraph } from "./harborTalks";
 import { pickDailyRumor, localDayKey } from "../harborRitual";
 import { scarTriggersChapterQuiet, scarEchoAmbientLine } from "../worldMemory";
@@ -126,11 +126,43 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
       .map((e) => (e.type === "addScar" ? e.label : ""));
     expect(labels).toContain("Jar before treat");
     expect(labels).toContain("Treat before jar");
-    expect(take?.text).toMatch(/Take/i);
+    expect(take?.text).toMatch(/sticks forever|Harbor will remember/i);
     // Hermans elegancy — choice buttons speak plaque vocabulary
     const choiceText = (take?.choices ?? []).map((c) => c.text);
     expect(choiceText).toContain("Jar before treat");
     expect(choiceText).toContain("Treat before jar");
+  });
+
+  it("Alma foreshadows the lighthouse twist without Coin Hold jargon", () => {
+    const content = loadIslandsContent();
+    const cove = content.islands.find((i) => i.id === "coincraft_cove");
+    const alma = cove?.dialogues?.find((d) => d.id === "dlg_artisan_alma");
+    const aa2 = alma?.nodes.find((n) => n.id === "aa2");
+    expect(aa2?.text).toMatch(/lighthouse|Harbor will feel/i);
+    expect(String(aa2?.text)).not.toMatch(/Coin Hold/i);
+  });
+
+  it("Coin Bag names Kira as the Cove twist teach", () => {
+    const tip = coinBagIslandTip(
+      {
+        version: "1",
+        updatedAt: new Date().toISOString(),
+        inventory: ["cc_coin_pouch"],
+        questStatus: {
+          q_cc_first_coins: { started: true, completed: true, completedObjectives: [] },
+          q_cc_save_or_spend: {
+            started: true,
+            completed: false,
+            completedObjectives: ["talk:npc_artisan_alma"],
+          },
+        },
+        completedMinigames: [],
+        discovered: { npcs: [], items: [], areas: [], islands: [] },
+      },
+      { id: "coincraft_cove", name: "Coincraft Cove" } as never,
+    );
+    expect(tip.tip).toMatch(/Kira|Lighthouse/i);
+    expect(tip.coach ?? "").toMatch(/twist|remember/i);
   });
 
   it("uses day-after echo rumor when scar is from a prior day", () => {

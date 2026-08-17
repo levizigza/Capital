@@ -688,9 +688,10 @@ function PlazaScene({
         const kind = h.kind ?? "building";
         const hero =
           kind === "money_structure" || kind === "carpet_gate" || kind === "plinth";
-        // First-meet plaza: hide hero labels (Plinth etc.) — coach + Talk own the read.
+        // Piggy presence: no floating names — coach + Talk own the read.
+        // Heroes only name when near / pulsing (avoids Plinth+Bank billboard clutter).
         const showLabel =
-          !piggyPresenceBeat && (pulsing || nearby || hero);
+          !piggyPresenceBeat && (pulsing || nearby);
         const labelY =
           kind === "money_structure"
             ? 5.2
@@ -738,6 +739,7 @@ function PlazaScene({
                   guided={pulsing}
                   scarRemembered={memoryLit}
                   spectacleActive={plinthSpectacleActive}
+                  quietLabels={piggyPresenceBeat}
                   scarOrgan={scarEcho?.organ ?? null}
                   scarLabel={
                     scarEcho?.label
@@ -753,20 +755,18 @@ function PlazaScene({
             </group>
             {showLabel ? (
               <Billboard follow position={[0, labelY, 0]}>
-                {/* Troika + Billboard often reads mirrored in local/dev — flip X. */}
-                <group scale={[-1, 1, 1]}>
-                  <SafeText
-                    fontSize={hero ? 0.34 : 0.26}
-                    color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
-                    anchorX="center"
-                    anchorY="middle"
-                    outlineWidth={0.02}
-                    outlineColor="#ffffff"
-                    depthOffset={-1}
-                  >
-                    {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
-                  </SafeText>
-                </group>
+                {/* No X-flip — Billboard + Troika already face the camera; scale -1 mirrored kids. */}
+                <SafeText
+                  fontSize={hero ? 0.34 : 0.26}
+                  color={pulsing ? "#92400e" : hero ? "#78350f" : "#16283b"}
+                  anchorX="center"
+                  anchorY="middle"
+                  outlineWidth={0.02}
+                  outlineColor="#ffffff"
+                  depthOffset={-1}
+                >
+                  {`${h.icon} ${h.label}${pulsing ? " ←" : ""}`}
+                </SafeText>
               </Billboard>
             ) : null}
           </group>
