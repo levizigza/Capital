@@ -18,16 +18,18 @@
 
 ---
 
-## Latest — Pass H (2026-08-17)
+## Latest — Pass I (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **75%** |
+| **Overall craft** | **76%** |
 | **Human Pass** | **0%** |
 
+### Pass I shipped (Audio)
+- Contract locks spectacle/share Memory-bed duck + Harbor-felt stingers
+
 ### Pass H shipped (Content — Ledger Bank Memory)
-- Bank pads host **Memory** minigames on Harbor (`mg_harbor_safe_memory`, `mg_harbor_ledger_mail`)
-- No more Coin/Clock arcade hosted as Memory Bank rooms
+- Bank pads host **Memory** minigames on Harbor
 
 ### Pass log
 | Pass | Focus | Overall |
@@ -39,7 +41,8 @@
 | E | Organ-named fail dignity + credit parity | 70% |
 | F | Organ progression lock language on map chips | 72% |
 | G | Talk Battle organ listen/speak chrome | 73% |
-| H | Ledger Bank Memory minigames | **75%** |
+| H | Ledger Bank Memory minigames | 75% |
+| I | Share/spectacle Memory-bed duck contract | **76%** |
 
 ---
 
