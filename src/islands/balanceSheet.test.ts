@@ -24,8 +24,10 @@ import coincraft from "./content/coincraft-cove.islands.json";
 
 const COVE = coincraft.islands[0]!;
 
-function coveQuestCoins(): number {
-  return (COVE.quests ?? []).reduce((sum, q) => sum + (q.rewards?.coins ?? 0), 0);
+function coveMainQuestCoins(): number {
+  return (COVE.quests ?? [])
+    .filter((q) => (q.track ?? "main") === "main")
+    .reduce((sum, q) => sum + (q.rewards?.coins ?? 0), 0);
 }
 
 function coinSortThresholds(): { explorer: number; apprentice: number; strategist: number } {
@@ -39,8 +41,8 @@ function coinSortThresholds(): { explorer: number; apprentice: number; strategis
 
 describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
   it("Cove main-quest earn clears first carpet polish without auto-skipping Fortune", () => {
-    const questCoins = coveQuestCoins();
-    expect(questCoins).toBe(80); // First Coins 30 + Save or Spend 50
+    const questCoins = coveMainQuestCoins();
+    expect(questCoins).toBe(80); // First Coins 30 + Save or Spend 50 (side digressions excluded)
 
     const firstClear = computeMinigameReward(true, 35, true, false);
     // Typical apprentice clear: ~33 coins (15 + floor(35/4) + 10 first-clear)
@@ -114,7 +116,7 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
   it("plaza pass and first Board Star stay soft sinks after Cove", () => {
     expect(PLAZA_PASS_PRICE).toBe(80);
     const sealCost = 20; // partyBoard seal space coinReward
-    const postCoveMin = coveQuestCoins() + computeMinigameReward(true, 20, true, false).coins;
+    const postCoveMin = coveMainQuestCoins() + computeMinigameReward(true, 20, true, false).coins;
     expect(postCoveMin).toBeGreaterThanOrEqual(sealCost);
     expect(postCoveMin).toBeGreaterThanOrEqual(PLAZA_PASS_PRICE); // pass is a choice, not a wall
   });

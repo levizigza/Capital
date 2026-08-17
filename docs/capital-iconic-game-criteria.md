@@ -26,4 +26,6 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 
 | Date | Score | Notes |
 |------|-------|-------|
-| 2026-08-17 start | Gaps on 5, 6, 9, Credit door (2/7) | Criteria locked; begin shore declutter + Credit unlock clarity + side digressions that feed Memory |
+| 2026-08-17 start | Gaps on 5, 6, 9, Credit door | Criteria locked |
+| 2026-08-17 pass A | 1–4,7–8,10–11 improving; **5** Shell Want + Inbox + Collector Rumor; **9** shore quiet; Credit mastery named | Still short of GTA4 NPC density (#6), BotW roam breadth (#4 partial), TLOU2 full emotional spine (#2 partial), Fun cold “again” (#12) |
+| **Ship iconic?** | **No** — keep iterating until every row Pass without caveats |

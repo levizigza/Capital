@@ -63,5 +63,6 @@ describe("iconic whole-game criteria contracts", () => {
     expect(cove).toMatch(/addScar/);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "cove_shell_want")).toBe(true);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "paycheck_inbox_storm")).toBe(true);
+    expect(SIDE_TOMFOOLERY.some((s) => s.id === "credit_collector_rumor")).toBe(true);
   });
 });

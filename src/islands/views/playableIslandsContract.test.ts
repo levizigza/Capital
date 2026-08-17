@@ -33,4 +33,21 @@ describe("playable islands contract", () => {
     expect(map).toMatch(/HARBOR_3D_FAIL_KEY/);
     expect(map).toMatch(/archipelago-map-flat/);
   });
+
+  it("shore explore never soft-locks behind endless loading veil", () => {
+    const shore = readFileSync(
+      join(__dirname, "../world3d/WalkableIslandExplore.tsx"),
+      "utf8",
+    );
+    expect(shore).toMatch(/island-shore-loading/);
+    expect(shore).toMatch(/Enter shore now/);
+    expect(shore).toMatch(/setReady\(true\)/);
+    expect(shore).toMatch(/failsafe/);
+  });
+
+  it("Credit Spiral lock names mastery progress for navigability", () => {
+    const gates = readFileSync(join(__dirname, "../progressGates.ts"), "utf8");
+    expect(gates).toMatch(/Spiral locked — mastery/);
+    expect(gates).toMatch(/Earn Freedom Seal/);
+  });
 });

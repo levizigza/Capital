@@ -96,6 +96,17 @@
             { "type": "collectItem", "itemId": "ck_canyon_seal" }
           ],
           "rewards": { "coins": 40, "xp": 30, "items": ["ck_credit_shard"] }
+        },
+        {
+          "id": "q_ck_collector_rumor",
+          "track": "side",
+          "title": "Collector Rumor",
+          "description": "Optional digression — hear The Debt Collector’s pitch without feeding the Ordeal. Harbor may gossip.",
+          "hint": "Talk to The Debt Collector in Debt Canyon when you want a scare — then walk away.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_debt_collector" }
+          ],
+          "rewards": { "coins": 10, "xp": 25 }
         }
       ],
       "dialogues": [
@@ -248,16 +259,39 @@
               "text": "BANK OF OBLIGATION. Pay in full. Or else. Default is not an option.",
               "choices": [
                 {
+                  "id": "dc1_rumor",
+                  "text": "I’m only listening — digression.",
+                  "nextNodeId": "dc_rumor_done",
+                  "effects": [
+                    { "type": "startQuest", "questId": "q_ck_collector_rumor" },
+                    { "type": "completeQuest", "questId": "q_ck_collector_rumor" },
+                    {
+                      "type": "addScar",
+                      "id": "ck_collector_rumor",
+                      "label": "Heard the Bank of Obligation pitch",
+                      "kind": "npc_tone",
+                      "stance": "risk",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
                   "id": "dc1_defy",
                   "text": "I rebuild trust — I don't feed interest haste.",
                   "nextNodeId": "dc2"
                 },
                 {
-                  "id": "dc1_back",
-                  "text": "…Step back from the vault doors.",
+                  "id": "dc1_flee",
+                  "text": "I walk away.",
                   "nextNodeId": "dc3"
                 }
               ]
+            },
+            {
+              "id": "dc_rumor_done",
+              "speaker": "The Debt Collector",
+              "text": "Listening is not paying. Interest still compounds. Harbor will whisper that you stood in my canyon.",
+              "end": true
             },
             {
               "id": "dc2",

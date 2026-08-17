@@ -105,6 +105,14 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     done: (s) => Boolean(s.questStatus["q_pp_inbox_storm"]?.completed),
   },
   {
+    id: "credit_collector_rumor",
+    track: "side",
+    title: "Credit · Collector Rumor",
+    blurb: "Optional canyon digression — hear the Bank pitch; Harbor may gossip.",
+    placeId: BOSS_ISLAND_ID,
+    done: (s) => Boolean(s.questStatus["q_ck_collector_rumor"]?.completed),
+  },
+  {
     id: "party_plaza",
     track: "side",
     title: "Fortune Party Plaza",
