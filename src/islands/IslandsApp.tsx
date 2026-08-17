@@ -173,7 +173,8 @@ import {
 } from "./story/hubGuidedIntro";
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
-import { applyConceptSync } from "./conceptProgression";
+import { applyConceptSync, getConceptPhase, getConceptTransferMetrics } from "./conceptProgression";
+import { CONCEPT_REGISTRY } from "./conceptProgression/registry";
 import {
   applyCoveTakeLedgerFootprint,
   coveTakeStanceFromChoiceId,
@@ -226,6 +227,18 @@ function findDialogue(graphs: DialogueGraph[], graphId: string): DialogueGraph |
 
 function findNode(graph: DialogueGraph, nodeId: DialogueNodeId): DialogueNode | undefined {
   return graph.nodes.find((n) => n.id === nodeId);
+}
+
+/** Emit concept_transfer when a spine concept reaches INDEPENDENT (transfer pass). */
+function trackConceptTransferEvents(before: IslandSaveV1, after: IslandSaveV1): void {
+  for (const def of CONCEPT_REGISTRY) {
+    const was = getConceptPhase(before, def.concept_id);
+    const now = getConceptPhase(after, def.concept_id);
+    if (was === now || now !== "INDEPENDENT") continue;
+    const metrics = getConceptTransferMetrics(after, def.concept_id);
+    if (!metrics) continue;
+    void analytics.track("concept_transfer", metrics as unknown as Record<string, unknown>);
+  }
 }
 
 export default function IslandsApp({ userProfile, setUserProfile, onExit, onReplayIntro }: IslandsAppProps) {
@@ -468,12 +481,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     if (!prev) return;
     // Progressive disclosure sync — proof predicates only (never time/Next).
     const next = applyConceptSync(updater(prev));
+    trackConceptTransferEvents(prev, next);
     saveRef.current = next;
     setSave(next);
   }, []);
 
   const replaceSave = useCallback((next: IslandSaveV1) => {
+    const prev = saveRef.current;
     const synced = applyConceptSync(next);
+    if (prev) trackConceptTransferEvents(prev, synced);
     saveRef.current = synced;
     setSave(synced);
   }, []);

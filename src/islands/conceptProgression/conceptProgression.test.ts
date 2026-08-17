@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { IslandSaveV1 } from "../types";
 import { createDefaultVoyagerLedger } from "../voyagerLedger";
-import { HARBOR_HAVEN_ID, COVE_ISLAND_ID, COVE_CHANGE_QUEST_ID } from "../islandIds";
+import { HARBOR_HAVEN_ID, COVE_ISLAND_ID, COVE_CHANGE_QUEST_ID, PAYCHECK_PENINSULA_ID } from "../islandIds";
 import {
   applyConceptSync,
   getConceptPhase,
@@ -38,6 +38,7 @@ function emptyEvidence(over: Partial<ConceptEvidence> = {}): ConceptEvidence {
     discoveredIslands: new Set(),
     hasFreedom: false,
     guidedHubDone: false,
+    transferScenarioPasses: new Set(),
     ...over,
   };
 }
@@ -118,12 +119,28 @@ describe("concept progression engine", () => {
           islandId: COVE_ISLAND_ID,
           at: "2026-01-02",
         },
+        paycheck_protect_vs_spend: {
+          choiceId: "protect",
+          label: "Umbrella",
+          islandId: PAYCHECK_PENINSULA_ID,
+          at: "2026-01-02",
+        },
       },
       harborScars: [
         {
           id: "cove_saver_plaque",
           label: "Jar before treat",
           kind: "plaque",
+          islandId: COVE_ISLAND_ID,
+          choiceId: "save",
+          createdAt: "2026-01-02",
+        },
+        {
+          id: "pp_umbrella_plaque",
+          label: "Umbrella first",
+          kind: "plaque",
+          islandId: PAYCHECK_PENINSULA_ID,
+          choiceId: "protect",
           createdAt: "2026-01-02",
         },
       ],

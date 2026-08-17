@@ -34,6 +34,8 @@ export function evalPredicate(
       return evidence.discoveredIslands.has(pred.islandId);
     case "guided_hub_done":
       return evidence.guidedHubDone;
+    case "transfer_scenario_passed":
+      return evidence.transferScenarioPasses.has(pred.scenarioId);
     case "all_of":
       return pred.of.every((p) => evalPredicate(p, evidence));
     case "any_of":

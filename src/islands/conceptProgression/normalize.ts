@@ -53,6 +53,26 @@ export function normalizeConceptProgress(
       hintsUsed: typeof e.hintsUsed === "number" && e.hintsUsed >= 0 ? Math.floor(e.hintsUsed) : 0,
       guidedEnteredAt: typeof e.guidedEnteredAt === "string" ? e.guidedEnteredAt : undefined,
       masteredAt: typeof e.masteredAt === "string" ? e.masteredAt : undefined,
+      guidedSuccess: typeof e.guidedSuccess === "boolean" ? e.guidedSuccess : undefined,
+      guidedAttempts:
+        typeof e.guidedAttempts === "number" && e.guidedAttempts >= 0
+          ? Math.floor(e.guidedAttempts)
+          : undefined,
+      transferSuccess: typeof e.transferSuccess === "boolean" ? e.transferSuccess : undefined,
+      transferAttempts:
+        typeof e.transferAttempts === "number" && e.transferAttempts >= 0
+          ? Math.floor(e.transferAttempts)
+          : undefined,
+      transferStartedAt:
+        typeof e.transferStartedAt === "string" ? e.transferStartedAt : undefined,
+      transferTimeMs:
+        typeof e.transferTimeMs === "number" && e.transferTimeMs >= 0
+          ? Math.floor(e.transferTimeMs)
+          : undefined,
+      strategySelected:
+        typeof e.strategySelected === "string" ? e.strategySelected : undefined,
+      transferScenarioId:
+        typeof e.transferScenarioId === "string" ? e.transferScenarioId : undefined,
       lastTransitionAt:
         typeof e.lastTransitionAt === "string" ? e.lastTransitionAt : now,
     };

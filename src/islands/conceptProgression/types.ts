@@ -34,6 +34,7 @@ export type ConceptPredicate =
   | { type: "has_freedom" }
   | { type: "island_discovered"; islandId: string }
   | { type: "guided_hub_done" }
+  | { type: "transfer_scenario_passed"; scenarioId: string }
   | { type: "all_of"; of: ConceptPredicate[] }
   | { type: "any_of"; of: ConceptPredicate[] };
 
@@ -70,6 +71,28 @@ export type ConceptRuntimeEntry = {
   guidedEnteredAt?: string;
   masteredAt?: string;
   lastTransitionAt?: string;
+  /** Guided practice succeeded (→ REDUCED_GUIDANCE) */
+  guidedSuccess?: boolean;
+  guidedAttempts?: number;
+  /** Transfer window metrics (→ INDEPENDENT) */
+  transferSuccess?: boolean;
+  transferAttempts?: number;
+  transferStartedAt?: string;
+  transferTimeMs?: number;
+  strategySelected?: string;
+  transferScenarioId?: string;
+};
+
+/** Exported measurement row — docs/ftue/TRANSFER_TASKS.md */
+export type ConceptTransferMetrics = {
+  concept_id: string;
+  guided_success: boolean;
+  guided_attempts: number;
+  hints_used: number;
+  transfer_success: boolean;
+  transfer_attempts: number;
+  transfer_time?: number;
+  strategy_selected?: string;
 };
 
 export type ConceptProgressState = {
@@ -87,4 +110,5 @@ export type ConceptEvidence = {
   discoveredIslands: ReadonlySet<string>;
   hasFreedom: boolean;
   guidedHubDone: boolean;
+  transferScenarioPasses: ReadonlySet<string>;
 };

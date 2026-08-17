@@ -42,6 +42,7 @@ export type AnalyticsEventName =
   | "harbor_purchase"
   /** Signature spine beats — misunderstanding / fun dropoff instrumentation */
   | "core_loop_beat"
+  | "concept_transfer"
   | "soft_beat_armed"
   | "take_foreshadow";
 
@@ -293,6 +294,16 @@ export type IslandSaveV1 = {
   harborScars?: import("./worldMemory").HarborScar[];
   /** Locked-forever decisions keyed by decision id */
   irreversibleChoices?: Record<string, import("./worldMemory").IrreversibleChoiceRecord>;
+  /** Passed transfer scenarios — rule proof in new context (see transferTasks.ts) */
+  conceptTransferPasses?: Record<
+    string,
+    {
+      passedAt: string;
+      attempts: number;
+      durationMs?: number;
+      strategy?: string;
+    }
+  >;
   /**
    * Progressive disclosure — money-concept phases (LOCKED…MASTERED).
    * See docs/ftue/PROGRESSIVE_DISCLOSURE_DESIGN.md · conceptProgression/

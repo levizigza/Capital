@@ -15,6 +15,7 @@ export function buildConceptEvidence(save: IslandSaveV1): ConceptEvidence {
   const ledger = ensureLedger(save.voyagerLedger);
   const masteryClears = new Set(ledger.masteryClears ?? []);
   const discoveredIslands = new Set(save.discovered?.islands ?? []);
+  const transferScenarioPasses = new Set(Object.keys(save.conceptTransferPasses ?? {}));
 
   return {
     completedQuests,
@@ -25,5 +26,6 @@ export function buildConceptEvidence(save: IslandSaveV1): ConceptEvidence {
     discoveredIslands,
     hasFreedom: hasHarborFreedom(save),
     guidedHubDone: isHubGuidedComplete(save.hubGuidedIntro),
+    transferScenarioPasses,
   };
 }

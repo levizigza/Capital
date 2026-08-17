@@ -17,9 +17,23 @@ export {
 } from "./registry";
 export { normalizeConceptProgress, createEmptyConceptProgress } from "./normalize";
 export {
+  TRANSFER_SCENARIOS,
+  getPrimaryTransferScenario,
+  getTransferScenario,
+  listTransferConceptIds,
+  primaryTransferPredicate,
+} from "./transferTasks";
+export {
+  exportConceptTransferMetrics,
+  syncConceptTransferPasses,
+  noteTransferAttempt,
+  inferTransferStrategy,
+} from "./transferMetrics";
+export {
   applyConceptSync,
   getConceptPhase,
   getActiveGuidance,
+  getConceptTransferMetrics,
   noteConceptFailure,
   markConceptReviewAvailable,
   withNormalizedConceptProgress,

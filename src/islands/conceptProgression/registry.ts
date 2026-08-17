@@ -6,6 +6,7 @@
 
 import type { ConceptDef } from "./types";
 import { isWeakSolePredicate } from "./predicates";
+import { primaryTransferPredicate } from "./transferTasks";
 import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
@@ -45,7 +46,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: { type: "scar_present", scarIdPrefix: "cove_" },
+    transfer_task: primaryTransferPredicate("money_is_alive"),
     mastery_condition: {
       type: "all_of",
       of: [
@@ -77,10 +78,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: {
-      type: "minigame_completed",
-      minigameId: "mg_coin_sort",
-    },
+    transfer_task: primaryTransferPredicate("earn_then_decide"),
     mastery_condition: {
       type: "mastery_gate_cleared",
       gateId: "gate_coin_sort",
@@ -97,13 +95,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: {
-      type: "any_of",
-      of: [
-        { type: "scar_present", scarId: "cove_saver_plaque" },
-        { type: "scar_present", scarId: "cove_spender_plaque" },
-      ],
-    },
+    transfer_task: primaryTransferPredicate("save_vs_spend"),
     mastery_condition: {
       type: "all_of",
       of: [
@@ -129,7 +121,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: { type: "quest_completed", questId: COVE_CHANGE_QUEST_ID },
+    transfer_task: primaryTransferPredicate("irreversible_take"),
     mastery_condition: {
       type: "all_of",
       of: [
@@ -161,13 +153,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: {
-      type: "any_of",
-      of: [
-        { type: "scar_present", scarIdPrefix: "pp_" },
-        { type: "scar_present", scarIdPrefix: "credit_" },
-      ],
-    },
+    transfer_task: primaryTransferPredicate("harbor_scar_memory"),
     mastery_condition: {
       type: "all_of",
       of: [
@@ -206,7 +192,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: { type: "has_freedom" },
+    transfer_task: primaryTransferPredicate("cashflow"),
     mastery_condition: { type: "has_freedom" },
   },
   {
@@ -232,10 +218,7 @@ export const CONCEPT_REGISTRY: ConceptDef[] = [
     failure_condition: { type: "never" },
     hint_policy: hint,
     retry_policy: retry,
-    transfer_task: {
-      type: "irreversible_set",
-      key: "credit_borrow_vs_wait",
-    },
+    transfer_task: primaryTransferPredicate("interest_compounds"),
     mastery_condition: {
       type: "irreversible_set",
       key: "credit_borrow_vs_wait",

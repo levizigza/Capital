@@ -3,6 +3,12 @@ import { buildConceptEvidence } from "./evidence";
 import { evalPredicate } from "./predicates";
 import { CONCEPT_REGISTRY, getConceptDef, listConceptIds } from "./registry";
 import { createEmptyConceptProgress, normalizeConceptProgress } from "./normalize";
+import {
+  exportConceptTransferMetrics,
+  finalizeGuidedMetricsOnReduced,
+  finalizeTransferMetricsOnIndependent,
+  syncConceptTransferPasses,
+} from "./transferMetrics";
 import type {
   ConceptDef,
   ConceptPhase,
@@ -59,10 +65,11 @@ export function applyConceptSync(
   save: IslandSaveV1,
   now = new Date().toISOString(),
 ): IslandSaveV1 {
+  let working = syncConceptTransferPasses(save, now);
   const known = new Set(listConceptIds());
-  const progress = normalizeConceptProgress(save.conceptProgress, known, now);
+  const progress = normalizeConceptProgress(working.conceptProgress, known, now);
   const concepts = { ...progress.concepts };
-  const evidence = buildConceptEvidence(save);
+  const evidence = buildConceptEvidence(working);
 
   // Ensure every registry id has an entry
   for (const def of CONCEPT_REGISTRY) {
@@ -105,12 +112,16 @@ export function applyConceptSync(
         }
       }
       if (evalPredicate(def.success_condition, evidence)) {
+        const updated = finalizeGuidedMetricsOnReduced(entry, now);
+        Object.assign(entry, updated);
         setPhase(entry, "REDUCED_GUIDANCE", now);
       }
     }
 
     if (entry.phase === "REDUCED_GUIDANCE") {
       if (evalPredicate(def.transfer_task, evidence)) {
+        const updated = finalizeTransferMetricsOnIndependent(entry, working, def.concept_id, now);
+        Object.assign(entry, updated);
         setPhase(entry, "INDEPENDENT", now);
       }
     }
@@ -136,11 +147,17 @@ export function applyConceptSync(
     if (entry.phase === "AVAILABLE" && evalPredicate(def.trigger_condition, evidence)) {
       setPhase(entry, "GUIDED", now);
       entry.attempts += 1;
-      if (evalPredicate(def.success_condition, evidence)) setPhase(entry, "REDUCED_GUIDANCE", now);
+      if (evalPredicate(def.success_condition, evidence)) {
+        const updated = finalizeGuidedMetricsOnReduced(entry, now);
+        Object.assign(entry, updated);
+        setPhase(entry, "REDUCED_GUIDANCE", now);
+      }
       if (
         (entry.phase === "REDUCED_GUIDANCE" || entry.phase === "GUIDED") &&
         evalPredicate(def.transfer_task, evidence)
       ) {
+        const updated = finalizeTransferMetricsOnIndependent(entry, working, def.concept_id, now);
+        Object.assign(entry, updated);
         setPhase(entry, "INDEPENDENT", now);
       }
       if (
@@ -160,7 +177,7 @@ export function applyConceptSync(
     concepts,
   };
 
-  return { ...save, conceptProgress: next, updatedAt: save.updatedAt };
+  return { ...working, conceptProgress: next, updatedAt: working.updatedAt };
 }
 
 /** Mark a concept for spaced review without wiping mastery timestamp. */
@@ -256,6 +273,17 @@ export function withNormalizedConceptProgress(save: IslandSaveV1): IslandSaveV1 
     ...save,
     conceptProgress: normalizeConceptProgress(save.conceptProgress, known),
   };
+}
+
+export function getConceptTransferMetrics(
+  save: IslandSaveV1,
+  conceptId: string,
+): import("./types").ConceptTransferMetrics | null {
+  const known = new Set(listConceptIds());
+  const progress = normalizeConceptProgress(save.conceptProgress, known);
+  const entry = progress.concepts[conceptId];
+  if (!entry) return null;
+  return exportConceptTransferMetrics(entry, conceptId, save);
 }
 
 export { createEmptyConceptProgress };
