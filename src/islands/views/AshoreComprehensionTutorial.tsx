@@ -12,7 +12,7 @@ import { capitalMusic } from "../audio/capitalMusic";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { analytics } from "../analytics";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
-import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
+import { cinemaTimeScale } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
 import {
   TALK_TARGET,
