@@ -1269,7 +1269,7 @@ export function HomeHubView({
               </button>
             ) : null}
             {!earlyCastle ? <WealthHud totalCoins={userProfile.totalCoins} compact /> : null}
-            {!simplified && !castleMode ? (
+            {!simplified && !castleMode && sideMagnetsOpen ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
             {freedomPlazaLine && !castleMode && !piggyPresence ? (

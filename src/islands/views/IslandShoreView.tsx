@@ -41,6 +41,7 @@ import { getIslandCulture } from "../islandCulture";
 import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
 import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
+import { isSpineTravelId } from "../spineArchipelago";
 import {
   harborScarPlaques,
   organQuietBadge,
@@ -148,6 +149,8 @@ export function IslandShoreView({
   const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
   const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
   const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
+  /** Spine shores lead with organ verb — genre city chrome stays parked (Pillar 0/1). */
+  const spineShore = isSpineTravelId(island.id);
 
   useEffect(() => {
     syncWorldPlace({
@@ -358,38 +361,51 @@ export function IslandShoreView({
               ) : null}
             </div>
           ) : (
-          <div className="space-y-1">
+          <div className="space-y-1" data-testid="shore-hero-copy">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-2xl">{island.icon}</span>
               <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
-              <span className="era-badge text-[10px]">{era.eraLabel}</span>
+              {!spineShore ? (
+                <span className="era-badge text-[10px]">{era.eraLabel}</span>
+              ) : null}
             </div>
-            <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {genre ? (
-                <>
-                  <span className="font-bold text-amber-200">{genre.canonName}</span>
-                  {" · "}
-                  {district?.districtName ?? genre.cityLabel}
-                  {" — "}
-                  {culture.cultureName}
-                </>
-              ) : (
-                <>
-                  {biome.label} — {culture.cultureName}
-                </>
-              )}
-              {" · "}
-              {district?.feel ?? culture.vibe}
-            </p>
-            {genreBlurb ? (
-              <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
-            ) : null}
-            {genre ? (
-              <p className="max-w-md text-[10px] text-white/55 drop-shadow">
-                Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
-                {genre.signatureMachines.slice(0, 2).join(" · ")}
+            {spineShore ? (
+              <p className="max-w-md text-xs text-white/85 drop-shadow" data-testid="shore-organ-line">
+                <span className="font-bold text-amber-200">
+                  {organVerbChip(organ?.id ?? "coin")}
+                </span>
+                {" — living money on this shore"}
               </p>
-            ) : null}
+            ) : (
+              <>
+                <p className="max-w-md text-xs text-white/85 drop-shadow">
+                  {genre ? (
+                    <>
+                      <span className="font-bold text-amber-200">{genre.canonName}</span>
+                      {" · "}
+                      {district?.districtName ?? genre.cityLabel}
+                      {" — "}
+                      {culture.cultureName}
+                    </>
+                  ) : (
+                    <>
+                      {biome.label} — {culture.cultureName}
+                    </>
+                  )}
+                  {" · "}
+                  {district?.feel ?? culture.vibe}
+                </p>
+                {genreBlurb ? (
+                  <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
+                ) : null}
+                {genre ? (
+                  <p className="max-w-md text-[10px] text-white/55 drop-shadow">
+                    Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
+                    {genre.signatureMachines.slice(0, 2).join(" · ")}
+                  </p>
+                ) : null}
+              </>
+            )}
             {nextStep ? (
               <div
                 className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100"
@@ -499,7 +515,11 @@ export function IslandShoreView({
           tip={
             chapterQuiet ? "Carpet home — Harbor felt that" : buddy.tip
           }
-          detail={chapterQuiet ? undefined : buddy.coach}
+          detail={
+            chapterQuiet
+              ? "Walk to the pier · board Carpet — Harbor remembered"
+              : buddy.coach
+          }
           track={buddy.track}
           guideArrows={guideArrows}
           onToggleGuide={onA11yChange ? toggleGuide : undefined}

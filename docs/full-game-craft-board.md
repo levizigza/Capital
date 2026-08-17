@@ -18,46 +18,51 @@
 
 ---
 
-## Status — Pass A (2026-08-17): Archipelago map restored
-
-### What shipped this pass
-- **Named islands on 3D map** — side shores no longer `hideLabels`
-- **Harbor “Click here · start” cue** strengthened on 3D map
-- **Flat failsafe is a Seed-of-Life island map** (not empty navy) with names + Harbor arrow
-- **Map WebGL fail key decoupled** from Harbor plaza fail (`ARCHIPELAGO_MAP_3D_FAIL_KEY`) so a sticky Harbor fail no longer erases islands
-
-### Overall after Pass A
+## Latest — Pass C (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **62%** |
+| **Overall craft** | **66%** |
 | **Human Pass** | **0%** |
-| **Map / travel UI (subset of #9 + #10)** | **78%** provisional |
 
-### Pillar board
+### Pass C shipped (Core loop)
+- Take hush **line** phase is caption-only (no bordered modal card)
+- After hush, Coin Bag keeps a pier/Carpet coach while `chapterQuiet`
+
+### Pass B shipped (Vision + Fantasy)
+- Spine shores lead with **organ verb** (no genre Cast/Machines/canon city hero)
+- Harbor Cashflow ledger deferred until Cove Change (`sideMagnetsOpen`)
+
+### Pass A shipped (Map / UI + Art)
+- Named islands on 3D + Seed-of-Life flat fallback + Harbor “Click here · start”
+- Map fail key decoupled from Harbor plaza
+
+---
+
+## Pillar board (after Pass C)
 
 | # | Pillar | % | Band | Evidence / gap |
 |---|--------|--:|------|----------------|
-| 0 | Vision | 68 | playable | Docs + freeze hold; human recite still owed |
-| 1 | Fantasy | 65 | playable | Harbor living-money stage exists; cold Ashore→Cove owed |
-| 2 | Core loop | 62 | playable | signature-loop machine; human micro-loop owed |
-| 3 | Goals / failure | 66 | playable | Dignity fail paths in code; miss-path cold owed |
+| 0 | Vision | 74 | playable↑ | Spine shore organ language; human recite owed |
+| 1 | Fantasy | 72 | playable↑ | Genre + early ledger chrome parked; cold Ashore→Cove owed |
+| 2 | Core loop | 70 | playable↑ | Hush captions + Carpet coach; human micro-loop owed |
+| 3 | Goals / failure | 66 | playable | Dignity fail paths; miss-path cold owed |
 | 4 | Feel | 64 | playable | Juice on Take/Plinth; Soft Beat shore next |
 | 5 | Progression | 63 | playable | Seals + carpet tier; kid retell owed |
-| 6 | Encounters | 64 | playable | Alma / Priya / Scanner shipped; deepen Talk organs |
+| 6 | Encounters | 64 | playable | Alma / Priya / Scanner; deepen Talk organs |
 | 7 | Content | 67 | playable | spineContentRegistry; no map widen |
-| 8 | Balance | 62 | playable | Cove→Freedom sheet; keep honest |
-| 9 | UI / comms | 72 | playable↑ | **Map names + cue + flat Seed** (this pass) |
-| 10 | Art direction | 70 | playable↑ | Sacred Seed guides + flat island rhythm restored |
-| 11 | Audio | 60 | playable | Stingers exist; share duck cold owed |
-| 12 | Story | 61 | playable | Kid sentences in docs/tests; human retell owed |
-| 13 | Onboarding | 70 | provisional | Tutorial craft solid for now; Human Pass still 0 |
-| 14 | Technical | 68 | playable | Failsafe + map fail key split (this pass) |
-| 15 | Accessibility | 63 | playable | Reduce paths; keep honest on new juice |
-| 16 | Testing | 70 | provisional | `test:iconic` cadence; human cold still required |
-| 17 | Scope | 72 | provisional | Freeze guarded; deepen spine only |
+| 8 | Balance | 62 | playable | Cove→Freedom sheet |
+| 9 | UI / comms | 74 | playable↑ | Map names + cue + flat Seed + shore organ HUD |
+| 10 | Art direction | 71 | playable↑ | Sacred Seed + named dioramas |
+| 11 | Audio | 60 | playable | Stingers; share duck cold owed |
+| 12 | Story | 63 | playable↑ | Organ shore lines; human retell owed |
+| 13 | Onboarding | 70 | provisional | Tutorial solid for now; Human Pass 0 |
+| 14 | Technical | 69 | playable | Map fail key split |
+| 15 | Accessibility | 63 | playable | Reduce paths |
+| 16 | Testing | 71 | provisional | New map/fantasy/loop contracts |
+| 17 | Scope | 72 | provisional | Freeze holds |
 
-**Mean ≈ 62%.** Prior status board rows that said “playable → iconic” without human cold were **overclaimed**; this board replaces that theater.
+**Mean ≈ 66%.**
 
 ---
 
@@ -66,5 +71,7 @@
 | Pass | Focus | Overall before → after |
 |------|--------|------------------------|
 | A | Archipelago islands + names + Harbor cue + flat Seed | ~58% → **62%** |
+| B | Spine organ shore + defer Harbor ledger | 62% → **64%** |
+| C | Take hush captions + Carpet coach | 64% → **66%** |
 
-Next pass: Vision → Fantasy lock against live Harbor/Cove (craft plan order), then Core loop cold path gaps — report % after each.
+Next: Goals/failure + Feel Soft Beat shore beacons, then Progression cold gates — report % after each. Human Pass stays 0 until cold retell.
