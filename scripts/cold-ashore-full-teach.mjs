@@ -91,12 +91,26 @@ try {
     throw new Error("Boot overlays still mounted on Harbor");
   }
 
+  const presence = await page.getByTestId("harbor-piggy-presence").isVisible().catch(() => false);
+  const coachCount = await page.getByTestId("castle-grounds-coach").count();
+  const ambushTalk = await page.getByTestId("hub-talk-npc").isVisible().catch(() => false);
+  if (!presence) throw new Error("Expected harbor-piggy-presence on first meet");
+  if (coachCount > 0) throw new Error("Castle coach must not stack on meet_guide");
+  if (ambushTalk) throw new Error("Talk CTA must not ambush before near Piggy");
+
   console.log(
     JSON.stringify(
       {
         pass: true,
         steps,
-        harbor: { quietChip: quietVisible, teachGone, castGone },
+        harbor: {
+          quietChip: quietVisible,
+          teachGone,
+          castGone,
+          presence,
+          coachMuted: coachCount === 0,
+          noAmbushTalk: !ambushTalk,
+        },
       },
       null,
       2,

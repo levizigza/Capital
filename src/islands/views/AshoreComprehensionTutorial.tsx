@@ -238,10 +238,8 @@ export function AshoreComprehensionTutorial({
               <h1 className="max-w-xl font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
                 Money is alive here
               </h1>
-              <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
-              <p className="mt-2 max-w-md text-sm text-amber-100/85">
-                That Voyager is you — {voyager.name || "your cast"}. Poke a living-money toy below,
-                then walk.
+              <p className="mt-3 max-w-lg text-base text-white/85">
+                {MURAL_THESIS} Poke a living-money toy — that’s you as {voyager.name || "Voyager"}.
               </p>
             </>
           ) : null}

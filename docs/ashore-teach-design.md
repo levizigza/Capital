@@ -1,6 +1,6 @@
 # Ashore Teach — Chamber 00 (iter 23)
 
-**Honest status:** **Gap / not iconic.** Soft-locks on boot CTA are being fixed; cold human retell still required before any Pass language.
+**Honest status:** **Gap / not iconic** until human cold retell. Soft-locks fixed; Chamber-00 cold green. Craft board: [tutorial-craft-board.md](./tutorial-craft-board.md).
 
 **Goal:** Short prove-it pad before Carpet — then the **first Cove→Harbor loop is the tutorial**.  
 **Research:** [ashore-tutorial-research.md](./ashore-tutorial-research.md)  

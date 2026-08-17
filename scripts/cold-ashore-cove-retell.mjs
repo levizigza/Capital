@@ -279,10 +279,27 @@ async function main() {
     await finishTalk(page);
     report.steps.push("harbor_talk");
 
-    await page.evaluate(async () => {
-      await window.__QA__.enterIsland("coincraft_cove");
-    });
-    await page.getByTestId("island-shore-view").waitFor({ timeout: 30_000 });
+    // Real voyage board — Talk → Carpet map → Cove pin (not QA enterIsland).
+    const travel = page.getByTestId("hub-travel-map");
+    const mythCarpet = page.getByTestId("fallback-board-carpet");
+    if (await travel.isVisible({ timeout: 12_000 }).catch(() => false)) {
+      await travel.click({ force: true });
+      report.boardedVia = "hub-travel-map";
+    } else if (await mythCarpet.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await mythCarpet.click({ force: true });
+      report.boardedVia = "fallback-board-carpet";
+    } else {
+      // Talk Battle should have advanced voyage; openTravel still proves map pin board.
+      await page.evaluate(() => window.__QA__.openTravel());
+      report.boardedVia = "qa-openTravel";
+    }
+    const covePin = page.getByTestId("island-pin-coincraft_cove");
+    await covePin.waitFor({ state: "visible", timeout: 20_000 });
+    if ((await covePin.getAttribute("data-locked")) === "1") {
+      throw new Error("Coincraft Cove pin locked on first voyage");
+    }
+    await covePin.click({ force: true });
+    await page.getByTestId("island-shore-view").waitFor({ timeout: 45_000 });
     report.steps.push("cove_shore");
 
     await talkNpc(page, "npc_captain_penny", /Teach|Yes|denominations|coins/i);
@@ -335,14 +352,24 @@ async function main() {
       await hush.click({ force: true }).catch(() => {});
       await page.keyboard.press("Escape").catch(() => {});
     }
+    let homeVia = null;
     const homeCta = page.getByTestId("shore-carpet-home-cta");
     const homeTop = page.getByTestId("shore-carpet-home");
     if (await homeCta.isVisible({ timeout: 10_000 }).catch(() => false)) {
-      await homeCta.evaluate((el) => el.click());
+      await homeCta.click({ force: true });
+      homeVia = "shore-carpet-home-cta";
+      await page.waitForTimeout(800);
     } else if (await homeTop.isVisible().catch(() => false)) {
-      await homeTop.evaluate((el) => el.click());
+      await homeTop.click({ force: true });
+      homeVia = "shore-carpet-home";
+      await page.waitForTimeout(800);
     }
-    await page.evaluate(() => window.__QA__.openHub());
+    // Only fall back if still on shore after CTA.
+    if (await page.getByTestId("island-shore-view").isVisible().catch(() => false)) {
+      await page.evaluate(() => window.__QA__.openHub());
+      homeVia = homeVia ? `${homeVia}+openHub` : "openHub";
+    }
+    report.homeVia = homeVia;
     const skip3d = page.getByTestId("harbor-skip-3d");
     if (await skip3d.isVisible({ timeout: 4_000 }).catch(() => false)) {
       await skip3d.click({ force: true });
@@ -351,56 +378,57 @@ async function main() {
 
     let kid = "";
     let sawSpectacle = false;
-    for (let i = 0; i < 60; i++) {
+    let sawShare = false;
+    for (let i = 0; i < 80; i++) {
       if (await page.getByTestId("scar-spectacle-retell").isVisible().catch(() => false)) {
         kid = await page.getByTestId("scar-spectacle-retell").innerText();
         sawSpectacle = true;
-        break;
+        // Dismiss into share freeze
+        await page.getByTestId("scar-spectacle").click({ force: true }).catch(() => {});
+        await page.waitForTimeout(600);
       }
       if (await page.getByTestId("scar-spectacle").isVisible().catch(() => false)) {
         sawSpectacle = true;
         const retell = page.getByTestId("scar-spectacle-retell");
         if (await retell.isVisible().catch(() => false)) {
           kid = await retell.innerText();
-          break;
         }
+        await page.getByTestId("scar-spectacle").click({ force: true }).catch(() => {});
+        await page.waitForTimeout(600);
       }
-      if (await page.getByTestId("harbor-felt-retell").isVisible().catch(() => false)) {
-        kid = await page.getByTestId("harbor-felt-retell").innerText();
+      if (await page.getByTestId("harbor-felt-share").isVisible().catch(() => false)) {
+        sawShare = true;
+        if (await page.getByTestId("harbor-felt-retell").isVisible().catch(() => false)) {
+          kid = await page.getByTestId("harbor-felt-retell").innerText();
+        } else if (
+          await page.getByTestId("harbor-felt-kid-sentence").isVisible().catch(() => false)
+        ) {
+          kid = await page.getByTestId("harbor-felt-kid-sentence").innerText();
+        }
         break;
       }
-      if (await page.getByTestId("harbor-felt-kid-sentence").isVisible().catch(() => false)) {
-        kid = await page.getByTestId("harbor-felt-kid-sentence").innerText();
-        break;
-      }
+      if (sawSpectacle && kid) break;
       if (await page.getByTestId("talk-battle-screen").isVisible().catch(() => false)) {
         const t = await page.getByTestId("talk-battle-screen").innerText();
         if (/Coin holds|Jar before|Harbor remembered/i.test(t)) {
           kid = t.replace(/\s+/g, " ").slice(0, 280);
-          break;
         }
         await finishTalk(page);
       }
-      if (i === 12) {
-        const piggy = page.getByTestId("fallback-talk-piggy");
-        const hubTalk = page.getByTestId("hub-talk-npc");
-        if (await piggy.isVisible().catch(() => false)) await piggy.evaluate((el) => el.click());
-        else if (await hubTalk.isVisible().catch(() => false))
-          await hubTalk.evaluate((el) => el.click());
-      }
-      await page.waitForTimeout(400);
+      await page.waitForTimeout(350);
     }
     const saveFinal = await page.evaluate(() => window.__QA__.getSave());
-    if (!kid && saveFinal?.harborHomecoming?.message) {
-      kid = saveFinal.harborHomecoming.message;
-    }
     report.kid = kid;
     report.sawSpectacle = sawSpectacle;
+    report.sawShare = sawShare;
     report.coveChangeDone = Boolean(saveFinal?.questStatus?.q_cc_save_or_spend?.completed);
     report.pass =
       report.hasScar &&
       report.coveChangeDone &&
-      /Coin holds|Jar before treat|Harbor remembered|Harbor feels/i.test(kid);
+      sawSpectacle === true &&
+      /Coin holds|Jar before treat|Harbor remembered/i.test(kid) &&
+      Boolean(report.boardedVia) &&
+      !String(report.boardedVia).includes("enterIsland");
     report.steps.push("harbor_retell");
 
     await page.screenshot({ path: `${SHOT}/retell.png`, fullPage: true, type: "png" });

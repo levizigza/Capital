@@ -46,9 +46,10 @@ describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
     expect(getHubGuidedStep({ version: 1, step: "to_dock" }).highlight).toBe("travel");
   });
 
-  it("Coin Bag meet_guide tip only points at Piggy", () => {
+  it("Coin Bag meet_guide tip is walk-first toward Piggy (no Talk ambush)", () => {
     const tip = coinBagHarborTip(createDefaultHubGuidedIntro());
-    expect(tip.coach ?? tip.tip).toMatch(/Piggy/i);
+    expect(`${tip.tip} ${tip.coach ?? ""}`).toMatch(/Piggy|fountain|walk/i);
+    expect(tip.tip).not.toMatch(/^Talk to Piggy/i);
     expect(`${tip.tip} ${tip.coach ?? ""}`).not.toMatch(/Outfitter|Capsule/i);
   });
 

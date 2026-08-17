@@ -34,8 +34,8 @@ const VOYAGE_TIP: CoinBagBuddyTip = {
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
   meet_guide: {
-    tip: "Talk to Piggy Penny — soft gold ring by the fountain",
-    coach: "I’m Coin Bag. Stay with me — we’ll walk to Piggy together.",
+    tip: "Piggy’s waving by the fountain — walk over when you want",
+    coach: "I’m Coin Bag. Walk first — Talk is yours when you’re ready.",
   },
   // DEMOTED — Ashore remaps these onto voyage; copy stays Outfitter-free.
   walk_outfitter: VOYAGE_TIP,

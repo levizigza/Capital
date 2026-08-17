@@ -46,11 +46,24 @@ try {
   }
   await page.screenshot({ path: `${SHOT}/04-walk.png` });
 
+  // Keyboard path: reload title and Enter on CTA (no mouse).
+  await page.goto(`${BASE}/?replayIntro=1`, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(800);
+  const skip2 = page.getByRole("button", { name: /^Skip$/i });
+  if (await skip2.isVisible({ timeout: 4_000 }).catch(() => false)) {
+    await skip2.click({ force: true });
+  }
+  await page.getByTestId("opening-choose-voyager").waitFor({ state: "visible", timeout: 20_000 });
+  await page.getByTestId("opening-choose-voyager").focus();
+  await page.keyboard.press("Enter");
+  await page.getByTestId("boot-cast-select").waitFor({ state: "visible", timeout: 15_000 });
+
   console.log(
     JSON.stringify(
       {
         pass: true,
         titleMouseClick: true,
+        titleKeyboardEnter: true,
         castContinue: true,
         ashoreFantasy: true,
         walkChamber: true,

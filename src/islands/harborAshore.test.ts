@@ -58,10 +58,10 @@ describe("Harbor Ashore redesign", () => {
     );
   });
 
-  it("shows soft Castle coach on first meet; mutes only quiet homecoming", () => {
+  it("mutes Castle coach on first meet; shows voyage coach on to_dock", () => {
     expect(
       shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: false }),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: true }),
     ).toBe(false);
