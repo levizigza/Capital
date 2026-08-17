@@ -1804,6 +1804,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             score,
             scoreThreshold: resolvedThreshold,
             source,
+            islandId: activeIsland.id,
             takeFlavor: resolveTakeFailFlavor({
               irreversibleChoices: save?.irreversibleChoices,
             }),

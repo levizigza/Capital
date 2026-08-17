@@ -48,6 +48,13 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
         },
       }),
     ).toBe("spend");
+    expect(
+      resolveTakeFailFlavor({
+        irreversibleChoices: {
+          credit_borrow_vs_wait: { choiceId: "borrow" },
+        },
+      }),
+    ).toBe("spend");
     const spend = minigameFailCopy({
       reason: "objective_not_met",
       minigameName: "Coin Catcher",
@@ -62,5 +69,18 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
     expect(spend.retryLabel).toBe(save.retryLabel);
     expect(spend.body.toLowerCase()).toMatch(/soft miss|still teach|no shame/);
     expect(spend.body.toLowerCase()).not.toMatch(/should have saved|bad spend|mistake/);
+  });
+
+  it("names the living-money organ on spine island fails", () => {
+    const copy = minigameFailCopy({
+      reason: "score_below_threshold",
+      minigameName: "Coin Sort",
+      score: 10,
+      scoreThreshold: 35,
+      source: "structure",
+      islandId: "coincraft_cove",
+    });
+    expect(copy.eyebrow).toMatch(/Coin holds/);
+    expect(copy.hint).toMatch(/Coin holds/);
   });
 });

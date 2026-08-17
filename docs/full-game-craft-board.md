@@ -18,55 +18,55 @@
 
 ---
 
-## Latest — Pass D (2026-08-17)
+## Latest — Pass E (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **68%** |
+| **Overall craft** | **70%** |
 | **Human Pass** | **0%** |
+
+### Pass E shipped (Goals / failure)
+- Soft-fail copy names the **organ verb** on spine islands
+- Credit borrow Takes share Spend dignity parity (`credit_borrow_vs_wait`)
 
 ### Pass D shipped (Feel + Art)
 - `ShoreSoftBeatBeacon` on Cove Jar · Paycheck Tower · Credit Keep exteriors
-- Distance labels name Soft Beat (lid / loft / battlement)
 
 ### Pass C shipped (Core loop)
-- Take hush **line** phase is caption-only (no bordered modal card)
-- After hush, Coin Bag keeps a pier/Carpet coach while `chapterQuiet`
+- Take hush line captions (no modal card) + Carpet coach while quiet
 
 ### Pass B shipped (Vision + Fantasy)
-- Spine shores lead with **organ verb** (no genre Cast/Machines/canon city hero)
-- Harbor Cashflow ledger deferred until Cove Change (`sideMagnetsOpen`)
+- Spine organ shore HUD; Harbor ledger deferred until Cove Change
 
 ### Pass A shipped (Map / UI + Art)
-- Named islands on 3D + Seed-of-Life flat fallback + Harbor “Click here · start”
-- Map fail key decoupled from Harbor plaza
+- Named Seed-of-Life islands + flat fallback + Harbor “Click here · start”
 
 ---
 
-## Pillar board (after Pass D)
+## Pillar board (after Pass E)
 
 | # | Pillar | % | Band | Evidence / gap |
 |---|--------|--:|------|----------------|
-| 0 | Vision | 74 | playable↑ | Spine shore organ language; human recite owed |
-| 1 | Fantasy | 72 | playable↑ | Genre + early ledger chrome parked; cold Ashore→Cove owed |
-| 2 | Core loop | 70 | playable↑ | Hush captions + Carpet coach; human micro-loop owed |
-| 3 | Goals / failure | 66 | playable | Dignity fail paths; miss-path cold owed |
-| 4 | Feel | 72 | playable↑ | Shore Soft Beat crown beacons |
+| 0 | Vision | 74 | playable↑ | Spine organ language; human recite owed |
+| 1 | Fantasy | 72 | playable↑ | Genre + early ledger parked; cold Ashore→Cove owed |
+| 2 | Core loop | 70 | playable↑ | Hush + Carpet coach; human micro-loop owed |
+| 3 | Goals / failure | 72 | playable↑ | Organ-named dignity fail + credit parity |
+| 4 | Feel | 72 | playable↑ | Shore Soft Beat crowns |
 | 5 | Progression | 63 | playable | Seals + carpet tier; kid retell owed |
 | 6 | Encounters | 64 | playable | Alma / Priya / Scanner; deepen Talk organs |
-| 7 | Content | 67 | playable | spineContentRegistry; no map widen |
+| 7 | Content | 67 | playable | spineContentRegistry |
 | 8 | Balance | 62 | playable | Cove→Freedom sheet |
-| 9 | UI / comms | 74 | playable↑ | Map names + cue + flat Seed + shore organ HUD |
-| 10 | Art direction | 74 | playable↑ | Soft Beat shore distance + Seed map |
+| 9 | UI / comms | 74 | playable↑ | Map + shore organ HUD |
+| 10 | Art direction | 74 | playable↑ | Soft Beat shore + Seed map |
 | 11 | Audio | 60 | playable | Stingers; share duck cold owed |
-| 12 | Story | 63 | playable↑ | Organ shore lines; human retell owed |
-| 13 | Onboarding | 70 | provisional | Tutorial solid for now; Human Pass 0 |
+| 12 | Story | 64 | playable↑ | Organ fail + shore lines; human retell owed |
+| 13 | Onboarding | 70 | provisional | Tutorial solid; Human Pass 0 |
 | 14 | Technical | 69 | playable | Map fail key split |
 | 15 | Accessibility | 64 | playable | Beacon respects reduce |
-| 16 | Testing | 72 | provisional | New map/fantasy/loop/beacon contracts |
+| 16 | Testing | 73 | provisional | Fail + map + fantasy + loop contracts |
 | 17 | Scope | 72 | provisional | Freeze holds |
 
-**Mean ≈ 68%.**
+**Mean ≈ 70%.**
 
 ---
 
@@ -78,6 +78,6 @@
 | B | Spine organ shore + defer Harbor ledger | 62% → **64%** |
 | C | Take hush captions + Carpet coach | 64% → **66%** |
 | D | Shore Soft Beat crown beacons | 66% → **68%** |
+| E | Organ-named fail dignity + credit parity | 68% → **70%** |
 
-Next: Goals/failure miss-path honesty + Progression Seal cold gates — report % after each. Human Pass stays 0 until cold retell.
-
+Next: Progression Seal cold gates + Encounters Talk organ deepen. Human Pass stays 0 until cold retell.
