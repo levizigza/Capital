@@ -18,7 +18,6 @@ import type {
 import type { LearningProfileId } from "../learningProfile";
 import type { CapitalCharacter } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getAnimationStyle } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
@@ -38,9 +37,7 @@ import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
-import { getIslandBiome } from "../world3d/islandBiomes";
 import type { AccessibilitySettings } from "../settings";
-import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
 import {
   harborScarPlaques,
   organQuietBadge,
@@ -101,7 +98,6 @@ export function IslandShoreView({
   talkOpen = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
-  const era = getAnimationStyle(theme.animationStyle);
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
   const organ = useMemo(() => moneyOrganForIsland(island.id), [island.id]);
@@ -144,10 +140,6 @@ export function IslandShoreView({
   const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const culture = useMemo(() => getIslandCulture(island), [island]);
-  const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
-  const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
-  const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
-  const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
 
   useEffect(() => {
     syncWorldPlace({
@@ -360,39 +352,14 @@ export function IslandShoreView({
           ) : (
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-2xl">{island.icon}</span>
+              <span className="text-2xl" aria-hidden>
+                {island.icon}
+              </span>
               <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
-              <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
-            <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {genre ? (
-                <>
-                  <span className="font-bold text-amber-200">{genre.canonName}</span>
-                  {" · "}
-                  {district?.districtName ?? genre.cityLabel}
-                  {" — "}
-                  {culture.cultureName}
-                </>
-              ) : (
-                <>
-                  {biome.label} — {culture.cultureName}
-                </>
-              )}
-              {" · "}
-              {district?.feel ?? culture.vibe}
-            </p>
-            {genreBlurb ? (
-              <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
-            ) : null}
-            {genre ? (
-              <p className="max-w-md text-[10px] text-white/55 drop-shadow">
-                Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
-                {genre.signatureMachines.slice(0, 2).join(" · ")}
-              </p>
-            ) : null}
             {nextStep ? (
               <div
-                className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100"
+                className="mt-1 max-w-sm rounded-xl border border-amber-300/35 bg-black/40 px-2.5 py-1.5 text-[11px] text-amber-50"
                 data-testid="shore-next-verb"
               >
                 <span className="font-bold uppercase tracking-wide text-amber-200">

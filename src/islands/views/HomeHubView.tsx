@@ -11,7 +11,7 @@ import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
 import { getIslandById } from "../content/loader";
 import { getEffectiveBoatTier } from "../boats";
-import { hasHarborFreedom } from "../progressGates";
+import { hasHarborFreedom, bossUnlockProgress } from "../progressGates";
 import { getProfileDef, type LearningProfileId } from "../learningProfile";
 import type { AccessibilitySettings } from "../settings";
 import {
@@ -589,6 +589,7 @@ export function HomeHubView({
     plinthGlow: plinthGlow || feltShareOpen,
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
+    creditMastery: bossUnlockProgress(save),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,

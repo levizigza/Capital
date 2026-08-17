@@ -89,6 +89,22 @@ export const MAIN_COURSE: MainCourseStep[] = [
 /** Explicitly optional — never gate the ending on these. */
 export const SIDE_TOMFOOLERY: MainCourseStep[] = [
   {
+    id: "cove_shell_want",
+    track: "side",
+    title: "Cove · Shell Want",
+    blurb: "Shelly’s digression — need vs want with a Harbor gossip scar.",
+    placeId: COVE_ISLAND_ID,
+    done: (s) => Boolean(s.questStatus["q_cc_shell_want"]?.completed),
+  },
+  {
+    id: "paycheck_inbox_storm",
+    track: "side",
+    title: "Paycheck · Inbox Storm",
+    blurb: "Optional money-mail choices on Main Street — Clock practice without the Take.",
+    placeId: PAYCHECK_PENINSULA_ID,
+    done: (s) => Boolean(s.questStatus["q_pp_inbox_storm"]?.completed),
+  },
+  {
     id: "party_plaza",
     track: "side",
     title: "Fortune Party Plaza",

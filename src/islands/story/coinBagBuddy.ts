@@ -73,6 +73,8 @@ export function coinBagHarborTip(
     day2Echo?: boolean;
     /** Freedom Seal carpet tier label (plaza read) */
     carpetTierLabel?: string | null;
+    /** Credit Kingdom unlock progress — plaza never silent-locks Spiral */
+    creditMastery?: { mastery: number; needed: number; escaped: boolean; unlocked: boolean } | null;
   },
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
@@ -136,6 +138,23 @@ export function coinBagHarborTip(
     return {
       tip: `Next painting: ${opts.nextPaintingHint}`,
       coach: "Money Carpet opens the Archipelago map. I’ll hop with you.",
+    };
+  }
+
+  const credit = opts?.creditMastery;
+  if (credit && credit.escaped && !credit.unlocked) {
+    return {
+      tip: `Credit Kingdom · mastery ${credit.mastery}/${credit.needed}`,
+      coach:
+        "Spiral opens after Freedom plus three mastery clears. Clear Soft Beats / quizzes — then Interest Keep waits.",
+      track: "main",
+    };
+  }
+  if (credit && !credit.escaped && !opts?.nextPaintingHint) {
+    return {
+      tip: "Freedom Seal first — then Spiral",
+      coach: "Credit Kingdom stays locked until Harbor escape. Finish Paycheck Change, come home.",
+      track: "main",
     };
   }
 

@@ -119,11 +119,14 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
     return "Finish Cove Change first — Coin holds";
   }
   if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
-    return "Finish Cove Change — then era shores open";
+    return "Finish Cove Change — then free-roam shores open";
   }
   if (island.id === BOSS_ISLAND_ID) {
     const prog = bossUnlockProgress(save);
-    return `Need freedom + ${prog.needed} mastery clears (${prog.mastery}/${prog.needed})`;
+    if (!prog.escaped) {
+      return "Earn Freedom Seal — then Spiral can open";
+    }
+    return `Spiral locked — mastery ${prog.mastery}/${prog.needed}`;
   }
   return "Locked";
 }
