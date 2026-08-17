@@ -57,6 +57,7 @@ import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { stepWalkVelocity } from "../input/walkFeel";
+import { playCapitalSfx } from "../audio/capitalSfx";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -291,6 +292,9 @@ function Player({
     p.x += vel.current.x * dt;
     p.z += vel.current.z * dt;
     moving.current = stepped.moving || Math.abs(turn) > 0.001;
+    if (stepped.justStopped) {
+      playCapitalSfx("walk_stop");
+    }
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 

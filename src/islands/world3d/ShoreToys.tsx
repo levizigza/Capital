@@ -6,7 +6,8 @@
 import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { playOrganSfx } from "../audio/capitalSfx";
+import { playOrganSfx, playCapitalSfx } from "../audio/capitalSfx";
+import { triggerJuice } from "@/juice";
 
 /** Spinning coin you can click — tiny delight on every shore. */
 export function ShoreSpinCoin({
@@ -68,6 +69,9 @@ export function ShoreBell({ position }: { position: [number, number, number] }) 
       onClick={(e) => {
         e.stopPropagation();
         setRing(3);
+        playOrganSfx("memory");
+        playCapitalSfx("talk_confirm");
+        triggerJuice("accept");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -116,6 +120,7 @@ export function ShoreClockToy({
         e.stopPropagation();
         setSpin(5);
         playOrganSfx("clock");
+        triggerJuice("accept");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -165,6 +170,7 @@ export function ShoreSpiralToy({
         e.stopPropagation();
         setBoost(4);
         playOrganSfx("spiral");
+        triggerJuice("accept");
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";

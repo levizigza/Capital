@@ -46,6 +46,9 @@ export function minigameFailCopy(opts: {
   source?: "board" | "arcade" | "dialogue" | "qa" | "structure" | null;
   /** When set, Spend Takes get the same dignity as saver — never a lecture. */
   takeFlavor?: TakeFailFlavor;
+  /** Organ underfoot — fail names the living money verb */
+  organId?: "coin" | "clock" | "spiral" | "memory" | null;
+  minigameId?: string | null;
 }): MinigameFailCopy {
   const name = opts.minigameName.trim() || "this challenge";
   const thresholdLine =
@@ -61,6 +64,19 @@ export function minigameFailCopy(opts: {
         : "Keep walking";
 
   const spendParity = opts.takeFlavor === "spend";
+  const organ = opts.organId;
+  const mg = (opts.minigameId ?? "").toLowerCase();
+
+  let organHint = thresholdLine;
+  if (organ === "spiral" || mg.includes("credit") || mg.includes("ck_")) {
+    organHint = `${thresholdLine} Spiral tip: wait beats haste — read the signal once more.`;
+  } else if (organ === "clock" || mg.includes("paycheck") || mg.includes("inbox")) {
+    organHint = `${thresholdLine} Clock tip: shelter first — one quieter choice, then retry.`;
+  } else if (organ === "coin" || mg.includes("cove") || mg.includes("coin")) {
+    organHint = `${thresholdLine} Coin tip: jar weight still waits — try the clearer path.`;
+  } else if (organ === "memory") {
+    organHint = `${thresholdLine} Memory tip: Harbor keeps the miss too — same place, clearer try.`;
+  }
 
   return {
     eyebrow: "Still learning",
@@ -68,7 +84,7 @@ export function minigameFailCopy(opts: {
     body: spendParity
       ? "Treat-first Takes still teach. A soft miss is not shame — same shore, clearer try."
       : "Money is alive here. A soft miss still teaches — no shame, just another try.",
-    hint: thresholdLine,
+    hint: organHint,
     retryLabel: "Retry",
     walkLabel,
   };

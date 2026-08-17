@@ -26,6 +26,8 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
+import { triggerJuice } from "@/juice";
 
 /** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
 const TALK_INPUT_ARM_MS = 220;
@@ -115,6 +117,9 @@ export function TalkBattleScreen({
     }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    playCapitalSfx("talk_confirm");
+    if (organ?.id) playOrganSfx(organ.id);
+    triggerJuice("accept");
     // Arm after the opening Talk gesture finishes — keeps first listen readable.
     inputArmed.current = false;
     const arm = window.setTimeout(() => {
@@ -125,13 +130,14 @@ export function TalkBattleScreen({
       document.body.style.overflow = prev;
       inputArmed.current = false;
     };
-  }, [open]);
+  }, [open, organ?.id]);
 
   const advanceFromListen = useCallback(() => {
     if (!inputArmed.current) return;
     const next = nextTalkPhase(node, "listen");
     if (next === "choose") {
       setPhase("choose");
+      playCapitalSfx("talk_confirm");
       return;
     }
     onContinue();
@@ -140,6 +146,8 @@ export function TalkBattleScreen({
   const chooseReply = useCallback(
     (choiceId: string) => {
       if (!inputArmed.current) return;
+      playCapitalSfx("talk_confirm");
+      triggerJuice("accept");
       onChoice(choiceId);
     },
     [onChoice],

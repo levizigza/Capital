@@ -15,6 +15,7 @@ import { softBeatScarVistaLine } from "@/design/designBible";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
+import { armSoftBeat } from "../softBeatArm";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -73,10 +74,16 @@ export function SoftBeatOverlay({
     if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
+    // Arm the next living Talk — Soft Beat is multiplicative, not a dead cinema.
+    armSoftBeat(kind);
+    void import("../analytics").then(({ analytics }) => {
+      void analytics.track("soft_beat_armed", { kind, organ: organ.id });
+      void analytics.track("core_loop_beat", { beat: "soft_beat", kind });
+    });
     const scale = cinemaTimeScale();
     const t = window.setTimeout(onDone, Math.round((hushActive ? 5200 : 4200) * scale));
     return () => window.clearTimeout(t);
-  }, [hushActive, onDone, organ.id]);
+  }, [hushActive, onDone, organ.id, kind]);
 
   const vista = softBeatScarVistaLine(kind, scarLabel);
   const body = hushActive ? beat.hushLine : (vista ?? beat.line);

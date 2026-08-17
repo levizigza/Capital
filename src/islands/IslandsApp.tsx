@@ -52,6 +52,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { playCapitalSfx } from "./audio/capitalSfx";
+import { consumeSoftBeatArm } from "./softBeatArm";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
@@ -150,6 +151,7 @@ import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
+import { moneyOrganForIsland } from "./moneyOrgans";
 import {
   applyCapsulePurchase,
   applyCarpetPolish,
@@ -1226,6 +1228,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         islandId: island?.id ?? HUB_ISLAND_ID,
         npcId,
       });
+      const armed = consumeSoftBeatArm();
+      if (armed) {
+        void analytics.track("core_loop_beat", { beat: "soft_beat_consumed", kind: armed, npcId });
+      }
 
       if (island) {
         updateSave((prev) => ({
@@ -1610,16 +1616,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(null);
     setMinigameStartedAt(null);
     setMinigameSource(null);
+    // Structure fail/abandon stays put — never remount Harbor under a Money Structure.
     if (source === "structure") {
-      setView("home");
-      setActiveIslandId(HUB_ISLAND_ID);
-      void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+      const place =
+        view === "home" || isHubIslandId(activeIsland?.id)
+          ? "harbor_haven"
+          : `islands_play:${activeIsland?.id ?? "unknown"}`;
+      void trackScreenEnter(place, {
+        islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+        stay: "structure",
+      });
       return;
     }
     void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
       islandId: activeIsland?.id,
     });
-  }, [activeIsland?.id, activeMinigameId, minigameStartedAt, minigameSource]);
+  }, [activeIsland?.id, activeMinigameId, minigameStartedAt, minigameSource, view]);
 
   const onMinigameComplete = useCallback(
     async (success: boolean, score?: number, timeline?: DecisionTimeline) => {
@@ -1704,10 +1716,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setMinigameStartedAt(null);
         setMinigameSource(null);
         setPendingMastery(null);
+        // Structure clear stays in place — Soft Beat / interior resume underfoot.
         if (source === "structure") {
-          setView("home");
-          setActiveIslandId(HUB_ISLAND_ID);
-          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+          const place =
+            view === "home" || isHubIslandId(activeIsland.id)
+              ? "harbor_haven"
+              : `islands_play:${activeIsland.id}`;
+          void trackScreenEnter(place, { islandId: activeIsland.id, stay: "structure" });
         } else {
           void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
         }
@@ -1808,6 +1823,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             takeFlavor: resolveTakeFailFlavor({
               irreversibleChoices: save?.irreversibleChoices,
             }),
+            organId: moneyOrganForIsland(activeIsland.id)?.id ?? null,
+            minigameId: mgId,
           }),
         });
         setActiveMinigameId(null);
@@ -1828,6 +1845,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       save,
       setUserProfile,
       updateSave,
+      view,
     ]
   );
 
@@ -2290,6 +2308,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 setMinigameSource("dialogue");
                 setActiveMinigameId(minigameId as MinigameId);
                 setMinigameStartedAt(Date.now());
+              }}
+              onPlayStructureMinigame={(minigameId) => {
+                setMinigameSource("structure");
+                setActiveMinigameId(minigameId as MinigameId);
+                setMinigameStartedAt(Date.now());
+                void analytics.track("minigame_started", {
+                  islandId: activeIsland.id,
+                  minigameId,
+                  source: "money_structure",
+                });
               }}
               onOpenBoard={() => setView("island")}
               onOpenTravel={() => setView("travel")}

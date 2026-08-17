@@ -245,7 +245,7 @@
               "choices": [
                 {
                   "id": "kk1_a",
-                  "text": "Jar before treat",
+                  "text": "Jar before treat — quieter hush · Harbor soft-names patience",
                   "nextNodeId": "kk2",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -267,7 +267,7 @@
                 },
                 {
                   "id": "kk1_spend",
-                  "text": "Treat before jar",
+                  "text": "Treat before jar — louder plaza gossip · Harbor still keeps it",
                   "nextNodeId": "kk2_spend",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },

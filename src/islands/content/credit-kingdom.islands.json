@@ -179,7 +179,7 @@
               "choices": [
                 {
                   "id": "r_wait",
-                  "text": "Waited the spiral",
+                  "text": "Waited the spiral — cooler coil · Harbor soft-names patience",
                   "nextNodeId": "r_done",
                   "effects": [
                     {
@@ -201,7 +201,7 @@
                 },
                 {
                   "id": "r_borrow",
-                  "text": "Haste fed the spiral",
+                  "text": "Haste fed the spiral — tighter interest weather · Harbor still keeps it",
                   "nextNodeId": "r_done_rush",
                   "effects": [
                     {

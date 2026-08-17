@@ -35,6 +35,7 @@ import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { stepWalkVelocity } from "../input/walkFeel";
+import { playCapitalSfx } from "../audio/capitalSfx";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell, ShoreClockToy, ShoreSpiralToy } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
@@ -174,6 +175,9 @@ function Player({
     p.x += vel.current.x * dt;
     p.z += vel.current.z * dt;
     moving.current = stepped.moving || Math.abs(turn) > 0.001;
+    if (stepped.justStopped) {
+      playCapitalSfx("walk_stop");
+    }
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 

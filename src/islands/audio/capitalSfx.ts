@@ -21,7 +21,11 @@ export type CapitalSfxId =
   /** Spectacle / share — “Harbor felt that” Memory resolve */
   | "harbor_felt"
   /** Quiet homecoming — Piggy welcomes you back (bond, not checklist) */
-  | "piggy_homecoming";
+  | "piggy_homecoming"
+  /** Walk came to rest — mute-friendly soft thud */
+  | "walk_stop"
+  /** Talk Battle open / choice confirm */
+  | "talk_confirm";
 
 let ctx: AudioContext | null = null;
 
@@ -146,6 +150,16 @@ export function playCapitalSfx(id: CapitalSfxId): void {
         tone(523.25, 180, "triangle", 0.032 * g, 0.08);
         tone(659.25, 220, "sine", 0.028 * g, 0.18);
         tone(784, 260, "triangle", 0.022 * g, 0.28);
+        break;
+      case "walk_stop":
+        // Soft land — second-to-second walk feel
+        tone(180, 70, "sine", 0.022 * g, 0);
+        tone(140, 90, "triangle", 0.016 * g, 0.04);
+        break;
+      case "talk_confirm":
+        // Talk Battle open / choice — Memory courtyard click
+        tone(494, 80, "triangle", 0.03 * g, 0);
+        tone(659.25, 110, "sine", 0.024 * g, 0.06);
         break;
       default:
         break;

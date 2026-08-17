@@ -32,4 +32,5 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 2026-08-17 pass D | Day-2 / Take juice deepen | Re-score **Pass×12** pending cold human “again” confirmation on device |
 | 2026-08-17 pass E | Myth fallback always playable · era digressions = patience/haste forks | Share juice + dual gossip scars; still **Hold** ship until cold human “again” |
 | 2026-08-17 pass F | Credit Collector listen/lean fork · travel whisper poetry | Collector dual scars; BotW stray copy; e2e failsafe+signature green |
-| **Ship iconic?** | **Hold** — machine contracts Pass×12; one cold human triangle still required before declaring to the player |
+| 2026-08-17 pass G | Day-2 organ-true headlines · cold triangle + spine retell scripts green | Machine cold pass; still **Hold** ship until a human says “again” |
+| **Ship iconic?** | **Hold** — machine contracts Pass×12 + cold scripts; one cold human triangle still required before declaring to the player |

@@ -127,10 +127,12 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(labels).toContain("Jar before treat");
     expect(labels).toContain("Treat before jar");
     expect(take?.text).toMatch(/Take/i);
-    // Hermans elegancy — choice buttons speak plaque vocabulary
-    const choiceText = (take?.choices ?? []).map((c) => c.text);
-    expect(choiceText).toContain("Jar before treat");
-    expect(choiceText).toContain("Treat before jar");
+    // Hermans elegancy — choice buttons speak plaque vocabulary (+ opportunity cost foreshadow)
+    const choiceText = (take?.choices ?? []).map((c) =>
+      typeof c.text === "string" ? c.text : "",
+    );
+    expect(choiceText.some((t) => t.startsWith("Jar before treat"))).toBe(true);
+    expect(choiceText.some((t) => t.startsWith("Treat before jar"))).toBe(true);
   });
 
   it("uses day-after echo rumor when scar is from a prior day", () => {
@@ -180,13 +182,13 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(payLabels).toContain("Glitter ate the umbrella");
     expect(creditLabels).toContain("Waited the spiral");
     expect(creditLabels).toContain("Haste fed the spiral");
-    // Hermans elegancy — choice buttons = plaque vocabulary
-    expect(payChoices.map((c) => c.text)).toEqual(
-      expect.arrayContaining(["Umbrella before glitter", "Glitter ate the umbrella"]),
-    );
-    expect(creditChoices.map((c) => c.text)).toEqual(
-      expect.arrayContaining(["Waited the spiral", "Haste fed the spiral"]),
-    );
+    // Hermans elegancy — choice buttons = plaque vocabulary (+ opportunity cost foreshadow)
+    const payTexts = payChoices.map((c) => (typeof c.text === "string" ? c.text : ""));
+    const creditTexts = creditChoices.map((c) => (typeof c.text === "string" ? c.text : ""));
+    expect(payTexts.some((t) => t.startsWith("Umbrella before glitter"))).toBe(true);
+    expect(payTexts.some((t) => t.startsWith("Glitter ate the umbrella"))).toBe(true);
+    expect(creditTexts.some((t) => t.startsWith("Waited the spiral"))).toBe(true);
+    expect(creditTexts.some((t) => t.startsWith("Haste fed the spiral"))).toBe(true);
   });
 
   it("Money Structure entryHints split arcade worlds from Soft Beat peeks", () => {

@@ -19,6 +19,7 @@ import { signatureTiming } from "@/qa/signatureLoop";
 import { triggerJuice } from "@/juice";
 import { prefersReducedMotion } from "../a11yMotion";
 import { useOverlayEscape } from "./useOverlayEscape";
+import { analytics } from "../analytics";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
 
@@ -61,6 +62,10 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
         burst: true,
         x: typeof window !== "undefined" ? window.innerWidth * 0.62 : undefined,
         y: typeof window !== "undefined" ? window.innerHeight * 0.36 : undefined,
+      });
+      void analytics.track("core_loop_beat", {
+        beat: "harbor_felt",
+        organId: organIdRef.current,
       });
     }, t.hushMs);
     const t1 = window.setTimeout(() => {

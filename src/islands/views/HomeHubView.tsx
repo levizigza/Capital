@@ -45,6 +45,8 @@ import {
 } from "../story/hubGuidedIntro";
 import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
+import { peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
+import { digressionScarGaps } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -607,6 +609,8 @@ export function HomeHubView({
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
     creditMastery: bossUnlockProgress(save),
+    softBeatArmWhisper: softBeatArmWhisper(peekSoftBeatArm()),
+    digressionGaps: digressionScarGaps(save),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1347,6 +1351,8 @@ export function HomeHubView({
             <CoinBagBuddyHud
               tip={buddyTip.tip}
               detail={castleMode ? guidedStep?.coach : undefined}
+              painting={structuralBuddy.painting}
+              seal={structuralBuddy.seal}
               guideArrows={guideArrows}
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />

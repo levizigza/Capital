@@ -252,7 +252,7 @@
               "choices": [
                 {
                   "id": "vv_protect",
-                  "text": "Umbrella before glitter",
+                  "text": "Umbrella before glitter — Clock shelters · quieter Main Street",
                   "nextNodeId": "vv_protect_end",
                   "effects": [
                     {
@@ -274,7 +274,7 @@
                 },
                 {
                   "id": "vv_spend",
-                  "text": "Glitter ate the umbrella",
+                  "text": "Glitter ate the umbrella — louder rain gossip · Harbor still keeps it",
                   "nextNodeId": "vv_spend_end",
                   "effects": [
                     {

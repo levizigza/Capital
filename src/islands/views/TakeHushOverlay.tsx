@@ -14,6 +14,7 @@ import { scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { analytics } from "../analytics";
 
 export type { TakeCinemaPhase };
 
@@ -57,6 +58,7 @@ export function TakeHushOverlay({
       playCapitalSfx("take_mark");
       // Hit-stop nudge when the organ mark flashes (juice checklist).
       triggerJuice("reward", { burst: true });
+      void analytics.track("core_loop_beat", { beat: "take_mark", organId });
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {

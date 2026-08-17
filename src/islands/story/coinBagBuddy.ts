@@ -24,6 +24,10 @@ export type CoinBagBuddyTip = {
   coach?: string;
   /** Main vs side when tip comes from a quest */
   track?: QuestTrack;
+  /** Medium horizon — next painting / organ island */
+  painting?: string | null;
+  /** Long horizon — Freedom Seal / Spiral mastery */
+  seal?: string | null;
 };
 
 /** Voyage tip — shared by to_dock + demoted legacy gate ids. */
@@ -75,11 +79,30 @@ export function coinBagHarborTip(
     carpetTierLabel?: string | null;
     /** Credit Kingdom unlock progress — plaza never silent-locks Spiral */
     creditMastery?: { mastery: number; needed: number; escaped: boolean; unlocked: boolean } | null;
+    /** Soft Beat lookout arm whisper (multiplicative chemistry) */
+    softBeatArmWhisper?: string | null;
+    /** Incomplete digression rumor count for curiosity shelf */
+    digressionGaps?: number | null;
   },
+): CoinBagBuddyTip {
+  const tip = coinBagHarborTipRaw(guided, opts);
+  return attachCoinBagHorizons(tip, opts);
+}
+
+function coinBagHarborTipRaw(
+  guided: HubGuidedIntroState | null | undefined,
+  opts?: Parameters<typeof coinBagHarborTip>[1],
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
     const live = normalizeHubGuidedIntro(guided);
     return TUTORIAL_TIPS[live.step] ?? TUTORIAL_TIPS.meet_guide;
+  }
+
+  if (opts?.softBeatArmWhisper) {
+    return {
+      tip: opts.softBeatArmWhisper,
+      coach: "Soft Beat armed your next Talk — organ chemistry, not a toast.",
+    };
   }
 
   if (opts?.homecomingPending) {
@@ -182,11 +205,44 @@ export function coinBagHarborTip(
       coach: "Our island adventure is paused — resume anytime.",
     };
   }
+  if (opts?.digressionGaps && opts.digressionGaps > 0 && opts.hasFreedom) {
+    return {
+      tip: `Plaza still holds ${opts.digressionGaps} unheard rumor${opts.digressionGaps === 1 ? "" : "s"}`,
+      coach: "Side shores leave gossip footprints. Stray when you want — spine stays open.",
+      track: "side",
+    };
+  }
   return {
     tip: "Ledger Bank — walk into the vault!",
     coach:
       "That brass bank is a money machine. Stamp and safe open arcade worlds; the teller is a quiet peek.",
   };
+}
+
+/** Attach Now · Painting · Seal horizons without stacking a dashboard. */
+export function attachCoinBagHorizons(
+  tip: CoinBagBuddyTip,
+  opts?: Parameters<typeof coinBagHarborTip>[1],
+): CoinBagBuddyTip {
+  const painting =
+    tip.painting ??
+    (opts?.nextPaintingHint && !tip.tip.includes(opts.nextPaintingHint)
+      ? opts.nextPaintingHint
+      : null);
+  const credit = opts?.creditMastery;
+  let seal = tip.seal ?? null;
+  if (!seal) {
+    if (credit && credit.escaped && !credit.unlocked) {
+      seal = `Spiral · mastery ${credit.mastery}/${credit.needed}`;
+    } else if (opts?.hasFreedom) {
+      seal = opts.carpetTierLabel?.trim()
+        ? `Freedom · ${opts.carpetTierLabel.trim()}`
+        : "Freedom Seal";
+    } else if (credit && !credit.escaped) {
+      seal = "Someday · Freedom Seal";
+    }
+  }
+  return { ...tip, painting: painting || null, seal };
 }
 
 function hasScarMemory(opts?: { latestScarLabel?: string | null }): boolean {

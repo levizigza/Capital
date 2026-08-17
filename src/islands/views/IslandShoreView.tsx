@@ -66,6 +66,8 @@ export type IslandShoreViewProps = {
   onTalkNpc: (npcId: NpcId) => void;
   onCollectItem: (itemId: ItemId) => void;
   onPlayMinigame: (minigameId: string) => void;
+  /** Money Structure part pads — stay-put fail source */
+  onPlayStructureMinigame?: (minigameId: string) => void;
   onOpenBoard: () => void;
   onOpenTravel: () => void;
   onOpenHub: () => void;
@@ -91,6 +93,7 @@ export function IslandShoreView({
   onTalkNpc,
   onCollectItem,
   onPlayMinigame,
+  onPlayStructureMinigame,
   onOpenBoard,
   onOpenTravel,
   onOpenHub,
@@ -208,10 +211,10 @@ export function IslandShoreView({
       }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
-        onPlayMinigame(part.minigameId);
+        (onPlayStructureMinigame ?? onPlayMinigame)(part.minigameId);
       }
     },
-    [onPlayMinigame],
+    [onPlayMinigame, onPlayStructureMinigame],
   );
 
   const activate = useCallback(
