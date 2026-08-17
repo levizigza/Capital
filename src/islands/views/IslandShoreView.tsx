@@ -209,6 +209,33 @@ export function IslandShoreView({
     setStructureOpen(true);
   }, []);
 
+  useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action || !structure) return;
+      if (detail.islandId && detail.islandId !== island.id) return;
+      if (detail.action === "enter") {
+        setEnteringJar(false);
+        setStructureOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        const soft = structure.parts.find((p) => p.softBeat)?.softBeat;
+        if (soft === "lookout" || soft === "umbrella" || soft === "battlement") {
+          setStructureOpen(true);
+          setSoftBeat(soft);
+        }
+        return;
+      }
+      if (detail.action === "exit") {
+        setSoftBeat(null);
+        setStructureOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, [structure, island.id]);
+
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "lookout" || part.softBeat === "umbrella" || part.softBeat === "battlement") {

@@ -17,7 +17,7 @@
 
 ---
 
-## Latest — Pass P (2026-08-17) · **100%**
+## Latest — Pass Q (2026-08-17) · **100%**
 
 | | |
 |--|--:|
@@ -30,13 +30,24 @@
 | `cold-ashore-cove-retell.mjs` | Coin holds · Jar before treat · jar Squeeze CTA |
 | `cold-spine-retell.mjs` | Coin · Clock · Spiral · Memory kid sentences |
 | `cold-human-triangle-pass.mjs` | Ritual trap clear · six questions |
-| `cold-full-cove-chain.mjs` | Penny → pouch → Coin Sort → Alma → jar → Harbor retell |
+| `cold-full-cove-chain.mjs` | Penny → pouch · Coin Sort · Alma · jar · Harbor retell |
 | `cold-full-paycheck-chain.mjs` | Clock shelters · Credit opens |
 | `cold-full-credit-chain.mjs` | Spiral withstands · Memory keeps |
 | `cold-fail-mute-seal.mjs` | Soft-fail **Coin holds** · mute cinema kid · Seal chase absent |
 | `cold-day2-coin-echo.mjs` | Day-2 Soft Beat Coin echo after scar |
+| `cold-structure-soft-beat-exit.mjs` | Cove Lid + Harbor Teller Soft Beat · remount-free exit |
 
-**Honesty:** several colds use `__QA__` to open islands / talk / minigames (headless WebGL walk flaky). Dialogue choices, mastery, fail chrome, mute, and Seal gating are real.
+**Machine:** `npm run test:iconic` · `npm run test:iconic:e2e` (includes `e2e/structure-soft-beat.spec.ts`)
+
+**Honesty:** several colds use `__QA__` to open islands / talk / structures / minigames (headless WebGL walk flaky). Soft Beat leave, structure exit, dialogue, mastery, fail chrome, mute, and Seal gating are real.
+
+### Six questions (cold-human-triangle + Soft Beat exit)
+1. Next verb usually clear; first-meet Piggy can read small in 3D.
+2. Ritual no longer traps over spectacle / day-2.
+3. Organ cinemas share hush→share shape but new suit verb; Soft Beat is a new beat.
+4. QA seeds + skip-3d when WebGL stalls; live Soft Beat leave + exit proved cold.
+5. Place / goal clear once cinema owns plaza.
+6. Kid sentences + Soft Beat Lid/Teller feel iconic, not only functional.
 
 ### Fail dignity quote (Pass O)
 > Still learning · Coin holds · Not a clear — try again · You scored 0. Need 35+ to clear Coin Sort Challenge.
@@ -47,12 +58,15 @@
 | A–L | Map islands · fantasy · loop · Soft Beat · Bank · Balance · A11y · failsafe | 82% |
 | M | Ashore→Cove cold | 89% |
 | N | Spine + Paycheck + Credit cold | 97% |
-| O | Fail dignity + mute cinema + Seal honesty | 100% |
-| P | Craft-plan sync · tutorial board · Cove-chain boot (Ashore skip + Piggy QA) · day-2 on evidence bank | **100%** |
+| O | Fail dignity + mute cinema + Seal honesty | 99%* |
+| P | Craft-plan sync · tutorial board · Cove-chain boot | 99%* |
+| Q | Soft Beat structure exit cold + e2e + cadence guard (honest 100%) | **100%** |
+
+\*Pass O/P claimed 100% before Soft Beat exit had machine/cold guards — Pass Q earns it.
 
 ---
 
-## Pillar board (after Pass P)
+## Pillar board (after Pass Q)
 
 | # | Pillar | % | Band |
 |---|--------|--:|------|

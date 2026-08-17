@@ -40,6 +40,15 @@ export type QABridge = {
   prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
+  /**
+   * Open Money Structure interior (skips enter cinema).
+   * Harbor → Ledger Bank; spine shores → Jar / Tower / Keep.
+   */
+  enterMoneyStructure: (islandId: string) => void | Promise<void>;
+  /** Fire the Soft Beat part inside the open structure (Lid / Teller / Loft / Battlement). */
+  enterStructureSoftBeat: () => void;
+  /** Dismiss Soft Beat and exit structure — host plaza/shore must stay mounted. */
+  exitMoneyStructure: () => void;
   ready: boolean;
 };
 

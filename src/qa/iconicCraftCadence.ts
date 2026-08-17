@@ -63,8 +63,11 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
   {
     id: "structure_exit",
     step: "Structure exit",
-    modes: ["human"],
-    guards: [],
+    modes: ["unit", "e2e", "human"],
+    guards: [
+      "src/islands/world3d/structureSoftBeatExit.test.ts",
+      "e2e/structure-soft-beat.spec.ts",
+    ],
   },
   {
     id: "piggy_first_meet",
@@ -281,4 +284,5 @@ export const ICONIC_E2E_SPECS = [
   "e2e/harbor-tutorial.spec.ts",
   "e2e/harbor-3d-failsafe.spec.ts",
   "e2e/cast-select.spec.ts",
+  "e2e/structure-soft-beat.spec.ts",
 ] as const;

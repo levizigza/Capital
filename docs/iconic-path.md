@@ -22,7 +22,7 @@ Each island may host one **Money Structure** — a landmark you climb *into*. In
 | Place | Structure | Entry | Parts |
 |-------|-----------|-------|-------|
 | Coincraft Cove | Giant Coin Jar | Coin slot | Cork Vault · Coin Spring · Lid Lookout |
-| Harbor Haven | Ledger Bank | Brass vault door | Safe Heart · Payday Stamp · Teller Window |
+| Harbor Haven | Ledger Bank | Brass vault door | Safe Heart · Ledger Stamp · Teller Window |
 | Paycheck Peninsula | Payroll Tower | Paycheck chute | Bucket Press · Time Clock · Umbrella Loft |
 | Credit Kingdom | Interest Keep | Interest spiral | Debt Anvil · Dispatch Hatch · Score Battlement |
 
@@ -99,7 +99,7 @@ __QA__.playSignatureTrailer()
 
 Automated: `npm run test:iconic` (unit contracts + content validate). Harbor/Cove smoke: `npm run test:iconic:e2e`.
 
-Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs` · `cold-spine-retell.mjs` · `cold-human-triangle-pass.mjs`.
+Cold organ scripts (QA build on :5000): `scripts/cold-full-cove-chain.mjs` · `cold-day2-coin-echo.mjs` · `cold-full-paycheck-chain.mjs` · `cold-full-credit-chain.mjs` · `cold-spine-retell.mjs` · `cold-human-triangle-pass.mjs` · `cold-structure-soft-beat-exit.mjs`.
 
 ```js
 await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spiral"

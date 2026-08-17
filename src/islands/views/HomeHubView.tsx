@@ -541,6 +541,30 @@ export function HomeHubView({
   }, []);
 
   useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action) return;
+      if (detail.islandId && detail.islandId !== HARBOR_HAVEN_ID) return;
+      if (detail.action === "enter") {
+        setEnteringBank(false);
+        setBankOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        setBankOpen(true);
+        setBankSoftBeat("ledger");
+        return;
+      }
+      if (detail.action === "exit") {
+        setBankSoftBeat(null);
+        setBankOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, []);
+
+  useEffect(() => {
     // Memory organ: Daily Ritual after Cove Change — never steals first-meet / voyage.
     if (
       !shouldAutoOpenDailyRitual({
@@ -1036,7 +1060,7 @@ export function HomeHubView({
   // Quiet HUD + pulsing Piggy + diegetic bubble carry the welcome-back.
 
   return (
-    <>
+    <div className="relative h-full min-h-[100dvh] w-full" data-testid="harbor-home-hub">
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -2055,6 +2079,6 @@ export function HomeHubView({
           />
         </Suspense>
       </GameModal>
-    </>
+    </div>
   );
 }
