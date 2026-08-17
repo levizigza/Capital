@@ -147,23 +147,21 @@ export function AshoreComprehensionTutorial({
   const line = useMemo(() => {
     if (stepId === "fantasy") {
       return fantasyDone
-        ? "It answered. The light opens…"
-        : `You are ${voyager.name || "the Voyager"}. Poke living money.`;
+        ? "It answered…"
+        : `You are ${voyager.name || "the Voyager"}. Living money waits.`;
     }
     if (stepId === "walk") {
-      return walkDone
-        ? "The path is yours."
-        : "Step into every light — this is how you explore.";
+      return walkDone ? "The path is yours." : "Step into every light.";
     }
     if (stepId === "talk") {
       if (talked) return "Piggy will meet you at Harbor.";
       if (nearTalk) return "Press E when you choose.";
-      return "Walk to Piggy — talk only when you want.";
+      return "Walk to the pink hush — talk only if you want.";
     }
     if (stepId === "dock") {
       return carpetBoarded
         ? "Cove first. Harbor will remember."
-        : "Board the glowing Cove carpet.";
+        : "Board the glowing carpet — Cove first.";
     }
     return "Harbor Haven, then Coincraft Cove.";
   }, [
@@ -220,21 +218,20 @@ export function AshoreComprehensionTutorial({
           {/* A11y + e2e hit targets — visuals are the 3D toys / carpet */}
           {stepId === "fantasy" ? (
             <div
-              className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center gap-8"
+              className="pointer-events-none absolute inset-0"
               data-testid="ashore-fantasy-toys"
               data-spectacle="1"
-              aria-hidden={false}
             >
               <button
                 type="button"
-                className="pointer-events-auto h-14 w-14 rounded-full opacity-[0.01]"
+                className="pointer-events-auto absolute left-[28%] top-[48%] h-[18vmin] w-[18vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.01]"
                 data-testid="ashore-fantasy-toy-memory"
                 aria-label="Poke Memory organ"
                 {...pointerSafeActivate(() => pokeFantasy("memory"))}
               />
               <button
                 type="button"
-                className="pointer-events-auto h-14 w-14 rounded-full opacity-[0.01]"
+                className="pointer-events-auto absolute left-[72%] top-[48%] h-[18vmin] w-[18vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.01]"
                 data-testid="ashore-fantasy-toy-coin"
                 aria-label="Poke Coin organ"
                 {...pointerSafeActivate(() => pokeFantasy("coin"))}
@@ -315,7 +312,7 @@ export function AshoreComprehensionTutorial({
         ) : null}
 
         <p
-          className="max-w-lg rounded-full bg-black/45 px-4 py-2 text-center text-sm font-semibold text-amber-50/95 shadow-[0_8px_28px_rgba(0,0,0,0.25)] backdrop-blur-md sm:text-base"
+          className="max-w-md text-center text-sm font-medium tracking-wide text-amber-50/80 drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)] sm:text-[0.95rem]"
           data-testid="ashore-teach-gate"
           data-gate={
             stepId === "walk"

@@ -104,54 +104,164 @@ function SeedFloor({ lit = 0 }: { lit?: number }) {
   );
 }
 
+function ChamberShell() {
+  const reduced = prefersReducedMotion();
+  const motes = useRef<THREE.Points>(null);
+  const moteCount = 48;
+  const positions = useMemo(() => {
+    const arr = new Float32Array(moteCount * 3);
+    for (let i = 0; i < moteCount; i++) {
+      const a = (i / moteCount) * Math.PI * 2;
+      const r = 2.2 + (i % 5) * 0.55;
+      arr[i * 3] = Math.cos(a) * r;
+      arr[i * 3 + 1] = 0.4 + (i % 7) * 0.35;
+      arr[i * 3 + 2] = Math.sin(a) * r * 0.85;
+    }
+    return arr;
+  }, []);
+  useFrame(({ clock }) => {
+    if (!motes.current || reduced) return;
+    motes.current.rotation.y = clock.elapsedTime * 0.04;
+    const y = Math.sin(clock.elapsedTime * 0.7) * 0.08;
+    motes.current.position.y = y;
+  });
+  return (
+    <group>
+      {/* Soft cove vault — place, not void */}
+      <mesh position={[0, 3.2, 0]}>
+        <cylinderGeometry args={[PAD_R + 1.8, PAD_R + 2.4, 7.2, 48, 1, true]} />
+        <meshStandardMaterial
+          color="#14304a"
+          side={THREE.BackSide}
+          roughness={0.92}
+          metalness={0.05}
+        />
+      </mesh>
+      <mesh position={[0, 6.4, 0]} rotation={[Math.PI, 0, 0]}>
+        <circleGeometry args={[PAD_R + 2.2, 48]} />
+        <meshStandardMaterial color="#0c2236" side={THREE.DoubleSide} roughness={1} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
+        <ringGeometry args={[PAD_R + 0.5, PAD_R + 2.6, 64]} />
+        <meshStandardMaterial color="#0e2438" roughness={0.95} />
+      </mesh>
+      {/* Warm harbor wash + cool depth */}
+      <pointLight position={[0, 4.5, 0]} intensity={0.55} color="#fde68a" distance={14} />
+      <pointLight position={[-3.5, 2.2, 2]} intensity={0.35} color="#7dd3fc" distance={10} />
+      <points ref={motes}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={moteCount}
+            array={positions}
+            itemSize={3}
+            args={[positions, 3]}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          color="#fde68a"
+          size={0.06}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
+          sizeAttenuation
+        />
+      </points>
+    </group>
+  );
+}
+
+function PokeSparks({ burst }: { burst: number }) {
+  const group = useRef<THREE.Group>(null);
+  const life = useRef(0);
+  const lastBurst = useRef(0);
+  useFrame((_, dt) => {
+    if (!group.current) return;
+    if (burst > lastBurst.current) {
+      lastBurst.current = burst;
+      life.current = 1;
+      group.current.children.forEach((c, i) => {
+        const a = (i / 6) * Math.PI * 2;
+        c.position.set(Math.cos(a) * 0.2, 0, Math.sin(a) * 0.2);
+      });
+    }
+    if (life.current <= 0) {
+      group.current.visible = false;
+      return;
+    }
+    life.current -= dt * 1.8;
+    group.current.visible = true;
+    const s = 0.7 + (1 - life.current) * 1.2;
+    group.current.scale.setScalar(s);
+    group.current.children.forEach((c) => {
+      c.position.y += dt * 1.1;
+    });
+  });
+  return (
+    <group ref={group} position={[0, 0.9, 0]} visible={false}>
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <mesh key={i}>
+          <sphereGeometry args={[0.055, 8, 8]} />
+          <meshBasicMaterial color="#fde68a" transparent opacity={0.9} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function OrganToyMesh({
   id,
   position,
-  label,
   lit,
   onPoke,
 }: {
   id: MoneyOrganId;
   position: [number, number, number];
-  label: string;
   lit: boolean;
   onPoke?: (id: MoneyOrganId) => void;
 }) {
   const accent = MONEY_ORGANS[id].accentHint;
   const mesh = useRef<THREE.Group>(null);
+  const pulse = useRef(0);
+  const [burst, setBurst] = useState(0);
   useFrame(({ clock }) => {
     if (!mesh.current) return;
-    mesh.current.position.y = 0.55 + Math.sin(clock.elapsedTime * 2 + position[0]) * (lit ? 0.08 : 0.05);
-    mesh.current.rotation.y = clock.elapsedTime * (lit ? 0.55 : 0.25);
+    const bob = Math.sin(clock.elapsedTime * 2 + position[0]) * (lit ? 0.1 : 0.05);
+    mesh.current.position.y = 0.62 + bob;
+    mesh.current.rotation.y = clock.elapsedTime * (lit ? 0.7 : 0.28);
+    if (pulse.current > 0) {
+      pulse.current -= 0.04;
+      const s = 1 + pulse.current * 0.35;
+      mesh.current.scale.setScalar(s);
+    }
   });
 
   const poke = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+    e.nativeEvent?.preventDefault?.();
+    pulse.current = 1;
+    setBurst((n) => n + 1);
     playOrganSfx(id);
     onPoke?.(id);
   };
 
   return (
     <group position={position}>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.04, 0]}
-        onPointerUp={poke}
-        onClick={poke}
-      >
-        <ringGeometry args={[0.55, 0.95, 28]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]}>
+        <ringGeometry args={[0.5, 1.05, 36]} />
         <meshStandardMaterial
           color={accent}
           emissive={accent}
-          emissiveIntensity={lit ? 0.65 : 0.3}
+          emissiveIntensity={lit ? 0.75 : 0.38}
           transparent
-          opacity={0.85}
+          opacity={0.88}
           depthWrite={false}
         />
       </mesh>
-      <group
-        ref={mesh}
-        onPointerUp={poke}
+      {/* Large invisible hit volume — reliable poke */}
+      <mesh
+        position={[0, 0.7, 0]}
+        onPointerDown={poke}
         onClick={poke}
         onPointerOver={() => {
           document.body.style.cursor = "pointer";
@@ -160,41 +270,69 @@ function OrganToyMesh({
           document.body.style.cursor = "auto";
         }}
       >
+        <sphereGeometry args={[0.95, 16, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <group ref={mesh}>
         {id === "memory" ? (
-          <mesh castShadow>
-            <boxGeometry args={[0.7, 0.95, 0.35]} />
-            <meshStandardMaterial
-              color="#94a3b8"
-              emissive={lit ? accent : "#334155"}
-              emissiveIntensity={lit ? 0.45 : 0.12}
-              metalness={0.35}
-              roughness={0.4}
-            />
-          </mesh>
+          <>
+            {/* Memory plinth — silver ledger slab */}
+            <mesh castShadow position={[0, 0, 0]}>
+              <boxGeometry args={[0.85, 1.05, 0.28]} />
+              <meshStandardMaterial
+                color="#cbd5e1"
+                emissive={lit ? accent : "#1e293b"}
+                emissiveIntensity={lit ? 0.55 : 0.15}
+                metalness={0.55}
+                roughness={0.28}
+              />
+            </mesh>
+            <mesh position={[0, 0.15, 0.16]}>
+              <circleGeometry args={[0.22, 24]} />
+              <meshStandardMaterial
+                color="#a7f3d0"
+                emissive="#34d399"
+                emissiveIntensity={lit ? 0.8 : 0.35}
+                metalness={0.2}
+                roughness={0.4}
+              />
+            </mesh>
+            <mesh position={[0, -0.55, 0]}>
+              <cylinderGeometry args={[0.35, 0.42, 0.18, 20]} />
+              <meshStandardMaterial color="#64748b" metalness={0.4} roughness={0.5} />
+            </mesh>
+          </>
         ) : (
-          <mesh castShadow>
-            <cylinderGeometry args={[0.38, 0.42, 0.85, 16]} />
-            <meshStandardMaterial
-              color="#fde68a"
-              emissive={lit ? accent : "#b45309"}
-              emissiveIntensity={lit ? 0.5 : 0.15}
-              metalness={0.4}
-              roughness={0.35}
-            />
-          </mesh>
+          <>
+            {/* Coin organ — face-forward gold medallion */}
+            <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.52, 0.52, 0.14, 32]} />
+              <meshStandardMaterial
+                color="#fcd34d"
+                emissive={lit ? accent : "#b45309"}
+                emissiveIntensity={lit ? 0.65 : 0.22}
+                metalness={0.7}
+                roughness={0.22}
+              />
+            </mesh>
+            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.08]}>
+              <circleGeometry args={[0.28, 28]} />
+              <meshStandardMaterial
+                color="#fff7ed"
+                emissive="#fbbf24"
+                emissiveIntensity={lit ? 0.7 : 0.25}
+                metalness={0.3}
+                roughness={0.35}
+              />
+            </mesh>
+            <mesh position={[0, -0.55, 0]}>
+              <cylinderGeometry args={[0.3, 0.38, 0.16, 20]} />
+              <meshStandardMaterial color="#92400e" metalness={0.35} roughness={0.45} />
+            </mesh>
+          </>
         )}
-        <Billboard position={[0, 1.15, 0]} follow>
-          <SafeText
-            fontSize={0.26}
-            color={lit ? "#fef3c7" : "#e2e8f0"}
-            anchorX="center"
-            outlineWidth={0.02}
-            outlineColor="#0f172a"
-          >
-            {lit ? `${label} · alive` : `Poke ${label}`}
-          </SafeText>
-        </Billboard>
       </group>
+      <PokeSparks burst={burst} />
     </group>
   );
 }
@@ -218,26 +356,20 @@ function CoveCarpetGate({
   };
   return (
     <group position={[0, 0.1, -2.4]} ref={root}>
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, 0.02, 0]}
-        onPointerUp={board}
-        onClick={board}
-      >
-        <ringGeometry args={[1.1, 1.55, 36]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[1.05, 1.65, 40]} />
         <meshStandardMaterial
           color="#fbbf24"
           emissive="#f59e0b"
-          emissiveIntensity={boarded ? 0.2 : 0.55}
+          emissiveIntensity={boarded ? 0.22 : 0.62}
           transparent
-          opacity={0.9}
+          opacity={0.92}
           depthWrite={false}
         />
       </mesh>
-      <group
-        scale={0.85}
-        rotation={[0, Math.PI, 0]}
-        onPointerUp={board}
+      <mesh
+        position={[0, 0.8, 0]}
+        onPointerDown={board}
         onClick={board}
         onPointerOver={() => {
           document.body.style.cursor = "pointer";
@@ -246,19 +378,12 @@ function CoveCarpetGate({
           document.body.style.cursor = "auto";
         }}
       >
+        <sphereGeometry args={[1.2, 16, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <group scale={0.85} rotation={[0, Math.PI, 0]}>
         <MoneyCarpet flying={!boarded} hideRider showBuddy={false} />
       </group>
-      <Billboard position={[0, 1.9, 0]} follow>
-        <SafeText
-          fontSize={0.28}
-          color="#fde68a"
-          anchorX="center"
-          outlineWidth={0.02}
-          outlineColor="#0f172a"
-        >
-          {boarded ? "Cove boarded" : "Board Coincraft Cove"}
-        </SafeText>
-      </Billboard>
     </group>
   );
 }
@@ -271,37 +396,40 @@ function MarkerMesh({
   claimed: boolean;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
+  const core = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (!mesh.current || claimed) return;
     const mat = mesh.current.material as THREE.MeshStandardMaterial;
-    mat.emissiveIntensity = 0.35 + Math.sin(clock.elapsedTime * 3) * 0.2;
+    mat.emissiveIntensity = 0.4 + Math.sin(clock.elapsedTime * 3) * 0.22;
     mesh.current.position.y = 0.08 + Math.sin(clock.elapsedTime * 2.2) * 0.04;
+    if (core.current) {
+      core.current.position.y = 0.35 + Math.sin(clock.elapsedTime * 2.8) * 0.06;
+    }
   });
   return (
     <group position={marker.position}>
       <mesh ref={mesh} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.45, 0.75, 28]} />
+        <ringGeometry args={[0.42, 0.82, 32]} />
         <meshStandardMaterial
           color={marker.color}
           emissive={marker.color}
-          emissiveIntensity={claimed ? 0.08 : 0.4}
+          emissiveIntensity={claimed ? 0.08 : 0.45}
           transparent
-          opacity={claimed ? 0.25 : 0.9}
+          opacity={claimed ? 0.2 : 0.92}
           depthWrite={false}
         />
       </mesh>
       {!claimed ? (
-        <Billboard position={[0, 1.15, 0]} follow>
-          <SafeText
-            fontSize={0.28}
+        <mesh ref={core}>
+          <sphereGeometry args={[0.14, 12, 10]} />
+          <meshStandardMaterial
             color={marker.color}
-            anchorX="center"
-            outlineWidth={0.02}
-            outlineColor="#0f172a"
-          >
-            {marker.label}
-          </SafeText>
-        </Billboard>
+            emissive={marker.color}
+            emissiveIntensity={0.7}
+            transparent
+            opacity={0.9}
+          />
+        </mesh>
       ) : null}
     </group>
   );
@@ -321,9 +449,9 @@ function PiggyTalkRing({
         <meshStandardMaterial
           color="#f9a8d4"
           emissive="#ec4899"
-          emissiveIntensity={near ? 0.55 : 0.28}
+          emissiveIntensity={near ? 0.65 : 0.3}
           transparent
-          opacity={0.85}
+          opacity={0.88}
           depthWrite={false}
         />
       </mesh>
@@ -339,17 +467,20 @@ function PiggyTalkRing({
         <sphereGeometry args={[0.18, 12, 10]} />
         <meshStandardMaterial color="#f472b6" />
       </mesh>
-      <Billboard position={[0, 1.85, 0]} follow>
-        <SafeText
-          fontSize={0.26}
-          color="#fde68a"
-          anchorX="center"
-          outlineWidth={0.02}
-          outlineColor="#0f172a"
-        >
-          {near ? "Piggy · Press E" : "Piggy Penny"}
-        </SafeText>
-      </Billboard>
+      {/* Diegetic cue only when near — no nameplate homework */}
+      {near ? (
+        <Billboard position={[0, 1.85, 0]} follow>
+          <SafeText
+            fontSize={0.24}
+            color="#fde68a"
+            anchorX="center"
+            outlineWidth={0.02}
+            outlineColor="#0f172a"
+          >
+            E
+          </SafeText>
+        </Billboard>
+      ) : null}
     </group>
   );
 }
@@ -543,17 +674,18 @@ function PracticeWorld({
 
   return (
     <>
-      <color attach="background" args={["#0a1a28"]} />
-      <fog attach="fog" args={["#0a1a28", 14, 32]} />
+      <color attach="background" args={["#0c2236"]} />
+      <fog attach="fog" args={["#0c2236", 11, 26]} />
       <ambientLight intensity={0.72} />
       <directionalLight position={[4, 8, 3]} intensity={1.2} />
       <directionalLight position={[-3, 2, -2]} intensity={0.45} />
       <hemisphereLight args={["#fde68a", "#0f172a", 0.42]} />
       <ChamberCamera mode={mode} />
+      <ChamberShell />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <circleGeometry args={[PAD_R + 0.45, 56]} />
-        <meshStandardMaterial color="#122033" roughness={0.88} metalness={0.1} />
+        <meshStandardMaterial color="#1a3348" roughness={0.88} metalness={0.08} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
         <ringGeometry args={[PAD_R + 0.12, PAD_R + 0.42, 56]} />
@@ -587,7 +719,6 @@ function PracticeWorld({
               key={t.id}
               id={t.id}
               position={t.position}
-              label={t.label}
               lit={fantasyPoked.includes(t.id)}
               onPoke={onPokeOrgan}
             />
@@ -680,7 +811,7 @@ export function VoyagerWalkPracticeStage({
         gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ camera, gl }) => {
           camera.lookAt(0, 0.7, -0.2);
-          gl.setClearColor("#071018", 1);
+          gl.setClearColor("#0c2236", 1);
           setReady(true);
         }}
       >

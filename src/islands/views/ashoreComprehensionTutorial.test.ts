@@ -90,7 +90,7 @@ describe("Ashore comprehension tutorial (iconic Chamber 00)", () => {
   it("uses Leave · Esc and body proves — not SaaS Skip / collect-all", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
-    expect(teach).toMatch(/Poke living money|Board the glowing Cove/);
+    expect(teach).toMatch(/Living money waits|Board the glowing carpet/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);
