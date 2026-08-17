@@ -83,6 +83,8 @@ export function coinBagHarborTip(
     softBeatArmWhisper?: string | null;
     /** Incomplete digression rumor count for curiosity shelf */
     digressionGaps?: number | null;
+    /** After Freedom — whisper Capsule Studio invent-inside-the-game */
+    studioOpenHint?: boolean;
   },
 ): CoinBagBuddyTip {
   const tip = coinBagHarborTipRaw(guided, opts);
@@ -178,6 +180,14 @@ function coinBagHarborTipRaw(
       tip: "Freedom Seal first — then Spiral",
       coach: "Credit Kingdom stays locked until Harbor escape. Finish Paycheck Change, come home.",
       track: "main",
+    };
+  }
+
+  if (opts?.studioOpenHint && opts?.hasFreedom) {
+    return {
+      tip: "Studio — invent a level inside Capital",
+      coach: "Capsule Studio is your toy box. Publish a mark Harbor can stamp — no multiplayer required.",
+      track: "side",
     };
   }
 

@@ -611,6 +611,11 @@ export function HomeHubView({
     creditMastery: bossUnlockProgress(save),
     softBeatArmWhisper: softBeatArmWhisper(peekSoftBeatArm()),
     digressionGaps: digressionScarGaps(save),
+    // Rotate Studio invent whisper when pavilion already known and digressions quiet.
+    studioOpenHint:
+      hasCompletedCoveChange(save) &&
+      digressionScarGaps(save) === 0 &&
+      !pointNextPainting,
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,

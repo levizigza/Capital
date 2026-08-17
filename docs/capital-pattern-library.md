@@ -65,7 +65,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 45 | Relatedness retention | **Freeze-alt** — household myth / witness |
 | 46 | Talk about outside the game | **Pass** — Harbor Felt share PNG |
 | 47 | Knowledge-sharing adjacent | **Pass** — organ kid sentences / cold retell |
-| 48 | Invent games inside the game | **Thin** — Studio + challenge runs local |
+| 48 | Invent games inside the game | **Pass** — Capsule Studio invent whisper after Freedom |
 | 49 | UGC / modding | **Freeze-alt** — Capsule Studio device-local |
 | 50 | Systems produce content | **Pass** — gossip · scars · ritual |
 | 51 | Toy value | **Pass** — ShoreBell + Soft Beat arm + structure toys |
@@ -123,6 +123,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 |------|-------|
 | 2026-08-17 | Library locked from research pass. Honest Gaps: feel verbs, fail stay/organ, Soft Beat arm, Take cost foreshadow, 3-horizon goals, incomplete collection, spine telemetry. |
 | 2026-08-17 pass A | Walk stop · Talk confirm · ShoreBell · structure stay-put · organ fail hints · Soft Beat arm · Take cost foreshadow · Coin Bag horizons · digression shelf · core_loop_beat | Gaps closed → re-score **iterating Thin→Pass**; **Hold** ship until human cold “again” (#94) |
+| 2026-08-17 pass B | Studio invent-inside whisper (#48) | Machine Pass× library in-scope; **Hold** #94 human |
 | **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
 
 See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.
