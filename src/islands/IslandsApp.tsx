@@ -167,6 +167,7 @@ import {
 } from "./story/hubGuidedIntro";
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
+import { applyConceptSync } from "./conceptProgression";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -451,14 +452,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const updateSave = useCallback((updater: (prev: IslandSaveV1) => IslandSaveV1) => {
     const prev = saveRef.current;
     if (!prev) return;
-    const next = updater(prev);
+    // Progressive disclosure sync — proof predicates only (never time/Next).
+    const next = applyConceptSync(updater(prev));
     saveRef.current = next;
     setSave(next);
   }, []);
 
   const replaceSave = useCallback((next: IslandSaveV1) => {
-    saveRef.current = next;
-    setSave(next);
+    const synced = applyConceptSync(next);
+    saveRef.current = synced;
+    setSave(synced);
   }, []);
 
   /** Debounced persist — always writes the latest save, never a stale in-flight body. */

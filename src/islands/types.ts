@@ -293,6 +293,11 @@ export type IslandSaveV1 = {
   harborScars?: import("./worldMemory").HarborScar[];
   /** Locked-forever decisions keyed by decision id */
   irreversibleChoices?: Record<string, import("./worldMemory").IrreversibleChoiceRecord>;
+  /**
+   * Progressive disclosure — money-concept phases (LOCKED…MASTERED).
+   * See docs/ftue/PROGRESSIVE_DISCLOSURE_DESIGN.md · conceptProgression/
+   */
+  conceptProgress?: import("./conceptProgression").ConceptProgressState;
   /** Soft personality axes derived from money choices */
   stance?: import("./worldMemory").VoyagerStance;
   /** Per-NPC talk memory for greeting branches */
