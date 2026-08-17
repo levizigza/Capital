@@ -29,6 +29,7 @@ import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
   CREDIT_ORDEAL_QUEST_ID,
+  HARBOR_HAVEN_ID,
   PAYCHECK_CHANGE_QUEST_ID,
 } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
@@ -52,9 +53,11 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { playCapitalSfx } from "./audio/capitalSfx";
+import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper, softBeatArmConsumesOnChoice, noteSoftBeatConsumed } from "./softBeatArm";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
+  harborTalkScars,
   nextPaintingAfterScar,
   plaqueShelfLine,
   stanceGreetingHint,
@@ -149,6 +152,7 @@ import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
+import { moneyOrganForIsland } from "./moneyOrgans";
 import {
   applyCapsulePurchase,
   applyCarpetPolish,
@@ -897,6 +901,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
   const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
+  const completeMinigameRef = useRef<
+    (success: boolean, score?: number) => void | Promise<void>
+  >(() => {});
 
   useEffect(() => {
     if (!save) return;
@@ -918,6 +925,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
         void trackScreenEnter(`minigame:${minigameId}`, { minigameId, source: "qa_bridge" });
       },
+      completeMinigame: (success, score) => completeMinigameRef.current(success, score),
       startQuest: (questId) => {
         void startQuest(questId as QuestId);
       },
@@ -963,6 +971,37 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       playSignatureTrailer: () => {
         setView("home");
         window.dispatchEvent(new Event("capital:signature-trailer"));
+      },
+      enterMoneyStructure: async (islandId: string) => {
+        const id = String(islandId || "");
+        if (id === HARBOR_HAVEN_ID || id === "harbor_haven") {
+          setActiveIslandId(null);
+          setView("home");
+          await new Promise((r) => window.setTimeout(r, 80));
+          window.dispatchEvent(
+            new CustomEvent("capital:qa-structure", {
+              detail: { action: "enter", islandId: HARBOR_HAVEN_ID },
+            }),
+          );
+          return;
+        }
+        await enterIsland(id, { instant: true });
+        await new Promise((r) => window.setTimeout(r, 120));
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", {
+            detail: { action: "enter", islandId: id },
+          }),
+        );
+      },
+      enterStructureSoftBeat: () => {
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", { detail: { action: "softBeat" } }),
+        );
+      },
+      exitMoneyStructure: () => {
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", { detail: { action: "exit" } }),
+        );
       },
     });
   }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
@@ -1225,6 +1264,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         islandId: island?.id ?? HUB_ISLAND_ID,
         npcId,
       });
+      // Soft Beat arm stays visible in Talk Battle — consume on first choice, not open.
+      const armedPeek = peekSoftBeatArm();
+      if (armedPeek) {
+        void analytics.track("core_loop_beat", {
+          beat: "soft_beat_visible",
+          kind: armedPeek,
+          npcId,
+        });
+      }
 
       if (island) {
         updateSave((prev) => ({
@@ -1248,7 +1296,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       const harborGraph = resolveHarborDialogue(npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(
           upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
@@ -1433,7 +1481,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         (save?.piggyBondHomecomings ?? 0) +
         (save?.harborHomecoming && !save.harborHomecoming.piggyTalked ? 1 : 0);
       return piggyHomecomingGraph(save?.harborHomecoming?.message, {
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(upcoming, 1),
       });
     }
@@ -1456,7 +1504,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return resolveHarborDialogue(dialogueState.npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: save?.piggyBondHomecomings ?? 0,
         stanceHint: stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
@@ -1569,6 +1617,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         nodeId: dialogueNode.id,
         choiceId,
       });
+      const armedPeek = peekSoftBeatArm();
+      if (armedPeek && softBeatArmConsumesOnChoice({ effects: choice.effects })) {
+        const armed = consumeSoftBeatArm();
+        if (armed) {
+          noteSoftBeatConsumed(armed);
+          void analytics.track("core_loop_beat", {
+            beat: "soft_beat_consumed",
+            kind: armed,
+            choiceId,
+          });
+          void analytics.track("take_foreshadow", { kind: armed, choiceId });
+        }
+      }
 
       await applyDialogueEffects(choice.effects as any);
 
@@ -1609,16 +1670,22 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     setActiveMinigameId(null);
     setMinigameStartedAt(null);
     setMinigameSource(null);
+    // Structure fail/abandon stays put — never remount Harbor under a Money Structure.
     if (source === "structure") {
-      setView("home");
-      setActiveIslandId(HUB_ISLAND_ID);
-      void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+      const place =
+        view === "home" || isHubIslandId(activeIsland?.id)
+          ? "harbor_haven"
+          : `islands_play:${activeIsland?.id ?? "unknown"}`;
+      void trackScreenEnter(place, {
+        islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+        stay: "structure",
+      });
       return;
     }
     void trackScreenEnter(`islands_play:${activeIsland?.id ?? "unknown"}`, {
       islandId: activeIsland?.id,
     });
-  }, [activeIsland?.id, activeMinigameId, minigameStartedAt, minigameSource]);
+  }, [activeIsland?.id, activeMinigameId, minigameStartedAt, minigameSource, view]);
 
   const onMinigameComplete = useCallback(
     async (success: boolean, score?: number, timeline?: DecisionTimeline) => {
@@ -1695,6 +1762,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             skillStats: updatedSkillStats,
             economyState: updatedEconomy,
             voyagerLedger: ledger,
+            harborScars:
+              mgId === "mg_inbox_storm" &&
+              !(prev.harborScars ?? []).some((s) => s.id === "pp_inbox_storm")
+                ? [
+                    ...(prev.harborScars ?? []),
+                    {
+                      id: "pp_inbox_storm",
+                      islandId: activeIsland.id,
+                      choiceId: "inbox_clear",
+                      label: "Cleared the Inbox Storm",
+                      kind: "npc_tone" as const,
+                      createdAt: new Date().toISOString(),
+                    },
+                  ]
+                : prev.harborScars,
           };
         });
         await completeObjective({ type: "completeMinigame", minigameId: mgId });
@@ -1703,10 +1785,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setMinigameStartedAt(null);
         setMinigameSource(null);
         setPendingMastery(null);
+        // Structure clear stays in place — Soft Beat / interior resume underfoot.
         if (source === "structure") {
-          setView("home");
-          setActiveIslandId(HUB_ISLAND_ID);
-          void trackScreenEnter("harbor_haven", { islandId: HUB_ISLAND_ID });
+          const place =
+            view === "home" || isHubIslandId(activeIsland.id)
+              ? "harbor_haven"
+              : `islands_play:${activeIsland.id}`;
+          void trackScreenEnter(place, { islandId: activeIsland.id, stay: "structure" });
         } else {
           void trackScreenEnter(`islands_play:${activeIsland.id}`, { islandId: activeIsland.id });
         }
@@ -1804,9 +1889,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             score,
             scoreThreshold: resolvedThreshold,
             source,
+            islandId: activeIsland.id,
             takeFlavor: resolveTakeFailFlavor({
               irreversibleChoices: save?.irreversibleChoices,
             }),
+            organId: moneyOrganForIsland(activeIsland.id)?.id ?? null,
+            minigameId: mgId,
           }),
         });
         setActiveMinigameId(null);
@@ -1827,8 +1915,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       save,
       setUserProfile,
       updateSave,
+      view,
     ]
   );
+
+  completeMinigameRef.current = (success, score) => onMinigameComplete(success, score);
 
   const handleMasteryPassed = useCallback(async () => {
     if (!pendingMastery || !activeIsland || !save) return;
@@ -1885,11 +1976,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const handleMasteryFailed = useCallback(() => {
     if (!pendingMastery) return;
     const { mgId, source } = pendingMastery;
+    const mgName =
+      activeIsland?.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
     setPendingMastery(null);
-    setMinigameSource(source);
-    setActiveMinigameId(mgId);
-    setMinigameStartedAt(Date.now());
-  }, [pendingMastery]);
+    setPendingMinigameFail({
+      mgId,
+      source,
+      copy: minigameFailCopy({
+        reason: "objective_not_met",
+        minigameName: `${mgName} mastery`,
+        source,
+        takeFlavor: resolveTakeFailFlavor({
+          irreversibleChoices: save?.irreversibleChoices,
+        }),
+        organId: moneyOrganForIsland(activeIsland?.id)?.id ?? null,
+        minigameId: mgId,
+      }),
+    });
+  }, [activeIsland, pendingMastery, save?.irreversibleChoices]);
 
   const handleMinigameFailRetry = useCallback(() => {
     if (!pendingMinigameFail) return;
@@ -2290,6 +2394,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 setActiveMinigameId(minigameId as MinigameId);
                 setMinigameStartedAt(Date.now());
               }}
+              onPlayStructureMinigame={(minigameId) => {
+                setMinigameSource("structure");
+                setActiveMinigameId(minigameId as MinigameId);
+                setMinigameStartedAt(Date.now());
+                void analytics.track("minigame_started", {
+                  islandId: activeIsland.id,
+                  minigameId,
+                  source: "money_structure",
+                });
+              }}
               onOpenBoard={() => setView("island")}
               onOpenTravel={() => setView("travel")}
               onOpenHub={() => setView("home")}
@@ -2370,6 +2484,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 ? HUB_ISLAND_ID
                 : (activeIsland?.id ?? save?.currentIslandId ?? HUB_ISLAND_ID)
             }
+            softBeatArmWhisper={softBeatArmWhisper(peekSoftBeatArm())}
+            softBeatArmKind={peekSoftBeatArm()}
             onChoice={(id) => void onDialogueChoice(id)}
             onContinue={onDialogueContinue}
             onSkip={closeDialogue}

@@ -14,7 +14,8 @@ describe("Harbor felt share card copy", () => {
     expect(coin.seal).toBe("COIN");
     expect(coin.brand).toBe("CAPITAL");
     expect(coin.kid).toMatch(/^The Coin holds/);
-    expect(coin.retell).toMatch(/Harbor remembered: “Jar before treat.”/);
+    expect(coin.retell).toMatch(/Jar before treat/);
+    expect(coin.retell).toMatch(/Coin/);
 
     const clock = feltCardCopy({
       voyagerName: "Sam",

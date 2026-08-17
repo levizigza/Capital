@@ -171,21 +171,33 @@ export function buildStaticKeeperGraph(rng: () => number): BehaviorNode {
 
 export function createHarborAgent(
   life: HarborNpcLife,
-  opts?: { guidedPose?: NpcPoseId | null; talkRadius?: number },
+  opts?: {
+    guidedPose?: NpcPoseId | null;
+    talkRadius?: number;
+    memory?: { talks?: number; lastChoiceIds?: string[] } | null;
+    scarEcho?: {
+      label: string;
+      dayOffset: "same" | "later";
+      organ?: import("../moneyOrgans").MoneyOrganId;
+    } | null;
+  },
 ): BehaviorGraphAgent {
   const hour = currentHarborHour();
-  const pose = harborNpcPose(life, hour);
+  const pose = harborNpcPose(life, hour, opts?.memory, opts?.scarEcho);
   const rng = mulberry32(hashStr(`${life.mascotId}:${hour}`));
   const bb = new Blackboard();
   bb.set(BB.position, [...pose.position] as Vec3);
-  bb.set(BB.home, [...life.home] as Vec3);
+  // Static keepers (incl. tip-hat terrace sway) hold the hour’s schedule slot.
+  bb.set(BB.home, [...(life.motion === "static" ? pose.position : life.home)] as Vec3);
   bb.set(BB.scheduleTarget, [...pose.position] as Vec3);
   bb.set(BB.yaw, pose.yaw);
   bb.set(BB.pose, "stand" as NpcPoseId);
   bb.set(BB.line, pose.line);
   bb.set(BB.name, pose.name);
-  bb.set(BB.walkRadius, life.motion === "static" ? 0.15 : 2.6);
-  bb.set(BB.speed, life.motion === "static" ? 0.4 : 1.55);
+  // Series leads micro-sway on terrace schedule; plaza roamers walk farther.
+  const leadStatic = life.motion === "static" && life.mascotId !== "piggy_penny";
+  bb.set(BB.walkRadius, life.motion === "static" ? (leadStatic ? 0.55 : 0.15) : 2.8);
+  bb.set(BB.speed, life.motion === "static" ? (leadStatic ? 0.55 : 0.4) : 1.65);
   bb.set(BB.talkRadius, opts?.talkRadius ?? 2.4);
   bb.set(BB.guidedPose, opts?.guidedPose ?? null);
   bb.set(BB.seed, life.mascotId);

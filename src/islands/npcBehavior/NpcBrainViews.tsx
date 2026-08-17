@@ -8,8 +8,10 @@ import type { NpcEmote } from "../story/dialogueActionSync";
 import { BB, type NpcPoseId, type Vec3 } from "./index";
 import { createHarborAgent, createShoreAmbientAgent } from "./graphs";
 import type { HarborNpcLife } from "../harborNpcLives";
+import { currentHarborHour, harborNpcPose } from "../harborNpcLives";
 import type { AmbientResident } from "../islandCulture";
 import type { BehaviorGraphAgent } from "./agent";
+import type { MoneyOrganId } from "../moneyOrgans";
 
 function emoteToPose(emote: NpcEmote): NpcPoseId {
   if (emote === "idle") return "stand";
@@ -29,6 +31,12 @@ type HarborBrainProps = {
   playerPos: React.MutableRefObject<THREE.Vector3>;
   /** Push live body into parent registry for proximity / HUD */
   bodyOut: React.MutableRefObject<Map<string, { position: Vec3; line: string; name: string }>>;
+  memory?: { talks?: number; lastChoiceIds?: string[] } | null;
+  scarEcho?: {
+    label: string;
+    dayOffset: "same" | "later";
+    organ?: MoneyOrganId;
+  } | null;
 };
 
 /**
@@ -47,15 +55,27 @@ export function HarborBehaviorNpc({
   nearPlayer,
   playerPos,
   bodyOut,
+  memory = null,
+  scarEcho = null,
 }: HarborBrainProps) {
   const agent = useMemo(() => createHarborAgent(life), [life]);
   const group = useRef<THREE.Group>(null);
   const [pose, setPose] = useState<NpcPoseId>("stand");
+  const [ambientLine, setAmbientLine] = useState(() =>
+    harborNpcPose(life, currentHarborHour(), memory, scarEcho).line,
+  );
 
   useEffect(() => {
     const guided = guidedEmote === "idle" ? null : emoteToPose(guidedEmote);
     agent.blackboard.set(BB.guidedPose, guided);
   }, [agent, guidedEmote]);
+
+  useEffect(() => {
+    const next = harborNpcPose(life, currentHarborHour(), memory, scarEcho);
+    agent.blackboard.set(BB.line, next.line);
+    agent.blackboard.set(BB.name, next.name);
+    setAmbientLine(next.line);
+  }, [agent, life, memory, scarEcho]);
 
   useFrame((_, dt) => {
     const p = playerPos.current;
@@ -68,28 +88,36 @@ export function HarborBehaviorNpc({
     if (body.pose !== pose) setPose(body.pose);
     bodyOut.current.set(life.mascotId, {
       position: body.position,
-      line: body.line,
+      line: body.line || ambientLine,
       name: body.name,
     });
   });
 
   // Prefer diegetic keeperSpeech (homecoming / spectacle) over emoji shorthand —
   // Piggy presence must match what dialogueActionSync claims.
-  const bubble = nearPlayer || showPulse
-    ? keeperSpeech
+  // Alive streets: when near a local, show their living ambient line (scar / tip-hat).
+  const guidedBubble =
+    guidedEmote === "wave"
+      ? "Talk — I’m Piggy by the fountain!"
+      : guidedEmote === "cheer"
+        ? "You came home different — I’m here."
+        : guidedEmote === "nod"
+          ? "That’s the way — keep going."
+          : guidedEmote === "point"
+            ? "That way — follow Coin Bag!"
+            : null;
+  const bubble =
+    nearPlayer || showPulse
       ? keeperSpeech
-      : guidedEmote === "wave"
-        ? "Talk — I’m Piggy by the fountain!"
-        : guidedEmote === "cheer"
-          ? "You came home different — I’m here."
-          : guidedEmote === "nod"
-            ? "That’s the way — keep going."
-            : guidedEmote === "point"
-              ? "That way — follow Coin Bag!"
-              : showPulse
-                ? "Talk — I’m right here."
-                : null
-    : null;
+        ? keeperSpeech
+        : guidedBubble
+          ? guidedBubble
+          : showPulse
+            ? "Talk — I’m right here."
+            : nearPlayer && ambientLine
+              ? ambientLine
+              : null
+      : null;
 
   return (
     <group ref={group}>

@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  boundedIndexFromKey,
   bumpWeeklyTalk,
   localDayKey,
   localWeekKey,
   markPaydayDone,
+  pickDailyRumor,
   prepareDay2EchoSave,
   syncHarborRitual,
   weeklyShareText,
@@ -22,6 +24,15 @@ function baseSave(): IslandSaveV1 {
 }
 
 describe("harborRitual", () => {
+  it("bounds ritual picks from day/week keys (#70) — deterministic, no Math.random", () => {
+    expect(boundedIndexFromKey("2026-08-17", 5)).toBe(boundedIndexFromKey("2026-08-17", 5));
+    expect(boundedIndexFromKey("2026-08-17", 5)).not.toBe(boundedIndexFromKey("2026-08-18", 5));
+    const a = pickDailyRumor(baseSave(), "2026-08-17");
+    const b = pickDailyRumor(baseSave(), "2026-08-17");
+    expect(a.id).toBe(b.id);
+    expect(a.text).toBe(b.text);
+  });
+
   it("syncs a new day with streak and weekly", () => {
     const day = new Date(2026, 6, 28);
     const save = syncHarborRitual(baseSave(), day);
@@ -102,5 +113,25 @@ describe("harborRitual", () => {
     expect(save.harborRitual?.today.echoSurpriseSeen).toBe(false);
     expect(save.harborHomecoming?.piggyTalked).toBe(true);
     expect(save.harborHomecoming?.pending).toBe(false);
+  });
+
+  it("day-2 Soft Beat can echo digression gossip when no overnight plaque", () => {
+    const dayKey = "2026-07-29";
+    const save = {
+      ...baseSave(),
+      harborScars: [
+        {
+          id: "pp_tip_plan",
+          islandId: "paycheck_peninsula",
+          choiceId: "pri_plan",
+          label: "Planned buckets before tipping",
+          kind: "npc_tone" as const,
+          createdAt: "2026-07-28T12:00:00.000Z",
+        },
+      ],
+    };
+    const rumor = pickDailyRumor(save, dayKey);
+    expect(rumor.id).toBe("scar_echo_pp_tip_plan");
+    expect(rumor.text).toMatch(/whispers|echo/i);
   });
 });

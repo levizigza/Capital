@@ -68,7 +68,15 @@ describe("Iconic craft cadence (Pillar 16)", () => {
   });
 
   it("requires automated coverage for signature cinema beats", () => {
-    const must = ["cove_take", "spectacle", "share", "day2", "reduced_motion", "corrupt_save"];
+    const must = [
+      "cove_take",
+      "spectacle",
+      "share",
+      "day2",
+      "reduced_motion",
+      "corrupt_save",
+      "structure_exit",
+    ];
     for (const id of must) {
       const row = ICONIC_COLD_CHECKLIST.find((r) => r.id === id);
       expect(row, id).toBeTruthy();

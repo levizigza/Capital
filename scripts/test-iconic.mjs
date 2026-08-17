@@ -38,7 +38,7 @@ function main() {
 
   console.log("[test:iconic] OK — run test:iconic:e2e when Harbor/Cove/carpet changed.");
   console.log(
-    "[test:iconic] Then one cold human run + update iconic-craft-plan status board.",
+    "[test:iconic] Then one official-harness cold + update docs/full-game-craft-board.md.",
   );
 }
 

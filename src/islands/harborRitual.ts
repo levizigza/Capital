@@ -4,7 +4,12 @@
  */
 
 import type { IslandSaveV1 } from "./types";
-import { harborScarPlaques, scarRumorLine } from "./worldMemory";
+import {
+  harborScarPlaques,
+  harborTalkScars,
+  isDigressionScar,
+  scarRumorLine,
+} from "./worldMemory";
 
 export type HarborRitualToday = {
   paydayDone?: boolean;
@@ -84,11 +89,18 @@ export function weeklyMeta(id: WeeklyChallengeId) {
   return WEEKLY_ROTATION.find((w) => w.id === id) ?? WEEKLY_ROTATION[0]!;
 }
 
+/**
+ * Pattern #70 — randomness bounded: day/week keys pick from a fixed pool.
+ * Same key → same index. Never Math.random on the ritual path.
+ */
+export function boundedIndexFromKey(key: string, length: number): number {
+  if (length <= 0) return 0;
+  const sum = [...key].reduce((a, c) => a + c.charCodeAt(0), 0);
+  return Math.abs(sum) % length;
+}
+
 function weekChallengeForKey(weekKey: string): HarborWeeklyChallenge {
-  const idx =
-    Math.abs(
-      [...weekKey].reduce((a, c) => a + c.charCodeAt(0), 0),
-    ) % WEEKLY_ROTATION.length;
+  const idx = boundedIndexFromKey(weekKey, WEEKLY_ROTATION.length);
   const meta = WEEKLY_ROTATION[idx]!;
   return {
     weekKey,
@@ -111,14 +123,36 @@ export function pickDailyRumor(save: IslandSaveV1, dayKey: string): { id: string
         text: scarRumorLine(p, "later"),
       };
     }
+    // Same-day plaque — prefer overnight digression echo if one is older
+    const digEcho = pickDigressionOvernightEcho(save, dayKey);
+    if (digEcho) return digEcho;
     return {
       id: `scar_${p.id}`,
       text: scarRumorLine(p, "same"),
     };
   }
-  const idx =
-    Math.abs([...dayKey].reduce((a, c) => a + c.charCodeAt(0), 0)) % RUMORS.length;
+  const digEcho = pickDigressionOvernightEcho(save, dayKey);
+  if (digEcho) return digEcho;
+  const idx = boundedIndexFromKey(dayKey, RUMORS.length);
   return RUMORS[idx]!;
+}
+
+/** Digression gossip can own day-2 Soft Beat when older than today. */
+function pickDigressionOvernightEcho(
+  save: IslandSaveV1,
+  dayKey: string,
+): { id: string; text: string } | null {
+  const digs = harborTalkScars(save).filter((s) => isDigressionScar(s));
+  if (digs.length === 0) return null;
+  const d = digs[digs.length - 1]!;
+  const scarDay = (d.createdAt || "").slice(0, 10);
+  if (scarDay && scarDay < dayKey) {
+    return {
+      id: `scar_echo_${d.id}`,
+      text: scarRumorLine(d, "later"),
+    };
+  }
+  return null;
 }
 
 /** Roll ritual to today / this week. Call on Harbor enter. */

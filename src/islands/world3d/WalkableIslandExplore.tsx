@@ -35,10 +35,16 @@ import { SHORE_WORLD_SCALE, shoreScale } from "./ledgerlight";
 import { ShoreBehaviorDriver } from "../npcBehavior/NpcBrainViews";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { stepWalkVelocity } from "../input/walkFeel";
+import { playCapitalSfx } from "../audio/capitalSfx";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { ShoreSpinCoin, ShoreBell, ShoreClockToy, ShoreSpiralToy } from "./ShoreToys";
 import { ShoreRhythmCraft } from "./ShorePlazaCraft";
 import { moneyOrganForIsland } from "../moneyOrgans";
+import { prefersReducedMotion } from "../a11yMotion";
+import { HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
+
+/** Sticky shore WebGL fail — skip Canvas next visit this session. */
+export const SHORE_3D_FAIL_KEY = "capital_shore3d_fail";
 
 type Props = {
   island: IslandDefinition;
@@ -174,6 +180,9 @@ function Player({
     p.x += vel.current.x * dt;
     p.z += vel.current.z * dt;
     moving.current = stepped.moving || Math.abs(turn) > 0.001;
+    if (stepped.justStopped) {
+      playCapitalSfx("walk_stop");
+    }
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 
@@ -994,19 +1003,18 @@ function ShoreScene({
         />
       )}
 
-      <IslandTitle
-        title={island.name}
-        subtitle={
-          chapterQuiet
-            ? "Quiet after the Take · fly home changed"
-            : genreLine
+      {chapterQuiet ? null : (
+        <IslandTitle
+          title={island.name}
+          subtitle={
+            genreLine
               ? `${genreLine} · ${culture.cultureName}`
               : `${biome.label} · ${culture.cultureName}`
-        }
-        height={shoreScale(8.2)}
-        accent={chapterQuiet ? "#94a3b8" : look.accent}
-      />
-
+          }
+          height={shoreScale(8.2)}
+          accent={look.accent}
+        />
+      )}
       {ambients.map((res) => (
         <AmbientCritter
           key={res.id}
@@ -1073,34 +1081,47 @@ export function WalkableIslandExplore({
   const look = useMemo(() => getIslandLook3D(island.id, theme.animationStyle), [island.id, theme.animationStyle]);
   const [near, setNear] = useState<string | null>(null);
   const playerPos = useRef(new THREE.Vector3(0, 0, SPAWN_Z));
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduced = prefersReducedMotion();
 
   const [ready, setReady] = useState(false);
   const [loadHint, setLoadHint] = useState(`Landing on ${island.name}…`);
+  const [skipCanvas, setSkipCanvas] = useState(() => {
+    try {
+      return sessionStorage.getItem(SHORE_3D_FAIL_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const readyRef = useRef(false);
   readyRef.current = ready;
 
   useEffect(() => {
     setLoadHint(`Landing on ${island.name}…`);
-    setReady(false);
-  }, [island.name]);
+    setReady(skipCanvas);
+  }, [island.name, skipCanvas]);
 
   useEffect(() => {
-    if (ready) return;
+    if (ready || skipCanvas) return;
     const hint = window.setTimeout(() => {
       setLoadHint("Still landing… finishing without waiting on 3D.");
     }, 1_200);
-    // Match Harbor gate — playable shore under ~2.5s, not a 9s dead veil.
+    // Match Harbor gate — playable shore under ~2.5s; skip hung Canvas.
     const failsafe = window.setTimeout(() => {
-      if (!readyRef.current) setReady(true);
-    }, 2_400);
+      if (!readyRef.current) {
+        try {
+          sessionStorage.setItem(SHORE_3D_FAIL_KEY, "1");
+        } catch {
+          /* ignore */
+        }
+        setSkipCanvas(true);
+        setReady(true);
+      }
+    }, HARBOR_HARD_FAILSAFE_MS);
     return () => {
       window.clearTimeout(hint);
       window.clearTimeout(failsafe);
     };
-  }, [ready]);
+  }, [ready, skipCanvas]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -1121,7 +1142,7 @@ export function WalkableIslandExplore({
 
   return (
     <div className="relative h-full w-full overflow-hidden" data-testid="island-shore-explore">
-      {!ready ? (
+      {!ready && !skipCanvas ? (
         <div
           className="absolute inset-0 z-[10] flex flex-col items-center justify-center gap-3 px-4 text-center"
           style={{ background: look.skyTop, color: look.accent }}
@@ -1132,12 +1153,47 @@ export function WalkableIslandExplore({
             type="button"
             className="pointer-events-auto min-h-11 rounded-xl border-2 border-[#1c1917] bg-[#f4b942] px-5 py-2.5 text-sm font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917]"
             data-testid="island-shore-enter-now"
-            onClick={() => setReady(true)}
+            onClick={() => {
+              try {
+                sessionStorage.setItem(SHORE_3D_FAIL_KEY, "1");
+              } catch {
+                /* ignore */
+              }
+              setSkipCanvas(true);
+              setReady(true);
+            }}
           >
             Enter shore now
           </button>
         </div>
       ) : null}
+      {skipCanvas ? (
+        <div
+          className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-3 px-4"
+          style={{
+            background: `radial-gradient(ellipse 70% 55% at 50% 40%, ${look.skyTop}, #0c4a6e)`,
+          }}
+          data-testid="island-shore-flat"
+        >
+          <p className="text-lg font-black text-white drop-shadow">{island.name}</p>
+          <p className="max-w-sm text-center text-xs font-semibold text-white/75">
+            Shore map (flat) — tap a place to continue.
+          </p>
+          <div className="flex max-w-md flex-wrap justify-center gap-2">
+            {hotspots.map((h) => (
+              <button
+                key={h.id}
+                type="button"
+                data-testid={`shore-flat-hotspot-${h.id}`}
+                className="min-h-11 rounded-full border-2 border-[#1c1917] bg-[#fffdf6] px-4 py-2 text-xs font-black text-[#1c1917] shadow-[2px_2px_0_#1c1917]"
+                onClick={() => onHotspot(h.id)}
+              >
+                {h.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
       <Canvas
         shadows
         dpr={reduced ? [1, 1] : [1, 1.25]}
@@ -1146,6 +1202,11 @@ export function WalkableIslandExplore({
         gl={{ antialias: !reduced, alpha: false, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor(look.skyTop, 1);
+          try {
+            sessionStorage.removeItem(SHORE_3D_FAIL_KEY);
+          } catch {
+            /* ignore */
+          }
           setReady(true);
         }}
       >
@@ -1182,6 +1243,7 @@ export function WalkableIslandExplore({
           />
         </Suspense>
       </Canvas>
+      )}
     </div>
   );
 }

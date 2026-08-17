@@ -48,6 +48,20 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
         },
       }),
     ).toBe("spend");
+    expect(
+      resolveTakeFailFlavor({
+        irreversibleChoices: {
+          credit_borrow_vs_wait: { choiceId: "borrow" },
+        },
+      }),
+    ).toBe("spend");
+    expect(
+      resolveTakeFailFlavor({
+        irreversibleChoices: {
+          credit_borrow_vs_wait: { choiceId: "wait" },
+        },
+      }),
+    ).toBe("save");
     const spend = minigameFailCopy({
       reason: "objective_not_met",
       minigameName: "Coin Catcher",
@@ -61,6 +75,7 @@ describe("minigameFail — Pillar 3 dignity contract", () => {
     expect(spend.title).toBe(save.title);
     expect(spend.retryLabel).toBe(save.retryLabel);
     expect(spend.body.toLowerCase()).toMatch(/soft miss|still teach|no shame/);
+    expect(spend.body.toLowerCase()).toMatch(/haste/);
     expect(spend.body.toLowerCase()).not.toMatch(/should have saved|bad spend|mistake/);
   });
 });

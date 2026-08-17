@@ -656,24 +656,95 @@ export function castMascotForNpc(npcId: string, preferredRole?: MoneyMascot["rol
 /** Piggy plaza slot — SW of fountain, clear of basin water (Coin Bag look-at + first-meet). */
 export const HARBOR_PIGGY_POS: [number, number, number] = [-2.8, 0, 2.4];
 
+/** Harbor plaza cast slot — optional tip-hat ambient when Voyager walks near. */
+export type HarborLocalSlot = {
+  mascotId: MoneyMascotId;
+  pos: [number, number, number];
+  yaw: number;
+  /** Short diegetic line when near (series tip-hat leads) — not a tip lecture. */
+  ambientNear?: string;
+};
+
 /** Harbor plaza sample — readable crowd without spawning all 30.
  *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide).
- *  Series leads flank the Memory Courtyard (SE Plinth terrace) — never Piggy's fountain slot. */
-export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
+ *  Series leads flank the Memory Courtyard (SE Plinth terrace) — never Piggy's fountain slot.
+ *  Alive streets (GTA4 bar): when harborTalkScars include digression npc_tone scars
+ *  (cc_shell_*, ck_collector_*) or spine plaques, Talk Battle graphs name them as living receipts. */
+export const HARBOR_LOCAL_CAST: HarborLocalSlot[] = [
   { mascotId: "piggy_penny", pos: HARBOR_PIGGY_POS, yaw: 0.35 },
   // Series leads — SE Memory Courtyard terrace (south of Plinth, clear of Bank door)
-  { mascotId: "cashwell", pos: [4.4, 0, 6.2], yaw: -0.55 },
-  { mascotId: "cashmere", pos: [5.2, 0, 7.0], yaw: -0.75 },
-  { mascotId: "peso_pedro", pos: [6.0, 0, 6.4], yaw: -0.95 },
-  { mascotId: "fortuna_fernanda", pos: [6.8, 0, 7.2], yaw: -1.1 },
-  { mascotId: "billionaire_bao", pos: [7.6, 0, 6.0], yaw: -1.25 },
-  { mascotId: "jade_fortune", pos: [8.4, 0, 7.0], yaw: -1.4 },
-  { mascotId: "sultan_stacks", pos: [9.0, 0, 5.8], yaw: -1.55 },
-  { mascotId: "dinar_dahlia", pos: [9.6, 0, 6.8], yaw: -1.7 },
-  { mascotId: "mansa_moneybaggs", pos: [10.2, 0, 5.6], yaw: -1.85 },
-  { mascotId: "kandake_kash", pos: [10.8, 0, 6.6], yaw: -2.0 },
-  { mascotId: "moneybagg_bro", pos: [11.4, 0, 5.4], yaw: -2.1 },
-  { mascotId: "mula_mami", pos: [12.0, 0, 6.4], yaw: -2.2 },
+  {
+    mascotId: "cashwell",
+    pos: [4.4, 0, 6.2],
+    yaw: -0.55,
+    ambientNear: "Cashwell: Tip the hat — the Plinth already filed yesterday.",
+  },
+  {
+    mascotId: "cashmere",
+    pos: [5.2, 0, 7.0],
+    yaw: -0.75,
+    ambientNear: "Cashmere: Taste remembers. Harbor does too.",
+  },
+  {
+    mascotId: "peso_pedro",
+    pos: [6.0, 0, 6.4],
+    yaw: -0.95,
+    ambientNear: "Peso Pedro: Small tip of the hat — big plaza memory.",
+  },
+  {
+    mascotId: "fortuna_fernanda",
+    pos: [6.8, 0, 7.2],
+    yaw: -1.1,
+    ambientNear: "Fortuna: Glow soft — Memory Courtyard keeps the roses.",
+  },
+  {
+    mascotId: "billionaire_bao",
+    pos: [7.6, 0, 6.0],
+    yaw: -1.25,
+    ambientNear: "Bao: Quiet nod. The Plinth does the talking.",
+  },
+  {
+    mascotId: "jade_fortune",
+    pos: [8.4, 0, 7.0],
+    yaw: -1.4,
+    ambientNear: "Jade: Polished hush — Harbor still names the Take.",
+  },
+  {
+    mascotId: "sultan_stacks",
+    pos: [9.0, 0, 5.8],
+    yaw: -1.55,
+    ambientNear: "Sultan: Crown tip — treasure leaves footprints here.",
+  },
+  {
+    mascotId: "dinar_dahlia",
+    pos: [9.6, 0, 6.8],
+    yaw: -1.7,
+    ambientNear: "Dahlia: Radiant tip-hat — plaza gossip wears gold.",
+  },
+  {
+    mascotId: "mansa_moneybaggs",
+    pos: [10.2, 0, 5.6],
+    yaw: -1.85,
+    ambientNear: "Mansa: Legacy tip — streets carry what you chose.",
+  },
+  {
+    mascotId: "kandake_kash",
+    pos: [10.8, 0, 6.6],
+    yaw: -2.0,
+    ambientNear: "Kandake: Crown nod — shared riches, shared rumor.",
+  },
+  {
+    mascotId: "moneybagg_bro",
+    pos: [11.4, 0, 5.4],
+    yaw: -2.1,
+    ambientNear: "Moneybagg: Swagger tip — big plays stick to Harbor.",
+  },
+  {
+    mascotId: "mula_mami",
+    pos: [12.0, 0, 6.4],
+    yaw: -2.2,
+    ambientNear: "Mula: Boss tip-hat — shine loud, memory louder.",
+  },
   { mascotId: "coiny", pos: [-6.2, 0, 4.0], yaw: 0.9 },
   { mascotId: "dollar_dash", pos: [2.2, 0, 8.4], yaw: -2.2 },
   { mascotId: "budget_bot", pos: [-2.8, 0, -7.4], yaw: 0.4 },

@@ -92,4 +92,103 @@ describe("harborTalks", () => {
     expect(resolveHarborDialogue("npc_artisan_alma", { scars })).toBeUndefined();
     expect(resolveHarborDialogue("coiny", { scars })?.id).toMatch(/scar|harbor/);
   });
+
+  it("plaza locals vividly name digression scars (alive streets, not tip lists)", () => {
+    const patience = resolveHarborDialogue("coiny", {
+      scars: [
+        {
+          id: "cc_shell_patience",
+          islandId: "coincraft_cove",
+          label: "Left Shelly’s shell on the stall",
+          kind: "npc_tone",
+        },
+      ],
+    });
+    expect(patience?.id).toMatch(/scar_memory/);
+    const p0 = String(patience?.nodes[0]?.text ?? "");
+    expect(p0).toMatch(/Shelly/);
+    expect(p0).toMatch(/Left Shelly/);
+    expect(p0).not.toMatch(/Count your coins before you spend/i);
+
+    const impulse = resolveHarborDialogue("spendy_sue", {
+      scars: [
+        {
+          id: "cc_shell_impulse",
+          islandId: "coincraft_cove",
+          label: "Bought Shelly’s shell want",
+          kind: "npc_tone",
+        },
+      ],
+    });
+    expect(String(impulse?.nodes[0]?.text ?? "")).toMatch(/shell want|Bought Shelly/i);
+
+    const rumor = resolveHarborDialogue("tip_jar_tom", {
+      scars: [
+        {
+          id: "ck_collector_rumor",
+          islandId: "credit_kingdom",
+          label: "Heard the Bank of Obligation pitch",
+          kind: "npc_tone",
+        },
+      ],
+    });
+    expect(String(rumor?.nodes[0]?.text ?? "")).toMatch(/Collector|canyon|Bank of Obligation/i);
+  });
+
+  it("tip-hat series leads name digression scars with vivid free-roam receipts", () => {
+    const scars = [
+      {
+        id: "cc_shell_impulse",
+        islandId: "coincraft_cove",
+        label: "Bought Shelly’s shell want",
+        kind: "npc_tone" as const,
+      },
+    ];
+    for (const id of ["cashmere", "mula_mami", "jade_fortune"] as const) {
+      const g = resolveHarborDialogue(id, { scars });
+      expect(g?.id).toMatch(/scar_memory/);
+      const mid = String(g?.nodes.find((n) => n.id === "s1")?.text ?? "");
+      expect(mid).toMatch(/Bought Shelly|shell want|digression|side/i);
+      expect(mid).not.toMatch(/Pay yourself first/i);
+      expect(mid).not.toMatch(/Automate a savings/i);
+    }
+  });
+
+  it("series leads name spine plaques as living receipts, not tip lists", () => {
+    const g = resolveHarborDialogue("cashwell", {
+      scars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          label: "Jar before treat",
+        },
+      ],
+    });
+    expect(g?.id).toMatch(/scar_memory/);
+    expect(String(g?.nodes[0]?.text ?? "")).toMatch(/Jar before treat/);
+    expect(String(g?.nodes.find((n) => n.id === "s1")?.text ?? "")).toMatch(/Plinth|Coin|receipt/i);
+    expect(String(g?.nodes.find((n) => n.id === "s1")?.text ?? "")).not.toMatch(
+      /Always up — after you face the Take/i,
+    );
+  });
+
+  it("Piggy free-roam names digression scars with weight, not a lecture", () => {
+    const g = resolveHarborDialogue("piggy_penny", {
+      guidedStep: "done",
+      scars: [
+        {
+          id: "cc_shell_patience",
+          islandId: "coincraft_cove",
+          label: "Left Shelly’s shell on the stall",
+          kind: "npc_tone",
+        },
+      ],
+    });
+    expect(g?.id).toBe("dlg_harbor_piggy_penny_memory");
+    const t = String(g?.nodes[0]?.text ?? "");
+    expect(t).toMatch(/Shelly/);
+    expect(t).toMatch(/Left Shelly/);
+    expect(t).not.toMatch(/Automate a savings transfer/i);
+    expect(t).not.toMatch(/Pay yourself first/i);
+  });
 });

@@ -8,9 +8,16 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { MoneyStructureTheme } from "../moneyStructures";
 import { playOrganSfx } from "../audio/capitalSfx";
+import type { MoneyOrganId } from "../moneyOrgans";
+import { triggerJuice } from "@/juice";
 
 function pokeCursor(on: boolean) {
   document.body.style.cursor = on ? "pointer" : "auto";
+}
+
+function pokeOrgan(organ: MoneyOrganId) {
+  playOrganSfx(organ);
+  triggerJuice("accept");
 }
 
 /** Poppable cork — Jar Cork Vault organ toy. */
@@ -30,7 +37,7 @@ function ToyCork({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setPop(1);
-        playOrganSfx("coin");
+        pokeOrgan("coin");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -64,7 +71,7 @@ function ToySpringCoil({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setSquash(1);
-        playOrganSfx("coin");
+        pokeOrgan("coin");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -103,7 +110,7 @@ function ToyCoin({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(5);
-        playOrganSfx("coin");
+        pokeOrgan("coin");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -135,7 +142,7 @@ function ToyClockFace({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setSpin(8);
-        playOrganSfx("clock");
+        pokeOrgan("clock");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -175,7 +182,7 @@ function ToySpiralBead({
       onClick={(e) => {
         e.stopPropagation();
         setBoost(6);
-        playOrganSfx("spiral");
+        pokeOrgan("spiral");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -194,7 +201,7 @@ function ToySpiralBead({
   );
 }
 
-/** Brass stamp — Bank Payday Stamp. */
+/** Brass stamp — Bank Ledger Stamp. */
 function ToyStamp({ position }: { position: [number, number, number] }) {
   const mesh = useRef<THREE.Mesh>(null);
   const [press, setPress] = useState(0);
@@ -209,7 +216,7 @@ function ToyStamp({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setPress(1);
-        playOrganSfx("memory");
+        pokeOrgan("memory");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -241,7 +248,7 @@ function ToyVaultDial({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setSpin(10);
-        playOrganSfx("memory");
+        pokeOrgan("memory");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -280,7 +287,7 @@ function ToyTellerGlass({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setGlow(1);
-        playOrganSfx("memory");
+        pokeOrgan("memory");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -325,7 +332,7 @@ function ToyBucketStack({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setBounce(1);
-        playOrganSfx("clock");
+        pokeOrgan("clock");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}
@@ -356,7 +363,7 @@ function ToyUmbrellaFold({ position }: { position: [number, number, number] }) {
       onClick={(e) => {
         e.stopPropagation();
         setOpen(1);
-        playOrganSfx("clock");
+        pokeOrgan("clock");
       }}
       onPointerOver={() => pokeCursor(true)}
       onPointerOut={() => pokeCursor(false)}

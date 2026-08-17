@@ -136,6 +136,17 @@
             { "type": "collectItem", "itemId": "cc_savings_jar" }
           ],
           "rewards": { "coins": 50, "xp": 100, "items": ["cc_craft_badge"] }
+        },
+        {
+          "id": "q_cc_shell_want",
+          "track": "side",
+          "title": "Shell Want",
+          "description": "Shelly tempts a pretty want. Choose need-first or impulse — Harbor gossip may follow.",
+          "hint": "Optional digression at the Craft Market. Talk to Shelly when main quest allows a wander.",
+          "objectives": [
+            { "type": "talkToNpc", "npcId": "npc_shelly" }
+          ],
+          "rewards": { "coins": 15, "xp": 40 }
         }
       ],
       "dialogues": [
@@ -234,7 +245,7 @@
               "choices": [
                 {
                   "id": "kk1_a",
-                  "text": "Jar before treat",
+                  "text": "Jar before treat — quieter hush · Harbor soft-names patience",
                   "nextNodeId": "kk2",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -256,7 +267,7 @@
                 },
                 {
                   "id": "kk1_spend",
-                  "text": "Treat before jar",
+                  "text": "Treat before jar — louder plaza gossip · Harbor still keeps it",
                   "nextNodeId": "kk2_spend",
                   "effects": [
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
@@ -306,30 +317,76 @@
             {
               "id": "sh1",
               "speaker": "Shelly",
-              "text": "Pretty shells! Only 5 coins each. But ask yourself — do you NEED a shell, or do you just WANT one? That's the secret to smart spending!",
+              "text": "Pretty shells — 5 coins. Need or want? Side digression: Harbor will gossip either way.",
               "choices": [
                 {
-                  "id": "sh1_a",
-                  "text": "That's a want, not a need!",
-                  "nextNodeId": "sh2"
+                  "id": "sh1_start",
+                  "text": "I’ll hear your pitch.",
+                  "nextNodeId": "sh_fork",
+                  "effects": [{ "type": "startQuest", "questId": "q_cc_shell_want" }]
                 },
                 {
-                  "id": "sh1_b",
-                  "text": "I'll think about it.",
-                  "nextNodeId": "sh3"
+                  "id": "sh1_later",
+                  "text": "Not now — main quest first.",
+                  "nextNodeId": "sh_later"
                 }
               ]
             },
             {
-              "id": "sh2",
+              "id": "sh_fork",
               "speaker": "Shelly",
-              "text": "You got it! Wants are okay sometimes, but needs come first. Smart thinking!",
+              "text": "So? Pocket warm enough for a want — or does the jar come first?",
+              "choices": [
+                {
+                  "id": "sh_need",
+                  "text": "Want waits. Jar first.",
+                  "nextNodeId": "sh_need_done",
+                  "effects": [
+                    { "type": "completeQuest", "questId": "q_cc_shell_want" },
+                    {
+                      "type": "addScar",
+                      "id": "cc_shell_patience",
+                      "label": "Left Shelly’s shell on the stall",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "sh_want",
+                  "text": "Buy the shell — I want it.",
+                  "nextNodeId": "sh_want_done",
+                  "effects": [
+                    { "type": "completeQuest", "questId": "q_cc_shell_want" },
+                    {
+                      "type": "addScar",
+                      "id": "cc_shell_impulse",
+                      "label": "Bought Shelly’s shell want",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "sh_need_done",
+              "speaker": "Shelly",
+              "text": "Respect. Needs before pretty. I’ll tell Harbor you waited — that’s Coin holding.",
               "end": true
             },
             {
-              "id": "sh3",
+              "id": "sh_want_done",
               "speaker": "Shelly",
-              "text": "Taking time to think before buying — that's already a great money habit!",
+              "text": "Sold! Wants aren’t evil — but Harbor saw the jingle. Spend honest, save louder next time.",
+              "end": true
+            },
+            {
+              "id": "sh_later",
+              "speaker": "Shelly",
+              "text": "Come back when the main Take isn’t yelling. Digressions keep.",
               "end": true
             }
           ]

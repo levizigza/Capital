@@ -26,6 +26,13 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
+import { triggerJuice } from "@/juice";
+import {
+  peekSoftBeatArm,
+  softBeatArmChoiceSuffix,
+} from "../softBeatArm";
+import type { SoftBeatKind } from "./SoftBeatOverlay";
 
 /** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
 const TALK_INPUT_ARM_MS = 220;
@@ -40,6 +47,10 @@ export type TalkBattleProps = {
   learningProfile: LearningProfileId;
   /** Island underfoot — paints Memory courtyard vs organ shores */
   placeId?: string | null;
+  /** Soft Beat arm foreshadow — multiplicative organ chemistry */
+  softBeatArmWhisper?: string | null;
+  /** Armed Soft Beat kind — appends organ suffix on Take / digression rows */
+  softBeatArmKind?: SoftBeatKind | null;
   onChoice: (choiceId: string) => void;
   onContinue: () => void;
   onSkip: () => void;
@@ -89,6 +100,8 @@ export function TalkBattleScreen({
   node,
   learningProfile,
   placeId = HARBOR_HAVEN_ID,
+  softBeatArmWhisper = null,
+  softBeatArmKind = null,
   onChoice,
   onContinue,
   onSkip,
@@ -102,6 +115,7 @@ export function TalkBattleScreen({
   const organ = moneyOrganForIsland(placeId);
   const organChip = organ ? organVerbChip(organ.id) : null;
   const accent = organAccent(placeId);
+  const armKind = softBeatArmKind ?? peekSoftBeatArm();
 
   // Reset to listen whenever the dialogue node changes
   useEffect(() => {
@@ -115,6 +129,9 @@ export function TalkBattleScreen({
     }
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    playCapitalSfx("talk_confirm");
+    if (organ?.id) playOrganSfx(organ.id);
+    triggerJuice("accept");
     // Arm after the opening Talk gesture finishes — keeps first listen readable.
     inputArmed.current = false;
     const arm = window.setTimeout(() => {
@@ -125,13 +142,14 @@ export function TalkBattleScreen({
       document.body.style.overflow = prev;
       inputArmed.current = false;
     };
-  }, [open]);
+  }, [open, organ?.id]);
 
   const advanceFromListen = useCallback(() => {
     if (!inputArmed.current) return;
     const next = nextTalkPhase(node, "listen");
     if (next === "choose") {
       setPhase("choose");
+      playCapitalSfx("talk_confirm");
       return;
     }
     onContinue();
@@ -140,6 +158,8 @@ export function TalkBattleScreen({
   const chooseReply = useCallback(
     (choiceId: string) => {
       if (!inputArmed.current) return;
+      playCapitalSfx("talk_confirm");
+      triggerJuice("accept");
       onChoice(choiceId);
     },
     [onChoice],
@@ -204,6 +224,14 @@ export function TalkBattleScreen({
           <p className="mt-0.5 text-[11px] font-semibold text-white/80 drop-shadow">
             {MONEY_IS_ALIVE_HERE}
           </p>
+          {softBeatArmWhisper ? (
+            <p
+              className="mt-1 max-w-xs text-[11px] font-bold text-amber-100 drop-shadow"
+              data-testid="talk-soft-beat-arm"
+            >
+              {softBeatArmWhisper}
+            </p>
+          ) : null}
         </div>
         <button
           type="button"
@@ -269,7 +297,13 @@ export function TalkBattleScreen({
               {phase === "listen" ? node.speaker || npcName : "Your reply"}
             </span>
             <span className="text-[10px] font-semibold text-[#92400e]/80">
-              {phase === "listen" ? "Listening…" : "Speak among living money"}
+              {phase === "listen"
+                ? organChip
+                  ? `Listening · ${organChip}`
+                  : "Listening…"
+                : organChip
+                  ? `Speak · ${organChip}`
+                  : "Speak among living money"}
             </span>
           </div>
 
@@ -291,7 +325,10 @@ export function TalkBattleScreen({
           ) : (
             <div className="max-h-[42vh] space-y-2 overflow-y-auto px-4 py-3">
               <p className="mb-1 text-sm font-medium text-[#4b5c6e] line-clamp-2">{body}</p>
-              {choices.map((choice: DialogueChoice) => (
+              {choices.map((choice: DialogueChoice) => {
+                const base = resolveProfileText(choice.text, learningProfile);
+                const suffix = softBeatArmChoiceSuffix(armKind, choice.effects);
+                return (
                 <button
                   key={choice.id}
                   type="button"
@@ -299,10 +336,12 @@ export function TalkBattleScreen({
                   style={{ borderLeftWidth: 6, borderLeftColor: accent }}
                   {...pointerSafeActivate(() => chooseReply(choice.id))}
                   data-testid={`talk-choice-${choice.id}`}
+                  data-soft-beat-armed={suffix ? "1" : "0"}
                 >
-                  {resolveProfileText(choice.text, learningProfile)}
+                  {suffix ? `${base}${suffix}` : base}
                 </button>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

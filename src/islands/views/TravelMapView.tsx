@@ -20,6 +20,7 @@ import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint } from "../progressGates";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { hasCompletedCoveChange } from "../chapterLoop";
 
 /** Compact structure label for the spine strip. */
 function structurePinGlyph(islandId: string): string {
@@ -41,7 +42,7 @@ export type TravelMapViewProps = {
 
 /**
  * Archipelago travel — one Seed of Life composition.
- * Map owns names + geometry; HUD is brand + spine strip only.
+ * Map owns names + geometry for every island; HUD is brand + spine strip only.
  */
 export function TravelMapView({
   userProfile,
@@ -68,6 +69,7 @@ export function TravelMapView({
 
   const stripIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
   const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
+  const freeRoamOpen = hasCompletedCoveChange(save);
 
   return (
     <GameHudLayout
@@ -140,6 +142,11 @@ export function TravelMapView({
                   </span>{" "}
                   {island.name}
                   {here ? " · here" : ""}
+                  {locked && lockWhy ? (
+                    <span className="mt-0.5 block max-w-[9.5rem] text-[8px] font-semibold leading-snug opacity-80 normal-case tracking-normal">
+                      {lockWhy}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
@@ -147,6 +154,18 @@ export function TravelMapView({
           <InputPromptHint action="cancel" className="justify-center text-white/70">
             Spine voyage · Esc Harbor
           </InputPromptHint>
+          {freeRoamOpen ? (
+            <p
+              className="max-w-md text-center text-[10px] font-medium text-sky-100/75"
+              data-testid="travel-free-roam-whisper"
+            >
+              Free roam · side shores whisper — stray, choose, leave footprints; spine stays Cove → Paycheck → Credit
+            </p>
+          ) : (
+            <p className="max-w-md text-center text-[10px] font-medium text-white/45">
+              Finish Cove Change — then the outer ring opens for free stray
+            </p>
+          )}
           {nextBoat ? (
             <p className="text-[10px] font-medium text-white/55">
               {nextBoat.minCoins - userProfile.totalCoins} coins · {nextBoat.label}

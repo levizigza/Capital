@@ -57,6 +57,7 @@ import { OrganLedgerLines } from "./OrganShoreMotifs";
 import { buildIslandTerrain, islandSeedFromId } from "./islandTerrain";
 import { clearTouchWalkIntent, mergeWalkIntent } from "../input/walkIntent";
 import { stepWalkVelocity } from "../input/walkFeel";
+import { playCapitalSfx } from "../audio/capitalSfx";
 import { KENNEY_ENABLED } from "./kenneyFlag";
 import { MoneyBagGuide, guideTargetForHighlight } from "./MoneyBagGuide";
 import { GuideProjector } from "../views/GuideWayfinder";
@@ -291,6 +292,9 @@ function Player({
     p.x += vel.current.x * dt;
     p.z += vel.current.z * dt;
     moving.current = stepped.moving || Math.abs(turn) > 0.001;
+    if (stepped.justStopped) {
+      playCapitalSfx("walk_stop");
+    }
     group.current.rotation.y = facing.current;
     playerPosOut.current.set(p.x, p.y, p.z);
 
@@ -493,6 +497,7 @@ function PlazaScene({
   npcBodies,
   look,
   scarEcho = null,
+  npcMemory = null,
   plinthSpectacleActive = false,
   piggyPresenceBeat = false,
 }: {
@@ -522,6 +527,7 @@ function PlazaScene({
     dayOffset: "same" | "later";
     organ?: import("../moneyOrgans").MoneyOrganId;
   } | null;
+  npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
   plinthSpectacleActive?: boolean;
   piggyPresenceBeat?: boolean;
 }) {
@@ -791,6 +797,8 @@ function PlazaScene({
             nearPlayer={nearNpcId === npc.mascotId}
             playerPos={playerPos}
             bodyOut={npcBodies}
+            memory={npcMemory?.[npc.mascotId] ?? null}
+            scarEcho={scarEcho}
           />
         );
       })}
@@ -1078,28 +1086,9 @@ export function WalkableHarborView({
     if (kill3d || force2d) setReady(true);
   }, [kill3d, force2d]);
 
+  // When sticky myth is active, never hide Talk/Carpet behind Plinth cinema stage.
+  // Cinema overlays own z-index; plaza must stay the myth fallback for navigability.
   if (kill3d || force2d) {
-    if (cinemaActive) {
-      // Quiet Memory stage under Plinth cinema — never “Piggy is waving” under share.
-      return (
-        <div
-          className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden"
-          data-testid="harbor-cinema-myth-stage"
-          aria-hidden
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, #bae6fd 0%, #7dd3fc 45%, #38bdf8 100%)",
-          }}
-        >
-          <div
-            className="absolute bottom-0 left-1/2 h-[30%] w-[120%] -translate-x-1/2 rounded-[100%] bg-[#86efac]/50"
-          />
-          <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[#0f172a]/55">
-            Harbor Haven · Memory
-          </p>
-        </div>
-      );
-    }
     return (
       <HarborMythFallback
         mode={fallbackMode}
@@ -1199,6 +1188,7 @@ export function WalkableHarborView({
           npcBodies={npcBodies}
           look={look}
           scarEcho={scarEcho}
+          npcMemory={npcMemory}
           plinthSpectacleActive={plinthSpectacleActive}
           piggyPresenceBeat={piggyPresenceBeat}
         />

@@ -4,8 +4,8 @@
     {
       "id": "venture_foundry",
       "name": "Gridlock Galleria",
-      "description": "Neon foundry district \u2014 pitch, budget, and build. Side shore of Fortune Archipelago with its neon sprawl bed.",
-      "icon": "\ud83c\udf06",
+      "description": "Neon foundry district — pitch, budget, and build. Side shore of Fortune Archipelago with its neon sprawl bed.",
+      "icon": "🌆",
       "provenance": {
         "learning_objectives": [
           "Understand the steps from business idea to minimum viable product",
@@ -19,7 +19,7 @@
           "npc-dialogue-tree",
           "budget-allocation"
         ],
-        "originality_notes": "Theme: industrial foundry district with workshops and pitching stages (not a corporate boardroom or office tycoon). Verb: negotiate with NPC investors and allocate startup budget across departments (not passive empire building). Structure: milestone-based quest chain where each quest represents a startup phase \u2014 idea, build, fund, scale (not sandbox or elimination). Combines trade-negotiation with budget-allocation through original NPC mentorship scenarios.",
+        "originality_notes": "Theme: industrial foundry district with workshops and pitching stages (not a corporate boardroom or office tycoon). Verb: negotiate with NPC investors and allocate startup budget across departments (not passive empire building). Structure: milestone-based quest chain where each quest represents a startup phase — idea, build, fund, scale (not sandbox or elimination). Combines trade-negotiation with budget-allocation through original NPC mentorship scenarios.",
         "forbidden_references": [
           "Monopoly",
           "Cashflow",
@@ -35,7 +35,7 @@
           "id": "vf_workshop",
           "name": "The Workshop",
           "description": "A gritty maker space with 3D printers, whiteboards, and prototype stations. Ideas become real here.",
-          "icon": "\ud83d\udd27",
+          "icon": "🔧",
           "connections": [
             "vf_pitch_stage",
             "vf_growth_lab"
@@ -45,7 +45,7 @@
           "id": "vf_pitch_stage",
           "name": "Pitch Stage",
           "description": "A small theater where founders present their ideas to mentors and investors. Bright lights, big stakes.",
-          "icon": "\ud83c\udfa4",
+          "icon": "🎤",
           "connections": [
             "vf_workshop",
             "vf_growth_lab"
@@ -55,7 +55,7 @@
           "id": "vf_growth_lab",
           "name": "Growth Lab",
           "description": "Screens show revenue dashboards and customer metrics. Scale-up strategists work here around the clock.",
-          "icon": "\ud83d\ude80",
+          "icon": "🚀",
           "connections": [
             "vf_workshop",
             "vf_pitch_stage"
@@ -69,28 +69,28 @@
         {
           "id": "npc_founder_fern",
           "name": "Founder Fern",
-          "icon": "\ud83d\udca1",
+          "icon": "💡",
           "areaId": "vf_workshop",
           "dialogueGraphId": "dlg_founder_fern"
         },
         {
           "id": "npc_investor_ike",
           "name": "Investor Ike",
-          "icon": "\ud83d\udcbc",
+          "icon": "💼",
           "areaId": "vf_pitch_stage",
           "dialogueGraphId": "dlg_investor_ike"
         },
         {
           "id": "npc_strategist_sara",
           "name": "Strategist Sara",
-          "icon": "\ud83d\udcca",
+          "icon": "📊",
           "areaId": "vf_growth_lab",
           "dialogueGraphId": "dlg_strategist_sara"
         },
         {
           "id": "npc_mentor_malik",
           "name": "Mentor Malik",
-          "icon": "\ud83c\udf93",
+          "icon": "🎓",
           "areaId": "vf_workshop",
           "dialogueGraphId": "dlg_mentor_malik"
         }
@@ -100,7 +100,7 @@
           "id": "vf_business_plan",
           "name": "Business Plan",
           "description": "A one-page plan covering your idea, target customer, and how you'll make money.",
-          "icon": "\ud83d\udcdd",
+          "icon": "📝",
           "location": {
             "areaId": "vf_workshop"
           }
@@ -108,8 +108,8 @@
         {
           "id": "vf_seed_funding",
           "name": "Seed Funding",
-          "description": "Your first round of capital. Use it wisely \u2014 it has to last until revenue starts flowing.",
-          "icon": "\ud83c\udf31",
+          "description": "Your first round of capital. Use it wisely — it has to last until revenue starts flowing.",
+          "icon": "🌱",
           "location": {
             "areaId": "vf_pitch_stage"
           }
@@ -118,7 +118,7 @@
           "id": "vf_pnl_sheet",
           "name": "Profit & Loss Sheet",
           "description": "A simple P&L that shows whether your venture is making or losing money.",
-          "icon": "\ud83d\udccb",
+          "icon": "📋",
           "location": {
             "areaId": "vf_growth_lab"
           }
@@ -127,7 +127,7 @@
           "id": "vf_foundry_badge",
           "name": "Foundry Badge",
           "description": "Awarded to entrepreneurs who complete the full startup journey from idea to growth.",
-          "icon": "\ud83c\udf96\ufe0f",
+          "icon": "🎖️",
           "location": {
             "areaId": "vf_growth_lab"
           }
@@ -136,7 +136,7 @@
       "quests": [
         {
           "id": "q_vf_idea_to_plan",
-          "track": "main",
+          "track": "side",
           "title": "Idea to Plan",
           "description": "Meet Founder Fern in the Workshop to brainstorm a business idea, then work with Mentor Malik to turn it into a one-page business plan.",
           "hint": "Start at The Workshop. Talk to Fern for inspiration, then Malik for structure.",
@@ -165,7 +165,7 @@
         },
         {
           "id": "q_vf_pitch_and_grow",
-          "track": "main",
+          "track": "side",
           "title": "Pitch and Grow",
           "description": "Take your business plan to the Pitch Stage and convince Investor Ike to fund you. Then enter the Growth Lab to learn about scaling.",
           "hint": "You need a Business Plan before pitching. Head to Pitch Stage, then Growth Lab.",
@@ -219,6 +219,11 @@
                   ]
                 },
                 {
+                  "id": "ff1_listen",
+                  "text": "Digression — look first or pitch first?",
+                  "nextNodeId": "ff_fork"
+                },
+                {
                   "id": "ff1_b",
                   "text": "I'm still brainstorming.",
                   "nextNodeId": "ff3"
@@ -229,6 +234,55 @@
               "id": "ff2",
               "speaker": "Founder Fern",
               "text": "Awesome! First question: who is your customer? Second: what problem do you solve for them? Third: how will you make money? Answer those three and you've got the bones of a business. Go see Mentor Malik to write it up!",
+              "end": true
+            },
+            {
+              "id": "ff_fork",
+              "speaker": "Founder Fern",
+              "text": "Foundry heat or foundry hush — do you linger with the makers, or rush a pitch before you’ve looked?",
+              "choices": [
+                {
+                  "id": "ff_linger",
+                  "text": "Linger — watch makers first.",
+                  "nextNodeId": "ff_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "vf_foundry_listen",
+                      "label": "Wandered Gridlock foundry floors",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "ff_rush",
+                  "text": "Rush a pitch — I’ll look later.",
+                  "nextNodeId": "ff_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "vf_foundry_rush",
+                      "label": "Rushed a Gridlock pitch cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ff_listen_done",
+              "speaker": "Founder Fern",
+              "text": "Watching makers before you pitch is a money skill. Harbor may gossip that you lingered in the foundry.",
+              "end": true
+            },
+            {
+              "id": "ff_rush_done",
+              "speaker": "Founder Fern",
+              "text": "Bold! Cold pitches leave sparks. Harbor may gossip that you spoke before you looked.",
               "end": true
             },
             {
@@ -291,7 +345,7 @@
               "choices": [
                 {
                   "id": "ike1_a",
-                  "text": "Here's my plan \u2014 it solves a real problem!",
+                  "text": "Here's my plan — it solves a real problem!",
                   "nextNodeId": "ike2",
                   "effects": [
                     {
@@ -313,7 +367,7 @@
             {
               "id": "ike2",
               "speaker": "Investor Ike",
-              "text": "I like it. Clear problem, clear customer, clear revenue path. Here's your Seed Funding \u2014 use it wisely! Head to the Growth Lab to learn how to scale without burning through cash.",
+              "text": "I like it. Clear problem, clear customer, clear revenue path. Here's your Seed Funding — use it wisely! Head to the Growth Lab to learn how to scale without burning through cash.",
               "end": true
             },
             {
@@ -354,7 +408,7 @@
             {
               "id": "ss2",
               "speaker": "Strategist Sara",
-              "text": "Here's your P&L sheet. Revenue at the top, subtract all costs, and the bottom line is your profit \u2014 or loss. Keep this positive and you'll survive. Keep it growing and you'll thrive!",
+              "text": "Here's your P&L sheet. Revenue at the top, subtract all costs, and the bottom line is your profit — or loss. Keep this positive and you'll survive. Keep it growing and you'll thrive!",
               "end": true
             },
             {
@@ -371,7 +425,7 @@
           "id": "mg_startup_budget",
           "name": "Startup Budget",
           "description": "Allocate a limited seed budget across product development, marketing, operations, and savings. Aim for a balanced spend that survives 12 simulated months.",
-          "icon": "\ud83d\udcb0",
+          "icon": "💰",
           "componentId": "StartupBudgetGame",
           "areaId": "vf_workshop"
         },
@@ -379,7 +433,7 @@
           "id": "mg_price_it_right",
           "name": "Price Your Product",
           "description": "Launch day! Slide your product's price and watch demand and profit react live. Discover the profit-maximizing price.",
-          "icon": "\ud83d\ude80",
+          "icon": "🚀",
           "componentId": "PriceItRightGame",
           "areaId": "vf_workshop",
           "genre": "simulation",
@@ -391,7 +445,7 @@
               "id": "PriceConfig",
               "config": {
                 "product": "your app subscription",
-                "emoji": "\ud83d\udcf1",
+                "emoji": "📱",
                 "cost": 3,
                 "maxDemand": 60,
                 "chokePrice": 25

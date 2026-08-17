@@ -35,10 +35,9 @@ describe("Pillar 12 story cold retell", () => {
       islandId: "coincraft_cove",
       label: "Jar before treat",
     };
-    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
-    expect(coldRetellLine(cove)).toBe(
-      'The Coin holds — Harbor remembered: “Jar before treat.”',
-    );
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — jar or treat · Coin holds");
+    expect(coldRetellLine(cove)).toMatch(/You chose with the Coin/);
+    expect(coldRetellLine(cove)).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine(cove.label, "coin")).toBe(
       'The Coin holds — Harbor remembered: “Jar before treat.” Local myth — and so do you.',
     );
@@ -76,7 +75,8 @@ describe("Pillar 12 story cold retell", () => {
     expect(soft).toMatch(/Not a second Take/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(day2).toMatch(/day2-echo-kid-sentence/);
-    expect(day2).toMatch(/Memory keeps — the Plinth did not forget/);
+    expect(day2).toMatch(/Still here — \$\{verbChip\} overnight|Still here —.*overnight/);
+    expect(day2).toMatch(/organVerbChip/);
     expect(spectacle).toMatch(/scar-spectacle-kid-sentence/);
     expect(spectacle).toMatch(/coldOrganKidSentence/);
     expect(talks).toMatch(/coldOrganKidSentence/);

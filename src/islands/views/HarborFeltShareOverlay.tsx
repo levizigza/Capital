@@ -35,6 +35,8 @@ type Props = {
    * Soft stamp only; never edits ledger/scar.
    */
   onWitness?: (opts: { witnessName: string; reaction: FamilyWitnessReaction }) => void;
+  /** Settings high-contrast — strengthen lower-third retell panel. */
+  highContrast?: boolean;
 };
 
 export function HarborFeltShareOverlay({
@@ -46,6 +48,7 @@ export function HarborFeltShareOverlay({
   onShare,
   onKeepWalking,
   onWitness,
+  highContrast = false,
 }: Props) {
   const organ = organId ?? "memory";
   const [witnessOpen, setWitnessOpen] = useState(false);
@@ -62,6 +65,7 @@ export function HarborFeltShareOverlay({
 
   useEffect(() => {
     // Share lands the same mute-test resolve as spectacle — Harbor felt that.
+    triggerJuice("complete", { burst: true });
     playCapitalSfx("harbor_felt");
     playOrganSfx(organ);
     playCapitalSfx("plinth_hum");
@@ -123,8 +127,13 @@ export function HarborFeltShareOverlay({
       {/* Sticky lower-third — high-contrast panel so organ retell reads at thumbnail size */}
       <div className="relative z-10 mx-auto w-full max-w-lg shrink-0 px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 text-center">
         <div
-          className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/92 px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md"
+          className={`rounded-2xl px-4 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.55)] backdrop-blur-md ${
+            highContrast
+              ? "border-2 border-white bg-[#020617] text-white"
+              : "border border-amber-100/35 bg-[#0b1220]/92"
+          }`}
           data-testid="harbor-felt-lower-third"
+          data-high-contrast={highContrast ? "1" : "0"}
         >
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
             {capitalOrganEyebrow(organId)} · Harbor felt that

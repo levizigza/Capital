@@ -44,8 +44,8 @@ describe("Signature juice contract", () => {
       "utf8",
     );
     expect(arrive).toMatch(/triggerJuice\("accept"/);
-    expect(soft).toMatch(/triggerJuice\("accept"/);
-    expect(day2).toMatch(/triggerJuice\("accept"/);
+    expect(soft).toMatch(/triggerJuice\("complete"/);
+    expect(day2).toMatch(/triggerJuice\("complete"/);
     expect(interior).toMatch(/triggerJuice\("complete"/);
     expect(interior).toMatch(/pointerSafeActivate/);
   });

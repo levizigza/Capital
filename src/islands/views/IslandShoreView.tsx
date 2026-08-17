@@ -18,12 +18,18 @@ import type {
 import type { LearningProfileId } from "../learningProfile";
 import type { CapitalCharacter } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
-import { getAnimationStyle } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
+import {
+  clearLastConsumedSoftBeat,
+  peekLastConsumedSoftBeat,
+  peekSoftBeatArm,
+  softBeatArmWhisper,
+  softBeatSpentHushLine,
+} from "../softBeatArm";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
@@ -38,9 +44,8 @@ import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
-import { getIslandBiome } from "../world3d/islandBiomes";
+import { isSideShoreTravelId, isSpineTravelId } from "../spineArchipelago";
 import type { AccessibilitySettings } from "../settings";
-import { getGenreWorld, getGenreDistrict, genreShoreBlurb } from "../genreWorlds";
 import {
   harborScarPlaques,
   organQuietBadge,
@@ -68,6 +73,8 @@ export type IslandShoreViewProps = {
   onTalkNpc: (npcId: NpcId) => void;
   onCollectItem: (itemId: ItemId) => void;
   onPlayMinigame: (minigameId: string) => void;
+  /** Money Structure part pads — stay-put fail source */
+  onPlayStructureMinigame?: (minigameId: string) => void;
   onOpenBoard: () => void;
   onOpenTravel: () => void;
   onOpenHub: () => void;
@@ -93,6 +100,7 @@ export function IslandShoreView({
   onTalkNpc,
   onCollectItem,
   onPlayMinigame,
+  onPlayStructureMinigame,
   onOpenBoard,
   onOpenTravel,
   onOpenHub,
@@ -101,7 +109,6 @@ export function IslandShoreView({
   talkOpen = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
-  const era = getAnimationStyle(theme.animationStyle);
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
   const organ = useMemo(() => moneyOrganForIsland(island.id), [island.id]);
@@ -134,6 +141,7 @@ export function IslandShoreView({
   }, [chapterQuiet, talkOpen]);
 
   const dismissTakeHush = useCallback(() => {
+    clearLastConsumedSoftBeat();
     setTakeHushOpen(false);
     setTakeCinemaPhase(null);
   }, []);
@@ -143,11 +151,10 @@ export function IslandShoreView({
   );
   const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
+  const sideShore = isSideShoreTravelId(island.id);
+  /** Spine shores lead with organ verb — genre city chrome stays parked. */
+  const spineShore = isSpineTravelId(island.id);
   const culture = useMemo(() => getIslandCulture(island), [island]);
-  const biome = useMemo(() => getIslandBiome(island.id), [island.id]);
-  const genre = useMemo(() => getGenreWorld(island.id), [island.id]);
-  const district = useMemo(() => getGenreDistrict(island.id), [island.id]);
-  const genreBlurb = useMemo(() => genreShoreBlurb(island.id), [island.id]);
 
   useEffect(() => {
     syncWorldPlace({
@@ -161,7 +168,14 @@ export function IslandShoreView({
     });
   }, [island.id, culture.ecosystemMotion]);
 
-  const structuralBuddy = coinBagIslandTip(save, island);
+  const armWhisper = softBeatArmWhisper(peekSoftBeatArm());
+  const structuralBuddy =
+    armWhisper && !chapterQuiet
+      ? {
+          tip: armWhisper,
+          coach: "Soft Beat armed your next Talk — organ chemistry on this shore too.",
+        }
+      : coinBagIslandTip(save, island);
   const buddy = resolveAdaptiveBuddyTip({
     save,
     profileId: learningProfile,
@@ -206,6 +220,33 @@ export function IslandShoreView({
     setStructureOpen(true);
   }, []);
 
+  useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action || !structure) return;
+      if (detail.islandId && detail.islandId !== island.id) return;
+      if (detail.action === "enter") {
+        setEnteringJar(false);
+        setStructureOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        const soft = structure.parts.find((p) => p.softBeat)?.softBeat;
+        if (soft === "lookout" || soft === "umbrella" || soft === "battlement") {
+          setStructureOpen(true);
+          setSoftBeat(soft);
+        }
+        return;
+      }
+      if (detail.action === "exit") {
+        setSoftBeat(null);
+        setStructureOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, [structure, island.id]);
+
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
       if (part.softBeat === "lookout" || part.softBeat === "umbrella" || part.softBeat === "battlement") {
@@ -214,10 +255,10 @@ export function IslandShoreView({
       }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
-        onPlayMinigame(part.minigameId);
+        (onPlayStructureMinigame ?? onPlayMinigame)(part.minigameId);
       }
     },
-    [onPlayMinigame],
+    [onPlayMinigame, onPlayStructureMinigame],
   );
 
   const activate = useCallback(
@@ -330,11 +371,13 @@ export function IslandShoreView({
                 scarLabel={latestScar.label}
                 organId={organ?.id ?? "coin"}
                 islandId={island.id}
-                organLine={
-                  organ
+                organLine={(() => {
+                  const base = organ
                     ? organTakeHushLine(organ.id)
-                    : organTakeHushLine("coin")
-                }
+                    : organTakeHushLine("coin");
+                  const spent = softBeatSpentHushLine(peekLastConsumedSoftBeat());
+                  return spent ? `${base} ${spent}` : base;
+                })()}
                 onPhaseChange={setTakeCinemaPhase}
                 onDone={dismissTakeHush}
               />
@@ -344,10 +387,6 @@ export function IslandShoreView({
         topLeft={
           takeHushOpen ? null : chapterQuiet ? (
             <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-2xl">{island.icon}</span>
-                <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
-              </div>
               <HudBadge className="mt-1 bg-slate-900/80 text-white" data-testid="shore-take-hush">
                 {organQuietBadge(organ?.id ?? "coin")}
               </HudBadge>
@@ -360,39 +399,32 @@ export function IslandShoreView({
           ) : (
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-2xl">{island.icon}</span>
+              <span className="text-2xl" aria-hidden>
+                {island.icon}
+              </span>
               <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
-              <span className="era-badge text-[10px]">{era.eraLabel}</span>
             </div>
-            <p className="max-w-md text-xs text-white/85 drop-shadow">
-              {genre ? (
-                <>
-                  <span className="font-bold text-amber-200">{genre.canonName}</span>
-                  {" · "}
-                  {district?.districtName ?? genre.cityLabel}
-                  {" — "}
-                  {culture.cultureName}
-                </>
-              ) : (
-                <>
-                  {biome.label} — {culture.cultureName}
-                </>
-              )}
-              {" · "}
-              {district?.feel ?? culture.vibe}
-            </p>
-            {genreBlurb ? (
-              <p className="max-w-md text-[10px] text-white/70 drop-shadow">{genreBlurb}</p>
-            ) : null}
-            {genre ? (
-              <p className="max-w-md text-[10px] text-white/55 drop-shadow">
-                Cast: {genre.signatureCast.slice(0, 2).join(" · ")} · Machines:{" "}
-                {genre.signatureMachines.slice(0, 2).join(" · ")}
+            {spineShore ? (
+              <p className="max-w-md text-xs text-white/85 drop-shadow" data-testid="shore-organ-line">
+                <span className="font-bold text-amber-200">
+                  {organVerbChip(organ?.id ?? "coin")}
+                </span>
+                {" — living money on this shore"}
               </p>
             ) : null}
-            {nextStep ? (
+            {sideShore ? (
               <div
-                className="mt-1 max-w-md rounded-xl border border-amber-300/40 bg-black/45 px-2 py-1 text-[11px] text-amber-100"
+                className="mt-1 max-w-sm rounded-xl border border-sky-300/30 bg-black/40 px-2.5 py-1.5 text-[11px] text-sky-50"
+                data-testid="shore-next-verb"
+                data-free-roam="1"
+              >
+                <span className="font-bold uppercase tracking-wide text-sky-200">Free roam</span>
+                {" · "}
+                Side shore — stray as you like; main story waits on the spine
+              </div>
+            ) : nextStep ? (
+              <div
+                className="mt-1 max-w-sm rounded-xl border border-amber-300/35 bg-black/40 px-2.5 py-1.5 text-[11px] text-amber-50"
                 data-testid="shore-next-verb"
               >
                 <span className="font-bold uppercase tracking-wide text-amber-200">
@@ -497,7 +529,11 @@ export function IslandShoreView({
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
           tip={
-            chapterQuiet ? "Carpet home — Harbor felt that" : buddy.tip
+            chapterQuiet
+              ? near?.id === "pier"
+                ? "Board the carpet home"
+                : "Walk to the pier · board Carpet"
+              : buddy.tip
           }
           detail={chapterQuiet ? undefined : buddy.coach}
           track={buddy.track}

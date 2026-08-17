@@ -38,7 +38,12 @@ export type AnalyticsEventName =
   | "settings_changed"
   | "character_saved"
   | "onboarding_completed"
-  | "hint_escalated";
+  | "hint_escalated"
+  | "harbor_purchase"
+  /** Signature spine beats — misunderstanding / fun dropoff instrumentation */
+  | "core_loop_beat"
+  | "soft_beat_armed"
+  | "take_foreshadow";
 
 export type AnalyticsEvent = {
   id: string;

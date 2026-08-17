@@ -4,8 +4,8 @@
     {
       "id": "digital_assets",
       "name": "Digital Asset Atoll",
-      "description": "AI undercity ledgers and scanners. Side shore of Fortune Archipelago \u2014 undercity pulse bed.",
-      "icon": "\ud83e\ude99",
+      "description": "AI undercity ledgers and scanners. Side shore of Fortune Archipelago — undercity pulse bed.",
+      "icon": "🪙",
       "requiredItems": [
         "re_island_medallion"
       ],
@@ -35,7 +35,7 @@
           "id": "da_wallet_wharf",
           "name": "Wallet Wharf",
           "description": "Set up your first digital wallet and learn about public/private keys.",
-          "icon": "\ud83d\udc5b",
+          "icon": "👛",
           "connections": [
             "da_exchange_plaza",
             "da_volatility_valley"
@@ -45,7 +45,7 @@
           "id": "da_exchange_plaza",
           "name": "Exchange Plaza",
           "description": "A bustling marketplace where digital assets are bought and sold.",
-          "icon": "\ud83d\udd04",
+          "icon": "🔄",
           "connections": [
             "da_wallet_wharf",
             "da_volatility_valley"
@@ -55,7 +55,7 @@
           "id": "da_volatility_valley",
           "name": "Volatility Valley",
           "description": "Watch prices swing wildly. Learn why crypto is risky and when hype overtakes fundamentals.",
-          "icon": "\ud83c\udfa2",
+          "icon": "🎢",
           "connections": [
             "da_wallet_wharf",
             "da_exchange_plaza"
@@ -66,28 +66,28 @@
         {
           "id": "npc_satoshi",
           "name": "Satoshi the Guide",
-          "icon": "\ud83e\uddd1\u200d\ud83d\udcbb",
+          "icon": "🧑‍💻",
           "areaId": "da_wallet_wharf",
           "dialogueGraphId": "dlg_satoshi"
         },
         {
           "id": "npc_exchange_emma",
           "name": "Exchange Emma",
-          "icon": "\ud83d\udcb1",
+          "icon": "💱",
           "areaId": "da_exchange_plaza",
           "dialogueGraphId": "dlg_emma"
         },
         {
           "id": "npc_fomo_fred",
           "name": "FOMO Fred",
-          "icon": "\ud83e\udd11",
+          "icon": "🤑",
           "areaId": "da_volatility_valley",
           "dialogueGraphId": "dlg_fred"
         },
         {
           "id": "npc_hodl_hannah",
           "name": "HODL Hannah",
-          "icon": "\ud83d\udc8e",
+          "icon": "💎",
           "areaId": "da_volatility_valley",
           "dialogueGraphId": "dlg_hannah"
         }
@@ -97,7 +97,7 @@
           "id": "da_wallet_key",
           "name": "Wallet Seed Phrase",
           "description": "Your 12-word recovery phrase. Guard it with your life!",
-          "icon": "\ud83d\udd11",
+          "icon": "🔑",
           "location": {
             "areaId": "da_wallet_wharf"
           }
@@ -106,7 +106,7 @@
           "id": "da_mock_coin",
           "name": "MockCoin Token",
           "description": "A simulated cryptocurrency used for learning transactions.",
-          "icon": "\ud83e\ude99",
+          "icon": "🪙",
           "location": {
             "areaId": "da_exchange_plaza"
           }
@@ -115,7 +115,7 @@
           "id": "da_volatility_chart",
           "name": "Volatility Report",
           "description": "A chart showing extreme price swings and the emotions that drive them.",
-          "icon": "\ud83d\udcc9",
+          "icon": "📉",
           "location": {
             "areaId": "da_volatility_valley"
           }
@@ -124,7 +124,7 @@
           "id": "da_island_medallion",
           "name": "Digital Asset Medallion",
           "description": "You understand the basics of digital assets and their risks.",
-          "icon": "\ud83c\udfc5",
+          "icon": "🏅",
           "location": {
             "areaId": "da_volatility_valley"
           }
@@ -133,7 +133,7 @@
       "quests": [
         {
           "id": "q_wallet_setup",
-          "track": "main",
+          "track": "side",
           "title": "Wallet & First Transaction",
           "description": "Set up a simulated crypto wallet, send and receive mock transactions, and understand gas fees.",
           "hint": "Talk to Satoshi at Wallet Wharf to create your wallet, then visit Exchange Emma to make your first trade.",
@@ -165,7 +165,7 @@
         },
         {
           "id": "q_volatility_lesson",
-          "track": "main",
+          "track": "side",
           "title": "Riding the Rollercoaster",
           "description": "Experience a simulated crypto crash. Learn why timing the market fails and how emotions drive bad decisions.",
           "hint": "Visit Volatility Valley. Talk to FOMO Fred and HODL Hannah for opposing viewpoints.",
@@ -200,7 +200,7 @@
             {
               "id": "s1",
               "speaker": "Satoshi the Guide",
-              "text": "Welcome to Wallet Wharf! A crypto wallet doesn't actually hold coins \u2014 it holds the keys that prove ownership. Let me show you how it works.",
+              "text": "Welcome to Wallet Wharf! A crypto wallet doesn't actually hold coins — it holds the keys that prove ownership. Let me show you how it works.",
               "choices": [
                 {
                   "id": "s1c1",
@@ -218,6 +218,11 @@
                   ]
                 },
                 {
+                  "id": "s1_listen",
+                  "text": "Digression — listen or sign first?",
+                  "nextNodeId": "s_fork"
+                },
+                {
                   "id": "s1c2",
                   "text": "What's a private key?",
                   "nextNodeId": "s3"
@@ -227,13 +232,62 @@
             {
               "id": "s2",
               "speaker": "Satoshi the Guide",
-              "text": "Here's your seed phrase \u2014 12 random words that can recover your wallet. Never share it! Now head to Exchange Plaza to make your first trade.",
+              "text": "Here's your seed phrase — 12 random words that can recover your wallet. Never share it! Now head to Exchange Plaza to make your first trade.",
+              "end": true
+            },
+            {
+              "id": "s_fork",
+              "speaker": "Satoshi the Guide",
+              "text": "Wharf clicks loud. Listen for keys — or sign a wallet before you’ve heard the pier?",
+              "choices": [
+                {
+                  "id": "s_linger",
+                  "text": "Listen at the wharf first.",
+                  "nextNodeId": "s_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "da_wharf_listen",
+                      "label": "Listened at Wallet Wharf",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "s_rush",
+                  "text": "Sign first — I’ll learn the pier later.",
+                  "nextNodeId": "s_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "da_wharf_rush",
+                      "label": "Signed Wallet Wharf keys cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "s_listen_done",
+              "speaker": "Satoshi the Guide",
+              "text": "Hearing the wharf before you sign is a money skill. Harbor may gossip that you listened first.",
+              "end": true
+            },
+            {
+              "id": "s_rush_done",
+              "speaker": "Satoshi the Guide",
+              "text": "Keys without the pier story leave sparks. Harbor may gossip that you signed cold.",
               "end": true
             },
             {
               "id": "s3",
               "speaker": "Satoshi the Guide",
-              "text": "Think of it like a password that signs every transaction. Your public key is like your email address \u2014 anyone can send you crypto. But only you can send crypto out, using your private key.",
+              "text": "Think of it like a password that signs every transaction. Your public key is like your email address — anyone can send you crypto. But only you can send crypto out, using your private key.",
               "choices": [
                 {
                   "id": "s3c1",
@@ -261,7 +315,7 @@
             {
               "id": "e1",
               "speaker": "Exchange Emma",
-              "text": "This is the Exchange! You can buy and sell digital assets here. Every transaction has a fee \u2014 we call it 'gas'. Want to try a mock trade?",
+              "text": "This is the Exchange! You can buy and sell digital assets here. Every transaction has a fee — we call it 'gas'. Want to try a mock trade?",
               "choices": [
                 {
                   "id": "e1c1",
@@ -284,13 +338,13 @@
             {
               "id": "e2",
               "speaker": "Exchange Emma",
-              "text": "Opening the exchange simulator\u2026",
+              "text": "Opening the exchange simulator…",
               "end": true
             },
             {
               "id": "e3",
               "speaker": "Exchange Emma",
-              "text": "Every transaction on the blockchain costs a small fee that goes to 'miners' or 'validators' who process it. Fees spike when the network is busy \u2014 sometimes a $10 transfer costs $50 in fees!",
+              "text": "Every transaction on the blockchain costs a small fee that goes to 'miners' or 'validators' who process it. Fees spike when the network is busy — sometimes a $10 transfer costs $50 in fees!",
               "choices": [
                 {
                   "id": "e3c1",
@@ -318,7 +372,7 @@
               "choices": [
                 {
                   "id": "f1c1",
-                  "text": "That sounds risky\u2026",
+                  "text": "That sounds risky…",
                   "nextNodeId": "f2"
                 },
                 {
@@ -331,13 +385,13 @@
             {
               "id": "f2",
               "speaker": "FOMO Fred",
-              "text": "Risk?! The only risk is missing out! \u2026okay fine, last time I went all-in on MoonToken and lost 80%. But THIS TIME is different!",
+              "text": "Risk?! The only risk is missing out! …okay fine, last time I went all-in on MoonToken and lost 80%. But THIS TIME is different!",
               "end": true
             },
             {
               "id": "f3",
               "speaker": "FOMO Fred",
-              "text": "Crashes are just buying opportunities! \u2026although I did panic-sell my whole portfolio at the bottom last time. Don't be like me. Maybe talk to Hannah \u2014 she's way calmer about this stuff.",
+              "text": "Crashes are just buying opportunities! …although I did panic-sell my whole portfolio at the bottom last time. Don't be like me. Maybe talk to Hannah — she's way calmer about this stuff.",
               "end": true
             }
           ]
@@ -372,13 +426,13 @@
             {
               "id": "h2",
               "speaker": "HODL Hannah",
-              "text": "Investing with emotion. People buy when they're euphoric and sell when they're terrified \u2014 the exact opposite of what works. Study the Volatility Report and you'll understand.",
+              "text": "Investing with emotion. People buy when they're euphoric and sell when they're terrified — the exact opposite of what works. Study the Volatility Report and you'll understand.",
               "end": true
             },
             {
               "id": "h3",
               "speaker": "HODL Hannah",
-              "text": "Stay grounded. \ud83d\udc8e\ud83e\udd32",
+              "text": "Stay grounded. 💎🤲",
               "end": true
             }
           ]
@@ -389,7 +443,7 @@
           "id": "mg_mock_exchange",
           "name": "Mock Crypto Exchange",
           "description": "Buy and sell simulated crypto tokens. Learn about order books, fees, and slippage.",
-          "icon": "\ud83d\udd04",
+          "icon": "🔄",
           "componentId": "MockExchangeGame",
           "areaId": "da_exchange_plaza"
         },
@@ -397,7 +451,7 @@
           "id": "mg_diversify_baskets",
           "name": "Don't Break the Basket",
           "description": "Crypto swings hard. Spread coins across assets and weather a volatile market year instead of betting it all on one token.",
-          "icon": "\ud83e\uddfa",
+          "icon": "🧺",
           "componentId": "DiversifyBasketsGame",
           "areaId": "da_exchange_plaza",
           "genre": "strategy",

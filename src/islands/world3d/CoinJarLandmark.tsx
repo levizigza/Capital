@@ -10,6 +10,7 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
+import { ShoreSoftBeatBeacon } from "./ShoreSoftBeatBeacon";
 
 type CinemaPhase = "hush" | "mark" | "line";
 
@@ -177,7 +178,10 @@ export function CoinJarLandmark({
         </mesh>
       </group>
 
-      <Billboard position={[0, 4.4, 0]} follow>
+      {/* Soft Beat lookout — readable from shore before squeeze-in */}
+      <ShoreSoftBeatBeacon y={4.55} accent="#fbbf24" hushActive={hushActive} />
+
+      <Billboard position={[0, 5.15, 0]} follow>
         <SafeText
           fontSize={0.32}
           color={hushActive ? "#e2e8f0" : "#fffbeb"}
@@ -192,7 +196,7 @@ export function CoinJarLandmark({
               ? "Quiet after the Take"
               : active
                 ? "Enter · coin slot"
-                : label}
+                : `${label} · Soft Beat lid`}
         </SafeText>
       </Billboard>
     </group>

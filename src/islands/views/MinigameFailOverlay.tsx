@@ -5,6 +5,7 @@
 import { useEffect } from "react";
 import { GameButton } from "@/game-ui";
 import { triggerJuice } from "@/juice";
+import { playOrganSfx, playCapitalSfx } from "../audio/capitalSfx";
 import { type MinigameFailCopy } from "../minigameFail";
 
 export type MinigameFailOverlayProps = {
@@ -16,7 +17,9 @@ export type MinigameFailOverlayProps = {
 export function MinigameFailOverlay({ copy, onRetry, onKeepWalking }: MinigameFailOverlayProps) {
   useEffect(() => {
     triggerJuice("fail");
-  }, []);
+    if (copy.organId) playOrganSfx(copy.organId);
+    else playCapitalSfx("talk_confirm");
+  }, [copy.organId]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

@@ -28,6 +28,7 @@ import { structureShell } from "./structureInteriorTheme";
 import { StructurePartSilhouette } from "./StructurePartSilhouette";
 import { JarInteriorArchitecture } from "./JarInteriorArchitecture";
 import { BankInteriorArchitecture } from "./BankInteriorArchitecture";
+import { prefersReducedMotion } from "../a11yMotion";
 import { TowerInteriorArchitecture } from "./TowerInteriorArchitecture";
 import { KeepInteriorArchitecture } from "./KeepInteriorArchitecture";
 import { triggerJuice } from "@/juice";
@@ -132,21 +133,24 @@ function InteriorPlayer({
 function SoftBeatBeacon({ accent, active }: { accent: string; active: boolean }) {
   const beam = useRef<THREE.Mesh>(null);
   const crown = useRef<THREE.Mesh>(null);
+  const reduced = prefersReducedMotion();
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     if (beam.current) {
       const mat = beam.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = (active ? 0.9 : 0.5) + Math.sin(t * 2.4) * 0.15;
-      beam.current.scale.y = 1 + Math.sin(t * 1.8) * 0.08;
+      const pulse = reduced ? 0 : Math.sin(t * 2.4) * 0.15;
+      mat.emissiveIntensity = (active ? 0.9 : 0.5) + pulse;
+      beam.current.scale.y = 1 + (reduced ? 0 : Math.sin(t * 1.8) * 0.08);
     }
     if (crown.current) {
       const mat = crown.current.material as THREE.MeshStandardMaterial;
-      mat.emissiveIntensity = (active ? 1.1 : 0.65) + Math.sin(t * 3.1) * 0.2;
-      crown.current.position.y = 2.85 + Math.sin(t * 2.2) * 0.08;
+      const pulse = reduced ? 0 : Math.sin(t * 3.1) * 0.2;
+      mat.emissiveIntensity = (active ? 1.1 : 0.65) + pulse;
+      crown.current.position.y = 2.85 + (reduced ? 0 : Math.sin(t * 2.2) * 0.08);
     }
   });
   return (
-    <group>
+    <group data-testid="interior-soft-beat-beacon">
       <mesh ref={beam} position={[0, 1.55, 0]}>
         <cylinderGeometry args={[0.1, 0.16, 2.6, 12]} />
         <meshStandardMaterial
@@ -202,12 +206,14 @@ function PartPad({
   const poke = useRef(0);
   const meshGroup = useRef<THREE.Group>(null);
   const softBeat = Boolean(part.softBeat);
+  const reduced = prefersReducedMotion();
   useFrame((_, dt) => {
     bounce.current += dt;
     if (poke.current > 0) poke.current = Math.max(0, poke.current - dt * 2.5);
     if (meshGroup.current) {
       meshGroup.current.rotation.y = poke.current * 1.8;
-      meshGroup.current.position.y = Math.sin(bounce.current * 2.5) * 0.06 + poke.current * 0.12;
+      const bob = reduced ? 0 : Math.sin(bounce.current * 2.5) * 0.06;
+      meshGroup.current.position.y = bob + poke.current * 0.12;
     }
   });
   const y = softBeat ? 1.05 : 0.9;
@@ -217,8 +223,8 @@ function PartPad({
       ? `Enter · ${organChip}`
       : `${part.label} · ${organChip}`
     : active
-      ? `Enter · ${part.entryPiece}`
-      : part.label;
+      ? `Enter · ${organChip}`
+      : `${part.label} · ${organChip}`;
   return (
     <group
       position={part.position}

@@ -2,6 +2,9 @@
  * Pillar 3 — goals / failure: lose with dignity, same place, clearer next verb.
  */
 
+import { moneyOrganForIsland } from "./moneyOrgans";
+import { organVerbChip } from "./worldMemory";
+
 export type MinigameFailReason = "score_below_threshold" | "objective_not_met";
 
 export type MinigameFailCopy = {
@@ -11,6 +14,8 @@ export type MinigameFailCopy = {
   hint: string;
   retryLabel: string;
   walkLabel: string;
+  /** Organ underfoot — fail sting + informational audio */
+  organId?: "coin" | "clock" | "spiral" | "memory" | null;
 };
 
 /** Spend-flavored Takes (treat / glitter) — soft-fail copy must match saver dignity. */
@@ -24,16 +29,22 @@ export function resolveMinigameFailReason(opts: {
   return "objective_not_met";
 }
 
-/** Detect jar/treat or umbrella/glitter Takes for soft-fail parity. */
+/** Detect jar/treat, umbrella/glitter, or wait/haste Takes for soft-fail parity. */
 export function resolveTakeFailFlavor(opts: {
   irreversibleChoices?: Record<string, { choiceId: string } | undefined> | null;
 }): TakeFailFlavor {
   const choices = opts.irreversibleChoices ?? {};
-  for (const key of ["cove_save_vs_spend", "paycheck_protect_vs_spend"] as const) {
+  for (const key of [
+    "cove_save_vs_spend",
+    "paycheck_protect_vs_spend",
+    "credit_borrow_vs_wait",
+  ] as const) {
     const c = choices[key];
     if (!c) continue;
-    if (c.choiceId === "spend") return "spend";
-    if (c.choiceId === "save" || c.choiceId === "protect") return "save";
+    if (c.choiceId === "spend" || c.choiceId === "borrow") return "spend";
+    if (c.choiceId === "save" || c.choiceId === "protect" || c.choiceId === "wait") {
+      return "save";
+    }
   }
   return null;
 }
@@ -46,6 +57,11 @@ export function minigameFailCopy(opts: {
   source?: "board" | "arcade" | "dialogue" | "qa" | "structure" | null;
   /** When set, Spend Takes get the same dignity as saver — never a lecture. */
   takeFlavor?: TakeFailFlavor;
+  /** Organ underfoot — fail names the living money verb */
+  organId?: "coin" | "clock" | "spiral" | "memory" | null;
+  /** Spine island — resolves organ when organId omitted */
+  islandId?: string | null;
+  minigameId?: string | null;
 }): MinigameFailCopy {
   const name = opts.minigameName.trim() || "this challenge";
   const thresholdLine =
@@ -61,15 +77,32 @@ export function minigameFailCopy(opts: {
         : "Keep walking";
 
   const spendParity = opts.takeFlavor === "spend";
+  const organ =
+    opts.organId ??
+    (opts.islandId ? moneyOrganForIsland(opts.islandId)?.id : null) ??
+    null;
+  const mg = (opts.minigameId ?? "").toLowerCase();
+
+  let organHint = thresholdLine;
+  if (organ === "spiral" || mg.includes("credit") || mg.includes("ck_")) {
+    organHint = `${thresholdLine} Spiral tip: wait beats haste — read the signal once more.`;
+  } else if (organ === "clock" || mg.includes("paycheck") || mg.includes("inbox")) {
+    organHint = `${thresholdLine} Clock tip: shelter first — one quieter choice, then retry.`;
+  } else if (organ === "coin" || mg.includes("cove") || mg.includes("coin")) {
+    organHint = `${thresholdLine} Coin tip: jar weight still waits — try the clearer path.`;
+  } else if (organ === "memory") {
+    organHint = `${thresholdLine} Memory tip: Harbor keeps the miss too — same place, clearer try.`;
+  }
 
   return {
-    eyebrow: "Still learning",
+    eyebrow: organ ? `Still learning · ${organVerbChip(organ)}` : "Still learning",
     title: "Not a clear — try again",
     body: spendParity
-      ? "Treat-first Takes still teach. A soft miss is not shame — same shore, clearer try."
+      ? "Treat-first and haste Takes still teach. A soft miss is not shame — same shore, clearer try."
       : "Money is alive here. A soft miss still teaches — no shame, just another try.",
-    hint: thresholdLine,
+    hint: organHint,
     retryLabel: "Retry",
     walkLabel,
+    organId: organ ?? null,
   };
 }

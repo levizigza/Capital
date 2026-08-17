@@ -12,8 +12,11 @@ import {
 } from "./storyBible";
 import {
   coldOrganKidSentence,
+  isDigressionScar,
   nextPaintingAfterScar,
+  piggyScarWeightLine,
   plaqueShelfLine,
+  plazaScarGossipLine,
   scarOrganId,
   scarOrganName,
 } from "../worldMemory";
@@ -440,11 +443,29 @@ export const HARBOR_DIALOGUES: DialogueGraph[] = [
   piggyGuidedGraph("done"),
 ];
 
+type TalkScar = {
+  id?: string;
+  label: string;
+  islandId?: string;
+  kind?: "plaque" | "npc_tone" | "plaza_prop";
+};
+
+function asTalkScar(s: TalkScar) {
+  return {
+    id: s.id ?? "",
+    islandId: s.islandId ?? "",
+    label: s.label,
+    kind:
+      s.kind ??
+      (s.id && isDigressionScar({ id: s.id, kind: "plaque" }) ? "npc_tone" : "plaque"),
+  } as const;
+}
+
 /** Welcome-back Talk Battle after Cove Change (or any chapter homecoming). */
 export function piggyHomecomingGraph(
   message?: string | null,
   opts?: {
-    scars?: { id?: string; label: string; islandId?: string }[];
+    scars?: TalkScar[];
     bondBeat?: number;
   },
 ): DialogueGraph {
@@ -453,38 +474,60 @@ export function piggyHomecomingGraph(
     "You came home changed. The Plinth already knows — Harbor feels different because YOU are.";
 
   const shelfScars = (opts?.scars ?? []).slice(-3);
-  const named = shelfScars.map((s) =>
-    plaqueShelfLine({
-      id: s.id ?? "",
-      islandId: s.islandId ?? "",
-      label: s.label,
-    }),
-  );
   const latestScar = shelfScars.at(-1);
-  const latestOrgan = latestScar
+  const latest = latestScar ? asTalkScar(latestScar) : null;
+  const digressionHome = latest && isDigressionScar(latest);
+
+  const plaqueNamed = shelfScars
+    .filter((s) => !isDigressionScar(asTalkScar(s)))
+    .map((s) =>
+      plaqueShelfLine({
+        id: s.id ?? "",
+        islandId: s.islandId ?? "",
+        label: s.label,
+      }),
+    );
+  const digressionNamed = shelfScars
+    .filter((s) => isDigressionScar(asTalkScar(s)))
+    .map((s) => `“${s.label}”`);
+
+  const latestOrgan = latest
     ? scarOrganId({
-        id: latestScar.id ?? "",
-        islandId: latestScar.islandId ?? "",
-        label: latestScar.label,
+        id: latest.id,
+        islandId: latest.islandId,
+        label: latest.label,
       })
     : null;
-  const kidLine = latestOrgan ? coldOrganKidSentence(latestOrgan) : null;
+  const kidLine =
+    latestOrgan && !digressionHome ? coldOrganKidSentence(latestOrgan) : null;
+
+  // Emotional weight first — digressions are gossip conscience; plaques are Plinth bond.
+  const weightLine = latest ? piggyScarWeightLine(latest) : null;
+  const shelfBit =
+    plaqueNamed.length > 0
+      ? `Your Memory Plinth: ${plaqueNamed.join(" · ")}.`
+      : digressionNamed.length > 0
+        ? `Plaza gossip still carries ${digressionNamed.join(" · ")}.`
+        : null;
   const scarLine =
-    named.length > 0
-      ? `${kidLine ? `${kidLine} ` : ""}Your Memory Plinth: ${named.join(" · ")}.`
-      : kidLine ?? "Coin Bag and I watched you grow.";
-  const nextPainting = latestScar
-    ? nextPaintingAfterScar({
-        id: latestScar.id ?? "",
-        islandId: latestScar.islandId ?? "",
-      })
-    : null;
+    [weightLine, kidLine, shelfBit].filter(Boolean).join(" ") ||
+    "Coin Bag and I watched you grow.";
+
+  const nextPainting =
+    latest && !digressionHome
+      ? nextPaintingAfterScar({
+          id: latest.id,
+          islandId: latest.islandId,
+        })
+      : null;
   const bond =
     opts?.bondBeat && opts.bondBeat >= 3
       ? "Three homecomings. Cove, Paycheck, Kingdom — I trust your pouch, and you."
       : opts?.bondBeat && opts.bondBeat >= 2
         ? "Second time you've flown home changed. I'm proud — and a little sniffly."
-        : "That's the Change beat — earn fair, then choose.";
+        : digressionHome
+          ? "Side roads count. I won't turn them into a lecture."
+          : "That's the Change beat — earn fair, then choose.";
 
   const phase =
     (opts?.bondBeat ?? 0) >= 3
@@ -502,13 +545,13 @@ export function piggyHomecomingGraph(
         ? (opts?.bondBeat ?? 0) >= 2
           ? bond
           : "We patched over a hard choice together. Coin Bag and I still walk with you."
-        : phase === "trust"
-          ? bond
-          : bond;
+        : bond;
 
   const nextLine = nextPainting
     ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Memory keeps your story on the Plinth.`
-    : "Coin Bag will point the Carpet Dock when a painting waits — Memory keeps your story on the Plinth.";
+    : digressionHome
+      ? "When you're ready, the Carpet Dock still waits — gossip fades slower than lessons."
+      : "Coin Bag will point the Carpet Dock when a painting waits — Memory keeps your story on the Plinth.";
 
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
@@ -563,7 +606,7 @@ export type HarborDialogueOpts = {
     piggyTalked?: boolean;
     message?: string | null;
   } | null;
-  scars?: { id?: string; label: string; islandId?: string }[];
+  scars?: TalkScar[];
   /** Count of celebrated homecomings / scars for Piggy bond depth */
   bondBeat?: number;
   /** Dominant stance for local greeting flavor */
@@ -572,38 +615,158 @@ export type HarborDialogueOpts = {
   npcTalks?: number;
 };
 
-function formatScarShelf(
-  scars: { id?: string; label: string; islandId?: string }[],
-): string {
+function formatScarShelf(scars: TalkScar[]): string {
   return scars
     .slice(-3)
-    .map((s) =>
-      plaqueShelfLine({
-        id: s.id ?? "",
-        islandId: s.islandId ?? "",
-        label: s.label,
-      }),
-    )
+    .map((s) => {
+      const t = asTalkScar(s);
+      if (isDigressionScar(t)) return `“${t.label}”`;
+      return plaqueShelfLine(t);
+    })
     .join(" · ");
+}
+
+/** Role-colored receipt beat after naming a scar — gossip, not a tip lecture. */
+function localScarReceiptBeat(
+  mascotId: MoneyMascotId,
+  scar: ReturnType<typeof asTalkScar>,
+): { mid: string; bye: string } {
+  const label = scar.label;
+  const dig = isDigressionScar(scar);
+  const organ = scarOrganName(scarOrganId(scar));
+  const byRole: Partial<Record<string, { mid: string; bye: string }>> = {
+    coiny: {
+      mid: dig
+        ? `Clink — I keep hearing “${label}” between coin counts. Plaza doesn’t need a tip sheet for that.`
+        : `I counted the ${organ} mark twice. “${label}.” Your pouch and the Plinth agree.`,
+      bye: dig ? "Gossip spends itself. Catch you at the fountain." : "Clink-clink. Plinth still glows.",
+    },
+    spendy_sue: {
+      mid: dig
+        ? `Ohhh I felt that digression. “${label}.” Want or wait — Harbor still talks like a market aisle.`
+        : `Impulse stalls go quiet when the ${organ} plaque reads “${label}.” I’m… trying to listen.`,
+      bye: "Okay okay — I’ll stop shopping the rumor.",
+    },
+    tip_jar_tom: {
+      mid: dig
+        ? `Tip jar’s full of whispers: “${label}.” Not advice — just receipts passing hand to hand.`
+        : `Someone tipped a story into my jar — ${organ}, “${label}.” I’m only the messenger.`,
+      bye: "Keep the change. Keep the memory.",
+    },
+    vault_vince: {
+      mid: dig
+        ? `Side doors leave marks too. Locked “${label}” behind my teeth. Harbor still overheard.`
+        : `Vault hears the ${organ}. “${label}.” Secure doesn’t mean forgotten.`,
+      bye: "Reserves intact. Story filed.",
+    },
+    budget_bot: {
+      mid: dig
+        ? `Beep. Digression logged — “${label}.” Not a budget line. A street line.`
+        : `Model updated: ${organ} plaque “${label}.” Numbers can’t hold the feeling. I still try.`,
+      bye: "Plan complete. Heart optional.",
+    },
+    dollar_dash: {
+      mid: dig
+        ? `Raced past the rumor twice — still “${label}.” Digressions stick to sneakers.`
+        : `Speed doesn’t outrun a ${organ} plaque. “${label}.” Felt that on the dock wind.`,
+      bye: "Gotta dash — rumor’s faster.",
+    },
+    cashwell: {
+      mid: dig
+        ? `Even side streets tip their hats. “${label}.” Style without the Main Quest? Harbor still files the gossip.`
+        : `Plinth glow, darling — ${organ}, “${label}.” Growth is style; memory is the receipt.`,
+      bye: "Tip the hat. Tip the truth.",
+    },
+    cashmere: {
+      mid: dig
+        ? `Side-aisle couture: “${label}.” I don’t lecture — I tailor the rumor to fit.`
+        : `Memory Courtyard stitched the ${organ} into “${label}.” Precision with feeling.`,
+      bye: dig ? "Grace when the gossip cools." : "Inherited. Intelligent. Remembered.",
+    },
+    peso_pedro: {
+      mid: dig
+        ? `¡Fiesta side-quest! “${label}” still dances past the tip jars.`
+        : `Small symbol, huge plaque — ${organ} says “${label}.” Celebration with a ledger.`,
+      bye: dig ? "Keep circulating." : "Stay liquid. Stay ledger-true.",
+    },
+    fortuna_fernanda: {
+      mid: dig
+        ? `Digression dressed for the plaza — “${label}.” Charm heard it first.`
+        : `Roses on the ${organ}: “${label}.” Abundance that remembers.`,
+      bye: dig ? "Blessed rumor, darling." : "Every entrance an occasion.",
+    },
+    billionaire_bao: {
+      mid: dig
+        ? `Quiet compound interest on gossip — “${label}.” No shout required.`
+        : `Subtle ${organ} filing: “${label}.” Legacy without noise.`,
+      bye: dig ? "Influence listens." : "Refined. Compounded.",
+    },
+    jade_fortune: {
+      mid: dig
+        ? `Jade doesn’t chase rumors — they arrive polished. “${label}.”`
+        : `Heirloom hush: the ${organ} still names “${label}.” Grace compounds.`,
+      bye: dig ? "Poised. Prosperous. Patient." : "Rooms remember her — and you.",
+    },
+    sultan_stacks: {
+      mid: dig
+        ? `Side streets wear crowns too. “${label}.” Treasure of a digression.`
+        : `Palace Plinth — ${organ}, “${label}.” Fortune favors the remembered Take.`,
+      bye: dig ? "Stack soft." : "Gold in every detail.",
+    },
+    dinar_dahlia: {
+      mid: dig
+        ? `Procession gossip: “${label}.” Radiant without a lecture.`
+        : `Treasure glow on the ${organ} — “${label}.” Spectacle with a spine.`,
+      bye: dig ? "Radiant rumor." : "Wonder in every ledger line.",
+    },
+    mansa_moneybaggs: {
+      mid: dig
+        ? `Caravan news: “${label}.” Side roads still write kingdoms.`
+        : `Trade-route ${organ}: “${label}.” Giving is royalty — memory is duty.`,
+      bye: dig ? "Uplift soft." : "Gold is a legacy.",
+    },
+    kandake_kash: {
+      mid: dig
+        ? `Community hush: “${label}.” Shared hands, shared streets.`
+        : `Crowned commerce names the ${organ} — “${label}.” Riches walk together.`,
+      bye: dig ? "Stride on." : "Treasure in motion.",
+    },
+    moneybagg_bro: {
+      mid: dig
+        ? `Big-play digression still hustling: “${label}.” No tip sheet — just streets.`
+        : `Empire receipt — ${organ}, “${label}.” Discipline today, memory forever.`,
+      bye: dig ? "Keep the swagger honest." : "Building empires. Naming Takes.",
+    },
+    mula_mami: {
+      mid: dig
+        ? `Boss-babe side street: “${label}.” Heels heard it before the Plinth.`
+        : `Stacks and ${organ} glow — “${label}.” Dressed for impact, filed for memory.`,
+      bye: dig ? "Shine when it cools." : "Luxury with a ledger.",
+    },
+  };
+  return (
+    byRole[mascotId] ?? {
+      mid: dig
+        ? `Alive streets remember digressions. “${label}.” I’m not here to coach — just to say Harbor heard.`
+        : `The ${organ} still names “${label}” on the Plinth. Living receipt. Not a tip list.`,
+      bye: dig ? "Wave when the rumor cools." : "See you by the Memory Courtyard.",
+    }
+  );
 }
 
 /** Free-roam Piggy when plaques exist — conscience that remembers. */
 export function piggyMemoryGraph(
-  scars: { id?: string; label: string; islandId?: string }[],
+  scars: TalkScar[],
   opts?: { stanceHint?: string | null },
 ): DialogueGraph {
   const shelf = formatScarShelf(scars);
   const latestScar = scars[scars.length - 1];
-  const latest = latestScar?.label ?? "your choice";
-  const organ = latestScar
-    ? scarOrganName(
-        scarOrganId({
-          id: latestScar.id ?? "",
-          islandId: latestScar.islandId ?? "",
-        }),
-      )
-    : "Memory";
+  const latest = latestScar ? asTalkScar(latestScar) : null;
   const stance = opts?.stanceHint ? ` ${opts.stanceHint}` : "";
+  const opener = latest
+    ? `${piggyScarWeightLine(latest)}${stance}`
+    : `Harbor doesn’t forget — and neither do I.${stance}`;
+  const dig = latest ? isDigressionScar(latest) : false;
   return {
     id: "dlg_harbor_piggy_penny_memory",
     startNodeId: "m1",
@@ -611,7 +774,7 @@ export function piggyMemoryGraph(
       {
         id: "m1",
         speaker: "Piggy Penny",
-        text: `The Plinth still holds the ${organ} — “${latest}.”${stance} Harbor doesn’t forget — and neither do I.`,
+        text: opener,
         choices: [{ id: "m1_ok", text: "I see it too", nextNodeId: "m2" }],
       },
       {
@@ -619,7 +782,9 @@ export function piggyMemoryGraph(
         speaker: "Piggy Penny",
         text:
           shelf.length > 0
-            ? `Your shelf: ${shelf}. Coin Bag will point when the next painting waits — or walk the Memory Plinth with me anytime.`
+            ? dig
+              ? `Still carrying: ${shelf}. No lecture — just the weight. Coin Bag stays; walk when you’re ready.`
+              : `Your shelf: ${shelf}. Coin Bag will point when the next painting waits — or walk the Memory Plinth with me anytime.`
             : "Coin Bag sticks with you. When a painting calls, we’ll float together.",
         choices: [{ id: "m2_ok", text: "Thanks, Piggy!" }],
         end: true,
@@ -628,47 +793,57 @@ export function piggyMemoryGraph(
   };
 }
 
-/** Plaza local who names the scar — living receipt, not ambient prop. */
+/** Plaza local who names the scar — living receipt, not tip-list mannequin. */
 function scarMemoryLocalGraph(
   mascotId: MoneyMascotId,
-  scars: { id?: string; label: string; islandId?: string }[],
+  scars: TalkScar[],
   opts: { stanceHint?: string | null; npcTalks?: number },
 ): DialogueGraph {
-  const base = localGraph(mascotId);
   const m = getMascot(mascotId);
   const latestScar = scars[scars.length - 1];
-  const latest = latestScar?.label ?? "that choice";
-  const organ = latestScar
-    ? scarOrganName(
-        scarOrganId({
-          id: latestScar.id ?? "",
-          islandId: latestScar.islandId ?? "",
-        }),
-      )
-    : "Memory";
-  const talks =
-    (opts.npcTalks ?? 0) >= 2 ? ` We’ve talked ${opts.npcTalks} times —` : "";
-  const stanceBit = opts.stanceHint ? ` ${opts.stanceHint}` : "";
-  const habit =
-    organ === "Clock"
-      ? "still stamp about"
-      : organ === "Spiral"
-        ? "still weigh"
-        : organ === "Memory"
-          ? "still name"
-          : "still tip jars about";
+  const latest = latestScar
+    ? asTalkScar(latestScar)
+    : asTalkScar({ id: "", label: "that choice", islandId: "" });
+  const gossip = plazaScarGossipLine(latest, {
+    talks: opts.npcTalks,
+    stanceHint: opts.stanceHint,
+  });
+  const beat = localScarReceiptBeat(mascotId, latest);
+  const dig = isDigressionScar(latest);
   return {
-    ...base,
     id: `dlg_harbor_${mascotId}_scar_memory`,
     startNodeId: "s0",
     nodes: [
       {
         id: "s0",
         speaker: m.name,
-        text: `${talks} Folks ${habit} the ${organ} — “${latest}” — on the Plinth.${stanceBit} Money left footprints.`,
-        choices: [{ id: "s0_ok", text: "Harbor felt that", nextNodeId: "n1" }],
+        text: gossip,
+        choices: [
+          {
+            id: "s0_ok",
+            text: dig ? "The streets remember" : "Harbor felt that",
+            nextNodeId: "s1",
+          },
+        ],
       },
-      ...base.nodes,
+      {
+        id: "s1",
+        speaker: m.name,
+        text: beat.mid,
+        choices: [
+          {
+            id: "s1_ok",
+            text: dig ? "Yeah… I hear it" : "Got it",
+            nextNodeId: "s2",
+          },
+        ],
+      },
+      {
+        id: "s2",
+        speaker: m.name,
+        text: beat.bye,
+        end: true,
+      },
     ],
   };
 }

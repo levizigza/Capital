@@ -4,8 +4,8 @@
     {
       "id": "intangibles",
       "name": "Intangible Isle",
-      "description": "Nocturne void of brands and names. Side shore of Fortune Archipelago \u2014 spiral naming lessons.",
-      "icon": "\ud83d\udca1",
+      "description": "Nocturne void of brands and names. Side shore of Fortune Archipelago — spiral naming lessons.",
+      "icon": "💡",
       "requiredItems": [
         "ba_island_medallion"
       ],
@@ -34,7 +34,7 @@
           "id": "in_patent_office",
           "name": "Patent Office",
           "description": "Rows of filing cabinets and inventors pitching ideas. Learn how IP creates value.",
-          "icon": "\ud83d\udcdd",
+          "icon": "📝",
           "connections": [
             "in_brand_boulevard",
             "in_goodwill_garden"
@@ -44,7 +44,7 @@
           "id": "in_brand_boulevard",
           "name": "Brand Boulevard",
           "description": "Billboards and logos everywhere. Discover why a name can be worth billions.",
-          "icon": "\ud83c\udff7\ufe0f",
+          "icon": "🏷️",
           "connections": [
             "in_patent_office",
             "in_goodwill_garden"
@@ -54,7 +54,7 @@
           "id": "in_goodwill_garden",
           "name": "Goodwill Garden",
           "description": "A peaceful park where deals are made. Understand goodwill in acquisitions.",
-          "icon": "\ud83c\udf33",
+          "icon": "🌳",
           "connections": [
             "in_patent_office",
             "in_brand_boulevard"
@@ -65,28 +65,28 @@
         {
           "id": "npc_inventor_iris",
           "name": "Inventor Iris",
-          "icon": "\ud83d\udd2c",
+          "icon": "🔬",
           "areaId": "in_patent_office",
           "dialogueGraphId": "dlg_iris"
         },
         {
           "id": "npc_branding_ben",
           "name": "Branding Ben",
-          "icon": "\ud83c\udfa8",
+          "icon": "🎨",
           "areaId": "in_brand_boulevard",
           "dialogueGraphId": "dlg_ben"
         },
         {
           "id": "npc_merger_maya",
           "name": "Merger Maya",
-          "icon": "\ud83e\udd1d",
+          "icon": "🤝",
           "areaId": "in_goodwill_garden",
           "dialogueGraphId": "dlg_maya"
         },
         {
           "id": "npc_lawyer_leon",
           "name": "Lawyer Leon",
-          "icon": "\u2696\ufe0f",
+          "icon": "⚖️",
           "areaId": "in_patent_office",
           "dialogueGraphId": "dlg_leon"
         }
@@ -96,7 +96,7 @@
           "id": "in_patent",
           "name": "Patent Certificate",
           "description": "A patent protects your invention for 20 years. Nobody else can copy it.",
-          "icon": "\ud83d\udcdc",
+          "icon": "📜",
           "location": {
             "areaId": "in_patent_office"
           }
@@ -105,7 +105,7 @@
           "id": "in_brand_valuation",
           "name": "Brand Valuation Report",
           "description": "Analysis showing how brand recognition translates into revenue.",
-          "icon": "\ud83d\udcca",
+          "icon": "📊",
           "location": {
             "areaId": "in_brand_boulevard"
           }
@@ -114,7 +114,7 @@
           "id": "in_goodwill_report",
           "name": "Goodwill Analysis",
           "description": "Shows the premium paid in an acquisition above the tangible asset value.",
-          "icon": "\ud83d\udccb",
+          "icon": "📋",
           "location": {
             "areaId": "in_goodwill_garden"
           }
@@ -123,7 +123,7 @@
           "id": "in_island_medallion",
           "name": "Intangible Isle Medallion",
           "description": "You understand the hidden value of intangible assets!",
-          "icon": "\ud83c\udfc5",
+          "icon": "🏅",
           "location": {
             "areaId": "in_goodwill_garden"
           }
@@ -132,7 +132,7 @@
       "quests": [
         {
           "id": "q_ip_creator",
-          "track": "main",
+          "track": "side",
           "title": "IP Creator",
           "description": "File a mock patent, learn about trademarks and copyrights, and see how IP drives company value.",
           "hint": "Talk to Inventor Iris at the Patent Office and consult Lawyer Leon about protection strategies.",
@@ -160,7 +160,7 @@
         },
         {
           "id": "q_brand_and_goodwill",
-          "track": "main",
+          "track": "side",
           "title": "Brand Power & Goodwill",
           "description": "Discover why companies pay billions for a brand name and what 'goodwill' means on a balance sheet.",
           "hint": "Visit Branding Ben on Brand Boulevard, then find Merger Maya in Goodwill Garden.",
@@ -199,7 +199,7 @@
             {
               "id": "ir1",
               "speaker": "Inventor Iris",
-              "text": "I just invented a new gadget! But without a patent, anyone could copy it. Intellectual property \u2014 patents, trademarks, copyrights \u2014 protects creators. Want to learn how?",
+              "text": "I just invented a new gadget! But without a patent, anyone could copy it. Intellectual property — patents, trademarks, copyrights — protects creators. Want to learn how?",
               "choices": [
                 {
                   "id": "ir1c1",
@@ -213,6 +213,11 @@
                   ]
                 },
                 {
+                  "id": "ir1_listen",
+                  "text": "Digression — glance or file first?",
+                  "nextNodeId": "ir_fork"
+                },
+                {
                   "id": "ir1c2",
                   "text": "What's the difference between them?",
                   "nextNodeId": "ir3"
@@ -223,6 +228,55 @@
               "id": "ir2",
               "speaker": "Inventor Iris",
               "text": "A patent protects inventions (20 years). A trademark protects brand names and logos (forever, if renewed). A copyright protects creative works like music and code (your lifetime + 70 years). Talk to Lawyer Leon for the legal details!",
+              "end": true
+            },
+            {
+              "id": "ir_fork",
+              "speaker": "Inventor Iris",
+              "text": "Gallery glass or filing desk — glance at names first, or file before you’ve looked?",
+              "choices": [
+                {
+                  "id": "ir_glance",
+                  "text": "Glance at the gallery first.",
+                  "nextNodeId": "ir_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "in_ip_glance",
+                      "label": "Glanced at Intangible Isle IP gallery",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "ir_rush",
+                  "text": "File first — I’ll name later.",
+                  "nextNodeId": "ir_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "in_ip_rush",
+                      "label": "Filed Intangible Isle IP cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "ir_listen_done",
+              "speaker": "Inventor Iris",
+              "text": "Naming ideas before you file is a money skill. Harbor may gossip that you lingered in the gallery.",
+              "end": true
+            },
+            {
+              "id": "ir_rush_done",
+              "speaker": "Inventor Iris",
+              "text": "Filing before naming leaves sparks. Harbor may gossip that you stamped cold.",
               "end": true
             },
             {
@@ -275,7 +329,7 @@
             {
               "id": "le2",
               "speaker": "Lawyer Leon",
-              "text": "Opening the IP scenario simulator\u2026",
+              "text": "Opening the IP scenario simulator…",
               "end": true
             },
             {
@@ -366,7 +420,7 @@
             {
               "id": "my1",
               "speaker": "Merger Maya",
-              "text": "When one company buys another, they often pay MORE than the sum of its assets. That 'extra' is called goodwill \u2014 it represents brand, customer relationships, patents, and team talent.",
+              "text": "When one company buys another, they often pay MORE than the sum of its assets. That 'extra' is called goodwill — it represents brand, customer relationships, patents, and team talent.",
               "choices": [
                 {
                   "id": "my1c1",
@@ -389,13 +443,13 @@
             {
               "id": "my2",
               "speaker": "Merger Maya",
-              "text": "Say a company has $10M in assets but is bought for $15M. That extra $5M is goodwill \u2014 the buyer believes the brand, customer base, and team are worth it. Here's an analysis report!",
+              "text": "Say a company has $10M in assets but is bought for $15M. That extra $5M is goodwill — the buyer believes the brand, customer base, and team are worth it. Here's an analysis report!",
               "end": true
             },
             {
               "id": "my3",
               "speaker": "Merger Maya",
-              "text": "Yes! If the acquired company underperforms, the buyer has to 'write down' goodwill \u2014 admitting they overpaid. It's a huge hit to the balance sheet. That's why due diligence matters.",
+              "text": "Yes! If the acquired company underperforms, the buyer has to 'write down' goodwill — admitting they overpaid. It's a huge hit to the balance sheet. That's why due diligence matters.",
               "choices": [
                 {
                   "id": "my3c1",
@@ -418,15 +472,15 @@
           "id": "mg_ip_scenario",
           "name": "IP Strategy Scenario",
           "description": "Navigate branching decisions about protecting your invention: patent, trademark, or open-source?",
-          "icon": "\u2696\ufe0f",
+          "icon": "⚖️",
           "componentId": "IPScenarioGame",
           "areaId": "in_patent_office"
         },
         {
           "id": "mg_license_pricing",
           "name": "Price Your License",
-          "description": "You own the patent \u2014 now set the licensing fee. Slide the price and watch how many partners sign on. Find the profit peak.",
-          "icon": "\u2696\ufe0f",
+          "description": "You own the patent — now set the licensing fee. Slide the price and watch how many partners sign on. Find the profit peak.",
+          "icon": "⚖️",
           "componentId": "PriceItRightGame",
           "areaId": "in_patent_office",
           "genre": "simulation",
@@ -438,7 +492,7 @@
               "id": "PriceConfig",
               "config": {
                 "product": "your patent license",
-                "emoji": "\u2696\ufe0f",
+                "emoji": "⚖️",
                 "cost": 3,
                 "maxDemand": 30,
                 "chokePrice": 20

@@ -126,7 +126,7 @@
       "quests": [
         {
           "id": "q_sc_credit_101",
-          "track": "main",
+          "track": "side",
           "title": "Credit 101",
           "description": "Meet Mentor Max to learn what credit is, then visit Credit Cleo to see how scores work and earn your Market Pass.",
           "hint": "Start at Signal Plaza, then head to Credit Lane.",
@@ -158,7 +158,7 @@
         },
         {
           "id": "q_sc_first_portfolio",
-          "track": "main",
+          "track": "side",
           "title": "First Portfolio",
           "description": "Use your Market Pass to enter Investor Tower. Meet Analyst Ari and Broker Blake to build a practice portfolio.",
           "hint": "You need the Market Pass from Credit Lane before entering Investor Tower.",
@@ -193,7 +193,7 @@
             {
               "id": "mm1",
               "speaker": "Mentor Max",
-              "text": "Welcome to Signal City, where every blinking light tells a story about money. Credit and investing can seem complicated, but I'll break it down. Ready?",
+              "text": "Phosphor Reef side shore — free roam. Every blinking light tells a money story. Digress here anytime; the spine still waits.",
               "choices": [
                 {
                   "id": "mm1_a",
@@ -207,6 +207,11 @@
                   ]
                 },
                 {
+                  "id": "mm1_listen",
+                  "text": "Digression — listen or rush the blink?",
+                  "nextNodeId": "mm_fork"
+                },
+                {
                   "id": "mm1_b",
                   "text": "I need a minute.",
                   "nextNodeId": "mm3"
@@ -217,6 +222,55 @@
               "id": "mm2",
               "speaker": "Mentor Max",
               "text": "Credit is borrowed money you promise to pay back. Your credit score tracks how reliably you keep that promise. Head to Credit Lane and talk to Cleo \u2014 she knows scores inside and out.",
+              "end": true
+            },
+            {
+              "id": "mm_fork",
+              "speaker": "Mentor Max",
+              "text": "Reef lights blink your name. Listen for the money story — or rush the signal before you’ve heard it?",
+              "choices": [
+                {
+                  "id": "mm_linger",
+                  "text": "Listen first — then I’ll roam.",
+                  "nextNodeId": "mm_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "sc_signal_listen",
+                      "label": "Listened to Phosphor Reef signals",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "mm_rush",
+                  "text": "Rush the blink — I’ll listen later.",
+                  "nextNodeId": "mm_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "sc_signal_rush",
+                      "label": "Rushed Phosphor Reef signals",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "mm_listen_done",
+              "speaker": "Mentor Max",
+              "text": "Hearing without rushing is a money skill. Harbor may gossip that you listened on the Reef.",
+              "end": true
+            },
+            {
+              "id": "mm_rush_done",
+              "speaker": "Mentor Max",
+              "text": "Rushing the blink leaves sparks. Harbor may gossip that you chased light cold.",
               "end": true
             },
             {

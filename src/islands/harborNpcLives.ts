@@ -13,8 +13,9 @@ import {
 import { PLAZA_POP_CAMEOS } from "./moneyPopCulture";
 import {
   localNamesScarEcho,
+  pickRotatingAliveStreetLine,
   piggyScarMemoryLine,
-  scarEchoAmbientLine,
+  type AliveStreetScarEcho,
 } from "./worldMemory";
 
 export type HarborHour = "morning" | "midday" | "afternoon" | "evening";
@@ -32,6 +33,8 @@ export type HarborNpcLife = {
   lines: Record<HarborHour, string>;
   /** Still vs roaming — Harbor is a mixed Ordinary World */
   motion: HarborMotion;
+  /** Short tip-hat ambient (series leads) when no scar echo */
+  ambientNear?: string;
 };
 
 const CAMEO_LINES: Record<string, string> = Object.fromEntries(
@@ -52,14 +55,46 @@ export function currentHarborHour(): HarborHour {
 }
 
 /**
- * Harbor motion mix — Piggy & even-index locals lean static (readable anchors);
- * odd-index cast wanders so the plaza still feels alive.
+ * Harbor motion mix — Piggy holds the fountain; series leads micro-sway on the
+ * terrace (static agents, tiny schedule); most plaza locals roam so streets feel alive.
  */
 function harborMotionForIndex(i: number, mascotId: MoneyMascotId): HarborMotion {
   if (mascotId === "piggy_penny") return "static";
   // Series leads hold the Memory Courtyard terrace — readable silhouettes.
   if (isSeriesLeadMascot(mascotId)) return "static";
-  return i % 2 === 0 ? "static" : "dynamic";
+  // ~2/3 of remaining locals wander (GTA4 bar density)
+  return i % 3 === 0 ? "static" : "dynamic";
+}
+
+/** Tiny terrace sway for tip-hat leads — alive without leaving the courtyard. */
+function seriesLeadTerraceDrift(
+  pos: [number, number, number],
+  i: number,
+): Record<HarborHour, [number, number, number]> {
+  const [x, y, z] = pos;
+  const a = (i % 4) * 0.35;
+  return {
+    morning: [x, y, z],
+    midday: [x + 0.45 + a * 0.1, y, z + 0.35],
+    afternoon: [x - 0.35, y, z + 0.55 + a * 0.08],
+    evening: [x + 0.25, y, z - 0.4],
+  };
+}
+
+function seriesLeadHourLines(
+  ambientNear: string | undefined,
+  name: string,
+): Record<HarborHour, string> {
+  const near =
+    ambientNear ??
+    `${name}: Tip the hat — Memory Courtyard keeps the receipt.`;
+  // Same short tip-hat line across the day — when near, streets feel authored.
+  return {
+    morning: near,
+    midday: near,
+    afternoon: near,
+    evening: near,
+  };
 }
 
 /**
@@ -73,115 +108,36 @@ export function buildHarborNpcLives(): HarborNpcLife[] {
     // Small schedule offsets so they migrate around shops / dock / market
     const drift: [number, number, number][] = [
       [x, y, z],
-      [x + (i % 2 ? 1.8 : -1.5), y, z + 1.2],
-      [x - 1.2, y, z + (i % 3 === 0 ? 2.5 : -1.8)],
-      [x + 0.8, y, z - 2.0],
+      [x + (i % 2 ? 2.2 : -1.9), y, z + 1.6],
+      [x - 1.6, y, z + (i % 3 === 0 ? 3.0 : -2.2)],
+      [x + 1.1, y, z - 2.4],
     ];
-    const defaultLines: Record<HarborHour, string> =
-      slot.mascotId === "cashwell"
-        ? {
-            morning: "Cashwell: Extra tall. Extra flash. The Plinth already knows yesterday.",
-            midday: "Cashwell: Always up — after you face the Take. Piggy keeps the verbs.",
-            afternoon: "Cashwell: Wealth in every detail. Memory Courtyard never forgets a choice.",
-            evening: "Cashwell: Time is money. Tip the hat — then tip yourself first.",
-          }
-        : slot.mascotId === "cashmere"
-          ? {
-              morning: "Cashmere Couture: Luxury with lineage. The Plinth keeps yesterday tailored.",
-              midday: "Cashmere: Style is strategy — Piggy keeps the Harbor verbs.",
-              afternoon: "Cashmere: She invests with precision. Memory Courtyard never forgets.",
-              evening: "Cashmere: Fortunes flourish around taste. Tip yourself first, darling.",
-            }
-          : slot.mascotId === "peso_pedro"
-            ? {
-                morning: "Peso Pedro: Golden charisma — the Plinth already heard yesterday’s fiesta.",
-                midday: "Peso Pedro: Small symbol, massive impact. Piggy keeps the Harbor verbs.",
-                afternoon: "Peso Pedro: Opportunities into celebrations. Memory Courtyard never forgets.",
-                evening: "Peso Pedro: Always in circulation. Tip yourself first — then dance.",
-              }
-            : slot.mascotId === "fortuna_fernanda"
-              ? {
-                  morning: "Fortuna Fernanda: Joy follows her glow — the Plinth keeps yesterday’s roses.",
-                  midday: "Fortuna: Charm is currency. Piggy keeps the Harbor verbs.",
-                  afternoon: "Fortuna: Style with sparkle. Memory Courtyard never forgets a Take.",
-                  evening: "Fortuna: Queen of celebration. Tip yourself first — then arrive.",
-                }
-              : slot.mascotId === "billionaire_bao"
-                ? {
-                    morning: "Billionaire Bao: Generations of vision — the Plinth keeps yesterday rooted.",
-                    midday: "Bao: Quiet luxury. Piggy keeps the Harbor verbs.",
-                    afternoon: "Bao: Every move intentional. Memory Courtyard compounds the outcome.",
-                    evening: "Bao: Influence without noise. Tip yourself first — then open doors.",
-                  }
-                : slot.mascotId === "jade_fortune"
-                  ? {
-                      morning: "Jade Fortune: Value follows her — the Plinth keeps yesterday polished.",
-                      midday: "Jade: Quiet luxury. Piggy keeps the Harbor verbs.",
-                      afternoon: "Jade: Wisdom sharpens every move. Memory Courtyard never forgets.",
-                      evening: "Jade: Fortune in bloom. Tip yourself first — then enter the room.",
-                    }
-                  : slot.mascotId === "sultan_stacks"
-                    ? {
-                        morning: "Sultan Stacks: Wealth worn like a crown — the Plinth keeps yesterday stacked.",
-                        midday: "Sultan: Palace presence. Piggy keeps the Harbor verbs.",
-                        afternoon: "Sultan: Fortune favors foresight. Memory Courtyard never forgets a Take.",
-                        evening: "Sultan: Big treasure, bigger legacy. Tip yourself first — then arrive.",
-                      }
-                    : slot.mascotId === "dinar_dahlia"
-                      ? {
-                          morning: "Dinar Dahlia: Fortune follows her — the Plinth keeps yesterday radiant.",
-                          midday: "Dahlia: Palace presence. Piggy keeps the Harbor verbs.",
-                          afternoon: "Dahlia: Elegance is currency. Memory Courtyard never forgets a Take.",
-                          evening: "Dahlia: Prosperity into spectacle. Tip yourself first — then arrive.",
-                        }
-                      : slot.mascotId === "mansa_moneybaggs"
-                        ? {
-                            morning: "Mansa Moneybaggs: Golden legacy — the Plinth keeps yesterday’s caravan.",
-                            midday: "Mansa: Kingdom wealth. Piggy keeps the Harbor verbs.",
-                            afternoon: "Mansa: Paths connect kingdoms. Memory Courtyard never forgets a Take.",
-                            evening: "Mansa: Giving is royalty. Tip yourself first — then uplift.",
-                          }
-                        : slot.mascotId === "kandake_kash"
-                          ? {
-                              morning: "Kandake Kash: History like a crown — the Plinth keeps yesterday’s stride.",
-                              midday: "Kandake: Crowned commerce. Piggy keeps the Harbor verbs.",
-                              afternoon: "Kandake: Riches feel richer shared. Memory Courtyard never forgets a Take.",
-                              evening: "Kandake: Treasure in motion. Tip yourself first — then multiply people.",
-                            }
-                          : slot.mascotId === "moneybagg_bro"
-                            ? {
-                                morning: "Moneybagg Bro: Swagger always — the Plinth keeps yesterday’s big play.",
-                                midday: "Moneybagg: Business moves. Piggy keeps the Harbor verbs.",
-                                afternoon: "Moneybagg: Cash flow 24/7. Memory Courtyard never forgets a Take.",
-                                evening: "Moneybagg: Hustle everyday. Tip yourself first — then build the empire.",
-                              }
-                            : slot.mascotId === "mula_mami"
-                              ? {
-                                  morning: "Mula Mami: Boss babe energy — the Plinth keeps yesterday’s shine.",
-                                  midday: "Mula: Cash confidence. Piggy keeps the Harbor verbs.",
-                                  afternoon: "Mula: Stacks in hand, plans in motion. Memory Courtyard never forgets a Take.",
-                                  evening: "Mula: Hustle and heels. Tip yourself first — then dress for impact.",
-                                }
-                              : {
-                                  morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
-                                  midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
-                                  afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
-                                  evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
-                                };
     const motion = harborMotionForIndex(i, slot.mascotId);
+    const lead = isSeriesLeadMascot(slot.mascotId);
+    const defaultLines: Record<HarborHour, string> = lead
+      ? seriesLeadHourLines(slot.ambientNear, m.name)
+      : {
+          morning: `${m.name}: ${m.tagline} Coffee first, then the ledger.`,
+          midday: CAMEO_LINES[m.name] ?? `${m.name}: Midday rush — budget before you browse.`,
+          afternoon: `${m.name}: Afternoon tip — pay yourself first, then play.`,
+          evening: `${m.name}: Harbor lights on. Count today's coins, dream tomorrow's.`,
+        };
+    const schedule: Record<HarborHour, [number, number, number]> = lead
+      ? seriesLeadTerraceDrift(slot.pos, i)
+      : {
+          morning: motion === "static" ? slot.pos : drift[0]!,
+          midday: motion === "static" ? slot.pos : drift[1]!,
+          afternoon: motion === "static" ? slot.pos : drift[2]!,
+          evening: motion === "static" ? slot.pos : drift[3]!,
+        };
     return {
       mascotId: slot.mascotId,
       home: slot.pos,
       yaw: slot.yaw,
-      schedule: {
-        // Static keepers stay home all day — schedule still defined for greet lines
-        morning: motion === "static" ? slot.pos : drift[0]!,
-        midday: motion === "static" ? slot.pos : drift[1]!,
-        afternoon: motion === "static" ? slot.pos : drift[2]!,
-        evening: motion === "static" ? slot.pos : drift[3]!,
-      },
+      schedule,
       lines: defaultLines,
       motion,
+      ambientNear: slot.ambientNear,
     };
   });
 }
@@ -190,11 +146,7 @@ export function harborNpcPose(
   life: HarborNpcLife,
   hour: HarborHour = currentHarborHour(),
   memory?: { talks?: number; lastChoiceIds?: string[] } | null,
-  scarEcho?: {
-    label: string;
-    dayOffset: "same" | "later";
-    organ?: import("./moneyOrgans").MoneyOrganId;
-  } | null,
+  scarEcho?: AliveStreetScarEcho | null,
 ): { position: [number, number, number]; yaw: number; line: string; name: string } {
   const mascot = getMascot(life.mascotId);
   let line = life.lines[hour];
@@ -204,7 +156,14 @@ export function harborNpcPose(
     line =
       life.mascotId === "piggy_penny"
         ? piggyScarMemoryLine(scarEcho.label, scarEcho.dayOffset, organ)
-        : scarEchoAmbientLine(mascot.name, scarEcho.label, scarEcho.dayOffset, organ);
+        : pickRotatingAliveStreetLine(life.mascotId, mascot.name, hour, {
+            label: scarEcho.label,
+            dayOffset: scarEcho.dayOffset,
+            organ,
+          });
+  } else if (life.ambientNear && isSeriesLeadMascot(life.mascotId)) {
+    // Tip-hat series leads — short ambient when near (no scar)
+    line = life.ambientNear;
   } else if (memory && (memory.talks ?? 0) >= 1) {
     const last = memory.lastChoiceIds?.at(-1);
     if (last) {

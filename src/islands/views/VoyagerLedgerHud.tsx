@@ -2,6 +2,7 @@ import {
   HARBOR_ESCAPE_STREAK,
   HARBOR_ESCAPE_TARGET,
   harborEscapeProgress,
+  isSealChasing,
   netCashflow,
   totalExpenses,
   totalIncome,
@@ -14,7 +15,8 @@ type Props = {
 };
 
 /**
- * Cashflow statement HUD — the north star of Fortune Grind.
+ * Cashflow statement HUD — north star after Cove Change.
+ * Seal-chase chrome only when Freedom is actually in play (same gate as plaza chip).
  */
 export function VoyagerLedgerHud({ ledger, compact }: Props) {
   const income = totalIncome(ledger);
@@ -22,6 +24,7 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
   const cf = netCashflow(ledger);
   const cfPositive = cf >= 0;
   const escape = harborEscapeProgress(ledger);
+  const chaseOn = isSealChasing(ledger);
 
   if (compact) {
     return (
@@ -30,9 +33,12 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
         title={
           escape.escaped
             ? "Harbor escaped — cashflow goal cleared!"
-            : `Escape: $${HARBOR_ESCAPE_TARGET}+/mo for ${HARBOR_ESCAPE_STREAK} Pay Days (${escape.streak}/${escape.needed})`
+            : chaseOn
+              ? `Escape: $${HARBOR_ESCAPE_TARGET}+/mo for ${HARBOR_ESCAPE_STREAK} Pay Days (${escape.streak}/${escape.needed})`
+              : "Cashflow — Seal chase opens after first deals or strong CF"
         }
         data-testid="voyager-ledger-hud"
+        data-seal-chase={chaseOn ? "1" : "0"}
       >
         <span className="text-[0.6rem] font-bold uppercase tracking-widest text-[var(--cap-ink-soft)]">
           Cashflow
@@ -46,17 +52,21 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
         </span>
         {escape.escaped ? (
           <span className="text-[0.65rem] font-black text-emerald-700">Freed!</span>
-        ) : (
+        ) : chaseOn ? (
           <span className="text-[0.6rem] font-bold text-[var(--cap-ink-soft)]">
             🎯{escape.streak}/{escape.needed}
           </span>
-        )}
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="cap-card min-w-[11rem] px-3 py-2" data-testid="voyager-ledger-hud">
+    <div
+      className="cap-card min-w-[11rem] px-3 py-2"
+      data-testid="voyager-ledger-hud"
+      data-seal-chase={chaseOn ? "1" : "0"}
+    >
       <div className="text-[0.6rem] font-bold uppercase tracking-widest text-[var(--cap-ink-soft)] mb-1">
         Voyager Ledger
       </div>
@@ -71,10 +81,12 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
           {cf}/mo
         </span>
       </div>
-      <div className="mt-1.5 rounded-lg border border-[var(--cap-ink)]/10 bg-[var(--cap-paper)]/80 px-2 py-1 text-[0.65rem] font-semibold">
-        {escape.escaped ? (
+      {escape.escaped ? (
+        <div className="mt-1.5 rounded-lg border border-[var(--cap-ink)]/10 bg-[var(--cap-paper)]/80 px-2 py-1 text-[0.65rem] font-semibold">
           <span className="text-emerald-700">🏆 Harbor escaped — cashflow is free!</span>
-        ) : (
+        </div>
+      ) : chaseOn ? (
+        <div className="mt-1.5 rounded-lg border border-[var(--cap-ink)]/10 bg-[var(--cap-paper)]/80 px-2 py-1 text-[0.65rem] font-semibold">
           <span className="text-[var(--cap-ink-soft)]">
             Escape goal:{" "}
             <span className="font-black text-[var(--cap-ink)]">${HARBOR_ESCAPE_TARGET}+/mo</span> for{" "}
@@ -83,8 +95,8 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
               {escape.streak}/{escape.needed}
             </span>
           </span>
-        )}
-      </div>
+        </div>
+      ) : null}
       {ledger.holdings.length > 0 ? (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {ledger.holdings.slice(0, 4).map((h) => (

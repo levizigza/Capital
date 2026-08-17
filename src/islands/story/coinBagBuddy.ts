@@ -24,6 +24,10 @@ export type CoinBagBuddyTip = {
   coach?: string;
   /** Main vs side when tip comes from a quest */
   track?: QuestTrack;
+  /** Medium horizon — next painting / organ island */
+  painting?: string | null;
+  /** Long horizon — Freedom Seal / Spiral mastery */
+  seal?: string | null;
 };
 
 /** Voyage tip — shared by to_dock + demoted legacy gate ids. */
@@ -73,11 +77,38 @@ export function coinBagHarborTip(
     day2Echo?: boolean;
     /** Freedom Seal carpet tier label (plaza read) */
     carpetTierLabel?: string | null;
+    /** Credit Kingdom unlock progress — plaza never silent-locks Spiral */
+    creditMastery?: { mastery: number; needed: number; escaped: boolean; unlocked: boolean } | null;
+    /** Soft Beat lookout arm whisper (multiplicative chemistry) */
+    softBeatArmWhisper?: string | null;
+    /** Incomplete digression rumor count for curiosity shelf */
+    digressionGaps?: number | null;
+    /** After Freedom — whisper VibeCode invent-inside-the-game */
+    studioOpenHint?: boolean;
+    /** Family Witness myth — Freeze-alt relatedness on the plaza */
+    witnessMyth?: string | null;
+    /** Cashflow → sky literacy tip (pattern #60 / weather teach) */
+    weatherLiteracy?: string | null;
   },
+): CoinBagBuddyTip {
+  const tip = coinBagHarborTipRaw(guided, opts);
+  return attachCoinBagHorizons(tip, opts);
+}
+
+function coinBagHarborTipRaw(
+  guided: HubGuidedIntroState | null | undefined,
+  opts?: Parameters<typeof coinBagHarborTip>[1],
 ): CoinBagBuddyTip {
   if (guided && !isHubGuidedComplete(guided)) {
     const live = normalizeHubGuidedIntro(guided);
     return TUTORIAL_TIPS[live.step] ?? TUTORIAL_TIPS.meet_guide;
+  }
+
+  if (opts?.softBeatArmWhisper) {
+    return {
+      tip: opts.softBeatArmWhisper,
+      coach: "Soft Beat armed your next Talk — organ chemistry, not a toast.",
+    };
   }
 
   if (opts?.homecomingPending) {
@@ -139,6 +170,45 @@ export function coinBagHarborTip(
     };
   }
 
+  const credit = opts?.creditMastery;
+  if (credit && credit.escaped && !credit.unlocked) {
+    return {
+      tip: `Credit Kingdom · mastery ${credit.mastery}/${credit.needed}`,
+      coach:
+        "Spiral opens after Freedom plus three mastery clears. Clear Soft Beats / quizzes — then Interest Keep waits.",
+      track: "main",
+    };
+  }
+  if (credit && !credit.escaped && !opts?.nextPaintingHint) {
+    return {
+      tip: "Freedom Seal first — then Spiral",
+      coach: "Credit Kingdom stays locked until Harbor escape. Finish Paycheck Change, come home.",
+      track: "main",
+    };
+  }
+
+  if (opts?.studioOpenHint && opts?.hasFreedom) {
+    return {
+      tip: "VibeCode — invent a level inside Capital",
+      coach: "Open VibeCode on the plaza stele. Publish a mark Harbor can stamp — device-local, no multiplayer.",
+      track: "side",
+    };
+  }
+
+  if (opts?.witnessMyth) {
+    return {
+      tip: opts.witnessMyth,
+      coach: "Someone nearby stamped a Witness — soft myth only. Family Room keeps it local.",
+    };
+  }
+
+  if (opts?.weatherLiteracy) {
+    return {
+      tip: opts.weatherLiteracy,
+      coach: "Cashflow paints the sky. Fog means interest weather — shops cut prices to help.",
+    };
+  }
+
   if (opts?.hasFreedom && opts?.pavilionUnlocked !== false) {
     const tier = opts.carpetTierLabel?.trim();
     return {
@@ -163,11 +233,45 @@ export function coinBagHarborTip(
       coach: "Our island adventure is paused — resume anytime.",
     };
   }
+  if (opts?.digressionGaps && opts.digressionGaps > 0 && (opts.hasFreedom || opts.latestScarLabel)) {
+    return {
+      tip: `Myth shelf · ${opts.digressionGaps} empty rumor slot${opts.digressionGaps === 1 ? "" : "s"}`,
+      coach: "Plinth keeps empty shelves curious. Side shores and digressions fill them — spine stays open.",
+      track: "side",
+    };
+  }
+
   return {
     tip: "Ledger Bank — walk into the vault!",
     coach:
       "That brass bank is a money machine. Stamp and safe open arcade worlds; the teller is a quiet peek.",
   };
+}
+
+/** Attach Now · Painting · Seal horizons without stacking a dashboard. */
+export function attachCoinBagHorizons(
+  tip: CoinBagBuddyTip,
+  opts?: Parameters<typeof coinBagHarborTip>[1],
+): CoinBagBuddyTip {
+  const painting =
+    tip.painting ??
+    (opts?.nextPaintingHint && !tip.tip.includes(opts.nextPaintingHint)
+      ? opts.nextPaintingHint
+      : null);
+  const credit = opts?.creditMastery;
+  let seal = tip.seal ?? null;
+  if (!seal) {
+    if (credit && credit.escaped && !credit.unlocked) {
+      seal = `Spiral · mastery ${credit.mastery}/${credit.needed}`;
+    } else if (opts?.hasFreedom) {
+      seal = opts.carpetTierLabel?.trim()
+        ? `Freedom · ${opts.carpetTierLabel.trim()}`
+        : "Freedom Seal";
+    } else if (credit && !credit.escaped) {
+      seal = "Someday · Freedom Seal";
+    }
+  }
+  return { ...tip, painting: painting || null, seal };
 }
 
 function hasScarMemory(opts?: { latestScarLabel?: string | null }): boolean {

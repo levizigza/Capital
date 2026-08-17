@@ -7,7 +7,7 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForSoftBeat } from "../moneyOrgans";
-import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
+import { prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
 import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
@@ -15,6 +15,7 @@ import { softBeatScarVistaLine } from "@/design/designBible";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
+import { armSoftBeat, noteSoftBeatTrail } from "../softBeatArm";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -25,26 +26,26 @@ const BEATS: Record<
 > = {
   lookout: {
     title: "Lid Lookout",
-    line: "From the lid the jar’s weight settles — Coin holds what Cove chose. Look — then leave.",
-    hushLine: "Quiet under the lid — the jar remembers. Not a second Take.",
+    line: "From the lid you feel the jar’s weight in your chest — Coin holds what Cove chose. Look once. Leave changed.",
+    hushLine: "Quiet under the lid. The jar remembers so you don’t have to shout it. Not a second Take.",
     accent: "#fbbf24",
   },
   umbrella: {
     title: "Umbrella Loft",
-    line: "From the loft Main Street looks dry or thin — Clock shelters what Paycheck chose. Look — then leave.",
-    hushLine: "Quiet in the loft — the Clock remembers. Not a second Take.",
+    line: "From the loft Main Street looks dry or thin — Clock shelters what Paycheck chose. Rain remembers. Look — then leave.",
+    hushLine: "Quiet in the loft. Shelter is a choice you can still feel. Not a second Take.",
     accent: "#38bdf8",
   },
   battlement: {
     title: "Score Battlement",
-    line: "From the wall the coil cools or tightens — Spiral withstands what Credit chose. Look — then leave.",
-    hushLine: "Quiet on the wall — the Spiral remembers. Not a second Take.",
+    line: "From the wall the coil cools or tightens — Spiral withstands what Credit chose. Interest doesn’t yell. Look — then leave.",
+    hushLine: "Quiet on the wall. Haste still echoes if you fed it. Not a second Take.",
     accent: "#a78bfa",
   },
   ledger: {
     title: "Teller Window",
-    line: "Under glass every jar and stamp hums — Memory keeps. Look — then leave.",
-    hushLine: "Quiet at the marble — Memory keeps your plaque. Look — then leave.",
+    line: "Under glass every jar and stamp hums — Memory keeps. This is why the plaza remembers. Look — then leave.",
+    hushLine: "Quiet at the marble. Memory keeps your plaque without a lecture. Look — then leave.",
     accent: "#f59e0b",
   },
 };
@@ -68,15 +69,20 @@ export function SoftBeatOverlay({
   useOverlayEscape(onDone);
 
   useEffect(() => {
-    triggerJuice("accept");
+    triggerJuice("complete", { burst: true });
     playOrganSfx(organ.id);
     if (!prefersReducedMotion() || hushActive) {
       playCapitalSfx(hushActive ? "scar_chime" : "soft_beat");
     }
-    const scale = cinemaTimeScale();
-    const t = window.setTimeout(onDone, Math.round((hushActive ? 5200 : 4200) * scale));
-    return () => window.clearTimeout(t);
-  }, [hushActive, onDone, organ.id]);
+    // Arm the next living Talk — Soft Beat is multiplicative, not a dead cinema.
+    armSoftBeat(kind);
+    noteSoftBeatTrail(kind, scarLabel);
+    void import("../analytics").then(({ analytics }) => {
+      void analytics.track("soft_beat_armed", { kind, organ: organ.id });
+      void analytics.track("core_loop_beat", { beat: "soft_beat", kind });
+    });
+    // Stay-until-Leave — toy value, not a timed cinema dump (pattern library #51).
+  }, [hushActive, organ.id, kind]);
 
   const vista = softBeatScarVistaLine(kind, scarLabel);
   const body = hushActive ? beat.hushLine : (vista ?? beat.line);

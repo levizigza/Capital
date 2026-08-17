@@ -4,8 +4,8 @@
     {
       "id": "future_shores",
       "name": "Portfolio Skies",
-      "description": "Solarpunk horizon beyond the spine. Side shore of Fortune Archipelago \u2014 imagine tomorrow\u2019s Memory.",
-      "icon": "\ud83c\udfa8",
+      "description": "Solarpunk horizon beyond the spine. Side shore of Fortune Archipelago — imagine tomorrow’s Memory.",
+      "icon": "🎨",
       "themeId": "future_shores",
       "provenance": {
         "learning_objectives": [
@@ -19,7 +19,7 @@
           "vibe-code-studio",
           "diversification"
         ],
-        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors \u2014 not unfinished scaffolding alone.",
+        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors — not unfinished scaffolding alone.",
         "forbidden_references": [
           "Mario",
           "Nintendo",
@@ -30,8 +30,8 @@
         {
           "id": "fs_scaffold",
           "name": "The Scaffold",
-          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished \u2014 waiting for your ideas.",
-          "icon": "\ud83d\udea7",
+          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished — waiting for your ideas.",
+          "icon": "🚧",
           "connections": [
             "fs_blank_canvas",
             "fs_community_dock"
@@ -41,7 +41,7 @@
           "id": "fs_blank_canvas",
           "name": "Blank Canvas Bay",
           "description": "Empty lots marked with chalk grids. Each plot is a game someone hasn't dreamed up yet. Maybe that someone is you.",
-          "icon": "\ud83d\udcd0",
+          "icon": "📐",
           "connections": [
             "fs_scaffold",
             "fs_community_dock"
@@ -51,7 +51,7 @@
           "id": "fs_community_dock",
           "name": "Community Dock",
           "description": "Where creators moor their prototypes. Open VibeCode Studio from home base to publish levels that can live here someday.",
-          "icon": "\u2693",
+          "icon": "⚓",
           "connections": [
             "fs_scaffold",
             "fs_blank_canvas"
@@ -62,7 +62,7 @@
         {
           "id": "npc_future_keeper",
           "name": "The Keeper",
-          "icon": "\ud83e\uddd1\u200d\ud83c\udfa8",
+          "icon": "🧑‍🎨",
           "areaId": "fs_scaffold",
           "dialogueGraphId": "dlg_future_keeper"
         }
@@ -72,7 +72,7 @@
           "id": "fs_builder_chalk",
           "name": "Builder's Chalk",
           "description": "Mark your territory on the blank canvas.",
-          "icon": "\ud83d\udd8d\ufe0f",
+          "icon": "🖍️",
           "location": {
             "areaId": "fs_blank_canvas"
           }
@@ -81,7 +81,7 @@
       "quests": [
         {
           "id": "q_fs_claim_plot",
-          "track": "main",
+          "track": "side",
           "title": "Claim Your Plot",
           "description": "The kids of the future get to finish what we started. Explore Future Shores and pick up builder's chalk.",
           "objectives": [
@@ -108,12 +108,17 @@
             {
               "id": "start",
               "speaker": "The Keeper",
-              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn \u2014 carve out games for your era in VibeCode Studio.",
+              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn — carve out games for your era in VibeCode Studio.",
               "choices": [
                 {
                   "id": "c1",
                   "text": "So I get to build what comes next?",
                   "nextNodeId": "build"
+                },
+                {
+                  "id": "c_listen",
+                  "text": "Digression — study or claim first?",
+                  "nextNodeId": "scaffold_fork"
                 },
                 {
                   "id": "c2",
@@ -123,9 +128,58 @@
               ]
             },
             {
+              "id": "scaffold_fork",
+              "speaker": "The Keeper",
+              "text": "Unfinished poles lean your way. Study the scaffolding — or claim a plot before you’ve looked?",
+              "choices": [
+                {
+                  "id": "c_look",
+                  "text": "Study the scaffolding first.",
+                  "nextNodeId": "listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fs_scaffold_look",
+                      "label": "Looked over Portfolio Skies scaffolding",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "c_rush",
+                  "text": "Claim a plot cold — I’ll study later.",
+                  "nextNodeId": "rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fs_scaffold_rush",
+                      "label": "Claimed Portfolio Skies plot cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "listen_done",
+              "speaker": "The Keeper",
+              "text": "Standing in unfinished space before you claim it is a money skill. Harbor may gossip that you studied the scaffolding.",
+              "end": true
+            },
+            {
+              "id": "rush_done",
+              "speaker": "The Keeper",
+              "text": "Claiming before looking leaves sparks. Harbor may gossip that you grabbed a pole cold.",
+              "end": true
+            },
+            {
               "id": "build",
               "speaker": "The Keeper",
-              "text": "Exactly. Sail to the other islands to see how each era looked \u2014 Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
+              "text": "Exactly. Sail to the other islands to see how each era looked — Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
               "end": true,
               "choices": [
                 {
@@ -143,7 +197,7 @@
             {
               "id": "old",
               "speaker": "The Keeper",
-              "text": "They're still out there \u2014 each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
+              "text": "They're still out there — each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
               "end": true,
               "choices": [
                 {
@@ -165,8 +219,8 @@
         {
           "id": "mg_fs_diversify",
           "name": "Weather Baskets",
-          "description": "Market weather shifts \u2014 rebalance baskets of assets like floating islands in the wind.",
-          "icon": "\ud83e\uddfa",
+          "description": "Market weather shifts — rebalance baskets of assets like floating islands in the wind.",
+          "icon": "🧺",
           "componentId": "DiversifyBasketsGame",
           "areaId": "fs_blank_canvas",
           "genre": "strategy",
@@ -176,8 +230,8 @@
         {
           "id": "mg_fs_compound",
           "name": "Horizon Snowball",
-          "description": "Watch long-horizon compounding under painterly aurora \u2014 patience is the weather pattern.",
-          "icon": "\u2744\ufe0f",
+          "description": "Watch long-horizon compounding under painterly aurora — patience is the weather pattern.",
+          "icon": "❄️",
           "componentId": "CompoundSnowballGame",
           "areaId": "fs_scaffold",
           "genre": "simulation",
@@ -198,7 +252,7 @@
           "id": "mg_fs_budget",
           "name": "Sky Budget",
           "description": "Allocate coins across floating districts before the storm front arrives.",
-          "icon": "\ud83d\udcca",
+          "icon": "📊",
           "componentId": "BudgetSplitterGame",
           "areaId": "fs_community_dock",
           "genre": "strategy",

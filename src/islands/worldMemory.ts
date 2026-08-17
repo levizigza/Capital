@@ -36,8 +36,9 @@ export type StanceAxis = keyof VoyagerStance;
 export type NpcMemoryEntry = {
   talks: number;
   lastChoiceIds: string[];
-  affinity?: number;
   lastTalkAt?: string;
+  /** Legacy field — no longer written; talks drive greetings */
+  affinity?: number;
 };
 
 export const DEFAULT_STANCE: VoyagerStance = { saver: 0, spender: 0, risk: 0 };
@@ -117,7 +118,6 @@ export function recordNpcTalk(
       [npcId]: {
         talks: (prev?.talks ?? 0) + 1,
         lastChoiceIds,
-        affinity: (prev?.affinity ?? 0) + (choiceId ? 1 : 0),
         lastTalkAt: new Date().toISOString(),
       },
     },
@@ -129,14 +129,56 @@ export function harborScarPlaques(save: IslandSaveV1): HarborScar[] {
   return (save.harborScars ?? []).filter((s) => s.kind === "plaque" || s.kind === "plaza_prop");
 }
 
+/**
+ * Side digressions (Shell Want, Collector Rumor, …) land as npc_tone gossip scars —
+ * not Plinth plaques, but plaza locals still name them (GTA4 alive streets).
+ */
+export function isDigressionScar(scar: Pick<HarborScar, "id" | "kind">): boolean {
+  if (scar.kind === "npc_tone") return true;
+  const id = scar.id.toLowerCase();
+  return (
+    id.startsWith("cc_shell_") ||
+    id.startsWith("pp_tip_") ||
+    id.startsWith("pp_inbox_") ||
+    id.startsWith("ck_collector_") ||
+    id.includes("shell_patience") ||
+    id.includes("shell_impulse") ||
+    id.includes("collector_rumor") ||
+    id.includes("inbox_storm")
+  );
+}
+
+/**
+ * Scars plaza Talk Battles may name — spine plaques plus digression gossip.
+ * Keeps spectacle/Plinth on plaques only via harborScarPlaques.
+ */
+export function harborTalkScars(save: IslandSaveV1): HarborScar[] {
+  return (save.harborScars ?? []).filter(
+    (s) => s.kind === "plaque" || s.kind === "plaza_prop" || isDigressionScar(s),
+  );
+}
+
 /** Chapter shelf name for Memory Plinth grouping. */
 export function scarChapterTitle(scar: HarborScar): string {
   const id = `${scar.id} ${scar.islandId}`.toLowerCase();
-  if (id.includes("cove") || scar.islandId === "coincraft_cove") return "Coincraft Cove";
+  // Digression ids: cc_shell_* (Cove), ck_collector_* (Credit) — no "cove"/"credit" substring.
+  if (
+    id.includes("cove") ||
+    id.includes("cc_shell") ||
+    scar.islandId === "coincraft_cove"
+  ) {
+    return "Coincraft Cove";
+  }
   if (id.includes("pp_") || id.includes("paycheck") || scar.islandId === "paycheck_peninsula") {
     return "Paycheck Peninsula";
   }
-  if (id.includes("credit") || scar.islandId === "credit_kingdom") return "Credit Kingdom";
+  if (
+    id.includes("credit") ||
+    id.includes("ck_collector") ||
+    scar.islandId === "credit_kingdom"
+  ) {
+    return "Credit Kingdom";
+  }
   return "Harbor memory";
 }
 
@@ -202,10 +244,20 @@ export function coldOrganKidSentence(organ: MoneyOrganId): string {
   return "The Coin holds — save a little; the jar still waits.";
 }
 
-/** One kid-facing sentence after a cold play — organ verb + plaque. */
+/** One kid-facing sentence after a cold play — organ verb + plaque with story weight. */
 export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  return `The ${organVerbChip(organ)} — Harbor remembered: “${scar.label}.”`;
+  const verb = organVerbChip(organ);
+  if (organ === "clock") {
+    return `You chose under the Clock — “${scar.label}.” Harbor still feels the shelter (or the rain).`;
+  }
+  if (organ === "spiral") {
+    return `You faced the Spiral — “${scar.label}.” Interest doesn’t yell; Harbor still hears it.`;
+  }
+  if (organ === "memory") {
+    return `Memory keeps the mark — “${scar.label}.” The Plinth will not forget.`;
+  }
+  return `You chose with the Coin — “${scar.label}.” Harbor remembered. The ${verb}.`;
 }
 
 /** Plinth billboard / modal row — organ verb first so the suit sticks. */
@@ -220,7 +272,11 @@ export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "labe
  */
 export function coldSpectacleHeadline(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  return `Harbor felt that — the ${organVerbChip(organ)}`;
+  const verb = organVerbChip(organ);
+  if (organ === "clock") return `Harbor felt that — rain or shelter · ${verb}`;
+  if (organ === "spiral") return `Harbor felt that — wait or haste · ${verb}`;
+  if (organ === "memory") return `Harbor felt that — ${verb}`;
+  return `Harbor felt that — jar or treat · ${verb}`;
 }
 
 /** Suit-verb hush after Take — Coin holds · Clock shelters · Spiral withstands. */
@@ -240,15 +296,15 @@ export function organQuietBadge(organ: MoneyOrganId): string {
 export function day2EchoBody(scarLabel: string, organ: MoneyOrganId): string {
   const chip = organVerbChip(organ);
   if (organ === "clock") {
-    return `The ${chip} — locals still stamp “${scarLabel}.” Yesterday sticks as today’s weather.`;
+    return `You wake and the plaza still wears “${scarLabel}.” The ${chip} — rain or shelter is now weather, not a quiz.`;
   }
   if (organ === "spiral") {
-    return `The ${chip} — locals still weigh “${scarLabel}.” Yesterday sticks as today’s weather.`;
+    return `You wake and the canyon still hums “${scarLabel}.” The ${chip} — haste or wait left overnight footprints.`;
   }
   if (organ === "memory") {
-    return `${chip} — locals still name “${scarLabel}” on the Plinth. Yesterday sticks as today’s weather.`;
+    return `You wake and the Plinth still holds “${scarLabel}.” ${chip} — Harbor did not sleep it off.`;
   }
-  return `The ${chip} — locals still tip their jars about “${scarLabel}.” Yesterday sticks as today’s weather.`;
+  return `You wake and tip jars still click “${scarLabel}.” The ${chip} — yesterday’s Take is today’s greeting.`;
 }
 
 /** Daily Harbor rumor that carries the organ word. */
@@ -257,8 +313,15 @@ export function scarRumorLine(
   kind: "same" | "later",
 ): string {
   const organ = scarOrganName(scarOrganId(scar));
+  const digression = isDigressionScar({ id: scar.id, kind: "npc_tone" });
   if (kind === "later") {
+    if (digression) {
+      return `Day-after echo: the ${organ} still whispers “${scar.label}.” Plaza gossip did not sleep it off.`;
+    }
     return `Day-after echo: the ${organ} still names “${scar.label}.” The Plinth did not forget overnight.`;
+  }
+  if (digression) {
+    return `Side-rumor weather: the ${organ} — “${scar.label}” — still shapes how locals greet you.`;
   }
   return `Memory Plinth rumor: the ${organ} — “${scar.label}” — still shapes how locals greet you.`;
 }
@@ -279,8 +342,10 @@ export function groupScarsByChapter(
     .map((ch) => ({ chapter: ch, scars: map.get(ch)! }));
 }
 
-/** True if this scar should trigger an in-chapter quiet beat. */
+/** True if this scar should trigger an in-chapter quiet beat (spine Takes only). */
 export function scarTriggersChapterQuiet(scarId: string): boolean {
+  // Digressions gossip Harbor — never steal Take hush / carpet cinema.
+  if (isDigressionScar({ id: scarId, kind: "plaque" })) return false;
   return (
     scarId.startsWith("cove_") ||
     scarId.startsWith("pp_") ||
@@ -315,11 +380,256 @@ export function piggyScarMemoryLine(
   return `Piggy Penny: Harbor felt that — the ${chip}. “${scarLabel}.” I’m proud you came home changed.`;
 }
 
+/**
+ * Plaza gossip opener — living receipt (GTA4 bar), not a tip list.
+ * Digression scars get specific rumor beats; spine plaques get organ-true haunt.
+ */
+export function plazaScarGossipLine(
+  scar: Pick<HarborScar, "id" | "islandId" | "label" | "kind">,
+  opts?: { talks?: number; stanceHint?: string | null },
+): string {
+  const talks =
+    (opts?.talks ?? 0) >= 2 ? `We’ve talked ${opts!.talks} times — ` : "";
+  const stanceBit = opts?.stanceHint ? ` ${opts.stanceHint}` : "";
+  const id = scar.id.toLowerCase();
+
+  if (id.includes("shell_patience") || id === "cc_shell_patience") {
+    return `${talks}Fountain crowd still whispers it — you left Shelly’s shell on the stall. “${scar.label}.” Want waited; Harbor noticed.${stanceBit}`;
+  }
+  if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
+    return `${talks}Someone at the tip jars keeps clinking your name — you bought Shelly’s shell want. “${scar.label}.” Pretty cost a story.${stanceBit}`;
+  }
+  if (id.includes("tip_plan") || id === "pp_tip_plan") {
+    return `${talks}Main Street still stamps soft about it — you planned buckets before tipping. “${scar.label}.” Clock shelter left a footprint.${stanceBit}`;
+  }
+  if (id.includes("tip_rush") || id === "pp_tip_rush") {
+    return `${talks}Tip jar still jingled your name — you tipped before the stamp. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("inbox_storm") || id === "pp_inbox_storm") {
+    return `${talks}Main Street still floods soft about it — you cleared the Inbox Storm. “${scar.label}.” Clock practice left a footprint.${stanceBit}`;
+  }
+  if (id.includes("collector_lean") || id === "ck_collector_lean") {
+    return `${talks}Canyon wind still names the lean — you edged toward Bank haste. “${scar.label}.” Listening isn’t paying, but leaning leaves weather.${stanceBit}`;
+  }
+  if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
+    return `${talks}Canyon wind carried it here — you stood in the Collector’s pitch. “${scar.label}.” Listening isn’t paying, but Harbor still gossiped.${stanceBit}`;
+  }
+  if (id.includes("signal_rush") || id === "sc_signal_rush") {
+    return `${talks}Reef lights still chase your name — you rushed Phosphor before you listened. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("signal_listen") || id === "sc_signal_listen") {
+    return `${talks}Reef lights still blink your name — you listened on Phosphor before you rushed. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("foundry_rush") || id === "vf_foundry_rush") {
+    return `${talks}Neon Workshop still sparks your name — you pitched Gridlock cold. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("foundry_listen") || id === "vf_foundry_listen") {
+    return `${talks}Neon Workshop still hums your name — you wandered Gridlock before you pitched. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("portfolio_rush") || id === "fa_portfolio_rush") {
+    return `${talks}Market Street still tips about the blind swing — you traded before the boards. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("portfolio_peek") || id === "fa_portfolio_peek") {
+    return `${talks}Market Street still tips about it — you peeked at the boards before you traded. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("wharf_rush") || id === "da_wharf_rush") {
+    return `${talks}Wallet Wharf still clicks cold — you signed keys before you listened. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("wharf_listen") || id === "da_wharf_listen") {
+    return `${talks}Wallet Wharf still clicks your name — you listened before you signed keys. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("shop_rush") || id === "ba_shop_rush") {
+    return `${talks}Keep aisles still murmur the blind stock — shelves before footsteps. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("shop_browse") || id === "ba_shop_browse") {
+    return `${talks}Keep aisles still murmur it — you browsed the shop floor before you stocked. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("ip_rush") || id === "in_ip_rush") {
+    return `${talks}Gallery glass still names the cold file — you stamped before you glanced. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("ip_glance") || id === "in_ip_glance") {
+    return `${talks}Gallery glass still names you — you glanced at IP before you filed. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+  if (id.includes("scaffold_rush") || id === "fs_scaffold_rush") {
+    return `${talks}Scaffold poles still lean at the cold claim — you grabbed before you looked. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("scaffold_look") || id === "fs_scaffold_look") {
+    return `${talks}Scaffold poles still lean your way — you looked before you claimed a plot. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
+  if (id.includes("auction_rush") || id === "re_auction_rush") {
+    return `${talks}Auction Yard still hammers the cold paddle — you bid before you watched. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
+  if (id.includes("auction_watch") || id === "re_auction_watch") {
+    return `${talks}Auction Yard still hammers soft about it — you watched before you bid. “${scar.label}.” Digression left a footprint.${stanceBit}`;
+  }
+
+  if (isDigressionScar(scar)) {
+    return `${talks}Side-street rumor: “${scar.label}.” Not a Plinth plaque — still a footprint on the plaza.${stanceBit}`;
+  }
+
+  const organ = scarOrganName(scarOrganId(scar));
+  const habit =
+    organ === "Clock"
+      ? "still stamp about"
+      : organ === "Spiral"
+        ? "still weigh"
+        : organ === "Memory"
+          ? "still name"
+          : "still tip jars about";
+  return `${talks}Folks ${habit} the ${organ} — “${scar.label}” — on the Plinth. Money left footprints.${stanceBit}`;
+}
+
+/**
+ * Piggy names a scar with emotional weight (TLOU2 / GotS) — short, not lecture-y.
+ * Digressions = quiet conscience; plaques = Plinth bond.
+ */
+export function piggyScarWeightLine(
+  scar: Pick<HarborScar, "id" | "islandId" | "label" | "kind">,
+): string {
+  const id = scar.id.toLowerCase();
+  if (id.includes("shell_patience") || id === "cc_shell_patience") {
+    return `I heard about Shelly’s stall. Leaving a want on the wood… that quiet sticks. “${scar.label}.”`;
+  }
+  if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
+    return `Harbor gossiped soft about the shell you bought. I don’t scold — I just… felt it with you. “${scar.label}.”`;
+  }
+  if (id.includes("tip_plan") || id === "pp_tip_plan") {
+    return `You planned Main Street buckets before tipping. That Clock quiet… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("tip_rush") || id === "pp_tip_rush") {
+    return `You tipped before the stamp. That jingle… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("inbox_storm") || id === "pp_inbox_storm") {
+    return `You cleared the Inbox Storm on Main Street. That Clock practice… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("collector_lean") || id === "ck_collector_lean") {
+    return `Word from the canyon reached me first. Leaning into that pitch leaves a colder chill — not shame, weather with teeth. “${scar.label}.”`;
+  }
+  if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
+    return `Word from the canyon reached me first. Standing in that pitch leaves a chill — not shame, just weather. “${scar.label}.”`;
+  }
+  if (id.includes("signal_rush") || id === "sc_signal_rush") {
+    return `You chased Reef light before listening. That haste… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("signal_listen") || id === "sc_signal_listen") {
+    return `You wandered the Reef and listened first. That patience… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("foundry_rush") || id === "vf_foundry_rush") {
+    return `You pitched Gridlock cold. That spark… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("foundry_listen") || id === "vf_foundry_listen") {
+    return `You lingered in the foundry before pitching. That patience… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("portfolio_rush") || id === "fa_portfolio_rush") {
+    return `You traded Market Street blind. That swing… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("portfolio_peek") || id === "fa_portfolio_peek") {
+    return `You peeked at Market Street boards first. That quiet… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("wharf_rush") || id === "da_wharf_rush") {
+    return `You signed Wharf keys cold. That click… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("wharf_listen") || id === "da_wharf_listen") {
+    return `You listened on the Wharf before keys. That care… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("shop_rush") || id === "ba_shop_rush") {
+    return `You stocked the Keep blind. That hurry… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("shop_browse") || id === "ba_shop_browse") {
+    return `You browsed the shop floor before stocking. That pause… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("ip_rush") || id === "in_ip_rush") {
+    return `You filed IP cold. That stamp… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("ip_glance") || id === "in_ip_glance") {
+    return `You glanced at the IP gallery first. That naming… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("scaffold_rush") || id === "fs_scaffold_rush") {
+    return `You claimed a plot before looking. That grab… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("scaffold_look") || id === "fs_scaffold_look") {
+    return `You studied unfinished scaffolding before claiming. That imagination… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("auction_rush") || id === "re_auction_rush") {
+    return `You bid the yard cold. That paddle… Harbor soft-names it too. “${scar.label}.”`;
+  }
+  if (id.includes("auction_watch") || id === "re_auction_watch") {
+    return `You watched the auction before raising a paddle. That chill… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (isDigressionScar(scar)) {
+    return `Side roads write on Harbor too. “${scar.label}.” I kept the feeling — not a lesson.`;
+  }
+  const organ = scarOrganName(scarOrganId(scar));
+  return `The Plinth still holds the ${organ} — “${scar.label}.” Harbor doesn’t forget — and neither do I.`;
+}
+
 /** True when this local should name the scar (dense plaza memory, not sparse). */
 export function localNamesScarEcho(mascotId: string, hourKey: string): boolean {
   if (mascotId === "piggy_penny") return true;
   // ~2/3 of locals + hour drift so the plaza feels haunted by choice
   return (mascotId.charCodeAt(0) + hourKey.length) % 3 !== 0;
+}
+
+export type AliveStreetScarEcho = {
+  label: string;
+  dayOffset: "same" | "later";
+  organ?: MoneyOrganId;
+};
+
+/**
+ * Living plaza line pool for one scar — rotate so GTA4 streets feel populated
+ * (not a single stuck rumor). Digression + plaque wording both land here.
+ */
+export function aliveStreetLinePool(
+  mascotName: string,
+  scar: AliveStreetScarEcho,
+): string[] {
+  const organ = scar.organ ?? "memory";
+  const organWord = scarOrganName(organ);
+  const label = scar.label;
+  if (scar.dayOffset === "later") {
+    return [
+      `${mascotName}: Still thinking about the ${organWord} — “${label}.” Money left footprints.`,
+      `${mascotName}: Day-after hush — “${label}” still rides the fountain wind.`,
+      `${mascotName}: Plaza hasn’t forgotten the ${organWord}. “${label}.”`,
+      `${mascotName}: Yesterday’s mark, today’s weather — “${label}.”`,
+    ];
+  }
+  return [
+    `${mascotName}: The Plinth just got a ${organWord} mark — “${label}.” Harbor felt that.`,
+    `${mascotName}: Alive streets naming “${label}” already — ${organWord} glow.`,
+    `${mascotName}: Tip jars and tip-hats — “${label}” is the rumor of the hour.`,
+    `${mascotName}: Memory Courtyard whispers “${label}.” Not a tip list — a receipt.`,
+  ];
+}
+
+/** Stable rotate through the living-line pool keyed by mascot + hour. */
+export function pickRotatingAliveStreetLine(
+  mascotId: string,
+  mascotName: string,
+  hourKey: string,
+  scar: AliveStreetScarEcho,
+): string {
+  const pool = aliveStreetLinePool(mascotName, scar);
+  let h = 0;
+  const key = `${mascotId}:${hourKey}:${scar.label}:${scar.dayOffset}`;
+  for (let i = 0; i < key.length; i++) h = (h * 33 + key.charCodeAt(i)) >>> 0;
+  return pool[h % pool.length]!;
+}
+
+/**
+ * Rotate which talk scar feeds plaza ambient echo so digressions AND spine plaques
+ * get named across a session — not only the newest plaque.
+ */
+export function pickRotatingAmbientEchoScar(
+  scars: HarborScar[],
+  nowMs = Date.now(),
+): HarborScar | null {
+  if (!scars.length) return null;
+  // ~90s buckets so the plaza shifts rumor without HUD flicker
+  const bucket = Math.floor(nowMs / 90_000);
+  const idx = ((bucket % scars.length) + scars.length) % scars.length;
+  return scars[idx] ?? scars[scars.length - 1]!;
 }
 
 export function stanceGreetingHint(

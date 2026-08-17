@@ -1,12 +1,17 @@
 /**
  * Slim objective strip — one glanceable next-step (BOTW / Hades style).
  * Persistent HUD stays thin; detail lives in menus / Talk, not stacked banners.
+ * Horizons: Now (tip) · Painting · Seal — simultaneous without a dashboard.
  */
 
 type Props = {
   tip: string;
   /** Short supporting line — shown only when present and not redundant with tip */
   detail?: string;
+  /** Medium horizon — next painting */
+  painting?: string | null;
+  /** Long horizon — Freedom / Spiral seal */
+  seal?: string | null;
   guideArrows?: boolean;
   onToggleGuide?: () => void;
   /** Optional quest track tag */
@@ -16,6 +21,8 @@ type Props = {
 export function CoinBagBuddyHud({
   tip,
   detail,
+  painting = null,
+  seal = null,
   guideArrows = true,
   onToggleGuide,
   track,
@@ -33,6 +40,7 @@ export function CoinBagBuddyHud({
       data-testid="coin-bag-buddy-hud"
       data-quest-track={track ?? undefined}
       data-guide-arrows={guideArrows ? "1" : "0"}
+      data-horizons={painting || seal ? "1" : "0"}
       role="status"
       aria-live="polite"
     >
@@ -53,6 +61,17 @@ export function CoinBagBuddyHud({
           )}
         </p>
         {showDetail ? <p className="cap-objective__detail">{detail}</p> : null}
+        {painting || seal ? (
+          <p
+            className="cap-objective__detail"
+            data-testid="coin-bag-horizons"
+            style={{ opacity: 0.8 }}
+          >
+            {[painting ? `Painting · ${painting}` : null, seal ? `Seal · ${seal}` : null]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        ) : null}
       </div>
       {onToggleGuide ? (
         <button

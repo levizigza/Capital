@@ -9,6 +9,7 @@ import { Billboard } from "@react-three/drei";
 import { SafeText } from "./SafeText";
 import { cinemaFlashAmp } from "../a11yMotion";
 import * as THREE from "three";
+import { ShoreSoftBeatBeacon } from "./ShoreSoftBeatBeacon";
 
 type CinemaPhase = "hush" | "mark" | "line";
 
@@ -133,7 +134,9 @@ export function PayrollTowerLandmark({
         <meshStandardMaterial color="#0f172a" />
       </mesh>
 
-      <Billboard position={[0, 5.3, 0]} follow>
+      <ShoreSoftBeatBeacon y={5.55} accent="#67e8f9" hushActive={hushActive} />
+
+      <Billboard position={[0, 6.15, 0]} follow>
         <SafeText
           fontSize={0.28}
           color={hushActive ? "#e2e8f0" : "#ecfeff"}
@@ -148,7 +151,7 @@ export function PayrollTowerLandmark({
               ? "Quiet after the Take"
               : active
                 ? "Enter · paycheck chute"
-                : label}
+                : `${label} · Soft Beat loft`}
         </SafeText>
       </Billboard>
     </group>

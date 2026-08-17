@@ -11,7 +11,7 @@ import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
 import { getIslandById } from "../content/loader";
 import { getEffectiveBoatTier } from "../boats";
-import { hasHarborFreedom } from "../progressGates";
+import { hasHarborFreedom, bossUnlockProgress } from "../progressGates";
 import { getProfileDef, type LearningProfileId } from "../learningProfile";
 import type { AccessibilitySettings } from "../settings";
 import {
@@ -45,6 +45,8 @@ import {
 } from "../story/hubGuidedIntro";
 import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
+import { peekSoftBeatArm, softBeatArmWhisper, readSoftBeatTrail, softBeatTrailLabel } from "../softBeatArm";
+import { digressionScarGaps, digressionShelfRows, digressionShelfTotal } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -52,11 +54,13 @@ import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLo
 import { canOpenSignatureCinema } from "../signatureCinemaGate";
 import {
   harborScarPlaques,
+  harborTalkScars,
   groupScarsByChapter,
   scarChapterTitle,
   scarOrganId,
   coldRetellLine,
   plaqueShelfLine,
+  pickRotatingAmbientEchoScar,
 } from "../worldMemory";
 import {
   dailyRumorText,
@@ -84,13 +88,19 @@ import {
   postFamilyChallenge,
   clearFamilyChallenge,
   completeFamilyChallenge,
+  maybeCompleteDigressionPairChallenge,
   recordShareWitness,
   familyChallengeBlurb,
   familyWitnessMythLine,
   FAMILY_CHALLENGE_KIND_LABEL,
   type FamilyChallengeKind,
 } from "../familyRoom";
-import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
+import {
+  harborWeatherMood,
+  weatherFogParams,
+  weatherCoachLine,
+  feedbackLoopLine,
+} from "../harborWeather";
 import {
   ScarSpectacleOverlay,
   type SpectacleCinemaPhase,
@@ -337,6 +347,8 @@ export function HomeHubView({
     !peninsulaChapterDone;
 
   const plaques = harborScarPlaques(save);
+  const talkScars = harborTalkScars(save);
+  const digressionShelf = useMemo(() => digressionShelfRows(save), [save]);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   // Design Bible: stance stays silent — no Plinth stance chrome.
@@ -382,19 +394,33 @@ export function HomeHubView({
   const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
 
   const latestPlaque = plaques[plaques.length - 1] ?? null;
-  const latestOrgan = latestPlaque ? scarOrganId(latestPlaque) : null;
-  const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
-  const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
-  const scarEcho =
-    latestPlaque != null
-      ? {
-          label: latestPlaque.label,
-          dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
-            | "same"
-            | "later",
-          organ: scarOrganId(latestPlaque),
-        }
+  const latestTalkScar = talkScars[talkScars.length - 1] ?? null;
+  const latestOrgan = latestPlaque
+    ? scarOrganId(latestPlaque)
+    : latestTalkScar
+      ? scarOrganId(latestTalkScar)
       : null;
+  const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
+  // Rotate ambient echo among digression + plaque talk scars so streets name more living lines.
+  // Spectacle / day-2 / share still key off latestPlaque separately.
+  const echoScar =
+    pickRotatingAmbientEchoScar(talkScars.length > 0 ? talkScars : plaques) ??
+    latestPlaque ??
+    latestTalkScar;
+  const scarDay = (echoScar?.createdAt || "").slice(0, 10);
+  const scarEcho = useMemo(
+    () =>
+      echoScar != null
+        ? {
+            label: echoScar.label,
+            dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
+              | "same"
+              | "later",
+            organ: scarOrganId(echoScar),
+          }
+        : null,
+    [echoScar?.label, echoScar?.createdAt, echoScar?.id, scarDay],
+  );
 
   useEffect(() => {
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });
@@ -540,6 +566,40 @@ export function HomeHubView({
     return () => window.removeEventListener("capital:signature-trailer", onQaTrailer);
   }, []);
 
+  // Pattern #82 — digression_pair Family Challenges clear when myth-shelf fills.
+  useEffect(() => {
+    const filled = digressionShelfTotal() - digressionScarGaps(save);
+    if (filled < 1) return;
+    maybeCompleteDigressionPairChallenge(
+      voyager?.name?.trim() || "Voyager",
+      filled,
+    );
+  }, [save.harborScars, voyager?.name]);
+
+  useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action) return;
+      if (detail.islandId && detail.islandId !== HARBOR_HAVEN_ID) return;
+      if (detail.action === "enter") {
+        setEnteringBank(false);
+        setBankOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        setBankOpen(true);
+        setBankSoftBeat("ledger");
+        return;
+      }
+      if (detail.action === "exit") {
+        setBankSoftBeat(null);
+        setBankOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, []);
+
   useEffect(() => {
     // Memory organ: Daily Ritual after Cove Change — never steals first-meet / voyage.
     if (
@@ -589,6 +649,21 @@ export function HomeHubView({
     plinthGlow: plinthGlow || feltShareOpen,
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
+    creditMastery: bossUnlockProgress(save),
+    softBeatArmWhisper: softBeatArmWhisper(peekSoftBeatArm()),
+    digressionGaps: digressionScarGaps(save),
+    // After Freedom + Cove Change — VibeCode invent whisper (pattern #48/#49).
+    studioOpenHint: Boolean(freed && hasCompletedCoveChange(save) && !pointNextPainting),
+    // Relatedness return — Witness above bank default (pattern #45).
+    witnessMyth: familyWitnessMythLine(getActiveFamilyRoom()?.witnesses?.[0]),
+    // #66 feedback loop (haste→fog→prices) beats generic #60 weather literacy.
+    weatherLiteracy: (() => {
+      const loop = feedbackLoopLine(save);
+      if (loop) return loop;
+      const mood = harborWeatherMood(save);
+      if (mood === "storm" || mood === "tight") return weatherCoachLine(mood);
+      return null;
+    })(),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1036,7 +1111,7 @@ export function HomeHubView({
   // Quiet HUD + pulsing Piggy + diegetic bubble carry the welcome-back.
 
   return (
-    <>
+    <div className="relative h-full min-h-[100dvh] w-full" data-testid="harbor-home-hub">
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -1178,6 +1253,7 @@ export function HomeHubView({
                     organId={latestOrgan}
                     scarMeta={{ id: latestPlaque.id, islandId: latestPlaque.islandId }}
                     previewUrl={feltPreviewUrl}
+                    highContrast={a11y.highContrast}
                     onShare={async () => {
                       try {
                         const result = await shareHarborFeltCard({
@@ -1252,8 +1328,20 @@ export function HomeHubView({
             </div>
           ) : earlyCastle && !showOutfitterChrome ? (
             <div className="cap-play-hud-left">
-              <p className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90">
-                Harbor Haven
+              <p
+                className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90"
+                data-testid="harbor-quiet-chip"
+              >
+                Harbor Haven — Talk Piggy
+              </p>
+            </div>
+          ) : firstMeet ? (
+            <div className="cap-play-hud-left">
+              <p
+                className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90"
+                data-testid="harbor-quiet-chip"
+              >
+                Harbor is quiet — find Piggy
               </p>
             </div>
           ) : (
@@ -1269,7 +1357,7 @@ export function HomeHubView({
               </button>
             ) : null}
             {!earlyCastle ? <WealthHud totalCoins={userProfile.totalCoins} compact /> : null}
-            {!simplified && !castleMode ? (
+            {!simplified && !castleMode && sideMagnetsOpen ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
             {freedomPlazaLine && !castleMode && !piggyPresence ? (
@@ -1329,6 +1417,8 @@ export function HomeHubView({
             <CoinBagBuddyHud
               tip={buddyTip.tip}
               detail={castleMode ? guidedStep?.coach : undefined}
+              painting={structuralBuddy.painting}
+              seal={structuralBuddy.seal}
               guideArrows={guideArrows}
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />
@@ -1557,6 +1647,68 @@ export function HomeHubView({
                 </ul>
               </div>
             ))}
+          </div>
+          <div data-testid="digression-myth-shelf" className="space-y-2">
+            <p className="text-xs font-black uppercase tracking-wide text-stone-500">
+              Side rumors ·{" "}
+              {digressionShelf.filter((r) => r.filled).length}/
+              {digressionShelf.length}
+            </p>
+            <ul className="grid gap-1.5 sm:grid-cols-2">
+              {digressionShelf.map((row) => (
+                <li
+                  key={row.label}
+                  className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
+                    row.filled
+                      ? "border-amber-200 bg-amber-50 text-amber-950"
+                      : "border-dashed border-stone-300 bg-stone-50/80 text-stone-400"
+                  }`}
+                  data-testid={
+                    row.filled
+                      ? `digression-slot-filled-${row.scarId}`
+                      : "digression-slot-empty"
+                  }
+                >
+                  {row.filled ? `✓ ${row.label}` : `· ${row.label}`}
+                  {row.scarLabel ? (
+                    <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                      “{row.scarLabel}”
+                    </span>
+                  ) : (
+                    <span className="mt-0.5 block text-[10px] font-medium opacity-70">
+                      Not heard yet
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div data-testid="soft-beat-trail-shelf" className="space-y-2">
+            <p className="text-xs font-black uppercase tracking-wide text-stone-500">
+              Soft Beat trail · {readSoftBeatTrail().length} peeks
+            </p>
+            {readSoftBeatTrail().length === 0 ? (
+              <p className="text-[11px] text-stone-400">
+                Climb Lid · Loft · Battlement · Teller — peeks stack here for the long game.
+              </p>
+            ) : (
+              <ul className="grid gap-1.5 sm:grid-cols-2">
+                {readSoftBeatTrail().map((row) => (
+                  <li
+                    key={`${row.kind}-${row.at}`}
+                    className="rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-semibold text-violet-950"
+                    data-testid={`soft-beat-trail-${row.kind}`}
+                  >
+                    {softBeatTrailLabel(row.kind)}
+                    {row.scarLabel ? (
+                      <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                        “{row.scarLabel}”
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           {plaques.length > 0 ? (
             <GameButton
@@ -2054,6 +2206,6 @@ export function HomeHubView({
           />
         </Suspense>
       </GameModal>
-    </>
+    </div>
   );
 }

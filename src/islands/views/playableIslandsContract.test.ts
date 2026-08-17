@@ -25,12 +25,36 @@ describe("playable islands contract", () => {
     expect(travel).not.toMatch(/disabled=\{locked \|\| here\}/);
   });
 
-  it("archipelago map skips Canvas when Harbor 3D already failed", () => {
+  it("archipelago map uses its own fail key and keeps a named flat Seed map", () => {
     const map = readFileSync(
       join(__dirname, "../world3d/ArchipelagoMap3D.tsx"),
       "utf8",
     );
-    expect(map).toMatch(/HARBOR_3D_FAIL_KEY/);
-    expect(map).toMatch(/archipelago-map-flat/);
+    const flat = readFileSync(
+      join(__dirname, "../world3d/FlatArchipelagoMap.tsx"),
+      "utf8",
+    );
+    expect(map).toMatch(/ARCHIPELAGO_MAP_3D_FAIL_KEY/);
+    expect(map).toMatch(/FlatArchipelagoMap/);
+    expect(flat).toMatch(/archipelago-map-flat/);
+    expect(flat).toMatch(/flat-map-island-/);
+    expect(flat).toMatch(/map-island-label-/);
+  });
+
+  it("shore explore never soft-locks behind endless loading veil", () => {
+    const shore = readFileSync(
+      join(__dirname, "../world3d/WalkableIslandExplore.tsx"),
+      "utf8",
+    );
+    expect(shore).toMatch(/island-shore-loading/);
+    expect(shore).toMatch(/Enter shore now/);
+    expect(shore).toMatch(/setReady\(true\)/);
+    expect(shore).toMatch(/failsafe/);
+  });
+
+  it("Credit Spiral lock names mastery progress for navigability", () => {
+    const gates = readFileSync(join(__dirname, "../progressGates.ts"), "utf8");
+    expect(gates).toMatch(/Spiral locked — mastery/);
+    expect(gates).toMatch(/Earn Freedom Seal/);
   });
 });

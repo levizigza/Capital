@@ -54,14 +54,23 @@ export function softBeatScarVistaLine(
   if (kind === "lookout") {
     if (hold) return `From the lid you feel the weight you kept — “${scarLabel}” still settles in the jar.`;
     if (spend) return `From the lid the jar looks lighter — “${scarLabel}” spent glitter Harbor still names.`;
+    if (/foundry|rush|signal|news|market|digression|inbox/.test(s)) {
+      return `From the lid a digression rumor still ticks — “${scarLabel}” keeps the jar curious.`;
+    }
   }
   if (kind === "umbrella") {
     if (wait) return `From the loft Main Street stays dry — “${scarLabel}” taught the Clock to shelter.`;
     if (haste || spend) return `From the loft the street looks thin — “${scarLabel}” still ticks in the rain.`;
+    if (/tip|inbox|paycheck|plan/.test(s)) {
+      return `From the loft a Paycheck digression still shades the street — “${scarLabel}.”`;
+    }
   }
   if (kind === "battlement") {
     if (wait) return `From the wall the coil cools — “${scarLabel}” withstood the rush.`;
     if (haste) return `From the wall the spiral still pulls — “${scarLabel}” left gravity in the Keep.`;
+    if (/credit|ordeal|score|signal/.test(s)) {
+      return `From the wall Credit gossip still coils — “${scarLabel}” keeps the Keep honest.`;
+    }
   }
   if (kind === "ledger") {
     return `Under glass Harbor keeps “${scarLabel}” — Memory, not a tip sheet.`;
