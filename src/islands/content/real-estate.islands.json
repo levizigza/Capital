@@ -4,8 +4,8 @@
     {
       "id": "real_estate",
       "name": "Real Estate Row",
-      "description": "Orbital lots and place-making. Side shore of Fortune Archipelago \u2014 coin that sits still.",
-      "icon": "\ud83c\udfd8\ufe0f",
+      "description": "Orbital lots and place-making. Side shore of Fortune Archipelago — coin that sits still.",
+      "icon": "🏘️",
       "requiredItems": [
         "fa_island_medallion"
       ],
@@ -35,7 +35,7 @@
           "id": "re_auction_yard",
           "name": "Auction Yard",
           "description": "Properties go to the highest bidder. Learn to spot deals and avoid overpaying.",
-          "icon": "\ud83d\udd28",
+          "icon": "🔨",
           "connections": [
             "re_rental_district",
             "re_reit_tower"
@@ -45,7 +45,7 @@
           "id": "re_rental_district",
           "name": "Rental District",
           "description": "Row houses and apartments. Manage tenants, collect rent, and handle repairs.",
-          "icon": "\ud83c\udfe0",
+          "icon": "🏠",
           "connections": [
             "re_auction_yard",
             "re_reit_tower"
@@ -55,7 +55,7 @@
           "id": "re_reit_tower",
           "name": "REIT Tower",
           "description": "A gleaming skyscraper. Invest in real estate without owning property directly.",
-          "icon": "\ud83c\udfe2",
+          "icon": "🏢",
           "connections": [
             "re_auction_yard",
             "re_rental_district"
@@ -66,28 +66,28 @@
         {
           "id": "npc_auctioneer",
           "name": "Auctioneer Al",
-          "icon": "\ud83d\udd28",
+          "icon": "🔨",
           "areaId": "re_auction_yard",
           "dialogueGraphId": "dlg_auctioneer"
         },
         {
           "id": "npc_flipper",
           "name": "Flipper Fiona",
-          "icon": "\ud83c\udfd7\ufe0f",
+          "icon": "🏗️",
           "areaId": "re_auction_yard",
           "dialogueGraphId": "dlg_flipper"
         },
         {
           "id": "npc_landlord",
           "name": "Landlord Larry",
-          "icon": "\ud83d\udd11",
+          "icon": "🔑",
           "areaId": "re_rental_district",
           "dialogueGraphId": "dlg_landlord"
         },
         {
           "id": "npc_reit_advisor",
           "name": "REIT Rachel",
-          "icon": "\ud83d\udcca",
+          "icon": "📊",
           "areaId": "re_reit_tower",
           "dialogueGraphId": "dlg_reit_advisor"
         }
@@ -97,7 +97,7 @@
           "id": "re_deed",
           "name": "Property Deed",
           "description": "Proof that you successfully purchased a property at auction.",
-          "icon": "\ud83d\udcdc",
+          "icon": "📜",
           "location": {
             "areaId": "re_auction_yard"
           }
@@ -106,7 +106,7 @@
           "id": "re_rental_ledger",
           "name": "Rental Ledger",
           "description": "Records of rental income, expenses, and net cash flow.",
-          "icon": "\ud83d\udcd2",
+          "icon": "📒",
           "location": {
             "areaId": "re_rental_district"
           }
@@ -115,7 +115,7 @@
           "id": "re_reit_share",
           "name": "REIT Share Certificate",
           "description": "A share in a diversified real estate investment trust.",
-          "icon": "\ud83c\udfe6",
+          "icon": "🏦",
           "location": {
             "areaId": "re_reit_tower"
           }
@@ -124,7 +124,7 @@
           "id": "re_island_medallion",
           "name": "Real Estate Medallion",
           "description": "Mastery of property investing. Unlocks the next island!",
-          "icon": "\ud83c\udfc5",
+          "icon": "🏅",
           "location": {
             "areaId": "re_reit_tower"
           }
@@ -133,7 +133,7 @@
       "quests": [
         {
           "id": "q_auction_flip",
-          "track": "main",
+          "track": "side",
           "title": "Auction & Flip",
           "description": "Buy a property at auction, renovate it, and sell for a profit. Learn the buy/rent/flip loop.",
           "hint": "Talk to Auctioneer Al to learn about bidding, then visit Flipper Fiona for renovation tips.",
@@ -161,7 +161,7 @@
         },
         {
           "id": "q_passive_income",
-          "track": "main",
+          "track": "side",
           "title": "Passive Income Pipeline",
           "description": "Understand rental yield, REIT dividends, and how location affects property value.",
           "hint": "Manage rentals with Landlord Larry, then compare REITs with Rachel at the tower.",
@@ -197,7 +197,7 @@
             {
               "id": "aa1",
               "speaker": "Auctioneer Al",
-              "text": "Welcome to the Auction Yard! Every property here starts at a base price \u2014 your job is to bid smart. Overpay and you'll never make a profit. Want to learn the ropes?",
+              "text": "Welcome to the Auction Yard! Every property here starts at a base price — your job is to bid smart. Overpay and you'll never make a profit. Want to learn the ropes?",
               "choices": [
                 {
                   "id": "aa1c1",
@@ -220,7 +220,7 @@
             {
               "id": "aa2",
               "speaker": "Auctioneer Al",
-              "text": "The key is knowing the After-Repair Value (ARV). That's what the property will be worth after renovations. Never bid more than 70% of ARV minus repair costs. Now go talk to Flipper Fiona \u2014 she's the renovation expert.",
+              "text": "The key is knowing the After-Repair Value (ARV). That's what the property will be worth after renovations. Never bid more than 70% of ARV minus repair costs. Now go talk to Flipper Fiona — she's the renovation expert.",
               "end": true
             },
             {
@@ -261,17 +261,17 @@
             {
               "id": "ff2",
               "speaker": "Flipper Fiona",
-              "text": "Opening the simulator\u2026",
+              "text": "Opening the simulator…",
               "end": true
             },
             {
               "id": "ff3",
               "speaker": "Flipper Fiona",
-              "text": "Number one: emotional bidding. Number two: underestimating repair costs. Number three: ignoring location \u2014 a great house in a bad neighborhood won't sell.",
+              "text": "Number one: emotional bidding. Number two: underestimating repair costs. Number three: ignoring location — a great house in a bad neighborhood won't sell.",
               "choices": [
                 {
                   "id": "ff3c1",
-                  "text": "Got it \u2014 let's try the auction!",
+                  "text": "Got it — let's try the auction!",
                   "nextNodeId": "ff2",
                   "effects": [
                     {
@@ -291,7 +291,7 @@
             {
               "id": "ll1",
               "speaker": "Landlord Larry",
-              "text": "Rental income sounds like free money, but there's a LOT to manage \u2014 tenants, maintenance, vacancies. The key metric is Net Operating Income: rent minus all expenses.",
+              "text": "Rental income sounds like free money, but there's a LOT to manage — tenants, maintenance, vacancies. The key metric is Net Operating Income: rent minus all expenses.",
               "choices": [
                 {
                   "id": "ll1c1",
@@ -314,7 +314,7 @@
             {
               "id": "ll2",
               "speaker": "Landlord Larry",
-              "text": "Use the Cap Rate: NOI divided by purchase price. A 6-8% cap rate is solid. Below 4% and you're barely beating inflation. Head to REIT Tower to see Rachel \u2014 she'll show you how to invest in real estate without being a landlord.",
+              "text": "Use the Cap Rate: NOI divided by purchase price. A 6-8% cap rate is solid. Below 4% and you're barely beating inflation. Head to REIT Tower to see Rachel — she'll show you how to invest in real estate without being a landlord.",
               "end": true
             },
             {
@@ -332,7 +332,7 @@
             {
               "id": "rr1",
               "speaker": "REIT Rachel",
-              "text": "A REIT \u2014 Real Estate Investment Trust \u2014 lets you invest in properties like malls, apartments, and offices without owning them directly. They trade like stocks and pay dividends. Want to compare some?",
+              "text": "A REIT — Real Estate Investment Trust — lets you invest in properties like malls, apartments, and offices without owning them directly. They trade like stocks and pay dividends. Want to compare some?",
               "choices": [
                 {
                   "id": "rr1c1",
@@ -361,7 +361,7 @@
             {
               "id": "rr3",
               "speaker": "REIT Rachel",
-              "text": "REITs are sensitive to interest rates \u2014 when rates rise, REIT prices often drop. And you don't get to pick which specific properties the trust buys. But for diversification and passive income, they're hard to beat.",
+              "text": "REITs are sensitive to interest rates — when rates rise, REIT prices often drop. And you don't get to pick which specific properties the trust buys. But for diversification and passive income, they're hard to beat.",
               "choices": [
                 {
                   "id": "rr3c1",
@@ -384,7 +384,7 @@
           "id": "mg_property_auction",
           "name": "Property Auction Simulator",
           "description": "Bid on properties, estimate renovation costs, and flip for profit. Learn the buy/rent/flip loop.",
-          "icon": "\ud83d\udd28",
+          "icon": "🔨",
           "componentId": "PropertyAuctionGame",
           "areaId": "re_auction_yard"
         },
@@ -392,7 +392,7 @@
           "id": "mg_compound_equity",
           "name": "Equity Snowball",
           "description": "Reinvest your rental income and appreciation each year, or cash it out. Feel how compounding builds a property empire.",
-          "icon": "\ud83c\udfe0",
+          "icon": "🏠",
           "componentId": "CompoundSnowballGame",
           "areaId": "re_auction_yard",
           "genre": "simulation",
