@@ -91,6 +91,8 @@ export function coinBagHarborTip(
     weatherLiteracy?: string | null;
     /** Take footprint sentence — Plinth afterglow echoes hush math */
     footprintLine?: string | null;
+    /** Map opened before Piggy Talk — soft re-hook, not a hard block */
+    piggyBypassPending?: boolean;
   },
 ): CoinBagBuddyTip {
   const tip = coinBagHarborTipRaw(guided, opts);
@@ -104,6 +106,16 @@ function coinBagHarborTipRaw(
   if (guided && !isHubGuidedComplete(guided)) {
     const live = normalizeHubGuidedIntro(guided);
     return TUTORIAL_TIPS[live.step] ?? TUTORIAL_TIPS.meet_guide;
+  }
+
+  // Failure recovery — map bypassed Keeper; don't lecture, re-hook presence.
+  if (opts?.piggyBypassPending) {
+    return {
+      tip: "Fountain first — Piggy still waits",
+      coach:
+        "Carpet opened early. Harbor’s Keeper still wants a Talk when you come home changed.",
+      track: "main",
+    };
   }
 
   if (opts?.softBeatArmWhisper) {

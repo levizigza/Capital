@@ -649,6 +649,12 @@ export function HomeHubView({
     latestScarLabel: latestPlaque?.label ?? null,
     plinthGlow: plinthGlow || feltShareOpen,
     footprintLine: takeFootprintFeedbackLine(save),
+    piggyBypassPending: Boolean(
+      save.hubGuidedIntro &&
+        isHubGuidedComplete(save.hubGuidedIntro) &&
+        save.hubGuidedIntro.didDock &&
+        !save.hubGuidedIntro.didMeetGuide,
+    ),
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
     creditMastery: bossUnlockProgress(save),

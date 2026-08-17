@@ -4,6 +4,11 @@
 
 import { moneyOrganForIsland } from "./moneyOrgans";
 import { organVerbChip } from "./worldMemory";
+import {
+  assistTierFromAttempts,
+  escalateMasteryHint,
+  escalateThresholdHint,
+} from "./onboardingFailureAssist";
 
 export type MinigameFailReason = "score_below_threshold" | "objective_not_met";
 
@@ -62,8 +67,13 @@ export function minigameFailCopy(opts: {
   /** Spine island — resolves organ when organId omitted */
   islandId?: string | null;
   minigameId?: string | null;
+  /** Failed attempts so far (from getHintLevel) — drives ATTEMPT 1–4 assist */
+  failedAttempts?: number;
+  /** Mastery quiz miss — quiz-only retry path */
+  masteryFail?: boolean;
 }): MinigameFailCopy {
   const name = opts.minigameName.trim() || "this challenge";
+  const tier = assistTierFromAttempts(opts.failedAttempts ?? 0);
   const thresholdLine =
     opts.reason === "score_below_threshold" && opts.scoreThreshold !== undefined
       ? `You scored ${opts.score ?? 0}. Need ${opts.scoreThreshold}+ to clear ${name}.`
@@ -84,12 +94,28 @@ export function minigameFailCopy(opts: {
   const mg = (opts.minigameId ?? "").toLowerCase();
 
   let organHint = thresholdLine;
-  if (organ === "spiral" || mg.includes("credit") || mg.includes("ck_")) {
+  if (opts.masteryFail) {
+    organHint = escalateMasteryHint({ tier, minigameName: name });
+  } else if (opts.reason === "score_below_threshold") {
+    organHint = escalateThresholdHint({
+      tier,
+      score: opts.score,
+      scoreThreshold: opts.scoreThreshold,
+      minigameName: name,
+      baseLine: thresholdLine,
+    });
+  } else if (organ === "spiral" || mg.includes("credit") || mg.includes("ck_")) {
     organHint = `${thresholdLine} Spiral tip: wait beats haste — read the signal once more.`;
   } else if (organ === "clock" || mg.includes("paycheck") || mg.includes("inbox")) {
     organHint = `${thresholdLine} Clock tip: shelter first — one quieter choice, then retry.`;
   } else if (organ === "coin" || mg.includes("cove") || mg.includes("coin")) {
-    organHint = `${thresholdLine} Coin tip: jar weight still waits — try the clearer path.`;
+    organHint = escalateThresholdHint({
+      tier,
+      score: opts.score,
+      scoreThreshold: opts.scoreThreshold,
+      minigameName: name,
+      baseLine: `${thresholdLine} Coin tip: jar weight still waits — try the clearer path.`,
+    });
   } else if (organ === "memory") {
     organHint = `${thresholdLine} Memory tip: Harbor keeps the miss too — same place, clearer try.`;
   }
@@ -99,9 +125,11 @@ export function minigameFailCopy(opts: {
     title: "Not a clear — try again",
     body: spendParity
       ? "Treat-first and haste Takes still teach. A soft miss is not shame — same shore, clearer try."
-      : "Money is alive here. A soft miss still teaches — no shame, just another try.",
+      : opts.masteryFail
+        ? "Money is alive here. A soft miss still teaches — Retry opens the quiz again, not the whole pad."
+        : "Money is alive here. A soft miss still teaches — no shame, just another try.",
     hint: organHint,
-    retryLabel: "Retry",
+    retryLabel: opts.masteryFail ? "Retry quiz" : "Retry",
     walkLabel,
     organId: organ ?? null,
   };

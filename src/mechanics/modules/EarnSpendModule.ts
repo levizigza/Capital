@@ -34,6 +34,8 @@ type EarnSpendState = {
   earnOptions: EarnOption[];
   spendOptions: SpendOption[];
   transactions: { type: "earn" | "spend"; id: string; amount: number }[];
+  /** Broke-spend attempts this session — escalate assist without optimal strategy */
+  insufficientCount?: number;
 };
 
 function parseConfig(raw: Record<string, unknown>): EarnSpendConfig {
@@ -143,10 +145,32 @@ const EarnSpendModule: MechanicModule = {
       }
       const { cost, id } = opt;
       if (state.wallet < cost) {
+        const insufficientCount = (state.insufficientCount ?? 0) + 1;
+        const newState: EarnSpendState = { ...state, insufficientCount };
+        let text = "Not enough money!";
+        if (insufficientCount === 2) {
+          text = `Not enough — wallet $${state.wallet}, needs $${cost}. Jobs add $.`;
+        } else if (insufficientCount === 3) {
+          text = "Earn and spend share one wallet this round — earn first.";
+        } else if (insufficientCount >= 4) {
+          text = "Use an Earn job to raise the wallet, then buy when you can afford it.";
+        }
         return {
-          newState: moduleState,
-          effects: [{ type: "showMessage", text: "Not enough money!", variant: "warning" }],
-          telemetry: [{ event: "earn_spend.insufficient", data: { id, cost, wallet: state.wallet }, ts: now }],
+          newState: newState as unknown as ModuleState,
+          effects: [{ type: "showMessage", text, variant: "warning" }],
+          telemetry: [
+            {
+              event: "earn_spend.insufficient",
+              data: {
+                id,
+                cost,
+                wallet: state.wallet,
+                attempt: insufficientCount,
+                assistTier: Math.min(4, insufficientCount),
+              },
+              ts: now,
+            },
+          ],
         };
       }
       const newState: EarnSpendState = {

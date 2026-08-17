@@ -10,6 +10,7 @@ import type { CapitalCharacter } from "../character";
 import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
+import { analytics } from "../analytics";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
@@ -62,22 +63,34 @@ export function AshoreComprehensionTutorial({
   const [carpetBoarded, setCarpetBoarded] = useState(false);
   const [toyNudge, setToyNudge] = useState(false);
   const [dockNudge, setDockNudge] = useState(false);
-  const reduced = prefersReducedMotion();
 
   useEffect(() => {
     capitalMusic.unlock();
     capitalMusic.playPlace({ kind: "opening" });
   }, []);
 
+  useEffect(() => {
+    void analytics.track("tutorial_step", { step: stepId, action: "enter" });
+  }, [stepId]);
+
+  const completeAshore = useCallback(
+    (action: "complete" | "skip") => {
+      void analytics.track("tutorial_step", { step: stepId, action });
+      onComplete();
+    },
+    [onComplete, stepId],
+  );
+
   const advance = useCallback(() => {
     if (index >= STEPS.length - 1) {
-      onComplete();
+      completeAshore("complete");
       return;
     }
+    void analytics.track("tutorial_step", { step: stepId, action: "complete" });
     setIndex((i) => i + 1);
     setToyNudge(false);
     setDockNudge(false);
-  }, [index, onComplete]);
+  }, [index, stepId, completeAshore]);
 
   const onClaimMarker = useCallback((id: string) => {
     playCapitalSfx("walk_stop");
@@ -119,12 +132,12 @@ export function AshoreComprehensionTutorial({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onComplete();
+        completeAshore("skip");
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onComplete]);
+  }, [completeAshore]);
 
   /** Clear nudge pulse after it has drawn the eye. */
   useEffect(() => {
@@ -146,7 +159,7 @@ export function AshoreComprehensionTutorial({
   /** Fantasy keeps Voyager as a preview — never let the stage clip the prove dock. */
   const compactPad = stepId === "fantasy" || stepId === "ready";
 
-  useInputAction("cancel", onComplete);
+  useInputAction("cancel", () => completeAshore("skip"));
 
   const chamberEyebrow = useMemo(() => {
     const map: Record<TeachStepId, string> = {
@@ -186,7 +199,7 @@ export function AshoreComprehensionTutorial({
           type="button"
           className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white/70 ring-1 ring-white/25 hover:bg-white/10"
           data-testid="ashore-teach-skip"
-          {...pointerSafeActivate(onComplete)}
+          {...pointerSafeActivate(() => completeAshore("skip"))}
         >
           Leave · Esc
         </button>
@@ -216,7 +229,7 @@ export function AshoreComprehensionTutorial({
                 compactPad ? "min-h-[22vh] max-h-[30vh] sm:max-h-[34vh]" : "min-h-[38vh] sm:min-h-[44vh]"
               }`}
             />
-            {(stepId === "walk" || stepId === "talk") && !reduced ? (
+            {(stepId === "walk" || stepId === "talk") ? (
               <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
                 <TouchWalkPad />
               </div>
@@ -404,7 +417,7 @@ export function AshoreComprehensionTutorial({
               type="button"
               className={CTA}
               data-testid="ashore-teach-continue"
-              {...pointerSafeActivate(onComplete)}
+              {...pointerSafeActivate(() => completeAshore("complete"))}
             >
               Launch carpet · {voyager.name || "Voyager"}
             </button>

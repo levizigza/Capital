@@ -113,6 +113,12 @@ import {
   type DifficultyLevel,
 } from "./settings";
 import {
+  assistTierFromAttempts,
+  hintEscalatedPayload,
+  masteryAssistQuestId,
+  type FailureKind,
+} from "./onboardingFailureAssist";
+import {
   loadLearningProfile,
   persistLearningProfile,
   resolveProfileText,
@@ -199,6 +205,8 @@ type PendingMinigameFail = {
   mgId: MinigameId;
   source: MinigameSource;
   copy: MinigameFailCopy;
+  /** Mastery quiz miss — Retry reopens quiz, not the whole minigame */
+  masteryRetry?: PendingMasteryClear | null;
 };
 
 function uniq<T>(arr: T[]): T[] {
@@ -557,7 +565,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         const guided = normalizeHubGuidedIntro(
           prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
         );
-        return { ...prev, hubGuidedIntro: advanceHubGuided(guided, event) };
+        const next = advanceHubGuided(guided, event);
+        if (
+          event === "opened_map" &&
+          guided.step === "meet_guide" &&
+          !guided.didMeetGuide
+        ) {
+          void analytics.track("core_loop_beat", {
+            beat: "piggy_bypassed",
+            via: "opened_map",
+          });
+          void analytics.track("hint_escalated", {
+            failureKind: "piggy_bypass",
+            attempt: 2,
+            hintLevel: 2,
+            assistChannel: "bag",
+          });
+        }
+        return { ...prev, hubGuidedIntro: next };
       });
     },
     [updateSave],
@@ -1864,6 +1889,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           learningProfile,
           durationMs,
           difficulty,
+          attempt: perf.attempts,
+          failureKind:
+            failReason === "score_below_threshold"
+              ? "coin_sort_threshold"
+              : "generic_minigame",
         });
 
         await analytics.track("minigame_retry", {
@@ -1875,14 +1905,34 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         const relatedQuests = activeIsland.quests.filter((q) =>
           q.objectives.some((o) => o.type === "completeMinigame" && o.minigameId === activeMinigameId)
         );
+        let maxFailCount = 0;
         for (const q of relatedQuests) {
           const failCount = recordQuestFailedAttempt(q.id);
-          if (failCount === 2) {
-            await analytics.track("hint_escalated", {
-              islandId: activeIsland.id,
-              questId: q.id,
-              hintLevel: failCount,
-            });
+          maxFailCount = Math.max(maxFailCount, failCount);
+          await analytics.track("quest_failed_attempt", {
+            questId: q.id,
+            attempt: failCount,
+            minigameId: activeMinigameId,
+            islandId: activeIsland.id,
+          });
+          const tier = assistTierFromAttempts(failCount);
+          if (tier >= 2) {
+            const failureKind: FailureKind =
+              failReason === "score_below_threshold"
+                ? "coin_sort_threshold"
+                : "generic_minigame";
+            await analytics.track(
+              "hint_escalated",
+              hintEscalatedPayload({
+                failureKind,
+                attempt: failCount,
+                hintLevel: failCount,
+                assistChannel: "fail_hint",
+                questId: q.id,
+                minigameId: activeMinigameId,
+                islandId: activeIsland.id,
+              }),
+            );
           }
         }
 
@@ -1922,6 +1972,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             }),
             organId: moneyOrganForIsland(activeIsland.id)?.id ?? null,
             minigameId: mgId,
+            failedAttempts:
+              maxFailCount ||
+              getQuestFailedAttempts(relatedQuests[0]?.id ?? ""),
           }),
         });
         setActiveMinigameId(null);
@@ -2002,13 +2055,47 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const handleMasteryFailed = useCallback(() => {
     if (!pendingMastery) return;
-    const { mgId, source } = pendingMastery;
+    const snapshot = pendingMastery;
+    const { mgId, source, gate } = snapshot;
     const mgName =
       activeIsland?.minigames?.find((m) => m.id === mgId)?.name ?? String(mgId);
+    const assistId = masteryAssistQuestId(gate.id);
+    const failCount = recordQuestFailedAttempt(assistId);
+    const tier = assistTierFromAttempts(failCount);
+    void analytics.track("fail_reason", {
+      context: "mastery",
+      minigameId: mgId,
+      islandId: activeIsland?.id,
+      reason: "objective_not_met",
+      failureKind: "mastery_quiz",
+      attempt: failCount,
+      hintLevel: failCount,
+    });
+    void analytics.track("quest_failed_attempt", {
+      questId: assistId,
+      attempt: failCount,
+      minigameId: mgId,
+      islandId: activeIsland?.id,
+    });
+    if (tier >= 2) {
+      void analytics.track(
+        "hint_escalated",
+        hintEscalatedPayload({
+          failureKind: "mastery_quiz",
+          attempt: failCount,
+          hintLevel: failCount,
+          assistChannel: "fail_hint",
+          questId: assistId,
+          minigameId: mgId,
+          islandId: activeIsland?.id,
+        }),
+      );
+    }
     setPendingMastery(null);
     setPendingMinigameFail({
       mgId,
       source,
+      masteryRetry: snapshot,
       copy: minigameFailCopy({
         reason: "objective_not_met",
         minigameName: `${mgName} mastery`,
@@ -2018,14 +2105,31 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         }),
         organId: moneyOrganForIsland(activeIsland?.id)?.id ?? null,
         minigameId: mgId,
+        failedAttempts: failCount,
+        masteryFail: true,
       }),
     });
   }, [activeIsland, pendingMastery, save?.irreversibleChoices]);
 
   const handleMinigameFailRetry = useCallback(() => {
     if (!pendingMinigameFail) return;
-    const { mgId, source } = pendingMinigameFail;
+    const { mgId, source, masteryRetry } = pendingMinigameFail;
     setPendingMinigameFail(null);
+    if (masteryRetry) {
+      void analytics.track("minigame_retry", {
+        islandId: activeIsland?.id,
+        minigameId: mgId,
+        afterMasteryFail: true,
+        quizOnly: true,
+      });
+      void analytics.track("core_loop_beat", {
+        beat: "failure_recovered",
+        failureKind: "mastery_quiz",
+        via: "quiz_only_retry",
+      });
+      setPendingMastery(masteryRetry);
+      return;
+    }
     setMinigameSource(source);
     setActiveMinigameId(mgId);
     setMinigameStartedAt(Date.now());

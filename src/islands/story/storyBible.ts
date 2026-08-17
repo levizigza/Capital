@@ -74,6 +74,8 @@ export type HubGuidedIntroState = {
   didPractice?: boolean;
   /** Opened travel map / dock with intent to leave */
   didDock?: boolean;
+  /** Talked to Piggy on first meet — falsey if map bypassed Keeper */
+  didMeetGuide?: boolean;
 };
 
 export const HUB_GUIDED_STEPS: Array<{
@@ -214,6 +216,7 @@ export function advanceHubGuided(
   switch (event) {
     case "talked_guide":
       // One teach → voyage (Portal-style: next chamber is leave home).
+      next.didMeetGuide = true;
       if (next.step === "meet_guide") next.step = ASHORE_VOYAGE_STEP;
       break;
     case "near_outfitter":
