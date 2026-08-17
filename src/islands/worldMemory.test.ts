@@ -126,6 +126,11 @@ describe("worldMemory", () => {
     expect(scarTriggersChapterQuiet("pp_protector_plaque")).toBe(true);
     expect(scarTriggersChapterQuiet("cove_saver_plaque")).toBe(true);
     expect(scarTriggersChapterQuiet("credit_haste_plaque")).toBe(true);
+    expect(scarTriggersChapterQuiet("pp_tip_plan")).toBe(false);
+    expect(scarTriggersChapterQuiet("pp_tip_rush")).toBe(false);
+    expect(scarTriggersChapterQuiet("pp_inbox_storm")).toBe(false);
+    expect(scarTriggersChapterQuiet("cc_shell_patience")).toBe(false);
+    expect(scarTriggersChapterQuiet("ck_collector_lean")).toBe(false);
   });
 
   it("Wave 7 — cold retell names organ + plaque for each spine scar", () => {

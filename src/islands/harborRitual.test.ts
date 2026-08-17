@@ -4,6 +4,7 @@ import {
   localDayKey,
   localWeekKey,
   markPaydayDone,
+  pickDailyRumor,
   prepareDay2EchoSave,
   syncHarborRitual,
   weeklyShareText,
@@ -102,5 +103,25 @@ describe("harborRitual", () => {
     expect(save.harborRitual?.today.echoSurpriseSeen).toBe(false);
     expect(save.harborHomecoming?.piggyTalked).toBe(true);
     expect(save.harborHomecoming?.pending).toBe(false);
+  });
+
+  it("day-2 Soft Beat can echo digression gossip when no overnight plaque", () => {
+    const dayKey = "2026-07-29";
+    const save = {
+      ...baseSave(),
+      harborScars: [
+        {
+          id: "pp_tip_plan",
+          islandId: "paycheck_peninsula",
+          choiceId: "pri_plan",
+          label: "Planned buckets before tipping",
+          kind: "npc_tone" as const,
+          createdAt: "2026-07-28T12:00:00.000Z",
+        },
+      ],
+    };
+    const rumor = pickDailyRumor(save, dayKey);
+    expect(rumor.id).toBe("scar_echo_pp_tip_plan");
+    expect(rumor.text).toMatch(/whispers|echo/i);
   });
 });

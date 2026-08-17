@@ -23,7 +23,13 @@ import { WealthHud } from "./WealthHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
-import { peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
+import {
+  clearLastConsumedSoftBeat,
+  peekLastConsumedSoftBeat,
+  peekSoftBeatArm,
+  softBeatArmWhisper,
+  softBeatSpentHushLine,
+} from "../softBeatArm";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
 import { WalkableIslandExplore } from "../world3d/WalkableIslandExplore";
 import { MoneyStructureInteriorView } from "../world3d/MoneyStructureInteriorView";
@@ -135,6 +141,7 @@ export function IslandShoreView({
   }, [chapterQuiet, talkOpen]);
 
   const dismissTakeHush = useCallback(() => {
+    clearLastConsumedSoftBeat();
     setTakeHushOpen(false);
     setTakeCinemaPhase(null);
   }, []);
@@ -335,11 +342,13 @@ export function IslandShoreView({
                 scarLabel={latestScar.label}
                 organId={organ?.id ?? "coin"}
                 islandId={island.id}
-                organLine={
-                  organ
+                organLine={(() => {
+                  const base = organ
                     ? organTakeHushLine(organ.id)
-                    : organTakeHushLine("coin")
-                }
+                    : organTakeHushLine("coin");
+                  const spent = softBeatSpentHushLine(peekLastConsumedSoftBeat());
+                  return spent ? `${base} ${spent}` : base;
+                })()}
                 onPhaseChange={setTakeCinemaPhase}
                 onDone={dismissTakeHush}
               />

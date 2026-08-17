@@ -52,7 +52,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { playCapitalSfx } from "./audio/capitalSfx";
-import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper, softBeatArmConsumesOnChoice } from "./softBeatArm";
+import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper, softBeatArmConsumesOnChoice, noteSoftBeatConsumed } from "./softBeatArm";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
@@ -1585,6 +1585,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (armedPeek && softBeatArmConsumesOnChoice({ effects: choice.effects })) {
         const armed = consumeSoftBeatArm();
         if (armed) {
+          noteSoftBeatConsumed(armed);
           void analytics.track("core_loop_beat", {
             beat: "soft_beat_consumed",
             kind: armed,

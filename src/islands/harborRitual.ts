@@ -4,7 +4,12 @@
  */
 
 import type { IslandSaveV1 } from "./types";
-import { harborScarPlaques, scarRumorLine } from "./worldMemory";
+import {
+  harborScarPlaques,
+  harborTalkScars,
+  isDigressionScar,
+  scarRumorLine,
+} from "./worldMemory";
 
 export type HarborRitualToday = {
   paydayDone?: boolean;
@@ -111,14 +116,37 @@ export function pickDailyRumor(save: IslandSaveV1, dayKey: string): { id: string
         text: scarRumorLine(p, "later"),
       };
     }
+    // Same-day plaque — prefer overnight digression echo if one is older
+    const digEcho = pickDigressionOvernightEcho(save, dayKey);
+    if (digEcho) return digEcho;
     return {
       id: `scar_${p.id}`,
       text: scarRumorLine(p, "same"),
     };
   }
+  const digEcho = pickDigressionOvernightEcho(save, dayKey);
+  if (digEcho) return digEcho;
   const idx =
     Math.abs([...dayKey].reduce((a, c) => a + c.charCodeAt(0), 0)) % RUMORS.length;
   return RUMORS[idx]!;
+}
+
+/** Digression gossip can own day-2 Soft Beat when older than today. */
+function pickDigressionOvernightEcho(
+  save: IslandSaveV1,
+  dayKey: string,
+): { id: string; text: string } | null {
+  const digs = harborTalkScars(save).filter((s) => isDigressionScar(s));
+  if (digs.length === 0) return null;
+  const d = digs[digs.length - 1]!;
+  const scarDay = (d.createdAt || "").slice(0, 10);
+  if (scarDay && scarDay < dayKey) {
+    return {
+      id: `scar_echo_${d.id}`,
+      text: scarRumorLine(d, "later"),
+    };
+  }
+  return null;
 }
 
 /** Roll ritual to today / this week. Call on Harbor enter. */

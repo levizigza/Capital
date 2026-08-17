@@ -313,8 +313,15 @@ export function scarRumorLine(
   kind: "same" | "later",
 ): string {
   const organ = scarOrganName(scarOrganId(scar));
+  const digression = isDigressionScar({ id: scar.id, kind: "npc_tone" });
   if (kind === "later") {
+    if (digression) {
+      return `Day-after echo: the ${organ} still whispers “${scar.label}.” Plaza gossip did not sleep it off.`;
+    }
     return `Day-after echo: the ${organ} still names “${scar.label}.” The Plinth did not forget overnight.`;
+  }
+  if (digression) {
+    return `Side-rumor weather: the ${organ} — “${scar.label}” — still shapes how locals greet you.`;
   }
   return `Memory Plinth rumor: the ${organ} — “${scar.label}” — still shapes how locals greet you.`;
 }
@@ -335,8 +342,10 @@ export function groupScarsByChapter(
     .map((ch) => ({ chapter: ch, scars: map.get(ch)! }));
 }
 
-/** True if this scar should trigger an in-chapter quiet beat. */
+/** True if this scar should trigger an in-chapter quiet beat (spine Takes only). */
 export function scarTriggersChapterQuiet(scarId: string): boolean {
+  // Digressions gossip Harbor — never steal Take hush / carpet cinema.
+  if (isDigressionScar({ id: scarId, kind: "plaque" })) return false;
   return (
     scarId.startsWith("cove_") ||
     scarId.startsWith("pp_") ||

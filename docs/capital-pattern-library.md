@@ -129,6 +129,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 2026-08-17 pass E | Digression myth shelf on Plinth · shore Soft Beat arm · organ fail SFX · toy juice · hush title strip · Inbox Storm scar · Witness plaza tip | Freeze-alt relatedness + collection visible; still **Hold** #94 |
 | 2026-08-17 pass F | Soft Beat arm burns only on Take/digression · choice-row organ suffix · Inbox Storm shelf slot · mastery fail organ overlay · Credit haste fail flavor · Witness tip demoted | Soft Beat chemistry reaches Ordeal; still **Hold** #94 |
 | 2026-08-17 pass G | Tip fork cost foreshadow · myth shelf Coin Bag tip after first scar · Soft Beat consume unit contracts | Incomplete-set curiosity earlier; still **Hold** #94 |
+| 2026-08-17 pass H | Digression scars skip Take hush · Soft Beat spend on Take hush · day-2 digression echo | Tip fork no longer steals carpet cinema; still **Hold** #94 |
 | **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
 
 See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.

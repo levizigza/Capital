@@ -62,3 +62,27 @@ export function softBeatArmChoiceSuffix(
   if (kind === "battlement") return " · Spiral wait still armed";
   return " · Memory keep still armed";
 }
+
+/** Last Soft Beat spent on a Take/digression — signature loop still names it. */
+let lastConsumed: SoftBeatKind | null = null;
+
+export function noteSoftBeatConsumed(kind: SoftBeatKind): void {
+  lastConsumed = kind;
+}
+
+export function peekLastConsumedSoftBeat(): SoftBeatKind | null {
+  return lastConsumed;
+}
+
+export function clearLastConsumedSoftBeat(): void {
+  lastConsumed = null;
+}
+
+/** Take hush / spectacle lower-third — Soft Beat chemistry after burn. */
+export function softBeatSpentHushLine(kind: SoftBeatKind | null): string | null {
+  if (!kind) return null;
+  if (kind === "lookout") return "Lid Lookout still on you — Coin hush rides this Take.";
+  if (kind === "umbrella") return "Umbrella Loft still on you — Clock shelter rides this Take.";
+  if (kind === "battlement") return "Battlement still on you — Spiral wait rides this Take.";
+  return "Teller Window still on you — Memory keep rides this Take.";
+}

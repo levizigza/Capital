@@ -198,4 +198,23 @@ describe("capital pattern library contracts", () => {
     expect(fail).toMatch(/credit_borrow_vs_wait/);
     expect(fail).toMatch(/borrow/);
   });
+
+  it("digression scars never arm Take hush / carpet cinema", () => {
+    const mem = readFileSync(join(__dirname, "../worldMemory.ts"), "utf8");
+    expect(mem).toMatch(/scarTriggersChapterQuiet/);
+    expect(mem).toMatch(/isDigressionScar/);
+  });
+
+  it("Soft Beat spend rides Take hush after consume", () => {
+    const shore = readFileSync(join(__dirname, "../views/IslandShoreView.tsx"), "utf8");
+    expect(shore).toMatch(/softBeatSpentHushLine/);
+    expect(shore).toMatch(/peekLastConsumedSoftBeat/);
+    const arm = readFileSync(join(__dirname, "../softBeatArm.ts"), "utf8");
+    expect(arm).toMatch(/noteSoftBeatConsumed/);
+  });
+
+  it("day-2 rumor can echo digression gossip", () => {
+    const ritual = readFileSync(join(__dirname, "../harborRitual.ts"), "utf8");
+    expect(ritual).toMatch(/pickDigressionOvernightEcho/);
+  });
 });
