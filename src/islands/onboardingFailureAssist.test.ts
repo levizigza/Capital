@@ -94,6 +94,12 @@ describe("onboarding failure assist", () => {
     expect(bypass.didDock).toBe(true);
   });
 
+  it("talked_guide requires didMeetGuide flag from advanceHubGuided", () => {
+    const g = advanceHubGuided(createDefaultHubGuidedIntro(), "talked_guide");
+    expect(g.didMeetGuide).toBe(true);
+    expect(g.step).toBe("to_dock");
+  });
+
   it("failure recovery doc + wires exist", () => {
     const doc = readFileSync(join(__dirname, "../../docs/ftue/FAILURE_RECOVERY.md"), "utf8");
     expect(doc).toMatch(/ATTEMPT 1/);

@@ -181,6 +181,7 @@ import {
   COVE_TAKE_KEY,
   takeFootprintFeedbackLine,
 } from "./firstFinancialScenario";
+import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -294,6 +295,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const talkCooldownRef = useRef<{ npcId: string; until: number } | null>(null);
   /** Last Talk Battle choice id — flushed into npcMemory on finishTalk */
   const lastTalkChoiceRef = useRef<string | null>(null);
+  /** Piggy guided advance only after a choice or end node — Esc/Leave alone does not count. */
+  const piggyTalkEngagedRef = useRef(false);
 
   const [hubModal, setHubModal] = useState<
     | "outfitter"
@@ -480,7 +483,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     const prev = saveRef.current;
     if (!prev) return;
     // Progressive disclosure sync — proof predicates only (never time/Next).
-    const next = applyConceptSync(updater(prev));
+    const next = reconcileFtueQuestProofs(applyConceptSync(updater(prev)));
     trackConceptTransferEvents(prev, next);
     saveRef.current = next;
     setSave(next);
@@ -488,7 +491,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const replaceSave = useCallback((next: IslandSaveV1) => {
     const prev = saveRef.current;
-    const synced = applyConceptSync(next);
+    const synced = reconcileFtueQuestProofs(applyConceptSync(next));
     if (prev) trackConceptTransferEvents(prev, synced);
     saveRef.current = synced;
     setSave(synced);
@@ -1618,14 +1621,16 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     if (npcId) {
       talkCooldownRef.current = { npcId, until: Date.now() + 2800 };
     }
-    // Advance Castle Grounds only after Piggy Talk Battle ends (incl. Skip)
+    // Advance Castle Grounds only after substantive Piggy Talk — not Esc/Leave alone.
     if (
       npcId === "piggy_penny" &&
+      piggyTalkEngagedRef.current &&
       save?.hubGuidedIntro &&
       !isHubGuidedComplete(save.hubGuidedIntro)
     ) {
       onHubGuidedEvent("talked_guide");
     }
+    piggyTalkEngagedRef.current = false;
     if (npcId) {
       const welcomedPiggy =
         npcId === "piggy_penny" &&
@@ -1678,6 +1683,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       if (!choice) return;
 
       lastTalkChoiceRef.current = choiceId;
+      if (dialogueState.npcId === "piggy_penny") {
+        piggyTalkEngagedRef.current = true;
+      }
 
       await analytics.track("dialogue_choice", {
         islandId: activeIsland?.id ?? HUB_ISLAND_ID,
@@ -1706,8 +1714,21 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       } else {
         finishTalk();
       }
+
+      updateSave((prev) => reconcileFtueQuestProofs(prev));
+      await maybeCompleteQuest(COVE_CHANGE_QUEST_ID);
     },
-    [activeIsland?.id, analytics, applyDialogueEffects, dialogueGraph, dialogueNode, finishTalk],
+    [
+      activeIsland?.id,
+      analytics,
+      applyDialogueEffects,
+      dialogueGraph,
+      dialogueNode,
+      dialogueState.npcId,
+      finishTalk,
+      maybeCompleteQuest,
+      updateSave,
+    ],
   );
 
   const closeDialogue = useCallback(() => {
@@ -1717,9 +1738,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const onDialogueContinue = useCallback(() => {
     // No choices left on this node — end the Talk Battle
     if (dialogueNode?.end || !(dialogueNode?.choices && dialogueNode.choices.length > 0)) {
+      if (dialogueState.npcId === "piggy_penny") {
+        piggyTalkEngagedRef.current = true;
+      }
       finishTalk();
     }
-  }, [dialogueNode, finishTalk]);
+  }, [dialogueNode, dialogueState.npcId, finishTalk]);
   const handleMinigameAbandon = useCallback(async () => {
     if (!activeMinigameId) {
       setActiveMinigameId(null);

@@ -5,6 +5,7 @@ import {
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
 import { normalizeHubGuidedIntro } from "./story/storyBible";
+import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
 
 const SAVE_KEY = "island_save_v1";
 
@@ -130,7 +131,7 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   const board = asPartyBoard(parsed.partyBoard);
   if (board) sanitized.partyBoard = board;
 
-  return migrateIslandSave(sanitized);
+  return reconcileFtueQuestProofs(migrateIslandSave(sanitized));
 }
 
 function hasCoveChapterProgress(save: IslandSaveV1): boolean {
