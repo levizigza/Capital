@@ -12,9 +12,21 @@ describe("Capital Pattern Library honesty bar", () => {
   it("exists and does not claim false 100% ship", () => {
     expect(existsSync(path)).toBe(true);
     const body = readFileSync(path, "utf8");
-    expect(body).toMatch(/Pass J/);
+    expect(body).toMatch(/Pass K/);
     expect(body).toMatch(/Ship iconic vs library\?\*\* \*\*Hold\*\*/);
     expect(body).not.toMatch(/Ship verdict \(Pass I.*100% Pass/);
+  });
+
+  it("requires individual rows 1–100 (no range lumps)", () => {
+    const body = readFileSync(path, "utf8");
+    expect(body).not.toMatch(/\|\s*\d+\s*[–-]\s*\d+\s*\|/);
+    const nums = new Set<number>();
+    for (const m of body.matchAll(/^\|\s*(\d+)\s*\|/gm)) {
+      nums.add(Number(m[1]));
+    }
+    expect([...nums].sort((a, b) => a - b)).toEqual(
+      Array.from({ length: 100 }, (_, i) => i + 1),
+    );
   });
 
   it("keeps #94 Hold until real non-designer proof", () => {

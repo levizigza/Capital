@@ -95,7 +95,12 @@ import {
   FAMILY_CHALLENGE_KIND_LABEL,
   type FamilyChallengeKind,
 } from "../familyRoom";
-import { harborWeatherMood, weatherFogParams, weatherCoachLine } from "../harborWeather";
+import {
+  harborWeatherMood,
+  weatherFogParams,
+  weatherCoachLine,
+  feedbackLoopLine,
+} from "../harborWeather";
 import {
   ScarSpectacleOverlay,
   type SpectacleCinemaPhase,
@@ -651,8 +656,10 @@ export function HomeHubView({
     studioOpenHint: Boolean(freed && hasCompletedCoveChange(save) && !pointNextPainting),
     // Relatedness return — Witness above bank default (pattern #45).
     witnessMyth: familyWitnessMythLine(getActiveFamilyRoom()?.witnesses?.[0]),
-    // Cashflow paints sky — teach weather literacy on tight/storm (pattern #60).
+    // #66 feedback loop (haste→fog→prices) beats generic #60 weather literacy.
     weatherLiteracy: (() => {
+      const loop = feedbackLoopLine(save);
+      if (loop) return loop;
       const mood = harborWeatherMood(save);
       if (mood === "storm" || mood === "tight") return weatherCoachLine(mood);
       return null;

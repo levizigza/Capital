@@ -66,6 +66,20 @@ export function weatherCoachLine(mood: HarborWeatherMood): string {
   }
 }
 
+/**
+ * Pattern #66 — name the closed feedback loop when a haste/risk scar is driving weather.
+ * Distinct from generic weather literacy (#60): this line teaches Take → sky → prices.
+ */
+export function feedbackLoopLine(save: IslandSaveV1): string | null {
+  const mood = harborWeatherMood(save);
+  const hasteScar = (save.harborScars ?? []).some(
+    (s) => s.id.includes("haste") || s.id.includes("risk"),
+  );
+  if (!hasteScar) return null;
+  if (mood !== "storm" && mood !== "tight") return null;
+  return "Loop closed: haste scar → fog → softer prices. Your Take is weather now.";
+}
+
 /** Fog density hint for 3D (near/far). */
 export function weatherFogParams(mood: HarborWeatherMood): { near: number; far: number } {
   switch (mood) {

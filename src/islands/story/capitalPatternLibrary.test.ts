@@ -27,8 +27,29 @@ describe("capital pattern library contracts", () => {
     expect(lib).toMatch(/Opportunity cost visible/);
     expect(lib).toMatch(/Instrumentation now/);
     expect(lib).toMatch(/Ship iconic vs library\?\*\* \*\*Hold\*\*/);
-    expect(lib).toMatch(/Pass J/);
+    expect(lib).toMatch(/Pass K/);
     expect(lib).not.toMatch(/Ship verdict \(Pass I.*100% Pass/);
+  });
+
+  it("lists every pattern 1–100 as its own row (no range lumps)", () => {
+    expect(lib).not.toMatch(/\|\s*\d+\s*[–-]\s*\d+\s*\|/);
+    const nums = new Set<number>();
+    for (const m of lib.matchAll(/^\|\s*(\d+)\s*\|/gm)) {
+      nums.add(Number(m[1]));
+    }
+    for (let i = 1; i <= 100; i++) {
+      expect(nums.has(i), `missing individual row for pattern ${i}`).toBe(true);
+    }
+    expect(nums.size).toBe(100);
+  });
+
+  it("feedback loop + bounded ritual pick are real (#66 / #70)", () => {
+    const weather = readFileSync(join(__dirname, "../harborWeather.ts"), "utf8");
+    expect(weather).toMatch(/feedbackLoopLine/);
+    const ritual = readFileSync(join(__dirname, "../harborRitual.ts"), "utf8");
+    expect(ritual).toMatch(/boundedIndexFromKey/);
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/feedbackLoopLine/);
   });
 
   it("VibeCode invent tip is real (not Capsule shop lie)", () => {

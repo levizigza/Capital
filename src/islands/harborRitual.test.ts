@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  boundedIndexFromKey,
   bumpWeeklyTalk,
   localDayKey,
   localWeekKey,
@@ -23,6 +24,15 @@ function baseSave(): IslandSaveV1 {
 }
 
 describe("harborRitual", () => {
+  it("bounds ritual picks from day/week keys (#70) — deterministic, no Math.random", () => {
+    expect(boundedIndexFromKey("2026-08-17", 5)).toBe(boundedIndexFromKey("2026-08-17", 5));
+    expect(boundedIndexFromKey("2026-08-17", 5)).not.toBe(boundedIndexFromKey("2026-08-18", 5));
+    const a = pickDailyRumor(baseSave(), "2026-08-17");
+    const b = pickDailyRumor(baseSave(), "2026-08-17");
+    expect(a.id).toBe(b.id);
+    expect(a.text).toBe(b.text);
+  });
+
   it("syncs a new day with streak and weekly", () => {
     const day = new Date(2026, 6, 28);
     const save = syncHarborRitual(baseSave(), day);

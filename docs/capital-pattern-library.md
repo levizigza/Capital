@@ -1,7 +1,8 @@
 # Capital Pattern Library — iconic Pass bar
 
 **Honesty law:** Pass only with code/cold evidence. Doc claims without guards = Gap.  
-Do **not** declare 100% while any Gap / Thin / Hold remains.
+Do **not** declare 100% while any Gap / Thin / Hold remains.  
+**Every pattern 1–100 must be its own row** — no range lumps (`66–70`). That was a prior honesty hole.
 
 **Freeze:** Harbor · Cove → Paycheck → Credit. Family Room local. No Nathan/BMO/CBE. No fake multiplayer.
 
@@ -9,14 +10,15 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 
 ---
 
-## Where we are (2026-08-17 Pass J — honest)
+## Where we are (2026-08-17 Pass K — honest)
 
 | | |
 |--|--:|
-| **Claimed ship** | **Not 100% yet** |
-| **Machine contracts green** | Passes A–H + Soft Beat exit merge (in progress) |
-| **This turn** | Closed fake Passes with real code (VibeCode tip, Witness priority, weather literacy, dwell-while-stuck, digression Family Challenge, Soft Beat digression vistas) |
-| **Still Hold** | **#94 only** — needs a real non-designer playtest log |
+| **Claimed ship** | **Not 100%** |
+| **Individual rows 1–100** | Required (Pass K closes lumped 66–70 / 73–75) |
+| **Machine Pass** | 99 patterns with code evidence |
+| **Still Hold** | **#94 only** — needs a real non-designer playtest log in `docs/pattern-human-playtest.md` |
+| **This turn** | Split range rows · feedback-loop literacy (#66) · bounded ritual pick (#70) · board guard test |
 
 ---
 
@@ -88,16 +90,22 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 | 57 | Peak contrast | **Pass** | Hush / quiet chrome |
 | 58 | Secrets multilevel | **Pass** | Digression shelf + era forks |
 | 59 | Feel clever | **Pass** | Digression stakes · mastery |
-| 60 | Break game intelligently | **Pass** | Haste weather + **Coin Bag weather literacy** on tight/storm |
+| 60 | Break game intelligently | **Pass** | Haste weather + Coin Bag weather literacy on tight/storm |
 | 61 | Fairness ≠ equality | **Pass** | Asymmetric Takes |
 | 62 | Interesting trade-offs | **Pass** | Cost foreshadow |
 | 63 | No dominant strategy | **Pass** | Both Takes scar Harbor |
 | 64 | Opportunity cost visible | **Pass** | Choice rows · tip fork foreshadow |
 | 65 | Resources = decisions | **Pass** | Scar-first Takes |
-| 66–70 | Feedback / uncertainty / randomness | **Pass** | Digression + mastery + ritual rotation |
+| 66 | Feedback loops | **Pass** | `feedbackLoopLine` — haste scar → fog → softer prices named in Coin Bag |
+| 67 | Productive uncertainty | **Pass** | Digression forks · Soft Beat Talk arm · tip forks without spoiling |
+| 68 | Incomplete information | **Pass** | Myth shelf empty rumor slots + digressionGaps tip |
+| 69 | Uncertainty intelligible | **Pass** | weatherCoachLine · Take cost foreshadow · organ fail hints |
+| 70 | Randomness bounded | **Pass** | `boundedIndexFromKey` — ritual rumor + weekly challenge (no Math.random) |
 | 71 | Information as resource | **Pass** | Organ + weather literacy |
 | 72 | Ecosystem | **Pass** | Organs wire systems |
-| 73–75 | Consequences / 2nd-order / traceable | **Pass** | Soft Beat → Talk arm · scar → plaza |
+| 73 | Consequences propagate | **Pass** | Scar → plaza gossip · Plinth · Piggy |
+| 74 | Second-order consequences | **Pass** | Soft Beat → next Talk arm chemistry |
+| 75 | Cause/effect learnable | **Pass** | Organ fail hints · structure stay-put · cost foreshadow |
 | 76 | Sim creates stories | **Pass** | Weather × digression × scars |
 | 77 | Identity from decisions | **Pass** | Stance / scars |
 | 78 | Home attachment | **Pass** | Harbor Haven |
@@ -116,7 +124,7 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 | 91 | Telemetry ≠ judgment | **Pass** | Local analytics export |
 | 92 | Iterate systems | **Pass** | This board’s loop |
 | 93 | Prototype risky first | **Pass** | Signature loop freeze |
-| 94 | Test with non-designers | **Hold** | Cold triangle is QA-assisted — not a human playtester. Needs real non-designer answers. |
+| 94 | Test with non-designers | **Hold** | Cold triangle is QA-assisted — not a human playtester. Needs real non-designer answers in `docs/pattern-human-playtest.md`. |
 | 95 | Instrumentation now | **Pass** | Spine beats in analytics union |
 | 96 | Longevity not novelty | **Pass** | Soft Beat trail peeks stack on Plinth · digression shelf · weather literacy |
 | 97 | Innovation serves play | **Pass** | Organ cinema serves retell |
@@ -132,8 +140,9 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 |------|-------|
 | Pass A–H | Real code for feel, Soft Beat arm, foreshadow, shelf, tip forks, affinity cut |
 | Pass I (retracted) | Doc claimed 100% without closing fake Passes — **lie revoked** |
-| **Pass J** | Real fixes: VibeCode tip · Witness priority · weather literacy · dwell-while-stuck · digression_pair Family Challenge · Soft Beat digression vistas · Soft Beat trail shelf. Board re-scored honest. **Ship blocked only on #94 Hold.** |
+| Pass J | Real fixes: VibeCode tip · Witness priority · weather literacy · dwell-while-stuck · digression_pair · Soft Beat vistas · trail shelf. **#94 Hold.** |
+| **Pass K** | Closed honesty hole: **no range rows** — #66–70 and #73–75 are individual. Added `feedbackLoopLine` (#66) + `boundedIndexFromKey` (#70). Guard test requires patterns 1–100 each. **Ship still blocked on #94.** |
 
 **Ship iconic vs library?** **Hold** — not 100% until #94 has a real non-designer playtest log (cold triangle alone is not enough).
 
-See also: `src/islands/story/capitalPatternLibrary.test.ts` · `docs/iconic-path.md`.
+See also: `src/islands/story/capitalPatternLibrary.test.ts` · `docs/pattern-human-playtest.md` · `docs/iconic-path.md`.

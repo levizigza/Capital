@@ -4,11 +4,16 @@ import {
   harborWeatherMood,
   scaleHarborPrice,
   skyIntentFromCashflow,
+  feedbackLoopLine,
 } from "./harborWeather";
 import { createDefaultVoyagerLedger } from "./voyagerLedger";
 import type { IslandSaveV1 } from "./types";
 
-function withLedger(salary: number, living: number): IslandSaveV1 {
+function withLedger(
+  salary: number,
+  living: number,
+  scars: IslandSaveV1["harborScars"] = [],
+): IslandSaveV1 {
   const ledger = createDefaultVoyagerLedger();
   return {
     version: "1",
@@ -17,6 +22,7 @@ function withLedger(salary: number, living: number): IslandSaveV1 {
     questStatus: {},
     completedMinigames: [],
     discovered: { npcs: [], items: [], areas: [], islands: [] },
+    harborScars: scars,
     voyagerLedger: {
       ...ledger,
       salaryIncome: salary,
@@ -33,5 +39,19 @@ describe("harborWeather", () => {
     expect(scaleHarborPrice(100, withLedger(5, 40))).toBeLessThan(100);
     expect(skyIntentFromCashflow(-5)).toBe("night");
     expect(skyIntentFromCashflow(50)).toBe("day");
+  });
+
+  it("names the haste→fog→prices feedback loop (#66)", () => {
+    const looped = withLedger(5, 40, [
+      {
+        id: "credit_haste_plaque",
+        label: "Haste",
+        kind: "plaque",
+        createdAt: "2026-08-01",
+      },
+    ]);
+    expect(harborWeatherMood(looped)).toBe("storm");
+    expect(feedbackLoopLine(looped)).toMatch(/Loop closed/);
+    expect(feedbackLoopLine(withLedger(80, 10))).toBeNull();
   });
 });
