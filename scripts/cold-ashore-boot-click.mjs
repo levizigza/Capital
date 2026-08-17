@@ -46,7 +46,7 @@ try {
   }
   await page.screenshot({ path: `${SHOT}/04-walk.png` });
 
-  // Keyboard path: reload title and Enter on CTA (no mouse).
+  // Keyboard path: reload title and Enter (window listener — no focus required).
   await page.goto(`${BASE}/?replayIntro=1`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(800);
   const skip2 = page.getByRole("button", { name: /^Skip$/i });
@@ -54,7 +54,7 @@ try {
     await skip2.click({ force: true });
   }
   await page.getByTestId("opening-choose-voyager").waitFor({ state: "visible", timeout: 20_000 });
-  await page.getByTestId("opening-choose-voyager").focus();
+  await page.waitForTimeout(400);
   await page.keyboard.press("Enter");
   await page.getByTestId("boot-cast-select").waitFor({ state: "visible", timeout: 15_000 });
 

@@ -72,7 +72,7 @@ try {
   await shot("06-ready");
 
   await page.getByTestId("ashore-teach-continue").click();
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(2000);
   await shot("07-after-launch");
 
   const skip3d = page.getByTestId("harbor-skip-3d");
@@ -81,9 +81,10 @@ try {
     steps.push("skip3d");
   }
 
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(800);
   await shot("08-harbor");
 
+  await page.getByTestId("harbor-piggy-presence").waitFor({ state: "visible", timeout: 25_000 });
   const quietVisible = await page.getByTestId("harbor-quiet-chip").isVisible().catch(() => false);
   const teachGone = (await page.getByTestId("ashore-comprehension-tutorial").count()) === 0;
   const castGone = (await page.getByTestId("boot-cast-select").count()) === 0;
@@ -91,12 +92,18 @@ try {
     throw new Error("Boot overlays still mounted on Harbor");
   }
 
-  const presence = await page.getByTestId("harbor-piggy-presence").isVisible().catch(() => false);
+  const presence = await page.getByTestId("harbor-piggy-presence").isVisible();
   const coachCount = await page.getByTestId("castle-grounds-coach").count();
   const ambushTalk = await page.getByTestId("hub-talk-npc").isVisible().catch(() => false);
-  if (!presence) throw new Error("Expected harbor-piggy-presence on first meet");
+  const mythMeet =
+    (await page.getByTestId("harbor-myth-fallback").getAttribute("data-fallback-mode").catch(() => null)) ===
+    "myth_meet";
+  // Myth meet may offer Talk as the diegetic CTA; 3D plaza must not ambush.
+  if (!mythMeet && ambushTalk) {
+    throw new Error("Talk CTA must not ambush before near Piggy on 3D plaza");
+  }
   if (coachCount > 0) throw new Error("Castle coach must not stack on meet_guide");
-  if (ambushTalk) throw new Error("Talk CTA must not ambush before near Piggy");
+  if (!presence) throw new Error("Expected harbor-piggy-presence on first meet");
 
   console.log(
     JSON.stringify(
@@ -109,7 +116,8 @@ try {
           castGone,
           presence,
           coachMuted: coachCount === 0,
-          noAmbushTalk: !ambushTalk,
+          noAmbushTalk: mythMeet || !ambushTalk,
+          mythMeet,
         },
       },
       null,
