@@ -41,7 +41,7 @@ export type TravelMapViewProps = {
 
 /**
  * Archipelago travel — one Seed of Life composition.
- * Map owns names + geometry; HUD is brand + spine strip only.
+ * Map owns names + geometry for every island; HUD is brand + spine strip only.
  */
 export function TravelMapView({
   userProfile,

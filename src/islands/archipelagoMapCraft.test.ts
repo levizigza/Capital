@@ -21,7 +21,7 @@ const stub = (id: string, name: string): IslandDefinition =>
     areas: [],
   }) as IslandDefinition;
 
-describe("archipelago map sacred geometry + declutter", () => {
+describe("archipelago map sacred geometry + named islands", () => {
   it("uses Seed of Life φ dual-ring (spine nest · side = spine × φ)", () => {
     expect(MAP_SPINE_RX).toBe(SEED_SPINE_R);
     expect(MAP_SIDE_RX).toBeCloseTo(SEED_SPINE_R * PHI, 5);
@@ -50,8 +50,9 @@ describe("archipelago map sacred geometry + declutter", () => {
     }
   });
 
-  it("names spine only, quiets side labels, keeps Harbor start cue", () => {
+  it("names every island, keeps Seed guides + Harbor start cue", () => {
     const map = readFileSync(join(__dirname, "world3d/ArchipelagoMap3D.tsx"), "utf8");
+    const flat = readFileSync(join(__dirname, "world3d/FlatArchipelagoMap.tsx"), "utf8");
     const mesh = readFileSync(join(__dirname, "world3d/DioramaIslandMesh.tsx"), "utf8");
     const travel = readFileSync(join(__dirname, "views/TravelMapView.tsx"), "utf8");
     const opening = readFileSync(join(__dirname, "styles/capital-opening.css"), "utf8");
@@ -59,9 +60,16 @@ describe("archipelago map sacred geometry + declutter", () => {
     expect(mesh).toMatch(/<Html/);
     expect(map).toMatch(/data-sacred="seed-of-life"/);
     expect(map).toMatch(/SeedOfLifeGuides/);
-    expect(map).toMatch(/hideLabels/);
+    expect(map).not.toMatch(/hideLabels/);
     expect(map).toMatch(/harbor-map-start-cue/);
     expect(map).toMatch(/Click here · start/);
+    expect(map).toMatch(/FlatArchipelagoMap/);
+    expect(map).toMatch(/ARCHIPELAGO_MAP_3D_FAIL_KEY/);
+    expect(map).not.toMatch(/HARBOR_3D_FAIL_KEY/);
+    expect(flat).toMatch(/map-island-label-/);
+    expect(flat).toMatch(/flat-map-island-/);
+    expect(flat).toMatch(/Click here · start/);
+    expect(flat).toMatch(/SEED_PETAL_ANGLES/);
     expect(map).toMatch(/spineOuter\.map/);
     expect(travel).not.toMatch(/archipelago-side-shore-strip/);
     expect(travel).not.toMatch(/HudChip/);

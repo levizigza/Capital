@@ -20,7 +20,7 @@ import { DioramaIslandMesh } from "./DioramaIslandMesh";
 import { WorldLighting } from "./WorldLighting";
 import { OceanWater } from "./OceanWater";
 import { moneyStructureForIsland } from "../moneyStructures";
-import { HARBOR_3D_FAIL_KEY, HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
+import { HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
 import { hasCompletedCoveChange } from "../chapterLoop";
 import { HARBOR_HAVEN_ID } from "../islandIds";
 import { prefersReducedMotion } from "../a11yMotion";
@@ -31,6 +31,10 @@ import {
   SEED_SIDE_R,
   SEED_SPINE_R,
 } from "../sacredGeometry";
+import { FlatArchipelagoMap } from "./FlatArchipelagoMap";
+
+/** Sticky only for the travel map — Harbor plaza fail must not wipe islands. */
+export const ARCHIPELAGO_MAP_3D_FAIL_KEY = "capital_archipelago_map3d_fail";
 
 type Props = {
   islands: Parameters<typeof buildArchipelagoLayout>[0];
@@ -198,9 +202,9 @@ function HarborStartCue({
   const reduced = prefersReducedMotion();
   return (
     <Html
-      position={[position[0], position[1] + 3.6, position[2]]}
+      position={[position[0], position[1] + 4.15, position[2]]}
       center
-      distanceFactor={11}
+      distanceFactor={10}
       style={{ pointerEvents: "none" }}
       zIndexRange={[40, 0]}
     >
@@ -209,15 +213,15 @@ function HarborStartCue({
         data-testid="harbor-map-start-cue"
       >
         <div
-          className={`text-[1.65rem] leading-none text-[#ef4444] drop-shadow-[0_2px_0_#7f1d1d] ${
+          className={`text-[2rem] leading-none text-[#ef4444] drop-shadow-[0_2px_0_#7f1d1d] ${
             reduced ? "" : "animate-bounce"
           }`}
           aria-hidden
         >
           ▼
         </div>
-        <div className="rounded-full border border-[#7f1d1d]/80 bg-[#dc2626]/95 px-3 py-1 text-center shadow-md">
-          <p className="text-[10px] font-black tracking-wide text-white">Click here · start</p>
+        <div className="rounded-full border-2 border-[#7f1d1d] bg-[#dc2626] px-3.5 py-1.5 text-center shadow-lg">
+          <p className="text-[11px] font-black tracking-wide text-white">Click here · start</p>
         </div>
       </div>
     </Html>
@@ -300,7 +304,7 @@ function MapScene({
         );
       })}
 
-      {/* Side shores: dioramas only — no nameplates (declutter). Unlock via strip later. */}
+      {/* Side shores: named dioramas — user must know what is what. */}
       {sideOuter.map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
         const era = getAnimationStyle(theme.animationStyle);
@@ -319,7 +323,6 @@ function MapScene({
             scale={0.82}
             current={node.island.id === currentId}
             locked={locked}
-            hideLabels
             onSelect={() => onSelect(node.island.id)}
           />
         );
@@ -330,7 +333,7 @@ function MapScene({
 
 /**
  * Fortune Archipelago travel map — Seed of Life composition.
- * Spine named · side shores quiet · HUD chrome stays off the geometry.
+ * Every island named · Harbor start cue · HUD chrome stays off the geometry.
  */
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
@@ -338,7 +341,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const [cueOn, setCueOn] = useState(() => !startCueDismissed());
   const [skipCanvas, setSkipCanvas] = useState(() => {
     try {
-      return sessionStorage.getItem(HARBOR_3D_FAIL_KEY) === "1";
+      return sessionStorage.getItem(ARCHIPELAGO_MAP_3D_FAIL_KEY) === "1";
     } catch {
       return false;
     }
@@ -355,7 +358,14 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   useEffect(() => {
     if (skipCanvas) return;
     const t = window.setTimeout(() => {
-      if (!readyRef.current) setSkipCanvas(true);
+      if (!readyRef.current) {
+        try {
+          sessionStorage.setItem(ARCHIPELAGO_MAP_3D_FAIL_KEY, "1");
+        } catch {
+          /* ignore */
+        }
+        setSkipCanvas(true);
+      }
     }, HARBOR_HARD_FAILSAFE_MS);
     return () => window.clearTimeout(t);
   }, [skipCanvas]);
@@ -378,23 +388,13 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
       data-sacred="seed-of-life"
     >
       {skipCanvas ? (
-        <div
-          className="absolute inset-0 z-[2] flex flex-col items-center justify-center gap-2 bg-[#0c4a6e] px-4 text-center"
-          data-testid="archipelago-map-flat"
-        >
-          <p className="text-sm font-bold text-white/85">Fortune Archipelago</p>
-          <p className="max-w-sm text-xs font-medium text-white/65">
-            Use the spine chips below to board the Money Carpet.
-          </p>
-          {showHarborCue ? (
-            <p
-              className="mt-2 rounded-full bg-red-600 px-3 py-1.5 text-xs font-black text-white"
-              data-testid="harbor-map-start-cue-flat"
-            >
-              Click Harbor Haven · start
-            </p>
-          ) : null}
-        </div>
+        <FlatArchipelagoMap
+          islands={islands}
+          save={save}
+          currentId={currentId}
+          onSelect={pick}
+          showHarborCue={showHarborCue}
+        />
       ) : (
         <>
           {!ready ? (
@@ -410,6 +410,11 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             onCreated={({ gl }) => {
               gl.setClearColor("#0c4a6e", 1);
+              try {
+                sessionStorage.removeItem(ARCHIPELAGO_MAP_3D_FAIL_KEY);
+              } catch {
+                /* ignore */
+              }
               setReady(true);
             }}
           >

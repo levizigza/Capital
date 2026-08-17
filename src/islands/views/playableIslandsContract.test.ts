@@ -25,12 +25,19 @@ describe("playable islands contract", () => {
     expect(travel).not.toMatch(/disabled=\{locked \|\| here\}/);
   });
 
-  it("archipelago map skips Canvas when Harbor 3D already failed", () => {
+  it("archipelago map uses its own fail key and keeps a named flat Seed map", () => {
     const map = readFileSync(
       join(__dirname, "../world3d/ArchipelagoMap3D.tsx"),
       "utf8",
     );
-    expect(map).toMatch(/HARBOR_3D_FAIL_KEY/);
-    expect(map).toMatch(/archipelago-map-flat/);
+    const flat = readFileSync(
+      join(__dirname, "../world3d/FlatArchipelagoMap.tsx"),
+      "utf8",
+    );
+    expect(map).toMatch(/ARCHIPELAGO_MAP_3D_FAIL_KEY/);
+    expect(map).toMatch(/FlatArchipelagoMap/);
+    expect(flat).toMatch(/archipelago-map-flat/);
+    expect(flat).toMatch(/flat-map-island-/);
+    expect(flat).toMatch(/map-island-label-/);
   });
 });
