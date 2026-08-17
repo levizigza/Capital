@@ -20,7 +20,7 @@ describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
     const g = piggyGuidedGraph("meet_guide");
     const texts = g.nodes.map((n) => n.text).join(" ");
     expect(texts).toMatch(/Welcome to Harbor Haven/i);
-    expect(texts).toMatch(/WASD|walk pad/i);
+    expect(texts).toMatch(/WASD|walk pad|\{move\}/i);
     expect(texts).toMatch(/Talk/i);
     expect(texts).not.toMatch(/Outfitter/i);
     expect(texts).not.toMatch(/Capsule|Carpet Dock|Freedom Seal/i);

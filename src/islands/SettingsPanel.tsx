@@ -32,6 +32,8 @@ type Props = {
   learningProfile?: LearningProfileId;
   onProfileChange?: (id: LearningProfileId) => void;
   onOpenAnalytics?: () => void;
+  /** Replay Ashore walk / talk / dock chambers (optional tutorial refresh). */
+  onReplayAshoreChambers?: () => void;
 };
 
 const TEXT_SIZES: { value: TextSize; label: string }[] = [
@@ -47,6 +49,7 @@ export default function SettingsPanel({
   learningProfile: propProfile,
   onProfileChange,
   onOpenAnalytics,
+  onReplayAshoreChambers,
 }: Props) {
   const [localProfile, setLocalProfile] = useState<LearningProfileId>(() => propProfile ?? loadLearningProfile());
   const [juiceLevel, setJuiceLevel] = useState<JuiceLevel>(() => loadJuiceSettings().level);
@@ -246,6 +249,29 @@ export default function SettingsPanel({
             ))}
           </div>
         </div>
+      </GamePanel>
+
+      <GamePanel title="Tutorial replay">
+        <p className="mb-3 text-xs text-gray-600">
+          Re-open the Ashore walk · talk · carpet chambers anytime. Your save progress stays
+          intact — this is practice only.
+        </p>
+        {onReplayAshoreChambers ? (
+          <GameButton
+            variant="outline"
+            size="sm"
+            motionEnabled={false}
+            data-testid="replay-ashore-chambers"
+            onClick={() => {
+              onReplayAshoreChambers();
+              onClose();
+            }}
+          >
+            Replay walk &amp; talk chambers
+          </GameButton>
+        ) : (
+          <p className="text-xs text-gray-500">Available from Harbor plaza settings.</p>
+        )}
       </GamePanel>
 
       <ControlsSettingsPanel />

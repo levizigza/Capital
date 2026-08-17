@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useInputAction } from "@/input";
+import { useInputAction, InputPromptHint, useInputPrompt } from "@/input";
 import { CharacterAvatar } from "./CharacterAvatar";
 import type { CapitalCharacter } from "../character";
 import type { DialogueChoice, DialogueNode } from "../types";
@@ -107,6 +107,8 @@ export function TalkBattleScreen({
   onContinue,
   onSkip,
 }: TalkBattleProps) {
+  const cancelPrompt = useInputPrompt("cancel");
+  const confirmPrompt = useInputPrompt("confirm");
   const [phase, setPhase] = useState<Phase>("listen");
   const inputArmed = useRef(false);
   const choices = node.choices ?? [];
@@ -340,6 +342,11 @@ export function TalkBattleScreen({
                   data-testid={`talk-choice-${choice.id}`}
                   data-soft-beat-armed={suffix ? "1" : "0"}
                   data-take-footprint={footprint ? "1" : "0"}
+                  aria-label={
+                    footprint
+                      ? `${base}${suffix ?? ""}. ${footprint}`
+                      : `${base}${suffix ?? ""}`
+                  }
                 >
                   <span className="block">{suffix ? `${base}${suffix}` : base}</span>
                   {footprint ? (
@@ -357,7 +364,18 @@ export function TalkBattleScreen({
           )}
         </div>
         <p className="mt-2 text-center text-[11px] font-semibold text-white/90 drop-shadow">
-          Enter listen · Esc · Leave
+          <InputPromptHint action="confirm" className="justify-center text-white/90">
+            listen
+          </InputPromptHint>
+          <span className="mx-1" aria-hidden>
+            ·
+          </span>
+          <InputPromptHint action="cancel" className="justify-center text-white/90">
+            Leave
+          </InputPromptHint>
+          <span className="sr-only">
+            Confirm {confirmPrompt.label}, cancel {cancelPrompt.label}
+          </span>
         </p>
       </div>
     </div>

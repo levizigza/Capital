@@ -37,7 +37,7 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).not.toMatch(/"paycheck"/);
     expect(teach).not.toMatch(/"credit"/);
     expect(teach).not.toMatch(/"return_scar"/);
-    expect(teach).not.toMatch(/"enter"/);
+    expect(teach).not.toMatch(/stepId === "enter"/);
     expect(teach).not.toMatch(/PaintingLessonShowcase/);
     expect(teach).not.toMatch(/ShareCardShowcase/);
     expect(teach).not.toMatch(/EnterStructuresShowcase/);
@@ -77,8 +77,9 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).toMatch(/playOrganSfx/);
   });
 
-  it("uses Leave · Esc and prove gates — not SaaS Skip / collect-all", () => {
-    expect(teach).toMatch(/Leave · Esc/);
+  it("uses Leave binding and prove gates — not SaaS Skip / collect-all", () => {
+    expect(teach).toMatch(/Leave ·/);
+    expect(teach).toMatch(/cancelPrompt/);
     expect(teach).toMatch(/pointerSafeActivate/);
     expect(teach).toMatch(/Poke a living-money toy|Board Cove first/);
     expect(teach).not.toMatch(/Visit all four/);
@@ -94,5 +95,10 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).toMatch(/setToyNudge\(true\)/);
     expect(show).toMatch(/Tap to poke/);
     expect(show).toMatch(/data-nudge/);
+  });
+
+  it("uses binding-aware interact via InputManager", () => {
+    expect(teach).toMatch(/useInputAction\(\s*["']interact["']/);
+    expect(teach).toMatch(/formatMovePhrase/);
   });
 });

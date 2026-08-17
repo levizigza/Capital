@@ -6,6 +6,7 @@ import {
   HudBadge,
 } from "@/game-ui";
 import { useInputAction } from "@/input";
+import { MoveTalkMapHint } from "./FtueControlsHint";
 
 import type { UserProfile } from "@/App";
 import type {
@@ -521,7 +522,9 @@ export function IslandShoreView({
                     : `Go · ${near.label}`}
               </GameButton>
             ) : (
-              <p className="cap-hint-whisper">Walk pad or WASD · E interact when near</p>
+              <p className="cap-hint-whisper">
+                <MoveTalkMapHint compact className="justify-center" />
+              </p>
             )}
           </div>
           )

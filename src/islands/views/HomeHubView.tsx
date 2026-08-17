@@ -1,11 +1,12 @@
 import { Suspense, lazy, useMemo, useState, useCallback, useEffect } from "react";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
+import { MoveTalkMapHint } from "./FtueControlsHint";
 import {
   GameHudLayout,
   GameButton,
   GameModal,
 } from "@/game-ui";
-import { useInputAction } from "@/input";
+import { useInputAction, resolveControlPlaceholders } from "@/input";
 
 import type { UserProfile } from "@/App";
 import type { IslandSaveV1, IslandsContent } from "../types";
@@ -178,6 +179,8 @@ export type HomeHubViewProps = {
   onOpenArcade: () => void;
   onOpenStudio: () => void;
   onReplayIntro?: () => void;
+  /** Replay Ashore comprehension chambers from settings */
+  onReplayAshoreChambers?: () => void;
   onResume: () => void;
   /** Open the Harbor Fortune Party board (2D) — optional side activity. */
   onPlayHarborBoard?: () => void;
@@ -232,6 +235,7 @@ export function HomeHubView({
   onOpenArcade,
   onOpenStudio,
   onReplayIntro,
+  onReplayAshoreChambers,
   onResume,
   onPlayHarborBoard,
   onOpenEditor,
@@ -381,6 +385,13 @@ export function HomeHubView({
     // Share freeze keeps Plinth pulse alive even after the 14s glow timer.
     plinthGlowActive: (plinthGlow || feltShareOpen) && !spectacleOpen,
   });
+  const resolvedKeeperBubble = useMemo(
+    () =>
+      visualBeats.keeperBubbleWhenNear
+        ? resolveControlPlaceholders(visualBeats.keeperBubbleWhenNear)
+        : "",
+    [visualBeats.keeperBubbleWhenNear],
+  );
   const nearKeeper = nearNpc?.id === HARBOR_KEEPER_MASCOT_ID;
   /** When near Piggy, wave becomes talk — conversation replaces the attractor. */
   const keeperEmote =
@@ -389,7 +400,7 @@ export function HomeHubView({
   const plinthShareBeat = spectacleOpen || plinthGlow || feltShareOpen;
   const keeperSpeech =
     castleMode || homecomingActive || plinthShareBeat
-      ? visualBeats.keeperBubbleWhenNear || null
+      ? resolvedKeeperBubble || null
       : null;
   // Keep "guide" — Piggy’s ring lights when pulseHotspotId === "guide"
   const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
@@ -1066,14 +1077,14 @@ export function HomeHubView({
         setNearNpc({
           id: npc.id,
           name: npc.name,
-          line: visualBeats.keeperBubbleWhenNear || guidedStep?.guideLine || npc.line,
+          line: resolvedKeeperBubble || guidedStep?.guideLine || npc.line,
         });
       } else {
         setNearNpc(npc);
       }
       // Opt-in only — never auto-open Talk Battle on walk-by (Zelda/BOTW courtesy).
     },
-    [castleMode, guidedStep?.guideLine, visualBeats.keeperBubbleWhenNear],
+    [castleMode, guidedStep?.guideLine, resolvedKeeperBubble],
   );
 
   /** Zelda/BOTW courtesy: approach shows prompt; E / Enter opts in — never ambush. */
@@ -1190,7 +1201,7 @@ export function HomeHubView({
                   }
                   keeperSpeech={
                     castleMode || homecomingActive || plinthShareBeat || piggyPresence
-                      ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
+                      ? keeperSpeech || resolvedKeeperBubble || null
                       : null
                   }
                   pulseHotspotId={
@@ -1477,22 +1488,26 @@ export function HomeHubView({
               </GameButton>
             ) : (
               <p className="text-center text-[11px] font-medium text-white/75 drop-shadow">
-                WASD / walk pad · E talk
+                <MoveTalkMapHint compact className="justify-center text-white/75" />
               </p>
             )}
             <p
               className="text-center text-[11px] font-semibold text-white/85 drop-shadow"
               data-testid="harbor-controls-whisper"
             >
-              {firstMeet && !nearPiggy
-                ? "WASD · walk to Piggy · E when near"
-                : showTravelChip
-                  ? "Or walk to the Money Carpet"
-                  : nearStore
-                    ? "E enter · Esc leaves shops"
-                    : nearNpc
-                      ? "WASD · E"
-                      : "WASD · E · map at Money Carpet"}
+              {firstMeet && !nearPiggy ? (
+                <>
+                  <MoveTalkMapHint compact className="justify-center" /> · walk to Piggy
+                </>
+              ) : showTravelChip ? (
+                "Or walk to the Money Carpet"
+              ) : nearStore ? (
+                <MoveTalkMapHint compact className="justify-center" />
+              ) : nearNpc ? (
+                <MoveTalkMapHint compact className="justify-center" />
+              ) : (
+                <MoveTalkMapHint compact showMap className="justify-center" />
+              )}
             </p>
           </div>
           )
@@ -2211,6 +2226,7 @@ export function HomeHubView({
             learningProfile={learningProfile}
             onProfileChange={updateLearningProfile}
             onOpenAnalytics={onOpenAnalytics}
+            onReplayAshoreChambers={onReplayAshoreChambers}
           />
         </Suspense>
       </GameModal>

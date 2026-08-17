@@ -28,7 +28,7 @@ export type GuidedVisualBeats = {
 export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   meet_guide: {
     keeperEmote: "wave",
-    keeperBubbleWhenNear: "Piggy Penny: Want to talk? Press E when you’re ready.",
+    keeperBubbleWhenNear: "Piggy Penny: Want to talk? {interact} when you're ready.",
     bagTip: "Piggy’s waving by the fountain — walk over when you want",
     pulseHotspot: "guide",
   },

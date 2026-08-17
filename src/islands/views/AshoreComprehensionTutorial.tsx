@@ -20,7 +20,7 @@ import {
   WALK_MARKERS,
 } from "../world3d/VoyagerWalkPracticeStage";
 import { pointerSafeActivate } from "../pointerSafeClick";
-import { useInputAction } from "@/input";
+import { useInputAction, formatMovePhrase, formatInteractPhrase, useInputPrompt } from "@/input";
 import {
   CarpetDockShowcase,
   FantasyOrganToys,
@@ -107,19 +107,29 @@ export function AshoreComprehensionTutorial({
     }
   }, [advance, stepId, walkDone]);
 
-  useEffect(() => {
-    if (stepId !== "talk" || talked) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.repeat) return;
-      if ((e.code === "KeyE" || e.key === "e" || e.key === "E") && nearTalk) {
-        e.preventDefault();
-        playOrganSfx("memory");
-        setTalked(true);
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [nearTalk, stepId, talked]);
+  const movePhrase = formatMovePhrase();
+  const interactPhrase = formatInteractPhrase({ verb: "Talk" });
+  const cancelPrompt = useInputPrompt("cancel");
+
+  useInputAction(
+    "interact",
+    () => {
+      if (!nearTalk || talked) return;
+      playOrganSfx("memory");
+      setTalked(true);
+    },
+    stepId === "talk" && nearTalk && !talked,
+  );
+
+  useInputAction(
+    "confirm",
+    () => {
+      if (!nearTalk || talked) return;
+      playOrganSfx("memory");
+      setTalked(true);
+    },
+    stepId === "talk" && nearTalk && !talked,
+  );
 
   useEffect(() => {
     if (stepId === "talk" && talked) {
@@ -261,7 +271,7 @@ export function AshoreComprehensionTutorial({
                 Walk your Voyager
               </h1>
               <p className="mt-2 max-w-md text-sm text-white/85">
-                Reach every glowing ring — this is how you explore Harbor. WASD or arrows.
+                Reach every glowing ring — this is how you explore Harbor. {movePhrase}.
               </p>
               <p
                 className="mt-3 text-sm font-bold text-amber-100"
@@ -280,17 +290,19 @@ export function AshoreComprehensionTutorial({
                 Talk when you choose
               </h1>
               <p className="mt-2 max-w-md text-sm text-white/85">
-                Piggy waits by the fountain. Walk into the pink ring — press E only when you’re ready.
+                Piggy waits by the fountain. Walk into the pink ring — use {interactPhrase.toLowerCase()} only
+                when you’re ready, or tap the button below.
               </p>
               <p
                 className="mt-3 text-sm font-bold text-amber-100"
                 data-testid="ashore-teach-gate"
                 data-gate="talk-near"
+                aria-live="polite"
               >
                 {talked
                   ? "Piggy: Meet me at Harbor — then the Carpet Dock south."
                   : nearTalk
-                    ? "Press E to talk"
+                    ? `${interactPhrase} · or tap below`
                     : "Walk to Piggy"}
               </p>
               {nearTalk && !talked ? (
@@ -427,7 +439,7 @@ export function AshoreComprehensionTutorial({
 
       <footer className="relative z-[2] shrink-0 px-4 pb-3 pt-1 text-center">
         <p className="text-[11px] uppercase tracking-wider text-white/45">
-          Chamber {index + 1} / {STEPS.length} · Esc · Leave
+          Chamber {index + 1} / {STEPS.length} · Leave · {cancelPrompt.label}
         </p>
         <div className="mx-auto mt-2 flex max-w-xs justify-center gap-1.5">
           {STEPS.map((id, i) => (

@@ -10,6 +10,7 @@ import {
 } from "@/game-ui";
 
 import { HomeHubView } from "./views/HomeHubView";
+import { AshoreComprehensionTutorial } from "./views/AshoreComprehensionTutorial";
 import { TravelMapView } from "./views/TravelMapView";
 import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
@@ -278,6 +279,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     return false;
   });
   const [bootHubHandled, setBootHubHandled] = useState(false);
+  const [ashoreReplayOpen, setAshoreReplayOpen] = useState(false);
 
   const [activeIslandId, setActiveIslandId] = useState<string | null>(null);
   const activeIsland = useMemo(
@@ -2431,6 +2433,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onOpenArcade={() => setView("arcade")}
             onOpenStudio={() => setView("studio")}
             onReplayIntro={onReplayIntro}
+            onReplayAshoreChambers={() => setAshoreReplayOpen(true)}
             onOpenAnalytics={() => setShowAnalytics(true)}
             onResume={() => {
               const id = save.currentIslandId || HUB_ISLAND_ID;
@@ -2748,6 +2751,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             <LazyAnalyticsExport onClose={() => setShowAnalytics(false)} />
           </Suspense>
         </GameModal>
+
+        {ashoreReplayOpen ? (
+          <AshoreComprehensionTutorial
+            character={save?.character ?? BASE_VOYAGER}
+            onComplete={() => setAshoreReplayOpen(false)}
+          />
+        ) : null}
       </GameTooltipProvider>
     </GameViewport>
   );

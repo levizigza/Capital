@@ -4,6 +4,7 @@
  */
 
 import type { DialogueGraph, IslandNpc, ProfileText } from "../types";
+import { resolveControlPlaceholders } from "@/input";
 import { HARBOR_LOCAL_CAST, getMascot, type MoneyMascotId } from "../moneyCast";
 import {
   normalizeHubGuidedIntro,
@@ -382,7 +383,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
   // One concept per step — never pitch Outfitter / Capsule before Talk → Carpet → Cove.
   const lines: Record<string, { text: string; next?: string; choice?: string; follow?: string }> = {
     meet_guide: {
-      text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with WASD or the walk pad, talk with E. Coin Bag sticks with you.",
+      text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with {move}, talk with {interact}. Coin Bag sticks with you.",
       choice: "Nice to meet you!",
       next: "meet_b",
       // Celebrate Talk only — voyage coach names the carpet next.
@@ -390,7 +391,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
         "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
     },
     to_dock: {
-      text: "Carpet Dock is that way. Open the Archipelago map and board for Coincraft Cove — your first painting!",
+      text: "Carpet Dock is that way. Open the Archipelago map ({map}) and board for Coincraft Cove — your first painting!",
       choice: "To the carpet!",
     },
     done: {
@@ -405,6 +406,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
       ? "done"
       : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
   const beat = lines[live] ?? lines.done!;
+  const spoken = resolveControlPlaceholders(beat.text);
   return {
     id: "dlg_harbor_piggy_penny_guided",
     startNodeId: "g1",
@@ -412,7 +414,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
       {
         id: "g1",
         speaker: "Piggy Penny",
-        text: beat.text,
+        text: spoken,
         choices: [
           {
             id: "ok",

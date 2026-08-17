@@ -9,6 +9,7 @@ import { capitalMusic } from "../audio/capitalMusic";
 import type { MoneyOrganId } from "../moneyOrgans";
 import { signatureTiming, type TakeCinemaPhase } from "@/qa/signatureLoop";
 import { prefersReducedMotion } from "../a11yMotion";
+import { actionBindingLabel } from "@/input";
 import { capitalOrganEyebrow } from "../titleVoice";
 import { scarOrganName } from "../worldMemory";
 import { triggerJuice } from "@/juice";
@@ -85,11 +86,15 @@ export function TakeHushOverlay({
 
   const organWord = scarOrganName(organId);
 
+  const cancelLabel = actionBindingLabel("cancel");
+
   return (
     <div
       className="pointer-events-auto absolute inset-0 z-[70] flex flex-col justify-end"
       role="dialog"
       aria-label="Quiet after the Take"
+      aria-live="polite"
+      aria-atomic="true"
       data-testid="take-hush-overlay"
       data-cinema-phase={phase}
       data-nav-escape="window"
@@ -105,13 +110,14 @@ export function TakeHushOverlay({
           <p
             className="cap-display text-sm tracking-[0.35em] text-white/55"
             data-testid="take-cinema-hush"
+            aria-live="polite"
           >
-            …
+            Quiet after your Take…
           </p>
         ) : null}
 
         {phase === "mark" ? (
-          <div data-testid="take-cinema-mark">
+          <div data-testid="take-cinema-mark" aria-live="polite">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-100/80">
               {capitalOrganEyebrow(organId)}
             </p>
@@ -131,7 +137,7 @@ export function TakeHushOverlay({
         ) : null}
 
         {phase === "line" ? (
-          <div className="px-1 text-center" data-testid="take-cinema-line">
+          <div className="px-1 text-center" data-testid="take-cinema-line" aria-live="polite">
             <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100/90">
               Quiet after the Take
             </p>
@@ -157,11 +163,13 @@ export function TakeHushOverlay({
               Carpet home — Harbor felt that
             </p>
             <p className="mt-1 text-[11px] font-semibold tracking-wide text-white/80">
-              Esc · Leave · board the Money Carpet
+              Leave · {cancelLabel} · board the Money Carpet
             </p>
           </div>
         ) : (
-          <p className="mt-6 text-[11px] tracking-wide text-white/55">Esc · Leave</p>
+          <p className="mt-6 text-[11px] tracking-wide text-white/55" aria-live="polite">
+            Leave · {cancelLabel}
+          </p>
         )}
       </div>
     </div>
