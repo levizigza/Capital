@@ -338,6 +338,7 @@ function MapScene({
 export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) {
   const [hint, setHint] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const reduced = prefersReducedMotion();
   const [cueOn, setCueOn] = useState(() => !startCueDismissed());
   const [skipCanvas, setSkipCanvas] = useState(() => {
     try {
@@ -346,9 +347,7 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
       return false;
     }
   });
-  const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const reduced = prefersReducedMotion();
 
   const earlyJourney = !hasCompletedCoveChange(save);
   const showHarborCue = cueOn && earlyJourney;

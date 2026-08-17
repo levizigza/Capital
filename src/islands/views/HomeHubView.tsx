@@ -1178,6 +1178,7 @@ export function HomeHubView({
                     organId={latestOrgan}
                     scarMeta={{ id: latestPlaque.id, islandId: latestPlaque.islandId }}
                     previewUrl={feltPreviewUrl}
+                    highContrast={a11y.highContrast}
                     onShare={async () => {
                       try {
                         const result = await shareHarborFeltCard({

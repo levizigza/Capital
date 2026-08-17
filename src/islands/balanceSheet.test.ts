@@ -18,9 +18,12 @@ import {
   applyPayday,
   createDefaultVoyagerLedger,
   freedomPlazaChip,
+  isSealChasing,
   netCashflow,
 } from "./voyagerLedger";
 import coincraft from "./content/coincraft-cove.islands.json";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const COVE = coincraft.islands[0]!;
 
@@ -131,6 +134,7 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     expect(
       freedomPlazaChip({ freed: false, boatLabel: "Threadbare rug", ledger: base }),
     ).toBeNull();
+    expect(isSealChasing(base)).toBe(false);
 
     const afterDeals = {
       ...base,
@@ -140,6 +144,7 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
       ],
     };
     expect(netCashflow(afterDeals)).toBe(30);
+    expect(isSealChasing(afterDeals)).toBe(true);
     const chase = freedomPlazaChip({
       freed: false,
       boatLabel: "Threadbare rug",
@@ -155,5 +160,12 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
         ledger: { ...afterDeals, harborEscaped: true },
       }),
     ).toBe("Freedom Seal · Fortune flyer");
+  });
+
+  it("ledger HUD only shows Seal chase chrome when chasing", () => {
+    const hud = readFileSync(join(__dirname, "views/VoyagerLedgerHud.tsx"), "utf8");
+    expect(hud).toMatch(/isSealChasing/);
+    expect(hud).toMatch(/data-seal-chase/);
+    expect(hud).toMatch(/chaseOn \?/);
   });
 });

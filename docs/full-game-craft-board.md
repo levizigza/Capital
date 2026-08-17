@@ -16,59 +16,55 @@
 **Overall %** = mean of pillars 0–17 (equal weight).  
 **Human Pass** stays **0%** until a fresh-profile cold retell of the signature loop.
 
+**Honest ceiling without Human Pass:** ~88–89% (all pillars provisional). **100% requires cold retell.**
+
 ---
 
-## Latest — Pass I (2026-08-17)
+## Latest — Pass L (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **76%** |
+| **Overall craft** | **82%** |
 | **Human Pass** | **0%** |
 
-### Pass I shipped (Audio)
-- Contract locks spectacle/share Memory-bed duck + Harbor-felt stingers
-
-### Pass H shipped (Content — Ledger Bank Memory)
-- Bank pads host **Memory** minigames on Harbor
+### Passes J–L shipped
+- **J Balance:** Seal-chase HUD chrome gated by `isSealChasing` (same as plaza chip)
+- **K A11y:** Interior Soft Beat reduce; share high-contrast; map/shore Settings-aware reduce
+- **L Tech + Content:** Shore Canvas failsafe → flat hotspots; structure pads name organ verb
 
 ### Pass log
 | Pass | Focus | Overall |
 |------|--------|--------:|
-| A | Named Seed islands + flat fallback + Harbor cue | 62% |
-| B | Spine organ shore + defer Harbor ledger | 64% |
-| C | Take hush captions + Carpet coach | 66% |
-| D | Shore Soft Beat crown beacons | 68% |
-| E | Organ-named fail dignity + credit parity | 70% |
-| F | Organ progression lock language on map chips | 72% |
-| G | Talk Battle organ listen/speak chrome | 73% |
-| H | Ledger Bank Memory minigames | 75% |
-| I | Share/spectacle Memory-bed duck contract | **76%** |
+| A–I | Map → fantasy → loop → feel → fail → prog → talk → Bank → audio | 76% |
+| J | Balance Seal-chase HUD honesty | 78% |
+| K | A11y reduce + high-contrast share | 80% |
+| L | Shore failsafe + organ pad labels | **82%** |
 
 ---
 
-## Pillar board (after Pass H)
+## Pillar board (after Pass L)
 
 | # | Pillar | % | Band | Evidence / gap |
 |---|--------|--:|------|----------------|
-| 0 | Vision | 75 | provisional | Organ language across map/shore/fail/Bank |
-| 1 | Fantasy | 74 | playable↑ | Genre + ledger parked; cold Ashore→Cove owed |
-| 2 | Core loop | 70 | playable↑ | Hush + Carpet coach; human micro-loop owed |
-| 3 | Goals / failure | 72 | playable↑ | Organ-named dignity fail |
-| 4 | Feel | 72 | playable↑ | Shore Soft Beat crowns |
-| 5 | Progression | 70 | playable↑ | Organ lock chips |
-| 6 | Encounters | 68 | playable↑ | Talk organ chrome |
-| 7 | Content | 76 | provisional | Bank Memory hosts; deepen Cove/Paycheck/Credit pads |
-| 8 | Balance | 64 | playable | Freedom sheet |
-| 9 | UI / comms | 76 | provisional | Map + organ HUD + lock reasons |
-| 10 | Art direction | 74 | playable↑ | Soft Beat shore + Seed map |
-| 11 | Audio | 62 | playable | Stingers + duck wired; cold mute owed |
-| 12 | Story | 66 | playable↑ | Memory Bank retell path |
-| 13 | Onboarding | 70 | provisional | Tutorial solid; Human Pass 0 |
-| 14 | Technical | 69 | playable | Map fail key split |
-| 15 | Accessibility | 64 | playable | Beacon respects reduce |
-| 16 | Testing | 75 | provisional | Bank + progression + map contracts |
-| 17 | Scope | 72 | provisional | Freeze holds |
+| 0 | Vision | 78 | provisional | Organ language across map/shore/fail/Bank/pads |
+| 1 | Fantasy | 76 | provisional | Genre + ledger parked; cold Ashore→Cove owed |
+| 2 | Core loop | 74 | playable↑ | Hush + Carpet; human micro-loop owed |
+| 3 | Goals / failure | 74 | playable↑ | Organ-named dignity fail |
+| 4 | Feel | 76 | provisional | Soft Beat crowns + reduce |
+| 5 | Progression | 74 | playable↑ | Organ locks + Seal chase honesty |
+| 6 | Encounters | 70 | playable↑ | Talk organ chrome |
+| 7 | Content | 80 | provisional | Bank Memory + organ pad labels |
+| 8 | Balance | 78 | provisional | isSealChasing HUD gate |
+| 9 | UI / comms | 78 | provisional | Map + organ HUD + lock reasons |
+| 10 | Art direction | 76 | provisional | Soft Beat + Seed map |
+| 11 | Audio | 70 | playable↑ | Duck contracts; cold mute owed |
+| 12 | Story | 70 | playable↑ | Memory Bank + organ pads |
+| 13 | Onboarding | 72 | provisional | Tutorial solid; Human Pass 0 |
+| 14 | Technical | 80 | provisional | Map + shore failsafe flat escapes |
+| 15 | Accessibility | 78 | provisional | Reduce + high-contrast share |
+| 16 | Testing | 80 | provisional | New balance/a11y/failsafe contracts |
+| 17 | Scope | 74 | provisional | Freeze holds |
 
-**Mean ≈ 75%.**
+**Mean ≈ 82%.**
 
-Next: Audio cold mute · Balance · Structure pad deepen on Cove/Paycheck/Credit. **Human Pass stays 0** until cold retell — cannot claim 100% without it.
+Next: run cold Ashore→Cove retell to raise Human Pass; then Story/Onboarding/Core loop to iconic. Without human cold, **100% is not claimable**.
