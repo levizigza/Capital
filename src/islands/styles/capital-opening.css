@@ -1179,7 +1179,9 @@ html.capital-intro-active body {
   font-size: 1.05rem;
   cursor: pointer;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28);
-  animation: cap-enter-bob 1.9s ease-in-out infinite;
+  /* Never bob the hit target — infinite transform made the primary CTA unclickable
+     for real mice / Playwright / computer-use (element never "stable"). */
+  animation: none;
   transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease;
 }
 .cap-enter-boat:hover { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0, 0, 0, 0.28); background: #ffb845; }

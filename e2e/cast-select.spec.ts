@@ -12,13 +12,16 @@ test.describe("Street Fighter cast select", () => {
       await skip.click({ force: true });
     }
     await expect(page.getByTestId("opening-choose-voyager")).toBeVisible({ timeout: 20_000 });
-    // Framer motion keeps the CTA "unstable" for Playwright checks — DOM click is reliable.
-    // Keep the evaluate body free of TypeScript (it runs in the browser).
+    // Real mouse click — title CTA must stay layout-stable (no infinite bob).
     for (let attempt = 0; attempt < 3; attempt++) {
       if (await page.getByTestId("boot-cast-select").count()) break;
-      await page.getByTestId("opening-choose-voyager").evaluate((el) => {
-        el.click();
-      });
+      try {
+        await page.getByTestId("opening-choose-voyager").click({ timeout: 4_000 });
+      } catch {
+        await page.getByTestId("opening-choose-voyager").evaluate((el) => {
+          el.click();
+        });
+      }
       try {
         await page.getByTestId("boot-cast-select").waitFor({ state: "visible", timeout: 4_000 });
         break;

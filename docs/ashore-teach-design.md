@@ -1,5 +1,7 @@
 # Ashore Teach — Chamber 00 (iter 23)
 
+**Honest status:** **Gap / not iconic.** Soft-locks on boot CTA are being fixed; cold human retell still required before any Pass language.
+
 **Goal:** Short prove-it pad before Carpet — then the **first Cove→Harbor loop is the tutorial**.  
 **Research:** [ashore-tutorial-research.md](./ashore-tutorial-research.md)  
 **North stars:** Portal checklist → twist · Mario body-lesson · BotW teach-when-needed · Astro toy clarity · Hermans elegancy.

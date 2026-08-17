@@ -44,9 +44,11 @@ const TALK_R = 1.15;
 function MarkerMesh({
   marker,
   claimed,
+  onClaim,
 }: {
   marker: PracticeMarker;
   claimed: boolean;
+  onClaim?: (id: string) => void;
 }) {
   const mesh = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
@@ -56,7 +58,19 @@ function MarkerMesh({
     mesh.current.position.y = 0.08 + Math.sin(clock.elapsedTime * 2.2) * 0.04;
   });
   return (
-    <group position={marker.position}>
+    <group
+      position={marker.position}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!claimed) onClaim?.(marker.id);
+      }}
+      onPointerOver={() => {
+        if (!claimed) document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto";
+      }}
+    >
       <mesh ref={mesh} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.45, 0.75, 28]} />
         <meshStandardMaterial
@@ -288,7 +302,12 @@ function PracticeWorld({
 
       {mode === "walk"
         ? markers.map((m) => (
-            <MarkerMesh key={m.id} marker={m} claimed={claimed.includes(m.id)} />
+            <MarkerMesh
+              key={m.id}
+              marker={m}
+              claimed={claimed.includes(m.id)}
+              onClaim={onClaimMarker}
+            />
           ))
         : null}
       {mode === "talk" && talkTarget ? (

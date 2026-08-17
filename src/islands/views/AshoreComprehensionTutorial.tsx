@@ -216,7 +216,7 @@ export function AshoreComprehensionTutorial({
               }`}
             />
             {(stepId === "walk" || stepId === "talk") && !reduced ? (
-              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
+              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3]">
                 <TouchWalkPad />
               </div>
             ) : null}
@@ -247,7 +247,8 @@ export function AshoreComprehensionTutorial({
                 Walk your Voyager
               </h1>
               <p className="mt-2 max-w-md text-sm text-white/85">
-                Reach every glowing ring — this is how you explore Harbor. WASD or arrows.
+                Reach every glowing ring — this is how you explore Harbor. WASD, arrows, walk
+                pad, or tap a ring.
               </p>
               <p
                 className="mt-3 text-sm font-bold text-amber-100"
