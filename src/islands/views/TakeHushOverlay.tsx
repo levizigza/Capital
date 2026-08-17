@@ -59,15 +59,19 @@ export function TakeHushOverlay({
       onPhaseChange?.("mark");
       // Irreversible mark — distinct from Soft Beat lookout (mute-test Take beat).
       playCapitalSfx("take_mark");
-      // Hit-stop nudge when the organ mark flashes (juice checklist).
-      triggerJuice("reward", { burst: true });
+      // Footprint strip is the perceptual climax — skip juice burst that covers numbers.
+      if (!footprintLine) {
+        triggerJuice("reward", { burst: true });
+      }
       void analytics.track("core_loop_beat", { beat: "take_mark", organId });
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {
       setPhase("line");
       onPhaseChange?.("line");
-      triggerJuice("accept", { burst: true });
+      if (!footprintLine) {
+        triggerJuice("accept", { burst: true });
+      }
     }, t.revealMs);
 
     // doneMs (not holdEndMs) — cold unseeded path needs the Carpet CTA beat.
@@ -77,7 +81,7 @@ export function TakeHushOverlay({
       window.clearTimeout(tLine);
       window.clearTimeout(tEnd);
     };
-  }, [onDone, onPhaseChange, organId, islandId]);
+  }, [onDone, onPhaseChange, organId, islandId, footprintLine]);
 
   const organWord = scarOrganName(organId);
 

@@ -19,6 +19,10 @@ export const COVE_TREAT_TAB_ID = "cove_take_treat_tab";
 
 export const COVE_TAKE_KEY = "cove_save_vs_spend";
 
+/** Monthly amounts written by the first Take — keep preview + apply in sync. */
+export const COVE_JAR_MONTHLY = 5;
+export const COVE_TREAT_MONTHLY = 5;
+
 export type CoveTakeStance = "save" | "spend";
 
 export type FirstScenarioBeat =
@@ -48,7 +52,7 @@ export function applyCoveTakeLedgerFootprint(
         id: COVE_JAR_HOLD_ID,
         name: "Cove Jar Hold",
         kind: "asset",
-        monthlyAmount: 5,
+        monthlyAmount: COVE_JAR_MONTHLY,
         icon: "🫙",
       }),
     };
@@ -60,7 +64,7 @@ export function applyCoveTakeLedgerFootprint(
       id: COVE_TREAT_TAB_ID,
       name: "Cove Treat Tab",
       kind: "liability",
-      monthlyAmount: 5,
+      monthlyAmount: COVE_TREAT_MONTHLY,
       icon: "🍬",
     }),
   };
@@ -81,6 +85,30 @@ export function firstScenarioCashflowDelta(save: IslandSaveV1): number {
   const ledger = ensureLedger(save.voyagerLedger);
   const base = createBaselineCashflow();
   return netCashflow(ledger) - base;
+}
+
+/**
+ * Preview before the Take writes — trains WHAT TO WATCH at the decision.
+ * Same wording as post-apply feedback lines.
+ */
+export function coveTakeStanceFootprintPreview(stance: CoveTakeStance): string {
+  if (stance === "save") {
+    return `Monthly keep +$${COVE_JAR_MONTHLY}/mo · Cove Jar Hold`;
+  }
+  return `Monthly drain −$${COVE_TREAT_MONTHLY}/mo · Cove Treat Tab`;
+}
+
+/** When a Talk choice is the Cove irreversible Take, return its footprint preview. */
+export function coveTakeChoiceFootprintPreview(
+  effects: { type: string; key?: string; choiceId?: string }[] | undefined,
+): string | null {
+  const irr = effects?.find(
+    (e) => e.type === "setIrreversible" && e.key === COVE_TAKE_KEY,
+  );
+  if (!irr?.choiceId) return null;
+  const stance = coveTakeStanceFromChoiceId(irr.choiceId);
+  if (!stance) return null;
+  return coveTakeStanceFootprintPreview(stance);
 }
 
 /**

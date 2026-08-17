@@ -172,6 +172,7 @@ import {
   applyCoveTakeLedgerFootprint,
   coveTakeStanceFromChoiceId,
   COVE_TAKE_KEY,
+  takeFootprintFeedbackLine,
 } from "./firstFinancialScenario";
 
 type IslandsAppProps = {
@@ -1508,6 +1509,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return piggyHomecomingGraph(save?.harborHomecoming?.message, {
         scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(upcoming, 1),
+        footprintLine: save ? takeFootprintFeedbackLine(save) : null,
       });
     }
     // Guided Piggy graphs share one id — never use the static "done" mint from HARBOR_DIALOGUES.

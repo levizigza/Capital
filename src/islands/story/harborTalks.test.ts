@@ -68,6 +68,20 @@ describe("harborTalks", () => {
     expect(g.nodes.find((n) => n.id === "h2")?.text).toMatch(/Coin holds · Jar before treat/);
     expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Paycheck Peninsula/);
     expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Memory keeps/);
+
+    const withMath = piggyHomecomingGraph("Piggy Penny: Home.", {
+      scars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          label: "Jar before treat",
+        },
+      ],
+      footprintLine: "Monthly keep +$5/mo · Cove Jar Hold",
+    });
+    expect(withMath.nodes.find((n) => n.id === "h2")?.text).toMatch(
+      /Monthly keep \+\$5\/mo · Cove Jar Hold/,
+    );
   });
 
   it("gives distinct tip beats per mascot role", () => {

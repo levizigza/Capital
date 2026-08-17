@@ -83,6 +83,13 @@ describe("iconic craft — Piggy / Coin Bag bond", () => {
     });
     expect(tip.tip).toMatch(/Plinth|Jar before treat/);
     expect(tip.coach.toLowerCase()).toMatch(/harbor felt|share|plinth/);
+
+    const withMath = coinBagHarborTip(null, {
+      latestScarLabel: "Jar before treat",
+      plinthGlow: true,
+      footprintLine: "Monthly keep +$5/mo · Cove Jar Hold",
+    });
+    expect(withMath.coach).toMatch(/Monthly keep \+\$5\/mo · Cove Jar Hold/);
   });
 
   it("deepens homecoming dialogue by bondBeat", () => {

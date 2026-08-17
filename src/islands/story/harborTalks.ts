@@ -467,6 +467,8 @@ export function piggyHomecomingGraph(
   opts?: {
     scars?: TalkScar[];
     bondBeat?: number;
+    /** Real ledger footprint after Cove Take — diegetic math echo */
+    footprintLine?: string | null;
   },
 ): DialogueGraph {
   const opener =
@@ -509,8 +511,9 @@ export function piggyHomecomingGraph(
       : digressionNamed.length > 0
         ? `Plaza gossip still carries ${digressionNamed.join(" · ")}.`
         : null;
+  const mathBit = opts?.footprintLine?.trim() || null;
   const scarLine =
-    [weightLine, kidLine, shelfBit].filter(Boolean).join(" ") ||
+    [weightLine, kidLine, mathBit, shelfBit].filter(Boolean).join(" ") ||
     "Coin Bag and I watched you grow.";
 
   const nextPainting =

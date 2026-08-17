@@ -32,11 +32,13 @@ describe("first financial scenario wire", () => {
 
     const hush = readFileSync(join(__dirname, "views/TakeHushOverlay.tsx"), "utf8");
     expect(hush).toMatch(/take-cinema-footprint/);
+    expect(hush).toMatch(/if \(!footprintLine\)/);
 
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
     expect(app).toMatch(/Got \$\{item\.name\}/);
     expect(app).toMatch(/organ_coin/);
     expect(app).toMatch(/\+\$\{rewards\.coins\} coins/);
+    expect(app).toMatch(/footprintLine: save \? takeFootprintFeedbackLine/);
 
     const mg = readFileSync(join(__dirname, "minigames/ModularMinigame.tsx"), "utf8");
     expect(mg).toMatch(/minigame-clear-at/);
@@ -52,5 +54,23 @@ describe("first financial scenario wire", () => {
     // Cashflow polarity must not rely on emerald/rose alone
     expect(hud).not.toMatch(/cfPositive \? "text-emerald/);
     expect(hud).not.toMatch(/cfPositive \? .*text-rose/);
+  });
+
+  it("perceptual literacy: decide preview + Harbor echo without modal chrome", () => {
+    const doc = readFileSync(join(__dirname, "../../docs/ftue/PERCEPTUAL_LITERACY.md"), "utf8");
+    expect(doc).toMatch(/WHAT TO WATCH/);
+    expect(doc).toMatch(/WHEN TO WATCH/);
+    expect(doc).toMatch(/layout/);
+
+    const talk = readFileSync(join(__dirname, "views/TalkBattleScreen.tsx"), "utf8");
+    expect(talk).toMatch(/coveTakeChoiceFootprintPreview/);
+    expect(talk).toMatch(/talk-choice-footprint-/);
+
+    const buddy = readFileSync(join(__dirname, "story/coinBagBuddy.ts"), "utf8");
+    expect(buddy).toMatch(/footprintLine/);
+    expect(buddy).toMatch(/Harbor felt that · \$\{math\}/);
+
+    const hub = readFileSync(join(__dirname, "views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/footprintLine: takeFootprintFeedbackLine/);
   });
 });

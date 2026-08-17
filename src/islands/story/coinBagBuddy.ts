@@ -89,6 +89,8 @@ export function coinBagHarborTip(
     witnessMyth?: string | null;
     /** Cashflow → sky literacy tip (pattern #60 / weather teach) */
     weatherLiteracy?: string | null;
+    /** Take footprint sentence — Plinth afterglow echoes hush math */
+    footprintLine?: string | null;
   },
 ): CoinBagBuddyTip {
   const tip = coinBagHarborTipRaw(guided, opts);
@@ -143,9 +145,12 @@ function coinBagHarborTipRaw(
   }
 
   if (opts?.plinthGlow && opts?.latestScarLabel) {
+    const math = opts.footprintLine?.trim();
     return {
       tip: `Plinth glows — “${opts.latestScarLabel}”`,
-      coach: "Harbor felt that. Share the card, then find Piggy — she’ll name what’s newly open on the Carpet.",
+      coach: math
+        ? `Harbor felt that · ${math}. Share the card, then find Piggy.`
+        : "Harbor felt that. Share the card, then find Piggy — she’ll name what’s newly open on the Carpet.",
     };
   }
 

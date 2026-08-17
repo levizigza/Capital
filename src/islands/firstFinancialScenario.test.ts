@@ -16,6 +16,8 @@ import {
   snapshotFirstFinancialScenario,
   firstScenarioCashflowDelta,
   takeFootprintFeedbackLine,
+  coveTakeStanceFootprintPreview,
+  coveTakeChoiceFootprintPreview,
 } from "./firstFinancialScenario";
 
 function baseSave(over: Partial<IslandSaveV1> = {}): IslandSaveV1 {
@@ -185,5 +187,25 @@ describe("first financial scenario — Cove Take alt paths (real ledger)", () =>
     expect(takeFootprintFeedbackLine(jar)).toMatch(/Monthly keep \+\$5\/mo · Cove Jar Hold/);
     const tab = applyCoveTakeLedgerFootprint(baseSave(), "spend");
     expect(takeFootprintFeedbackLine(tab)).toMatch(/Monthly drain −\$5\/mo · Cove Treat Tab/);
+  });
+
+  it("decision preview matches post-apply feedback (perceptual literacy)", () => {
+    expect(coveTakeStanceFootprintPreview("save")).toBe(
+      takeFootprintFeedbackLine(applyCoveTakeLedgerFootprint(baseSave(), "save")),
+    );
+    expect(coveTakeStanceFootprintPreview("spend")).toBe(
+      takeFootprintFeedbackLine(applyCoveTakeLedgerFootprint(baseSave(), "spend")),
+    );
+    expect(
+      coveTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: COVE_TAKE_KEY, choiceId: "save" },
+      ]),
+    ).toMatch(/keep \+\$5/);
+    expect(
+      coveTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: COVE_TAKE_KEY, choiceId: "spend" },
+      ]),
+    ).toMatch(/drain −\$5/);
+    expect(coveTakeChoiceFootprintPreview([{ type: "giveItem", key: "x" }])).toBeNull();
   });
 });

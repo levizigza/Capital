@@ -45,6 +45,7 @@ import {
 } from "../story/hubGuidedIntro";
 import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
+import { takeFootprintFeedbackLine } from "../firstFinancialScenario";
 import { peekSoftBeatArm, softBeatArmWhisper, readSoftBeatTrail, softBeatTrailLabel } from "../softBeatArm";
 import { digressionScarGaps, digressionShelfRows, digressionShelfTotal } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
@@ -647,6 +648,7 @@ export function HomeHubView({
     bondStrain,
     latestScarLabel: latestPlaque?.label ?? null,
     plinthGlow: plinthGlow || feltShareOpen,
+    footprintLine: takeFootprintFeedbackLine(save),
     day2Echo: Boolean(save.harborRitual?.today.rumorId?.startsWith("scar_echo_")),
     carpetTierLabel: boat.label,
     creditMastery: bossUnlockProgress(save),
