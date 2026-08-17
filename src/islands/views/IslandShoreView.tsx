@@ -37,6 +37,7 @@ import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
+import { isSideShoreTravelId } from "../spineArchipelago";
 import type { AccessibilitySettings } from "../settings";
 import {
   harborScarPlaques,
@@ -139,6 +140,7 @@ export function IslandShoreView({
   );
   const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
+  const sideShore = isSideShoreTravelId(island.id);
   const culture = useMemo(() => getIslandCulture(island), [island]);
 
   useEffect(() => {
@@ -357,7 +359,17 @@ export function IslandShoreView({
               </span>
               <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
             </div>
-            {nextStep ? (
+            {sideShore ? (
+              <div
+                className="mt-1 max-w-sm rounded-xl border border-sky-300/30 bg-black/40 px-2.5 py-1.5 text-[11px] text-sky-50"
+                data-testid="shore-next-verb"
+                data-free-roam="1"
+              >
+                <span className="font-bold uppercase tracking-wide text-sky-200">Free roam</span>
+                {" · "}
+                Side shore — stray as you like; main story waits on the spine
+              </div>
+            ) : nextStep ? (
               <div
                 className="mt-1 max-w-sm rounded-xl border border-amber-300/35 bg-black/40 px-2.5 py-1.5 text-[11px] text-amber-50"
                 data-testid="shore-next-verb"

@@ -32,6 +32,8 @@ describe("iconic whole-game criteria contracts", () => {
   it("keeps shore HUD to organ next-verb — no culture/cast stack", () => {
     expect(shore).toMatch(/shore-next-verb/);
     expect(shore).toMatch(/organVerbChip/);
+    expect(shore).toMatch(/Free roam/);
+    expect(shore).toMatch(/data-free-roam/);
     expect(shore).not.toMatch(/Cast:/);
     expect(shore).not.toMatch(/signatureMachines/);
     expect(shore).not.toMatch(/genreShoreBlurb/);
