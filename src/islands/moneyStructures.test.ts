@@ -5,6 +5,7 @@ import {
   CREDIT_INTEREST_KEEP,
   HARBOR_LEDGER_BANK,
   PAYCHECK_PAYROLL_TOWER,
+  hostIslandForStructureMinigame,
   moneyStructureForIsland,
 } from "./moneyStructures";
 import {
@@ -99,7 +100,8 @@ describe("money structures", () => {
     expect(s?.id).toBe(HARBOR_LEDGER_BANK.id);
     expect(s?.theme).toBe("bank");
     expect(s?.entryVerb.toLowerCase()).toMatch(/vault/);
-    expect(s?.parts.some((p) => p.minigameId === "mg_inbox_storm")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_harbor_safe_memory")).toBe(true);
+    expect(s?.parts.some((p) => p.minigameId === "mg_harbor_ledger_mail")).toBe(true);
     expect(s?.parts.some((p) => p.softBeat === "ledger")).toBe(true);
   });
 
@@ -190,5 +192,11 @@ describe("money structures", () => {
     expect(keep?.label).toMatch(/Interest Keep/i);
     expect(keep?.structureId).toBe("credit_interest_keep");
     expect(keep?.subtitle?.toLowerCase()).toMatch(/spiral|interest/);
+  });
+
+  it("hosts Bank Memory minigames on Harbor Haven", () => {
+    expect(hostIslandForStructureMinigame("mg_harbor_safe_memory")).toBe(HARBOR_HAVEN_ID);
+    expect(hostIslandForStructureMinigame("mg_harbor_ledger_mail")).toBe(HARBOR_HAVEN_ID);
+    expect(hostIslandForStructureMinigame("mg_treasure_vault")).toBe(COVE_ISLAND_ID);
   });
 });

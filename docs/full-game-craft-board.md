@@ -18,17 +18,18 @@
 
 ---
 
-## Latest — Pass G (2026-08-17)
+## Latest — Pass H (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **73%** |
+| **Overall craft** | **75%** |
 | **Human Pass** | **0%** |
 
-### Pass G shipped (Encounters)
-- Talk Battle listen/speak chrome names the organ verb on spine shores
+### Pass H shipped (Content — Ledger Bank Memory)
+- Bank pads host **Memory** minigames on Harbor (`mg_harbor_safe_memory`, `mg_harbor_ledger_mail`)
+- No more Coin/Clock arcade hosted as Memory Bank rooms
 
-### Prior passes
+### Pass log
 | Pass | Focus | Overall |
 |------|--------|--------:|
 | A | Named Seed islands + flat fallback + Harbor cue | 62% |
@@ -37,33 +38,34 @@
 | D | Shore Soft Beat crown beacons | 68% |
 | E | Organ-named fail dignity + credit parity | 70% |
 | F | Organ progression lock language on map chips | 72% |
-| G | Talk Battle organ listen/speak chrome | **73%** |
+| G | Talk Battle organ listen/speak chrome | 73% |
+| H | Ledger Bank Memory minigames | **75%** |
 
 ---
 
-## Pillar board (after Pass F)
+## Pillar board (after Pass H)
 
 | # | Pillar | % | Band | Evidence / gap |
 |---|--------|--:|------|----------------|
-| 0 | Vision | 74 | playable↑ | Spine organ language; human recite owed |
-| 1 | Fantasy | 72 | playable↑ | Genre + early ledger parked; cold Ashore→Cove owed |
+| 0 | Vision | 75 | provisional | Organ language across map/shore/fail/Bank |
+| 1 | Fantasy | 74 | playable↑ | Genre + ledger parked; cold Ashore→Cove owed |
 | 2 | Core loop | 70 | playable↑ | Hush + Carpet coach; human micro-loop owed |
-| 3 | Goals / failure | 72 | playable↑ | Organ-named dignity fail + credit parity |
+| 3 | Goals / failure | 72 | playable↑ | Organ-named dignity fail |
 | 4 | Feel | 72 | playable↑ | Shore Soft Beat crowns |
-| 5 | Progression | 70 | playable↑ | Organ lock chips + Seal language |
-| 6 | Encounters | 64 | playable | Alma / Priya / Scanner; deepen Talk organs |
-| 7 | Content | 67 | playable | spineContentRegistry |
-| 8 | Balance | 64 | playable↑ | Lock copy ties to Freedom Seal |
-| 9 | UI / comms | 76 | provisional | Map + organ HUD + visible lock reasons |
+| 5 | Progression | 70 | playable↑ | Organ lock chips |
+| 6 | Encounters | 68 | playable↑ | Talk organ chrome |
+| 7 | Content | 76 | provisional | Bank Memory hosts; deepen Cove/Paycheck/Credit pads |
+| 8 | Balance | 64 | playable | Freedom sheet |
+| 9 | UI / comms | 76 | provisional | Map + organ HUD + lock reasons |
 | 10 | Art direction | 74 | playable↑ | Soft Beat shore + Seed map |
-| 11 | Audio | 60 | playable | Stingers; share duck cold owed |
-| 12 | Story | 65 | playable↑ | Organ fail/locks; human retell owed |
+| 11 | Audio | 62 | playable | Stingers + duck wired; cold mute owed |
+| 12 | Story | 66 | playable↑ | Memory Bank retell path |
 | 13 | Onboarding | 70 | provisional | Tutorial solid; Human Pass 0 |
 | 14 | Technical | 69 | playable | Map fail key split |
 | 15 | Accessibility | 64 | playable | Beacon respects reduce |
-| 16 | Testing | 74 | provisional | Progression + fail + map contracts |
+| 16 | Testing | 75 | provisional | Bank + progression + map contracts |
 | 17 | Scope | 72 | provisional | Freeze holds |
 
-**Mean ≈ 72%.**
+**Mean ≈ 75%.**
 
-Next: Encounters Talk organ deepen · Audio share duck · Content spine interiors. Human Pass stays 0 until cold retell.
+Next: Audio cold mute · Balance · Structure pad deepen on Cove/Paycheck/Credit. **Human Pass stays 0** until cold retell — cannot claim 100% without it.
