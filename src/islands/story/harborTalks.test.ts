@@ -135,6 +135,43 @@ describe("harborTalks", () => {
     expect(String(rumor?.nodes[0]?.text ?? "")).toMatch(/Collector|canyon|Bank of Obligation/i);
   });
 
+  it("tip-hat series leads name digression scars with vivid free-roam receipts", () => {
+    const scars = [
+      {
+        id: "cc_shell_impulse",
+        islandId: "coincraft_cove",
+        label: "Bought Shelly’s shell want",
+        kind: "npc_tone" as const,
+      },
+    ];
+    for (const id of ["cashmere", "mula_mami", "jade_fortune"] as const) {
+      const g = resolveHarborDialogue(id, { scars });
+      expect(g?.id).toMatch(/scar_memory/);
+      const mid = String(g?.nodes.find((n) => n.id === "s1")?.text ?? "");
+      expect(mid).toMatch(/Bought Shelly|shell want|digression|side/i);
+      expect(mid).not.toMatch(/Pay yourself first/i);
+      expect(mid).not.toMatch(/Automate a savings/i);
+    }
+  });
+
+  it("series leads name spine plaques as living receipts, not tip lists", () => {
+    const g = resolveHarborDialogue("cashwell", {
+      scars: [
+        {
+          id: "cove_saver_plaque",
+          islandId: "coincraft_cove",
+          label: "Jar before treat",
+        },
+      ],
+    });
+    expect(g?.id).toMatch(/scar_memory/);
+    expect(String(g?.nodes[0]?.text ?? "")).toMatch(/Jar before treat/);
+    expect(String(g?.nodes.find((n) => n.id === "s1")?.text ?? "")).toMatch(/Plinth|Coin|receipt/i);
+    expect(String(g?.nodes.find((n) => n.id === "s1")?.text ?? "")).not.toMatch(
+      /Always up — after you face the Take/i,
+    );
+  });
+
   it("Piggy free-roam names digression scars with weight, not a lecture", () => {
     const g = resolveHarborDialogue("piggy_penny", {
       guidedStep: "done",

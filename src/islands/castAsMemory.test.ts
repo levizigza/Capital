@@ -23,6 +23,39 @@ describe("cast-as-memory", () => {
     expect(naming.length).toBeGreaterThanOrEqual(Math.floor(lives.length * 0.5));
   });
 
+  it("rotates living ambient lines for plaza locals when scar echo exists", () => {
+    const lives = buildHarborNpcLives();
+    const coiny = lives.find((l) => l.mascotId === "coiny")!;
+    const morning = harborNpcPose(coiny, "morning", null, {
+      label: "Jar before treat",
+      dayOffset: "same",
+      organ: "coin",
+    });
+    const evening = harborNpcPose(coiny, "evening", null, {
+      label: "Jar before treat",
+      dayOffset: "same",
+      organ: "coin",
+    });
+    expect(morning.line).toMatch(/Jar before treat/);
+    expect(evening.line).toMatch(/Jar before treat/);
+    expect(morning.line).not.toEqual(evening.line);
+  });
+
+  it("gives tip-hat series leads a short ambientNear when no scar", () => {
+    const lives = buildHarborNpcLives();
+    const cashwell = lives.find((l) => l.mascotId === "cashwell")!;
+    expect(cashwell.ambientNear).toMatch(/Tip the hat|Plinth/i);
+    const pose = harborNpcPose(cashwell, "midday", null, null);
+    expect(pose.line).toBe(cashwell.ambientNear);
+    expect(pose.line.length).toBeLessThan(90);
+  });
+
+  it("keeps more plaza locals dynamic so streets feel populated", () => {
+    const lives = buildHarborNpcLives().filter((l) => l.mascotId !== "piggy_penny");
+    const dynamic = lives.filter((l) => l.motion === "dynamic");
+    expect(dynamic.length).toBeGreaterThanOrEqual(4);
+  });
+
   it("gives Piggy a free-roam memory talk when plaques exist", () => {
     const g = piggyMemoryGraph([{ label: "Jar before treat", islandId: "coincraft_cove", id: "cove_saver_plaque" }]);
     expect(g.nodes[0]?.text).toMatch(/Jar before treat/);

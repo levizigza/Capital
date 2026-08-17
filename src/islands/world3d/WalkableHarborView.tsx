@@ -493,6 +493,7 @@ function PlazaScene({
   npcBodies,
   look,
   scarEcho = null,
+  npcMemory = null,
   plinthSpectacleActive = false,
   piggyPresenceBeat = false,
 }: {
@@ -522,6 +523,7 @@ function PlazaScene({
     dayOffset: "same" | "later";
     organ?: import("../moneyOrgans").MoneyOrganId;
   } | null;
+  npcMemory?: Record<string, { talks?: number; lastChoiceIds?: string[] }> | null;
   plinthSpectacleActive?: boolean;
   piggyPresenceBeat?: boolean;
 }) {
@@ -791,6 +793,8 @@ function PlazaScene({
             nearPlayer={nearNpcId === npc.mascotId}
             playerPos={playerPos}
             bodyOut={npcBodies}
+            memory={npcMemory?.[npc.mascotId] ?? null}
+            scarEcho={scarEcho}
           />
         );
       })}
@@ -1199,6 +1203,7 @@ export function WalkableHarborView({
           npcBodies={npcBodies}
           look={look}
           scarEcho={scarEcho}
+          npcMemory={npcMemory}
           plinthSpectacleActive={plinthSpectacleActive}
           piggyPresenceBeat={piggyPresenceBeat}
         />

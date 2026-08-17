@@ -677,6 +677,72 @@ function localScarReceiptBeat(
         : `Plinth glow, darling — ${organ}, “${label}.” Growth is style; memory is the receipt.`,
       bye: "Tip the hat. Tip the truth.",
     },
+    cashmere: {
+      mid: dig
+        ? `Side-aisle couture: “${label}.” I don’t lecture — I tailor the rumor to fit.`
+        : `Memory Courtyard stitched the ${organ} into “${label}.” Precision with feeling.`,
+      bye: dig ? "Grace when the gossip cools." : "Inherited. Intelligent. Remembered.",
+    },
+    peso_pedro: {
+      mid: dig
+        ? `¡Fiesta side-quest! “${label}” still dances past the tip jars.`
+        : `Small symbol, huge plaque — ${organ} says “${label}.” Celebration with a ledger.`,
+      bye: dig ? "Keep circulating." : "Stay liquid. Stay ledger-true.",
+    },
+    fortuna_fernanda: {
+      mid: dig
+        ? `Digression dressed for the plaza — “${label}.” Charm heard it first.`
+        : `Roses on the ${organ}: “${label}.” Abundance that remembers.`,
+      bye: dig ? "Blessed rumor, darling." : "Every entrance an occasion.",
+    },
+    billionaire_bao: {
+      mid: dig
+        ? `Quiet compound interest on gossip — “${label}.” No shout required.`
+        : `Subtle ${organ} filing: “${label}.” Legacy without noise.`,
+      bye: dig ? "Influence listens." : "Refined. Compounded.",
+    },
+    jade_fortune: {
+      mid: dig
+        ? `Jade doesn’t chase rumors — they arrive polished. “${label}.”`
+        : `Heirloom hush: the ${organ} still names “${label}.” Grace compounds.`,
+      bye: dig ? "Poised. Prosperous. Patient." : "Rooms remember her — and you.",
+    },
+    sultan_stacks: {
+      mid: dig
+        ? `Side streets wear crowns too. “${label}.” Treasure of a digression.`
+        : `Palace Plinth — ${organ}, “${label}.” Fortune favors the remembered Take.`,
+      bye: dig ? "Stack soft." : "Gold in every detail.",
+    },
+    dinar_dahlia: {
+      mid: dig
+        ? `Procession gossip: “${label}.” Radiant without a lecture.`
+        : `Treasure glow on the ${organ} — “${label}.” Spectacle with a spine.`,
+      bye: dig ? "Radiant rumor." : "Wonder in every ledger line.",
+    },
+    mansa_moneybaggs: {
+      mid: dig
+        ? `Caravan news: “${label}.” Side roads still write kingdoms.`
+        : `Trade-route ${organ}: “${label}.” Giving is royalty — memory is duty.`,
+      bye: dig ? "Uplift soft." : "Gold is a legacy.",
+    },
+    kandake_kash: {
+      mid: dig
+        ? `Community hush: “${label}.” Shared hands, shared streets.`
+        : `Crowned commerce names the ${organ} — “${label}.” Riches walk together.`,
+      bye: dig ? "Stride on." : "Treasure in motion.",
+    },
+    moneybagg_bro: {
+      mid: dig
+        ? `Big-play digression still hustling: “${label}.” No tip sheet — just streets.`
+        : `Empire receipt — ${organ}, “${label}.” Discipline today, memory forever.`,
+      bye: dig ? "Keep the swagger honest." : "Building empires. Naming Takes.",
+    },
+    mula_mami: {
+      mid: dig
+        ? `Boss-babe side street: “${label}.” Heels heard it before the Plinth.`
+        : `Stacks and ${organ} glow — “${label}.” Dressed for impact, filed for memory.`,
+      bye: dig ? "Shine when it cools." : "Luxury with a ledger.",
+    },
   };
   return (
     byRole[mascotId] ?? {

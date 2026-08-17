@@ -486,6 +486,68 @@ export function localNamesScarEcho(mascotId: string, hourKey: string): boolean {
   return (mascotId.charCodeAt(0) + hourKey.length) % 3 !== 0;
 }
 
+export type AliveStreetScarEcho = {
+  label: string;
+  dayOffset: "same" | "later";
+  organ?: MoneyOrganId;
+};
+
+/**
+ * Living plaza line pool for one scar — rotate so GTA4 streets feel populated
+ * (not a single stuck rumor). Digression + plaque wording both land here.
+ */
+export function aliveStreetLinePool(
+  mascotName: string,
+  scar: AliveStreetScarEcho,
+): string[] {
+  const organ = scar.organ ?? "memory";
+  const organWord = scarOrganName(organ);
+  const label = scar.label;
+  if (scar.dayOffset === "later") {
+    return [
+      `${mascotName}: Still thinking about the ${organWord} — “${label}.” Money left footprints.`,
+      `${mascotName}: Day-after hush — “${label}” still rides the fountain wind.`,
+      `${mascotName}: Plaza hasn’t forgotten the ${organWord}. “${label}.”`,
+      `${mascotName}: Yesterday’s mark, today’s weather — “${label}.”`,
+    ];
+  }
+  return [
+    `${mascotName}: The Plinth just got a ${organWord} mark — “${label}.” Harbor felt that.`,
+    `${mascotName}: Alive streets naming “${label}” already — ${organWord} glow.`,
+    `${mascotName}: Tip jars and tip-hats — “${label}” is the rumor of the hour.`,
+    `${mascotName}: Memory Courtyard whispers “${label}.” Not a tip list — a receipt.`,
+  ];
+}
+
+/** Stable rotate through the living-line pool keyed by mascot + hour. */
+export function pickRotatingAliveStreetLine(
+  mascotId: string,
+  mascotName: string,
+  hourKey: string,
+  scar: AliveStreetScarEcho,
+): string {
+  const pool = aliveStreetLinePool(mascotName, scar);
+  let h = 0;
+  const key = `${mascotId}:${hourKey}:${scar.label}:${scar.dayOffset}`;
+  for (let i = 0; i < key.length; i++) h = (h * 33 + key.charCodeAt(i)) >>> 0;
+  return pool[h % pool.length]!;
+}
+
+/**
+ * Rotate which talk scar feeds plaza ambient echo so digressions AND spine plaques
+ * get named across a session — not only the newest plaque.
+ */
+export function pickRotatingAmbientEchoScar(
+  scars: HarborScar[],
+  nowMs = Date.now(),
+): HarborScar | null {
+  if (!scars.length) return null;
+  // ~90s buckets so the plaza shifts rumor without HUD flicker
+  const bucket = Math.floor(nowMs / 90_000);
+  const idx = ((bucket % scars.length) + scars.length) % scars.length;
+  return scars[idx] ?? scars[scars.length - 1]!;
+}
+
 export function stanceGreetingHint(
   stance?: VoyagerStance | null,
 ): string | null {

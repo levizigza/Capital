@@ -20,6 +20,9 @@ import {
   piggyScarWeightLine,
   plaqueShelfLine,
   plazaScarGossipLine,
+  aliveStreetLinePool,
+  pickRotatingAliveStreetLine,
+  pickRotatingAmbientEchoScar,
   recordIrreversible,
   recordNpcTalk,
   scarChapterTitle,
@@ -222,5 +225,53 @@ describe("worldMemory", () => {
     expect(plazaScarGossipLine(save.harborScars![1]!)).toMatch(/Collector|canyon/i);
     expect(piggyScarWeightLine(save.harborScars![0]!)).toMatch(/Shelly/);
     expect(piggyScarWeightLine(save.harborScars![0]!)).not.toMatch(/Pay yourself first/i);
+  });
+
+  it("alive-street helpers rotate living lines across digression + plaque scars", () => {
+    const pool = aliveStreetLinePool("Coiny", {
+      label: "Jar before treat",
+      dayOffset: "same",
+      organ: "coin",
+    });
+    expect(pool.length).toBeGreaterThanOrEqual(3);
+    expect(pool.every((l) => /Jar before treat/.test(l))).toBe(true);
+    expect(pool.some((l) => /Coin|Plinth|Alive streets|tip-hat/i.test(l))).toBe(true);
+
+    const a = pickRotatingAliveStreetLine("coiny", "Coiny", "morning", {
+      label: "Jar before treat",
+      dayOffset: "same",
+      organ: "coin",
+    });
+    const b = pickRotatingAliveStreetLine("coiny", "Coiny", "evening", {
+      label: "Jar before treat",
+      dayOffset: "same",
+      organ: "coin",
+    });
+    expect(a).toMatch(/Jar before treat/);
+    expect(b).toMatch(/Jar before treat/);
+    // Hour key shifts the pool index so streets don't stuck-loop one line
+    expect(a === b).toBe(false);
+
+    const dig = {
+      id: "cc_shell_patience",
+      islandId: "coincraft_cove",
+      choiceId: "sh_need",
+      label: "Left Shelly’s shell on the stall",
+      kind: "npc_tone" as const,
+      createdAt: "2026-01-01",
+    };
+    const plaque = {
+      id: "cove_saver_plaque",
+      islandId: "coincraft_cove",
+      choiceId: "save",
+      label: "Jar before treat",
+      kind: "plaque" as const,
+      createdAt: "2026-01-02",
+    };
+    const first = pickRotatingAmbientEchoScar([dig, plaque], 0);
+    const later = pickRotatingAmbientEchoScar([dig, plaque], 90_000);
+    expect(first?.label).toBeTruthy();
+    expect(later?.label).toBeTruthy();
+    expect(first!.label).not.toEqual(later!.label);
   });
 });

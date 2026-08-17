@@ -58,6 +58,7 @@ import {
   scarOrganId,
   coldRetellLine,
   plaqueShelfLine,
+  pickRotatingAmbientEchoScar,
 } from "../worldMemory";
 import {
   dailyRumorText,
@@ -391,18 +392,26 @@ export function HomeHubView({
       ? scarOrganId(latestTalkScar)
       : null;
   const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
-  const echoScar = latestPlaque ?? latestTalkScar;
+  // Rotate ambient echo among digression + plaque talk scars so streets name more living lines.
+  // Spectacle / day-2 / share still key off latestPlaque separately.
+  const echoScar =
+    pickRotatingAmbientEchoScar(talkScars.length > 0 ? talkScars : plaques) ??
+    latestPlaque ??
+    latestTalkScar;
   const scarDay = (echoScar?.createdAt || "").slice(0, 10);
-  const scarEcho =
-    echoScar != null
-      ? {
-          label: echoScar.label,
-          dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
-            | "same"
-            | "later",
-          organ: scarOrganId(echoScar),
-        }
-      : null;
+  const scarEcho = useMemo(
+    () =>
+      echoScar != null
+        ? {
+            label: echoScar.label,
+            dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
+              | "same"
+              | "later",
+            organ: scarOrganId(echoScar),
+          }
+        : null,
+    [echoScar?.label, echoScar?.createdAt, echoScar?.id, scarDay],
+  );
 
   useEffect(() => {
     syncWorldPlace({ place: "harbor", islandId: "harbor_haven", ecosystemMotion: "mixed" });

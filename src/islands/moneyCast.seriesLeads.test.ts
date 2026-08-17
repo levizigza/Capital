@@ -50,6 +50,16 @@ describe("series leads — Cashwell through Mula Mami", () => {
     }
   });
 
+  it("gives each tip-hat series lead one short ambientNear line", () => {
+    for (const id of SERIES_LEAD_MASCOT_IDS) {
+      const slot = HARBOR_LOCAL_CAST.find((s) => s.mascotId === id)!;
+      expect(slot.ambientNear).toBeTruthy();
+      expect(slot.ambientNear!.length).toBeGreaterThan(12);
+      expect(slot.ambientNear!.length).toBeLessThan(90);
+      expect(slot.ambientNear).not.toMatch(/Pay yourself first|Automate a savings/i);
+    }
+  });
+
   it("does not randomize series-lead coats or gear", () => {
     for (const id of SERIES_LEAD_MASCOT_IDS) {
       const a = varyMascot(id, `harbor:${id}:morning`);
