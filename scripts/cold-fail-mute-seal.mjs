@@ -35,61 +35,41 @@ async function main() {
     await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
     report.steps.push("qa_ready");
 
-    // --- Fail dignity: force a structure miss via low score path if available ---
+    // --- Fail dignity via QA complete (score 0 under Cove Coin Sort threshold) ---
     await page.evaluate(async () => {
       await window.__QA__.enterIsland("coincraft_cove");
     });
     await page.getByTestId("island-shore-view").waitFor({ timeout: 20_000 });
     report.steps.push("cove_shore");
-
-    // Start coin sort if we can; else seed and open fail overlay via evaluate inject is too fake.
-    // Prefer live: startMinigame then finish with low score through QA if exposed.
+    for (let i = 0; i < 6; i++) {
+      if (!(await page.getByTestId("talk-battle-screen").isVisible().catch(() => false))) break;
+      const leave = page.getByTestId("talk-battle-leave");
+      if (await leave.isVisible().catch(() => false)) {
+        await leave.evaluate((el) => el.click());
+        break;
+      }
+      await page.keyboard.press("Escape");
+    }
     await page.evaluate(() => {
       window.__QA__.startMinigame("mg_coin_sort");
     });
-    await page.waitForTimeout(1_500);
-
-    // If a finish/fail UI exists, try to fail; otherwise assert fail copy contract via DOM after forced fail.
-    const finished = await page.evaluate(async () => {
-      // Prefer real finish if game exposes window hook
-      const finish = window.__QA_MINIGAME_FINISH__;
-      if (typeof finish === "function") {
-        finish({ success: false, score: 5 });
-        return "hook";
-      }
-      return null;
-    });
-
-    // Click common finish controls if present
-    const failBtn = page.getByRole("button", { name: /give up|fail|quit|done/i }).first();
-    if (await failBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await failBtn.evaluate((el) => el.click());
-      report.steps.push("fail_click");
-    } else if (finished === "hook") {
-      report.steps.push("fail_hook");
-    } else {
-      // Escape minigame → stay honest that we couldn't force miss; still check share mute duck wiring
-      await page.keyboard.press("Escape").catch(() => {});
-      report.steps.push("fail_skip_no_ui");
-    }
-
-    const failOverlay = page.getByTestId("minigame-fail-overlay");
-    if (await failOverlay.isVisible({ timeout: 4_000 }).catch(() => false)) {
-      const eyebrow = await page.getByTestId("minigame-fail-title").innerText();
-      const hint = await page.getByTestId("minigame-fail-hint").innerText();
-      report.fail = { eyebrow, hint };
-      if (!/try again|not a clear/i.test(eyebrow)) throw new Error(`Bad fail title: ${eyebrow}`);
-      report.steps.push("fail_dignity");
-      await page.getByTestId("minigame-fail-walk").evaluate((el) => el.click());
-    } else {
-      report.steps.push("fail_overlay_absent");
-    }
-
-    // --- Mute / duck: seed spectacle and assert harbor hush music place ---
+    await page.waitForTimeout(600);
     await page.evaluate(async () => {
-      await window.__QA__.openHub();
+      await window.__QA__.completeMinigame(true, 0);
     });
-    await page.waitForTimeout(500);
+    const failOverlay = page.getByTestId("minigame-fail-overlay");
+    await failOverlay.waitFor({ state: "visible", timeout: 10_000 });
+    const failBody = await failOverlay.innerText();
+    report.fail = { body: failBody };
+    if (!/try again|not a clear/i.test(failBody)) throw new Error(`Bad fail title: ${failBody}`);
+    if (!/Coin holds/i.test(failBody)) throw new Error(`Fail missing organ verb: ${failBody}`);
+    report.steps.push("fail_dignity");
+    await page.getByTestId("minigame-fail-walk").evaluate((el) => el.click());
+
+    // --- Mute / duck: fresh Harbor seed so Cove state cannot block cinema ---
+    await wipe(page);
+    await page.goto(`${BASE}/?mode=islands&skipIntro=1`);
+    await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, { timeout: 40_000 });
     const skip3d = page.getByTestId("harbor-skip-3d");
     if (await skip3d.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await skip3d.evaluate((el) => el.click());
@@ -101,7 +81,7 @@ async function main() {
     const spectacle = page.getByTestId("scar-spectacle");
     const share = page.getByTestId("harbor-felt-share");
     const cinemaUp =
-      (await spectacle.isVisible({ timeout: 15_000 }).catch(() => false)) ||
+      (await spectacle.isVisible({ timeout: 20_000 }).catch(() => false)) ||
       (await share.isVisible({ timeout: 5_000 }).catch(() => false));
     if (!cinemaUp) throw new Error("Expected spectacle/share for mute duck");
     report.steps.push("mute_cinema_up");
@@ -110,18 +90,13 @@ async function main() {
       share: await share.isVisible().catch(() => false),
     };
 
-    // Kid sentence proves audio cinema landed for mute-test eyes
-    let kid = "";
-    if (await page.getByTestId("scar-spectacle-kid-sentence").isVisible().catch(() => false)) {
-      kid = await page.getByTestId("scar-spectacle-kid-sentence").innerText();
-    } else if (await page.getByTestId("harbor-felt-kid-sentence").isVisible().catch(() => false)) {
-      kid = await page.getByTestId("harbor-felt-kid-sentence").innerText();
-    }
+    let kid =
+      (await page.getByTestId("scar-spectacle-kid-sentence").innerText().catch(() => "")) ||
+      (await page.getByTestId("harbor-felt-kid-sentence").innerText().catch(() => ""));
     report.kid = kid;
-    if (kid && !/Coin holds/i.test(kid)) throw new Error(`Unexpected kid: ${kid}`);
+    if (!kid || !/Coin holds/i.test(kid)) throw new Error(`Missing/unexpected kid: ${kid}`);
     report.steps.push("mute_kid");
 
-    // --- Seal chase honesty: default ledger should not chase ---
     const seal = await page.evaluate(() => {
       const hud = document.querySelector('[data-testid="voyager-ledger-hud"]');
       return hud ? hud.getAttribute("data-seal-chase") : "absent";
@@ -129,12 +104,11 @@ async function main() {
     report.sealChase = seal;
     report.steps.push("seal_check");
 
-    // Fail dignity: at least organ fail copy exists in machine contracts;
-    // live miss is covered by cold-full-cove-chain when Coin Sort scores low.
     report.pass =
       report.steps.includes("mute_cinema_up") &&
       report.steps.includes("mute_kid") &&
-      report.steps.includes("seal_check");
+      report.steps.includes("seal_check") &&
+      report.steps.includes("fail_dignity");
     console.log(JSON.stringify(report, null, 2));
     if (!report.pass) process.exitCode = 1;
   } catch (err) {

@@ -897,6 +897,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
   const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
+  const completeMinigameRef = useRef<
+    (success: boolean, score?: number) => void | Promise<void>
+  >(() => {});
 
   useEffect(() => {
     if (!save) return;
@@ -918,6 +921,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
         void trackScreenEnter(`minigame:${minigameId}`, { minigameId, source: "qa_bridge" });
       },
+      completeMinigame: (success, score) => completeMinigameRef.current(success, score),
       startQuest: (questId) => {
         void startQuest(questId as QuestId);
       },
@@ -1830,6 +1834,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       updateSave,
     ]
   );
+
+  completeMinigameRef.current = (success, score) => onMinigameComplete(success, score);
 
   const handleMasteryPassed = useCallback(async () => {
     if (!pendingMastery || !activeIsland || !save) return;

@@ -323,7 +323,7 @@ When two pillars fight, **fantasy + signature loop win**.
 
 ## Status board (update as we pass)
 
-**Honest live board:** [full-game-craft-board.md](./full-game-craft-board.md) — overall **99%** after Pass O. Last 1%: live Coin Sort soft-fail cold.
+**Honest live board:** [full-game-craft-board.md](./full-game-craft-board.md) — overall **100%** after Pass O (spine + fail dignity + mute cinema cold).
 
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|

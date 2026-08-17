@@ -19,6 +19,11 @@ export type QABridge = {
   openTravel: () => void;
   openHub: () => void;
   startMinigame: (minigameId: string) => void;
+  /**
+   * Finish the active minigame with an explicit result (cold fail dignity).
+   * Prefer live Finish round → See result when the UI is reachable.
+   */
+  completeMinigame: (success: boolean, score?: number) => void | Promise<void>;
   startQuest: (questId: string) => void;
   /** Open a real Talk Battle (cold quest chains — not a seed shortcut). */
   talkNpc: (npcId: string) => void | Promise<void>;
