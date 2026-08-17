@@ -1106,9 +1106,12 @@ export function HomeHubView({
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
-                      ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
-                      : null
+                    // First-meet: Coin Bag tip owns the read — no stacked 3D speech bubble.
+                    piggyPresence
+                      ? null
+                      : castleMode || homecomingActive || plinthShareBeat
+                        ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
+                        : null
                   }
                   pulseHotspotId={
                     castleMode || plinthShareBeat || homecomingActive || piggyPresence

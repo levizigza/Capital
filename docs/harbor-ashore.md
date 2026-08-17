@@ -1,6 +1,6 @@
 # Harbor Ashore — opening tutorial
 
-**Honest status (2026-08-17):** **Not iconic yet.** Boot CTA was soft-locked by infinite CSS bob on the primary title button (real clicks failed; e2e cheated with `evaluate`). Walk chamber had no desktop pad / tap-ring failsafe. Do **not** mark Pass until a cold human completes Title → Cast → Ashore → Carpet → Harbor and can retell: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
+**Honest status (2026-08-17):** **Still Gap — closer.** Boot soft-locks fixed; full Chamber-00 → Harbor cold script can complete. First-meet still needs human polish (label clutter / Plinth mirror). Do **not** mark Pass until a cold human completes Title → Ashore → Harbor → Cove Take and can retell: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
 
 **Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 

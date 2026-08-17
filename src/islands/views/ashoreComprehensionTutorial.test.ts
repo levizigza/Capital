@@ -81,6 +81,8 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
     expect(teach).toMatch(/Poke a living-money toy|Board Cove first/);
+    expect(teach).toMatch(/ashore-walk-claim-row/);
+    expect(teach).toMatch(/ashore-talk-approach/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);

@@ -9,7 +9,6 @@ import { drawMemoryPlinthSilhouette } from "../harborIcon";
 import { prefersReducedMotion } from "../a11yMotion";
 import { ISLAND_THEMES } from "../themes/islandThemes";
 import { playOrganSfx } from "../audio/capitalSfx";
-import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type PaintingHero = "plinth" | "jar" | "tower" | "keep" | "carpet";
 
@@ -271,11 +270,11 @@ export function CarpetDockShowcase({
         <button
           type="button"
           data-testid="ashore-carpet-board-cove"
-          className="relative transition hover:scale-[1.03]"
-          {...pointerSafeActivate(() => {
+          className="relative touch-manipulation transition hover:scale-[1.03]"
+          onClick={() => {
             playOrganSfx("coin");
             onBoard();
-          })}
+          }}
         >
           <SpinePaintingPortal organ="coin" lit size="xl" />
           <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
