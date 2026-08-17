@@ -43,8 +43,8 @@ test.describe("Harbor 3D failsafe", () => {
     await page.goto("/?mode=islands&skipIntro=1");
     await waitForQaReady(page);
     await page.evaluate(async () => {
-      await window.__QA__!.seedSignatureLoop("day2_echo");
-      // Ensure Harbor hub (not a leftover shore explore) before asserting myth.
+      // piggy_ready — no day-2 cinema covering myth fallback
+      await window.__QA__!.seedSignatureLoop("piggy_ready");
       window.__QA__!.openHub();
     });
     await dismissHarborCinemaIfOpen(page);

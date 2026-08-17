@@ -1082,28 +1082,9 @@ export function WalkableHarborView({
     if (kill3d || force2d) setReady(true);
   }, [kill3d, force2d]);
 
+  // When sticky myth is active, never hide Talk/Carpet behind Plinth cinema stage.
+  // Cinema overlays own z-index; plaza must stay the myth fallback for navigability.
   if (kill3d || force2d) {
-    if (cinemaActive) {
-      // Quiet Memory stage under Plinth cinema — never “Piggy is waving” under share.
-      return (
-        <div
-          className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden"
-          data-testid="harbor-cinema-myth-stage"
-          aria-hidden
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, #bae6fd 0%, #7dd3fc 45%, #38bdf8 100%)",
-          }}
-        >
-          <div
-            className="absolute bottom-0 left-1/2 h-[30%] w-[120%] -translate-x-1/2 rounded-[100%] bg-[#86efac]/50"
-          />
-          <p className="relative text-xs font-bold uppercase tracking-[0.22em] text-[#0f172a]/55">
-            Harbor Haven · Memory
-          </p>
-        </div>
-      );
-    }
     return (
       <HarborMythFallback
         mode={fallbackMode}
