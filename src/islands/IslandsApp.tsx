@@ -1045,6 +1045,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
       }
 
+      // First Coins → open the Take quest so Coin Bag points at Kira (Alma is optional tip).
+      if (questId === "q_cc_first_coins") {
+        await startQuest(COVE_CHANGE_QUEST_ID);
+      }
+
       // Cove Change beat → Harbor homecoming celebration + unlock Island 2.
       if (questId === COVE_CHANGE_QUEST_ID) {
         updateSave((prev) => {
@@ -1133,7 +1138,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
       }
     },
-    [activeIsland, learningProfile, setUserProfile, updateSave, save?.questStatus]
+    [activeIsland, learningProfile, setUserProfile, updateSave, save?.questStatus, startQuest]
   );
 
   const completeObjective = useCallback(

@@ -13,6 +13,7 @@ import { playOrganSfx } from "../audio/capitalSfx";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
+import { CharacterAvatar } from "./CharacterAvatar";
 import {
   TALK_TARGET,
   VoyagerWalkPracticeStage,
@@ -138,12 +139,10 @@ export function AshoreComprehensionTutorial({
     return () => window.clearTimeout(t);
   }, [dockNudge]);
 
-  const showPad =
-    stepId === "fantasy" || stepId === "walk" || stepId === "talk" || stepId === "ready";
-  const padMode =
-    stepId === "walk" ? "walk" : stepId === "talk" ? "talk" : "showcase";
-  /** Fantasy keeps Voyager as a preview — never let the stage clip the prove dock. */
-  const compactPad = stepId === "fantasy" || stepId === "ready";
+  const showPad = stepId === "walk" || stepId === "talk";
+  const padMode = stepId === "walk" ? "walk" : "talk";
+  /** Fantasy / Launch use 2D Voyager preview — never stack another WebGL canvas on boot. */
+  const showVoyagerPreview = stepId === "fantasy" || stepId === "ready";
 
   useInputAction("cancel", onComplete);
 
@@ -165,7 +164,7 @@ export function AshoreComprehensionTutorial({
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex flex-col overflow-hidden text-white"
+      className="fixed inset-0 z-[10040] flex flex-col overflow-hidden text-white"
       data-testid="ashore-comprehension-tutorial"
       data-teach-step={stepId}
       data-teach-mode="chamber-00"
@@ -195,14 +194,22 @@ export function AshoreComprehensionTutorial({
         className="relative z-[1] flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
         data-testid="ashore-teach-scroll"
       >
-        {showPad ? (
+        {showVoyagerPreview ? (
           <div
-            className={`relative mx-auto w-full max-w-3xl shrink-0 px-3 ${
-              compactPad
-                ? "max-h-[30vh] min-h-[22vh] sm:max-h-[34vh]"
-                : "min-h-[38vh] flex-1 sm:min-h-[44vh]"
-            }`}
+            className="mx-auto flex w-full max-w-3xl shrink-0 flex-col items-center gap-2 px-3 pt-1"
+            data-testid="ashore-voyager-preview"
           >
+            <div className="rounded-full bg-white/10 p-2 ring-2 ring-amber-200/40">
+              <CharacterAvatar character={voyager} size={96} />
+            </div>
+            <p className="text-xs font-semibold text-amber-100/90">
+              {voyager.name || "Voyager"} — that’s you
+            </p>
+          </div>
+        ) : null}
+
+        {showPad ? (
+          <div className="relative mx-auto w-full max-w-3xl max-h-[42vh] min-h-[28vh] shrink-0 px-3 sm:max-h-[46vh] sm:min-h-[34vh]">
             <VoyagerWalkPracticeStage
               character={voyager}
               mode={padMode}
@@ -211,12 +218,10 @@ export function AshoreComprehensionTutorial({
               talkTarget={TALK_TARGET}
               nearTalk={nearTalk}
               onNearTalkChange={setNearTalk}
-              className={`h-full overflow-hidden rounded-2xl ring-1 ring-amber-200/25 ${
-                compactPad ? "min-h-[22vh] max-h-[30vh] sm:max-h-[34vh]" : "min-h-[38vh] sm:min-h-[44vh]"
-              }`}
+              className="h-full min-h-[28vh] max-h-[42vh] overflow-hidden rounded-2xl ring-1 ring-amber-200/25 sm:min-h-[34vh] sm:max-h-[46vh]"
             />
-            {(stepId === "walk" || stepId === "talk") && !reduced ? (
-              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3] sm:hidden">
+            {!reduced ? (
+              <div className="pointer-events-auto absolute bottom-3 right-5 z-[3]">
                 <TouchWalkPad />
               </div>
             ) : null}
@@ -233,10 +238,8 @@ export function AshoreComprehensionTutorial({
               <h1 className="max-w-xl font-[family-name:var(--cap-display,Georgia,serif)] text-3xl font-black sm:text-4xl">
                 Money is alive here
               </h1>
-              <p className="mt-3 max-w-lg text-base text-white/85">{MURAL_THESIS}</p>
-              <p className="mt-2 max-w-md text-sm text-amber-100/85">
-                That Voyager is you — {voyager.name || "your cast"}. Poke a living-money toy below,
-                then walk.
+              <p className="mt-3 max-w-lg text-base text-white/85">
+                {MURAL_THESIS} Poke a living-money toy — that’s you as {voyager.name || "Voyager"}.
               </p>
             </>
           ) : null}
@@ -247,7 +250,8 @@ export function AshoreComprehensionTutorial({
                 Walk your Voyager
               </h1>
               <p className="mt-2 max-w-md text-sm text-white/85">
-                Reach every glowing ring — this is how you explore Harbor. WASD or arrows.
+                Reach every glowing ring — this is how you explore Harbor. WASD, arrows, or the walk
+                pad. Prefer stepping into the light.
               </p>
               <p
                 className="mt-3 text-sm font-bold text-amber-100"
@@ -276,22 +280,9 @@ export function AshoreComprehensionTutorial({
                 {talked
                   ? "Piggy: Meet me at Harbor — then the Carpet Dock south."
                   : nearTalk
-                    ? "Press E to talk"
-                    : "Walk to Piggy"}
+                    ? "Press E to talk — or use the button below"
+                    : "Walk to Piggy — or use the button below"}
               </p>
-              {nearTalk && !talked ? (
-                <button
-                  type="button"
-                  className={CTA}
-                  data-testid="ashore-teach-talk"
-                  {...pointerSafeActivate(() => {
-                    playOrganSfx("memory");
-                    setTalked(true);
-                  })}
-                >
-                  Talk to Piggy?
-                </button>
-              ) : null}
             </>
           ) : null}
 
@@ -301,8 +292,8 @@ export function AshoreComprehensionTutorial({
                 Board a living painting
               </h1>
               <p className="mt-2 max-w-lg text-sm text-white/85">
-                The Money Carpet is your voyage vehicle. Cove is lit first — that’s where your first
-                game waits.
+                The Money Carpet is your voyage vehicle. Cove is lit first — earn fair coins, then one
+                forever choice. Harbor will feel it when you come home.
               </p>
               <div
                 className={`mt-4 w-full ${dockNudge ? "animate-pulse" : ""}`}
@@ -325,9 +316,9 @@ export function AshoreComprehensionTutorial({
                 Harbor, then Cove
               </h1>
               <p className="mt-2 max-w-lg text-sm text-white/85">
-                You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board{" "}
-                <span className="font-bold text-amber-100">Coincraft Cove</span>. Your choice there
-                will stain Harbor — that’s the real lesson.
+                You’ll land on Harbor Haven. Talk to Piggy, board{" "}
+                <span className="font-bold text-amber-100">Coincraft Cove</span>, choose jar or treat —
+                then Harbor remembers. That’s the real lesson.
               </p>
               <div className="mt-4 w-full">
                 <ReadyCarpetShowcase />
@@ -349,10 +340,14 @@ export function AshoreComprehensionTutorial({
         </main>
       </div>
 
-      {/* Prove dock — always on-screen so Chamber 1 / Dock never soft-lock below the fold */}
-      {(stepId === "fantasy" || stepId === "dock" || stepId === "ready") && (
+      {/* Prove dock — always on-screen so chambers never soft-lock below the fold / under WebGL */}
+      {(stepId === "fantasy" ||
+        stepId === "walk" ||
+        stepId === "talk" ||
+        stepId === "dock" ||
+        stepId === "ready") && (
         <div
-          className="relative z-[3] flex shrink-0 flex-col items-center border-t border-amber-200/20 bg-[#020617]/95 px-4 pb-3 pt-3 backdrop-blur-sm"
+          className="relative z-[10050] flex shrink-0 flex-col items-center border-t border-amber-200/20 bg-[#020617]/95 px-4 pb-3 pt-3 backdrop-blur-sm"
           data-testid="ashore-teach-prove-dock"
         >
           {stepId === "fantasy" ? (
@@ -366,16 +361,72 @@ export function AshoreComprehensionTutorial({
                 className={fantasyDone ? CTA : CTA_MUTED}
                 data-testid="ashore-teach-continue"
                 aria-disabled={!fantasyDone}
-                {...pointerSafeActivate(() => {
+                onClick={() => {
                   if (!fantasyDone) {
                     setToyNudge(true);
                     return;
                   }
                   advance();
-                })}
+                }}
               >
                 {fantasyDone ? "Enter the walk chamber" : "Poke a living-money toy"}
               </button>
+            </>
+          ) : null}
+
+          {stepId === "walk" && !walkDone ? (
+            <>
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100/80">
+                Prefer the glowing rings · or tap a name
+              </p>
+              <div
+                className="flex flex-wrap justify-center gap-2"
+                data-testid="ashore-walk-claim-row"
+              >
+                {WALK_MARKERS.map((m) => {
+                  const done = claimed.includes(m.id);
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      disabled={done}
+                      data-testid={`ashore-walk-claim-${m.id}`}
+                      className="min-h-11 touch-manipulation rounded-xl border border-white/30 bg-white/10 px-3 py-2 text-xs font-bold text-white disabled:opacity-40"
+                      style={{ borderColor: done ? undefined : m.color }}
+                      onClick={() => onClaimMarker(m.id)}
+                    >
+                      {done ? `✓ ${m.label}` : `Ring · ${m.label}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ) : null}
+
+          {stepId === "talk" && !talked ? (
+            <>
+              {!nearTalk ? (
+                <button
+                  type="button"
+                  className="min-h-11 touch-manipulation rounded-xl border border-pink-200/50 bg-pink-500/20 px-4 py-2 text-sm font-bold text-pink-100"
+                  data-testid="ashore-talk-approach"
+                  onClick={() => setNearTalk(true)}
+                >
+                  Step into Piggy’s ring
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={CTA}
+                  data-testid="ashore-teach-talk"
+                  onClick={() => {
+                    playOrganSfx("memory");
+                    setTalked(true);
+                  }}
+                >
+                  Talk to Piggy?
+                </button>
+              )}
             </>
           ) : null}
 
@@ -385,14 +436,14 @@ export function AshoreComprehensionTutorial({
               className={carpetBoarded ? CTA : CTA_MUTED}
               data-testid="ashore-teach-continue"
               aria-disabled={!carpetBoarded}
-              {...pointerSafeActivate(() => {
+              onClick={() => {
                 if (!carpetBoarded) {
                   setDockNudge(true);
                   return;
                 }
                 playOrganSfx("coin");
                 advance();
-              })}
+              }}
             >
               {carpetBoarded ? "Ready to launch" : "Board Cove first"}
             </button>
@@ -403,7 +454,7 @@ export function AshoreComprehensionTutorial({
               type="button"
               className={CTA}
               data-testid="ashore-teach-continue"
-              {...pointerSafeActivate(onComplete)}
+              onClick={onComplete}
             >
               Launch carpet · {voyager.name || "Voyager"}
             </button>
@@ -411,7 +462,7 @@ export function AshoreComprehensionTutorial({
         </div>
       )}
 
-      <footer className="relative z-[2] shrink-0 px-4 pb-3 pt-1 text-center">
+      <footer className="pointer-events-none relative z-[2] shrink-0 px-4 pb-3 pt-1 text-center">
         <p className="text-[11px] uppercase tracking-wider text-white/45">
           Chamber {index + 1} / {STEPS.length} · Esc · Leave
         </p>

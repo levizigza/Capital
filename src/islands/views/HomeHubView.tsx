@@ -307,7 +307,8 @@ export function HomeHubView({
     firstMeet,
     quietHomecoming: quietHarbor,
   });
-  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach. */
+  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach.
+   *  WalkableHarborView still uses piggyPresence (not stripPlaza) for labels / soft spawn. */
   const stripPlaza = shouldStripPlazaForPresence({
     firstMeet,
     quietHomecoming: quietHarbor,
@@ -424,6 +425,8 @@ export function HomeHubView({
         spectacleOpen,
         feltShareOpen,
         guidedComplete: !guided || isHubGuidedComplete(guided),
+        // Portal twist: scar cinema must fire even if voyage coach wasn’t closed.
+        unshownScar: true,
       })
     ) {
       return;
@@ -1106,9 +1109,12 @@ export function HomeHubView({
                       : "idle"
                   }
                   keeperSpeech={
-                    castleMode || homecomingActive || plinthShareBeat || piggyPresence
-                      ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
-                      : null
+                    // First-meet: Coin Bag tip owns the read — no stacked 3D speech bubble.
+                    piggyPresence
+                      ? null
+                      : castleMode || homecomingActive || plinthShareBeat
+                        ? keeperSpeech || visualBeats.keeperBubbleWhenNear || null
+                        : null
                   }
                   pulseHotspotId={
                     castleMode || plinthShareBeat || homecomingActive || piggyPresence
@@ -1156,7 +1162,7 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  piggyPresenceBeat={stripPlaza}
+                  piggyPresenceBeat={piggyPresence}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
                 />
@@ -1325,10 +1331,16 @@ export function HomeHubView({
               >
                 {ashorePresenceLine({ firstMeet: firstMeet && !stripPlaza })}
               </p>
-            ) : showTravelChip ? null : (
+            ) : (
             <CoinBagBuddyHud
               tip={buddyTip.tip}
-              detail={castleMode ? guidedStep?.coach : undefined}
+              detail={
+                castleMode
+                  ? guidedStep?.coach
+                  : showTravelChip
+                    ? buddyTip.coach
+                    : undefined
+              }
               guideArrows={guideArrows}
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />

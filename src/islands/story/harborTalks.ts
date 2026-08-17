@@ -387,7 +387,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
         "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
     },
     to_dock: {
-      text: "Carpet Dock is that way. Open the Archipelago map and board for Coincraft Cove — your first painting!",
+      text: "Carpet Dock is that way. Board for Coincraft Cove — earn fair coins, then one choice Harbor will feel.",
       choice: "To the carpet!",
     },
     done: {

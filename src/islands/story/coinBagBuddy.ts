@@ -29,13 +29,13 @@ export type CoinBagBuddyTip = {
 /** Voyage tip — shared by to_dock + demoted legacy gate ids. */
 const VOYAGE_TIP: CoinBagBuddyTip = {
   tip: "Money Carpet → Coincraft Cove",
-  coach: "Board the carpet with me. First painting!",
+  coach: "Board with me. Fair coins first — then one choice Harbor feels.",
 };
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {
   meet_guide: {
-    tip: "Talk to Piggy Penny — soft gold ring by the fountain",
-    coach: "I’m Coin Bag. Stay with me — we’ll walk to Piggy together.",
+    tip: "Piggy’s waving by the fountain — walk over when you want",
+    coach: "I’m Coin Bag. Walk first — Talk is yours when you’re ready.",
   },
   // DEMOTED — Ashore remaps these onto voyage; copy stays Outfitter-free.
   walk_outfitter: VOYAGE_TIP,
@@ -265,9 +265,46 @@ export function coinBagIslandTip(
         return {
           tip: "Captain Penny — First Coins",
           coach:
-            "Talk to Captain Penny at the harbor. Earn fair coins, then the Giant Coin Jar Take waits.",
+            "Talk to Captain Penny at the dock. Earn fair coins — then the lighthouse Take.",
           track: "main",
         };
+      }
+      const saveSpend = save.questStatus["q_cc_save_or_spend"];
+      if (saveSpend?.started && !saveSpend.completed) {
+        const have = saveSpend.completedObjectives ?? [];
+        if (!have.includes("talk:npc_keeper_kira") || !have.includes("item:cc_savings_jar")) {
+          return {
+            tip: "Keeper Kira — Savings Lighthouse",
+            coach:
+              "This is the twist: jar before treat, or treat before jar. Harbor will remember.",
+            track: "main",
+          };
+        }
+      }
+      const firstCoins = save.questStatus["q_cc_first_coins"];
+      if (firstCoins?.started && !firstCoins.completed) {
+        const have = firstCoins.completedObjectives ?? [];
+        if (!have.includes("talk:npc_captain_penny")) {
+          return {
+            tip: "Captain Penny — First Coins",
+            coach: "Talk to Penny at the dock — then sort coins for your pouch.",
+            track: "main",
+          };
+        }
+        if (!have.includes("item:cc_coin_pouch")) {
+          return {
+            tip: "Pick up your Coin Pouch",
+            coach: "It’s on the dock. Grab it, then sort coins.",
+            track: "main",
+          };
+        }
+        if (!have.includes("minigame:mg_coin_sort")) {
+          return {
+            tip: "Coin Sort — prove fair coins",
+            coach: "Finish the sort. Next stop: Keeper Kira’s forever choice.",
+            track: "main",
+          };
+        }
       }
     }
 

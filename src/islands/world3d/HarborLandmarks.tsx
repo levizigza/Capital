@@ -335,12 +335,15 @@ export function MemoryPlinthMesh({
   guided = false,
   scarRemembered = false,
   spectacleActive = false,
+  quietLabels = false,
   scarOrgan = null,
   scarLabel,
 }: AccentProps & {
   scarRemembered?: boolean;
   /** Scar spectacle camera lock — lamp peaks */
   spectacleActive?: boolean;
+  /** First-meet / quiet homecoming — no empty-shelf “Memory” billboard clutter */
+  quietLabels?: boolean;
   /** Scar organ tint — Coin gold / Clock sky / Spiral violet on Memory ledger */
   scarOrgan?: MoneyOrganId | null;
   scarLabel?: string;
@@ -467,38 +470,20 @@ export function MemoryPlinthMesh({
         />
       ) : null}
 
-      {/* Empty-shelf plaque face vs scar label.
-          Parent hotspot yaw can leave troika mirrored — flip X so kids can read it. */}
-      {!scarRemembered ? (
-        <Billboard follow position={[0, 2.95, 0]}>
-          <group scale={[-1, 1, 1]}>
-            <SafeText
-              fontSize={0.2}
-              color="#57534e"
-              anchorX="center"
-              anchorY="middle"
-              outlineWidth={0.015}
-              outlineColor="#fafaf9"
-            >
-              Memory
-            </SafeText>
-          </group>
-        </Billboard>
-      ) : null}
-      {scarRemembered && scarLabel ? (
+      {/* Scar plaque only — empty shelf stays silhouette (plaza hotspot names it when near).
+          No X-flip: Billboard faces camera; scale -1 was mirroring local/dev Troika. */}
+      {!quietLabels && scarRemembered && scarLabel ? (
         <Billboard follow position={[0, 3.05, 0]}>
-          <group scale={[-1, 1, 1]}>
-            <SafeText
-              fontSize={0.22}
-              color="#78350f"
-              anchorX="center"
-              anchorY="middle"
-              outlineWidth={0.02}
-              outlineColor="#fffbeb"
-            >
-              {scarLabel}
-            </SafeText>
-          </group>
+          <SafeText
+            fontSize={0.22}
+            color="#78350f"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.02}
+            outlineColor="#fffbeb"
+          >
+            {scarLabel}
+          </SafeText>
         </Billboard>
       ) : null}
     </group>

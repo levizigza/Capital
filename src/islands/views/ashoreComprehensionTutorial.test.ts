@@ -81,6 +81,8 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(teach).toMatch(/Leave · Esc/);
     expect(teach).toMatch(/pointerSafeActivate/);
     expect(teach).toMatch(/Poke a living-money toy|Board Cove first/);
+    expect(teach).toMatch(/ashore-walk-claim-row/);
+    expect(teach).toMatch(/ashore-talk-approach/);
     expect(teach).not.toMatch(/Visit all four/);
     expect(teach).not.toMatch(/Light all six/);
     expect(teach).not.toMatch(/>\s*Skip\s*</);
@@ -89,10 +91,16 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
   it("keeps Fantasy toys + Continue on a sticky prove dock (no below-fold soft-lock)", () => {
     expect(teach).toMatch(/ashore-teach-prove-dock/);
     expect(teach).toMatch(/ashore-teach-scroll/);
-    expect(teach).toMatch(/compactPad/);
+    expect(teach).toMatch(/ashore-voyager-preview/);
+    expect(teach).toMatch(/CharacterAvatar/);
     expect(teach).toMatch(/aria-disabled=\{!fantasyDone\}/);
     expect(teach).toMatch(/setToyNudge\(true\)/);
     expect(show).toMatch(/Tap to poke/);
     expect(show).toMatch(/data-nudge/);
+  });
+
+  it("mounts WebGL practice pad only on Walk and Talk chambers", () => {
+    expect(teach).toMatch(/showPad = stepId === "walk" \|\| stepId === "talk"/);
+    expect(teach).toMatch(/VoyagerWalkPracticeStage/);
   });
 });

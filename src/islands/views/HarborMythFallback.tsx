@@ -83,8 +83,11 @@ export function HarborMythFallback({
           <h2 className="relative max-w-sm text-2xl font-black text-[#16283b]">
             Piggy Penny is waving
           </h2>
-          <p className="relative max-w-md text-sm font-medium text-[#16283b]/85">
-            Fountain court center — Piggy on the SW apron. Talk, then board the carpet south.
+          <p
+            className="relative max-w-md text-sm font-medium text-[#16283b]/85"
+            data-testid="harbor-piggy-presence"
+          >
+            Fountain court — walk to Piggy when you’re ready. Talk is yours to start.
           </p>
         </>
       ) : mode === "myth_travel" ? (

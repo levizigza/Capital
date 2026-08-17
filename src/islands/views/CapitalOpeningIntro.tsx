@@ -471,7 +471,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                 <span className="cap-opening-title__ornament" aria-hidden />
               </h1>
               <p className="cap-opening-tagline">
-                Harbor Haven awaits. Choose your Voyager, then ride the Money Carpet.
+                Harbor Haven awaits. Choose your Voyager, prove Walk · Talk on Ashore, then ride the Money Carpet.
               </p>
               <p className="cap-opening-time" aria-hidden>
                 {timeLabel}
@@ -490,7 +490,7 @@ export function CapitalOpeningIntro({ onComplete }: Props) {
                   <span className="cap-enter-boat__icon cap-enter-boat__icon--bill" aria-hidden />
                   Choose your Voyager
                 </button>
-                <span className="cap-enter-hint">Enter · Space</span>
+                <span className="cap-enter-hint">Click · Enter · Space</span>
               </div>
             </div>
           </motion.div>

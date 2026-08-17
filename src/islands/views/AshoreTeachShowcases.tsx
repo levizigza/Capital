@@ -9,7 +9,6 @@ import { drawMemoryPlinthSilhouette } from "../harborIcon";
 import { prefersReducedMotion } from "../a11yMotion";
 import { ISLAND_THEMES } from "../themes/islandThemes";
 import { playOrganSfx } from "../audio/capitalSfx";
-import { pointerSafeActivate } from "../pointerSafeClick";
 
 export type PaintingHero = "plinth" | "jar" | "tower" | "keep" | "carpet";
 
@@ -223,17 +222,17 @@ export function FantasyOrganToys({
             data-testid={`ashore-fantasy-toy-${t.id}`}
             aria-pressed={lit}
             aria-label={`Poke ${t.label}`}
-            className={`flex min-h-[7.5rem] min-w-[6.5rem] flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
+            className={`flex min-h-[7.5rem] min-w-[6.5rem] touch-manipulation flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
               lit
                 ? "bg-white/15 ring-amber-200/70"
                 : nudge
                   ? "bg-amber-400/20 ring-amber-200/90 hover:bg-amber-400/30"
                   : "bg-white/10 ring-white/35 hover:bg-white/15"
             }`}
-            {...pointerSafeActivate(() => {
+            onClick={() => {
               playOrganSfx(t.id);
               onPoke(t.id);
-            })}
+            }}
           >
             <SpinePaintingPortal organ={t.id} lit={lit} size="sm" />
             <span className="text-[11px] font-bold" style={{ color: accent }}>
@@ -271,11 +270,11 @@ export function CarpetDockShowcase({
         <button
           type="button"
           data-testid="ashore-carpet-board-cove"
-          className="relative transition hover:scale-[1.03]"
-          {...pointerSafeActivate(() => {
+          className="relative touch-manipulation transition hover:scale-[1.03]"
+          onClick={() => {
             playOrganSfx("coin");
             onBoard();
-          })}
+          }}
         >
           <SpinePaintingPortal organ="coin" lit size="xl" />
           <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">

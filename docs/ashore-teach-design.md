@@ -1,5 +1,7 @@
 # Ashore Teach — Chamber 00 (iter 23)
 
+**Honest status:** **Gap / not iconic** until human cold retell. Soft-locks fixed; Chamber-00 cold green. Craft board: [tutorial-craft-board.md](./tutorial-craft-board.md).
+
 **Goal:** Short prove-it pad before Carpet — then the **first Cove→Harbor loop is the tutorial**.  
 **Research:** [ashore-tutorial-research.md](./ashore-tutorial-research.md)  
 **North stars:** Portal checklist → twist · Mario body-lesson · BotW teach-when-needed · Astro toy clarity · Hermans elegancy.
@@ -28,11 +30,16 @@
 
 | Lesson | Where |
 |--------|--------|
-| Take fork | Cove · Keeper Kira (real scar) |
-| Harbor remembers | First carpet home + spectacle |
+| Harbor remembers | First carpet home + spectacle *(wired; cold human still Gap)* |
 | Share | Post-spectacle |
 | Soft Beat vs arcade | First Coin Jar enter |
 | Paycheck / Credit | When those paintings unlock |
+
+## Organic twist (in world — Chamber 00 combine)
+
+| Lesson | Where |
+|--------|--------|
+| Take fork | Cove · Keeper Kira — jar before treat / treat before jar · hush · carpet home |
 
 ## Code
 

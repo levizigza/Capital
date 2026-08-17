@@ -36,7 +36,7 @@ function formatConsoleArgs(args: unknown[]): { message: string; stack?: string }
 
 export function DevErrorOverlay() {
   const [entries, setEntries] = useState<OverlayErrorEntry[]>([]);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isEnabled, setIsEnabled] = useState(true);
   const [filter, setFilter] = useState("");
   const originalConsole = useRef<{ error?: typeof console.error; warn?: typeof console.warn }>({});
@@ -264,7 +264,21 @@ export function DevErrorOverlay() {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} data-testid="dev-error-overlay">
+      {!isOpen ? (
+        <button
+          type="button"
+          style={{ ...styles.header, ...styles.interactive, cursor: "pointer", borderBottom: "1px solid rgba(148, 163, 184, 0.25)", borderRadius: 10 }}
+          onClick={() => setIsOpen(true)}
+          title="Show Dev Errors (Ctrl+Shift+E)"
+        >
+          <div style={styles.title}>
+            <span>Dev</span>
+            <span style={styles.badge}>{entries.length}</span>
+          </div>
+        </button>
+      ) : (
+        <>
       <div style={{ ...styles.header, ...styles.interactive }}>
         <div style={styles.title}>
           <span>Dev Errors</span>
@@ -289,16 +303,15 @@ export function DevErrorOverlay() {
           <button
             type="button"
             style={styles.button}
-            onClick={() => setIsOpen(open => !open)}
-            title={isOpen ? "Collapse" : "Expand"}
+            onClick={() => setIsOpen(false)}
+            title="Collapse"
           >
-            {isOpen ? "Hide" : "Show"}
+            Hide
           </button>
         </div>
       </div>
 
-      {isOpen ? (
-        <div style={{ ...styles.panel, ...styles.interactive }}>
+      <div style={{ ...styles.panel, ...styles.interactive }}>
           <div style={styles.controls}>
             <input
               style={styles.input}
@@ -323,7 +336,8 @@ export function DevErrorOverlay() {
             ))
           )}
         </div>
-      ) : null}
+        </>
+      )}
     </div>
   );
 }

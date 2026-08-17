@@ -26,8 +26,8 @@ export {
 };
 
 /**
- * Castle coach — soft tip during first meet / voyage.
- * Never stacks a forced Talk CTA (teach already covered controls).
+ * Castle coach — voyage tip only after Talk.
+ * First meet: presence line owns the beat (no stacked coach over Piggy).
  */
 export function shouldShowCastleCoach(opts: {
   guidedStepId?: string | null;
@@ -36,6 +36,8 @@ export function shouldShowCastleCoach(opts: {
 }): boolean {
   if (!opts.guidedStepId || opts.guidedStepId === "done") return false;
   if (opts.quietHomecoming) return false;
+  // meet_guide: Ashore already taught controls — presence + near Talk only.
+  if (opts.guidedStepId === "meet_guide") return false;
   return true;
 }
 
@@ -71,7 +73,7 @@ export function shouldForceTalkCta(opts: {
 
 /** Voyage coach — single next verb toward Cove. */
 export function ashoreVoyageCoach(): string {
-  return "Board the Money Carpet — Coincraft Cove is your first painting.";
+  return "Board the Money Carpet — Cove first. Fair coins, then one choice Harbor feels.";
 }
 
 export function ashoreVoyageVerb(): string {

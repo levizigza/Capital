@@ -2,6 +2,9 @@
  * Pointer-safe primary CTA: fire once on pointerup (touch / computerUse /
  * Playwright pointer sequence) OR on click alone (keyboard / evaluate click).
  * Prevents double-advance when both pointerup and click arrive.
+ *
+ * IMPORTANT: Do not put infinite CSS transform animations on elements that use
+ * this helper — hit targets must stay layout-stable for real mice.
  */
 
 const FLAG = "__capitalPointerActivated";

@@ -1,5 +1,7 @@
 # Harbor Ashore — opening tutorial
 
+**Honest status (2026-08-17):** **Machine craft 100% per beat · Human Pass 0% · Overall ~93%.** See [tutorial-craft-board.md](./tutorial-craft-board.md). Do **not** mark tutorial Pass until a cold human retells: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
+
 **Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 
 **Canon:** [ashore-teach-design.md](./ashore-teach-design.md) · [ashore-tutorial-research.md](./ashore-tutorial-research.md) · [iconic-path.md](./iconic-path.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md)  
