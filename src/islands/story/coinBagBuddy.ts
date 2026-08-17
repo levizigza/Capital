@@ -265,25 +265,43 @@ export function coinBagIslandTip(
         return {
           tip: "Captain Penny — First Coins",
           coach:
-            "Talk to Captain Penny at the dock. Earn fair coins — then Alma clears the path to Kira’s choice.",
+            "Talk to Captain Penny at the dock. Earn fair coins — then the lighthouse Take.",
           track: "main",
         };
       }
       const saveSpend = save.questStatus["q_cc_save_or_spend"];
       if (saveSpend?.started && !saveSpend.completed) {
         const have = saveSpend.completedObjectives ?? [];
-        if (!have.includes("talk:npc_artisan_alma")) {
-          return {
-            tip: "Artisan Alma — Craft Market",
-            coach: "Clear brushes vs glitter. She points the lighthouse — the choice that sticks.",
-            track: "main",
-          };
-        }
         if (!have.includes("talk:npc_keeper_kira") || !have.includes("item:cc_savings_jar")) {
           return {
             tip: "Keeper Kira — Savings Lighthouse",
             coach:
               "This is the twist: jar before treat, or treat before jar. Harbor will remember.",
+            track: "main",
+          };
+        }
+      }
+      const firstCoins = save.questStatus["q_cc_first_coins"];
+      if (firstCoins?.started && !firstCoins.completed) {
+        const have = firstCoins.completedObjectives ?? [];
+        if (!have.includes("talk:npc_captain_penny")) {
+          return {
+            tip: "Captain Penny — First Coins",
+            coach: "Talk to Penny at the dock — then sort coins for your pouch.",
+            track: "main",
+          };
+        }
+        if (!have.includes("item:cc_coin_pouch")) {
+          return {
+            tip: "Pick up your Coin Pouch",
+            coach: "It’s on the dock. Grab it, then sort coins.",
+            track: "main",
+          };
+        }
+        if (!have.includes("minigame:mg_coin_sort")) {
+          return {
+            tip: "Coin Sort — prove fair coins",
+            coach: "Finish the sort. Next stop: Keeper Kira’s forever choice.",
             track: "main",
           };
         }

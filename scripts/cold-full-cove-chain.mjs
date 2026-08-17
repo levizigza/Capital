@@ -324,9 +324,7 @@ async function main() {
     if (!sortDone) throw new Error("mg_coin_sort not in completedMinigames");
     report.steps.push("coin_sort");
 
-    await talkNpc(page, "npc_artisan_alma", /Sure|bench|stays/i);
-    report.steps.push("alma_talk");
-
+    // Critical path: Kira Take (Alma is optional tip — not required).
     await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_keeper_kira");
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await page.getByTestId("talk-battle-continue").evaluate((el) => el.click()).catch(() => {});

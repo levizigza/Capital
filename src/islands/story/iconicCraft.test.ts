@@ -133,9 +133,17 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
     expect(choiceText).toContain("Treat before jar");
   });
 
-  it("Alma foreshadows the lighthouse twist without Coin Hold jargon", () => {
+  it("Alma is optional tip — does not gate the Take quest", () => {
     const content = loadIslandsContent();
     const cove = content.islands.find((i) => i.id === "coincraft_cove");
+    const quest = cove?.quests.find((q) => q.id === "q_cc_save_or_spend");
+    const objs = quest?.objectives ?? [];
+    expect(objs.some((o) => o.type === "talkToNpc" && o.npcId === "npc_keeper_kira")).toBe(
+      true,
+    );
+    expect(objs.some((o) => o.type === "talkToNpc" && o.npcId === "npc_artisan_alma")).toBe(
+      false,
+    );
     const alma = cove?.dialogues?.find((d) => d.id === "dlg_artisan_alma");
     const aa2 = alma?.nodes.find((n) => n.id === "aa2");
     expect(aa2?.text).toMatch(/lighthouse|Harbor will feel/i);
@@ -153,7 +161,7 @@ describe("iconic signature — Cove quiet + day-2 echo", () => {
           q_cc_save_or_spend: {
             started: true,
             completed: false,
-            completedObjectives: ["talk:npc_artisan_alma"],
+            completedObjectives: [],
           },
         },
         completedMinigames: [],

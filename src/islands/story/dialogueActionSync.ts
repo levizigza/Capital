@@ -64,7 +64,7 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   to_dock: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Money Carpet that way — Cove first. Fair coins, then one choice Harbor feels!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },

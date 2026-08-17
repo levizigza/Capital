@@ -1329,10 +1329,16 @@ export function HomeHubView({
               >
                 {ashorePresenceLine({ firstMeet: firstMeet && !stripPlaza })}
               </p>
-            ) : showTravelChip ? null : (
+            ) : (
             <CoinBagBuddyHud
               tip={buddyTip.tip}
-              detail={castleMode ? guidedStep?.coach : undefined}
+              detail={
+                castleMode
+                  ? guidedStep?.coach
+                  : showTravelChip
+                    ? buddyTip.coach
+                    : undefined
+              }
               guideArrows={guideArrows}
               onToggleGuide={earlyCastle ? undefined : toggleGuide}
             />

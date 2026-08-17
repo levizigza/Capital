@@ -128,10 +128,9 @@
           "id": "q_cc_save_or_spend",
           "track": "main",
           "title": "Save or Spend?",
-          "description": "Clear Alma's craft bench (brushes stay, glitter waits), then visit Keeper Kira for the jar-or-treat Take.",
-          "hint": "Talk to Alma at the Craft Market, then walk to the Savings Lighthouse for the Take.",
+          "description": "Visit Keeper Kira at the Savings Lighthouse for the jar-or-treat Take — one choice Harbor will remember.",
+          "hint": "Walk to the Savings Lighthouse. Keeper Kira’s question sticks forever.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_artisan_alma" },
             { "type": "talkToNpc", "npcId": "npc_keeper_kira" },
             { "type": "collectItem", "itemId": "cc_savings_jar" }
           ],
@@ -177,9 +176,9 @@
               "id": "cp2",
               "speaker": "Captain Penny",
               "text": {
-                "explorer": "A penny is 1 cent, a nickel is 5, a dime is 10, and a quarter is 25. Grab your Coin Pouch and try sorting!",
-                "apprentice": "Great spirit! A penny is 1 cent, a nickel is 5, a dime is 10, and a quarter is 25. Grab that Coin Pouch on the dock and try sorting some coins!",
-                "strategist": "Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢. Exact change avoids overpaying — collect your pouch and run the sort challenge."
+                "explorer": "A penny is 1 cent, a nickel is 5, a dime is 10, and a quarter is 25. Grab your Coin Pouch and try sorting — then the lighthouse asks one forever choice!",
+                "apprentice": "Great spirit! Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢. Grab that Coin Pouch, sort coins, then walk to Keeper Kira — her question sticks.",
+                "strategist": "Penny 1¢, nickel 5¢, dime 10¢, quarter 25¢. Exact change first — then the Savings Lighthouse Take. Harbor will feel it."
               },
               "end": true
             },
@@ -198,27 +197,26 @@
             {
               "id": "aa1",
               "speaker": "Artisan Alma",
-              "text": "Oh — a Coin Pouch! Fair coins earned. My bench is a mess: brushes that feed real work, glitter that just sparkles. Clear a path to Keeper Kira?",
+              "text": "Oh — a Coin Pouch! Fair coins earned. My bench is a mess: brushes that feed real work, glitter that just sparkles. Want a tip before the lighthouse?",
               "choices": [
                 {
                   "id": "aa1_a",
                   "text": "Sure — what stays on the bench?",
-                  "nextNodeId": "aa2",
-                  "effects": [{ "type": "startQuest", "questId": "q_cc_save_or_spend" }]
+                  "nextNodeId": "aa2"
                 },
-                { "id": "aa1_b", "text": "Not right now.", "nextNodeId": "aa3" }
+                { "id": "aa1_b", "text": "I’m headed to Kira.", "nextNodeId": "aa3" }
               ]
             },
             {
               "id": "aa2",
               "speaker": "Artisan Alma",
-              "text": "Keep the brushes. Glitter can wait. Then walk to the Savings Lighthouse — Kira will ask one question that sticks. Harbor will feel the answer.",
+              "text": "Keep the brushes. Glitter can wait. Then the Savings Lighthouse — Kira will ask one question that sticks. Harbor will feel the answer.",
               "end": true
             },
             {
               "id": "aa3",
               "speaker": "Artisan Alma",
-              "text": "No rush. Come back when you’re ready for the lighthouse.",
+              "text": "Good. The lighthouse Take is the one Harbor remembers — jar before treat, or treat before jar.",
               "end": true
             }
           ]
@@ -237,6 +235,7 @@
                   "text": "Jar before treat",
                   "nextNodeId": "kk2",
                   "effects": [
+                    { "type": "startQuest", "questId": "q_cc_save_or_spend" },
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
                     {
                       "type": "setIrreversible",
@@ -259,6 +258,7 @@
                   "text": "Treat before jar",
                   "nextNodeId": "kk2_spend",
                   "effects": [
+                    { "type": "startQuest", "questId": "q_cc_save_or_spend" },
                     { "type": "giveItem", "itemId": "cc_savings_jar" },
                     {
                       "type": "setIrreversible",

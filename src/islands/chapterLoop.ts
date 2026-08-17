@@ -136,14 +136,14 @@ export function buildCoveChangeReplayTimeline(opts: {
         timestamp: now,
         context: { islandId: opts.islandId, questId: COVE_CHANGE_QUEST_ID },
         action: {
-          eventTitle: "Craft bench with Alma",
-          chosenLabel: "Cleared brushes; glitter can wait",
+          eventTitle: "Earn fair coins with Penny",
+          chosenLabel: "Pouch + Coin Sort cleared",
           chosenIndex: 0,
         },
         alternatives: ["Walked away"],
-        stateDiff: "Quest started",
+        stateDiff: "First Coins complete — Take quest opens",
         explanation:
-          "Alma clears the path to the jar-or-treat choice — Cove’s Coin organ, not Paycheck’s three payday buckets.",
+          "Fair coins first — then the lighthouse Take. Alma is optional tip, not a gate.",
       },
       {
         timestamp: now,
