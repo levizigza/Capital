@@ -207,7 +207,7 @@
               "choices": [
                 {
                   "id": "pri_plan",
-                  "text": "Plan buckets first — Clock shelters.",
+                  "text": "Plan buckets first — Clock shelters · quieter Main Street",
                   "nextNodeId": "pri_plan_done",
                   "effects": [
                     {
@@ -222,7 +222,7 @@
                 },
                 {
                   "id": "pri_tip",
-                  "text": "Tip first — I’ll stamp later.",
+                  "text": "Tip first — louder tip-jar weather · Harbor still keeps it",
                   "nextNodeId": "pri_tip_done",
                   "effects": [
                     {

@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { digressionScarGaps, digressionShelfTotal } from "../digressionShelf";
-import { armSoftBeat, peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
+import { digressionScarGaps, digressionShelfTotal, digressionShelfRows } from "../digressionShelf";
+import {
+  armSoftBeat,
+  peekSoftBeatArm,
+  softBeatArmWhisper,
+  softBeatArmConsumesOnChoice,
+  softBeatArmChoiceSuffix,
+  consumeSoftBeatArm,
+} from "../softBeatArm";
 import { minigameFailCopy } from "../minigameFail";
 import { attachCoinBagHorizons } from "./coinBagBuddy";
 import type { IslandSaveV1 } from "../types";
@@ -26,6 +33,21 @@ describe("capital pattern library contracts", () => {
     armSoftBeat("lookout");
     expect(peekSoftBeatArm()).toBe("lookout");
     expect(softBeatArmWhisper("lookout")).toMatch(/Coin/);
+    expect(softBeatArmConsumesOnChoice({ effects: [{ type: "setIrreversible" }] })).toBe(true);
+    expect(softBeatArmConsumesOnChoice({ effects: [{ type: "addScar" }] })).toBe(true);
+    expect(softBeatArmConsumesOnChoice({ effects: [{ type: "giveItem" }] })).toBe(false);
+    expect(softBeatArmChoiceSuffix("battlement", [{ type: "setIrreversible" }])).toMatch(/Spiral/);
+    expect(softBeatArmChoiceSuffix("battlement", [{ type: "giveItem" }])).toBeNull();
+    consumeSoftBeatArm();
+  });
+
+  it("Inbox Storm fills a digression myth shelf slot", () => {
+    const one = {
+      harborScars: [{ id: "pp_inbox_storm", label: "Cleared the Inbox Storm" }],
+    } as unknown as IslandSaveV1;
+    const rows = digressionShelfRows(one);
+    expect(rows.some((r) => r.label.includes("Inbox Storm") && r.filled)).toBe(true);
+    expect(digressionScarGaps(one)).toBe(digressionShelfTotal() - 1);
   });
 
   it("fail copy names organ verbs for learnable feedback", () => {
@@ -136,11 +158,17 @@ describe("capital pattern library contracts", () => {
     const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
     expect(app).toMatch(/pp_inbox_storm/);
     expect(app).toMatch(/mg_inbox_storm/);
-  });
-
-  it("Inbox Storm fills a digression myth shelf slot", () => {
     const shelf = readFileSync(join(__dirname, "../digressionShelf.ts"), "utf8");
     expect(shelf).toMatch(/pp_inbox_storm/);
+  });
+
+  it("Paycheck tip fork foreshadows opportunity cost", () => {
+    const pay = readFileSync(
+      join(__dirname, "../content/paycheck-peninsula.islands.json"),
+      "utf8",
+    );
+    expect(pay).toMatch(/quieter Main Street/);
+    expect(pay).toMatch(/louder tip-jar weather/);
   });
 
   it("Soft Beat arm burns only on Take or digression stakes", () => {

@@ -217,10 +217,10 @@ function coinBagHarborTipRaw(
       coach: "Our island adventure is paused — resume anytime.",
     };
   }
-  if (opts?.digressionGaps && opts.digressionGaps > 0 && opts.hasFreedom) {
+  if (opts?.digressionGaps && opts.digressionGaps > 0 && (opts.hasFreedom || opts.latestScarLabel)) {
     return {
-      tip: `Plaza still holds ${opts.digressionGaps} unheard rumor${opts.digressionGaps === 1 ? "" : "s"}`,
-      coach: "Side shores leave gossip footprints. Stray when you want — spine stays open.",
+      tip: `Myth shelf · ${opts.digressionGaps} empty rumor slot${opts.digressionGaps === 1 ? "" : "s"}`,
+      coach: "Plinth keeps empty shelves curious. Side shores and digressions fill them — spine stays open.",
       track: "side",
     };
   }
