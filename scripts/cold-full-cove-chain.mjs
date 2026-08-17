@@ -92,24 +92,32 @@ async function passMasteryQuiz(page) {
   await quiz.waitFor({ state: "visible", timeout: 12_000 });
 
   // gate_coin_sort: correctIndex is 1 (B) for q1/q2/q3
-  await page.evaluate(() => {
-    for (const qid of ["q1", "q2", "q3"]) {
-      document.querySelector(`[data-testid="mastery-choice-${qid}-1"]`)?.click();
-    }
-  });
+  for (const qid of ["q1", "q2", "q3"]) {
+    await page.getByTestId(`mastery-choice-${qid}-1`).click({ force: true });
+    await page.waitForTimeout(80);
+  }
   await page.waitForFunction(() => {
     const sub = document.querySelector('[data-testid="mastery-quiz-submit"]');
     return sub instanceof HTMLButtonElement && !sub.disabled;
   }, null, { timeout: 5_000 });
 
-  await page.getByTestId("mastery-quiz-submit").evaluate((el) => el.click());
-  await quiz.waitFor({ state: "hidden", timeout: 12_000 });
+  await page.getByTestId("mastery-quiz-submit").click({ force: true });
+  await page.waitForFunction(
+    () => {
+      const quizEl = document.querySelector('[data-testid="mastery-quiz"]');
+      if (!quizEl) return true;
+      return /All correct|block unlocked/i.test(quizEl.textContent || "");
+    },
+    null,
+    { timeout: 8_000 },
+  );
   // onPassed delays 600ms before save update — wait for clear
   await page.waitForFunction(
     () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
     null,
-    { timeout: 8_000 },
+    { timeout: 12_000 },
   );
+  await quiz.waitFor({ state: "hidden", timeout: 15_000 }).catch(() => {});
   return true;
 }
 

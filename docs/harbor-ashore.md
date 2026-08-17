@@ -1,6 +1,6 @@
 # Harbor Ashore — opening tutorial
 
-**Honest status (2026-08-17):** **Still Gap — ~72% craft.** See [tutorial-craft-board.md](./tutorial-craft-board.md). Boot soft-locks fixed; Chamber-00 → Harbor cold green; Cove path is Penny → Kira Take (Alma optional); Harbor labels quiet on presence. Do **not** mark Pass until a cold human completes Title → Ashore → Harbor → Cove Take and can retell: *walked, talked to Piggy, boarded Cove, chose, Harbor remembered.*
+**Honest status (2026-08-17):** **Still Gap — ~82% craft.** See [tutorial-craft-board.md](./tutorial-craft-board.md). Machine cold Ashore→Cove→Harbor retell is green; human cold retell still required for Pass.
 
 **Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 

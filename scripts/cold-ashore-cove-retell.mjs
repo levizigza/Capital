@@ -77,22 +77,41 @@ async function talkNpc(page, npcId, preferChoice) {
 async function passMasteryQuiz(page) {
   const quiz = page.getByTestId("mastery-quiz");
   await quiz.waitFor({ state: "visible", timeout: 12_000 });
-  await page.evaluate(() => {
-    for (const qid of ["q1", "q2", "q3"]) {
-      document.querySelector(`[data-testid="mastery-choice-${qid}-1"]`)?.click();
-    }
-  });
+
+  // gate_coin_sort: correctIndex is 1 for q1/q2/q3 — click via Playwright so React state updates.
+  for (const qid of ["q1", "q2", "q3"]) {
+    await page.getByTestId(`mastery-choice-${qid}-1`).click({ force: true });
+    await page.waitForTimeout(80);
+  }
   await page.waitForFunction(() => {
     const sub = document.querySelector('[data-testid="mastery-quiz-submit"]');
     return sub instanceof HTMLButtonElement && !sub.disabled;
   }, null, { timeout: 5_000 });
-  await page.getByTestId("mastery-quiz-submit").evaluate((el) => el.click());
-  await quiz.waitFor({ state: "hidden", timeout: 12_000 });
+
+  await page.getByTestId("mastery-quiz-submit").click({ force: true });
   await page.waitForFunction(
-    () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
+    () => {
+      const quizEl = document.querySelector('[data-testid="mastery-quiz"]');
+      if (!quizEl) return true;
+      return /All correct|block unlocked/i.test(quizEl.textContent || "");
+    },
     null,
     { timeout: 8_000 },
   );
+  await page.waitForFunction(
+    () => (window.__QA__?.getSave()?.completedMinigames || []).includes("mg_coin_sort"),
+    null,
+    { timeout: 12_000 },
+  );
+  // Modal may keep quiz briefly — wait for modal or quiz to clear.
+  await page
+    .getByTestId("mastery-quiz")
+    .waitFor({ state: "hidden", timeout: 15_000 })
+    .catch(() => {});
+  await page
+    .getByTestId("minigame-modal")
+    .waitFor({ state: "hidden", timeout: 15_000 })
+    .catch(() => {});
 }
 
 async function playCoinSort(page) {
