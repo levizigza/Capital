@@ -192,16 +192,19 @@ export function SpinePaintingPortal({
   );
 }
 
-/** Fantasy chamber — poke organ toys so living money is felt, not only read. */
+/** Fantasy beat — poke organ toys so living money is felt, not only read. */
 export function FantasyOrganToys({
   poked,
   onPoke,
   nudge = false,
+  spectacle = false,
 }: {
   poked: MoneyOrganId[];
   onPoke: (id: MoneyOrganId) => void;
-  /** Pulse toys when Continue was pressed before a poke (clipped-CTA recovery). */
+  /** Pulse toys when the eye needs them. */
   nudge?: boolean;
+  /** Iconic layout — large toys beside the Voyager stage. */
+  spectacle?: boolean;
 }) {
   const toys: { id: MoneyOrganId; label: string }[] = [
     { id: "memory", label: "Memory keeps" },
@@ -209,9 +212,12 @@ export function FantasyOrganToys({
   ];
   return (
     <div
-      className={`flex justify-center gap-4 ${nudge ? "animate-pulse" : ""}`}
+      className={`${spectacle ? "flex w-full max-w-3xl justify-center gap-5 sm:gap-8" : "flex justify-center gap-4"} ${
+        nudge ? "animate-pulse" : ""
+      }`}
       data-testid="ashore-fantasy-toys"
       data-nudge={nudge ? "1" : "0"}
+      data-spectacle={spectacle ? "1" : "0"}
     >
       {toys.map((t) => {
         const lit = poked.includes(t.id);
@@ -223,24 +229,34 @@ export function FantasyOrganToys({
             data-testid={`ashore-fantasy-toy-${t.id}`}
             aria-pressed={lit}
             aria-label={`Poke ${t.label}`}
-            className={`flex min-h-[7.5rem] min-w-[6.5rem] flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
-              lit
-                ? "bg-white/15 ring-amber-200/70"
-                : nudge
-                  ? "bg-amber-400/20 ring-amber-200/90 hover:bg-amber-400/30"
-                  : "bg-white/10 ring-white/35 hover:bg-white/15"
+            className={`flex flex-col items-center gap-1.5 rounded-2xl transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
+              spectacle
+                ? `min-h-[9rem] min-w-[7.5rem] px-3 py-3 sm:min-h-[11rem] sm:min-w-[9rem] ${
+                    lit
+                      ? "bg-white/10 ring-2 ring-amber-200/80"
+                      : nudge
+                        ? "bg-amber-400/15 ring-2 ring-amber-200/90 hover:bg-amber-400/25"
+                        : "bg-black/25 ring-1 ring-white/30 hover:bg-white/10"
+                  }`
+                : `min-h-[7.5rem] min-w-[6.5rem] px-3 py-2.5 ring-2 ${
+                    lit
+                      ? "bg-white/15 ring-amber-200/70"
+                      : nudge
+                        ? "bg-amber-400/20 ring-amber-200/90 hover:bg-amber-400/30"
+                        : "bg-white/10 ring-white/35 hover:bg-white/15"
+                  }`
             }`}
             {...pointerSafeActivate(() => {
               playOrganSfx(t.id);
               onPoke(t.id);
             })}
           >
-            <SpinePaintingPortal organ={t.id} lit={lit} size="sm" />
-            <span className="text-[11px] font-bold" style={{ color: accent }}>
+            <SpinePaintingPortal organ={t.id} lit={lit} size={spectacle ? "md" : "sm"} />
+            <span className="text-[11px] font-bold sm:text-xs" style={{ color: accent }}>
               {t.label}
             </span>
             <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">
-              {lit ? "Lit" : "Tap to poke"}
+              {lit ? "Alive" : "Poke"}
             </span>
           </button>
         );
