@@ -129,14 +129,53 @@ export function harborScarPlaques(save: IslandSaveV1): HarborScar[] {
   return (save.harborScars ?? []).filter((s) => s.kind === "plaque" || s.kind === "plaza_prop");
 }
 
+/**
+ * Side digressions (Shell Want, Collector Rumor, …) land as npc_tone gossip scars —
+ * not Plinth plaques, but plaza locals still name them (GTA4 alive streets).
+ */
+export function isDigressionScar(scar: Pick<HarborScar, "id" | "kind">): boolean {
+  if (scar.kind === "npc_tone") return true;
+  const id = scar.id.toLowerCase();
+  return (
+    id.startsWith("cc_shell_") ||
+    id.startsWith("ck_collector_") ||
+    id.includes("shell_patience") ||
+    id.includes("shell_impulse") ||
+    id.includes("collector_rumor")
+  );
+}
+
+/**
+ * Scars plaza Talk Battles may name — spine plaques plus digression gossip.
+ * Keeps spectacle/Plinth on plaques only via harborScarPlaques.
+ */
+export function harborTalkScars(save: IslandSaveV1): HarborScar[] {
+  return (save.harborScars ?? []).filter(
+    (s) => s.kind === "plaque" || s.kind === "plaza_prop" || isDigressionScar(s),
+  );
+}
+
 /** Chapter shelf name for Memory Plinth grouping. */
 export function scarChapterTitle(scar: HarborScar): string {
   const id = `${scar.id} ${scar.islandId}`.toLowerCase();
-  if (id.includes("cove") || scar.islandId === "coincraft_cove") return "Coincraft Cove";
+  // Digression ids: cc_shell_* (Cove), ck_collector_* (Credit) — no "cove"/"credit" substring.
+  if (
+    id.includes("cove") ||
+    id.includes("cc_shell") ||
+    scar.islandId === "coincraft_cove"
+  ) {
+    return "Coincraft Cove";
+  }
   if (id.includes("pp_") || id.includes("paycheck") || scar.islandId === "paycheck_peninsula") {
     return "Paycheck Peninsula";
   }
-  if (id.includes("credit") || scar.islandId === "credit_kingdom") return "Credit Kingdom";
+  if (
+    id.includes("credit") ||
+    id.includes("ck_collector") ||
+    scar.islandId === "credit_kingdom"
+  ) {
+    return "Credit Kingdom";
+  }
   return "Harbor memory";
 }
 
@@ -202,10 +241,20 @@ export function coldOrganKidSentence(organ: MoneyOrganId): string {
   return "The Coin holds — save a little; the jar still waits.";
 }
 
-/** One kid-facing sentence after a cold play — organ verb + plaque. */
+/** One kid-facing sentence after a cold play — organ verb + plaque with story weight. */
 export function coldRetellLine(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  return `The ${organVerbChip(organ)} — Harbor remembered: “${scar.label}.”`;
+  const verb = organVerbChip(organ);
+  if (organ === "clock") {
+    return `You chose under the Clock — “${scar.label}.” Harbor still feels the shelter (or the rain).`;
+  }
+  if (organ === "spiral") {
+    return `You faced the Spiral — “${scar.label}.” Interest doesn’t yell; Harbor still hears it.`;
+  }
+  if (organ === "memory") {
+    return `Memory keeps the mark — “${scar.label}.” The Plinth will not forget.`;
+  }
+  return `You chose with the Coin — “${scar.label}.” Harbor remembered. The ${verb}.`;
 }
 
 /** Plinth billboard / modal row — organ verb first so the suit sticks. */
@@ -220,7 +269,11 @@ export function plaqueShelfLine(scar: Pick<HarborScar, "id" | "islandId" | "labe
  */
 export function coldSpectacleHeadline(scar: Pick<HarborScar, "id" | "islandId" | "label">): string {
   const organ = scarOrganId(scar);
-  return `Harbor felt that — the ${organVerbChip(organ)}`;
+  const verb = organVerbChip(organ);
+  if (organ === "clock") return `Harbor felt that — rain or shelter · ${verb}`;
+  if (organ === "spiral") return `Harbor felt that — wait or haste · ${verb}`;
+  if (organ === "memory") return `Harbor felt that — ${verb}`;
+  return `Harbor felt that — jar or treat · ${verb}`;
 }
 
 /** Suit-verb hush after Take — Coin holds · Clock shelters · Spiral withstands. */
@@ -313,6 +366,69 @@ export function piggyScarMemoryLine(
     return `Piggy Penny: Still here — the ${chip} did not wash out. “${scarLabel}.”`;
   }
   return `Piggy Penny: Harbor felt that — the ${chip}. “${scarLabel}.” I’m proud you came home changed.`;
+}
+
+/**
+ * Plaza gossip opener — living receipt (GTA4 bar), not a tip list.
+ * Digression scars get specific rumor beats; spine plaques get organ-true haunt.
+ */
+export function plazaScarGossipLine(
+  scar: Pick<HarborScar, "id" | "islandId" | "label" | "kind">,
+  opts?: { talks?: number; stanceHint?: string | null },
+): string {
+  const talks =
+    (opts?.talks ?? 0) >= 2 ? `We’ve talked ${opts!.talks} times — ` : "";
+  const stanceBit = opts?.stanceHint ? ` ${opts.stanceHint}` : "";
+  const id = scar.id.toLowerCase();
+
+  if (id.includes("shell_patience") || id === "cc_shell_patience") {
+    return `${talks}Fountain crowd still whispers it — you left Shelly’s shell on the stall. “${scar.label}.” Want waited; Harbor noticed.${stanceBit}`;
+  }
+  if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
+    return `${talks}Someone at the tip jars keeps clinking your name — you bought Shelly’s shell want. “${scar.label}.” Pretty cost a story.${stanceBit}`;
+  }
+  if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
+    return `${talks}Canyon wind carried it here — you stood in the Collector’s pitch. “${scar.label}.” Listening isn’t paying, but Harbor still gossiped.${stanceBit}`;
+  }
+
+  if (isDigressionScar(scar)) {
+    return `${talks}Side-street rumor: “${scar.label}.” Not a Plinth plaque — still a footprint on the plaza.${stanceBit}`;
+  }
+
+  const organ = scarOrganName(scarOrganId(scar));
+  const habit =
+    organ === "Clock"
+      ? "still stamp about"
+      : organ === "Spiral"
+        ? "still weigh"
+        : organ === "Memory"
+          ? "still name"
+          : "still tip jars about";
+  return `${talks}Folks ${habit} the ${organ} — “${scar.label}” — on the Plinth. Money left footprints.${stanceBit}`;
+}
+
+/**
+ * Piggy names a scar with emotional weight (TLOU2 / GotS) — short, not lecture-y.
+ * Digressions = quiet conscience; plaques = Plinth bond.
+ */
+export function piggyScarWeightLine(
+  scar: Pick<HarborScar, "id" | "islandId" | "label" | "kind">,
+): string {
+  const id = scar.id.toLowerCase();
+  if (id.includes("shell_patience") || id === "cc_shell_patience") {
+    return `I heard about Shelly’s stall. Leaving a want on the wood… that quiet sticks. “${scar.label}.”`;
+  }
+  if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
+    return `Harbor gossiped soft about the shell you bought. I don’t scold — I just… felt it with you. “${scar.label}.”`;
+  }
+  if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
+    return `Word from the canyon reached me first. Standing in that pitch leaves a chill — not shame, just weather. “${scar.label}.”`;
+  }
+  if (isDigressionScar(scar)) {
+    return `Side roads write on Harbor too. “${scar.label}.” I kept the feeling — not a lesson.`;
+  }
+  const organ = scarOrganName(scarOrganId(scar));
+  return `The Plinth still holds the ${organ} — “${scar.label}.” Harbor doesn’t forget — and neither do I.`;
 }
 
 /** True when this local should name the scar (dense plaza memory, not sparse). */

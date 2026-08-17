@@ -52,6 +52,7 @@ import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "../chapterLo
 import { canOpenSignatureCinema } from "../signatureCinemaGate";
 import {
   harborScarPlaques,
+  harborTalkScars,
   groupScarsByChapter,
   scarChapterTitle,
   scarOrganId,
@@ -337,6 +338,7 @@ export function HomeHubView({
     !peninsulaChapterDone;
 
   const plaques = harborScarPlaques(save);
+  const talkScars = harborTalkScars(save);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   // Design Bible: stance stays silent — no Plinth stance chrome.
@@ -382,17 +384,23 @@ export function HomeHubView({
   const pulseHotspotId = resolvePulseHotspotId(visualBeats.pulseHotspot);
 
   const latestPlaque = plaques[plaques.length - 1] ?? null;
-  const latestOrgan = latestPlaque ? scarOrganId(latestPlaque) : null;
+  const latestTalkScar = talkScars[talkScars.length - 1] ?? null;
+  const latestOrgan = latestPlaque
+    ? scarOrganId(latestPlaque)
+    : latestTalkScar
+      ? scarOrganId(latestTalkScar)
+      : null;
   const familyMyth = familyPlaqueMythLine(latestPlaque?.label, latestOrgan);
-  const scarDay = (latestPlaque?.createdAt || "").slice(0, 10);
+  const echoScar = latestPlaque ?? latestTalkScar;
+  const scarDay = (echoScar?.createdAt || "").slice(0, 10);
   const scarEcho =
-    latestPlaque != null
+    echoScar != null
       ? {
-          label: latestPlaque.label,
+          label: echoScar.label,
           dayOffset: (scarDay && scarDay < localDayKey() ? "later" : "same") as
             | "same"
             | "later",
-          organ: scarOrganId(latestPlaque),
+          organ: scarOrganId(echoScar),
         }
       : null;
 

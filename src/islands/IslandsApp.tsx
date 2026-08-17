@@ -55,6 +55,7 @@ import { playCapitalSfx } from "./audio/capitalSfx";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
+  harborTalkScars,
   nextPaintingAfterScar,
   plaqueShelfLine,
   stanceGreetingHint,
@@ -1248,7 +1249,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       const harborGraph = resolveHarborDialogue(npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(
           upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
@@ -1433,7 +1434,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         (save?.piggyBondHomecomings ?? 0) +
         (save?.harborHomecoming && !save.harborHomecoming.piggyTalked ? 1 : 0);
       return piggyHomecomingGraph(save?.harborHomecoming?.message, {
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: Math.max(upcoming, 1),
       });
     }
@@ -1456,7 +1457,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       return resolveHarborDialogue(dialogueState.npcId, {
         guidedStep: guided,
         homecoming: save?.harborHomecoming,
-        scars: harborScarPlaques(save ?? ({} as IslandSaveV1)),
+        scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: save?.piggyBondHomecomings ?? 0,
         stanceHint: stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,

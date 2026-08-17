@@ -35,10 +35,9 @@ describe("Pillar 12 story cold retell", () => {
       islandId: "coincraft_cove",
       label: "Jar before treat",
     };
-    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
-    expect(coldRetellLine(cove)).toBe(
-      'The Coin holds — Harbor remembered: “Jar before treat.”',
-    );
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — jar or treat · Coin holds");
+    expect(coldRetellLine(cove)).toMatch(/You chose with the Coin/);
+    expect(coldRetellLine(cove)).toMatch(/Jar before treat/);
     expect(familyPlaqueMythLine(cove.label, "coin")).toBe(
       'The Coin holds — Harbor remembered: “Jar before treat.” Local myth — and so do you.',
     );

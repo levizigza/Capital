@@ -60,4 +60,22 @@ describe("cast-as-memory", () => {
     });
     expect(spiral?.nodes[0]?.text).toMatch(/Spiral/);
   });
+
+  it("names digression scars in Talk Battle without falling into tip lists", () => {
+    const g = resolveHarborDialogue("coiny", {
+      scars: [
+        {
+          id: "cc_shell_impulse",
+          islandId: "coincraft_cove",
+          label: "Bought Shelly’s shell want",
+          kind: "npc_tone",
+        },
+      ],
+    });
+    expect(g?.id).toMatch(/scar_memory/);
+    expect(String(g?.nodes[0]?.text)).toMatch(/Shelly|shell want/i);
+    expect(g?.nodes.some((n) => String(n.text).match(/Count your coins before you spend/i))).toBe(
+      false,
+    );
+  });
 });

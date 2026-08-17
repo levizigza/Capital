@@ -658,7 +658,9 @@ export const HARBOR_PIGGY_POS: [number, number, number] = [-2.8, 0, 2.4];
 
 /** Harbor plaza sample — readable crowd without spawning all 30.
  *  baggy_bucks is reserved for the hopping Coin Bag guide (MoneyBagGuide).
- *  Series leads flank the Memory Courtyard (SE Plinth terrace) — never Piggy's fountain slot. */
+ *  Series leads flank the Memory Courtyard (SE Plinth terrace) — never Piggy's fountain slot.
+ *  Alive streets (GTA4 bar): when harborTalkScars include digression npc_tone scars
+ *  (cc_shell_*, ck_collector_*) or spine plaques, Talk Battle graphs name them as living receipts. */
 export const HARBOR_LOCAL_CAST: { mascotId: MoneyMascotId; pos: [number, number, number]; yaw: number }[] = [
   { mascotId: "piggy_penny", pos: HARBOR_PIGGY_POS, yaw: 0.35 },
   // Series leads — SE Memory Courtyard terrace (south of Plinth, clear of Bank door)

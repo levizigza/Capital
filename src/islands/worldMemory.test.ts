@@ -8,13 +8,18 @@ import {
   day2EchoBody,
   dominantStance,
   groupScarsByChapter,
+  harborScarPlaques,
+  harborTalkScars,
   hasIrreversible,
+  isDigressionScar,
   nextPaintingAfterScar,
   organQuietBadge,
   organSuitVerb,
   organTakeHushLine,
   organVerbChip,
+  piggyScarWeightLine,
   plaqueShelfLine,
+  plazaScarGossipLine,
   recordIrreversible,
   recordNpcTalk,
   scarChapterTitle,
@@ -150,16 +155,17 @@ describe("worldMemory", () => {
     expect(scarOrganId(credit)).toBe("spiral");
     expect(organSuitVerb("coin")).toBe("holds");
     expect(organVerbChip("coin")).toBe("Coin holds");
-    expect(coldRetellLine(cove)).toBe('The Coin holds — Harbor remembered: “Jar before treat.”');
-    expect(coldRetellLine(pay)).toBe('The Clock shelters — Harbor remembered: “Umbrella before glitter.”');
-    expect(coldRetellLine(credit)).toBe('The Spiral withstands — Harbor remembered: “Waited the spiral.”');
+    expect(coldRetellLine(cove)).toMatch(/You chose with the Coin/);
+    expect(coldRetellLine(cove)).toMatch(/Jar before treat/);
+    expect(coldRetellLine(pay)).toMatch(/You chose under the Clock/);
+    expect(coldRetellLine(credit)).toMatch(/You faced the Spiral/);
     expect(plaqueShelfLine(cove)).toBe("Coin holds · Jar before treat");
     expect(nextPaintingAfterScar(cove)).toBe("Paycheck Peninsula");
     expect(nextPaintingAfterScar(pay)).toBe("Credit Kingdom");
     expect(nextPaintingAfterScar(credit)).toBeNull();
-    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — the Coin holds");
-    expect(coldSpectacleHeadline(pay)).toBe("Harbor felt that — the Clock shelters");
-    expect(coldSpectacleHeadline(credit)).toBe("Harbor felt that — the Spiral withstands");
+    expect(coldSpectacleHeadline(cove)).toBe("Harbor felt that — jar or treat · Coin holds");
+    expect(coldSpectacleHeadline(pay)).toBe("Harbor felt that — rain or shelter · Clock shelters");
+    expect(coldSpectacleHeadline(credit)).toBe("Harbor felt that — wait or haste · Spiral withstands");
     // One mythology — never Harmon jargon as organ names
     expect(coldSpectacleHeadline(cove)).not.toMatch(/Change|Take$/);
     expect(organTakeHushLine("coin")).toMatch(/holds/);
@@ -185,5 +191,36 @@ describe("worldMemory", () => {
       expect(line).not.toMatch(/Dotgraph|Ledgerlight|Mindwage|Harmon/i);
       expect(line).not.toMatch(/Coin Change|Clock Take/);
     }
+  });
+
+  it("digression scars feed talk graphs, not Plinth plaques", () => {
+    let save = baseSave();
+    save = addHarborScar(save, {
+      id: "cc_shell_patience",
+      islandId: "coincraft_cove",
+      choiceId: "sh_need",
+      label: "Left Shelly’s shell on the stall",
+      kind: "npc_tone",
+      createdAt: "2026-01-01",
+    });
+    save = addHarborScar(save, {
+      id: "ck_collector_rumor",
+      islandId: "credit_kingdom",
+      choiceId: "dc1_rumor",
+      label: "Heard the Bank of Obligation pitch",
+      kind: "npc_tone",
+      createdAt: "2026-01-02",
+    });
+    expect(harborScarPlaques(save)).toHaveLength(0);
+    expect(harborTalkScars(save)).toHaveLength(2);
+    expect(isDigressionScar(save.harborScars![0]!)).toBe(true);
+    expect(scarChapterTitle(save.harborScars![0]!)).toBe("Coincraft Cove");
+    expect(scarChapterTitle(save.harborScars![1]!)).toBe("Credit Kingdom");
+    expect(scarOrganId(save.harborScars![0]!)).toBe("coin");
+    expect(scarOrganId(save.harborScars![1]!)).toBe("spiral");
+    expect(plazaScarGossipLine(save.harborScars![0]!)).toMatch(/Shelly/);
+    expect(plazaScarGossipLine(save.harborScars![1]!)).toMatch(/Collector|canyon/i);
+    expect(piggyScarWeightLine(save.harborScars![0]!)).toMatch(/Shelly/);
+    expect(piggyScarWeightLine(save.harborScars![0]!)).not.toMatch(/Pay yourself first/i);
   });
 });
