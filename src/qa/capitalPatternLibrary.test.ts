@@ -12,7 +12,7 @@ describe("Capital Pattern Library honesty bar", () => {
   it("exists and does not claim false 100% ship", () => {
     expect(existsSync(path)).toBe(true);
     const body = readFileSync(path, "utf8");
-    expect(body).toMatch(/Pass K/);
+    expect(body).toMatch(/Pass L/);
     expect(body).toMatch(/Ship iconic vs library\?\*\* \*\*Hold\*\*/);
     expect(body).not.toMatch(/Ship verdict \(Pass I.*100% Pass/);
   });

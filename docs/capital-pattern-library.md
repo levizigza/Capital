@@ -10,15 +10,15 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 
 ---
 
-## Where we are (2026-08-17 Pass K — honest)
+## Where we are (2026-08-17 Pass L — honest)
 
 | | |
 |--|--:|
-| **Claimed ship** | **Not 100%** |
-| **Individual rows 1–100** | Required (Pass K closes lumped 66–70 / 73–75) |
-| **Machine Pass** | 99 patterns with code evidence |
-| **Still Hold** | **#94 only** — needs a real non-designer playtest log in `docs/pattern-human-playtest.md` |
-| **This turn** | Split range rows · feedback-loop literacy (#66) · bounded ritual pick (#70) · board guard test |
+| **Claimed ship** | **Not 100%** (#94 Hold) |
+| **Patterns 1–93, 95–100** | **Pass** in playable code on this branch |
+| **Live Pages** | Still on `main` @ older SHA — **this PR must merge** before https://levizigza.github.io/Capital/ shows Pass L |
+| **Still Hold** | **#94 only** — real non-designer playtest log |
+| **This turn** | Restored chapter-quiet Carpet coach (“Walk to the pier · board Carpet”) so Take→home is playable; unit suite green (492) |
 
 ---
 
@@ -142,6 +142,7 @@ Do **not** declare 100% while any Gap / Thin / Hold remains.
 | Pass I (retracted) | Doc claimed 100% without closing fake Passes — **lie revoked** |
 | Pass J | Real fixes: VibeCode tip · Witness priority · weather literacy · dwell-while-stuck · digression_pair · Soft Beat vistas · trail shelf. **#94 Hold.** |
 | **Pass K** | Closed honesty hole: **no range rows** — #66–70 and #73–75 are individual. Added `feedbackLoopLine` (#66) + `boundedIndexFromKey` (#70). Guard test requires patterns 1–100 each. **Ship still blocked on #94.** |
+| **Pass L** | Restored Take→Carpet pier coach on shore; full `npm test` green. **Live site still needs this PR merged to `main`.** #94 Hold unchanged. |
 
 **Ship iconic vs library?** **Hold** — not 100% until #94 has a real non-designer playtest log (cold triangle alone is not enough).
 

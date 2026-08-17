@@ -27,7 +27,7 @@ describe("capital pattern library contracts", () => {
     expect(lib).toMatch(/Opportunity cost visible/);
     expect(lib).toMatch(/Instrumentation now/);
     expect(lib).toMatch(/Ship iconic vs library\?\*\* \*\*Hold\*\*/);
-    expect(lib).toMatch(/Pass K/);
+    expect(lib).toMatch(/Pass L/);
     expect(lib).not.toMatch(/Ship verdict \(Pass I.*100% Pass/);
   });
 

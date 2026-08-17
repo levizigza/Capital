@@ -529,7 +529,11 @@ export function IslandShoreView({
         <div data-hud-pass className="flex h-full min-h-0 flex-col items-center justify-start gap-2 pt-1">
           <CoinBagBuddyHud
           tip={
-            chapterQuiet ? "Carpet home — Harbor felt that" : buddy.tip
+            chapterQuiet
+              ? near?.id === "pier"
+                ? "Board the carpet home"
+                : "Walk to the pier · board Carpet"
+              : buddy.tip
           }
           detail={chapterQuiet ? undefined : buddy.coach}
           track={buddy.track}
