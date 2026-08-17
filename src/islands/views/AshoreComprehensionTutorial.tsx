@@ -333,7 +333,8 @@ export function AshoreComprehensionTutorial({
           {line}
         </p>
 
-        {stepId !== "ready" &&
+        {skipReady &&
+        stepId !== "ready" &&
         ((stepId === "fantasy" && !fantasyDone) ||
           (stepId === "walk" && !walkDone) ||
           (stepId === "talk" && !talked) ||
