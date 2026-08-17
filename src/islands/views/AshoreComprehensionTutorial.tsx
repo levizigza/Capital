@@ -62,12 +62,19 @@ export function AshoreComprehensionTutorial({
   const [talked, setTalked] = useState(false);
   const [fantasyPoked, setFantasyPoked] = useState<MoneyOrganId[]>([]);
   const [carpetBoarded, setCarpetBoarded] = useState(false);
+  const [skipReady, setSkipReady] = useState(false);
   const reduced = prefersReducedMotion();
 
   useEffect(() => {
     capitalMusic.unlock();
     capitalMusic.playPlace({ kind: "opening" });
   }, []);
+
+  useEffect(() => {
+    setSkipReady(false);
+    const t = window.setTimeout(() => setSkipReady(true), 4200);
+    return () => window.clearTimeout(t);
+  }, [stepId]);
 
   const advance = useCallback(() => {
     if (index >= STEPS.length - 1) {

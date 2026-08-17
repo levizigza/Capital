@@ -107,47 +107,78 @@ function SeedFloor({ lit = 0 }: { lit?: number }) {
 function ChamberShell() {
   const reduced = prefersReducedMotion();
   const motes = useRef<THREE.Points>(null);
-  const moteCount = 48;
+  const moteCount = 64;
   const positions = useMemo(() => {
     const arr = new Float32Array(moteCount * 3);
     for (let i = 0; i < moteCount; i++) {
       const a = (i / moteCount) * Math.PI * 2;
-      const r = 2.2 + (i % 5) * 0.55;
+      const r = 1.8 + (i % 6) * 0.5;
       arr[i * 3] = Math.cos(a) * r;
-      arr[i * 3 + 1] = 0.4 + (i % 7) * 0.35;
-      arr[i * 3 + 2] = Math.sin(a) * r * 0.85;
+      arr[i * 3 + 1] = 0.35 + (i % 8) * 0.32;
+      arr[i * 3 + 2] = Math.sin(a) * r * 0.9;
     }
     return arr;
   }, []);
   useFrame(({ clock }) => {
     if (!motes.current || reduced) return;
-    motes.current.rotation.y = clock.elapsedTime * 0.04;
-    const y = Math.sin(clock.elapsedTime * 0.7) * 0.08;
-    motes.current.position.y = y;
+    motes.current.rotation.y = clock.elapsedTime * 0.045;
+    motes.current.position.y = Math.sin(clock.elapsedTime * 0.65) * 0.07;
   });
   return (
     <group>
-      {/* Soft cove vault — place, not void */}
-      <mesh position={[0, 3.2, 0]}>
-        <cylinderGeometry args={[PAD_R + 1.8, PAD_R + 2.4, 7.2, 48, 1, true]} />
-        <meshStandardMaterial
-          color="#14304a"
-          side={THREE.BackSide}
-          roughness={0.92}
-          metalness={0.05}
+      {/* Soft harbor sky — place, not void */}
+      <mesh>
+        <sphereGeometry args={[16, 32, 20]} />
+        <meshBasicMaterial color="#16354c" side={THREE.BackSide} />
+      </mesh>
+      <mesh position={[0, -1.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[14, 48]} />
+        <meshBasicMaterial color="#0a1c2c" />
+      </mesh>
+      {/* Warm horizon ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[5.2, 7.8, 64]} />
+        <meshBasicMaterial
+          color="#f59e0b"
+          transparent
+          opacity={0.08}
+          side={THREE.DoubleSide}
+          depthWrite={false}
         />
       </mesh>
-      <mesh position={[0, 6.4, 0]} rotation={[Math.PI, 0, 0]}>
-        <circleGeometry args={[PAD_R + 2.2, 48]} />
-        <meshStandardMaterial color="#0c2236" side={THREE.DoubleSide} roughness={1} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
-        <ringGeometry args={[PAD_R + 0.5, PAD_R + 2.6, 64]} />
-        <meshStandardMaterial color="#0e2438" roughness={0.95} />
-      </mesh>
-      {/* Warm harbor wash + cool depth */}
-      <pointLight position={[0, 4.5, 0]} intensity={0.55} color="#fde68a" distance={14} />
-      <pointLight position={[-3.5, 2.2, 2]} intensity={0.35} color="#7dd3fc" distance={10} />
+      {/* Seed pillars — six quiet columns */}
+      {SEED_PETAL_ANGLES.map((angle, i) => {
+        const r = PAD_R + 0.95;
+        const x = Math.cos(angle) * r;
+        const z = Math.sin(angle) * r;
+        return (
+          <group key={i} position={[x, 0, z]}>
+            <mesh position={[0, 1.6, 0]}>
+              <cylinderGeometry args={[0.12, 0.16, 3.2, 10]} />
+              <meshStandardMaterial
+                color="#1e3a52"
+                emissive="#0ea5e9"
+                emissiveIntensity={0.08}
+                metalness={0.25}
+                roughness={0.7}
+              />
+            </mesh>
+            <mesh position={[0, 3.25, 0]}>
+              <sphereGeometry args={[0.18, 12, 10]} />
+              <meshStandardMaterial
+                color="#fde68a"
+                emissive="#fbbf24"
+                emissiveIntensity={0.45}
+                metalness={0.4}
+                roughness={0.35}
+              />
+            </mesh>
+          </group>
+        );
+      })}
+      <pointLight position={[0, 4.2, 0]} intensity={0.7} color="#fde68a" distance={16} />
+      <pointLight position={[-3.2, 2.4, 2.2]} intensity={0.4} color="#7dd3fc" distance={11} />
+      <pointLight position={[3.2, 2.4, 2.2]} intensity={0.35} color="#fbbf24" distance={11} />
       <points ref={motes}>
         <bufferGeometry>
           <bufferAttribute
@@ -160,9 +191,9 @@ function ChamberShell() {
         </bufferGeometry>
         <pointsMaterial
           color="#fde68a"
-          size={0.06}
+          size={0.07}
           transparent
-          opacity={0.55}
+          opacity={0.6}
           depthWrite={false}
           sizeAttenuation
         />
@@ -304,30 +335,30 @@ function OrganToyMesh({
           </>
         ) : (
           <>
-            {/* Coin organ — face-forward gold medallion */}
-            <mesh castShadow rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.52, 0.52, 0.14, 32]} />
+            {/* Coin organ — standing gold medallion, face toward camera */}
+            <mesh castShadow rotation={[0.15, 0, 0.08]}>
+              <cylinderGeometry args={[0.55, 0.55, 0.12, 36]} />
               <meshStandardMaterial
-                color="#fcd34d"
+                color="#fbbf24"
                 emissive={lit ? accent : "#b45309"}
-                emissiveIntensity={lit ? 0.65 : 0.22}
-                metalness={0.7}
-                roughness={0.22}
+                emissiveIntensity={lit ? 0.7 : 0.28}
+                metalness={0.75}
+                roughness={0.18}
               />
             </mesh>
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.08]}>
-              <circleGeometry args={[0.28, 28]} />
+            <mesh rotation={[0.15, 0, 0.08]} position={[0, 0, 0.07]}>
+              <circleGeometry args={[0.32, 32]} />
               <meshStandardMaterial
-                color="#fff7ed"
-                emissive="#fbbf24"
-                emissiveIntensity={lit ? 0.7 : 0.25}
-                metalness={0.3}
-                roughness={0.35}
+                color="#fffbeb"
+                emissive="#fcd34d"
+                emissiveIntensity={lit ? 0.85 : 0.35}
+                metalness={0.25}
+                roughness={0.3}
               />
             </mesh>
-            <mesh position={[0, -0.55, 0]}>
-              <cylinderGeometry args={[0.3, 0.38, 0.16, 20]} />
-              <meshStandardMaterial color="#92400e" metalness={0.35} roughness={0.45} />
+            <mesh position={[0, -0.58, 0]}>
+              <cylinderGeometry args={[0.32, 0.4, 0.18, 20]} />
+              <meshStandardMaterial color="#78350f" metalness={0.4} roughness={0.4} />
             </mesh>
           </>
         )}
@@ -355,20 +386,20 @@ function CoveCarpetGate({
     onBoard?.();
   };
   return (
-    <group position={[0, 0.1, -2.4]} ref={root}>
+    <group position={[0, 0.18, -1.55]} ref={root}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <ringGeometry args={[1.05, 1.65, 40]} />
+        <ringGeometry args={[1.15, 1.85, 40]} />
         <meshStandardMaterial
           color="#fbbf24"
           emissive="#f59e0b"
-          emissiveIntensity={boarded ? 0.22 : 0.62}
+          emissiveIntensity={boarded ? 0.22 : 0.7}
           transparent
-          opacity={0.92}
+          opacity={0.95}
           depthWrite={false}
         />
       </mesh>
       <mesh
-        position={[0, 0.8, 0]}
+        position={[0, 0.7, 0]}
         onPointerDown={board}
         onClick={board}
         onPointerOver={() => {
@@ -378,10 +409,10 @@ function CoveCarpetGate({
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[1.2, 16, 12]} />
+        <sphereGeometry args={[1.35, 16, 12]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-      <group scale={0.85} rotation={[0, Math.PI, 0]}>
+      <group scale={1.15} rotation={[0.12, Math.PI, 0]} position={[0, 0.35, 0]}>
         <MoneyCarpet flying={!boarded} hideRider showBuddy={false} />
       </group>
     </group>
@@ -485,8 +516,8 @@ function PiggyTalkRing({
   );
 }
 
-const CARPET_POS: [number, number, number] = [0, 0, -2.4];
-const CARPET_R = 1.35;
+const CARPET_POS: [number, number, number] = [0, 0, -1.55];
+const CARPET_R = 1.45;
 
 function PracticePlayer({
   character,
@@ -628,18 +659,18 @@ function PracticePlayer({
 function ChamberCamera({ mode }: { mode: PracticeMode }) {
   useFrame(({ camera }) => {
     const targets: Record<PracticeMode, THREE.Vector3> = {
-      fantasy: new THREE.Vector3(0, 5.2, 6.4),
-      walk: new THREE.Vector3(0, 5.8, 7.2),
-      talk: new THREE.Vector3(0, 5.4, 6.8),
-      dock: new THREE.Vector3(0, 4.8, 6.0),
-      showcase: new THREE.Vector3(0, 5.2, 6.4),
+      fantasy: new THREE.Vector3(0, 4.6, 6.0),
+      walk: new THREE.Vector3(0, 5.4, 6.8),
+      talk: new THREE.Vector3(0, 4.8, 6.2),
+      dock: new THREE.Vector3(0, 4.2, 5.4),
+      showcase: new THREE.Vector3(0, 4.8, 6.0),
     };
     const look: Record<PracticeMode, THREE.Vector3> = {
-      fantasy: new THREE.Vector3(0, 0.7, -0.2),
-      walk: new THREE.Vector3(0, 0.6, 0),
-      talk: new THREE.Vector3(0, 0.7, -1.2),
-      dock: new THREE.Vector3(0, 0.5, -1.8),
-      showcase: new THREE.Vector3(0, 0.6, 0),
+      fantasy: new THREE.Vector3(0, 0.85, -0.15),
+      walk: new THREE.Vector3(0, 0.55, 0),
+      talk: new THREE.Vector3(0, 0.75, -1.1),
+      dock: new THREE.Vector3(0, 0.55, -1.4),
+      showcase: new THREE.Vector3(0, 0.65, 0),
     };
     camera.position.lerp(targets[mode], 0.06);
     const cur = new THREE.Vector3();
