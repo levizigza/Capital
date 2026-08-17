@@ -425,6 +425,8 @@ export function HomeHubView({
         spectacleOpen,
         feltShareOpen,
         guidedComplete: !guided || isHubGuidedComplete(guided),
+        // Portal twist: scar cinema must fire even if voyage coach wasn’t closed.
+        unshownScar: true,
       })
     ) {
       return;

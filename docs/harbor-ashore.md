@@ -1,6 +1,6 @@
 # Harbor Ashore — opening tutorial
 
-**Honest status (2026-08-17):** **Still Gap — ~82% craft.** See [tutorial-craft-board.md](./tutorial-craft-board.md). Machine cold Ashore→Cove→Harbor retell is green; human cold retell still required for Pass.
+**Honest status (2026-08-17):** **Still Gap — ~88% craft.** See [tutorial-craft-board.md](./tutorial-craft-board.md). Machine cold Ashore→Cove→Harbor spectacle retell is green; **human** cold retell still required for Pass.
 
 **Purpose:** Prove Walk · Talk · board Cove, then land on Harbor. The first Cove Take → Harbor remembers is the rest of the teach.
 

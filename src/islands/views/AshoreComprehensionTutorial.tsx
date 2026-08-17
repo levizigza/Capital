@@ -294,8 +294,8 @@ export function AshoreComprehensionTutorial({
                 Board a living painting
               </h1>
               <p className="mt-2 max-w-lg text-sm text-white/85">
-                The Money Carpet is your voyage vehicle. Cove is lit first — that’s where your first
-                game waits.
+                The Money Carpet is your voyage vehicle. Cove is lit first — earn fair coins, then one
+                forever choice. Harbor will feel it when you come home.
               </p>
               <div
                 className={`mt-4 w-full ${dockNudge ? "animate-pulse" : ""}`}
@@ -318,9 +318,9 @@ export function AshoreComprehensionTutorial({
                 Harbor, then Cove
               </h1>
               <p className="mt-2 max-w-lg text-sm text-white/85">
-                You’ll land on Harbor Haven. Talk to Piggy, walk south to the Carpet Dock, and board{" "}
-                <span className="font-bold text-amber-100">Coincraft Cove</span>. Your choice there
-                will stain Harbor — that’s the real lesson.
+                You’ll land on Harbor Haven. Talk to Piggy, board{" "}
+                <span className="font-bold text-amber-100">Coincraft Cove</span>, choose jar or treat —
+                then Harbor remembers. That’s the real lesson.
               </p>
               <div className="mt-4 w-full">
                 <ReadyCarpetShowcase />

@@ -34,24 +34,38 @@ async function finishTalk(page) {
     if (!(await page.getByTestId("talk-battle-screen").isVisible().catch(() => false))) {
       return;
     }
-    const choice = page.locator('[data-testid^="talk-choice-"]').first();
-    if (await choice.isVisible().catch(() => false)) {
-      await choice.evaluate((el) => el.click());
+    try {
+      const choice = page.locator('[data-testid^="talk-choice-"]').first();
+      if ((await choice.count()) && (await choice.isVisible().catch(() => false))) {
+        await choice.click({ force: true, timeout: 3_000 });
+        await page.waitForTimeout(250);
+        continue;
+      }
+      const cont = page.getByTestId("talk-battle-continue");
+      if ((await cont.count()) && (await cont.isVisible().catch(() => false))) {
+        await cont.click({ force: true, timeout: 3_000 });
+        await page.waitForTimeout(250);
+        continue;
+      }
+      const leave = page.getByTestId("talk-battle-leave");
+      if (await leave.isVisible().catch(() => false)) {
+        await leave.click({ force: true, timeout: 3_000 });
+        await page.waitForTimeout(250);
+      }
+    } catch {
       await page.waitForTimeout(200);
       continue;
-    }
-    const cont = page.getByTestId("talk-battle-continue");
-    if (await cont.isVisible().catch(() => false)) {
-      await cont.evaluate((el) => el.click());
-      await page.waitForTimeout(200);
-      continue;
-    }
-    const leave = page.getByTestId("talk-battle-leave");
-    if (await leave.isVisible().catch(() => false)) {
-      await leave.evaluate((el) => el.click());
-      await page.waitForTimeout(200);
     }
   }
+  await page
+    .getByTestId("talk-battle-screen")
+    .waitFor({ state: "hidden", timeout: 8_000 })
+    .catch(async () => {
+      const leave = page.getByTestId("talk-battle-leave");
+      if (await leave.isVisible().catch(() => false)) {
+        await leave.click({ force: true });
+      }
+    });
 }
 
 async function talkNpc(page, npcId, preferChoice) {
@@ -289,16 +303,25 @@ async function main() {
     report.steps.push("coin_sort");
 
     // Critical path is Kira — Alma is optional tip (not required).
+    // Dismiss any leftover talk/modal from mastery.
+    if (await page.getByTestId("talk-battle-screen").isVisible().catch(() => false)) {
+      await finishTalk(page);
+    }
+    await page
+      .getByTestId("minigame-modal")
+      .waitFor({ state: "hidden", timeout: 10_000 })
+      .catch(() => {});
+
     await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_keeper_kira");
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
-    await page.getByTestId("talk-battle-continue").evaluate((el) => el.click()).catch(() => {});
-    await page.waitForTimeout(300);
+    await page.getByTestId("talk-battle-continue").click({ force: true }).catch(() => {});
+    await page.waitForTimeout(400);
     const jar = page
       .locator('[data-testid^="talk-choice-"]')
       .filter({ hasText: /Jar before treat/i })
       .first();
-    await jar.waitFor({ state: "visible", timeout: 8_000 });
-    await jar.evaluate((el) => el.click());
+    await jar.waitFor({ state: "visible", timeout: 10_000 });
+    await jar.click({ force: true });
     await finishTalk(page);
     report.steps.push("kira_take");
 
@@ -327,10 +350,20 @@ async function main() {
     report.steps.push("carpet_home");
 
     let kid = "";
+    let sawSpectacle = false;
     for (let i = 0; i < 60; i++) {
       if (await page.getByTestId("scar-spectacle-retell").isVisible().catch(() => false)) {
         kid = await page.getByTestId("scar-spectacle-retell").innerText();
+        sawSpectacle = true;
         break;
+      }
+      if (await page.getByTestId("scar-spectacle").isVisible().catch(() => false)) {
+        sawSpectacle = true;
+        const retell = page.getByTestId("scar-spectacle-retell");
+        if (await retell.isVisible().catch(() => false)) {
+          kid = await retell.innerText();
+          break;
+        }
       }
       if (await page.getByTestId("harbor-felt-retell").isVisible().catch(() => false)) {
         kid = await page.getByTestId("harbor-felt-retell").innerText();
@@ -362,6 +395,7 @@ async function main() {
       kid = saveFinal.harborHomecoming.message;
     }
     report.kid = kid;
+    report.sawSpectacle = sawSpectacle;
     report.coveChangeDone = Boolean(saveFinal?.questStatus?.q_cc_save_or_spend?.completed);
     report.pass =
       report.hasScar &&

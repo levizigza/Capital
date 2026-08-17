@@ -37,12 +37,19 @@ describe("signature cinema gate", () => {
     ).toBe(false);
   });
 
-  it("waits for Castle Grounds to finish", () => {
+  it("waits for Castle Grounds to finish — unless an unshown scar owns the plaza", () => {
     expect(
       canOpenSignatureCinema({
         plazaReady: true,
         guidedComplete: false,
       }),
     ).toBe(false);
+    expect(
+      canOpenSignatureCinema({
+        plazaReady: true,
+        guidedComplete: false,
+        unshownScar: true,
+      }),
+    ).toBe(true);
   });
 });
