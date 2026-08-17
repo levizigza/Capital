@@ -74,14 +74,13 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     expect(t.apprentice).toBeLessThan(t.strategist);
   });
 
-  it("Cove Take has no pouch debit today (scar-only) — spend path must not brick-wall", () => {
+  it("Cove Take still has no pouch debit — ledger footprint is holdings, not coins", () => {
     const kira = COVE.dialogues?.find((d) => d.id === "dlg_keeper_kira");
     const kk1 = kira?.nodes.find((n) => n.id === "kk1");
     const spend = kk1?.choices?.find((c) => c.id === "kk1_spend");
     const save = kk1?.choices?.find((c) => c.id === "kk1_a");
     expect(spend?.effects?.some((e) => e.type === "setIrreversible")).toBe(true);
     expect(save?.effects?.some((e) => e.type === "setIrreversible")).toBe(true);
-    // No money effect type on DialogueEffect yet — Take cost is scar/irreversible only.
     expect(JSON.stringify(spend?.effects ?? [])).not.toMatch(/"money"/);
   });
 

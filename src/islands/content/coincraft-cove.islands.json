@@ -223,13 +223,13 @@
             {
               "id": "aa2",
               "speaker": "Artisan Alma",
-              "text": "Keep the brushes. Glitter can wait. Then walk to the lighthouse — Kira's Take sticks forever: jar before treat, or treat before jar. That's Coin Hold.",
+              "text": "Keep the brushes. Glitter can wait. Walk to the lighthouse — Kira’s Take sticks: jar or treat.",
               "end": true
             },
             {
               "id": "aa3",
               "speaker": "Artisan Alma",
-              "text": "No rush. Come back when you're ready for the jar path.",
+              "text": "Come back when you’re ready. Either jar or treat — Harbor will hear it.",
               "end": true
             }
           ]
@@ -241,7 +241,7 @@
             {
               "id": "kk1",
               "speaker": "Keeper Kira",
-              "text": "Welcome to the Savings Lighthouse! You earned fair coins. This is a Take — it sticks forever. Jar before treat, or treat before jar?",
+              "text": "You earned fair coins. This Take sticks. Jar before treat, or treat before jar?",
               "choices": [
                 {
                   "id": "kk1_a",

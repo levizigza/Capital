@@ -168,6 +168,11 @@ import {
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
 import { applyConceptSync } from "./conceptProgression";
+import {
+  applyCoveTakeLedgerFootprint,
+  coveTakeStanceFromChoiceId,
+  COVE_TAKE_KEY,
+} from "./firstFinancialScenario";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -1417,7 +1422,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         if (effect.type === "setIrreversible") {
           updateSave((prev) => {
             if (prev.irreversibleChoices?.[effect.key]) return prev;
-            return {
+            let next: IslandSaveV1 = {
               ...prev,
               irreversibleChoices: {
                 ...(prev.irreversibleChoices ?? {}),
@@ -1429,6 +1434,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               },
             };
+            // First financial scenario — real ledger footprint (not tutorial fake).
+            if (effect.key === COVE_TAKE_KEY) {
+              const stance = coveTakeStanceFromChoiceId(effect.choiceId);
+              if (stance) next = applyCoveTakeLedgerFootprint(next, stance);
+            }
+            return next;
           });
         }
         if (effect.type === "addScar") {
