@@ -117,7 +117,24 @@
                 },
                 {
                   "id": "c_listen",
-                  "text": "Just look at the scaffolding — digression.",
+                  "text": "Digression — study or claim first?",
+                  "nextNodeId": "scaffold_fork"
+                },
+                {
+                  "id": "c2",
+                  "text": "What happened to the old islands?",
+                  "nextNodeId": "old"
+                }
+              ]
+            },
+            {
+              "id": "scaffold_fork",
+              "speaker": "The Keeper",
+              "text": "Unfinished poles lean your way. Study the scaffolding — or claim a plot before you’ve looked?",
+              "choices": [
+                {
+                  "id": "c_look",
+                  "text": "Study the scaffolding first.",
                   "nextNodeId": "listen_done",
                   "effects": [
                     {
@@ -131,9 +148,19 @@
                   ]
                 },
                 {
-                  "id": "c2",
-                  "text": "What happened to the old islands?",
-                  "nextNodeId": "old"
+                  "id": "c_rush",
+                  "text": "Claim a plot cold — I’ll study later.",
+                  "nextNodeId": "rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fs_scaffold_rush",
+                      "label": "Claimed Portfolio Skies plot cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
                 }
               ]
             },
@@ -141,6 +168,12 @@
               "id": "listen_done",
               "speaker": "The Keeper",
               "text": "Standing in unfinished space before you claim it is a money skill. Harbor may gossip that you studied the scaffolding.",
+              "end": true
+            },
+            {
+              "id": "rush_done",
+              "speaker": "The Keeper",
+              "text": "Claiming before looking leaves sparks. Harbor may gossip that you grabbed a pole cold.",
               "end": true
             },
             {

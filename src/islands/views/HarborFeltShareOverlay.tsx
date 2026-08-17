@@ -62,6 +62,7 @@ export function HarborFeltShareOverlay({
 
   useEffect(() => {
     // Share lands the same mute-test resolve as spectacle — Harbor felt that.
+    triggerJuice("complete", { burst: true });
     playCapitalSfx("harbor_felt");
     playOrganSfx(organ);
     playCapitalSfx("plinth_hum");

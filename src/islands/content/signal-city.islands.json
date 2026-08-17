@@ -208,18 +208,8 @@
                 },
                 {
                   "id": "mm1_listen",
-                  "text": "Just listen — then I’ll roam.",
-                  "nextNodeId": "mm_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "sc_signal_listen",
-                      "label": "Listened to Phosphor Reef signals",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — listen or rush the blink?",
+                  "nextNodeId": "mm_fork"
                 },
                 {
                   "id": "mm1_b",
@@ -235,9 +225,52 @@
               "end": true
             },
             {
+              "id": "mm_fork",
+              "speaker": "Mentor Max",
+              "text": "Reef lights blink your name. Listen for the money story — or rush the signal before you’ve heard it?",
+              "choices": [
+                {
+                  "id": "mm_linger",
+                  "text": "Listen first — then I’ll roam.",
+                  "nextNodeId": "mm_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "sc_signal_listen",
+                      "label": "Listened to Phosphor Reef signals",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "mm_rush",
+                  "text": "Rush the blink — I’ll listen later.",
+                  "nextNodeId": "mm_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "sc_signal_rush",
+                      "label": "Rushed Phosphor Reef signals",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "mm_listen_done",
               "speaker": "Mentor Max",
               "text": "Hearing without rushing is a money skill. Harbor may gossip that you listened on the Reef.",
+              "end": true
+            },
+            {
+              "id": "mm_rush_done",
+              "speaker": "Mentor Max",
+              "text": "Rushing the blink leaves sparks. Harbor may gossip that you chased light cold.",
               "end": true
             },
             {

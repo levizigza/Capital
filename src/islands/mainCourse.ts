@@ -116,65 +116,105 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     id: "signal_reef_listen",
     track: "side",
     title: "Phosphor Reef · Listen",
-    blurb: "Free-roam side shore — hear signals before you rush; Harbor may gossip.",
+    blurb: "Free-roam digression — listen or rush the blink; Harbor gossips either way.",
     placeId: "signal_city",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "sc_signal_listen")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "sc_signal_listen" || x.id === "sc_signal_rush",
+        ),
+      ),
   },
   {
     id: "venture_foundry_listen",
     track: "side",
     title: "Gridlock · Foundry Listen",
-    blurb: "Free-roam side shore — wander the workshop before you pitch; Harbor may gossip.",
+    blurb: "Free-roam digression — linger with makers or pitch cold; Harbor gossips either way.",
     placeId: "venture_foundry",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "vf_foundry_listen")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "vf_foundry_listen" || x.id === "vf_foundry_rush",
+        ),
+      ),
   },
   {
     id: "financial_assets_peek",
     track: "side",
     title: "Budget Kart · Portfolio Peek",
-    blurb: "Free-roam side shore — peek at Market Street boards; Harbor may gossip.",
+    blurb: "Free-roam digression — peek boards or trade blind; Harbor gossips either way.",
     placeId: "financial_assets",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "fa_portfolio_peek")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "fa_portfolio_peek" || x.id === "fa_portfolio_rush",
+        ),
+      ),
   },
   {
     id: "digital_assets_listen",
     track: "side",
     title: "Digital Atoll · Wharf Listen",
-    blurb: "Free-roam side shore — listen at Wallet Wharf before keys; Harbor may gossip.",
+    blurb: "Free-roam digression — listen or sign keys cold; Harbor gossips either way.",
     placeId: "digital_assets",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "da_wharf_listen")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "da_wharf_listen" || x.id === "da_wharf_rush",
+        ),
+      ),
   },
   {
     id: "business_assets_browse",
     track: "side",
     title: "Diversify Keep · Shop Browse",
-    blurb: "Free-roam side shore — browse the shop floor before stocking; Harbor may gossip.",
+    blurb: "Free-roam digression — browse floor or stock blind; Harbor gossips either way.",
     placeId: "business_assets",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "ba_shop_browse")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "ba_shop_browse" || x.id === "ba_shop_rush",
+        ),
+      ),
   },
   {
     id: "intangibles_glance",
     track: "side",
     title: "Intangible Isle · IP Glance",
-    blurb: "Free-roam side shore — glance at the IP gallery; Harbor may gossip.",
+    blurb: "Free-roam digression — glance gallery or file cold; Harbor gossips either way.",
     placeId: "intangibles",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "in_ip_glance")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "in_ip_glance" || x.id === "in_ip_rush",
+        ),
+      ),
   },
   {
     id: "future_shores_look",
     track: "side",
     title: "Portfolio Skies · Scaffold Look",
-    blurb: "Free-roam side shore — study scaffolding before you claim; Harbor may gossip.",
+    blurb: "Free-roam digression — study poles or claim cold; Harbor gossips either way.",
     placeId: "future_shores",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "fs_scaffold_look")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "fs_scaffold_look" || x.id === "fs_scaffold_rush",
+        ),
+      ),
   },
   {
     id: "real_estate_watch",
     track: "side",
     title: "Real Estate Row · Auction Watch",
-    blurb: "Free-roam side shore — watch the auction before you bid; Harbor may gossip.",
+    blurb: "Free-roam digression — watch yard or bid cold; Harbor gossips either way.",
     placeId: "real_estate",
-    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "re_auction_watch")),
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "re_auction_watch" || x.id === "re_auction_rush",
+        ),
+      ),
   },
   {
     id: "party_plaza",

@@ -220,18 +220,8 @@
                 },
                 {
                   "id": "ff1_listen",
-                  "text": "Just look around the foundry — digression.",
-                  "nextNodeId": "ff_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "vf_foundry_listen",
-                      "label": "Wandered Gridlock foundry floors",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — look first or pitch first?",
+                  "nextNodeId": "ff_fork"
                 },
                 {
                   "id": "ff1_b",
@@ -247,9 +237,52 @@
               "end": true
             },
             {
+              "id": "ff_fork",
+              "speaker": "Founder Fern",
+              "text": "Foundry heat or foundry hush — do you linger with the makers, or rush a pitch before you’ve looked?",
+              "choices": [
+                {
+                  "id": "ff_linger",
+                  "text": "Linger — watch makers first.",
+                  "nextNodeId": "ff_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "vf_foundry_listen",
+                      "label": "Wandered Gridlock foundry floors",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "ff_rush",
+                  "text": "Rush a pitch — I’ll look later.",
+                  "nextNodeId": "ff_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "vf_foundry_rush",
+                      "label": "Rushed a Gridlock pitch cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "ff_listen_done",
               "speaker": "Founder Fern",
               "text": "Watching makers before you pitch is a money skill. Harbor may gossip that you lingered in the foundry.",
+              "end": true
+            },
+            {
+              "id": "ff_rush_done",
+              "speaker": "Founder Fern",
+              "text": "Bold! Cold pitches leave sparks. Harbor may gossip that you spoke before you looked.",
               "end": true
             },
             {

@@ -262,7 +262,24 @@
                 },
                 {
                   "id": "p1_listen",
-                  "text": "Just peek at the boards — digression.",
+                  "text": "Digression — peek or trade blind?",
+                  "nextNodeId": "p_fork"
+                },
+                {
+                  "id": "p1c2",
+                  "text": "Just browsing for now.",
+                  "nextNodeId": "p3"
+                }
+              ]
+            },
+            {
+              "id": "p_fork",
+              "speaker": "Penny the Trader",
+              "text": "Boards are loud today. Peek first — or slap a trade before you’ve read the tape?",
+              "choices": [
+                {
+                  "id": "p_peek",
+                  "text": "Peek at the boards first.",
                   "nextNodeId": "p_listen_done",
                   "effects": [
                     {
@@ -276,9 +293,19 @@
                   ]
                 },
                 {
-                  "id": "p1c2",
-                  "text": "Just browsing for now.",
-                  "nextNodeId": "p3"
+                  "id": "p_rush",
+                  "text": "Trade blind — I’ll learn mid-swing.",
+                  "nextNodeId": "p_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "fa_portfolio_rush",
+                      "label": "Traded Market Street blind",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
                 }
               ]
             },
@@ -286,6 +313,12 @@
               "id": "p_listen_done",
               "speaker": "Penny the Trader",
               "text": "Looking before you trade is a money skill. Harbor may gossip that you peeked at the boards.",
+              "end": true
+            },
+            {
+              "id": "p_rush_done",
+              "speaker": "Penny the Trader",
+              "text": "Swing first, read later — that’s a story. Harbor may gossip that you traded blind.",
               "end": true
             },
             {

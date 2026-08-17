@@ -219,18 +219,8 @@
                 },
                 {
                   "id": "s1_listen",
-                  "text": "Just look around the wharf — digression.",
-                  "nextNodeId": "s_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "da_wharf_listen",
-                      "label": "Listened at Wallet Wharf",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — listen or sign first?",
+                  "nextNodeId": "s_fork"
                 },
                 {
                   "id": "s1c2",
@@ -246,9 +236,52 @@
               "end": true
             },
             {
+              "id": "s_fork",
+              "speaker": "Satoshi the Guide",
+              "text": "Wharf clicks loud. Listen for keys — or sign a wallet before you’ve heard the pier?",
+              "choices": [
+                {
+                  "id": "s_linger",
+                  "text": "Listen at the wharf first.",
+                  "nextNodeId": "s_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "da_wharf_listen",
+                      "label": "Listened at Wallet Wharf",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "s_rush",
+                  "text": "Sign first — I’ll learn the pier later.",
+                  "nextNodeId": "s_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "da_wharf_rush",
+                      "label": "Signed Wallet Wharf keys cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "s_listen_done",
               "speaker": "Satoshi the Guide",
               "text": "Hearing the wharf before you sign is a money skill. Harbor may gossip that you listened first.",
+              "end": true
+            },
+            {
+              "id": "s_rush_done",
+              "speaker": "Satoshi the Guide",
+              "text": "Keys without the pier story leave sparks. Harbor may gossip that you signed cold.",
               "end": true
             },
             {

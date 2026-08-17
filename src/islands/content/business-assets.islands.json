@@ -212,18 +212,8 @@
                 },
                 {
                   "id": "sm1_listen",
-                  "text": "Just browse the shop floor — digression.",
-                  "nextNodeId": "sm_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "ba_shop_browse",
-                      "label": "Browsed Diversify Keep shop floor",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — browse or stock first?",
+                  "nextNodeId": "sm_fork"
                 },
                 {
                   "id": "sm1c2",
@@ -239,9 +229,52 @@
               "end": true
             },
             {
+              "id": "sm_fork",
+              "speaker": "Shop Owner Sam",
+              "text": "Aisles or invoices — browse the floor first, or stock shelves before you’ve walked them?",
+              "choices": [
+                {
+                  "id": "sm_browse",
+                  "text": "Browse the shop floor first.",
+                  "nextNodeId": "sm_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "ba_shop_browse",
+                      "label": "Browsed Diversify Keep shop floor",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "sm_rush",
+                  "text": "Stock first — I’ll browse later.",
+                  "nextNodeId": "sm_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "ba_shop_rush",
+                      "label": "Stocked Diversify Keep blind",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "sm_listen_done",
               "speaker": "Shop Owner Sam",
               "text": "Browsing margins before you stock is a money skill. Harbor may gossip that you wandered the shop.",
+              "end": true
+            },
+            {
+              "id": "sm_rush_done",
+              "speaker": "Shop Owner Sam",
+              "text": "Shelves before footsteps — that’s a story. Harbor may gossip that you stocked blind.",
               "end": true
             },
             {

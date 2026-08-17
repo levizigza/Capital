@@ -214,18 +214,8 @@
                 },
                 {
                   "id": "ir1_listen",
-                  "text": "Just glance at the IP gallery — digression.",
-                  "nextNodeId": "ir_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "in_ip_glance",
-                      "label": "Glanced at Intangible Isle IP gallery",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — glance or file first?",
+                  "nextNodeId": "ir_fork"
                 },
                 {
                   "id": "ir1c2",
@@ -241,9 +231,52 @@
               "end": true
             },
             {
+              "id": "ir_fork",
+              "speaker": "Inventor Iris",
+              "text": "Gallery glass or filing desk — glance at names first, or file before you’ve looked?",
+              "choices": [
+                {
+                  "id": "ir_glance",
+                  "text": "Glance at the gallery first.",
+                  "nextNodeId": "ir_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "in_ip_glance",
+                      "label": "Glanced at Intangible Isle IP gallery",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "ir_rush",
+                  "text": "File first — I’ll name later.",
+                  "nextNodeId": "ir_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "in_ip_rush",
+                      "label": "Filed Intangible Isle IP cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "ir_listen_done",
               "speaker": "Inventor Iris",
               "text": "Naming ideas before you file is a money skill. Harbor may gossip that you lingered in the gallery.",
+              "end": true
+            },
+            {
+              "id": "ir_rush_done",
+              "speaker": "Inventor Iris",
+              "text": "Filing before naming leaves sparks. Harbor may gossip that you stamped cold.",
               "end": true
             },
             {

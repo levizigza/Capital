@@ -79,6 +79,16 @@ describe("iconic whole-game criteria contracts", () => {
       "re_auction_watch",
       "sc_signal_listen",
     ];
+    const rushScars = [
+      "vf_foundry_rush",
+      "fa_portfolio_rush",
+      "da_wharf_rush",
+      "ba_shop_rush",
+      "in_ip_rush",
+      "fs_scaffold_rush",
+      "re_auction_rush",
+      "sc_signal_rush",
+    ];
     const contentBlob = [
       "venture-foundry",
       "financial-assets",
@@ -96,10 +106,21 @@ describe("iconic whole-game criteria contracts", () => {
     for (const id of scars) {
       expect(contentBlob).toMatch(new RegExp(id));
     }
+    for (const id of rushScars) {
+      expect(contentBlob).toMatch(new RegExp(id));
+    }
+    expect(contentBlob).toMatch(/_fork|scaffold_fork/);
     const mem = readFileSync(join(__dirname, "../worldMemory.ts"), "utf8");
     expect(mem).toMatch(/foundry_listen/);
+    expect(mem).toMatch(/foundry_rush/);
     expect(mem).toMatch(/portfolio_peek/);
     expect(mem).toMatch(/auction_watch/);
     expect(SIDE_TOMFOOLERY.some((s) => s.id === "signal_reef_listen")).toBe(true);
+    const foundry = SIDE_TOMFOOLERY.find((s) => s.id === "venture_foundry_listen");
+    expect(
+      foundry?.done({
+        harborScars: [{ id: "vf_foundry_rush" }],
+      } as unknown as IslandSaveV1),
+    ).toBe(true);
   });
 });

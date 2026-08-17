@@ -11,7 +11,7 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 2 | Emotional main story | TLOU2 / GotS | Cove→Paycheck→Credit + Harbor memory cold-retold with feeling | **Pass** — weighted retell · Soft Beat · day-2 · Piggy homecoming |
 | 3 | Signature loop juice | Portal checklist | Take → hush → carpet → spectacle → Plinth → share → Piggy without soft-lock | **Pass** — juice + e2e |
 | 4 | Free roam | BotW | After Cove Change, stray to side shores / structures / digressions | **Pass** — outer ring + free-roam HUD |
-| 5 | Side quests with stakes | D&D × GTA4 | Digressions with NPCs, choices, Harbor Memory consequences | **Pass** — spine digressions + era listen scars |
+| 5 | Side quests with stakes | D&D × GTA4 | Digressions with NPCs, choices, Harbor Memory consequences | **Pass** — spine forks + era patience/haste forks (dual gossip scars) |
 | 6 | Alive NPCs | GTA4 streets | Talkable locals with scar memory + plaza motion | **Pass** — rotating gossip · ambientNear · denser roam |
 | 7 | Every island playable | Playability | Enter, walk, talk, leave; no endless loading | **Pass** |
 | 8 | Navigable always | Failsafe craft | Leave·Esc, carpet, myth, shore force-ready, corrupt save | **Pass** |
@@ -30,4 +30,5 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 2026-08-17 pass A–B | Partial | Quiet shores, digressions, Credit door, e2e |
 | 2026-08-17 pass C | Era digressions ×8 + alive streets | Plaza motion + rotating scar gossip |
 | 2026-08-17 pass D | Day-2 / Take juice deepen | Re-score **Pass×12** pending cold human “again” confirmation on device |
+| 2026-08-17 pass E | Myth fallback always playable · era digressions = patience/haste forks | Share juice + dual gossip scars; still **Hold** ship until cold human “again” |
 | **Ship iconic?** | **Hold** — machine contracts Pass×12; one cold human triangle still required before declaring to the player |

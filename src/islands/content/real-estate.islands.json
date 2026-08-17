@@ -212,18 +212,8 @@
                 },
                 {
                   "id": "aa1_listen",
-                  "text": "Just watch the auction — digression.",
-                  "nextNodeId": "aa_listen_done",
-                  "effects": [
-                    {
-                      "type": "addScar",
-                      "id": "re_auction_watch",
-                      "label": "Watched Real Estate Row auction",
-                      "kind": "npc_tone",
-                      "stance": "saver",
-                      "stanceDelta": 1
-                    }
-                  ]
+                  "text": "Digression — watch or bid first?",
+                  "nextNodeId": "aa_fork"
                 },
                 {
                   "id": "aa1c2",
@@ -239,9 +229,52 @@
               "end": true
             },
             {
+              "id": "aa_fork",
+              "speaker": "Auctioneer Al",
+              "text": "Hammers are warm. Watch the yard — or raise a paddle before you’ve read the room?",
+              "choices": [
+                {
+                  "id": "aa_watch",
+                  "text": "Watch the auction first.",
+                  "nextNodeId": "aa_listen_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "re_auction_watch",
+                      "label": "Watched Real Estate Row auction",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "aa_rush",
+                  "text": "Bid cold — I’ll watch later.",
+                  "nextNodeId": "aa_rush_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "re_auction_rush",
+                      "label": "Bid Real Estate Row cold",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               "id": "aa_listen_done",
               "speaker": "Auctioneer Al",
               "text": "Watching bids before you raise a paddle is a money skill. Harbor may gossip that you stood in the yard.",
+              "end": true
+            },
+            {
+              "id": "aa_rush_done",
+              "speaker": "Auctioneer Al",
+              "text": "Cold paddles leave sparks. Harbor may gossip that you bid before you watched.",
               "end": true
             },
             {
