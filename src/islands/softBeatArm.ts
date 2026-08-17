@@ -86,3 +86,47 @@ export function softBeatSpentHushLine(kind: SoftBeatKind | null): string | null 
   if (kind === "battlement") return "Battlement still on you — Spiral wait rides this Take.";
   return "Teller Window still on you — Memory keep rides this Take.";
 }
+
+/** Pattern #42/#96 — durable Soft Beat peeks (longevity without new islands). */
+export type SoftBeatTrailEntry = {
+  kind: SoftBeatKind;
+  at: string;
+  scarLabel?: string;
+};
+
+const TRAIL_KEY = "capital_soft_beat_trail_v1";
+const TRAIL_MAX = 24;
+
+export function readSoftBeatTrail(): SoftBeatTrailEntry[] {
+  try {
+    const raw = localStorage.getItem(TRAIL_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as SoftBeatTrailEntry[];
+    return Array.isArray(parsed) ? parsed.slice(0, TRAIL_MAX) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function noteSoftBeatTrail(kind: SoftBeatKind, scarLabel?: string | null): SoftBeatTrailEntry[] {
+  const next: SoftBeatTrailEntry = {
+    kind,
+    at: new Date().toISOString(),
+    scarLabel: scarLabel?.trim() || undefined,
+  };
+  const trail = [next, ...readSoftBeatTrail().filter((e) => e.kind !== kind)].slice(0, TRAIL_MAX);
+  try {
+    localStorage.setItem(TRAIL_KEY, JSON.stringify(trail));
+  } catch {
+    /* ignore quota */
+  }
+  return trail;
+}
+
+export function softBeatTrailLabel(kind: SoftBeatKind): string {
+  if (kind === "lookout") return "Lid Lookout";
+  if (kind === "umbrella") return "Umbrella Loft";
+  if (kind === "battlement") return "Score Battlement";
+  return "Teller Window";
+}
+

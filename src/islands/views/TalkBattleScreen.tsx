@@ -297,7 +297,13 @@ export function TalkBattleScreen({
               {phase === "listen" ? node.speaker || npcName : "Your reply"}
             </span>
             <span className="text-[10px] font-semibold text-[#92400e]/80">
-              {phase === "listen" ? "Listening…" : "Speak among living money"}
+              {phase === "listen"
+                ? organChip
+                  ? `Listening · ${organChip}`
+                  : "Listening…"
+                : organChip
+                  ? `Speak · ${organChip}`
+                  : "Speak among living money"}
             </span>
           </div>
 

@@ -44,7 +44,7 @@ import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
 import { nextMainCourseStep, SIDE_TOMFOOLERY } from "../mainCourse";
 import { getIslandCulture } from "../islandCulture";
-import { isSideShoreTravelId } from "../spineArchipelago";
+import { isSideShoreTravelId, isSpineTravelId } from "../spineArchipelago";
 import type { AccessibilitySettings } from "../settings";
 import {
   harborScarPlaques,
@@ -152,6 +152,8 @@ export function IslandShoreView({
   const guideArrows = a11y?.guideArrows !== false;
   const nextStep = useMemo(() => nextMainCourseStep(save), [save]);
   const sideShore = isSideShoreTravelId(island.id);
+  /** Spine shores lead with organ verb — genre city chrome stays parked. */
+  const spineShore = isSpineTravelId(island.id);
   const culture = useMemo(() => getIslandCulture(island), [island]);
 
   useEffect(() => {
@@ -217,6 +219,33 @@ export function IslandShoreView({
     setEnteringJar(false);
     setStructureOpen(true);
   }, []);
+
+  useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action || !structure) return;
+      if (detail.islandId && detail.islandId !== island.id) return;
+      if (detail.action === "enter") {
+        setEnteringJar(false);
+        setStructureOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        const soft = structure.parts.find((p) => p.softBeat)?.softBeat;
+        if (soft === "lookout" || soft === "umbrella" || soft === "battlement") {
+          setStructureOpen(true);
+          setSoftBeat(soft);
+        }
+        return;
+      }
+      if (detail.action === "exit") {
+        setSoftBeat(null);
+        setStructureOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, [structure, island.id]);
 
   const onEnterPart = useCallback(
     (part: MoneyStructurePart) => {
@@ -375,6 +404,14 @@ export function IslandShoreView({
               </span>
               <h1 className="text-xl font-black text-white drop-shadow sm:text-2xl">{island.name}</h1>
             </div>
+            {spineShore ? (
+              <p className="max-w-md text-xs text-white/85 drop-shadow" data-testid="shore-organ-line">
+                <span className="font-bold text-amber-200">
+                  {organVerbChip(organ?.id ?? "coin")}
+                </span>
+                {" — living money on this shore"}
+              </p>
+            ) : null}
             {sideShore ? (
               <div
                 className="mt-1 max-w-sm rounded-xl border border-sky-300/30 bg-black/40 px-2.5 py-1.5 text-[11px] text-sky-50"

@@ -36,7 +36,42 @@
       "items": [],
       "quests": [],
       "dialogues": [],
-      "minigames": []
+      "minigames": [
+        {
+          "id": "mg_harbor_safe_memory",
+          "name": "Safe Heart Rooms",
+          "description": "Memory rooms inside the vault — Harbor remembers what you keep.",
+          "icon": "🔐",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "hh_plaza",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore",
+          "estimatedMinutes": 6
+        },
+        {
+          "id": "mg_harbor_ledger_mail",
+          "name": "Ledger Mail",
+          "description": "Harbor mail Memory stamps — each choice is something Harbor will remember.",
+          "icon": "📮",
+          "componentId": "ModularMinigame",
+          "areaId": "hh_plaza",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": ["finance_kids"],
+                "tags": [],
+                "maxDraws": 6
+              }
+            }
+          ],
+          "genre": "decision",
+          "complexity": "easy",
+          "visualShell": "cards",
+          "estimatedMinutes": 4
+        }
+      ]
     }
   ]
 }

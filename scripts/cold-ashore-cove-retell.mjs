@@ -75,7 +75,21 @@ async function main() {
     }
     report.steps.push("boot_carpet");
 
-    if (await skip.isVisible({ timeout: 12_000 }).catch(() => false)) {
+    // Ashore teach may own the first harbor beat — skip or continue into plaza.
+    const ashSkip = page.getByTestId("ashore-teach-skip");
+    if (await ashSkip.isVisible({ timeout: 8_000 }).catch(() => false)) {
+      await ashSkip.evaluate((el) => el.click());
+      report.steps.push("ashore_skip");
+    } else {
+      const ashCont = page.getByTestId("ashore-teach-continue");
+      for (let i = 0; i < 8; i++) {
+        if (!(await ashCont.isVisible().catch(() => false))) break;
+        await ashCont.evaluate((el) => el.click());
+        await page.waitForTimeout(400);
+      }
+    }
+
+    if (await skip.isVisible({ timeout: 8_000 }).catch(() => false)) {
       await skip.click({ force: true });
     }
     const enter = page.getByTestId("harbor-skip-3d");
@@ -83,19 +97,37 @@ async function main() {
       await enter.click({ force: true });
     }
 
-    // Wait QA
+    // Wait QA (IslandsApp mounts after Ashore dismisses)
     await page.waitForFunction(() => Boolean(window.__QA__?.ready), null, {
-      timeout: 30_000,
+      timeout: 45_000,
     });
+    report.steps.push("qa_ready");
 
+    // Prefer live Talk CTA; else QA talkNpc so Piggy meet isn't a soft-lock.
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
-    if (await talk.isVisible({ timeout: 15_000 }).catch(() => false)) {
-      await talk.evaluate((el) => el.click());
-    } else {
-      await mythTalk.evaluate((el) => el.click());
+    let talked = false;
+    for (let i = 0; i < 12 && !talked; i++) {
+      await page.keyboard.down("w");
+      await page.waitForTimeout(280);
+      await page.keyboard.up("w");
+      await page.waitForTimeout(120);
+      if (await talk.isVisible().catch(() => false)) {
+        await talk.evaluate((el) => el.click());
+        talked = true;
+        break;
+      }
     }
-    await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
+    if (!talked && (await mythTalk.isVisible().catch(() => false))) {
+      await mythTalk.evaluate((el) => el.click());
+      talked = true;
+    }
+    if (!talked) {
+      await page.evaluate(async () => {
+        await window.__QA__.talkNpc("piggy_penny");
+      });
+    }
+    await page.getByTestId("talk-battle-screen").waitFor({ timeout: 20_000 });
     await finishTalk(page);
     report.steps.push("harbor_talk");
 

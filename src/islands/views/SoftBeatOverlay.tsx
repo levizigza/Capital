@@ -15,7 +15,7 @@ import { softBeatScarVistaLine } from "@/design/designBible";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { useOverlayEscape } from "./useOverlayEscape";
-import { armSoftBeat } from "../softBeatArm";
+import { armSoftBeat, noteSoftBeatTrail } from "../softBeatArm";
 
 export type SoftBeatKind = "lookout" | "umbrella" | "battlement" | "ledger";
 
@@ -76,6 +76,7 @@ export function SoftBeatOverlay({
     }
     // Arm the next living Talk — Soft Beat is multiplicative, not a dead cinema.
     armSoftBeat(kind);
+    noteSoftBeatTrail(kind, scarLabel);
     void import("../analytics").then(({ analytics }) => {
       void analytics.track("soft_beat_armed", { kind, organ: organ.id });
       void analytics.track("core_loop_beat", { beat: "soft_beat", kind });

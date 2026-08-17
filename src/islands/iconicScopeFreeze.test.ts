@@ -49,6 +49,9 @@ describe("Iconic scope freeze (Pillar 17)", () => {
     const later = auditIconicLaterDoc(root);
     expect(later.missing, later.missing.join(", ")).toEqual([]);
     expect(later.ok).toBe(true);
+    const body = readFileSync(join(root, ICONIC_LATER_DOC), "utf8");
+    expect(body).toMatch(/MVP iconic bar HOLDS/);
+    expect(body).toMatch(/not a remaining 100% gap/i);
   });
 
   it("keeps demo Key Cove parked; era shores carry SIDE SHORE banners", () => {

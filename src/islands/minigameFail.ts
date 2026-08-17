@@ -2,6 +2,9 @@
  * Pillar 3 — goals / failure: lose with dignity, same place, clearer next verb.
  */
 
+import { moneyOrganForIsland } from "./moneyOrgans";
+import { organVerbChip } from "./worldMemory";
+
 export type MinigameFailReason = "score_below_threshold" | "objective_not_met";
 
 export type MinigameFailCopy = {
@@ -56,6 +59,8 @@ export function minigameFailCopy(opts: {
   takeFlavor?: TakeFailFlavor;
   /** Organ underfoot — fail names the living money verb */
   organId?: "coin" | "clock" | "spiral" | "memory" | null;
+  /** Spine island — resolves organ when organId omitted */
+  islandId?: string | null;
   minigameId?: string | null;
 }): MinigameFailCopy {
   const name = opts.minigameName.trim() || "this challenge";
@@ -72,7 +77,10 @@ export function minigameFailCopy(opts: {
         : "Keep walking";
 
   const spendParity = opts.takeFlavor === "spend";
-  const organ = opts.organId;
+  const organ =
+    opts.organId ??
+    (opts.islandId ? moneyOrganForIsland(opts.islandId)?.id : null) ??
+    null;
   const mg = (opts.minigameId ?? "").toLowerCase();
 
   let organHint = thresholdLine;
@@ -87,7 +95,7 @@ export function minigameFailCopy(opts: {
   }
 
   return {
-    eyebrow: "Still learning",
+    eyebrow: organ ? `Still learning · ${organVerbChip(organ)}` : "Still learning",
     title: "Not a clear — try again",
     body: spendParity
       ? "Treat-first and haste Takes still teach. A soft miss is not shame — same shore, clearer try."

@@ -115,19 +115,18 @@ export function TakeHushOverlay({
         ) : null}
 
         {phase === "line" ? (
-          <div
-            className="rounded-2xl border border-amber-100/35 bg-[#0b1220]/88 px-4 py-3 shadow-[0_12px_36px_rgba(0,0,0,0.45)] backdrop-blur-md"
-            data-testid="take-cinema-line"
-          >
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100">
+          <div className="px-1 text-center" data-testid="take-cinema-line">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-100/90">
               Quiet after the Take
             </p>
-            <p className="cap-display mt-2 text-xl text-[#fffdf6] sm:text-2xl">
+            <p className="cap-display mt-2 text-xl text-[#fffdf6] drop-shadow-[0_2px_12px_rgba(0,0,0,0.65)] sm:text-2xl">
               “{scarLabel}”
             </p>
-            <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90">{organLine}</p>
+            <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90 drop-shadow">
+              {organLine}
+            </p>
             <p
-              className="mt-3 text-sm font-black tracking-wide text-amber-100"
+              className="mt-3 text-sm font-black tracking-wide text-amber-100 drop-shadow"
               data-testid="take-cinema-home-cta"
             >
               Carpet home — Harbor felt that

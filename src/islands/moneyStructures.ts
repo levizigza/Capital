@@ -105,19 +105,19 @@ export const HARBOR_LEDGER_BANK: MoneyStructureDef = {
       id: "vault_safe",
       label: "Safe Heart",
       icon: "🔐",
-      blurb: "Spin the dial — the safe's rooms unfold.",
+      blurb: "Spin the dial — Memory rooms Harbor will keep.",
       entryPiece: "Spinning vault dial",
       position: [-4.2, 0, -2.5],
-      minigameId: "mg_treasure_vault",
+      minigameId: "mg_harbor_safe_memory",
     },
     {
       id: "stamp_press",
-      label: "Payday Stamp",
+      label: "Ledger Stamp",
       icon: "📮",
-      blurb: "The press that prints pay stubs — inbox storms inside.",
-      entryPiece: "Brass stamp press",
+      blurb: "Harbor mail Memory stamps — not a paycheck inbox.",
+      entryPiece: "Brass ledger stamp",
       position: [4.2, 0, -2.2],
-      minigameId: "mg_inbox_storm",
+      minigameId: "mg_harbor_ledger_mail",
     },
     {
       id: "teller_window",
@@ -238,6 +238,9 @@ export function moneyStructurePart(
 }
 
 export function hostIslandForStructureMinigame(minigameId: string): string | null {
+  if (minigameId === "mg_harbor_safe_memory" || minigameId === "mg_harbor_ledger_mail") {
+    return HARBOR_HAVEN_ID;
+  }
   if (minigameId === "mg_treasure_vault" || minigameId === "mg_coin_catcher") return COVE_ISLAND_ID;
   if (minigameId.startsWith("mg_ck_")) return CREDIT_KINGDOM_ID;
   if (

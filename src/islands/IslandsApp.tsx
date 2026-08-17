@@ -29,6 +29,7 @@ import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
   CREDIT_ORDEAL_QUEST_ID,
+  HARBOR_HAVEN_ID,
   PAYCHECK_CHANGE_QUEST_ID,
 } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
@@ -900,6 +901,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const talkNpcRef = useRef<(npcId: NpcId) => void>(() => {});
   const collectItemRef = useRef<(itemId: ItemId) => Promise<boolean>>(async () => false);
+  const completeMinigameRef = useRef<
+    (success: boolean, score?: number) => void | Promise<void>
+  >(() => {});
 
   useEffect(() => {
     if (!save) return;
@@ -921,6 +925,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
         void trackScreenEnter(`minigame:${minigameId}`, { minigameId, source: "qa_bridge" });
       },
+      completeMinigame: (success, score) => completeMinigameRef.current(success, score),
       startQuest: (questId) => {
         void startQuest(questId as QuestId);
       },
@@ -966,6 +971,37 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       playSignatureTrailer: () => {
         setView("home");
         window.dispatchEvent(new Event("capital:signature-trailer"));
+      },
+      enterMoneyStructure: async (islandId: string) => {
+        const id = String(islandId || "");
+        if (id === HARBOR_HAVEN_ID || id === "harbor_haven") {
+          setActiveIslandId(null);
+          setView("home");
+          await new Promise((r) => window.setTimeout(r, 80));
+          window.dispatchEvent(
+            new CustomEvent("capital:qa-structure", {
+              detail: { action: "enter", islandId: HARBOR_HAVEN_ID },
+            }),
+          );
+          return;
+        }
+        await enterIsland(id, { instant: true });
+        await new Promise((r) => window.setTimeout(r, 120));
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", {
+            detail: { action: "enter", islandId: id },
+          }),
+        );
+      },
+      enterStructureSoftBeat: () => {
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", { detail: { action: "softBeat" } }),
+        );
+      },
+      exitMoneyStructure: () => {
+        window.dispatchEvent(
+          new CustomEvent("capital:qa-structure", { detail: { action: "exit" } }),
+        );
       },
     });
   }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
@@ -1853,6 +1889,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             score,
             scoreThreshold: resolvedThreshold,
             source,
+            islandId: activeIsland.id,
             takeFlavor: resolveTakeFailFlavor({
               irreversibleChoices: save?.irreversibleChoices,
             }),
@@ -1881,6 +1918,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       view,
     ]
   );
+
+  completeMinigameRef.current = (success, score) => onMinigameComplete(success, score);
 
   const handleMasteryPassed = useCallback(async () => {
     if (!pendingMastery || !activeIsland || !save) return;

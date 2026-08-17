@@ -20,13 +20,44 @@ describe("capital pattern library contracts", () => {
     "utf8",
   );
 
-  it("locks the pattern library bar and ship Hold", () => {
-    expect(lib).toMatch(/Second-to-second interaction/);
+  it("locks the pattern library bar and honest ship Hold", () => {
+    expect(lib).toMatch(/Second-to-second/);
     expect(lib).toMatch(/Failure contains information/);
     expect(lib).toMatch(/Multiplicative/);
     expect(lib).toMatch(/Opportunity cost visible/);
     expect(lib).toMatch(/Instrumentation now/);
-    expect(lib).toMatch(/Ship iconic vs library\?\*\* \| \*\*Hold\*\*/);
+    expect(lib).toMatch(/Ship iconic vs library\?\*\* \*\*Hold\*\*/);
+    expect(lib).toMatch(/Pass J/);
+    expect(lib).not.toMatch(/Ship verdict \(Pass I.*100% Pass/);
+  });
+
+  it("VibeCode invent tip is real (not Capsule shop lie)", () => {
+    const buddy = readFileSync(join(__dirname, "coinBagBuddy.ts"), "utf8");
+    expect(buddy).toMatch(/VibeCode — invent a level/);
+    expect(buddy).not.toMatch(/Capsule Studio is your toy box/);
+  });
+
+  it("dwell_stuck arms while stuck on screen", () => {
+    const track = readFileSync(
+      join(__dirname, "../analytics/screenTracking.ts"),
+      "utf8",
+    );
+    expect(track).toMatch(/armDwellStuckWatch/);
+    expect(track).toMatch(/whileStuck: true/);
+  });
+
+  it("Family digression_pair challenge exists for local coop", () => {
+    const fam = readFileSync(join(__dirname, "../familyRoom.ts"), "utf8");
+    expect(fam).toMatch(/digression_pair/);
+    expect(fam).toMatch(/maybeCompleteDigressionPairChallenge/);
+  });
+
+  it("weather literacy reaches Coin Bag on tight/storm", () => {
+    const buddy = readFileSync(join(__dirname, "coinBagBuddy.ts"), "utf8");
+    expect(buddy).toMatch(/weatherLiteracy/);
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/weatherLiteracy/);
+    expect(hub).toMatch(/harborWeatherMood/);
   });
 
   it("Soft Beat arms the next living Talk (multiplicative chemistry)", () => {
@@ -213,8 +244,13 @@ describe("capital pattern library contracts", () => {
     expect(arm).toMatch(/noteSoftBeatConsumed/);
   });
 
-  it("day-2 rumor can echo digression gossip", () => {
-    const ritual = readFileSync(join(__dirname, "../harborRitual.ts"), "utf8");
-    expect(ritual).toMatch(/pickDigressionOvernightEcho/);
+  it("Soft Beat trail shelves peeks for longevity", () => {
+    const arm = readFileSync(join(__dirname, "../softBeatArm.ts"), "utf8");
+    expect(arm).toMatch(/noteSoftBeatTrail/);
+    expect(arm).toMatch(/readSoftBeatTrail/);
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/soft-beat-trail-shelf/);
+    const soft = readFileSync(join(__dirname, "../views/SoftBeatOverlay.tsx"), "utf8");
+    expect(soft).toMatch(/noteSoftBeatTrail/);
   });
 });

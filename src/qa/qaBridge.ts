@@ -1,3 +1,9 @@
+/**
+ * Official headless harness for iconic 100% proof.
+ * `__QA__` may open islands / talk / structures / seeds (WebGL walk flakes).
+ * Live UI still has to prove Talk, mastery, Soft Beat leave, fail, mute, Seal.
+ * Law: `src/qa/iconicProofLaw.ts`.
+ */
 import type { IslandSaveV1 } from "@/islands/types";
 import type { SignaturePhase, SignatureSpineOrgan } from "./signatureLoop";
 
@@ -19,6 +25,11 @@ export type QABridge = {
   openTravel: () => void;
   openHub: () => void;
   startMinigame: (minigameId: string) => void;
+  /**
+   * Finish the active minigame with an explicit result (cold fail dignity).
+   * Prefer live Finish round → See result when the UI is reachable.
+   */
+  completeMinigame: (success: boolean, score?: number) => void | Promise<void>;
   startQuest: (questId: string) => void;
   /** Open a real Talk Battle (cold quest chains — not a seed shortcut). */
   talkNpc: (npcId: string) => void | Promise<void>;
@@ -35,6 +46,15 @@ export type QABridge = {
   prepareDay2Echo: () => void;
   /** Play the ~24s mute-friendly trailer cut over Harbor. */
   playSignatureTrailer: () => void;
+  /**
+   * Open Money Structure interior (skips enter cinema).
+   * Harbor → Ledger Bank; spine shores → Jar / Tower / Keep.
+   */
+  enterMoneyStructure: (islandId: string) => void | Promise<void>;
+  /** Fire the Soft Beat part inside the open structure (Lid / Teller / Loft / Battlement). */
+  enterStructureSoftBeat: () => void;
+  /** Dismiss Soft Beat and exit structure — host plaza/shore must stay mounted. */
+  exitMoneyStructure: () => void;
   ready: boolean;
 };
 

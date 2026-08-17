@@ -63,8 +63,11 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
   {
     id: "structure_exit",
     step: "Structure exit",
-    modes: ["human"],
-    guards: [],
+    modes: ["unit", "e2e", "human"],
+    guards: [
+      "src/islands/world3d/structureSoftBeatExit.test.ts",
+      "e2e/structure-soft-beat.spec.ts",
+    ],
   },
   {
     id: "piggy_first_meet",
@@ -235,7 +238,12 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
   {
     pillar: 16,
     name: "Testing",
-    guards: ["src/qa/iconicCraftCadence.test.ts", "src/qa/signatureLoop.test.ts"],
+    guards: [
+      "src/qa/iconicCraftCadence.test.ts",
+      "src/qa/signatureLoop.test.ts",
+      "src/qa/iconicProofLaw.test.ts",
+      "src/qa/capitalPatternLibrary.test.ts",
+    ],
   },
   {
     pillar: 17,
@@ -249,6 +257,8 @@ export function iconicUnitTestPaths(): string[] {
   const set = new Set<string>([
     "src/qa/signatureLoop.test.ts",
     "src/qa/iconicCraftCadence.test.ts",
+    "src/qa/iconicProofLaw.test.ts",
+    "src/qa/capitalPatternLibrary.test.ts",
     "src/islands/story/iconicCraft.test.ts",
     "src/islands/story/capitalPatternLibrary.test.ts",
     "src/islands/story/capitalIconicGame.test.ts",
@@ -283,4 +293,5 @@ export const ICONIC_E2E_SPECS = [
   "e2e/harbor-tutorial.spec.ts",
   "e2e/harbor-3d-failsafe.spec.ts",
   "e2e/cast-select.spec.ts",
+  "e2e/structure-soft-beat.spec.ts",
 ] as const;

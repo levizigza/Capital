@@ -201,7 +201,7 @@ function ToySpiralBead({
   );
 }
 
-/** Brass stamp — Bank Payday Stamp. */
+/** Brass stamp — Bank Ledger Stamp. */
 function ToyStamp({ position }: { position: [number, number, number] }) {
   const mesh = useRef<THREE.Mesh>(null);
   const [press, setPress] = useState(0);

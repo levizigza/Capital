@@ -45,8 +45,8 @@ import {
 } from "../story/hubGuidedIntro";
 import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
-import { peekSoftBeatArm, softBeatArmWhisper } from "../softBeatArm";
-import { digressionScarGaps, digressionShelfRows } from "../digressionShelf";
+import { peekSoftBeatArm, softBeatArmWhisper, readSoftBeatTrail, softBeatTrailLabel } from "../softBeatArm";
+import { digressionScarGaps, digressionShelfRows, digressionShelfTotal } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -88,6 +88,7 @@ import {
   postFamilyChallenge,
   clearFamilyChallenge,
   completeFamilyChallenge,
+  maybeCompleteDigressionPairChallenge,
   recordShareWitness,
   familyChallengeBlurb,
   familyWitnessMythLine,
@@ -560,6 +561,40 @@ export function HomeHubView({
     return () => window.removeEventListener("capital:signature-trailer", onQaTrailer);
   }, []);
 
+  // Pattern #82 — digression_pair Family Challenges clear when myth-shelf fills.
+  useEffect(() => {
+    const filled = digressionShelfTotal() - digressionScarGaps(save);
+    if (filled < 1) return;
+    maybeCompleteDigressionPairChallenge(
+      voyager?.name?.trim() || "Voyager",
+      filled,
+    );
+  }, [save.harborScars, voyager?.name]);
+
+  useEffect(() => {
+    const onQaStructure = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ action?: string; islandId?: string }>).detail;
+      if (!detail?.action) return;
+      if (detail.islandId && detail.islandId !== HARBOR_HAVEN_ID) return;
+      if (detail.action === "enter") {
+        setEnteringBank(false);
+        setBankOpen(true);
+        return;
+      }
+      if (detail.action === "softBeat") {
+        setBankOpen(true);
+        setBankSoftBeat("ledger");
+        return;
+      }
+      if (detail.action === "exit") {
+        setBankSoftBeat(null);
+        setBankOpen(false);
+      }
+    };
+    window.addEventListener("capital:qa-structure", onQaStructure);
+    return () => window.removeEventListener("capital:qa-structure", onQaStructure);
+  }, []);
+
   useEffect(() => {
     // Memory organ: Daily Ritual after Cove Change — never steals first-meet / voyage.
     if (
@@ -612,12 +647,16 @@ export function HomeHubView({
     creditMastery: bossUnlockProgress(save),
     softBeatArmWhisper: softBeatArmWhisper(peekSoftBeatArm()),
     digressionGaps: digressionScarGaps(save),
-    // Rotate Studio invent whisper when pavilion already known and digressions quiet.
-    studioOpenHint:
-      hasCompletedCoveChange(save) &&
-      digressionScarGaps(save) === 0 &&
-      !pointNextPainting,
+    // After Freedom + Cove Change — VibeCode invent whisper (pattern #48/#49).
+    studioOpenHint: Boolean(freed && hasCompletedCoveChange(save) && !pointNextPainting),
+    // Relatedness return — Witness above bank default (pattern #45).
     witnessMyth: familyWitnessMythLine(getActiveFamilyRoom()?.witnesses?.[0]),
+    // Cashflow paints sky — teach weather literacy on tight/storm (pattern #60).
+    weatherLiteracy: (() => {
+      const mood = harborWeatherMood(save);
+      if (mood === "storm" || mood === "tight") return weatherCoachLine(mood);
+      return null;
+    })(),
   });
   const buddyTip = resolveAdaptiveBuddyTip({
     save,
@@ -1065,7 +1104,7 @@ export function HomeHubView({
   // Quiet HUD + pulsing Piggy + diegetic bubble carry the welcome-back.
 
   return (
-    <>
+    <div className="relative h-full min-h-[100dvh] w-full" data-testid="harbor-home-hub">
       {enteringBank && ledgerBank ? (
         <WorldArriveOverlay
           islandId={HARBOR_HAVEN_ID}
@@ -1207,6 +1246,7 @@ export function HomeHubView({
                     organId={latestOrgan}
                     scarMeta={{ id: latestPlaque.id, islandId: latestPlaque.islandId }}
                     previewUrl={feltPreviewUrl}
+                    highContrast={a11y.highContrast}
                     onShare={async () => {
                       try {
                         const result = await shareHarborFeltCard({
@@ -1310,7 +1350,7 @@ export function HomeHubView({
               </button>
             ) : null}
             {!earlyCastle ? <WealthHud totalCoins={userProfile.totalCoins} compact /> : null}
-            {!simplified && !castleMode ? (
+            {!simplified && !castleMode && sideMagnetsOpen ? (
               <VoyagerLedgerHud ledger={ensureLedger(save.voyagerLedger)} compact />
             ) : null}
             {freedomPlazaLine && !castleMode && !piggyPresence ? (
@@ -1635,6 +1675,33 @@ export function HomeHubView({
                 </li>
               ))}
             </ul>
+          </div>
+          <div data-testid="soft-beat-trail-shelf" className="space-y-2">
+            <p className="text-xs font-black uppercase tracking-wide text-stone-500">
+              Soft Beat trail · {readSoftBeatTrail().length} peeks
+            </p>
+            {readSoftBeatTrail().length === 0 ? (
+              <p className="text-[11px] text-stone-400">
+                Climb Lid · Loft · Battlement · Teller — peeks stack here for the long game.
+              </p>
+            ) : (
+              <ul className="grid gap-1.5 sm:grid-cols-2">
+                {readSoftBeatTrail().map((row) => (
+                  <li
+                    key={`${row.kind}-${row.at}`}
+                    className="rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-[11px] font-semibold text-violet-950"
+                    data-testid={`soft-beat-trail-${row.kind}`}
+                  >
+                    {softBeatTrailLabel(row.kind)}
+                    {row.scarLabel ? (
+                      <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                        “{row.scarLabel}”
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           {plaques.length > 0 ? (
             <GameButton
@@ -2132,6 +2199,6 @@ export function HomeHubView({
           />
         </Suspense>
       </GameModal>
-    </>
+    </div>
   );
 }

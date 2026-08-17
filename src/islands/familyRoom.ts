@@ -28,7 +28,11 @@ export type FamilyMember = {
   joinedAt: string;
 };
 
-export type FamilyChallengeKind = "studio_clear" | "freedom_seal" | "cove_take";
+export type FamilyChallengeKind =
+  | "studio_clear"
+  | "freedom_seal"
+  | "cove_take"
+  | "digression_pair";
 
 export type FamilyChallenge = {
   id: string;
@@ -233,6 +237,7 @@ export const FAMILY_CHALLENGE_KIND_LABEL: Record<FamilyChallengeKind, string> = 
   studio_clear: "Clear a pinned Studio voyage",
   freedom_seal: "Earn the Freedom Seal",
   cove_take: "Finish the Cove Take",
+  digression_pair: "Fill a digression myth-shelf pair together",
 };
 
 /** Replace the single active challenge — human sets what matters; no ladder. */
@@ -317,4 +322,18 @@ export function familyChallengeBlurb(challenge: FamilyChallenge | null | undefin
   if (!challenge) return null;
   const n = challenge.completions.length;
   return `${challenge.authorName} set: ${challenge.targetLabel} — ${n} household clear${n === 1 ? "" : "s"} (no ranking).`;
+}
+
+/**
+ * Pattern #82 — digression_pair challenges auto-clear when a household member
+ * fills a myth-shelf scar (shared local coop without a fake backend).
+ */
+export function maybeCompleteDigressionPairChallenge(
+  memberName: string,
+  filledDigressionCount: number,
+): FamilyRoom | null {
+  const room = getActiveFamilyRoom();
+  if (!room?.challenge || room.challenge.kind !== "digression_pair") return null;
+  if (filledDigressionCount < 1) return null;
+  return completeFamilyChallenge(memberName);
 }

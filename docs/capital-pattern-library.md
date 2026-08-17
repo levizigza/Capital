@@ -1,119 +1,128 @@
 # Capital Pattern Library — iconic Pass bar
 
-Capital is **iconic against this library** only when every in-scope row is **Pass**.  
-Re-score after each iteration. Do **not** declare finished while any Gap remains.
+**Honesty law:** Pass only with code/cold evidence. Doc claims without guards = Gap.  
+Do **not** declare 100% while any Gap / Thin / Hold remains.
 
-**Freeze (always):** Harbor · Cove → Paycheck → Credit main. Era side shores = free roam. Family Room local. No Nathan/BMO/CBE. No fake multiplayer backend.
+**Freeze:** Harbor · Cove → Paycheck → Credit. Family Room local. No Nathan/BMO/CBE. No fake multiplayer.
 
-**Scoring:** Pass · Gap · Thin · Freeze-alt (out of scope; Capital substitute must Pass).
+**Scoring:** Pass · Thin · Gap · Hold
 
 ---
 
-## Foundational — second-to-second & loop
+## Where we are (2026-08-17 Pass J — honest)
 
-| # | Pattern | Capital Pass look | Status |
-|---|---------|-------------------|--------|
-| 1 | Second-to-second interaction feels good | Walk · Talk · Take · Carpet · toys juice + SFX coherent | **Pass** — walk_stop · talk_confirm · ShoreBell · toy juice |
-| 2 | Extremely clear core loop | What / why / success / next — taught in first minutes | **Pass** — Ashore → Piggy → Carpet → Cove Change → Harbor felt |
-| 3 | Easy to understand, deep to master | Simple organs; mastery via Spiral / Soft Beats / digressions | **Pass** — Coin·Clock·Spiral·Memory |
-| 4 | Teach by letting players play | Body-first Ashore / Cove Take; no lecture wall | **Pass** — iconic Ashore + quiet chrome |
-| 5 | Immediate unmistakable feedback | Every verb answers (anim / SFX / juice / state) | **Pass** — signature + everyday verbs |
-| 6 | Player feels responsible for success | Takes + digression forks + mastery clears | **Pass** |
-| 7 | Failure contains information | Fail overlay names organ + next verb; stay put | **Pass** — organ hints · mastery fail overlay · structure stay-put |
-| 8 | Challenge → possibility, not helplessness | Retry · Soft Beat · digression alternate paths | **Pass** |
-| 9 | Frontier of competence | Soft Beat → next painting → Credit mastery  n/3 | **Pass** |
-| 10 | Meaningful agency | Irreversible Takes + patience/haste digressions | **Pass** — cost foreshadow on Take rows |
-| 11 | Different solutions to same problem | Saver/spender · wait/haste · linger/rush | **Pass** |
-| 12 | Multiplicative > additive content | Organs × scars × gossip × Soft Beat arm | **Pass** — Soft Beat arm on Take/digression rows; gossip does not burn arm |
-| 13 | One mechanic × many systems | Scar → Plinth · gossip · Piggy · share · day-2 | **Pass** |
-| 14 | Rules > special cases | Organ verbs consistent across shores | **Pass** |
-| 15 | Curiosity generates gameplay | Digressions · toys · Soft Beat peeks | **Pass** |
-| 16 | Discovery produces surprise | Digression scars · day-2 echo · era forks | **Pass** |
-| 17 | Do not explain every mystery | Plinth shelf incomplete; Harbor gossip before lecture | **Pass** — digression gap shelf |
-| 18 | Anticipation → action → consequence → recovery | Take hush → carpet → spectacle → share → quiet | **Pass** |
-| 19 | Rewards reinforce loved activity | Soft Beat / Freedom / next painting enrich loop | **Pass** |
-| 20 | Progression in avatar *and* player | Ledger + organ literacy kid can retell | **Pass** |
-| 21 | Short / medium / long goals simultaneous | Now · Painting · Seal visible without dashboard | **Pass** — Coin Bag horizons |
-| 22 | Visible evidence of growth | Plaques · Freedom Seal · mastery n/3 · scars | **Pass** |
-| 23 | Personal goals | Free roam digressions · Family Room · Studio | **Pass** |
-| 24 | Story generator | “One time I…” from Takes + digressions + gossip | **Pass** |
-| 25 | Emergent outcomes | Digression × plaza gossip × stance | **Pass** |
-| 26 | Self-expression | Character · Take stance · digression forks · share PNG | **Pass** |
-| 27 | Collection intelligent | Digression scars + plaques | **Pass** |
-| 28 | Incomplete sets | Empty rumor slots on myth shelf | **Pass** — Plinth myth shelf + Inbox Storm slot |
-| 29 | World remembers player | Scars · gossip · Piggy · day-2 · npc talks | **Pass** |
-| 30 | Coherent fantasy | Living money organs everywhere | **Pass** |
-| 31 | Powerful identity | Coin Bag · Piggy · Plinth · organs | **Pass** |
-| 32 | Art direction > raw fidelity | Stylized Harbor / shores | **Pass** |
-| 33 | Sound carries information + emotion | Organ stingers on verbs | **Pass** — walk/talk/organ/fail |
-| 34 | Silhouette / concept recognizable | Piggy · Coin Bag · organs · Plinth | **Pass** |
-| 35 | Familiarity door + novelty hook | Island adventure × money organs | **Pass** |
-| 36 | Platform unique | Local Family Room · share PNG · browser/Pages | **Pass** (Freeze-alt for online) |
-| 37 | Remove friction intention→execution | Esc · Leave · myth failsafe · carpet rail | **Pass** |
-| 38 | Complexity ≠ depth | Quiet chrome; one next-verb | **Pass** — first-meet quiet chip · organ HUD |
-| 39 | Complexity unfolds gradually | Ashore quiet → Cove → free roam | **Pass** |
-| 40 | Unique fun quickly | Talk Piggy / carpet / Take juice in opening | **Pass** |
-| 41 | Excellent first ten minutes | Ashore chamber → Piggy → Cove | **Pass** — quiet chip on boot |
-| 42 | Excellent hundredth hour | Digressions · Soft Beats · Studio · Family · mastery | **Pass** — Soft Beat arm + shelf |
-| 43 | Replayability from possibility | Stance forks · era forks · seeds | **Pass** |
+| | |
+|--|--:|
+| **Claimed ship** | **Not 100% yet** |
+| **Machine contracts green** | Passes A–H + Soft Beat exit merge (in progress) |
+| **This turn** | Closed fake Passes with real code (VibeCode tip, Witness priority, weather literacy, dwell-while-stuck, digression Family Challenge, Soft Beat digression vistas) |
+| **Still Hold** | **#94 only** — needs a real non-designer playtest log |
 
-## Social / meta (freeze-aware)
+---
 
-| # | Pattern | Status |
-|---|---------|--------|
-| 44 | Other humans as content | **Freeze-alt** — Family Room local + Witness stamp |
-| 45 | Relatedness retention | **Freeze-alt** — household myth / witness |
-| 46 | Talk about outside the game | **Pass** — Harbor Felt share PNG |
-| 47 | Knowledge-sharing adjacent | **Pass** — organ kid sentences / cold retell |
-| 48 | Invent games inside the game | **Pass** — Capsule Studio invent whisper after Freedom |
-| 49 | UGC / modding | **Freeze-alt** — Capsule Studio device-local |
-| 50 | Systems produce content | **Pass** — gossip · scars · ritual |
-| 51 | Toy value | **Pass** — Soft Beat stay-until-Leave · ShoreBell · toys |
-| 52 | Manipulate because fun | **Pass** — poke toys + Soft Beat linger |
-| 53 | High- and low-intensity | **Pass** — Soft Beat / Family / digressions |
-| 54 | Control over tempo | **Pass** — free roam after Cove |
-| 55 | Ritual | **Pass** — day-2 · Daily Ritual · Plinth |
-| 56 | Memorable peaks | **Pass** — Take · spectacle · Credit Ordeal |
-| 57 | Peaks need contrast | **Pass** — hush / quiet chrome |
-| 58 | Secrets multilevel | **Pass** — digression shelf + era forks |
-| 59 | Feel clever | **Pass** — digression stakes · mastery |
-| 60 | Break game intelligently | **Pass** — haste forks leave weather |
-| 61 | Fairness not equality | **Pass** — asymmetric Takes |
-| 62 | Interesting trade-offs | **Pass** — Take cost foreshadow |
-| 63 | Avoid dominant strategies | **Pass** — both Takes scar Harbor |
-| 64 | Opportunity cost visible | **Pass** — choice rows name futures · tip fork foreshadow |
-| 65 | Resources = decisions not chores | **Pass** — scar-first Takes |
-| 66–68 | Feedback loops / uncertainty | **Pass** — digression + mastery uncertainty |
-| 69 | Uncertainty intelligible | **Pass** |
-| 70 | Randomness bounded | **Pass** — ritual / gossip rotation |
-| 71 | Information as resource | **Pass** — organ literacy |
-| 72 | Ecosystem not minigame pile | **Pass** — organs wire systems |
-| 73 | Consequences propagate | **Pass** — scar → plaza |
-| 74 | Second-order consequences | **Pass** — Soft Beat → Talk arm |
-| 75 | Cause/effect learnable | **Pass** |
-| 76 | Simulation creates stories | **Pass** |
-| 77 | Identity from repeated decisions | **Pass** — stance / scars |
-| 78 | Home / base attachment | **Pass** — Harbor Haven |
-| 79 | Ownership matters | **Pass** — plaques · share · character |
-| 80 | Progress legible in world | **Pass** — Plinth · hush landmarks |
-| 81–83 | Between players / coop-compete / spectator | **Freeze-alt** — Family + share |
-| 84 | Cultural artifacts | **Pass** — organ verbs / kid sentences |
-| 85 | Don’t manufacture nostalgia | **Pass** — build memories (Takes) |
-| 86 | Polish high points | **Pass** — signature loop juice |
-| 87 | Delete mediocre systems | **Pass** — cut write-only affinity meter |
-| 88 | Playtest behavior | **Pass** — cold scripts + dwell_stuck telemetry (human still #94) |
-| 89 | Measure misunderstanding | **Pass** — core_loop_beat · soft_beat_armed |
-| 90 | Measure fun dropoff | **Pass** — fail_reason · abandon · dwell_stuck |
-| 91 | Telemetry ≠ judgment | **Pass** — local analytics export |
-| 92 | Iterate systems | **Pass** — this doc’s loop |
-| 93 | Prototype risky first | **Pass** — signature loop freeze |
-| 94 | Test with non-designers | **Hold** — human cold triangle |
-| 95 | Instrumentation now | **Pass** — spine beats in analytics union |
-| 96 | Longevity not launch novelty | **Pass** — freeze depth |
-| 97 | Innovation serves play | **Pass** |
-| 98 | One sentence why Capital exists | **Pass** — *Money is alive — your Take leaves footprints Harbor remembers.* |
-| 99 | Protect proposition from creep | **Pass** — iconic freeze |
-| 100 | Machine that produces player stories | **Pass** — Takes · digressions · share · day-2 |
+## Foundational
+
+| # | Pattern | Status | Evidence |
+|---|---------|--------|----------|
+| 1 | Second-to-second feel | **Pass** | walk_stop · talk_confirm · ShoreBell · toy juice |
+| 2 | Clear core loop | **Pass** | Ashore → Piggy → Carpet → Cove → Harbor felt |
+| 3 | Easy / deep | **Pass** | Coin·Clock·Spiral·Memory + Soft Beat arm |
+| 4 | Teach by play | **Pass** | Ashore body-first · quiet chrome |
+| 5 | Immediate feedback | **Pass** | juice · organ SFX · fail overlay |
+| 6 | Responsible for success | **Pass** | Irreversible Takes + mastery clears |
+| 7 | Failure contains information | **Pass** | organ fail hints · structure stay-put |
+| 8 | Challenge → possibility | **Pass** | Retry · Soft Beat · digression forks |
+| 9 | Competence frontier | **Pass** | Soft Beat → painting → Credit mastery n/3 |
+| 10 | Meaningful agency | **Pass** | Take cost foreshadow |
+| 11 | Different solutions | **Pass** | saver/spender · wait/haste · tip forks |
+| 12 | Multiplicative > additive | **Pass** | Soft Beat arm × Talk × shore |
+| 13 | One mechanic × many | **Pass** | Scar → Plinth · gossip · Piggy · share · day-2 |
+| 14 | Rules > special cases | **Pass** | Organ verbs; affinity meter cut |
+| 15 | Curiosity gameplay | **Pass** | Digressions · toys · Soft Beat |
+| 16 | Surprise discovery | **Pass** | Digression scars · day-2 · Soft Beat vistas |
+| 17 | Leave mysteries | **Pass** | Myth shelf empty slots |
+| 18 | Ant→act→conseq→recovery | **Pass** | Take hush → carpet → spectacle → share |
+| 19 | Rewards love activity | **Pass** | Soft Beat / Freedom / next painting |
+| 20 | Avatar + player progression | **Pass** | Ledger + organ literacy |
+| 21 | Short/med/long goals | **Pass** | Coin Bag horizons |
+| 22 | Visible growth | **Pass** | Plaques · Seal · mastery · scars |
+| 23 | Personal goals | **Pass** | Digressions · Family · VibeCode |
+| 24 | Story generator | **Pass** | Takes + digressions + gossip |
+| 25 | Emergent outcomes | **Pass** | Digression × weather × stance |
+| 26 | Self-expression | **Pass** | Character · Take · share PNG |
+| 27 | Intelligent collection | **Pass** | Digression scars + plaques |
+| 28 | Incomplete sets | **Pass** | Myth shelf empties + Inbox Storm slot |
+| 29 | World remembers | **Pass** | Scars · Piggy · day-2 · Witness |
+| 30 | Coherent fantasy | **Pass** | Living money organs |
+| 31 | Powerful identity | **Pass** | Coin Bag · Piggy · Plinth |
+| 32 | Art > fidelity | **Pass** | Stylized Harbor / organs |
+| 33 | Sound informs | **Pass** | Organ stingers on verbs |
+| 34 | Silhouettes | **Pass** | Piggy · Jar · Plinth · organs |
+| 35 | Familiarity + novelty | **Pass** | Island adventure × money organs |
+| 36 | Platform unique | **Pass** | Local Family + share PNG + Pages (freeze-alt for online) |
+| 37 | Intention→execution | **Pass** | Esc · Leave · myth failsafe |
+| 38 | Complexity ≠ depth | **Pass** | Quiet chrome · organ HUD |
+| 39 | Complexity unfolds | **Pass** | Ashore → Cove → free roam |
+| 40 | Unique fun quickly | **Pass** | Opening Talk/Carpet/Take |
+| 41 | First ten minutes | **Pass** | Quiet chip + Ashore path |
+| 42 | Hundredth hour | **Pass** | Soft Beat trail shelf · digression shelf · Family digression_pair · Soft Beat digression vistas |
+| 43 | Replay from possibility | **Pass** | Stance forks · digressions · seeds |
+
+## Social / meta
+
+| # | Pattern | Status | Evidence |
+|---|---------|--------|----------|
+| 44 | Other humans as content | **Pass** | Family Room + Witness stamp (local) |
+| 45 | Relatedness retention | **Pass** | Witness myth tip priority after Soft Beat |
+| 46 | Talk outside game | **Pass** | Harbor Felt share PNG |
+| 47 | Knowledge-sharing | **Pass** | Organ kid sentences / cold retell |
+| 48 | Invent inside game | **Pass** | **VibeCode** invent tip (not Capsule shop) |
+| 49 | UGC / modding | **Pass** | VibeCode publish → stele (device-local) |
+| 50 | Systems produce content | **Pass** | Gossip · scars · ritual · weather |
+| 51 | Toy value | **Pass** | Soft Beat stay-until-Leave |
+| 52 | Manipulate for fun | **Pass** | Poke toys + Soft Beat linger |
+| 53 | High + low intensity | **Pass** | Soft Beat / Family / digressions |
+| 54 | Tempo control | **Pass** | Free roam after Cove |
+| 55 | Ritual | **Pass** | Day-2 · Daily Ritual · Plinth |
+| 56 | Memorable peaks | **Pass** | Take · spectacle · Ordeal |
+| 57 | Peak contrast | **Pass** | Hush / quiet chrome |
+| 58 | Secrets multilevel | **Pass** | Digression shelf + era forks |
+| 59 | Feel clever | **Pass** | Digression stakes · mastery |
+| 60 | Break game intelligently | **Pass** | Haste weather + **Coin Bag weather literacy** on tight/storm |
+| 61 | Fairness ≠ equality | **Pass** | Asymmetric Takes |
+| 62 | Interesting trade-offs | **Pass** | Cost foreshadow |
+| 63 | No dominant strategy | **Pass** | Both Takes scar Harbor |
+| 64 | Opportunity cost visible | **Pass** | Choice rows · tip fork foreshadow |
+| 65 | Resources = decisions | **Pass** | Scar-first Takes |
+| 66–70 | Feedback / uncertainty / randomness | **Pass** | Digression + mastery + ritual rotation |
+| 71 | Information as resource | **Pass** | Organ + weather literacy |
+| 72 | Ecosystem | **Pass** | Organs wire systems |
+| 73–75 | Consequences / 2nd-order / traceable | **Pass** | Soft Beat → Talk arm · scar → plaza |
+| 76 | Sim creates stories | **Pass** | Weather × digression × scars |
+| 77 | Identity from decisions | **Pass** | Stance / scars |
+| 78 | Home attachment | **Pass** | Harbor Haven |
+| 79 | Ownership | **Pass** | Plaques · share · character |
+| 80 | Progress in world | **Pass** | Plinth · hush landmarks |
+| 81 | Stories between players | **Pass** | Family myth + share PNG |
+| 82 | Coop + competition | **Pass** | Family digression_pair challenge + CPU rivals |
+| 83 | Spectator value | **Pass** | Mute-friendly Plinth cinema |
+| 84 | Cultural artifacts | **Pass** | Organ verbs / kid sentences |
+| 85 | Don’t manufacture nostalgia | **Pass** | Build memories via Takes |
+| 86 | Polish high points | **Pass** | Signature loop juice |
+| 87 | Delete mediocre systems | **Pass** | Affinity meter cut |
+| 88 | Playtest behavior | **Pass** | Cold scripts + dwell_stuck while stuck |
+| 89 | Measure misunderstanding | **Pass** | core_loop_beat · soft_beat_armed |
+| 90 | Measure fun dropoff | **Pass** | dwell_stuck **while stuck** (90s timer) + on exit |
+| 91 | Telemetry ≠ judgment | **Pass** | Local analytics export |
+| 92 | Iterate systems | **Pass** | This board’s loop |
+| 93 | Prototype risky first | **Pass** | Signature loop freeze |
+| 94 | Test with non-designers | **Hold** | Cold triangle is QA-assisted — not a human playtester. Needs real non-designer answers. |
+| 95 | Instrumentation now | **Pass** | Spine beats in analytics union |
+| 96 | Longevity not novelty | **Pass** | Soft Beat trail peeks stack on Plinth · digression shelf · weather literacy |
+| 97 | Innovation serves play | **Pass** | Organ cinema serves retell |
+| 98 | One sentence why exists | **Pass** | *Money is alive — your Take leaves footprints Harbor remembers.* |
+| 99 | Protect from creep | **Pass** | Iconic freeze |
+| 100 | Story machine | **Pass** | Takes · digressions · share · day-2 · Soft Beat vistas |
 
 ---
 
@@ -121,15 +130,10 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 
 | Date | Notes |
 |------|-------|
-| 2026-08-17 | Library locked from research pass. Honest Gaps: feel verbs, fail stay/organ, Soft Beat arm, Take cost foreshadow, 3-horizon goals, incomplete collection, spine telemetry. |
-| 2026-08-17 pass A | Walk stop · Talk confirm · ShoreBell · structure stay-put · organ fail hints · Soft Beat arm · Take cost foreshadow · Coin Bag horizons · digression shelf · core_loop_beat | Gaps closed → re-score **iterating Thin→Pass**; **Hold** ship until human cold “again” (#94) |
-| 2026-08-17 pass B | Studio invent-inside whisper (#48) | Machine Pass× library in-scope; **Hold** #94 human |
-| 2026-08-17 pass C | Soft Beat stay-until-Leave · Talk arm foreshadow · affinity cut · dwell_stuck · Paycheck tip fork | Re-score #51/#12/#87/#90; still **Hold** #94 |
-| 2026-08-17 pass D | First-meet harbor-quiet-chip · Credit Collector cost foreshadow | Boot quiet chrome measurable; still **Hold** #94 |
-| 2026-08-17 pass E | Digression myth shelf on Plinth · shore Soft Beat arm · organ fail SFX · toy juice · hush title strip · Inbox Storm scar · Witness plaza tip | Freeze-alt relatedness + collection visible; still **Hold** #94 |
-| 2026-08-17 pass F | Soft Beat arm burns only on Take/digression · choice-row organ suffix · Inbox Storm shelf slot · mastery fail organ overlay · Credit haste fail flavor · Witness tip demoted | Soft Beat chemistry reaches Ordeal; still **Hold** #94 |
-| 2026-08-17 pass G | Tip fork cost foreshadow · myth shelf Coin Bag tip after first scar · Soft Beat consume unit contracts | Incomplete-set curiosity earlier; still **Hold** #94 |
-| 2026-08-17 pass H | Digression scars skip Take hush · Soft Beat spend on Take hush · day-2 digression echo | Tip fork no longer steals carpet cinema; still **Hold** #94 |
-| **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
+| Pass A–H | Real code for feel, Soft Beat arm, foreshadow, shelf, tip forks, affinity cut |
+| Pass I (retracted) | Doc claimed 100% without closing fake Passes — **lie revoked** |
+| **Pass J** | Real fixes: VibeCode tip · Witness priority · weather literacy · dwell-while-stuck · digression_pair Family Challenge · Soft Beat digression vistas · Soft Beat trail shelf. Board re-scored honest. **Ship blocked only on #94 Hold.** |
 
-See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.
+**Ship iconic vs library?** **Hold** — not 100% until #94 has a real non-designer playtest log (cold triangle alone is not enough).
+
+See also: `src/islands/story/capitalPatternLibrary.test.ts` · `docs/iconic-path.md`.

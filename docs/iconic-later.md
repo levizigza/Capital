@@ -1,7 +1,10 @@
 # Iconic later list — park before creep
 
-**Purpose (Pillar 17):** Keep feature creep from eating the signature loop.  
-Anything here is **parked** until the MVP iconic bar holds:  
+**Purpose (Pillar 17):** Keep feature creep from eating the signature loop.
+
+**MVP iconic bar HOLDS** (Pass R, 2026-08-17) — this list is **not a remaining 100% gap**.  
+100% scores Harbor · Cove → Paycheck → Credit only. Rows below are freeze-parked extras or already-iterated spine polish.
+
 **Signature loop + Cove · Paycheck · Credit organs cold-retellable at Harbor.**
 
 **Canon:** [iconic-path.md](./iconic-path.md) · [iconic-craft-plan.md](./iconic-craft-plan.md) · [mural-thesis.md](./mural-thesis.md) · [era-shores-restore.md](./era-shores-restore.md)  
@@ -22,7 +25,7 @@ Lift main-course width only when a cold player can retell Coin · Clock · Spira
 
 ---
 
-## MVP iconic (in scope)
+## MVP iconic (in scope — bar holds)
 
 - Cove Take → carpet home → scar spectacle → Plinth share → Piggy → day-2 echo  
 - Paycheck + Credit Takes that Harbor can name with organ words  
@@ -30,7 +33,7 @@ Lift main-course width only when a cold player can retell Coin · Clock · Spira
 - Quiet Harbor chrome, Esc · Leave, corrupt-save / myth failsafe, reduced motion  
 - Era **SIDE SHORE** restore (signal_city · venture_foundry · …) with per-shore soundtrack — see [era-shores-restore.md](./era-shores-restore.md)  
 
-Deepen spine signature before inventing *new* main-course islands.
+SIDE SHORE restore is **live on the outer ring** and **not scored** in the 100% board. Deepen spine only if a new soft-lock appears — do not invent *new* main-course islands.
 
 ---
 
@@ -49,27 +52,27 @@ Docs carry **SIDE SHORE** banners. Soft-locked until Cove Change. Soundtrack cue
 
 ---
 
-## Deferred polish (from craft status “Next fix”)
+## Closed polish (was “Next fix” — not a 100% gap)
 
-These are **allowed later** as spine depth — not new main-course islands:
+These shipped on the spine or stay freeze-parked by law:
 
-| From | Parked polish |
-|------|----------------|
-| Fantasy / Story / UI | (iterated) Talk Battle + cold kid retell; Ashore Piggy/veil polish on PR #68 |
-| Core loop | (iterated) Cold Take `doneMs` + pier guide + Carpet CTA after hush |
-| Goals | (iterated) Bad-take Spend soft-fail copy parity |
-| Feel | (iterated) Walk stop coast + carpet rail juice on hop/land |
-| Progression | (iterated) Freedom Seal + Seal chase chip after pouch dips |
-| Encounters | (iterated) Alma craft-bench ≠ Paycheck payday buckets |
-| Content | SIDE SHORE banners on era island docs; demo Key Cove stays PARKED |
-| Balance | (iterated) First seal plaza readability after pouch dips |
-| Art | Harbor plaza master plan — fountain court clear of Bank door |
-| Audio | Per-shore era cues live when side shores load |
-| Onboarding | (iterated) Boot Board CTA + look-stage Cancel parity |
-| Technical | (iterated) Kill-switch e2e for harbor3d sticky fail |
-| A11y | (done) High-contrast share lower-third panel |
-| Testing | Keep status board honest after every fix |
-| Whole-game | See [whole-game-craft.md](./whole-game-craft.md) — parts + whole craft law |
+| From | Status |
+|------|--------|
+| Fantasy / Story / UI | Closed — Talk Battle + cold kid retell |
+| Core loop | Closed — Take hush + pier + Carpet CTA |
+| Goals | Closed — Spend / Coin Sort fail dignity |
+| Feel | Closed — walk coast + Soft Beat beacons |
+| Progression | Closed — Freedom Seal + `isSealChasing` |
+| Encounters | Closed — Alma · Priya · Score Scanner |
+| Content | Closed — SIDE SHORE banners; Key Cove PARKED |
+| Balance | Closed — Seal chase chrome gated |
+| Art | Closed — plaza plan + named Seed map |
+| Audio | Closed — organ stingers + mute cinema; era cues on side-shore load |
+| Onboarding | Closed — Ashore teach + tutorial board 100% |
+| Technical | Closed — Harbor / shore / map failsafes |
+| A11y | Closed — Settings OR OS reduce + high-contrast share |
+| Testing | Closed — official harness law + cold bank |
+| Whole-game | Closed — [whole-game-craft.md](./whole-game-craft.md) + Pass R board |
 
 ---
 

@@ -83,10 +83,12 @@ export function coinBagHarborTip(
     softBeatArmWhisper?: string | null;
     /** Incomplete digression rumor count for curiosity shelf */
     digressionGaps?: number | null;
-    /** After Freedom — whisper Capsule Studio invent-inside-the-game */
+    /** After Freedom — whisper VibeCode invent-inside-the-game */
     studioOpenHint?: boolean;
     /** Family Witness myth — Freeze-alt relatedness on the plaza */
     witnessMyth?: string | null;
+    /** Cashflow → sky literacy tip (pattern #60 / weather teach) */
+    weatherLiteracy?: string | null;
   },
 ): CoinBagBuddyTip {
   const tip = coinBagHarborTipRaw(guided, opts);
@@ -187,9 +189,23 @@ function coinBagHarborTipRaw(
 
   if (opts?.studioOpenHint && opts?.hasFreedom) {
     return {
-      tip: "Studio — invent a level inside Capital",
-      coach: "Capsule Studio is your toy box. Publish a mark Harbor can stamp — no multiplayer required.",
+      tip: "VibeCode — invent a level inside Capital",
+      coach: "Open VibeCode on the plaza stele. Publish a mark Harbor can stamp — device-local, no multiplayer.",
       track: "side",
+    };
+  }
+
+  if (opts?.witnessMyth) {
+    return {
+      tip: opts.witnessMyth,
+      coach: "Someone nearby stamped a Witness — soft myth only. Family Room keeps it local.",
+    };
+  }
+
+  if (opts?.weatherLiteracy) {
+    return {
+      tip: opts.weatherLiteracy,
+      coach: "Cashflow paints the sky. Fog means interest weather — shops cut prices to help.",
     };
   }
 
@@ -221,15 +237,6 @@ function coinBagHarborTipRaw(
     return {
       tip: `Myth shelf · ${opts.digressionGaps} empty rumor slot${opts.digressionGaps === 1 ? "" : "s"}`,
       coach: "Plinth keeps empty shelves curious. Side shores and digressions fill them — spine stays open.",
-      track: "side",
-    };
-  }
-
-  // Freeze-alt relatedness — never override homecoming / scar / Soft Beat.
-  if (opts?.witnessMyth) {
-    return {
-      tip: opts.witnessMyth,
-      coach: "Someone nearby stamped a Witness — soft myth only. Family Room keeps it local.",
       track: "side",
     };
   }
