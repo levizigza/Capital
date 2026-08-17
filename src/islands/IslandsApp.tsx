@@ -1070,6 +1070,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           totalCoins: prev.totalCoins + (rewards.coins || 0),
           xp: prev.xp + (rewards.xp || 0),
         }));
+        const bits: string[] = [];
+        if (rewards.coins) bits.push(`+${rewards.coins} coins`);
+        if (rewards.xp) bits.push(`+${rewards.xp} XP`);
+        toast.message(bits.join(" · "), {
+          description: resolveProfileText(quest.title, learningProfile),
+        });
       }
 
       if (rewards?.items && rewards.items.length > 0) {
@@ -1242,6 +1248,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             items: uniq([...prev.discovered.items, itemId]),
           },
         };
+      });
+
+      playCapitalSfx("organ_coin");
+      toast.message(`Got ${item.name}`, {
+        description: "In your pouch — shore practice wallets stay separate.",
       });
 
       await completeObjective({ type: "collectItem", itemId });

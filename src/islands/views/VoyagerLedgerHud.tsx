@@ -44,17 +44,23 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
           Cashflow
         </span>
         <span
-          className={`font-display text-base font-black ${cfPositive ? "text-emerald-700" : "text-rose-700"}`}
+          className="font-display text-base font-black text-[var(--cap-ink)]"
+          aria-label={
+            cfPositive
+              ? `Cashflow keep plus ${cf} per month`
+              : `Cashflow drain minus ${Math.abs(cf)} per month`
+          }
+          data-testid="voyager-ledger-cf"
         >
-          {cfPositive ? "+" : ""}
-          {cf}
+          {cfPositive ? "keep +" : "drain −"}
+          {Math.abs(cf)}
           <span className="text-[0.65rem] font-bold text-[var(--cap-ink-soft)]">/mo</span>
         </span>
         {escape.escaped ? (
-          <span className="text-[0.65rem] font-black text-emerald-700">Freed!</span>
+          <span className="text-[0.65rem] font-black text-[var(--cap-ink)]">Freed</span>
         ) : chaseOn ? (
           <span className="text-[0.6rem] font-bold text-[var(--cap-ink-soft)]">
-            🎯{escape.streak}/{escape.needed}
+            streak {escape.streak}/{escape.needed}
           </span>
         ) : null}
       </div>
@@ -72,18 +78,26 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 text-xs font-semibold">
         <span className="text-[var(--cap-ink-soft)]">Income</span>
-        <span className="text-emerald-700">+{income}/mo</span>
+        <span className="text-[var(--cap-ink)]">+{income}/mo in</span>
         <span className="text-[var(--cap-ink-soft)]">Expenses</span>
-        <span className="text-rose-700">−{expenses}/mo</span>
+        <span className="text-[var(--cap-ink)]">−{expenses}/mo out</span>
         <span className="font-black text-[var(--cap-ink)]">Cashflow</span>
-        <span className={`font-black ${cfPositive ? "text-emerald-700" : "text-rose-700"}`}>
-          {cfPositive ? "+" : ""}
-          {cf}/mo
+        <span
+          className="font-black text-[var(--cap-ink)]"
+          data-testid="voyager-ledger-cf"
+          aria-label={
+            cfPositive
+              ? `Cashflow keep plus ${cf} per month`
+              : `Cashflow drain minus ${Math.abs(cf)} per month`
+          }
+        >
+          {cfPositive ? "keep +" : "drain −"}
+          {Math.abs(cf)}/mo
         </span>
       </div>
       {escape.escaped ? (
         <div className="mt-1.5 rounded-lg border border-[var(--cap-ink)]/10 bg-[var(--cap-paper)]/80 px-2 py-1 text-[0.65rem] font-semibold">
-          <span className="text-emerald-700">🏆 Harbor escaped — cashflow is free!</span>
+          <span className="text-[var(--cap-ink)]">Harbor escaped — cashflow is free</span>
         </div>
       ) : chaseOn ? (
         <div className="mt-1.5 rounded-lg border border-[var(--cap-ink)]/10 bg-[var(--cap-paper)]/80 px-2 py-1 text-[0.65rem] font-semibold">
@@ -102,10 +116,11 @@ export function VoyagerLedgerHud({ ledger, compact }: Props) {
           {ledger.holdings.slice(0, 4).map((h) => (
             <span
               key={h.id}
-              className="rounded-full border border-[var(--cap-ink)]/15 bg-[var(--cap-paper)] px-1.5 text-[0.6rem] font-bold"
-              title={`${h.name}: ${h.kind === "asset" ? "+" : "−"}${h.monthlyAmount}/mo`}
+              className="rounded-md border border-[var(--cap-ink)]/15 bg-[var(--cap-paper)] px-1.5 py-0.5 text-[0.6rem] font-bold text-[var(--cap-ink)]"
+              title={`${h.name}: ${h.kind === "asset" ? "keep +" : "drain −"}${h.monthlyAmount}/mo`}
             >
-              {h.icon}
+              {h.icon}{" "}
+              {h.kind === "asset" ? `keep +${h.monthlyAmount}` : `drain −${h.monthlyAmount}`}
             </span>
           ))}
         </div>

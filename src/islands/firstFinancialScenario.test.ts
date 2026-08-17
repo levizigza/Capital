@@ -15,6 +15,7 @@ import {
   hasCompletedFirstFinancialTake,
   snapshotFirstFinancialScenario,
   firstScenarioCashflowDelta,
+  takeFootprintFeedbackLine,
 } from "./firstFinancialScenario";
 
 function baseSave(over: Partial<IslandSaveV1> = {}): IslandSaveV1 {
@@ -176,5 +177,13 @@ describe("first financial scenario — Cove Take alt paths (real ledger)", () =>
     const defer = (aa1.choices ?? []).find((c) => c.id === "aa1_b")!;
     expect(defer.nextNodeId).toBe("aa3");
     expect(JSON.stringify(defer.effects ?? [])).not.toMatch(/setIrreversible/);
+  });
+
+  it("footprint feedback line names keep/drain with dollars — not color alone", () => {
+    expect(takeFootprintFeedbackLine(baseSave())).toBeNull();
+    const jar = applyCoveTakeLedgerFootprint(baseSave(), "save");
+    expect(takeFootprintFeedbackLine(jar)).toMatch(/Monthly keep \+\$5\/mo · Cove Jar Hold/);
+    const tab = applyCoveTakeLedgerFootprint(baseSave(), "spend");
+    expect(takeFootprintFeedbackLine(tab)).toMatch(/Monthly drain −\$5\/mo · Cove Treat Tab/);
   });
 });

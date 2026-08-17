@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CapitalCharacter } from "../character";
 import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
-import { playOrganSfx } from "../audio/capitalSfx";
+import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
@@ -80,6 +80,7 @@ export function AshoreComprehensionTutorial({
   }, [index, onComplete]);
 
   const onClaimMarker = useCallback((id: string) => {
+    playCapitalSfx("walk_stop");
     setClaimed((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }, []);
 

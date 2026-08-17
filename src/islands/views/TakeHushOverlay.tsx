@@ -24,6 +24,8 @@ type Props = {
   /** Wave 6 — which organ bed ducks during the hush */
   organId?: MoneyOrganId;
   islandId?: string;
+  /** Real ledger footprint after Cove Take — numbers + words, not color alone */
+  footprintLine?: string | null;
   onDone: () => void;
   /** Drive Coin Jar / Tower / Keep mark flash in the shore scene */
   onPhaseChange?: (phase: TakeCinemaPhase) => void;
@@ -34,6 +36,7 @@ export function TakeHushOverlay({
   organLine = "The Coin holds. Harbor is already listening.", // prefer organTakeHushLine(organId) from caller
   organId = "coin",
   islandId = "coincraft_cove",
+  footprintLine = null,
   onDone,
   onPhaseChange,
 }: Props) {
@@ -111,6 +114,15 @@ export function TakeHushOverlay({
             <p className="cap-display mt-2 text-2xl text-white drop-shadow sm:text-3xl">
               A {organWord} choice you can’t undo
             </p>
+            {footprintLine ? (
+              <p
+                className="mt-3 rounded-lg border border-white/25 bg-slate-950/55 px-3 py-2 text-sm font-bold text-[#fffdf6] shadow-sm"
+                data-testid="take-cinema-footprint"
+                aria-live="polite"
+              >
+                {footprintLine}
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -125,6 +137,15 @@ export function TakeHushOverlay({
             <p className="mt-2 text-sm font-semibold text-[#fffdf6]/90 drop-shadow">
               {organLine}
             </p>
+            {footprintLine ? (
+              <p
+                className="mt-2 text-sm font-bold text-[#fffdf6] drop-shadow"
+                data-testid="take-cinema-footprint-line"
+                aria-live="polite"
+              >
+                {footprintLine}
+              </p>
+            ) : null}
             <p
               className="mt-3 text-sm font-black tracking-wide text-amber-100 drop-shadow"
               data-testid="take-cinema-home-cta"

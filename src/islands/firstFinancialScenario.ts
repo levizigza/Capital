@@ -83,6 +83,23 @@ export function firstScenarioCashflowDelta(save: IslandSaveV1): number {
   return netCashflow(ledger) - base;
 }
 
+/**
+ * Player-facing Take footprint strip — words + numbers, not color alone.
+ * e.g. "Monthly keep +$5/mo · Cove Jar Hold"
+ */
+export function takeFootprintFeedbackLine(save: IslandSaveV1): string | null {
+  const ledger = ensureLedger(save.voyagerLedger);
+  const jar = ledger.holdings.find((h) => h.id === COVE_JAR_HOLD_ID);
+  if (jar) {
+    return `Monthly keep +$${jar.monthlyAmount}/mo · ${jar.name}`;
+  }
+  const tab = ledger.holdings.find((h) => h.id === COVE_TREAT_TAB_ID);
+  if (tab) {
+    return `Monthly drain −$${tab.monthlyAmount}/mo · ${tab.name}`;
+  }
+  return null;
+}
+
 function createBaselineCashflow(): number {
   // Matches createDefaultVoyagerLedger: 40 − 25
   return 15;

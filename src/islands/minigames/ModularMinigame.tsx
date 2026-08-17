@@ -6,6 +6,7 @@ import {
   formatProfileMoney,
   formatProfileNumber,
   getProfileDef,
+  resolveProfileNumber,
 } from "../learningProfile";
 import { appendEventHistory } from "../save";
 import {
@@ -76,6 +77,22 @@ export default function ModularMinigame({
   const eventDeckDrawCount = useRef(0);
 
   const uiModels = useMemo(() => getUIModels(session), [session]);
+
+  /** Clear threshold from quest objectives — show before fail (feedback audit S1). */
+  const clearAtPts = useMemo(() => {
+    for (const q of island.quests ?? []) {
+      for (const o of q.objectives ?? []) {
+        if (
+          o.type === "completeMinigame" &&
+          o.minigameId === minigameId &&
+          o.scoreThreshold != null
+        ) {
+          return resolveProfileNumber(o.scoreThreshold, learningProfile);
+        }
+      }
+    }
+    return null;
+  }, [island.quests, minigameId, learningProfile]);
 
   const handleEffects = useCallback((effects: Effect[]) => {
     for (const effect of effects) {
@@ -244,6 +261,14 @@ export default function ModularMinigame({
         <span className="font-semibold text-gray-700">
           ⭐ {formatProfileNumber(session.game.score, learningProfile)} pts
         </span>
+        {clearAtPts != null ? (
+          <span
+            className="rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-bold text-slate-800"
+            data-testid="minigame-clear-at"
+          >
+            Clear at {formatProfileNumber(clearAtPts, learningProfile)}+ pts
+          </span>
+        ) : null}
         <span className="text-gray-500">
           Turn {session.game.turn} / {session.game.maxTurns}
         </span>

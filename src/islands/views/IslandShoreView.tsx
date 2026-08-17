@@ -39,6 +39,7 @@ import { playCapitalSfx } from "../audio/capitalSfx";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SoftBeatOverlay, type SoftBeatKind } from "./SoftBeatOverlay";
 import { TakeHushOverlay, type TakeCinemaPhase } from "./TakeHushOverlay";
+import { takeFootprintFeedbackLine } from "../firstFinancialScenario";
 import { TouchWalkPad } from "./TouchWalkPad";
 import { resolveShoreGuideLookAt } from "../coinBagGuideTargets";
 import { IslandPlayView } from "./IslandPlayView";
@@ -371,6 +372,7 @@ export function IslandShoreView({
                 scarLabel={latestScar.label}
                 organId={organ?.id ?? "coin"}
                 islandId={island.id}
+                footprintLine={takeFootprintFeedbackLine(save)}
                 organLine={(() => {
                   const base = organ
                     ? organTakeHushLine(organ.id)
