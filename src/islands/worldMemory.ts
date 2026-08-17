@@ -390,6 +390,9 @@ export function plazaScarGossipLine(
   if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
     return `${talks}Canyon wind carried it here — you stood in the Collector’s pitch. “${scar.label}.” Listening isn’t paying, but Harbor still gossiped.${stanceBit}`;
   }
+  if (id.includes("signal_listen") || id === "sc_signal_listen") {
+    return `${talks}Reef lights still blink your name — you listened on Phosphor before you rushed. “${scar.label}.” Free roam left a footprint.${stanceBit}`;
+  }
 
   if (isDigressionScar(scar)) {
     return `${talks}Side-street rumor: “${scar.label}.” Not a Plinth plaque — still a footprint on the plaza.${stanceBit}`;
@@ -423,6 +426,9 @@ export function piggyScarWeightLine(
   }
   if (id.includes("collector_rumor") || id === "ck_collector_rumor") {
     return `Word from the canyon reached me first. Standing in that pitch leaves a chill — not shame, just weather. “${scar.label}.”`;
+  }
+  if (id.includes("signal_listen") || id === "sc_signal_listen") {
+    return `You wandered the Reef and listened first. That patience… Harbor soft-names it. “${scar.label}.”`;
   }
   if (isDigressionScar(scar)) {
     return `Side roads write on Harbor too. “${scar.label}.” I kept the feeling — not a lesson.`;

@@ -113,6 +113,14 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     done: (s) => Boolean(s.questStatus["q_ck_collector_rumor"]?.completed),
   },
   {
+    id: "signal_reef_listen",
+    track: "side",
+    title: "Phosphor Reef · Listen",
+    blurb: "Free-roam side shore — hear signals before you rush; Harbor may gossip.",
+    placeId: "signal_city",
+    done: (s) => Boolean((s.harborScars ?? []).some((x) => x.id === "sc_signal_listen")),
+  },
+  {
     id: "party_plaza",
     track: "side",
     title: "Fortune Party Plaza",
