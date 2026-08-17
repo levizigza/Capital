@@ -323,28 +323,30 @@ When two pillars fight, **fantasy + signature loop win**.
 
 ## Status board (update as we pass)
 
-**Honest live board:** [full-game-craft-board.md](./full-game-craft-board.md) — overall **100%** after Pass O (spine + fail dignity + mute cinema cold).
+**Honest live boards**
+- Full game: [full-game-craft-board.md](./full-game-craft-board.md) — **100%** after Pass O
+- Tutorial: [tutorial-craft-board.md](./tutorial-craft-board.md) — **100%** (Ashore→Cove cold)
 
-| # | Pillar | Verdict | Last pass | Next fix |
-|---|--------|---------|-----------|----------|
-| 0 | Vision | playable | 2026-08-02 | Recite loop + mural; keep freeze |
-| 1 | Fantasy | playable → iconic | 2026-08-02 | Talk Battle living-money stage (organ chip, I hear you / Walk on, Leave). Next: cold human Ashore→Cove |
-| 2 | Core loop | playable → iconic | 2026-08-02 | Cold Take `doneMs` + pier guide + Carpet CTA after hush. Next: cold human Ashore→Cove pass |
-| 3 | Goals / failure | playable → iconic | 2026-08-02 | Dignity fail overlay + Spend Take soft-fail parity (`resolveTakeFailFlavor`). Next: keep board honest on miss paths |
-| 4 | Feel | playable → iconic | 2026-08-02 | Walk coast stop + carpet rail juice + Take/Plinth juice. Next: Soft Beat shore beacons |
-| 5 | Progression | playable → iconic | 2026-08-02 | Freedom Seal + Seal chase chip after pouch dips; carpet tier. Next: cold kid retell |
-| 6 | Encounters | playable → iconic | 2026-08-02 | Alma craft-bench → jar Take; Paycheck Priya owns payday buckets; Credit Score Scanner. Next: deepen organ vocabulary in Talk |
-| 7 | Content | playable → iconic | 2026-08-02 | `spineContentRegistry` tags organ·verb·cold-retell; parks genre/asset packs + Cove digression minigames out of live loader/Arcade; Paycheck Clock identity; genre HUD muted on spine. Next: (done in P17) PARKED banners on outer island docs |
-| 8 | Balance | playable → iconic | 2026-08-02 | Cove → Freedom balance sheet + Seal chase chip after pouch dips. Next: keep escape streak honest |
-| 9 | UI / comms | playable → iconic | 2026-08-02 | Talk Battle Leave + organ stage + Esc · Leave overlays. Next: cold human Ashore→Cove |
-| 10 | Art direction | playable → iconic | 2026-08-02 | Soft Beat crown beacon + organ verb pad labels; Cove Jar distance. Next: shore Soft Beat distance read |
-| 11 | Audio | playable → iconic | 2026-08-02 | `take_mark` + `harbor_felt` + `piggy_homecoming` mute-test stingers. Next: keep duck honest on share |
-| 12 | Story | playable → iconic | 2026-08-02 | Cold kid sentences + Talk Battle organ chip; Ashore→Cove retell contract. Next: cold human Ashore→Cove |
-| 13 | Onboarding | playable → iconic | 2026-08-03 | Ashore UI law Talk→Carpet→Cove; Outfitter-card demoted; Portal/Asobi/HL research |
-| 14 | Technical | playable → iconic | 2026-08-02 | Harbor failsafe + `e2e/harbor-3d-failsafe` sticky/kill. Next: keep myth <3s honest in CI |
-| 15 | Accessibility | playable → iconic | 2026-08-02 | Settings OR OS reduce; damp Take/Plinth strobes; high-contrast share lower-third. Next: keep reduce honest on new juice |
-| 16 | Testing | playable → iconic | 2026-08-02 | `test:iconic` + cadence map (`iconicCraftCadence`); checklist + six questions. Next: keep board honest after every pillar |
-| 17 | Scope | playable → iconic | 2026-08-02 | Freeze in code + `docs/iconic-later.md` creep sink + PARKED banners on outer docs. Next: deepen spine from later-list polish only |
+| # | Pillar | Verdict | Last pass | Evidence / freeze |
+|---|--------|---------|-----------|-------------------|
+| 0 | Vision | iconic | 2026-08-17 | Loop + mural + freeze recited; Pass O board |
+| 1 | Fantasy | iconic | 2026-08-17 | Organ shore HUD · Talk organ chrome · Seed islands named |
+| 2 | Core loop | iconic | 2026-08-17 | Take hush · Carpet coach · pier · day-2 Soft Beat cold |
+| 3 | Goals / failure | iconic | 2026-08-17 | Organ soft-fail dignity · `cold-fail-mute-seal` PASS |
+| 4 | Feel | iconic | 2026-08-17 | Soft Beat beacons · juice · reduce-aware |
+| 5 | Progression | iconic | 2026-08-17 | Freedom Seal honesty · organ lock chips · Seal chase gated |
+| 6 | Encounters | iconic | 2026-08-17 | Alma · Priya · Score Scanner · Talk listen/speak organ |
+| 7 | Content | iconic | 2026-08-17 | Spine registry · Bank Memory pads · genre parked |
+| 8 | Balance | iconic | 2026-08-17 | `isSealChasing` · pouch dips · escape streak honest |
+| 9 | UI / comms | iconic | 2026-08-17 | Leave / Esc · organ stage · caption hush · Harbor start cue |
+| 10 | Art direction | iconic | 2026-08-17 | Named Seed map · Soft Beat crown · organ pad labels |
+| 11 | Audio | iconic | 2026-08-17 | Mute cinema · share Memory-bed duck · stingers |
+| 12 | Story | iconic | 2026-08-17 | Coin · Clock · Spiral · Memory kid colds |
+| 13 | Onboarding | iconic | 2026-08-17 | Ashore teach · tutorial board 100% |
+| 14 | Technical | iconic | 2026-08-17 | Harbor + shore + archipelago failsafes · flat maps |
+| 15 | Accessibility | iconic | 2026-08-17 | Settings OR OS reduce · high-contrast share |
+| 16 | Testing | iconic | 2026-08-17 | `test:iconic` · cold bank Pass O · day-2 · cove chain |
+| 17 | Scope | iconic | 2026-08-17 | Freeze held · later sink · no map widen |
 
 ---
 
@@ -352,11 +354,9 @@ When two pillars fight, **fantasy + signature loop win**.
 
 1. Read the pillar row above (2 min)  
 2. Cold evidence (play or QA seed) (10–20 min)  
-3. Write gap list in the status board (or park on [iconic-later.md](./iconic-later.md))  
+3. Write gap list on the live board (or park on [iconic-later.md](./iconic-later.md))  
 4. Ship the single highest-leverage fix **or** mark defer with reason  
 5. `npm run test:iconic` (and `test:iconic:e2e` if Harbor / Cove / carpet touched)  
-6. Commit + note in PR / this board  
+6. Commit + note in PR / live board  
 
-**Last shipped:** Whole-game craft **iter 20 — iconic Ashore teach** (see your Voyager walk · loop · organs · toolkit; soundtrack unchanged).  
-
-**Craft sequence complete (0–17).** Whole-game craft iters 9–15 deepened Harbor · Cove → Paycheck → Credit (cold Takes + Ashore Piggy/veil + tutorial craft demoting Outfitter-card 2026-08-03). Next: merge PR #68 when CI green — do not widen the map.
+**Craft sequence complete (0–17) at iconic / 100%.** Deepen Harbor · Cove → Paycheck → Credit only — do not widen the map.

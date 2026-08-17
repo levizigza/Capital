@@ -250,6 +250,20 @@ async function bootToHarbor(page, report) {
       } else {
         await page.getByTestId("boot-board-carpet").evaluate((el) => el.click());
       }
+
+      // Ashore teach owns first harbor beat — skip so __QA__ can mount.
+      const ashSkip = page.getByTestId("ashore-teach-skip");
+      if (await ashSkip.isVisible({ timeout: 8_000 }).catch(() => false)) {
+        await ashSkip.evaluate((el) => el.click());
+      } else {
+        const ashCont = page.getByTestId("ashore-teach-continue");
+        for (let i = 0; i < 8; i++) {
+          if (!(await ashCont.isVisible().catch(() => false))) break;
+          await ashCont.evaluate((el) => el.click());
+          await page.waitForTimeout(400);
+        }
+      }
+
       if (await skip.isVisible({ timeout: 12_000 }).catch(() => false)) {
         await skip.click({ force: true });
       }
@@ -278,14 +292,31 @@ async function main() {
     await bootToHarbor(page, report);
     report.steps.push("boot");
 
+    // Prefer live Talk CTA; else walk toward Piggy; else QA talkNpc.
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
-    if (await talk.isVisible({ timeout: 15_000 }).catch(() => false)) {
-      await talk.evaluate((el) => el.click());
-    } else {
-      await mythTalk.evaluate((el) => el.click());
+    let talked = false;
+    for (let i = 0; i < 12 && !talked; i++) {
+      await page.keyboard.down("w");
+      await page.waitForTimeout(280);
+      await page.keyboard.up("w");
+      await page.waitForTimeout(120);
+      if (await talk.isVisible().catch(() => false)) {
+        await talk.evaluate((el) => el.click());
+        talked = true;
+        break;
+      }
     }
-    await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
+    if (!talked && (await mythTalk.isVisible().catch(() => false))) {
+      await mythTalk.evaluate((el) => el.click());
+      talked = true;
+    }
+    if (!talked) {
+      await page.evaluate(async () => {
+        await window.__QA__.talkNpc("piggy_penny");
+      });
+    }
+    await page.getByTestId("talk-battle-screen").waitFor({ timeout: 20_000 });
     await finishTalk(page);
     report.steps.push("harbor_talk");
 

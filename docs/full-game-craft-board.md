@@ -17,7 +17,7 @@
 
 ---
 
-## Latest — Pass O (2026-08-17) · **100%**
+## Latest — Pass P (2026-08-17) · **100%**
 
 | | |
 |--|--:|
@@ -30,9 +30,13 @@
 | `cold-ashore-cove-retell.mjs` | Coin holds · Jar before treat · jar Squeeze CTA |
 | `cold-spine-retell.mjs` | Coin · Clock · Spiral · Memory kid sentences |
 | `cold-human-triangle-pass.mjs` | Ritual trap clear · six questions |
+| `cold-full-cove-chain.mjs` | Penny → pouch → Coin Sort → Alma → jar → Harbor retell |
 | `cold-full-paycheck-chain.mjs` | Clock shelters · Credit opens |
 | `cold-full-credit-chain.mjs` | Spiral withstands · Memory keeps |
 | `cold-fail-mute-seal.mjs` | Soft-fail **Coin holds** · mute cinema kid · Seal chase absent |
+| `cold-day2-coin-echo.mjs` | Day-2 Soft Beat Coin echo after scar |
+
+**Honesty:** several colds use `__QA__` to open islands / talk / minigames (headless WebGL walk flaky). Dialogue choices, mastery, fail chrome, mute, and Seal gating are real.
 
 ### Fail dignity quote (Pass O)
 > Still learning · Coin holds · Not a clear — try again · You scored 0. Need 35+ to clear Coin Sort Challenge.
@@ -43,11 +47,12 @@
 | A–L | Map islands · fantasy · loop · Soft Beat · Bank · Balance · A11y · failsafe | 82% |
 | M | Ashore→Cove cold | 89% |
 | N | Spine + Paycheck + Credit cold | 97% |
-| O | Fail dignity + mute cinema + Seal honesty | **100%** |
+| O | Fail dignity + mute cinema + Seal honesty | 100% |
+| P | Craft-plan sync · tutorial board · Cove-chain boot (Ashore skip + Piggy QA) · day-2 on evidence bank | **100%** |
 
 ---
 
-## Pillar board (after Pass O)
+## Pillar board (after Pass P)
 
 | # | Pillar | % | Band |
 |---|--------|--:|------|

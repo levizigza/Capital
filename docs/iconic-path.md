@@ -48,7 +48,7 @@ This is **structure depth** on the main quest. Era **side shores** may ride the 
 
 Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 
-**Cadence (Pillar 16):** after each pillar fix → `npm run test:iconic` → (Harbor/Cove/carpet touch) `npm run test:iconic:e2e` → one cold run below → update [iconic-craft-plan.md](./iconic-craft-plan.md) status board. Machine map: `src/qa/iconicCraftCadence.ts`.
+**Cadence (Pillar 16):** after each pillar fix → `npm run test:iconic` → (Harbor/Cove/carpet touch) `npm run test:iconic:e2e` → one cold run below → update [full-game-craft-board.md](./full-game-craft-board.md) (pointer in [iconic-craft-plan.md](./iconic-craft-plan.md)). Machine map: `src/qa/iconicCraftCadence.ts`.
 
 | Step | Pass look / feel |
 |------|------------------|

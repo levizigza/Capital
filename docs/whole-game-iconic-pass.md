@@ -27,3 +27,5 @@ If a threshold says “stamps / weighs / Coincraft Change / Main course (n/m)”
 ## Prove
 
 `npm run test:iconic` · `npm run test:iconic:e2e` · cold spine retell · plaza clearance  
+
+**Live score:** [full-game-craft-board.md](./full-game-craft-board.md) · [tutorial-craft-board.md](./tutorial-craft-board.md) — both **100%** (Pass O, 2026-08-17).  
