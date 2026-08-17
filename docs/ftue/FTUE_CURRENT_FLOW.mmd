@@ -1,0 +1,103 @@
+# FTUE Current Flow
+
+Mermaid map of the **actual** first-time path as implemented in code (2026-08-17).  
+Does not invent branches that do not exist.
+
+```mermaid
+flowchart TD
+  subgraph LAUNCH["LAUNCH"]
+    A[Title mural<br/>CapitalOpeningIntro] -->|Choose your Voyager| B[Cast select<br/>BootCastSelect]
+    A -.->|Skip mural sweep| B
+    B -->|Continue to Ashore Teach| C{Ashore Teach<br/>5 chambers}
+  end
+
+  subgraph ASHORE["ASHORE CHAMBER-00 — tutorial-only"]
+    C --> C1[Fantasy: poke organ toy]
+    C1 --> C2[Walk: claim glowing rings]
+    C2 --> C3[Talk: near + E]
+    C3 --> C4[Dock: board Cove painting]
+    C4 --> C5[Ready / Launch copy]
+    C -.->|Leave · Esc skip all| D
+    C5 --> D[Carpet opening flight<br/>CarpetOpeningIntro]
+  end
+
+  subgraph HARBOR_MEET["HARBOR — first meet"]
+    D --> E[Land Harbor<br/>hubGuidedIntro = meet_guide]
+    E --> F[Quiet chrome<br/>Piggy presence]
+    F --> G{Talk Piggy?}
+    G -->|talked_guide| H[to_dock<br/>Board Carpet CTA]
+    G -.->|opened_map bypass| I[guided done]
+    H -->|opened_map| I
+  end
+
+  subgraph COVE["COVE — live chapter"]
+    I --> J[Travel map<br/>spine only · Paycheck locked]
+    J --> K[Enter Coincraft Cove]
+    K --> L[q_cc_first_coins<br/>Penny → pouch → Coin Sort]
+    L --> M[Alma foreshadow]
+    M --> N[Keeper Kira Take]
+    N -->|Maybe later| M
+    N -->|Jar or Treat<br/>setIrreversible + addScar| O[FIRST DECISION]
+  end
+
+  subgraph LOOP["SIGNATURE LOOP CLOSE"]
+    O --> P[Take hush cinema<br/>take_mark]
+    P --> Q[Carpet home CTA]
+    Q --> R[Harbor · chapter quiet]
+    R --> S[Scar spectacle<br/>harbor_felt]
+    S --> T{Share / Witness<br/>optional}
+    T --> U[Quiet homecoming<br/>Talk Piggy]
+    U --> V[FIRST COMPLETE CORE LOOP<br/>Cove Change complete]
+  end
+
+  subgraph FREE["UNGUIDED → FREE PLAY"]
+    V --> W[Paycheck unlocks]
+    V --> X[Side shores unlock]
+    V --> Y[Arcade / Studio / Ritual magnets]
+    W --> Z[FIRST UNGUIDED DECISION<br/>pick next painting]
+    X --> Z
+    Y --> Z
+    Z --> AA[FREE PLAY]
+  end
+
+  style O fill:#f4b942,stroke:#1c1917,color:#1c1917
+  style V fill:#f4b942,stroke:#1c1917,color:#1c1917
+  style Z fill:#7dd3fc,stroke:#1c1917,color:#1c1917
+  style AA fill:#86efac,stroke:#1c1917,color:#1c1917
+```
+
+## Macro stage anchors
+
+| Stage | Node(s) |
+|-------|---------|
+| LAUNCH | A → B |
+| FIRST CONTROL | C2 (Walk rings); if Ashore skipped, first Harbor walk |
+| FIRST MEANINGFUL ACTION | C3 or G (Talk) |
+| FIRST DECISION | O (Kira Take) |
+| FIRST CONSEQUENCE | P → R (hush + quiet) |
+| FIRST REWARD | jar item + spectacle + Piggy homecoming |
+| FIRST COMPLETE CORE LOOP | V (`q_cc_save_or_spend` completed) |
+| FIRST UNGUIDED DECISION | Z |
+| FREE PLAY | AA |
+
+## Critical gates (code)
+
+| Gate | Condition |
+|------|-----------|
+| `meet_guide` | Carpet boot / default guided intro |
+| `to_dock` | After `talked_guide` |
+| `done` | After `opened_map` (also from `meet_guide`) |
+| Paycheck / side shores locked | `!hasCompletedCoveChange(save)` |
+| Cove Change | `questStatus.q_cc_save_or_spend.completed` |
+| Chapter quiet scars | Spine plaques (`cove_` / `pp_` / `credit_`) via `scarTriggersChapterQuiet` |
+
+## Parallel optional paths (exist, not critical)
+
+```mermaid
+flowchart LR
+  K[Cove shore] -.-> S1[Shelly digression]
+  K -.-> S2[Giant Coin Jar Soft Beat]
+  E[Harbor plaza] -.-> S3[Outfitter discovery]
+  E -.-> S4[Capsule discovery]
+  S -.-> S5[Family Witness on share]
+```
