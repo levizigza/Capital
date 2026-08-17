@@ -1279,8 +1279,20 @@ export function HomeHubView({
             </div>
           ) : earlyCastle && !showOutfitterChrome ? (
             <div className="cap-play-hud-left">
-              <p className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90">
-                Harbor Haven
+              <p
+                className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90"
+                data-testid="harbor-quiet-chip"
+              >
+                Harbor Haven — Talk Piggy
+              </p>
+            </div>
+          ) : firstMeet ? (
+            <div className="cap-play-hud-left">
+              <p
+                className="rounded-full bg-black/45 px-3 py-1.5 text-xs font-semibold text-white/90"
+                data-testid="harbor-quiet-chip"
+              >
+                Harbor is quiet — find Piggy
               </p>
             </div>
           ) : (

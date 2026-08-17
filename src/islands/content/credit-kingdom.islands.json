@@ -282,7 +282,7 @@
               "choices": [
                 {
                   "id": "dc_listen",
-                  "text": "Only listening — I don’t pay panic.",
+                  "text": "Only listening — cooler canyon · Harbor soft-names patience",
                   "nextNodeId": "dc_rumor_done",
                   "effects": [
                     { "type": "startQuest", "questId": "q_ck_collector_rumor" },
@@ -299,7 +299,7 @@
                 },
                 {
                   "id": "dc_lean",
-                  "text": "Lean in — show me the haste.",
+                  "text": "Lean in — tighter interest weather · Harbor still keeps it",
                   "nextNodeId": "dc_lean_done",
                   "effects": [
                     { "type": "startQuest", "questId": "q_ck_collector_rumor" },

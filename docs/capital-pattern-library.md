@@ -50,10 +50,10 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 35 | Familiarity door + novelty hook | Island adventure × money organs | **Pass** |
 | 36 | Platform unique | Local Family Room · share PNG · browser/Pages | **Pass** (Freeze-alt for online) |
 | 37 | Remove friction intention→execution | Esc · Leave · myth failsafe · carpet rail | **Pass** |
-| 38 | Complexity ≠ depth | Quiet chrome; one next-verb | **Pass** |
+| 38 | Complexity ≠ depth | Quiet chrome; one next-verb | **Pass** — first-meet quiet chip · organ HUD |
 | 39 | Complexity unfolds gradually | Ashore quiet → Cove → free roam | **Pass** |
 | 40 | Unique fun quickly | Talk Piggy / carpet / Take juice in opening | **Pass** |
-| 41 | Excellent first ten minutes | Ashore chamber → Piggy → Cove | **Pass** |
+| 41 | Excellent first ten minutes | Ashore chamber → Piggy → Cove | **Pass** — quiet chip on boot |
 | 42 | Excellent hundredth hour | Digressions · Soft Beats · Studio · Family · mastery | **Pass** — Soft Beat arm + shelf |
 | 43 | Replayability from possibility | Stance forks · era forks · seeds | **Pass** |
 
@@ -125,6 +125,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 2026-08-17 pass A | Walk stop · Talk confirm · ShoreBell · structure stay-put · organ fail hints · Soft Beat arm · Take cost foreshadow · Coin Bag horizons · digression shelf · core_loop_beat | Gaps closed → re-score **iterating Thin→Pass**; **Hold** ship until human cold “again” (#94) |
 | 2026-08-17 pass B | Studio invent-inside whisper (#48) | Machine Pass× library in-scope; **Hold** #94 human |
 | 2026-08-17 pass C | Soft Beat stay-until-Leave · Talk arm foreshadow · affinity cut · dwell_stuck · Paycheck tip fork | Re-score #51/#12/#87/#90; still **Hold** #94 |
+| 2026-08-17 pass D | First-meet harbor-quiet-chip · Credit Collector cost foreshadow | Boot quiet chrome measurable; still **Hold** #94 |
 | **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
 
 See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.
