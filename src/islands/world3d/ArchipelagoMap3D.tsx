@@ -347,7 +347,6 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
       return false;
     }
   });
-  const reduced = prefersReducedMotion();
 
   const earlyJourney = !hasCompletedCoveChange(save);
   const showHarborCue = cueOn && earlyJourney;
