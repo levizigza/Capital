@@ -1,3 +1,9 @@
+/**
+ * Official headless harness for iconic 100% proof.
+ * `__QA__` may open islands / talk / structures / seeds (WebGL walk flakes).
+ * Live UI still has to prove Talk, mastery, Soft Beat leave, fail, mute, Seal.
+ * Law: `src/qa/iconicProofLaw.ts`.
+ */
 import type { IslandSaveV1 } from "@/islands/types";
 import type { SignaturePhase, SignatureSpineOrgan } from "./signatureLoop";
 

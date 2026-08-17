@@ -324,7 +324,7 @@ When two pillars fight, **fantasy + signature loop win**.
 ## Status board (update as we pass)
 
 **Honest live boards**
-- Full game: [full-game-craft-board.md](./full-game-craft-board.md) — **100%** after Pass Q (Soft Beat exit cold + e2e)
+- Full game: [full-game-craft-board.md](./full-game-craft-board.md) — **100%** after Pass R (caveats closed)
 - Tutorial: [tutorial-craft-board.md](./tutorial-craft-board.md) — **100%** (Ashore→Cove cold)
 
 | # | Pillar | Verdict | Last pass | Evidence / freeze |
@@ -345,7 +345,7 @@ When two pillars fight, **fantasy + signature loop win**.
 | 13 | Onboarding | iconic | 2026-08-17 | Ashore teach · tutorial board 100% |
 | 14 | Technical | iconic | 2026-08-17 | Harbor + shore + archipelago failsafes · flat maps |
 | 15 | Accessibility | iconic | 2026-08-17 | Settings OR OS reduce · high-contrast share |
-| 16 | Testing | iconic | 2026-08-17 | `test:iconic` · Soft Beat exit e2e · cold bank Pass Q |
+| 16 | Testing | iconic | 2026-08-17 | Official harness law · Soft Beat e2e · cold bank Pass R |
 | 17 | Scope | iconic | 2026-08-17 | Freeze held · later sink · no map widen |
 
 ---

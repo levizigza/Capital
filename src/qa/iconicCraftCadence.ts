@@ -238,7 +238,11 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
   {
     pillar: 16,
     name: "Testing",
-    guards: ["src/qa/iconicCraftCadence.test.ts", "src/qa/signatureLoop.test.ts"],
+    guards: [
+      "src/qa/iconicCraftCadence.test.ts",
+      "src/qa/signatureLoop.test.ts",
+      "src/qa/iconicProofLaw.test.ts",
+    ],
   },
   {
     pillar: 17,
@@ -252,6 +256,7 @@ export function iconicUnitTestPaths(): string[] {
   const set = new Set<string>([
     "src/qa/signatureLoop.test.ts",
     "src/qa/iconicCraftCadence.test.ts",
+    "src/qa/iconicProofLaw.test.ts",
     "src/islands/story/iconicCraft.test.ts",
     "src/islands/signatureCinemaGate.test.ts",
     "src/islands/views/signatureJuiceContract.test.ts",

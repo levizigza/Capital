@@ -24,8 +24,9 @@
 ### Evidence
 - `cold-ashore-cove-retell.mjs` PASS — boot → Ashore → Harbor Talk → Cove jar Squeeze → Harbor Coin-holds retell
 - Ashore teach skip/continue reachable; Harbor Piggy meet cold; spine organ language on shore
-- Full-game board Pass Q absorbs Ashore as onboarding pillar 13 at iconic
+- Full-game board Pass R absorbs Ashore as onboarding pillar 13 at iconic
 - Soft Beat Lid path cold on Cove (`cold-structure-soft-beat-exit.mjs`)
+- Official harness (`__QA__`) is the proof method — not a remaining tutorial gap
 
 ### Beat board
 
