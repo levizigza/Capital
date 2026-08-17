@@ -320,7 +320,6 @@ async function main() {
     report.steps.push("coin_sort");
 
     // Critical path is Kira — Alma is optional tip (not required).
-    // Dismiss any leftover talk/modal from mastery.
     if (await page.getByTestId("talk-battle-screen").isVisible().catch(() => false)) {
       await finishTalk(page);
     }
@@ -328,23 +327,22 @@ async function main() {
       .getByTestId("minigame-modal")
       .waitFor({ state: "hidden", timeout: 10_000 })
       .catch(() => {});
+    await page.waitForTimeout(500);
 
-    await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_keeper_kira");
-    await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
-    await page.getByTestId("talk-battle-continue").click({ force: true }).catch(() => {});
-    await page.waitForTimeout(400);
-    const jar = page
-      .locator('[data-testid^="talk-choice-"]')
-      .filter({ hasText: /Jar before treat/i })
-      .first();
-    await jar.waitFor({ state: "visible", timeout: 10_000 });
-    await jar.click({ force: true });
-    await finishTalk(page);
+    await talkNpc(page, "npc_keeper_kira", /Jar before treat/i);
     report.steps.push("kira_take");
 
     const save3 = await page.evaluate(() => window.__QA__.getSave());
     report.hasScar = Boolean(save3?.harborScars?.some((s) => s.id === "cove_saver_plaque"));
-    if (!report.hasScar) throw new Error("Missing cove_saver_plaque after Kira");
+    if (!report.hasScar) {
+      const talkTxt = await page.getByTestId("talk-battle-screen").innerText().catch(() => "");
+      throw new Error(
+        `Missing cove_saver_plaque after Kira. talk=${talkTxt.slice(0, 200)} save=${JSON.stringify({
+          quest: save3?.questStatus,
+          scars: save3?.harborScars,
+        })}`,
+      );
+    }
 
     const hush = page.getByTestId("take-hush-overlay");
     if (await hush.isVisible({ timeout: 12_000 }).catch(() => false)) {

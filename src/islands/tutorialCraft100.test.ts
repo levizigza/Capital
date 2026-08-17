@@ -16,6 +16,13 @@ describe("tutorial craft-100 — Title → Cast", () => {
     expect(src).toMatch(/opening-choose-voyager/);
   });
 
+  it("title wires Enter · Space to Choose Voyager", () => {
+    const src = readFileSync(join(__dirname, "views/CapitalOpeningIntro.tsx"), "utf8");
+    expect(src).toMatch(/Enter/);
+    expect(src).toMatch(/opening-choose-voyager/);
+    expect(src).toMatch(/e\.key !== "Enter" && e\.key !== " "/);
+  });
+
   it("cast Continue lands Ashore Teach (not instant Carpet)", () => {
     const src = readFileSync(join(__dirname, "views/BootCastSelect.tsx"), "utf8");
     expect(src).toMatch(/Continue to Ashore Teach/);
