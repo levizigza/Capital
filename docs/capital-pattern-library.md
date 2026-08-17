@@ -24,7 +24,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 9 | Frontier of competence | Soft Beat → next painting → Credit mastery  n/3 | **Pass** |
 | 10 | Meaningful agency | Irreversible Takes + patience/haste digressions | **Pass** — cost foreshadow on Take rows |
 | 11 | Different solutions to same problem | Saver/spender · wait/haste · linger/rush | **Pass** |
-| 12 | Multiplicative > additive content | Organs × scars × gossip × Soft Beat arm | **Pass** — Soft Beat arms next Talk |
+| 12 | Multiplicative > additive content | Organs × scars × gossip × Soft Beat arm | **Pass** — Soft Beat arm visible in Talk Battle |
 | 13 | One mechanic × many systems | Scar → Plinth · gossip · Piggy · share · day-2 | **Pass** |
 | 14 | Rules > special cases | Organ verbs consistent across shores | **Pass** |
 | 15 | Curiosity generates gameplay | Digressions · toys · Soft Beat peeks | **Pass** |
@@ -68,8 +68,8 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 48 | Invent games inside the game | **Pass** — Capsule Studio invent whisper after Freedom |
 | 49 | UGC / modding | **Freeze-alt** — Capsule Studio device-local |
 | 50 | Systems produce content | **Pass** — gossip · scars · ritual |
-| 51 | Toy value | **Pass** — ShoreBell + Soft Beat arm + structure toys |
-| 52 | Manipulate because fun | **Pass** — poke toys + Soft Beat |
+| 51 | Toy value | **Pass** — Soft Beat stay-until-Leave · ShoreBell · toys |
+| 52 | Manipulate because fun | **Pass** — poke toys + Soft Beat linger |
 | 53 | High- and low-intensity | **Pass** — Soft Beat / Family / digressions |
 | 54 | Control over tempo | **Pass** — free roam after Cove |
 | 55 | Ritual | **Pass** — day-2 · Daily Ritual · Plinth |
@@ -100,10 +100,10 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 84 | Cultural artifacts | **Pass** — organ verbs / kid sentences |
 | 85 | Don’t manufacture nostalgia | **Pass** — build memories (Takes) |
 | 86 | Polish high points | **Pass** — signature loop juice |
-| 87 | Delete mediocre systems | **Ongoing** — complexity cut |
-| 88 | Playtest behavior | **Ongoing** — cold scripts + Hold human |
+| 87 | Delete mediocre systems | **Pass** — cut write-only affinity meter |
+| 88 | Playtest behavior | **Pass** — cold scripts + dwell_stuck telemetry (human still #94) |
 | 89 | Measure misunderstanding | **Pass** — core_loop_beat · soft_beat_armed |
-| 90 | Measure fun dropoff | **Pass** — fail_reason · abandon · core_loop |
+| 90 | Measure fun dropoff | **Pass** — fail_reason · abandon · dwell_stuck |
 | 91 | Telemetry ≠ judgment | **Pass** — local analytics export |
 | 92 | Iterate systems | **Pass** — this doc’s loop |
 | 93 | Prototype risky first | **Pass** — signature loop freeze |
@@ -124,6 +124,7 @@ Re-score after each iteration. Do **not** declare finished while any Gap remains
 | 2026-08-17 | Library locked from research pass. Honest Gaps: feel verbs, fail stay/organ, Soft Beat arm, Take cost foreshadow, 3-horizon goals, incomplete collection, spine telemetry. |
 | 2026-08-17 pass A | Walk stop · Talk confirm · ShoreBell · structure stay-put · organ fail hints · Soft Beat arm · Take cost foreshadow · Coin Bag horizons · digression shelf · core_loop_beat | Gaps closed → re-score **iterating Thin→Pass**; **Hold** ship until human cold “again” (#94) |
 | 2026-08-17 pass B | Studio invent-inside whisper (#48) | Machine Pass× library in-scope; **Hold** #94 human |
+| 2026-08-17 pass C | Soft Beat stay-until-Leave · Talk arm foreshadow · affinity cut · dwell_stuck · Paycheck tip fork | Re-score #51/#12/#87/#90; still **Hold** #94 |
 | **Ship iconic vs library?** | **Hold** — machine contracts green; human cold triangle still required |
 
 See also: `docs/capital-iconic-game-criteria.md` · `docs/iconic-path.md`.

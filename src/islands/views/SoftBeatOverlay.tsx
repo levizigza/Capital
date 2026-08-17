@@ -7,7 +7,7 @@
 import { useEffect } from "react";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { moneyOrganForSoftBeat } from "../moneyOrgans";
-import { cinemaTimeScale, prefersReducedMotion } from "../a11yMotion";
+import { prefersReducedMotion } from "../a11yMotion";
 import { GameButton } from "@/game-ui";
 import { softBeatEyebrow } from "../titleVoice";
 import { coldOrganKidSentence, organVerbChip } from "../worldMemory";
@@ -80,10 +80,8 @@ export function SoftBeatOverlay({
       void analytics.track("soft_beat_armed", { kind, organ: organ.id });
       void analytics.track("core_loop_beat", { beat: "soft_beat", kind });
     });
-    const scale = cinemaTimeScale();
-    const t = window.setTimeout(onDone, Math.round((hushActive ? 5200 : 4200) * scale));
-    return () => window.clearTimeout(t);
-  }, [hushActive, onDone, organ.id, kind]);
+    // Stay-until-Leave — toy value, not a timed cinema dump (pattern library #51).
+  }, [hushActive, organ.id, kind]);
 
   const vista = softBeatScarVistaLine(kind, scarLabel);
   const body = hushActive ? beat.hushLine : (vista ?? beat.line);

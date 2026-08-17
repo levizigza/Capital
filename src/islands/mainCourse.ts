@@ -105,6 +105,19 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     done: (s) => Boolean(s.questStatus["q_pp_inbox_storm"]?.completed),
   },
   {
+    id: "paycheck_tip_fork",
+    track: "side",
+    title: "Paycheck · Tip Fork",
+    blurb: "Priya digression — plan buckets or tip first; Harbor gossips either way.",
+    placeId: PAYCHECK_PENINSULA_ID,
+    done: (s) =>
+      Boolean(
+        (s.harborScars ?? []).some(
+          (x) => x.id === "pp_tip_plan" || x.id === "pp_tip_rush",
+        ),
+      ),
+  },
+  {
     id: "credit_collector_rumor",
     track: "side",
     title: "Credit · Collector Rumor",

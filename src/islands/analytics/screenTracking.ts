@@ -12,13 +12,23 @@ export async function trackScreenEnter(
 ): Promise<void> {
   const prev = getCurrentScreen();
   if (prev && prev !== screen) {
+    const dwellMs = getScreenDwellMs();
     await analytics.track("screen_exit", {
       ...sessionContext(),
       screen: prev,
-      dwellMs: getScreenDwellMs(),
+      dwellMs,
       nextScreen: screen,
       ...meta,
     });
+    // Fun-dropoff / stuck signal — long dwell without progress (pattern #90).
+    if (dwellMs >= 90_000) {
+      await analytics.track("core_loop_beat", {
+        beat: "dwell_stuck",
+        screen: prev,
+        dwellMs,
+        nextScreen: screen,
+      });
+    }
   }
   setCurrentScreen(screen);
   await analytics.track("screen_enter", {

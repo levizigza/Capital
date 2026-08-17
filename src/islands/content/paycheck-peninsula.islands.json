@@ -192,8 +192,62 @@
                   "nextNodeId": "pri2",
                   "effects": [{ "type": "startMinigame", "minigameId": "mg_budget_split" }]
                 },
+                {
+                  "id": "pri1_digress",
+                  "text": "Digression — tip first or plan first?",
+                  "nextNodeId": "pri_fork"
+                },
                 { "id": "pri1_b", "text": "Tell me more first.", "nextNodeId": "pri3" }
               ]
+            },
+            {
+              "id": "pri_fork",
+              "speaker": "Planner Priya",
+              "text": "Tip jar’s ringing. Plan the three buckets first — or tip the glitter stall before you’ve stamped?",
+              "choices": [
+                {
+                  "id": "pri_plan",
+                  "text": "Plan buckets first — Clock shelters.",
+                  "nextNodeId": "pri_plan_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "pp_tip_plan",
+                      "label": "Planned buckets before tipping",
+                      "kind": "npc_tone",
+                      "stance": "saver",
+                      "stanceDelta": 1
+                    }
+                  ]
+                },
+                {
+                  "id": "pri_tip",
+                  "text": "Tip first — I’ll stamp later.",
+                  "nextNodeId": "pri_tip_done",
+                  "effects": [
+                    {
+                      "type": "addScar",
+                      "id": "pp_tip_rush",
+                      "label": "Tipped Main Street before planning",
+                      "kind": "npc_tone",
+                      "stance": "spender",
+                      "stanceDelta": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "pri_plan_done",
+              "speaker": "Planner Priya",
+              "text": "Shelter before glitter tips. Harbor may gossip that you planned first — Clock skill.",
+              "end": true
+            },
+            {
+              "id": "pri_tip_done",
+              "speaker": "Planner Priya",
+              "text": "Tips leave weather too. Harbor may gossip that you jingled before the stamp.",
+              "end": true
             },
             {
               "id": "pri2",

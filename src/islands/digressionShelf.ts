@@ -8,6 +8,7 @@ import type { IslandSaveV1 } from "./types";
 /** Pair forks count as one filled shelf slot if either branch is present. */
 const DIGRESSION_PAIRS: [string, string][] = [
   ["cc_shell_patience", "cc_shell_impulse"],
+  ["pp_tip_plan", "pp_tip_rush"],
   ["ck_collector_rumor", "ck_collector_lean"],
   ["sc_signal_listen", "sc_signal_rush"],
   ["vf_foundry_listen", "vf_foundry_rush"],

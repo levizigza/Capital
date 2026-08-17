@@ -80,11 +80,35 @@ describe("capital pattern library contracts", () => {
     expect(cove).toMatch(/louder plaza gossip/);
   });
 
-  it("instruments core_loop_beat for misunderstanding telemetry", () => {
-    const types = readFileSync(join(__dirname, "../types.ts"), "utf8");
-    expect(types).toMatch(/core_loop_beat/);
-    expect(types).toMatch(/soft_beat_armed/);
-    const take = readFileSync(join(__dirname, "../views/TakeHushOverlay.tsx"), "utf8");
-    expect(take).toMatch(/core_loop_beat/);
+  it("Soft Beat stays until Leave — toy value, not timed dump", () => {
+    const soft = readFileSync(join(__dirname, "../views/SoftBeatOverlay.tsx"), "utf8");
+    expect(soft).toMatch(/Stay-until-Leave/);
+    expect(soft).not.toMatch(/setTimeout\(onDone/);
+  });
+
+  it("Talk Battle can show Soft Beat arm foreshadow", () => {
+    const talk = readFileSync(join(__dirname, "../views/TalkBattleScreen.tsx"), "utf8");
+    expect(talk).toMatch(/talk-soft-beat-arm/);
+    expect(talk).toMatch(/softBeatArmWhisper/);
+  });
+
+  it("Paycheck tip fork scars Harbor like Cove Shell Want", () => {
+    const pay = readFileSync(
+      join(__dirname, "../content/paycheck-peninsula.islands.json"),
+      "utf8",
+    );
+    expect(pay).toMatch(/pp_tip_plan/);
+    expect(pay).toMatch(/pp_tip_rush/);
+    expect(pay).toMatch(/pri_fork/);
+  });
+
+  it("deletes write-only affinity meter from recordNpcTalk", () => {
+    const mem = readFileSync(join(__dirname, "../worldMemory.ts"), "utf8");
+    expect(mem).not.toMatch(/affinity: \(prev\?\.affinity/);
+  });
+
+  it("emits dwell_stuck for fun-dropoff telemetry", () => {
+    const track = readFileSync(join(__dirname, "../analytics/screenTracking.ts"), "utf8");
+    expect(track).toMatch(/dwell_stuck/);
   });
 });

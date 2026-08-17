@@ -42,6 +42,8 @@ export type TalkBattleProps = {
   learningProfile: LearningProfileId;
   /** Island underfoot — paints Memory courtyard vs organ shores */
   placeId?: string | null;
+  /** Soft Beat arm foreshadow — multiplicative organ chemistry */
+  softBeatArmWhisper?: string | null;
   onChoice: (choiceId: string) => void;
   onContinue: () => void;
   onSkip: () => void;
@@ -91,6 +93,7 @@ export function TalkBattleScreen({
   node,
   learningProfile,
   placeId = HARBOR_HAVEN_ID,
+  softBeatArmWhisper = null,
   onChoice,
   onContinue,
   onSkip,
@@ -212,6 +215,14 @@ export function TalkBattleScreen({
           <p className="mt-0.5 text-[11px] font-semibold text-white/80 drop-shadow">
             {MONEY_IS_ALIVE_HERE}
           </p>
+          {softBeatArmWhisper ? (
+            <p
+              className="mt-1 max-w-xs text-[11px] font-bold text-amber-100 drop-shadow"
+              data-testid="talk-soft-beat-arm"
+            >
+              {softBeatArmWhisper}
+            </p>
+          ) : null}
         </div>
         <button
           type="button"

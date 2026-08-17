@@ -36,8 +36,9 @@ export type StanceAxis = keyof VoyagerStance;
 export type NpcMemoryEntry = {
   talks: number;
   lastChoiceIds: string[];
-  affinity?: number;
   lastTalkAt?: string;
+  /** Legacy field — no longer written; talks drive greetings */
+  affinity?: number;
 };
 
 export const DEFAULT_STANCE: VoyagerStance = { saver: 0, spender: 0, risk: 0 };
@@ -117,7 +118,6 @@ export function recordNpcTalk(
       [npcId]: {
         talks: (prev?.talks ?? 0) + 1,
         lastChoiceIds,
-        affinity: (prev?.affinity ?? 0) + (choiceId ? 1 : 0),
         lastTalkAt: new Date().toISOString(),
       },
     },
@@ -387,6 +387,12 @@ export function plazaScarGossipLine(
   if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
     return `${talks}Someone at the tip jars keeps clinking your name — you bought Shelly’s shell want. “${scar.label}.” Pretty cost a story.${stanceBit}`;
   }
+  if (id.includes("tip_plan") || id === "pp_tip_plan") {
+    return `${talks}Main Street still stamps soft about it — you planned buckets before tipping. “${scar.label}.” Clock shelter left a footprint.${stanceBit}`;
+  }
+  if (id.includes("tip_rush") || id === "pp_tip_rush") {
+    return `${talks}Tip jar still jingled your name — you tipped before the stamp. “${scar.label}.” Haste left a footprint.${stanceBit}`;
+  }
   if (id.includes("collector_lean") || id === "ck_collector_lean") {
     return `${talks}Canyon wind still names the lean — you edged toward Bank haste. “${scar.label}.” Listening isn’t paying, but leaning leaves weather.${stanceBit}`;
   }
@@ -471,6 +477,12 @@ export function piggyScarWeightLine(
   }
   if (id.includes("shell_impulse") || id === "cc_shell_impulse") {
     return `Harbor gossiped soft about the shell you bought. I don’t scold — I just… felt it with you. “${scar.label}.”`;
+  }
+  if (id.includes("tip_plan") || id === "pp_tip_plan") {
+    return `You planned Main Street buckets before tipping. That Clock quiet… Harbor soft-names it. “${scar.label}.”`;
+  }
+  if (id.includes("tip_rush") || id === "pp_tip_rush") {
+    return `You tipped before the stamp. That jingle… Harbor soft-names it too. “${scar.label}.”`;
   }
   if (id.includes("collector_lean") || id === "ck_collector_lean") {
     return `Word from the canyon reached me first. Leaning into that pitch leaves a colder chill — not shame, weather with teeth. “${scar.label}.”`;

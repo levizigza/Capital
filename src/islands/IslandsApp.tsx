@@ -52,7 +52,7 @@ import {
 import { getMascot } from "./moneyCast";
 import { capitalMusic } from "./audio";
 import { playCapitalSfx } from "./audio/capitalSfx";
-import { consumeSoftBeatArm } from "./softBeatArm";
+import { consumeSoftBeatArm, peekSoftBeatArm, softBeatArmWhisper } from "./softBeatArm";
 import { getGenreWorld } from "./genreWorlds";
 import {
   harborScarPlaques,
@@ -1228,9 +1228,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         islandId: island?.id ?? HUB_ISLAND_ID,
         npcId,
       });
-      const armed = consumeSoftBeatArm();
-      if (armed) {
-        void analytics.track("core_loop_beat", { beat: "soft_beat_consumed", kind: armed, npcId });
+      // Soft Beat arm stays visible in Talk Battle — consume on first choice, not open.
+      const armedPeek = peekSoftBeatArm();
+      if (armedPeek) {
+        void analytics.track("core_loop_beat", {
+          beat: "soft_beat_visible",
+          kind: armedPeek,
+          npcId,
+        });
       }
 
       if (island) {
@@ -1576,6 +1581,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         nodeId: dialogueNode.id,
         choiceId,
       });
+      const armed = consumeSoftBeatArm();
+      if (armed) {
+        void analytics.track("core_loop_beat", {
+          beat: "soft_beat_consumed",
+          kind: armed,
+          choiceId,
+        });
+        void analytics.track("take_foreshadow", { kind: armed, choiceId });
+      }
 
       await applyDialogueEffects(choice.effects as any);
 
@@ -2399,6 +2413,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 ? HUB_ISLAND_ID
                 : (activeIsland?.id ?? save?.currentIslandId ?? HUB_ISLAND_ID)
             }
+            softBeatArmWhisper={softBeatArmWhisper(peekSoftBeatArm())}
             onChoice={(id) => void onDialogueChoice(id)}
             onContinue={onDialogueContinue}
             onSkip={closeDialogue}
