@@ -18,16 +18,15 @@
 
 ---
 
-## Latest — Pass F (2026-08-17)
+## Latest — Pass G (2026-08-17)
 
 | | |
 |--|--:|
-| **Overall craft** | **72%** |
+| **Overall craft** | **73%** |
 | **Human Pass** | **0%** |
 
-### Pass F shipped (Progression)
-- Credit / Paycheck lock hints name **Coin / Freedom Seal / Spiral**
-- Spine chips show lock reason on the chip (not only title tooltip)
+### Pass G shipped (Encounters)
+- Talk Battle listen/speak chrome names the organ verb on spine shores
 
 ### Prior passes
 | Pass | Focus | Overall |
@@ -37,7 +36,8 @@
 | C | Take hush captions + Carpet coach | 66% |
 | D | Shore Soft Beat crown beacons | 68% |
 | E | Organ-named fail dignity + credit parity | 70% |
-| F | Organ progression lock language on map chips | **72%** |
+| F | Organ progression lock language on map chips | 72% |
+| G | Talk Battle organ listen/speak chrome | **73%** |
 
 ---
 

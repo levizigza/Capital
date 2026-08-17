@@ -36,7 +36,8 @@ describe("Talk Battle fantasy contract", () => {
     expect(src).toMatch(/talk-battle-organ/);
     expect(src).toMatch(/I hear you/);
     expect(src).toMatch(/Walk on/);
-    expect(src).toMatch(/Speak among living money/);
+    expect(src).toMatch(/Speak among living money|Speak ·/);
     expect(src).toMatch(/Your reply/);
+    expect(src).toMatch(/Listening · \$\{organChip\}/);
   });
 });
