@@ -323,7 +323,7 @@ When two pillars fight, **fantasy + signature loop win**.
 
 ## Status board (update as we pass)
 
-**Honest live board:** [full-game-craft-board.md](./full-game-craft-board.md) — overall **70%** after Pass E. Do not treat the historical table below as current iconic proof.
+**Honest live board:** [full-game-craft-board.md](./full-game-craft-board.md) — overall **72%** after Pass F. Do not treat the historical table below as current iconic proof.
 
 | # | Pillar | Verdict | Last pass | Next fix |
 |---|--------|---------|-----------|----------|

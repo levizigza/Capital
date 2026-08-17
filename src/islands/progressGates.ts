@@ -123,7 +123,10 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
   }
   if (island.id === BOSS_ISLAND_ID) {
     const prog = bossUnlockProgress(save);
-    return `Need freedom + ${prog.needed} mastery clears (${prog.mastery}/${prog.needed})`;
+    if (!prog.escaped) {
+      return `Freedom Seal first — then Spiral (${prog.mastery}/${prog.needed} mastery)`;
+    }
+    return `Spiral waits · ${prog.mastery}/${prog.needed} mastery clears`;
   }
   return "Locked";
 }

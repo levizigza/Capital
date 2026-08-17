@@ -140,6 +140,11 @@ export function TravelMapView({
                   </span>{" "}
                   {island.name}
                   {here ? " · here" : ""}
+                  {locked && lockWhy ? (
+                    <span className="mt-0.5 block max-w-[9.5rem] text-[8px] font-semibold leading-snug opacity-80 normal-case tracking-normal">
+                      {lockWhy}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
