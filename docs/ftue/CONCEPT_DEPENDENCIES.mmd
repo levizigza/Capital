@@ -1,0 +1,144 @@
+# Capital concept dependencies
+
+Graph of **player-facing concepts that exist in shipped gameplay**.  
+Nodes omitted if they only appear in design docs / `learning_objectives` metadata.
+
+**Absent from spine teaching (example list check):** `liquidity` (never), named `opportunity_cost` (embodied only), named `time_horizon` / `diversification` (era shores only — dashed).
+
+```mermaid
+flowchart TB
+  subgraph FOUNDATION["Foundation — enablers"]
+    money_is_alive[money_is_alive]
+    walk_talk[walk_talk]
+    carpet_voyage[carpet_voyage]
+  end
+
+  subgraph COIN["Coin organ — Hold"]
+    coin_denominations[coin_denominations]
+    exact_change[exact_change]
+    earn_then_decide[earn_then_decide]
+    save_vs_spend[save_vs_spend]
+    irreversible_take[irreversible_take]
+    coin_hold[coin_hold]
+    needs_vs_wants[needs_vs_wants]
+    harbor_scar_memory[harbor_scar_memory]
+  end
+
+  subgraph LEDGER["Harbor ledger — after first footprint"]
+    income[income]
+    expenses[expenses]
+    cashflow[cashflow]
+    asset[asset]
+    liability[liability]
+    pay_day[pay_day]
+    harbor_weather[harbor_weather]
+  end
+
+  subgraph CLOCK["Clock organ — Shelter"]
+    paycheck_income[paycheck_income]
+    budget_buckets[budget_buckets]
+    emergency_fund[emergency_fund]
+    protect_vs_spend[protect_vs_spend]
+    plan_vs_impulse[plan_vs_impulse]
+  end
+
+  subgraph SEAL["Gate to Spiral"]
+    freedom_seal[freedom_seal]
+    mastery_clear[mastery_clear]
+  end
+
+  subgraph SPIRAL["Spiral organ — Withstand"]
+    debt[debt]
+    interest_compounds[interest_compounds]
+    patience_vs_haste[patience_vs_haste]
+    on_time_history[on_time_history]
+    apr[apr]
+    credit_utilization[credit_utilization]
+    wait_vs_borrow[wait_vs_borrow]
+    bank_of_obligation[bank_of_obligation]
+  end
+
+  subgraph ERA["Era shores — after Cove Change · not spine"]
+    diversification[diversification]
+    time_horizon[time_horizon]
+    investment_return[investment_return]
+  end
+
+  %% Foundation
+  money_is_alive --> irreversible_take
+  walk_talk --> carpet_voyage
+  carpet_voyage --> earn_then_decide
+
+  %% Coin chain
+  coin_denominations --> exact_change
+  exact_change --> earn_then_decide
+  earn_then_decide --> save_vs_spend
+  save_vs_spend --> irreversible_take
+  irreversible_take --> coin_hold
+  irreversible_take --> harbor_scar_memory
+  coin_hold --> harbor_scar_memory
+  needs_vs_wants -.->|digression| save_vs_spend
+  needs_vs_wants --> plan_vs_impulse
+
+  %% Memory feeds ledger literacy
+  harbor_scar_memory --> cashflow
+  income --> cashflow
+  expenses --> cashflow
+  cashflow --> harbor_weather
+  cashflow --> asset
+  cashflow --> liability
+  cashflow --> pay_day
+  pay_day --> freedom_seal
+  asset --> freedom_seal
+  liability --> cashflow
+
+  %% Clock
+  harbor_scar_memory --> paycheck_income
+  paycheck_income --> budget_buckets
+  needs_vs_wants --> budget_buckets
+  budget_buckets --> emergency_fund
+  emergency_fund --> protect_vs_spend
+  protect_vs_spend --> irreversible_take
+  budget_buckets --> plan_vs_impulse
+  plan_vs_impulse --> patience_vs_haste
+
+  %% Seal
+  cashflow --> freedom_seal
+  mastery_clear --> wait_vs_borrow
+  freedom_seal --> debt
+
+  %% Spiral
+  patience_vs_haste --> wait_vs_borrow
+  debt --> interest_compounds
+  interest_compounds --> on_time_history
+  interest_compounds --> apr
+  on_time_history --> credit_utilization
+  apr --> wait_vs_borrow
+  credit_utilization --> wait_vs_borrow
+  wait_vs_borrow --> irreversible_take
+  bank_of_obligation -.->|digression| wait_vs_borrow
+  wait_vs_borrow --> harbor_weather
+
+  %% Era (optional)
+  cashflow -.-> diversification
+  asset -.-> investment_return
+  protect_vs_spend -.-> time_horizon
+  diversification -.-> investment_return
+
+  style irreversible_take fill:#f4b942,stroke:#1c1917
+  style harbor_scar_memory fill:#f4b942,stroke:#1c1917
+  style cashflow fill:#86efac,stroke:#1c1917
+  style freedom_seal fill:#7dd3fc,stroke:#1c1917
+  style interest_compounds fill:#c4b5fd,stroke:#1c1917
+```
+
+## Premature edges in the *current* ship (problems)
+
+```mermaid
+flowchart LR
+  AshoreThesis[Ashore mural thesis<br/>names Clock + Spiral] -.->|too early| Organs
+  ReadyLecture[Ready chamber<br/>signature foreshadow] -.->|before lived Take| HarborFelt
+  CompoundSide[Cove compound / snowball<br/>side minigame] -.->|before coin_hold closed| Compound
+  DealCards[Harbor Asset/Liability deals<br/>can appear early] -.->|before cashflow sense| Ledger
+  APRInbox[APR / utilization inbox] -.->|if before interest felt| Spiral
+```
