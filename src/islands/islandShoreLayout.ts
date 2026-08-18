@@ -118,20 +118,34 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
 
   const games = (island.minigames ?? []).filter((g) => !isParkedMinigameId(g.id));
   const kinesthetic = games.filter((g) => isKinestheticComponent(g.componentId));
-  const needsDash = kinesthetic.length === 0;
-
-  const padGames = needsDash
-    ? [
-        {
-          id: partyDashIdForIsland(island.id),
-          name: `${island.name} Painting Arena`,
-          icon: "🖼️",
-          componentId: "PartyArenaMinigame",
-          description: "Dive the painting — 3D action world.",
-        },
-        ...kinesthetic,
-      ]
-    : kinesthetic;
+  const literacy = games.filter((g) => !isKinestheticComponent(g.componentId));
+  /**
+   * Shore pads must teach money — interleave literacy sims/quizzes with
+   * kinesthetic spice. Never hide financial games behind Party Arena alone.
+   */
+  const padGames: Array<{
+    id: string;
+    name: string;
+    icon?: string;
+    componentId: string;
+    description?: string;
+  }> = [];
+  let li = 0;
+  let ki = 0;
+  while (padGames.length < 4 && (li < literacy.length || ki < kinesthetic.length)) {
+    if (li < literacy.length) padGames.push(literacy[li++]!);
+    if (padGames.length >= 4) break;
+    if (ki < kinesthetic.length) padGames.push(kinesthetic[ki++]!);
+  }
+  if (padGames.length === 0) {
+    padGames.push({
+      id: partyDashIdForIsland(island.id),
+      name: `${island.name} Painting Arena`,
+      icon: "🖼️",
+      componentId: "PartyArenaMinigame",
+      description: "Dive the painting — 3D action world.",
+    });
+  }
 
   const pads = padGames.slice(0, 4);
   pads.forEach((g, i) => {

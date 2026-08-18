@@ -160,6 +160,7 @@ import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
 import { moneyOrganForIsland } from "./moneyOrgans";
+import { hostIslandForStructureMinigame } from "./moneyStructures";
 import {
   applyCapsulePurchase,
   applyCarpetPolish,
@@ -2609,18 +2610,20 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             }
             onPlayStructureMinigame={(minigameId) => {
               const host =
+                hostIslandForStructureMinigame(minigameId) ??
                 content.islands.find((i) => i.minigames?.some((m) => m.id === minigameId))?.id ??
-                null;
-              if (host) setActiveIslandId(host);
+                HUB_ISLAND_ID;
+              setActiveIslandId(host);
               setMinigameSource("structure");
               setActiveMinigameId(minigameId as MinigameId);
               setMinigameStartedAt(Date.now());
               void analytics.track("minigame_started", {
-                islandId: host ?? HUB_ISLAND_ID,
+                islandId: host,
                 minigameId,
                 source: "money_structure",
               });
             }}
+            structurePlayLocked={Boolean(activeMinigameId)}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}
@@ -2705,6 +2708,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   source: "money_structure",
                 });
               }}
+              structurePlayLocked={Boolean(activeMinigameId)}
               onOpenBoard={() => setView("island")}
               onOpenTravel={() => setView("travel")}
               onOpenHub={() => setView("home")}

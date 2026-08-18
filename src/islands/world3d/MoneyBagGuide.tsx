@@ -174,7 +174,7 @@ function BunnyMoneyBagMesh({
   );
 }
 
-/** Floating arrow from buddy toward the objective. */
+/** Floating chevron from buddy toward the objective — readable, not a stub cone. */
 function PointArrow({ activeRef }: { activeRef: MutableRefObject<boolean> }) {
   const ref = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
@@ -182,17 +182,29 @@ function PointArrow({ activeRef }: { activeRef: MutableRefObject<boolean> }) {
     const active = activeRef.current;
     ref.current.visible = active;
     if (!active) return;
-    ref.current.position.z = 0.55 + Math.sin(clock.elapsedTime * 5) * 0.08;
+    const bob = Math.sin(clock.elapsedTime * 4.2) * 0.06;
+    ref.current.position.z = 0.62 + bob;
+    ref.current.position.y = 0.92 + bob * 0.35;
   });
   return (
-    <group ref={ref} position={[0, 0.85, 0.55]} rotation={[Math.PI / 2, 0, 0]}>
-      <mesh castShadow>
-        <coneGeometry args={[0.16, 0.45, 8]} />
+    <group ref={ref} position={[0, 0.92, 0.62]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh castShadow position={[0, 0.18, 0]}>
+        <coneGeometry args={[0.14, 0.38, 3]} />
+        <meshStandardMaterial
+          color="#fde68a"
+          emissive="#f59e0b"
+          emissiveIntensity={0.55}
+          roughness={0.4}
+          metalness={0.15}
+        />
+      </mesh>
+      <mesh castShadow position={[0, -0.08, 0]}>
+        <boxGeometry args={[0.08, 0.22, 0.08]} />
         <meshStandardMaterial
           color="#fbbf24"
-          emissive="#f59e0b"
-          emissiveIntensity={0.7}
-          roughness={0.35}
+          emissive="#b45309"
+          emissiveIntensity={0.35}
+          roughness={0.45}
         />
       </mesh>
     </group>

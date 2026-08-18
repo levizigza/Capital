@@ -3,7 +3,7 @@
  */
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
 import { useInputAction } from "@/input";
@@ -67,6 +67,7 @@ function InteriorPlayer({
   inputFrozen: boolean;
 }) {
   const group = useRef<THREE.Group>(null);
+  const { camera } = useThree();
   const keys = useRef({ f: false, b: false, l: false, r: false });
   const vel = useRef(new THREE.Vector3());
   const facing = useRef(0);
@@ -93,36 +94,45 @@ function InteriorPlayer({
   }, []);
 
   useFrame((_, dt) => {
-    if (!group.current || inputFrozen) return;
-    const k = mergeWalkIntent(keys.current);
-    const wish = new THREE.Vector3(
-      (k.r ? 1 : 0) - (k.l ? 1 : 0),
-      0,
-      (k.b ? 1 : 0) - (k.f ? 1 : 0),
-    );
-    if (wish.lengthSq() > 0) {
-      wish.normalize();
-      facing.current = Math.atan2(wish.x, wish.z);
-      vel.current.lerp(wish.multiplyScalar(SPEED), 1 - Math.exp(-12 * dt));
-    } else {
-      vel.current.multiplyScalar(Math.exp(-10 * dt));
-    }
-    group.current.position.x += vel.current.x * dt;
-    group.current.position.z += vel.current.z * dt;
-    group.current.position.x = THREE.MathUtils.clamp(group.current.position.x, -9, 9);
-    group.current.position.z = THREE.MathUtils.clamp(group.current.position.z, -9, 10);
-    group.current.rotation.y = facing.current;
+    if (!group.current) return;
+    const p = group.current.position;
 
-    let nearest: string | null = null;
-    let best = INTERACT_R;
-    for (const p of pads) {
-      const d = group.current.position.distanceTo(new THREE.Vector3(...p.position));
-      if (d < best) {
-        best = d;
-        nearest = p.id;
+    if (!inputFrozen) {
+      const k = mergeWalkIntent(keys.current);
+      const wish = new THREE.Vector3(
+        (k.r ? 1 : 0) - (k.l ? 1 : 0),
+        0,
+        (k.b ? 1 : 0) - (k.f ? 1 : 0),
+      );
+      if (wish.lengthSq() > 0) {
+        wish.normalize();
+        facing.current = Math.atan2(wish.x, wish.z);
+        vel.current.lerp(wish.multiplyScalar(SPEED), 1 - Math.exp(-12 * dt));
+      } else {
+        vel.current.multiplyScalar(Math.exp(-10 * dt));
       }
+      p.x += vel.current.x * dt;
+      p.z += vel.current.z * dt;
+      p.x = THREE.MathUtils.clamp(p.x, -9, 9);
+      p.z = THREE.MathUtils.clamp(p.z, -9, 10);
+      group.current.rotation.y = facing.current;
+
+      let nearest: string | null = null;
+      let best = INTERACT_R;
+      for (const pad of pads) {
+        const d = group.current.position.distanceTo(new THREE.Vector3(...pad.position));
+        if (d < best) {
+          best = d;
+          nearest = pad.id;
+        }
+      }
+      onNear(nearest);
     }
-    onNear(nearest);
+
+    // Chase-cam follow — same contract as Harbor / shore walk.
+    const ideal = new THREE.Vector3(p.x * 0.35, 7.4, p.z + 10.2);
+    camera.position.lerp(ideal, 1 - Math.pow(0.0016, dt));
+    camera.lookAt(p.x, 1.35, p.z - 0.4);
   });
 
   return (

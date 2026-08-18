@@ -218,6 +218,8 @@ export type HomeHubViewProps = {
   onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** True while a structure / shore minigame modal owns input — freeze vault walk */
+  structurePlayLocked?: boolean;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -266,6 +268,7 @@ export function HomeHubView({
   onMarkEchoSurprise,
   onClearChapterQuiet,
   onPlayStructureMinigame,
+  structurePlayLocked = false,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -280,6 +283,7 @@ export function HomeHubView({
   useInputAction("cancel", () => {
     // Talk Battle owns Esc while open
     if (talkOpen) return;
+    if (structurePlayLocked) return;
     if (bankOpen) {
       setBankOpen(false);
       return;
@@ -1064,8 +1068,7 @@ export function HomeHubView({
       }
       if (part.minigameId) {
         playCapitalSfx("organ_memory");
-        // Hide vault shell so the minigame modal is not buried under z-60.
-        setBankOpen(false);
+        // Keep vault mounted under GameModal (z-90) so closing a pad returns to the bank.
         onPlayStructureMinigame?.(part.minigameId);
       }
     },
@@ -1165,7 +1168,7 @@ export function HomeHubView({
             character={voyager}
             onExit={() => setBankOpen(false)}
             onEnterPart={onEnterBankPart}
-            inputFrozen={Boolean(bankSoftBeat)}
+            inputFrozen={Boolean(bankSoftBeat) || structurePlayLocked}
           />
           {bankSoftBeat ? (
             <SoftBeatOverlay

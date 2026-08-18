@@ -26,7 +26,9 @@ describe("archipelago map sacred geometry + named islands", () => {
     expect(MAP_SPINE_RX).toBe(SEED_SPINE_R);
     expect(MAP_SIDE_RX).toBeCloseTo(SEED_SPINE_R * PHI, 5);
     expect(MAP_SIDE_RX).toBe(SEED_SIDE_R);
-    expect(ARCHIPELAGO_MAP_SPACING).toBeLessThan(5);
+    // Spread scene units so shores read as an archipelago, not a clump.
+    expect(ARCHIPELAGO_MAP_SPACING).toBeGreaterThanOrEqual(5);
+    expect(ARCHIPELAGO_MAP_SPACING).toBeLessThan(9);
   });
 
   it("places Harbor at Seed hub with spine inside the side ring", () => {
@@ -74,6 +76,8 @@ describe("archipelago map sacred geometry + named islands", () => {
     expect(travel).not.toMatch(/archipelago-side-shore-strip/);
     expect(travel).not.toMatch(/HudChip/);
     expect(travel).toMatch(/Spine voyage/);
+    expect(travel).toMatch(/archipelago-strip-prev/);
+    expect(travel).toMatch(/archipelago-strip-next/);
     expect(opening).toMatch(/Seed of Life/);
   });
 });
