@@ -7,8 +7,11 @@
 **Canon companions (detail):**  
 [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [game-pillars.md](./game-pillars.md) · [mural-thesis.md](./mural-thesis.md) · [story-bible.md](./story-bible.md) · [harbor-ashore.md](./harbor-ashore.md) · [era-shores-restore.md](./era-shores-restore.md)
 
+**Chase target (subject + build order):**  
+[design/DECISION_CONSTRAINTS_NORTH_STAR.md](./design/DECISION_CONSTRAINTS_NORTH_STAR.md) — Capital’s real subject is **decision-making under constraints**; money is the medium; literacy **is** the gameplay. Implementation order: Audit → constitution → decisions → core loop → playable finance → system depth → feedback → UI → learning transfer → measurement → real users. Do **not** start with AI guide, story engine, social, or giant simulation.
+
 **Audit siblings (deep dives; may live on design branches until merged):**  
-complexity cut · longevity 100h · feature gate · secrets · replayability · social · progression · economy · risk/reward · choices · system interactions · feedback · curiosity · identity · metrics · economy sim · playtest
+quality north-star · complexity cut · longevity 100h · feature gate · secrets · replayability · social · progression · economy · risk/reward · choices · system interactions · feedback · curiosity · identity · metrics · economy sim · playtest
 
 **Freeze (always on):** Main quest strip stays **Harbor · Cove → Paycheck → Credit**. Family Room stays **local**. No Nathan Project / BMO / CBE merges. Prefer deepening hush → scar spectacle → Plinth → share → Piggy → day-2 → Money Structure interiors over map width.
 
@@ -57,6 +60,8 @@ Every UI and mechanic asks: *Does this make me feel like a Voyager among Money M
 **Iconic phase north star:** Make **one money choice** feel unforgettable.
 
 **Mural:** *You are inside living money. Harbor remembers. Cove holds. Paycheck clocks. Credit spirals.*
+
+**Subject (chase target):** Capital’s real subject is **decision-making under constraints**. Money is the medium. Liquidity, debt, risk, careers, housing, inflation — different environments for the same deeper questions (want · information · tradeoff · possibility · uncertainty tolerance · what this locks in later). If that is fun, financial literacy does not bolt onto the game — **it is the gameplay.** See [design/DECISION_CONSTRAINTS_NORTH_STAR.md](./design/DECISION_CONSTRAINTS_NORTH_STAR.md).
 
 ---
 
@@ -404,34 +409,36 @@ From [game-pillars.md](./game-pillars.md): D1 / D7 retention, quest and tutorial
 Before building:
 
 1. Pass **freeze** and **anti-pillars**.  
-2. Name **organ + suit verb** if it touches the spine.  
-3. Prefer lifting **≥3 existing systems** over adding a toy.  
-4. Score value vs cost (see `FEATURE_GATE` / `docs/feature-gate/` when present).
+2. Pass the **chase-target tests** in [design/DECISION_CONSTRAINTS_NORTH_STAR.md](./design/DECISION_CONSTRAINTS_NORTH_STAR.md) (constraint · deeper questions · money-as-medium · transfer · order).  
+3. Name **organ + suit verb** if it touches the spine.  
+4. Prefer lifting **≥3 existing systems** over adding a toy.  
+5. Score value vs cost (see `FEATURE_GATE` / `docs/feature-gate/` when present).  
+6. Respect **implementation order** — do not jump to AI guide, story engine, social, or giant sim before Audit→…→Real users holds.
 
-**Value axes (examples):** fantasy · loop · meaningful decisions · existing systems · emergence · mastery · expression · replay · local social · memorable stories.
+**Value axes (examples):** fantasy · loop · meaningful decisions under constraints · existing systems · emergence · mastery · expression · replay · local social · memorable stories.
 
 **Cost axes (examples):** cognitive · UI · tech · balance · maintenance · content.
 
 | Verdict | When |
 |---------|------|
-| **Reject** | Freeze fail, copycat-only why, value &lt; cost |
+| **Reject** | Freeze fail, copycat-only why, value &lt; cost, literacy bolted on as quiz/chrome |
 | **Park** | Interesting but not now → [iconic-later.md](./iconic-later.md) |
 | **Accept with conditions** | High cost or weak multi-system coupling — require Soft Beat / Plinth / CF wiring |
 | **Accept** | Value ≥ cost, no freeze fails, preferably ≥3 systems touched |
 
 **Prefer:** one change that lifts Soft Beat + ledger + Plinth over three unrelated toys; world teaching over chrome; local social myth over leaderboards; emergent rules over collectibles.
 
-**Hard rejects:** map width · fake MP · foreign merge · “other games have this” as the main why · grind-as-longevity.
+**Hard rejects:** map width · fake MP · foreign merge · “other games have this” as the main why · grind-as-longevity · starting with AI guide / story engine / social / giant simulation before the chase sequence.
 
 ---
 
 ## Final question (every future feature)
 
-> **Does this help Capital generate a more interesting player story?**
+> **Does this make decision-making under constraints more interesting — with money as the medium — and help Capital generate a more interesting player story?**
 
 A *player story* is a retellable chain the quest log did not fully author — across Take residue → ledger → weather → Soft Beat → Plinth share → (optionally) a household Witness stamp — spoken in organ language (“The Coin holds — Harbor remembered…”).
 
-If the honest answer is only “they clear content faster” or “they farm longer,” **do not ship**. Deepen interactions among Take · Soft Beat · cashflow · weather · Plinth · Family Room instead.
+If the honest answer is only “they clear content faster,” “they farm longer,” or “they pass a quiz,” **do not ship**. Deepen interactions among Take · Soft Beat · cashflow · weather · Plinth · Family Room instead.
 
 ---
 
