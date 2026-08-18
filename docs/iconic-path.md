@@ -59,7 +59,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Structure enter | Room silhouette + lit interior always; plaza/shore stays mounted under overlay |
 | Structure pads | Unique part silhouettes (`StructurePartSilhouette`) + Soft Beat lookout beacon — readable without HUD text on Pages |
 | Structure exit | No Harbor remount — walkable plaza returns instantly |
-| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide`; **no stacked Castle coach** (Talk CTA is the only surface) |
+| Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide`; Castle coach names the next verb while the plaza teaches it |
 | Ashore voyage | After Talk → Money Carpet → Coincraft Cove (Outfitter / Capsule / Daily Ritual are discoveries, not gates) |
 | No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove |
 | Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid / Daily Ritual auto-open |

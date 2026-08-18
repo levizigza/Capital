@@ -58,15 +58,18 @@ describe("Harbor Ashore redesign", () => {
     );
   });
 
-  it("removes Castle coach banner — world verbs teach instead", () => {
+  it("shows Castle coach during first meet and voyage, not after done or hush", () => {
     expect(
       shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: false }),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       shouldShowCastleCoach({ guidedStepId: "to_dock", quietHomecoming: false }),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: true }),
+    ).toBe(false);
+    expect(
+      shouldShowCastleCoach({ guidedStepId: "done", quietHomecoming: false }),
     ).toBe(false);
   });
 

@@ -152,17 +152,16 @@ describe("player onboarding modes", () => {
     expect(briefing.refreshers.length).toBeGreaterThan(0);
   });
 
-  it("reduces guidance for experienced and returning modes", () => {
+  it("reduces guidance for experienced; returning still gets Harbor coach", () => {
     expect(
       shouldShowCastleCoachForPlayer("experienced", { guidedStepId: "meet_guide" }),
     ).toBe(false);
     expect(
       shouldShowCastleCoachForPlayer("returning", { guidedStepId: "meet_guide" }),
-    ).toBe(false);
-    // Scaffold removal: castle coach deleted for new players too (world verbs teach).
+    ).toBe(true);
     expect(
       shouldShowCastleCoachForPlayer("new", { guidedStepId: "meet_guide" }),
-    ).toBe(false);
+    ).toBe(true);
     expect(getActiveGuidanceForPlayer(createDefaultIslandSave(), "returning")).toEqual([]);
   });
 

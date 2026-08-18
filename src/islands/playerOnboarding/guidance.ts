@@ -8,7 +8,7 @@ export function shouldShowCastleCoachForPlayer(
   mode: PlayerOnboardingMode,
   opts: Parameters<typeof shouldShowCastleCoach>[0],
 ): boolean {
-  if (mode === "experienced" || mode === "returning") return false;
+  if (mode === "experienced") return false;
   return shouldShowCastleCoach(opts);
 }
 
@@ -27,7 +27,7 @@ export function getActiveGuidanceForPlayer(
 }
 
 export function shouldReduceHubPresenceCopy(mode: PlayerOnboardingMode): boolean {
-  return mode === "experienced" || mode === "returning";
+  return mode === "experienced";
 }
 
 export function shouldSkipAshoreComprehensionTeach(mode: PlayerOnboardingMode): boolean {

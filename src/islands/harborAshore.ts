@@ -25,17 +25,17 @@ export {
 };
 
 /**
- * Castle coach banner — removed as duplicate FTUE chrome.
- * Piggy presence + Coin Bag + proximity Talk / Board Carpet CTA teach the same verbs.
- * See docs/ftue/FTUE_SCAFFOLD_REMOVAL_AUDIT.md
+ * Castle coach — live next-verb card during first meet / voyage.
+ * Quiet homecoming still mutes it so presence owns the scar beat.
  */
 export function shouldShowCastleCoach(opts: {
   guidedStepId?: string | null;
   /** Quiet homecoming still mutes coach so presence owns the beat */
   quietHomecoming?: boolean;
 }): boolean {
-  void opts;
-  return false;
+  if (!opts.guidedStepId || opts.guidedStepId === "done") return false;
+  if (opts.quietHomecoming) return false;
+  return true;
 }
 
 /** Soft presence — walk first; never a modal Talk ambush. */

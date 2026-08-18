@@ -1505,7 +1505,9 @@ export function HomeHubView({
               {firstMeet &&
               !nearPiggy &&
               !shouldReduceHubPresenceCopy(playerOnboardingMode) ? (
-                <>Walk to Piggy when you’re ready</>
+                <>
+                  <MoveTalkMapHint compact className="justify-center" /> · walk to Piggy
+                </>
               ) : showTravelChip ? (
                 "Or walk to the Money Carpet"
               ) : nearStore ? (
