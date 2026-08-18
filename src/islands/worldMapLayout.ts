@@ -39,7 +39,7 @@ export const MAP_HUB = { ...SEED_HUB };
 
 /**
  * Sacred-geometry dual ring (Seed of Life):
- * spine nest · side ring at φ · dioramas overlap, not a sparse grid.
+ * spine inside · side ring at φ · water gaps between shores (readable rhythm).
  */
 export const MAP_SPINE_RX = SEED_SPINE_R;
 export const MAP_SPINE_RY = SEED_SPINE_R * PHI_INV;

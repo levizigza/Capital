@@ -99,17 +99,10 @@ export function applySkillChanges(
   state: SkillStatsState,
   changes: SkillStatChange[],
 ): SkillStatsState {
-  if (changes.length === 0) return state;
-
-  const next: SkillStatsMap = { ...state.current };
-  for (const ch of changes) {
-    if (ch.stat in next) {
-      next[ch.stat] = clamp(next[ch.stat] + ch.delta);
-    }
-  }
-
-  const history = [...state.history, ...changes].slice(-MAX_HISTORY);
-  return { current: next, history };
+  // Extrinsic meters retired — literacy is CF / scars / transfer, not RPG bars.
+  // Keep signature for call-site compatibility; do not mutate progression.
+  void changes;
+  return state;
 }
 
 // ---------------------------------------------------------------------------

@@ -341,21 +341,21 @@ function Player({
       onNearNpc(npcNear ? { id: npcNear.id, name: npcNear.name, line: npcNear.line } : null);
     }
 
-    const back = near ? 10.5 : 8.5;
-    const camH = near ? 5.4 : 4.9;
+    const back = near ? 9.2 : 7.4;
+    const camH = near ? 4.85 : 4.35;
     const ideal = new THREE.Vector3(
       p.x - Math.sin(camYaw.current) * back,
       camH,
       p.z - Math.cos(camYaw.current) * back,
     );
     if (nearDoor) {
-      const side = Math.sin(camYaw.current + Math.PI / 2) * 1.4;
-      const sideZ = Math.cos(camYaw.current + Math.PI / 2) * 1.4;
+      const side = Math.sin(camYaw.current + Math.PI / 2) * 1.15;
+      const sideZ = Math.cos(camYaw.current + Math.PI / 2) * 1.15;
       ideal.x += side;
       ideal.z += sideZ;
     }
-    camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
-    camera.lookAt(p.x, near ? 1.55 : 1.25, p.z);
+    camera.position.lerp(ideal, 1 - Math.pow(0.0022, dt));
+    camera.lookAt(p.x, near ? 1.45 : 1.2, p.z);
   });
 
   return (

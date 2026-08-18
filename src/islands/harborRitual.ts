@@ -367,13 +367,14 @@ export function bumpWeeklyStudio(save: IslandSaveV1): IslandSaveV1 {
 export function weeklyShareText(weekly: HarborWeeklyChallenge, voyagerName: string): string {
   const meta = weeklyMeta(weekly.id);
   if (weekly.done) {
-    return `${voyagerName} cleared Harbor weekly: ${meta.title} (${weekly.progress}/${weekly.target}) in Capital!`;
+    return `${voyagerName} lived Harbor’s weekly myth: ${meta.title} — in Capital.`;
   }
-  return `${voyagerName} is chasing Harbor weekly: ${meta.title} — ${weekly.progress}/${weekly.target}`;
+  return `${voyagerName} is chasing Harbor’s weekly myth: ${meta.title}`;
 }
 
 export function ritualNeedsAttention(save: IslandSaveV1): boolean {
   const t = save.harborRitual?.today;
   if (!t) return true;
-  return !t.paydayDone || !t.rumorSeen || !t.rewardClaimed;
+  // Pay Day + rumor only — no login-reward claim chrome.
+  return !t.paydayDone || !t.rumorSeen;
 }

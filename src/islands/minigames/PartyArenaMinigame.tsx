@@ -3,7 +3,7 @@ import { PartyArenaWorld } from "../world3d/PartyArenaWorld";
 
 /**
  * Full-screen 3D Fortune Party action world — used when you dive a painting portal.
- * Move + jump + grab. Mastery quiz still gates literacy after clear.
+ * Move + jump + grab. Optional mastery digression never gates Credit or clears.
  */
 export default function PartyArenaMinigame({
   island,

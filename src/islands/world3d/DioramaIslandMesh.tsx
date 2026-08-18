@@ -605,9 +605,9 @@ export function DioramaIslandMesh({
 
       {!hideLabels ? (
         <Html
-          position={[0, 2.55, 0]}
+          position={[0, locked ? 2.85 : 3.15, 0]}
           center
-          distanceFactor={12}
+          distanceFactor={14}
           style={{ pointerEvents: "none" }}
           zIndexRange={[20, 0]}
         >
@@ -628,6 +628,27 @@ export function DioramaIslandMesh({
             ) : null}
           </div>
         </Html>
+      ) : null}
+      {/* Unlocked shores show play beacons so the map reads as playable, not empty props. */}
+      {!locked ? (
+        <group position={[0, 0.15, 0]}>
+          {[
+            [-0.55, 0.55],
+            [0.6, 0.35],
+            [0.1, -0.55],
+          ].map(([x, z], i) => (
+            <mesh key={i} position={[x!, 0.55 + i * 0.08, z!]} castShadow>
+              <sphereGeometry args={[0.11, 10, 8]} />
+              <meshStandardMaterial
+                color={look.accent}
+                emissive={look.accent}
+                emissiveIntensity={current ? 0.85 : 0.45}
+                roughness={0.35}
+                metalness={0.2}
+              />
+            </mesh>
+          ))}
+        </group>
       ) : null}
     </group>
   );

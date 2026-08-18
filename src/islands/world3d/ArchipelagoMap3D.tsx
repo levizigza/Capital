@@ -176,8 +176,9 @@ function RouteRibbon({
 function MapCamera() {
   const { camera } = useThree();
   useFrame(() => {
-    camera.position.lerp(new THREE.Vector3(0, 10.8, 11.6), 0.08);
-    camera.lookAt(0, 0.4, 0);
+    // Pull back so the φ dual-ring reads as an archipelago, not a clump.
+    camera.position.lerp(new THREE.Vector3(0, 16.5, 18.2), 0.08);
+    camera.lookAt(0, 0.35, 0);
   });
   return null;
 }
@@ -248,7 +249,7 @@ function MapScene({
         shadowMapSize={512}
         compactScene
       />
-      <OceanWater color="#0e7490" shading="harbor" size={72} calm />
+      <OceanWater color="#0e7490" shading="harbor" size={110} calm />
       <SeedOfLifeGuides />
       <MapCamera />
 
@@ -271,7 +272,7 @@ function MapScene({
         seed={layout.hub.island.id}
         islandId={layout.hub.island.id}
         position={hubPos}
-        scale={1.38}
+        scale={1.12}
         current={layout.hub.island.id === currentId}
         selected={layout.hub.island.id === currentId}
         locked={isIslandLocked(layout.hub.island, save.inventory, save)}
@@ -290,11 +291,11 @@ function MapScene({
             <DioramaIslandMesh
               look={look}
               title={node.island.name}
-              subtitle={locked ? "Locked" : undefined}
+              subtitle={locked ? "Locked" : "Playable"}
               seed={node.island.id}
               islandId={node.island.id}
               position={pos}
-              scale={1.05}
+              scale={0.88}
               current={node.island.id === currentId}
               locked={locked}
               onSelect={() => onSelect(node.island.id)}
@@ -316,11 +317,11 @@ function MapScene({
             key={node.island.id}
             look={look}
             title={node.island.name}
-            subtitle={era.decade}
+            subtitle={locked ? era.decade : `${era.decade} · Play`}
             seed={node.island.id}
             islandId={node.island.id}
             position={pos}
-            scale={0.82}
+            scale={0.68}
             current={node.island.id === currentId}
             locked={locked}
             onSelect={() => onSelect(node.island.id)}

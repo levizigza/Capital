@@ -30,10 +30,10 @@ const emptySave = {
 } as unknown as IslandSaveV1;
 
 describe("progression lock organ language", () => {
-  it("keeps Cove and Paycheck open from Harbor; Credit still needs Freedom/mastery", () => {
+  it("keeps Cove and Paycheck open from Harbor; Credit needs Freedom + Paycheck Change", () => {
     expect(isIslandProgressLocked(stub(COVE_ISLAND_ID), emptySave)).toBe(false);
     expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(false);
     expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(true);
-    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom Seal|Spiral/);
+    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom Seal|Spiral|Paycheck/);
   });
 });

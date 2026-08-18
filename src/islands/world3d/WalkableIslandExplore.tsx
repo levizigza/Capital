@@ -214,15 +214,15 @@ function Player({
     }
     onNear(structureNear ?? near);
 
-    const back = near ? shoreScale(10.2) : shoreScale(8.2);
-    const camH = near ? shoreScale(5.2) : shoreScale(4.7);
+    const back = near ? shoreScale(8.8) : shoreScale(7.0);
+    const camH = near ? shoreScale(4.7) : shoreScale(4.2);
     const ideal = new THREE.Vector3(
       p.x - Math.sin(camYaw.current) * back,
       camH,
       p.z - Math.cos(camYaw.current) * back,
     );
-    camera.position.lerp(ideal, 1 - Math.pow(0.0015, dt));
-    camera.lookAt(p.x, near ? 1.45 : 1.2, p.z);
+    camera.position.lerp(ideal, 1 - Math.pow(0.0022, dt));
+    camera.lookAt(p.x, near ? 1.4 : 1.15, p.z);
   });
 
   return (

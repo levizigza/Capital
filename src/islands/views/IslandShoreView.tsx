@@ -77,6 +77,8 @@ export type IslandShoreViewProps = {
   onPlayMinigame: (minigameId: string) => void;
   /** Money Structure part pads — stay-put fail source */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** True while a minigame modal owns input — freeze structure walk */
+  structurePlayLocked?: boolean;
   onOpenBoard: () => void;
   onOpenTravel: () => void;
   onOpenHub: () => void;
@@ -109,6 +111,7 @@ export function IslandShoreView({
   onEnterArea,
   onStartQuest,
   talkOpen = false,
+  structurePlayLocked = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
@@ -257,7 +260,7 @@ export function IslandShoreView({
       }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
-        setStructureOpen(false);
+        // Keep structure mounted under the modal so exit returns to the interior.
         (onPlayStructureMinigame ?? onPlayMinigame)(part.minigameId);
       }
     },
@@ -318,7 +321,7 @@ export function IslandShoreView({
             character={character}
             onExit={() => setStructureOpen(false)}
             onEnterPart={onEnterPart}
-            inputFrozen={Boolean(softBeat)}
+            inputFrozen={Boolean(softBeat) || structurePlayLocked}
           />
             {softBeat ? (
             <SoftBeatOverlay

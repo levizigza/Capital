@@ -61,7 +61,8 @@ describe("island shore + party play", () => {
     expect(spots.some((s) => s.kind === "journal")).toBe(true);
     expect(spots.some((s) => s.kind === "npc")).toBe(true);
     const pad = spots.find((s) => s.kind === "play_pad");
-    expect(pad?.minigameId).toBe(partyDashIdForIsland("paycheck_peninsula"));
+    // Literacy sims/quizzes land on shore — not only an injected Party Arena.
+    expect(pad?.minigameId).toBe("mg_budget_split");
   });
 
   it("assigns distinct mascots to NPCs", () => {
@@ -84,18 +85,19 @@ describe("island shore + party play", () => {
           componentId: "CoinCatcherMinigame",
         },
         {
-          id: "mg_life_fork",
-          name: "Life Fork",
-          icon: "🔀",
+          id: "mg_budget_split",
+          name: "Budget Split",
+          icon: "📊",
           description: "quiz",
-          componentId: "LifeForkGame",
+          componentId: "BudgetSplitterGame",
         },
       ],
     });
     expect(islandNeedsPartyDash(island)).toBe(false);
     const pads = buildShoreHotspots(island).filter((s) => s.kind === "play_pad");
     expect(pads.some((p) => p.minigameId === "mg_coin_catcher")).toBe(true);
-    expect(pads.some((p) => p.minigameId === "mg_life_fork")).toBe(false);
+    // Literacy games share the shore with kinesthetic openers.
+    expect(pads.some((p) => p.minigameId === "mg_budget_split")).toBe(true);
     expect(isKinestheticComponent("CoinCatcherMinigame")).toBe(true);
   });
 
@@ -114,5 +116,18 @@ describe("island shore + party play", () => {
     expect(spots.some((h) => h.refId === "cc_savings_jar")).toBe(false);
     expect(spots.some((h) => h.refId === "cc_craft_badge")).toBe(false);
     expect(spots.some((h) => h.refId === "cc_coin_pouch")).toBe(true);
+  });
+
+  it("puts financial literacy pads on unlocked spine shores (not only Party Arena)", () => {
+    const content = loadIslandsContent();
+    for (const id of ["coincraft_cove", "paycheck_peninsula", "credit_kingdom"]) {
+      const island = content.islands.find((i) => i.id === id)!;
+      const pads = buildShoreHotspots(island).filter((s) => s.kind === "play_pad");
+      expect(pads.length).toBeGreaterThan(0);
+      const literacy = pads.filter(
+        (p) => p.minigameId && !String(p.minigameId).startsWith("mg_party_dash_"),
+      );
+      expect(literacy.length).toBeGreaterThan(0);
+    }
   });
 });
