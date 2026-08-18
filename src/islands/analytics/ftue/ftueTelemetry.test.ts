@@ -65,6 +65,7 @@ describe("FTUE telemetry privacy", () => {
   it("allowlist covers segment keys", () => {
     for (const key of [
       "ftue_version",
+      "experiment_id",
       "experiment_variant",
       "platform",
       "experience_mode",

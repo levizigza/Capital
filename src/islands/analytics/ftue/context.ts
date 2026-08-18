@@ -6,9 +6,8 @@ import type {
   PlatformSegment,
   SkipStatusSegment,
 } from "./types";
-import { FTUE_VERSION } from "./types";
+import { ftueExperimentAnalyticsContext } from "../../ftueExperiments";
 
-const EXP_VARIANT_KEY = "capital_ftue_exp_variant";
 const RETENTION_DAYS_KEY = "capital_ftue_retention_days_v1";
 
 type MutableSessionStats = {
@@ -48,22 +47,6 @@ export function resetFtueSessionStats(): void {
   stats.skipStatus = "none";
 }
 
-function resolveExperimentVariant(): string {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    const fromQuery = params.get("exp") ?? params.get("ftueExp");
-    if (fromQuery && /^[a-z0-9_-]{1,32}$/i.test(fromQuery)) {
-      localStorage.setItem(EXP_VARIANT_KEY, fromQuery);
-      return fromQuery;
-    }
-    const stored = localStorage.getItem(EXP_VARIANT_KEY);
-    if (stored && /^[a-z0-9_-]{1,32}$/i.test(stored)) return stored;
-  } catch {
-    /* ignore */
-  }
-  return "control";
-}
-
 export function resolvePlatform(): PlatformSegment {
   if (import.meta.env.VITE_QA === "1") return "qa";
   try {
@@ -91,9 +74,11 @@ function failurePatternSegment(): FailurePatternSegment {
 export function buildFtueSegmentContext(
   overrides?: Partial<FtueSegmentContext>,
 ): FtueSegmentContext {
+  const exp = ftueExperimentAnalyticsContext();
   return {
-    ftue_version: FTUE_VERSION,
-    experiment_variant: resolveExperimentVariant(),
+    ftue_version: exp.ftue_version,
+    experiment_id: exp.experiment_id,
+    experiment_variant: exp.experiment_variant,
     platform: resolvePlatform(),
     experience_mode: stats.experienceMode,
     skip_status: stats.skipStatus,

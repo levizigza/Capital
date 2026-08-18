@@ -6,7 +6,7 @@
  * never tutorial_completed alone.
  */
 
-export const FTUE_VERSION = "ashore_v1" as const;
+export { FTUE_VERSION } from "../../ftueExperiments";
 
 export const FTUE_EVENT_NAMES = [
   "ftue_started",
@@ -46,6 +46,7 @@ export type PlatformSegment = "web" | "mobile_web" | "qa";
 /** Attached to every FTUE event (after privacy sanitize). */
 export type FtueSegmentContext = {
   ftue_version: string;
+  experiment_id: string;
   experiment_variant: string;
   platform: PlatformSegment;
   experience_mode: ExperienceModeSegment;
@@ -58,6 +59,7 @@ export type FtueSegmentContext = {
 /** Allowlisted payload keys — anything else is stripped. */
 export const FTUE_PAYLOAD_ALLOWLIST = new Set([
   "ftue_version",
+  "experiment_id",
   "experiment_variant",
   "platform",
   "experience_mode",

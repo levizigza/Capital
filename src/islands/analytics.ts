@@ -4,6 +4,8 @@ import type { AnalyticsEvent, AnalyticsEventName } from "./types";
 
 import { MAX_ANALYTICS_EVENTS, ANALYTICS_KV_KEY } from "./analytics/export";
 import { getOrStartSession, sessionContext } from "./analytics/session";
+import { ftueExperimentAnalyticsContext } from "./ftueExperiments";
+import { FTUE_EVENT_NAMES } from "./analytics/ftue/types";
 
 export interface AnalyticsSink {
   emit: (event: AnalyticsEvent) => void | Promise<void>;
@@ -33,6 +35,41 @@ export class ConsoleAndKVSink implements AnalyticsSink {
   }
 }
 
+const FTUE_EVENT_SET = new Set<string>(FTUE_EVENT_NAMES);
+
+/** Onboarding-adjacent events that must carry exact ftue_version. */
+const FTUE_RELEVANT_EVENTS = new Set<string>([
+  ...FTUE_EVENT_NAMES,
+  "session_started",
+  "session_ended",
+  "tutorial_started",
+  "tutorial_completed",
+  "tutorial_step",
+  "onboarding_completed",
+  "hint_escalated",
+  "concept_transfer",
+  "core_loop_beat",
+  "soft_beat_armed",
+  "take_foreshadow",
+  "player_onboarding_mode",
+  "quest_started",
+  "quest_completed",
+  "quest_failed_attempt",
+  "minigame_started",
+  "minigame_completed",
+  "minigame_retry",
+  "fail_reason",
+  "dialogue_started",
+  "dialogue_choice",
+  "island_entered",
+  "screen_enter",
+  "screen_exit",
+]);
+
+function shouldStampFtueVersion(name: string): boolean {
+  return FTUE_RELEVANT_EVENTS.has(name) || FTUE_EVENT_SET.has(name);
+}
+
 export class AnalyticsClient {
   private sinks: AnalyticsSink[];
 
@@ -42,12 +79,14 @@ export class AnalyticsClient {
 
   async track(name: AnalyticsEventName, payload?: Record<string, unknown>): Promise<void> {
     getOrStartSession();
+    const ftueStamp = shouldStampFtueVersion(name) ? ftueExperimentAnalyticsContext() : {};
     const event: AnalyticsEvent = {
       id: uuidv4(),
       ts: new Date().toISOString(),
       name,
       payload: {
         ...sessionContext(),
+        ...ftueStamp,
         ...payload,
       },
     };

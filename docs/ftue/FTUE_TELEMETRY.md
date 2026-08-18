@@ -40,7 +40,10 @@ Local-first instrumentation for Harbor / Ashore / Cove learning loops.
 
 ## Segments (on every FTUE event)
 
-`ftue_version` · `experiment_variant` · `platform` · `experience_mode` · `skip_status` · `hint_usage` · `failure_pattern` · `concept_id`
+`ftue_version` · `experiment_id` · `experiment_variant` · `platform` · `experience_mode` · `skip_status` · `hint_usage` · `failure_pattern` · `concept_id`
+
+Exact `ftue_version` is also stamped on all onboarding-relevant `analytics.track` events (see `FTUE_EXPERIMENTATION.md`).
+
 
 ## Privacy rules
 
@@ -58,8 +61,14 @@ Local-first instrumentation for Harbor / Ashore / Cove learning loops.
 
 ## Experiment variant
 
-`?exp=<id>` or `localStorage.capital_ftue_exp_variant` (default `control`).
+See `docs/ftue/FTUE_EXPERIMENTATION.md`.
+
+- Sticky assignment + `?ftueExp=experimentId:variant` / `?exp=variant`
+- Winners never auto-ship; human review required
+- `FTUE_VERSION` is the single exact version string on events
 
 ## Human testing
 
 Pair telemetry with the repeatable protocol in `docs/ftue/FTUE_USABILITY_PROTOCOL.md` (small cohorts, no observer help, fix-before-expand). Templates live under `docs/ftue/usability/`.
+
+Experimentation (versioned hypotheses, human review, no auto-ship): `docs/ftue/FTUE_EXPERIMENTATION.md`.
