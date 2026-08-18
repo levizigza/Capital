@@ -51,3 +51,5 @@ Dismissal sets `reorientationSeenAt` and session flag — does **not** reset FTU
 - Wired in `App.tsx`, `BootCastSelect.tsx`, `IslandsApp.tsx`, `HomeHubView.tsx`, `save.ts`
 
 Also see `docs/ftue/FTUE_TELEMETRY.md` for privacy-conscious FTUE events and primary metrics (tutorial completion is secondary only).
+
+Human validation: `docs/ftue/FTUE_USABILITY_PROTOCOL.md` + templates in `docs/ftue/usability/`.

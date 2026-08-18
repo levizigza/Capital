@@ -59,3 +59,7 @@ Local-first instrumentation for Harbor / Ashore / Cove learning loops.
 ## Experiment variant
 
 `?exp=<id>` or `localStorage.capital_ftue_exp_variant` (default `control`).
+
+## Human testing
+
+Pair telemetry with the repeatable protocol in `docs/ftue/FTUE_USABILITY_PROTOCOL.md` (small cohorts, no observer help, fix-before-expand). Templates live under `docs/ftue/usability/`.
