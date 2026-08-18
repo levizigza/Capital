@@ -1,0 +1,74 @@
+%%{init: {'theme': 'neutral', 'flowchart': {'htmlLabels': false}} }%%
+flowchart TD
+  subgraph boot [Boot — App.tsx]
+    Title[Title / opening]
+    Cast[Street Fighter cast select]
+    FTUE7[Ashore FTUE-7 prove-it]
+    CarpetOpen[Carpet opening ceremony]
+    Title --> Cast --> FTUE7 --> CarpetOpen
+  end
+
+  subgraph harbor [Harbor Haven — home]
+    Meet[Piggy meet_guide Talk]
+    Plaza[Plaza walk Look Poke]
+    Bank[Ledger Bank structure]
+    Map[Money Carpet map]
+    Spectacle[Scar spectacle]
+    Plinth[Memory Plinth glow]
+    Share[Share PNG]
+    PiggyHome[Piggy homecoming]
+    Day2[Day-2 echo]
+    PayDay[Ritual Pay Day → CF streak]
+    Freedom[Freedom Seal]
+    CarpetOpen --> Meet
+    Meet --> Plaza
+    Plaza --> Map
+    Plaza --> Bank
+    Spectacle --> Plinth --> Share --> PiggyHome --> Day2
+    PayDay --> Freedom
+  end
+
+  subgraph spine [Main course strip — iconic freeze]
+    Cove[Coincraft Cove]
+    CoveTake[Irreversible Take jar vs treat]
+    CoveHush[Take hush cinema]
+    Pay[Paycheck Peninsula]
+    PayTake[Paycheck Change Take]
+    Credit[Credit Kingdom]
+    CreditOrdeal[Credit Ordeal / Interest Keep]
+    Map --> Cove
+    Cove --> CoveTake --> CoveHush
+    CoveHush -->|Carpet home| Spectacle
+    Map --> Pay
+    Pay --> PayTake --> CoveHush
+    Freedom -->|plus mastery clears on main| Credit
+    Credit --> CreditOrdeal
+  end
+
+  subgraph learn [Learning arc — docs north star]
+    Situation[Understandable situation]
+    Choice[Consequential choice]
+    Consequence[Simulated consequence]
+    Causal[Causal understanding Piggy names plaque]
+    Analog[Analogous problem Paycheck]
+    ITR[Independent transfer attempt]
+    Situation --> Choice --> Consequence --> Causal --> Analog --> ITR
+    CoveTake -.-> Choice
+    CoveHush -.-> Consequence
+    PiggyHome -.-> Causal
+    PayTake -.-> Analog
+  end
+
+  subgraph side [Side — never required for ending]
+    Arcade[Arcade]
+    Capsule[Capsule]
+    Studio[VibeCode]
+    Board[Harbor Board]
+    Family[Family Room local]
+    Shores[Era side shores after Cove Change]
+  end
+
+  Plaza -.-> Arcade
+  Plaza -.-> Capsule
+  Plaza -.-> Family
+  Map -.-> Shores
