@@ -51,7 +51,7 @@ describe("Structure part silhouettes", () => {
     expect(interior).toMatch(/Crown orb/);
     expect(interior).toMatch(/StructurePartSilhouette/);
     expect(interior).toMatch(/SafeText/);
-    expect(interior).toMatch(/active && onEnter/);
+    expect(interior).toMatch(/if \(onEnter\) onEnter\(\)/);
     expect(interior).not.toMatch(/from "@react-three\/drei".*Text|,\s*Text\s*}/);
     for (const part of allParts.filter((p) => p.softBeat)) {
       expect(STRUCTURE_PART_SILHOUETTE_IDS).toContain(part.id);

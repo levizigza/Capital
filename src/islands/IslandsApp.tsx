@@ -443,6 +443,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }, []);
 
   useEffect(() => {
+    // Global mute button writes prefs directly — keep Settings panel in sync.
+    return capitalMusic.subscribe(() => {
+      const enabled = capitalMusic.isEnabled();
+      setA11y((prev) => {
+        if ((prev.musicEnabled !== false) === enabled) return prev;
+        return { ...prev, musicEnabled: enabled };
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     if (dialogueState.open) {
       capitalMusic.playPlace({ kind: "talk" });
       return;
@@ -2841,8 +2852,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             open
             onClose={() => void handleMinigameAbandon()}
             maxWidth="lg"
-            usePortal={false}
-            zIndex={50}
+            usePortal
+            zIndex={90}
           >
             <IslandThemeProvider islandId={activeIsland.id} themeId={activeIsland.themeId}>
               <div data-testid="minigame-modal">

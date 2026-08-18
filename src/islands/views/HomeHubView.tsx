@@ -350,9 +350,11 @@ export function HomeHubView({
   });
   // Outfitter is plaza discovery after Ashore — never a guided hero teach.
   const showOutfitterChrome = !quietHarbor && !castleMode && !firstMeet;
-  /** Map chrome on voyage — free roam uses diegetic Money Carpet. */
+  /** Map chrome once voyage starts — free roam also uses diegetic Money Carpet. */
   const showTravelChip =
-    !quietHarbor && Boolean(castleMode) && guidedStep?.id === "to_dock";
+    !quietHarbor &&
+    Boolean(castleMode) &&
+    (guidedStep?.id === "to_dock" || guidedStep?.id === "done");
   const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
@@ -1062,6 +1064,8 @@ export function HomeHubView({
       }
       if (part.minigameId) {
         playCapitalSfx("organ_memory");
+        // Hide vault shell so the minigame modal is not buried under z-60.
+        setBankOpen(false);
         onPlayStructureMinigame?.(part.minigameId);
       }
     },

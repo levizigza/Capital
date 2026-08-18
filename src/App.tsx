@@ -9,6 +9,7 @@ import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/vie
 import { BootCastSelect } from '@/islands/views/BootCastSelect'
 import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehensionTutorial'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
+import { GlobalMusicMuteButton } from '@/islands/views/GlobalMusicMuteButton'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
 import { peekIslandSaveSync } from '@/islands/save'
@@ -16,7 +17,6 @@ import { peekIslandSaveSync } from '@/islands/save'
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
 import StructuredModeHub from '@/components/StructuredModeHub'
-import { MusicPlayer } from '@/components/MusicPlayer'
 import { OfflineIndicator } from '@/hooks/use-offline-support'
 import type { Tier, SkillLine } from '@/data/tiers'
 import { TIER_DATA } from '@/data/tiers'
@@ -467,7 +467,8 @@ function App() {
   if (showCapitalIntro && ISLANDS_ENABLED) {
     return (
       <>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-left" richColors />
+        <GlobalMusicMuteButton />
         {bootPhase === "title" ? (
           <CapitalOpeningIntro
             key="capital-opening-boot"
@@ -564,9 +565,7 @@ function App() {
     return (
       <>
         <Toaster position="top-right" richColors />
-        <div className="fixed top-4 right-4 z-50">
-          <MusicPlayer />
-        </div>
+        <GlobalMusicMuteButton />
         <ThreeJSModeSelection onSelectMode={handleModeSelect} />
       </>
     )
@@ -576,11 +575,9 @@ function App() {
   if (currentMode === "islands" && ISLANDS_ENABLED) {
     return (
       <>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-left" richColors />
         <OfflineIndicator />
-        <div className="fixed top-4 right-4 z-50">
-          <MusicPlayer />
-        </div>
+        <GlobalMusicMuteButton />
         {DebugPanel ? (
           <Suspense fallback={null}>
             <DebugPanel
@@ -643,9 +640,7 @@ function App() {
       <>
         <Toaster position="top-right" richColors />
         <OfflineIndicator />
-        <div className="fixed top-4 right-4 z-50">
-          <MusicPlayer />
-        </div>
+        <GlobalMusicMuteButton />
         <Suspense fallback={<LoadingFallback />}>
           <AIChatHelper playerName={userProfile.name || "Explorer"} />
           {DebugPanel ? (
@@ -673,9 +668,7 @@ function App() {
       <>
         <Toaster position="top-right" richColors />
         <OfflineIndicator />
-        <div className="fixed top-4 right-4 z-50">
-          <MusicPlayer />
-        </div>
+        <GlobalMusicMuteButton />
         <Suspense fallback={<LoadingFallback />}>
           <StructuredModeHub
             userProfile={userProfile}

@@ -33,6 +33,8 @@ import { TowerInteriorArchitecture } from "./TowerInteriorArchitecture";
 import { KeepInteriorArchitecture } from "./KeepInteriorArchitecture";
 import { triggerJuice } from "@/juice";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { TouchWalkPad } from "../views/TouchWalkPad";
+import { mergeWalkIntent } from "../input/walkIntent";
 
 function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
   if (theme === "bank") return near ? "Close the vault" : "Return · Memory plaza";
@@ -92,7 +94,7 @@ function InteriorPlayer({
 
   useFrame((_, dt) => {
     if (!group.current || inputFrozen) return;
-    const k = keys.current;
+    const k = mergeWalkIntent(keys.current);
     const wish = new THREE.Vector3(
       (k.r ? 1 : 0) - (k.l ? 1 : 0),
       0,
@@ -232,8 +234,8 @@ function PartPad({
         e.stopPropagation();
         poke.current = 1;
         playOrganSfx(moneyOrganForStructureTheme(theme).id);
-        // Near pad: poke climbs in (kids poke what they can reach).
-        if (active && onEnter) onEnter();
+        // Far poke still climbs in — kids tap the glowing pad they can see.
+        if (onEnter) onEnter();
       }}
       onPointerOver={() => {
         document.body.style.cursor = "pointer";
@@ -526,8 +528,9 @@ export function MoneyStructureInteriorView({
           )
         }
       >
-        <div />
+        <div data-hud-pass className="flex h-full min-h-0 flex-col" />
       </GameHudLayout>
+      {!inputFrozen ? <TouchWalkPad enabled /> : null}
     </div>
   );
 }

@@ -9,7 +9,6 @@ import { hasCompletedCoveChange } from "./chapterLoop";
 import {
   HUB_ISLAND_ID,
   isHubIslandId,
-  PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import { isSideShoreTravelId } from "./spineArchipelago";
 
@@ -92,12 +91,8 @@ export function isIslandProgressLocked(island: IslandDefinition, save: IslandSav
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;
 
-  // Island 2 opens after Cove “save or spend” Change beat.
-  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
-    return true;
-  }
-
-  // Era side shores open after first Cove Change — first-run stays on the signature loop.
+  // Cove + Paycheck stay open on the signature strip after Harbor.
+  // Era side shores still open after first Cove Change so first-run stays on the spine.
   if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
     return true;
   }
@@ -114,9 +109,6 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
   if (!isIslandProgressLocked(island, save)) return null;
   if ((island.requiredItems || []).some((id) => !save.inventory.includes(id))) {
     return "Need a key item";
-  }
-  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
-    return "Finish Cove Change first — Coin holds";
   }
   if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
     return "Finish Cove Change — then free-roam shores open";

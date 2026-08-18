@@ -95,7 +95,13 @@ export function TravelMapView({
         </div>
       }
       topRight={
-        <GameButton variant="outline" size="sm" onClick={onBack} data-testid="travel-map-back">
+        <GameButton
+          variant="outline"
+          size="sm"
+          onClick={onBack}
+          data-testid="travel-map-back"
+          className="mr-12"
+        >
           Harbor
         </GameButton>
       }

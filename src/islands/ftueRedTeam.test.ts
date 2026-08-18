@@ -137,7 +137,12 @@ describe("FTUE red team — Cove Take before quest chain (SOFTLOCK fix)", () => 
       },
     };
     expect(hasCompletedCoveChange(completed)).toBe(true);
-    expect(isIslandProgressLocked(PAYCHECK_PENINSULA_ID, completed)).toBe(false);
+    expect(
+      isIslandProgressLocked(
+        { id: PAYCHECK_PENINSULA_ID, name: "Paycheck", themeId: "paycheck_peninsula", npcs: [], quests: [], items: [], areas: [] } as never,
+        completed,
+      ),
+    ).toBe(false);
   });
 
   it("spender Take path: same recovery", () => {

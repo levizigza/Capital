@@ -100,11 +100,11 @@ export function islandMainQuestsComplete(island: IslandDefinition, save: IslandS
 }
 
 export function hasCompletedCoveChange(save: IslandSaveV1): boolean {
-  return Boolean(save.questStatus[COVE_CHANGE_QUEST_ID]?.completed);
+  return Boolean(save.questStatus?.[COVE_CHANGE_QUEST_ID]?.completed);
 }
 
 export function hasCompletedPaycheckChange(save: IslandSaveV1): boolean {
-  return Boolean(save.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.completed);
+  return Boolean(save.questStatus?.[PAYCHECK_CHANGE_QUEST_ID]?.completed);
 }
 
 export function isCoveChapterIsland(islandId: string): boolean {

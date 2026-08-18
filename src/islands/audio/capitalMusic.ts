@@ -62,6 +62,9 @@ class CapitalMusic {
   private unlocked = false;
   private pendingCue: MusicCueId | null = null;
   private pendingGainScale = 1;
+  /** Survives mute stop so unmute can resume the place bed. */
+  private resumeCue: MusicCueId | null = null;
+  private resumeGainScale = 1;
   private listeners = new Set<() => void>();
 
   constructor() {
@@ -100,9 +103,15 @@ class CapitalMusic {
   setEnabled(enabled: boolean): void {
     this.prefs.enabled = enabled;
     savePrefs(this.prefs);
-    if (!enabled) this.stop(true);
-    else if (this.pendingCue) this.playCue(this.pendingCue);
-    else if (this.currentCue) this.playCue(this.currentCue);
+    if (!enabled) {
+      this.stop(true, { keepResume: true });
+    } else if (this.pendingCue) {
+      this.playCue(this.pendingCue, this.pendingGainScale);
+    } else if (this.resumeCue) {
+      this.playCue(this.resumeCue, this.resumeGainScale);
+    } else if (this.currentCue) {
+      this.playCue(this.currentCue, this.currentGainScale);
+    }
     this.emit();
   }
 
@@ -142,6 +151,8 @@ class CapitalMusic {
   playCue(cue: MusicCueId, gainScale = 1): void {
     this.pendingCue = cue;
     this.pendingGainScale = gainScale;
+    this.resumeCue = cue;
+    this.resumeGainScale = gainScale;
     if (!this.prefs.enabled) {
       this.emit();
       return;
@@ -197,9 +208,12 @@ class CapitalMusic {
     this.emit();
   }
 
-  stop(immediate = false): void {
+  stop(immediate = false, opts?: { keepResume?: boolean }): void {
     this.pendingCue = null;
     this.currentCue = null;
+    if (!opts?.keepResume) {
+      this.resumeCue = null;
+    }
     if (!this.current) {
       this.emit();
       return;

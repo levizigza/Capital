@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { islandLockHint } from "./progressGates";
+import { islandLockHint, isIslandProgressLocked } from "./progressGates";
 import type { IslandDefinition, IslandSaveV1 } from "./types";
+import { COVE_ISLAND_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
 
 const stub = (id: string): IslandDefinition =>
   ({
@@ -29,8 +30,10 @@ const emptySave = {
 } as unknown as IslandSaveV1;
 
 describe("progression lock organ language", () => {
-  it("names Coin on Paycheck gate and Spiral on Credit gate", () => {
-    expect(islandLockHint(stub("paycheck_peninsula"), emptySave)).toMatch(/Coin holds/);
+  it("keeps Cove and Paycheck open from Harbor; Credit still needs Freedom/mastery", () => {
+    expect(isIslandProgressLocked(stub(COVE_ISLAND_ID), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(true);
     expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom Seal|Spiral/);
   });
 });

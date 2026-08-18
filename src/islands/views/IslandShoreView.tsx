@@ -257,6 +257,7 @@ export function IslandShoreView({
       }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
+        setStructureOpen(false);
         (onPlayStructureMinigame ?? onPlayMinigame)(part.minigameId);
       }
     },
