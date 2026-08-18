@@ -15,14 +15,57 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  quality:
-    uses: ./.github/workflows/qa.yml
+  # Do not call qa.yml here. Its e2e-smoke job hangs on `playwright install`
+  # (hours, not minutes) and a reusable workflow cannot finish until every
+  # child job ends — so Pages never reached build. Standalone QA still runs
+  # on push to main. Gate the static ship on unit/content/lint/security only.
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run content:validate
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run security:check
+      - run: npm test -- src/security src/islands/familyRoom.test.ts
 
   build:
-    # Ship even if a flaky e2e smoke fails — unit/content/lint/security still gate via quality.
-    # Pages was stuck on Wave 3 for days because e2e-smoke blocked deploy after Wave 4 map freeze.
-    needs: quality
-    if: ${{ always() && needs.quality.result != 'cancelled' }}
+    needs: [unit, content, lint, security]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
