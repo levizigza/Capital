@@ -5,6 +5,7 @@
 
 import type { IslandSaveV1 } from "../types";
 import { noteTransferAttempt } from "../conceptProgression/transferMetrics";
+import { PAYCHECK_CHANGE_QUEST_ID, PAYCHECK_PENINSULA_ID } from "../islandIds";
 import {
   SPINE_TRANSFER_SURFACES,
   transferSurfacesOnIsland,
@@ -62,5 +63,26 @@ export function stampIndependentTransferWindows(
     if (!isTransferAttemptPending(next, surface)) continue;
     next = noteTransferAttempt(next, surface.concept_id, now);
   }
+  next = ensurePaycheckTransferQuest(next, now);
   return next;
+}
+
+/** Analogous Take is the Change quest — start it on land, no Carlos classroom. */
+function ensurePaycheckTransferQuest(save: IslandSaveV1, now: string): IslandSaveV1 {
+  if (save.currentIslandId !== PAYCHECK_PENINSULA_ID) return save;
+  if (!isUnguidedTransferOpen(save, PAYCHECK_PENINSULA_ID)) return save;
+  const rainy = save.questStatus[PAYCHECK_CHANGE_QUEST_ID];
+  if (rainy?.started) return save;
+  return {
+    ...save,
+    questStatus: {
+      ...save.questStatus,
+      [PAYCHECK_CHANGE_QUEST_ID]: {
+        started: true,
+        completed: false,
+        completedObjectives: rainy?.completedObjectives ?? [],
+        startedAt: now,
+      },
+    },
+  };
 }

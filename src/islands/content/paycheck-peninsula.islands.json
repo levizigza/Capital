@@ -4,7 +4,7 @@
     {
       "id": "paycheck_peninsula",
       "name": "Paycheck Peninsula",
-      "description": "Clock organ shore — earn, stamp a paycheck into buckets, then face the rainy-day Take before Harbor remembers.",
+      "description": "Clock organ shore — a stall with two prices after Cove. Harbor keeps whichever you pick, then Clock buckets wait as a new organ.",
       "icon": "🕒",
       "provenance": {
         "learning_objectives": [
@@ -103,10 +103,10 @@
       "quests": [
         {
           "id": "q_pp_budget_basics",
-          "track": "main",
+          "track": "side",
           "title": "Budget Basics",
-          "description": "Collect your first paycheck from Pat, then visit Planner Priya to learn how to split it into categories.",
-          "hint": "Start on Main Street, talk to Payroll Pat, then head to the Budget Bureau.",
+          "description": "After the stall, collect a paycheck from Pat and stamp buckets with Priya — Clock as a new organ.",
+          "hint": "Main Street Pat, then the Budget Bureau — after Vee’s stall has spoken.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_payroll_pat" },
             { "type": "collectItem", "itemId": "pp_first_paycheck" },
@@ -119,10 +119,9 @@
           "id": "q_pp_rainy_day",
           "track": "main",
           "title": "Expect the Unexpected",
-          "description": "Coach Carlos names the rain. Vendor Vee’s stall has two prices. Harbor will notice.",
+          "description": "Vendor Vee’s stall has two prices. Harbor will notice.",
           "hint": "Rainy Day Park, then Vee on Main Street — pick a stall price when you’re ready.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_coach_carlos" },
             { "type": "talkToNpc", "npcId": "npc_vendor_vee" },
             { "type": "collectItem", "itemId": "pp_rainy_day_fund" }
           ],
@@ -149,24 +148,24 @@
               "id": "pat1",
               "speaker": "Payroll Pat",
               "text": {
-                "explorer": "Hi! You earned your first paycheck! Let's figure out how to split it up so you can buy fun stuff AND save some too.",
-                "apprentice": "Hey there! You've been working hard and your first paycheck is ready. But before you spend it all, have you thought about where each dollar should go?",
-                "strategist": "Congratulations on your first paycheck. Before you allocate funds, consider the 50/30/20 rule — needs, wants, and savings. How you distribute this income now sets the tone for your financial habits."
+                "explorer": "Stamp came in! After the stall, we can split fun stuff AND a little keep — Clock buckets, when you’re ready.",
+                "apprentice": "Paycheck’s here. Fountain’s already a Harbor story. When you’re ready, Priya stamps needs / wants / savings — Clock’s new organ.",
+                "strategist": "Income is in. The stall already wrote Harbor weather. Clock’s next organ is allocation — 50/30/20 if you want the Bureau."
               },
               "choices": [
                 {
                   "id": "pat1_a",
-                  "text": "I want to learn how to budget!",
+                  "text": "Show me Clock buckets",
                   "nextNodeId": "pat2",
                   "effects": [{ "type": "startQuest", "questId": "q_pp_budget_basics" }]
                 },
-                { "id": "pat1_b", "text": "I'll figure it out myself.", "nextNodeId": "pat3" }
+                { "id": "pat1_b", "text": "I’ll wander first.", "nextNodeId": "pat3" }
               ]
             },
             {
               "id": "pat2",
               "speaker": "Payroll Pat",
-              "text": "Smart move! Grab your paycheck here, then visit Planner Priya at the Budget Bureau. She's the best in town at helping people plan their spending.",
+              "text": "Clock’s the stamp organ. Grab the paycheck here, then Priya’s Bureau — buckets after the stall.",
               "end": true
             },
             {
@@ -270,11 +269,11 @@
             {
               "id": "cc1",
               "speaker": "Coach Carlos",
-              "text": "Life throws curveballs! What if your phone breaks or you need new shoes? That's why you need a Rainy Day Fund. Want to build one?",
+              "text": "Life throws curveballs — phones, shoes, rain. A Rainy Day Fund is Clock shelter you don’t touch until then. Vee’s stall already wrote today’s weather; swing by if you want the long version.",
               "choices": [
                 {
                   "id": "cc1_a",
-                  "text": "Teach me about emergency funds!",
+                  "text": "Tell me about rainy-day funds",
                   "nextNodeId": "cc2",
                   "effects": [{ "type": "startQuest", "questId": "q_pp_rainy_day" }]
                 },
@@ -309,6 +308,7 @@
                   "text": "Umbrella before glitter — Clock shelters · quieter Main Street",
                   "nextNodeId": "vv_protect_end",
                   "effects": [
+                    { "type": "startQuest", "questId": "q_pp_rainy_day" },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
@@ -331,6 +331,7 @@
                   "text": "Glitter ate the umbrella — louder rain gossip · Harbor still keeps it",
                   "nextNodeId": "vv_spend_end",
                   "effects": [
+                    { "type": "startQuest", "questId": "q_pp_rainy_day" },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",

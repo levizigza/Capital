@@ -39,6 +39,8 @@ export type QABridge = {
   resetSave: () => Promise<void>;
   /** Seed Harbor at a signature-loop phase (cold playtest). Optional spine organ. */
   seedSignatureLoop: (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => Promise<void>;
+  /** Cove training done, parked on Paycheck with the analogous Take still open (ITR cold play). */
+  seedIndependentTransfer: () => Promise<void>;
   /**
    * After a same-day Cove/Paycheck/Credit Take: backdate the latest scar and
    * re-roll ritual so Day-2 echo cinema can open (cold overnight proof).

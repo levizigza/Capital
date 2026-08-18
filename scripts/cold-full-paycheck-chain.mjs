@@ -1,9 +1,7 @@
 /**
- * Paycheck Change cold chain (Clock shelters):
- * Seed post-Cove unlock → Pat → paycheck item → Priya → Budget Split →
- * Carlos → Vee protect Take → Harbor retell.
- *
- * Cove unlock is seeded (piggy_ready); Paycheck quests + Take are real play.
+ * Paycheck Change cold chain (Independent Transfer):
+ * Seed post-Cove unlock → Paycheck shore → Vee stall Take (no budget class) →
+ * Harbor retell of what Clock kept.
  *
  * Usage: node scripts/cold-full-paycheck-chain.mjs
  */
@@ -147,42 +145,6 @@ async function main() {
     await page.getByTestId("island-shore-view").waitFor({ timeout: 30_000 });
     report.steps.push("paycheck_shore");
 
-    await talkNpc(page, "npc_payroll_pat", /learn how to budget|budget/i);
-    report.steps.push("pat_talk");
-
-    const gotPay = await page.evaluate(async () => {
-      const ok = await window.__QA__.collectItem("pp_first_paycheck");
-      return { ok, inv: window.__QA__.getSave()?.inventory ?? [] };
-    });
-    if (!gotPay.ok || !gotPay.inv.includes("pp_first_paycheck")) {
-      throw new Error(`First Paycheck collect failed: ${JSON.stringify(gotPay)}`);
-    }
-    report.steps.push("first_paycheck");
-
-    // Avoid Priya's startMinigame redirect to kinesthetic pad — talk only, then QA open Budget Split.
-    await talkNpc(page, "npc_planner_priya", /Tell me more|more first/i);
-    report.steps.push("priya_talk");
-    if (await page.getByTestId("minigame-modal").isVisible().catch(() => false)) {
-      await page.keyboard.press("Escape").catch(() => {});
-      await page.waitForTimeout(300);
-    }
-
-    await page.evaluate(() => window.__QA__.startMinigame("mg_budget_split"));
-    await playBudgetSplit(page);
-    const basics = await page.evaluate(() => {
-      const s = window.__QA__.getSave();
-      return {
-        split: s?.completedMinigames?.includes("mg_budget_split"),
-        quest: s?.questStatus?.q_pp_budget_basics?.completed,
-      };
-    });
-    report.budget = basics;
-    if (!basics.split) throw new Error("mg_budget_split not cleared");
-    report.steps.push("budget_split");
-
-    await talkNpc(page, "npc_coach_carlos", /emergency|Teach|Yes|rainy/i);
-    report.steps.push("carlos_talk");
-
     await page.evaluate((id) => window.__QA__.talkNpc(id), "npc_vendor_vee");
     await page.getByTestId("talk-battle-screen").waitFor({ timeout: 15_000 });
     await page.getByTestId("talk-battle-continue").evaluate((el) => el.click()).catch(() => {});
@@ -223,7 +185,7 @@ async function main() {
 
     let kid = report.homecoming || "";
     for (let i = 0; i < 40; i++) {
-      if (/Clock shelters/i.test(kid)) break;
+      if (/Clock shelters|Clock kept the loft|rain gossip/i.test(kid)) break;
       if (await page.getByTestId("scar-spectacle-retell").isVisible().catch(() => false)) {
         kid = await page.getByTestId("scar-spectacle-retell").innerText();
         break;
@@ -234,7 +196,7 @@ async function main() {
       }
       if (await page.getByTestId("talk-battle-screen").isVisible().catch(() => false)) {
         const t = await page.getByTestId("talk-battle-screen").innerText();
-        if (/Clock shelters|Umbrella before/i.test(t)) {
+        if (/Clock shelters|Clock kept the loft|Umbrella before|rain gossip/i.test(t)) {
           kid = t.replace(/\s+/g, " ").slice(0, 280);
           break;
         }
@@ -250,14 +212,14 @@ async function main() {
       const msg = await page.evaluate(
         () => window.__QA__.getSave()?.harborHomecoming?.message || "",
       );
-      if (/Clock shelters/i.test(msg)) kid = msg;
+      if (/Clock shelters|Clock kept the loft|rain gossip/i.test(msg)) kid = msg;
       await page.waitForTimeout(350);
     }
     report.kid = kid;
     report.pass =
       report.hasScar &&
       report.paycheckDone &&
-      /Clock shelters|Umbrella before glitter/i.test(kid);
+      /Clock kept the loft|rain gossip|Clock shelters|Umbrella before glitter/i.test(kid);
 
     await page.screenshot({
       path: "/opt/cursor/artifacts/screenshots/cold-paycheck-retell.png",

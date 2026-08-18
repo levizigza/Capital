@@ -35,7 +35,7 @@ Mapped onto live Capital (Cove → Paycheck → Credit + Harbor) — **player-fe
 | Second analogous problem | Paycheck fountain stall — two prices, **no Cove mapping**, **no “this is the Take”** |
 | Independent transfer | Land on Paycheck after Cove Take stamps `transfer_started`; Vee commit → INDEPENDENT. King KPI uses those events. |
 | Freedom | Map unlocks as curiosity (“a painting woke”), not homework. Coin Bag does not point the answer. |
-| New interacting concept | Clock buckets / Credit spiral — new organ, still no “this is like the jar/umbrella” |
+| New interacting concept | **After** Vee’s Take: optional Clock buckets (Pat/Priya side quest). Credit spiral is a new organ with no umbrella mapping. |
 | Curiosity hook | Soft Beat, digressions, day-2 echo — never forced FTUE |
 | Normal play | Scaffolding indistinguishable from Capital verbs |
 

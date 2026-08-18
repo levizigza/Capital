@@ -9,6 +9,7 @@ import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
   HARBOR_HAVEN_ID,
+  PAYCHECK_CHANGE_QUEST_ID,
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -16,6 +17,8 @@ import {
   isUnguidedTransferOpen,
   shouldMutePrincipleReteach,
   stampIndependentTransferWindows,
+  resolveTransferTalk,
+  buildIndependentTransferSave,
 } from "./index";
 
 function baseSave(over: Partial<IslandSaveV1> = {}): IslandSaveV1 {
@@ -124,7 +127,7 @@ describe("independent transfer teaching", () => {
         q_pp_rainy_day: {
           started: true,
           completed: false,
-          completedObjectives: ["talk:npc_coach_carlos"],
+          completedObjectives: [],
         },
       },
     });
@@ -153,5 +156,45 @@ describe("independent transfer teaching", () => {
     const save = trainedCoveSave({ currentIslandId: PAYCHECK_PENINSULA_ID });
     const next = noteTransferAttempt(save, "save_vs_spend");
     expect(next.conceptProgress?.concepts.save_vs_spend?.transferAttempts).toBeGreaterThanOrEqual(1);
+  });
+
+  it("landing on Paycheck starts the stall quest and mutes Pat/Priya/Carlos classrooms", () => {
+    const landed = stampIndependentTransferWindows({
+      ...trainedCoveSave(),
+      currentIslandId: PAYCHECK_PENINSULA_ID,
+    });
+    expect(landed.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.started).toBe(true);
+    expect(landed.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.completed).not.toBe(true);
+
+    const pat = resolveTransferTalk(landed, "dlg_payroll_pat");
+    expect(pat?.nodes[0]?.text).toMatch(/Fountain cracked/i);
+    expect(JSON.stringify(pat)).not.toMatch(/startQuest/);
+    expect(JSON.stringify(pat)).not.toMatch(/startMinigame/);
+
+    const priya = resolveTransferTalk(landed, "dlg_planner_priya");
+    expect(JSON.stringify(priya)).not.toMatch(/startMinigame/);
+    expect(priya?.nodes[0]?.text).toMatch(/Clock can wait/);
+  });
+
+  it("Budget Basics is a side Clock organ, not the Paycheck Change quest", () => {
+    const json = JSON.parse(
+      readFileSync(join(__dirname, "../content/paycheck-peninsula.islands.json"), "utf8"),
+    ) as { islands: Array<{ quests: Array<{ id: string; track: string; objectives: unknown[] }> }> };
+    const quests = json.islands[0]!.quests;
+    const rainy = quests.find((q) => q.id === "q_pp_rainy_day")!;
+    const budget = quests.find((q) => q.id === "q_pp_budget_basics")!;
+    expect(rainy.track).toBe("main");
+    expect(budget.track).toBe("side");
+    expect(JSON.stringify(rainy.objectives)).not.toMatch(/npc_coach_carlos/);
+    expect(JSON.stringify(rainy.objectives)).toMatch(/npc_vendor_vee/);
+  });
+
+  it("independent-transfer seed parks after Cove with the analogous Take still open", () => {
+    const seed = buildIndependentTransferSave();
+    expect(seed.irreversibleChoices?.cove_save_vs_spend).toBeTruthy();
+    expect(seed.irreversibleChoices?.paycheck_protect_vs_spend).toBeFalsy();
+    expect(seed.currentIslandId).toBe(PAYCHECK_PENINSULA_ID);
+    expect(seed.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.started).toBe(true);
+    expect(isUnguidedTransferOpen(seed, PAYCHECK_PENINSULA_ID)).toBe(true);
   });
 });

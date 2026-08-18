@@ -346,13 +346,6 @@ export function coinBagIslandTip(
       }
       if (rainy?.started && !rainy.completed) {
         const have = rainy.completedObjectives ?? [];
-        if (!have.includes("talk:npc_coach_carlos")) {
-          return {
-            tip: "Rainy Day Park — Coach Carlos",
-            coach: "Surprises love empty pouches. Carlos will set the challenge.",
-            track: "main",
-          };
-        }
         if (!have.includes("talk:npc_vendor_vee") || !have.includes("item:pp_rainy_day_fund")) {
           return {
             tip: "Vendor Vee — stall by the fountain",

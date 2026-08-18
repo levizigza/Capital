@@ -124,7 +124,7 @@ If not, that surface is not iconic yet.
 
 - **Day-2 Coin echo:** `prepareDay2EchoSave` / `__QA__.prepareDay2Echo()` overnight craft → Soft Beat cinema; `scripts/cold-day2-coin-echo.mjs` + e2e `prepareDay2Echo overnight craft`
 - **Coin Jar deepen:** Cork Vault + Coin Spring silhouettes; near-pad poke-to-enter; cork/spring toys; Lid Soft Beat `data-soft-beat-climb="lid-climb"`
-- **Paycheck cold chain:** Pat → paycheck → Priya → Budget Split → Carlos → Vee protect → Harbor **Clock shelters** (`scripts/cold-full-paycheck-chain.mjs`)
+- **Paycheck cold chain:** post-Cove → Vee stall Take (no budget class) → Harbor names what Clock kept (`scripts/cold-full-paycheck-chain.mjs`)
 
 ## Iteration 11 (shipped)
 

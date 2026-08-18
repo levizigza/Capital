@@ -9,3 +9,5 @@ export {
   stampIndependentTransferWindows,
   isTransferAttemptPending,
 } from "./stamp";
+export { resolveTransferTalk } from "./paycheckTalk";
+export { buildIndependentTransferSave } from "./seed";

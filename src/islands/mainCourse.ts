@@ -62,10 +62,9 @@ export const MAIN_COURSE: MainCourseStep[] = [
   {
     id: "second_painting",
     track: "main",
-    title: "Paycheck Peninsula · Budget Course",
-    blurb: "Allocate a paycheck, then face the rainy-day Take — protect or spend.",
+    title: "Paycheck Peninsula · Stall Course",
+    blurb: "A new stall, two prices — Harbor keeps either. Clock buckets wait after.",
     placeId: PAYCHECK_PENINSULA_ID,
-    paintingId: "mg_budget_split",
     done: (s) => Boolean(s.questStatus[PAYCHECK_CHANGE_QUEST_ID]?.completed),
   },
   {
@@ -95,6 +94,15 @@ export const SIDE_TOMFOOLERY: MainCourseStep[] = [
     blurb: "Shelly’s digression — need vs want with a Harbor gossip scar.",
     placeId: COVE_ISLAND_ID,
     done: (s) => Boolean(s.questStatus["q_cc_shell_want"]?.completed),
+  },
+  {
+    id: "paycheck_budget_basics",
+    track: "side",
+    title: "Paycheck · Clock Buckets",
+    blurb: "Optional after the stall — Pat and Priya stamp needs/wants/savings as a new organ.",
+    placeId: PAYCHECK_PENINSULA_ID,
+    paintingId: "mg_budget_split",
+    done: (s) => Boolean(s.questStatus["q_pp_budget_basics"]?.completed),
   },
   {
     id: "paycheck_inbox_storm",

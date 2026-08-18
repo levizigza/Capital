@@ -191,18 +191,6 @@ export function buildPaycheckChangeReplayTimeline(opts: {
         timestamp: now,
         context: { islandId: opts.islandId, questId: PAYCHECK_CHANGE_QUEST_ID },
         action: {
-          eventTitle: "Budget Basics with Priya",
-          chosenLabel: "Split needs, wants, and savings",
-          chosenIndex: 0,
-        },
-        alternatives: ["Spend the whole paycheck"],
-        stateDiff: "Budget planner earned",
-        explanation: "A paycheck only becomes a plan when you name the buckets.",
-      },
-      {
-        timestamp: now,
-        context: { islandId: opts.islandId, questId: PAYCHECK_CHANGE_QUEST_ID },
-        action: {
           eventTitle: "Vendor Vee's fountain vs glitter",
           chosenLabel: protectedFund
             ? "Umbrella before glitter"
@@ -214,11 +202,11 @@ export function buildPaycheckChangeReplayTimeline(opts: {
           : ["Umbrella before glitter"],
         stateDiff: protectedFund ? "Umbrella plaque" : "Glitter plaza mark",
         explanation: protectedFund
-          ? "Surprises don't ask permission. Keeping an umbrella is the Change beat."
+          ? "Harbor kept the loft dry. Same world rule as Cove — new stall, new numbers."
           : "Glitter now thins the pouch — Harbor will still remember, and you can rebuild.",
       },
     ],
     storySummary:
-      "You turned a paycheck into a plan, faced a surprise Take, and Paycheck left a mark on Harbor.",
+      "You faced a new stall without a Cove lecture, picked a price, and Paycheck left a mark on Harbor.",
   };
 }

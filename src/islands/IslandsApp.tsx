@@ -32,6 +32,7 @@ import {
   CREDIT_ORDEAL_QUEST_ID,
   HARBOR_HAVEN_ID,
   PAYCHECK_CHANGE_QUEST_ID,
+  PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
 import { usesCourseWorld } from "./mainCourse";
@@ -175,7 +176,7 @@ import {
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
 import { applyConceptSync, getConceptPhase, getConceptTransferMetrics } from "./conceptProgression";
-import { stampIndependentTransferWindows } from "./independentTransfer";
+import { resolveTransferTalk, stampIndependentTransferWindows, buildIndependentTransferSave } from "./independentTransfer";
 import { CONCEPT_REGISTRY } from "./conceptProgression/registry";
 import {
   applyCoveTakeLedgerFootprint,
@@ -1087,6 +1088,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setView("home");
         await persistIslandSave(fresh);
       },
+      seedIndependentTransfer: async () => {
+        const seeded = buildIndependentTransferSave();
+        replaceSave(seeded);
+        setHubModal(null);
+        await persistIslandSave(seeded);
+        await enterIsland(PAYCHECK_PENINSULA_ID, { instant: true });
+      },
       seedSignatureLoop: async (phase?: SignaturePhase, organ?: SignatureSpineOrgan) => {
         const resolved = phase ?? "spectacle_ready";
         const seeded = buildSignatureLoopSave(resolved, new Date(), organ ?? "coin");
@@ -1653,6 +1661,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const dialogueGraph = useMemo(() => {
     if (!dialogueState.graphId) return undefined;
+    const transferTalk = resolveTransferTalk(save, dialogueState.graphId);
+    if (transferTalk) return transferTalk;
     const fromIsland = activeIsland
       ? findDialogue(activeIsland.dialogues, dialogueState.graphId)
       : undefined;
@@ -1697,12 +1707,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     activeIsland,
     dialogueState.graphId,
     dialogueState.npcId,
-    save?.hubGuidedIntro,
-    save?.harborHomecoming,
-    save?.piggyBondHomecomings,
-    save?.harborScars,
-    save?.stance,
-    save?.npcMemory,
+    save,
   ]);
 
   const dialogueNode = useMemo(() => {

@@ -36,7 +36,7 @@ export const ICONIC_PROOF_COLD_SCRIPTS = [
 export const ICONIC_PROOF_HARNESS_MAY = [
   "enterIsland / openHub / openTravel",
   "talkNpc / collectItem / startMinigame",
-  "seedSignatureLoop / prepareDay2Echo",
+  "seedSignatureLoop / seedIndependentTransfer / prepareDay2Echo",
   "enterMoneyStructure / enterStructureSoftBeat",
   "completeMinigame for fail-dignity cold",
   "harbor-skip-3d when Canvas veil stalls",

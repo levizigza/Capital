@@ -3,7 +3,7 @@
 **Why this exists:** Pattern #94 (test with non-designers) cannot Pass on QA cold scripts alone.  
 Automation proves systems; a human who did not design Capital must still play.
 
-For a full FTUE cohort loop (silence rules, finding cards, fix→retest), use [`docs/ftue/FTUE_USABILITY_PROTOCOL.md`](./ftue/FTUE_USABILITY_PROTOCOL.md).
+For Independent Transfer Rate (king FTUE KPI), use [`docs/ftue/INDEPENDENT_TRANSFER_PLAYTEST.md`](./ftue/INDEPENDENT_TRANSFER_PLAYTEST.md) — observer silence at Paycheck Vee after Cove.
 
 ## How to Pass #94
 
