@@ -30,10 +30,11 @@ Same campaign unlock path is OK **only if** Takes change what is possible later 
 | Digression Plinth checklist | Heard myths only — no empty era slots / X/Y fill |
 | Craft “badge” souvenir | Renamed Jar Keep Cork; quest XP reward stripped |
 | Legacy achievement dashboards | Structured mode tabs/panels gated off product path |
+| Mastery digression unreachable | Cleared play pads offer optional worksheet CTA (never gates) |
+| Local ITR / health measurement | Health dashboard in Settings → Analytics; local-only honesty copy |
+| Outer TrophyRoom / XP ladder chrome | Trophy room retired; Creative hub hides level ladder under bible law |
 
-## Not in this PR
+## Still deferred (not a product honesty lie)
 
-- Live remote ITR dashboard / cold cohort execution (process already documented)
-- Wiring MasteryQuiz entry CTA (kept optional; no longer forced after clear)
-- Giant sim / AI guide / social expansion (still deferred)
-- Outer Creative TrophyRoom3D dead import cleanup (non-product)
+- Cold **remote** cohort execution (needs remote analytics sink + recruited players)
+- Giant sim / AI guide / social (chase-order gated)

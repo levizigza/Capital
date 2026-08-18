@@ -23,6 +23,8 @@ import {
   type LearningProfileId,
 } from "../learningProfile";
 import { isKinestheticComponent, partyPlayKind } from "../partyPlayStyle";
+import { getMasteryGateForMinigame } from "../masteryGate";
+import { ensureLedger } from "../voyagerLedger";
 import type {
   AreaId,
   IslandDefinition,
@@ -68,6 +70,8 @@ export type IslandPlayViewProps = {
   onOpenHub: () => void;
   onOpenStudio?: () => void;
   onPlayMinigame?: (minigameId: string) => void;
+  /** Optional worksheet digression — never gates Credit or island clears. */
+  onOpenMasteryDigression?: (minigameId: string) => void;
   /** Optional Fortune Party board for this island */
   onOpenBoard?: () => void;
   /** Soft HUD after irreversible Take */
@@ -312,6 +316,7 @@ export function IslandPlayView({
   onOpenHub,
   onOpenStudio,
   onPlayMinigame,
+  onOpenMasteryDigression,
   onOpenBoard,
   chapterQuiet = false,
   onClearChapterQuiet,
@@ -552,30 +557,51 @@ export function IslandPlayView({
                     : kind === "quiz"
                       ? "📝 After play"
                       : "🎯 Strategy";
+                const digressionGate = getMasteryGateForMinigame(mg.id);
+                const masteryDone = digressionGate
+                  ? ensureLedger(save.voyagerLedger).masteryClears.includes(digressionGate.id)
+                  : false;
                 return (
-                  <button
+                  <div
                     key={mg.id}
-                    type="button"
+                    className="rounded-xl border-2 border-black/15 bg-white/80 p-3"
                     data-testid={`island-minigame-${mg.id}`}
-                    onClick={() => onPlayMinigame(mg.id)}
-                    className="flex items-center gap-3 rounded-xl border-2 border-black/15 bg-white/80 p-3 text-left transition-transform hover:-translate-y-0.5 hover:border-black/40"
                   >
-                    <span className="text-2xl shrink-0">{mg.icon}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="flex flex-wrap items-center gap-2 font-bold">
-                        {mg.name}
-                        <span className="text-[10px] font-bold uppercase tracking-wide text-amber-800">
-                          {kindLabel}
+                    <button
+                      type="button"
+                      onClick={() => onPlayMinigame(mg.id)}
+                      className="flex w-full items-center gap-3 text-left transition-transform hover:-translate-y-0.5"
+                    >
+                      <span className="text-2xl shrink-0">{mg.icon}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex flex-wrap items-center gap-2 font-bold">
+                          {mg.name}
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-amber-800">
+                            {kindLabel}
+                          </span>
+                          {cleared ? <span className="text-xs text-emerald-600">✓ cleared</span> : null}
                         </span>
-                        {cleared ? <span className="text-xs text-emerald-600">✓ cleared</span> : null}
+                        <span className="line-clamp-2 text-xs text-gray-600">{mg.description}</span>
+                        {mg.homage ? (
+                          <span className="mt-0.5 block text-[10px] italic text-gray-500">{mg.homage}</span>
+                        ) : null}
                       </span>
-                      <span className="line-clamp-2 text-xs text-gray-600">{mg.description}</span>
-                      {mg.homage ? (
-                        <span className="mt-0.5 block text-[10px] italic text-gray-500">{mg.homage}</span>
-                      ) : null}
-                    </span>
-                    <span className="shrink-0 text-lg">▶</span>
-                  </button>
+                      <span className="shrink-0 text-lg">▶</span>
+                    </button>
+                    {cleared && digressionGate && onOpenMasteryDigression ? (
+                      <GameButton
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 w-full"
+                        data-testid={`mastery-digression-${mg.id}`}
+                        onClick={() => onOpenMasteryDigression(mg.id)}
+                      >
+                        {masteryDone
+                          ? "Optional digression · reviewed"
+                          : "Optional digression · worksheet"}
+                      </GameButton>
+                    ) : null}
+                  </div>
                 );
               })}
             </div>

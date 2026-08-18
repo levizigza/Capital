@@ -6,6 +6,12 @@ import type { AnalyticsEvent } from "../types";
 import { analyzeFunnel, FUNNEL_WINDOW_MS, type FunnelAnalysis } from "./funnel";
 import { analyzeFtueMetrics, FTUE_PRIMARY_METRICS, type FtueMetricsSnapshot } from "./ftue";
 import {
+  analyzeHealthDashboard,
+  type HealthCategorySnapshot,
+  type HealthDamageFlag,
+  type HealthMetric,
+} from "./healthDashboard";
+import {
   clearAnalyticsEvents,
   exportAnalyticsCsv,
   exportAnalyticsJson,
@@ -29,6 +35,96 @@ function formatMetric(id: string, value: number | null): string {
     return `${Math.round(value * 100)}%`;
   }
   return String(value);
+}
+
+
+function formatHealthMetric(m: HealthMetric): string {
+  if (m.value == null) return "—";
+  if (m.unit === "rate") return `${Math.round(m.value * 100)}%`;
+  if (m.unit === "ms") return formatMs(m.value);
+  if (m.unit === "unknown") return "unavailable";
+  return String(m.value);
+}
+
+const CATEGORY_TONE: Record<string, string> = {
+  engagement: "border-sky-300/80 bg-sky-50/90",
+  learning: "border-emerald-300/80 bg-emerald-50/90",
+  business: "border-amber-300/80 bg-amber-50/90",
+};
+
+function DamageFlagsPanel({ flags }: { flags: HealthDamageFlag[] }) {
+  if (flags.length === 0) {
+    return (
+      <p className="text-xs text-gray-500" data-testid="health-flags-clear">
+        No cross-category damage flags from local data yet.
+      </p>
+    );
+  }
+  return (
+    <div className="space-y-2" data-testid="health-flags">
+      {flags.map((f) => (
+        <div
+          key={f.id}
+          className="rounded-xl border border-rose-300 bg-rose-50 px-3 py-2"
+          data-testid={`health-flag-${f.id}`}
+        >
+          <p className="text-xs font-black uppercase tracking-wide text-rose-900">{f.title}</p>
+          <p className="mt-1 text-xs leading-relaxed text-rose-900/90">{f.detail}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CategoryColumn({ category }: { category: HealthCategorySnapshot }) {
+  return (
+    <div
+      className={`rounded-xl border-2 px-3 py-3 ${CATEGORY_TONE[category.id] ?? "bg-gray-50"}`}
+      data-testid={`health-category-${category.id}`}
+    >
+      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-900">{category.title}</h3>
+      <ul className="mt-3 space-y-2">
+        {category.metrics.map((m) => (
+          <li key={m.id} className="border-t border-black/5 pt-2 first:border-0 first:pt-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-xs font-semibold text-gray-800">{m.label}</span>
+              <span className="font-mono text-sm font-bold tabular-nums text-gray-950">
+                {formatHealthMetric(m)}
+              </span>
+            </div>
+            {m.inverted ? <p className="text-[10px] text-gray-600">Higher is worse</p> : null}
+            {m.note ? <p className="text-[10px] leading-snug text-gray-500">{m.note}</p> : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function HealthDashboardPanel({
+  engagement,
+  learning,
+  business,
+  flags,
+  law,
+}: {
+  engagement: HealthCategorySnapshot;
+  learning: HealthCategorySnapshot;
+  business: HealthCategorySnapshot;
+  flags: HealthDamageFlag[];
+  law: string;
+}) {
+  return (
+    <div className="space-y-3" data-testid="health-dashboard">
+      <p className="text-xs font-medium leading-relaxed text-gray-700">{law}</p>
+      <DamageFlagsPanel flags={flags} />
+      <div className="grid gap-3 md:grid-cols-3">
+        <CategoryColumn category={engagement} />
+        <CategoryColumn category={learning} />
+        <CategoryColumn category={business} />
+      </div>
+    </div>
+  );
 }
 
 function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
@@ -86,6 +182,9 @@ function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
           After Capital teaches a principle once, can players reason with it in a new situation
           without being told what to do? Tutorial completion is not success.
         </p>
+        <p className="mt-2 text-[10px] font-semibold uppercase tracking-wide text-emerald-900/70">
+          Local device ITR — not a live cohort until a remote sink exists
+        </p>
       </div>
       <p className="text-xs text-gray-600">
         Supporting autonomy metrics — comprehension over checklist finish.
@@ -136,6 +235,7 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
 
   const analysis = useMemo(() => analyzeFunnel(events), [events]);
   const ftueSnap = useMemo(() => analyzeFtueMetrics(events), [events]);
+  const health = useMemo(() => analyzeHealthDashboard(events), [events]);
 
   const quitSessions = useMemo(
     () => analysis.sessions.filter((s) => s.quitWithin5Min),
@@ -146,10 +246,10 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
     <div className="max-h-[min(80dvh,720px)] space-y-4 overflow-y-auto">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-xl font-black">Analytics Export</h2>
+          <h2 className="text-xl font-black">Health dashboard</h2>
           <p className="text-xs text-gray-500">
-            FTUE metrics + first {formatMs(FUNNEL_WINDOW_MS)} funnel · {events.length} events ·{" "}
-            {analysis.sessionsInWindow} sessions
+            Local ENGAGEMENT · LEARNING · BUSINESS · {events.length} events ·{" "}
+            {analysis.sessionsInWindow} sessions · not a remote cohort
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -191,7 +291,17 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
         </GamePanel>
       ) : (
         <>
-          <GamePanel title="FTUE primary metrics">
+          <GamePanel title="ENGAGEMENT · LEARNING · BUSINESS">
+            <HealthDashboardPanel
+              engagement={health.engagement}
+              learning={health.learning}
+              business={health.business}
+              flags={health.flags}
+              law={health.law}
+            />
+          </GamePanel>
+
+          <GamePanel title="FTUE primary metrics (local)">
             <FtueMetricsPanel snap={ftueSnap} />
           </GamePanel>
 

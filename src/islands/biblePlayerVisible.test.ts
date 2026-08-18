@@ -64,4 +64,19 @@ describe("bible player-visible wiring", () => {
   it("Memory Plinth modal drops stance chrome", () => {
     expect(hub).not.toMatch(/stanceLine \?/);
   });
+
+  it("exposes optional mastery digression from island play pads", () => {
+    const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
+    expect(play).toMatch(/onOpenMasteryDigression/);
+    expect(play).toMatch(/Optional digression/);
+    expect(app).toMatch(/onOpenMasteryDigression/);
+    expect(app).toMatch(/setPendingMastery/);
+  });
+
+  it("ships local health dashboard with ITR honesty", () => {
+    const analytics = readFileSync(join(__dirname, "analytics/AnalyticsExportView.tsx"), "utf8");
+    expect(analytics).toMatch(/health-dashboard/);
+    expect(analytics).toMatch(/Local device ITR|not a remote cohort|Local ENGAGEMENT/i);
+    expect(analytics).toMatch(/analyzeHealthDashboard/);
+  });
 });

@@ -2739,6 +2739,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 setActiveMinigameId(minigameId as MinigameId);
                 setMinigameStartedAt(Date.now());
               }}
+              onOpenMasteryDigression={(minigameId) => {
+                const gate = getMasteryGateForMinigame(minigameId);
+                if (!gate) return;
+                setPendingMastery({
+                  gate,
+                  mgId: minigameId as MinigameId,
+                  score: undefined,
+                  source: "dialogue",
+                  firstClear: false,
+                });
+              }}
               onOpenBoard={() => setView("island")}
               chapterQuiet={Boolean(save?.chapterQuietPending)}
               onClearChapterQuiet={() =>
