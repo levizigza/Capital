@@ -3,6 +3,8 @@
 **Why this exists:** Pattern #94 (test with non-designers) cannot Pass on QA cold scripts alone.  
 Automation proves systems; a human who did not design Capital must still play.
 
+For a full FTUE cohort loop (silence rules, finding cards, fix→retest), use [`docs/ftue/FTUE_USABILITY_PROTOCOL.md`](./ftue/FTUE_USABILITY_PROTOCOL.md).
+
 ## How to Pass #94
 
 1. Fresh profile · Harbor · Cove → Paycheck → Credit cold path (or signature Soft Beat + share).
