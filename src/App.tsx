@@ -9,6 +9,7 @@ import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/vie
 import { BootCastSelect } from '@/islands/views/BootCastSelect'
 import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehensionTutorial'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
+import { GlobalMusicMuteButton } from '@/islands/views/GlobalMusicMuteButton'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
 import { peekIslandSaveSync } from '@/islands/save'
@@ -467,7 +468,8 @@ function App() {
   if (showCapitalIntro && ISLANDS_ENABLED) {
     return (
       <>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-left" richColors />
+        <GlobalMusicMuteButton />
         {bootPhase === "title" ? (
           <CapitalOpeningIntro
             key="capital-opening-boot"
@@ -576,11 +578,9 @@ function App() {
   if (currentMode === "islands" && ISLANDS_ENABLED) {
     return (
       <>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-left" richColors />
         <OfflineIndicator />
-        <div className="fixed top-4 right-4 z-50">
-          <MusicPlayer />
-        </div>
+        <GlobalMusicMuteButton />
         {DebugPanel ? (
           <Suspense fallback={null}>
             <DebugPanel

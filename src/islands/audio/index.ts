@@ -11,3 +11,4 @@ export {
 export { capitalMusic } from "./capitalMusic";
 export { playOpeningFoley } from "./openingAudio";
 export { playCapitalSfx, playOrganSfx, type CapitalSfxId } from "./capitalSfx";
+export { setCapitalMusicEnabled, toggleCapitalMusicMute } from "./musicMute";
