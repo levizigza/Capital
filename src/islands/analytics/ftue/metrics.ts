@@ -9,13 +9,21 @@ function elapsed(e: AnalyticsEvent): number {
   return typeof ms === "number" ? ms : 0;
 }
 
-function firstElapsed(events: AnalyticsEvent[], name: string, via?: string): number | null {
+function namesMatch(e: AnalyticsEvent, names: string[]): boolean {
+  return names.includes(e.name);
+}
+
+function firstElapsed(events: AnalyticsEvent[], names: string[], via?: string): number | null {
   const hit = events.find((e) => {
-    if (e.name !== name) return false;
+    if (!namesMatch(e, names)) return false;
     if (via && e.payload?.via !== via) return false;
     return true;
   });
   return hit ? elapsed(hit) : null;
+}
+
+function countByNames(sess: AnalyticsEvent[], names: string[]): number {
+  return sess.filter((e) => namesMatch(e, names)).length;
 }
 
 function rate(numer: number, denom: number): number | null {
@@ -59,8 +67,17 @@ export function computeRetentionRates(
   return out;
 }
 
+/** Count locks only once — exclude first_meaningful_decision (duplicate of first select). */
+const DECISION_EVENTS = ["decision_selected", "decision_committed"];
+const FAILURE_EVENTS = ["failure", "failure_occurred"];
+const RECOVERY_EVENTS = ["recovery", "retry_successful"];
+const FREEPLAY_EVENTS = ["freeplay_started", "freeplay_entered"];
+const COMPLETE_LOOP_EVENTS = ["first_complete_loop"];
+const CONSEQUENCE_EVENTS = ["consequence_displayed", "first_complete_loop"];
+
 /**
- * Aggregate FTUE metrics. Tutorial completion is reported as secondary only.
+ * Aggregate learning metrics. Tutorial completion is reported as secondary only.
+ * Never treat tutorial_completion_rate as the primary success measure.
  */
 export function analyzeFtueMetrics(events: AnalyticsEvent[]): FtueMetricsSnapshot {
   const bySession = groupEventsBySession(events);
@@ -73,8 +90,8 @@ export function analyzeFtueMetrics(events: AnalyticsEvent[]): FtueMetricsSnapsho
   let nDecision = 0;
   let sumConsequence = 0;
   let nConsequence = 0;
-  let sumCore = 0;
-  let nCore = 0;
+  let sumLoop = 0;
+  let nLoop = 0;
 
   let guidedOk = 0;
   let guidedDenom = 0;
@@ -87,31 +104,38 @@ export function analyzeFtueMetrics(events: AnalyticsEvent[]): FtueMetricsSnapsho
   let freeplay = 0;
   let tutorialDone = 0;
 
+  const strategyIds = new Set<string>();
+  let strategyDecisions = 0;
+
   for (const sess of sessions) {
-    const a = firstElapsed(sess, "first_control_received");
+    const a = firstElapsed(sess, ["first_control_received"]);
     if (a != null) {
       sumAction += a;
       nAction += 1;
     }
     const d =
-      firstElapsed(sess, "decision_presented", "first_decision_marker") ??
-      firstElapsed(sess, "decision_presented");
+      firstElapsed(sess, ["first_meaningful_decision"]) ??
+      firstElapsed(sess, ["decision_selected", "decision_committed"]) ??
+      firstElapsed(sess, ["decision_presented"], "first_decision_marker") ??
+      firstElapsed(sess, ["decision_presented"]);
     if (d != null) {
       sumDecision += d;
       nDecision += 1;
     }
     const c =
-      firstElapsed(sess, "consequence_displayed", "first_consequence_marker") ??
-      firstElapsed(sess, "consequence_displayed");
+      firstElapsed(sess, CONSEQUENCE_EVENTS, "first_consequence_marker") ??
+      firstElapsed(sess, CONSEQUENCE_EVENTS);
     if (c != null) {
       sumConsequence += c;
       nConsequence += 1;
     }
-    // Core loop = first Earn→Decide→Take consequence in session
-    const core = firstElapsed(sess, "consequence_displayed");
-    if (core != null) {
-      sumCore += core;
-      nCore += 1;
+    const loop =
+      firstElapsed(sess, COMPLETE_LOOP_EVENTS) ??
+      firstElapsed(sess, ["consequence_displayed"], "first_consequence_marker") ??
+      firstElapsed(sess, ["consequence_displayed"]);
+    if (loop != null) {
+      sumLoop += loop;
+      nLoop += 1;
     }
 
     const practiced = sess.filter((e) => e.name === "concept_practiced").length;
@@ -132,28 +156,39 @@ export function analyzeFtueMetrics(events: AnalyticsEvent[]): FtueMetricsSnapsho
     if (sess.some((e) => e.name === "hint_used" || e.name === "hint_requested")) {
       hintSessions += 1;
     }
-    failures += sess.filter((e) => e.name === "failure_occurred").length;
-    recoveries += sess.filter((e) => e.name === "retry_successful").length;
+    failures += countByNames(sess, FAILURE_EVENTS);
+    recoveries += countByNames(sess, RECOVERY_EVENTS);
 
-    if (sess.some((e) => e.name === "freeplay_entered")) freeplay += 1;
+    // Prefer freeplay_started; count session once even if legacy also present.
+    if (sess.some((e) => namesMatch(e, FREEPLAY_EVENTS))) freeplay += 1;
     if (sess.some((e) => e.name === "tutorial_completed" || e.name === "onboarding_completed")) {
       tutorialDone += 1;
+    }
+
+    for (const e of sess) {
+      if (!namesMatch(e, DECISION_EVENTS)) continue;
+      strategyDecisions += 1;
+      const cid = e.payload?.choiceId;
+      if (typeof cid === "string" && cid) strategyIds.add(cid);
     }
   }
 
   const retention = computeRetentionRates(loadRetentionDays());
   const sessionCount = sessions.length || 0;
+  const loopMs = nLoop ? Math.round(sumLoop / nLoop) : null;
 
   return {
     tutorial_completion_rate: rate(tutorialDone, sessionCount),
     time_to_first_action_ms: nAction ? Math.round(sumAction / nAction) : null,
     time_to_first_decision_ms: nDecision ? Math.round(sumDecision / nDecision) : null,
     time_to_first_consequence_ms: nConsequence ? Math.round(sumConsequence / nConsequence) : null,
-    time_to_first_core_loop_ms: nCore ? Math.round(sumCore / nCore) : null,
+    time_to_first_core_loop_ms: loopMs,
+    time_to_first_complete_loop_ms: loopMs,
     guided_success_rate: rate(guidedOk, guidedDenom),
     independent_transfer_rate: rate(transferOk, transferDenom),
     hint_dependency: rate(hintSessions, Math.max(practicedSessions, sessionCount)),
     failure_recovery_rate: rate(recoveries, failures),
+    strategy_diversity: rate(strategyIds.size, strategyDecisions),
     freeplay_conversion: rate(freeplay, Math.max(ftueStarts, sessionCount)),
     d1_retention: retention.d1_retention ?? null,
     d7_retention: retention.d7_retention ?? null,
@@ -175,15 +210,12 @@ export function analyzeFtueMetricsBySegment(
 
 export function primaryMetricValues(snap: FtueMetricsSnapshot): Record<FtuePrimaryMetricId, number | null> {
   return {
-    time_to_first_action: snap.time_to_first_action_ms,
-    time_to_first_decision: snap.time_to_first_decision_ms,
-    time_to_first_consequence: snap.time_to_first_consequence_ms,
-    time_to_first_core_loop: snap.time_to_first_core_loop_ms,
-    guided_success_rate: snap.guided_success_rate,
     independent_transfer_rate: snap.independent_transfer_rate,
-    hint_dependency: snap.hint_dependency,
+    time_to_first_decision: snap.time_to_first_decision_ms,
+    time_to_first_complete_loop: snap.time_to_first_complete_loop_ms,
     failure_recovery_rate: snap.failure_recovery_rate,
-    freeplay_conversion: snap.freeplay_conversion,
+    hint_dependency: snap.hint_dependency,
+    strategy_diversity: snap.strategy_diversity,
     d1_retention: snap.d1_retention,
     d7_retention: snap.d7_retention,
     d30_retention: snap.d30_retention,

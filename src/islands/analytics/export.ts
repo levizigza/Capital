@@ -57,7 +57,7 @@ export function eventsToJson(
       /** Primary FTUE KPIs — tutorial completion is secondary only. */
       ftueMetrics: ftue ?? analyzeFtueMetrics(events),
       primarySuccessNote:
-        "Do not treat tutorial_completion_rate as the primary success metric. Prefer freeplay_conversion, independent_transfer_rate, failure_recovery_rate, and time_to_first_core_loop.",
+        "Never use tutorial completion as the primary measure of success. King KPI: independent_transfer_rate. Also measure time_to_first_decision, time_to_first_complete_loop, failure_recovery_rate, hint_dependency, strategy_diversity, D1/D7/D30.",
       funnel: analysis,
       events,
     },

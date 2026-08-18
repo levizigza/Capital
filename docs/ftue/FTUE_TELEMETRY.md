@@ -2,40 +2,41 @@
 
 Local-first instrumentation for Harbor / Ashore / Cove learning loops.  
 **King KPI is Independent Transfer Rate** — see [NORTH_STAR.md](./NORTH_STAR.md).  
-Tutorial shell completion is diagnostic only.
+**Canonical event + Measure list:** [docs/design/LEARNING_TELEMETRY.md](../design/LEARNING_TELEMETRY.md).
 
-## Events (minimum set)
+**Hard law:** Never use tutorial completion as the primary measure of success.
+
+## Events (instrument)
 
 | Event | Meaning |
 |-------|---------|
-| `ftue_started` | First FTUE / Ashore / experienced boot |
-| `first_control_received` | First walk/move proof |
-| `first_meaningful_action` | Talk, map open, or dialogue choice |
-| `decision_presented` | Irreversible Take choices shown |
-| `decision_committed` | Take / irreversible locked |
-| `consequence_displayed` | Take hush, scar, Harbor felt |
-| `concept_introduced` | Concept → GUIDED |
-| `concept_practiced` | Concept → REDUCED_GUIDANCE |
-| `hint_offered` / `hint_requested` / `hint_used` | Assist density |
-| `failure_occurred` / `retry_started` / `retry_successful` | Recovery loop |
+| `first_meaningful_decision` | First consequential Take / irreversible locked |
+| `first_complete_loop` | First felt Earn→Decide→Take→consequence |
+| `decision_time` | Dwell ms on decision surface (`dwellMs`) |
+| `decision_selected` / `decision_changed` | Lock / change before lock |
+| `consequence_displayed` | Hush, scar, Harbor felt |
+| `failure` / `recovery` | Fail + successful retry |
+| `hint_requested` / `hint_offered` / `hint_used` | Assist density |
+| `ai_intervention` | Adaptive coach nudge shown |
 | `transfer_started` / `transfer_success` / `transfer_failure` | Transfer tasks |
-| `guidance_reduced` | Coach density drops |
-| `autonomy_unlocked` | INDEPENDENT or MASTERED |
-| `tutorial_skipped` | Experienced skip / Ashore skip |
-| `tutorial_replayed` | Settings or returning refresher |
-| `freeplay_entered` | Map open / hub guided done |
-| `session_ended` | Exit |
-| `return_session` | Returning player (≥72h) |
+| `reflection_started` / `reflection_completed` | Optional Whisper |
+| `freeplay_started` | Map / hub autonomy |
+| `session_end` / `return_session` | Session lifecycle |
 
-## Metrics
+Legacy aliases (`decision_committed`, `failure_occurred`, `retry_successful`, `freeplay_entered`, `session_ended`) are still **accepted in metrics**.
 
-**King KPI — Independent Transfer Rate** (see [NORTH_STAR.md](./NORTH_STAR.md)):
+## Metrics (measure)
 
 | Metric | Role |
 |--------|------|
-| **`independent_transfer_rate`** | **King.** Successful transfer events ÷ transfer attempts. After Capital teaches a principle once, can the player reason with it in a different situation without being told? |
-| `time_to_first_*` / `guided_success_rate` / `hint_dependency` / `failure_recovery_rate` / `freeplay_conversion` / `D1`–`D30` | Supporting autonomy metrics |
-| `tutorial_completion_rate` | **Diagnostic only** — never the ship metric |
+| **`independent_transfer_rate`** | **King.** Successful transfers ÷ transfer attempts |
+| `time_to_first_decision` | Elapsed → first meaningful decision |
+| `time_to_first_complete_loop` | Elapsed → first complete felt loop |
+| `failure_recovery_rate` | recovery ÷ failure |
+| `hint_dependency` | Hint sessions ÷ practice sessions |
+| `strategy_diversity` | Unique `choiceId` ÷ decision locks |
+| `D1` / `D7` / `D30` | Local calendar return (`d1_retention` …) |
+| `tutorial_completion_rate` | **Diagnostic only — never the ship metric** |
 
 If a change only raises tutorial completion, do **not** ship it as a win.
 
@@ -44,7 +45,6 @@ If a change only raises tutorial completion, do **not** ship it as a win.
 `ftue_version` · `experiment_id` · `experiment_variant` · `platform` · `experience_mode` · `skip_status` · `hint_usage` · `failure_pattern` · `concept_id`
 
 Exact `ftue_version` is also stamped on all onboarding-relevant `analytics.track` events (see `FTUE_EXPERIMENTATION.md`).
-
 
 ## Privacy rules
 
@@ -57,8 +57,8 @@ Exact `ftue_version` is also stamped on all onboarding-relevant `analytics.track
 ## Code
 
 - `src/islands/analytics/ftue/` — types, privacy, context, track, lifecycle, metrics
-- Wired from `IslandsApp`, Ashore teach, BootCastSelect, Take hush, Scar spectacle
-- Export UI: Settings → Analytics — **FTUE primary metrics** panel
+- Wired from `IslandsApp`, Ashore teach, BootCastSelect, Take hush, Scar spectacle, adaptive coach
+- Export UI: Settings → Analytics — **FTUE primary metrics** panel (king KPI first)
 
 ## Experiment variant
 

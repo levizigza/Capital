@@ -24,7 +24,8 @@ function formatMetric(id: string, value: number | null): string {
     id.includes("rate") ||
     id.includes("conversion") ||
     id.includes("retention") ||
-    id.includes("dependency")
+    id.includes("dependency") ||
+    id.includes("diversity")
   ) {
     return `${Math.round(value * 100)}%`;
   }
@@ -57,15 +58,12 @@ function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
 function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
   const primary: Record<(typeof FTUE_PRIMARY_METRICS)[number], number | null> = {
     independent_transfer_rate: snap.independent_transfer_rate,
-    time_to_first_core_loop: snap.time_to_first_core_loop_ms,
-    freeplay_conversion: snap.freeplay_conversion,
-    failure_recovery_rate: snap.failure_recovery_rate,
-    d1_retention: snap.d1_retention,
-    time_to_first_action: snap.time_to_first_action_ms,
     time_to_first_decision: snap.time_to_first_decision_ms,
-    time_to_first_consequence: snap.time_to_first_consequence_ms,
-    guided_success_rate: snap.guided_success_rate,
+    time_to_first_complete_loop: snap.time_to_first_complete_loop_ms,
+    failure_recovery_rate: snap.failure_recovery_rate,
     hint_dependency: snap.hint_dependency,
+    strategy_diversity: snap.strategy_diversity,
+    d1_retention: snap.d1_retention,
     d7_retention: snap.d7_retention,
     d30_retention: snap.d30_retention,
   };
@@ -84,11 +82,11 @@ function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
         </p>
         <p className="mt-1 text-xs leading-relaxed text-emerald-900/90">
           After Capital teaches a principle once, can players reason with it in a new situation
-          without being told what to do? Tutorial completion is not success.
+          without being told what to do? Tutorial completion is never the primary success measure.
         </p>
       </div>
       <p className="text-xs text-gray-600">
-        Supporting autonomy metrics — comprehension over checklist finish.
+        Measure set — time to decision/loop, recovery, hints, strategy diversity, D1/D7/D30.
       </p>
       <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
         {FTUE_PRIMARY_METRICS.filter((id) => id !== "independent_transfer_rate").map((id) => (
