@@ -179,11 +179,9 @@ import { applyConceptSync, getConceptPhase, getConceptTransferMetrics } from "./
 import { resolveTransferTalk, stampIndependentTransferWindows, buildIndependentTransferSave } from "./independentTransfer";
 import { CONCEPT_REGISTRY } from "./conceptProgression/registry";
 import {
-  applyCoveTakeLedgerFootprint,
-  coveTakeStanceFromChoiceId,
-  COVE_TAKE_KEY,
+  applySpineTakeLedgerFootprint,
   takeFootprintFeedbackLine,
-} from "./firstFinancialScenario";
+} from "./spineTakeFootprints";
 import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
 import {
   applyExperiencedBootstrap,
@@ -1269,7 +1267,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The Coin holds — save a little; the jar still waits.${scarBit} ${next} is newly open on the Carpet.`,
+              message: `Piggy Penny: The Coin holds — Harbor felt your Take.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1293,12 +1291,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             : "";
           const next = lastScar ? nextPaintingAfterScar(lastScar) : "Credit Kingdom";
           const pp = prev.irreversibleChoices?.paycheck_protect_vs_spend?.choiceId;
-          const clockFelt =
-            pp === "spend"
-              ? "The Clock still names the rain gossip — glitter went first."
-              : pp === "protect"
-                ? "The Clock kept the loft dry when the sky cracked."
-                : "The Clock shelters — Harbor felt the stamp.";
+          const clockFelt = "The Clock shelters — Harbor felt the stamp.";
+          void pp;
           return {
             ...prev,
             harborHomecoming: {
@@ -1341,7 +1335,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The Spiral withstands — wait beats haste on the interest wall.${scarBit} Memory keeps your Ordeal on the Plinth.`,
+              message: `Piggy Penny: The Spiral withstands — Harbor kept your Ordeal on the Plinth.${scarBit} Memory keeps what you chose.`,
             },
           };
         });
@@ -1558,7 +1552,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               playId = lead?.id ?? partyDashIdForIsland(activeIsland.id);
               toast.message("Movement game first", {
                 description:
-                  "Clear the play pad — then the mastery quiz. That’s the Party style pairing.",
+                  "Clear the play pad first — literacy sticks in the world (Takes, cashflow), not a worksheet gate.",
               });
             }
           }
@@ -1616,11 +1610,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               },
             };
-            // First financial scenario — real ledger footprint (not tutorial fake).
-            if (effect.key === COVE_TAKE_KEY) {
-              const stance = coveTakeStanceFromChoiceId(effect.choiceId);
-              if (stance) next = applyCoveTakeLedgerFootprint(next, stance);
-            }
+            // Spine Takes write real CF footprints — world diverges even when unlock path is shared.
+            next = applySpineTakeLedgerFootprint(next, effect.key, effect.choiceId);
             return next;
           });
         }
@@ -2036,22 +2027,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       };
 
       if (questSuccess) {
-        const gate = getMasteryGateForMinigame(mgId);
-        const ledger = ensureLedger(save.voyagerLedger);
-        if (gate && !hasMasteryClear(ledger, gate.id)) {
-          setPendingMastery({
-            gate,
-            mgId,
-            score,
-            timeline,
-            source,
-            firstClear,
-          });
-          setActiveMinigameId(null);
-          setMinigameStartedAt(null);
-          setMinigameSource(null);
-          return;
-        }
+        // Mastery quiz is optional digression — never blocks clear or Credit unlock.
         await finalizeSuccessfulClear(firstClear);
       } else {
         const failReason = resolveMinigameFailReason({

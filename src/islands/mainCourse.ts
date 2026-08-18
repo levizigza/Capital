@@ -10,7 +10,7 @@
  *
  * Fortune Party pattern for the worlds inside paintings:
  * - Stick = move, Action = jump/grab/shove
- * - Short timed arenas with clear verbs, then mastery quiz
+ * - Short timed arenas with clear verbs; literacy lands in Takes / cashflow
  */
 
 import type { IslandSaveV1, QuestTrack } from "./types";

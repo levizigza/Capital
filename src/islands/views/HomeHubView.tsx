@@ -1811,8 +1811,7 @@ export function HomeHubView({
       >
         <div className="space-y-4 text-left">
           <p className="text-sm text-muted-foreground text-center">
-            Streak {save.harborRitual?.streak ?? 1} day
-            {(save.harborRitual?.streak ?? 1) === 1 ? "" : "s"} — show up, listen, collect.
+            Harbor return — listen for day-2 echoes, then one honest Pay Day.
           </p>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
             <p className="font-bold">Mascot rumor</p>
@@ -1841,24 +1840,6 @@ export function HomeHubView({
               onClick={() => onClaimRitualPayday?.()}
             >
               {save.harborRitual?.today.paydayDone ? "Pay Day collected" : "Collect Pay Day"}
-            </GameButton>
-          </div>
-          <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
-            <p className="font-bold">Tiny reward</p>
-            <p className="mt-1 text-muted-foreground">
-              +5 coins after rumor + Pay Day — never buys progress.
-            </p>
-            <GameButton
-              variant="outline"
-              className="mt-2 w-full"
-              disabled={
-                Boolean(save.harborRitual?.today.rewardClaimed) ||
-                !save.harborRitual?.today.paydayDone ||
-                !save.harborRitual?.today.rumorSeen
-              }
-              onClick={() => onClaimRitualReward?.()}
-            >
-              {save.harborRitual?.today.rewardClaimed ? "Reward claimed" : "Claim +5 coins"}
             </GameButton>
           </div>
           {weekly && weeklyInfo ? (

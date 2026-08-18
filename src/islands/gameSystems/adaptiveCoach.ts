@@ -9,10 +9,9 @@ import type { CoinBagBuddyTip } from "../story/coinBagBuddy";
 import type { IslandSaveV1 } from "../types";
 import type { LearningProfileId } from "../learningProfile";
 import { PROFILES, loadLearningProfile } from "../learningProfile";
-import { createDefaultSkillStats } from "../skillStats";
 import { ensureLedger, netCashflow } from "../voyagerLedger";
 import { getQuestFailedAttempts } from "../settings";
-import { tickWorldDirector, lowestSkillFocus } from "./worldDirector";
+import { tickWorldDirector } from "./worldDirector";
 import { WB, worldBlackboard } from "./worldBlackboard";
 import type { EcosystemMotionMode } from "../islandCulture";
 
@@ -43,11 +42,11 @@ function totalFailPressure(save: IslandSaveV1): number {
 function scoreNudges(ctx: AdaptiveCoachContext): ScoredNudge[] {
   const profileId = ctx.profileId ?? loadLearningProfile();
   const profile = PROFILES[profileId];
-  const skills = ctx.save.skillStats ?? createDefaultSkillStats();
   const ledger = ensureLedger(ctx.save.voyagerLedger);
   const cashflow = netCashflow(ledger);
   const fails = totalFailPressure(ctx.save);
-  const focus = lowestSkillFocus(skills.current);
+  // Do not coach on skillStats RPG meters — CF + fails only.
+  const focus = "none" as const;
   const hintBias = profile.hintFrequency; // 0–2
 
   const director = tickWorldDirector({
@@ -94,37 +93,6 @@ function scoreNudges(ctx: AdaptiveCoachContext): ScoredNudge[] {
       tip: {
         tip: "Grow monthly cashflow",
         coach: `Ledger net ≈ ${Math.round(cashflow)}. Pay Day streaks beat pouch luck — hunt deals, cut liabilities.`,
-      },
-    });
-  }
-
-  if (director.adaptiveFocus === "resilience") {
-    nudges.push({
-      id: "resilience",
-      score: 5.5 + hintBias * 0.3,
-      tip: {
-        tip: "Build a buffer habit",
-        coach: "Resilience is low — keep an emergency pouch before big spends.",
-      },
-    });
-  }
-  if (director.adaptiveFocus === "discipline") {
-    nudges.push({
-      id: "discipline",
-      score: 5.5 + hintBias * 0.3,
-      tip: {
-        tip: "Stick the budget once",
-        coach: "Discipline is soft — pay the bill in full when you can; skip the impulse stall.",
-      },
-    });
-  }
-  if (director.adaptiveFocus === "foresight") {
-    nudges.push({
-      id: "foresight",
-      score: 5.5 + hintBias * 0.3,
-      tip: {
-        tip: "Plan one step ahead",
-        coach: "Foresight needs reps — check the next quest reward before you spend.",
       },
     });
   }

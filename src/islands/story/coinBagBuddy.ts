@@ -191,9 +191,9 @@ function coinBagHarborTipRaw(
   const credit = opts?.creditMastery;
   if (credit && credit.escaped && !credit.unlocked) {
     return {
-      tip: `Credit Kingdom · mastery ${credit.mastery}/${credit.needed}`,
+      tip: "Credit Kingdom · finish Paycheck Change",
       coach:
-        "Spiral opens after Freedom plus three mastery clears. Clear Soft Beats / quizzes — then Interest Keep waits.",
+        "Spiral opens after Freedom plus Paycheck Change — prove the Clock lesson in the world, not on a quiz.",
       track: "main",
     };
   }
@@ -280,7 +280,7 @@ export function attachCoinBagHorizons(
   let seal = tip.seal ?? null;
   if (!seal) {
     if (credit && credit.escaped && !credit.unlocked) {
-      seal = `Spiral · mastery ${credit.mastery}/${credit.needed}`;
+      seal = "Spiral · Paycheck Change";
     } else if (opts?.hasFreedom) {
       seal = opts.carpetTierLabel?.trim()
         ? `Freedom · ${opts.carpetTierLabel.trim()}`

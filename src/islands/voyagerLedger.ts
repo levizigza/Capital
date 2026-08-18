@@ -329,6 +329,38 @@ export function acceptDeal(
   };
 }
 
+/**
+ * When the catalog is owned, regenerate a scaled deal so constraint play continues
+ * (new tradeoff / higher cost — not a dead “keep grinding” wall).
+ */
+export function regenerateAssetDealOffer(
+  ownedIds: string[],
+  generation = 1,
+): DealOffer {
+  const assets = HARBOR_DEALS.filter((d) => d.kind === "asset");
+  const base = assets[Math.floor(Math.random() * assets.length)] ?? HARBOR_DEALS[0]!;
+  const gen = Math.max(1, Math.min(5, generation));
+  const monthly = Math.round(base.monthlyAmount * (1 + 0.25 * gen));
+  const cost = Math.round(dealPurchaseCost(base) * (1.35 * gen));
+  return {
+    id: `${base.id}_gen${gen}_${ownedIds.length}`,
+    name: `${base.name} (renewed)`,
+    kind: "asset",
+    monthlyAmount: monthly,
+    icon: base.icon,
+    purchaseCost: cost,
+  };
+}
+
+export type LiabilityOffer = LedgerHolding & {
+  /** Coins to refuse the debt without taking the monthly drain. */
+  buyoutCost: number;
+};
+
+export function liabilityBuyoutCost(trap: LedgerHolding): number {
+  return Math.max(12, Math.round(trap.monthlyAmount * 4));
+}
+
 export function pickRandomDeal(excludeIds: string[] = []): LedgerHolding {
   const pool = HARBOR_DEALS.filter((d) => !excludeIds.includes(d.id));
   const use = pool.length > 0 ? pool : HARBOR_DEALS;

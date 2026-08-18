@@ -121,11 +121,11 @@ describe("capital pattern library contracts", () => {
         nextPaintingHint: "Paycheck Peninsula",
         hasFreedom: true,
         carpetTierLabel: "Skiff",
-        creditMastery: { mastery: 1, needed: 3, escaped: true, unlocked: false },
+        creditMastery: { mastery: 0, needed: 0, escaped: true, unlocked: false },
       },
     );
     expect(tip.painting).toMatch(/Paycheck/);
-    expect(tip.seal).toMatch(/Spiral|Freedom/);
+    expect(tip.seal).toMatch(/Spiral|Paycheck Change|Freedom/);
   });
 
   it("digression shelf tracks incomplete rumor pairs", () => {

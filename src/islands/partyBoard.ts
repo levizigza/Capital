@@ -17,8 +17,11 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  liabilityBuyoutCost,
+  regenerateAssetDealOffer,
   type DealOffer,
   type LedgerHolding,
+  type LiabilityOffer,
   type VoyagerLedger,
 } from "./voyagerLedger";
 import {
@@ -110,6 +113,8 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Interactive liability — borrow / buyout / walk */
+  pendingLiability?: import("./voyagerLedger").LiabilityOffer;
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -505,12 +510,17 @@ export function resolvePlayerSpace(
     }
     case "deal": {
       const owned = ledger.holdings.map((h) => h.id);
-      const deal = pickUnusedHolding("asset", owned);
+      let deal = pickUnusedHolding("asset", owned);
+      let offer: DealOffer;
       if (!deal) {
-        payload.message = "No new income deals left — keep grinding cashflow!";
+        const gen =
+          1 + ledger.holdings.filter((h) => h.kind === "asset" && h.id.includes("_gen")).length;
+        offer = regenerateAssetDealOffer(owned, gen);
+        payload.pendingDeal = offer;
+        payload.message = `Renewed deal: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo (catalog clear — new tradeoff).`;
         break;
       }
-      const offer: DealOffer = {
+      offer = {
         ...deal,
         purchaseCost: dealPurchaseCost(deal),
       };
@@ -522,12 +532,15 @@ export function resolvePlayerSpace(
       const owned = ledger.holdings.map((h) => h.id);
       const trap = pickUnusedHolding("liability", owned);
       if (!trap) {
-        payload.message = "You already carry every Harbor liability — watch that cashflow!";
+        payload.message = "No fresh debt traps — your cashflow still carries what you already borrowed.";
         break;
       }
-      ledger = addHolding(ledger, trap);
-      payload.ledger = ledger;
-      payload.message = `Debt Trap! ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo).`;
+      const liabilityOffer: LiabilityOffer = {
+        ...trap,
+        buyoutCost: liabilityBuyoutCost(trap),
+      };
+      payload.pendingLiability = liabilityOffer;
+      payload.message = `Debt Trap on the table: ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo). Borrow, buy out, or walk.`;
       break;
     }
     case "coins":
