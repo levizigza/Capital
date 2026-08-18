@@ -3,6 +3,7 @@ import { getConceptPhase } from "../../conceptProgression";
 import type { IslandSaveV1 } from "../../types";
 import { CONCEPT_REGISTRY } from "../../conceptProgression/registry";
 import { trackFtue } from "./track";
+import { FTUE_EVENT_NAMES } from "./types";
 
 /**
  * Diff concept phases and emit privacy-safe FTUE concept lifecycle events.
@@ -47,26 +48,11 @@ export function trackConceptLifecycleFtue(before: IslandSaveV1, after: IslandSav
   }
 }
 
-/** Helper for tests — filter FTUE events from a stream. */
+const FTUE_NAME_SET = new Set<string>(FTUE_EVENT_NAMES);
+
+/** Helper for tests — filter FTUE / learning events from a stream. */
 export function isFtueEventName(name: string): boolean {
-  return (
-    name.startsWith("ftue_") ||
-    name.startsWith("first_") ||
-    name.startsWith("decision_") ||
-    name.startsWith("consequence_") ||
-    name.startsWith("concept_") ||
-    name.startsWith("hint_") ||
-    name.startsWith("failure_") ||
-    name.startsWith("retry_") ||
-    name.startsWith("transfer_") ||
-    name === "guidance_reduced" ||
-    name === "autonomy_unlocked" ||
-    name === "tutorial_skipped" ||
-    name === "tutorial_replayed" ||
-    name === "freeplay_entered" ||
-    name === "return_session" ||
-    name === "session_ended"
-  );
+  return FTUE_NAME_SET.has(name);
 }
 
 export function filterFtueEvents(events: AnalyticsEvent[]): AnalyticsEvent[] {

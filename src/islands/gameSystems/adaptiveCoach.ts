@@ -15,6 +15,7 @@ import { getQuestFailedAttempts } from "../settings";
 import { tickWorldDirector, lowestSkillFocus } from "./worldDirector";
 import { WB, worldBlackboard } from "./worldBlackboard";
 import type { EcosystemMotionMode } from "../islandCulture";
+import { trackAiIntervention } from "../analytics/ftue";
 
 export type AdaptiveCoachContext = {
   save: IslandSaveV1;
@@ -173,6 +174,10 @@ export function resolveAdaptiveBuddyTip(ctx: AdaptiveCoachContext): CoinBagBuddy
   if (best && best.score >= 4.5) {
     worldBlackboard.set(WB.coachTip, best.tip.tip);
     worldBlackboard.set(WB.coachCoach, best.tip.coach ?? "");
+    void trackAiIntervention({
+      via: best.id,
+      interventionLevel: Math.min(5, Math.round(best.score)),
+    });
     return best.tip;
   }
 

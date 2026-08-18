@@ -42,6 +42,7 @@ const FTUE_RELEVANT_EVENTS = new Set<string>([
   ...FTUE_EVENT_NAMES,
   "session_started",
   "session_ended",
+  "session_end",
   "tutorial_started",
   "tutorial_completed",
   "tutorial_step",

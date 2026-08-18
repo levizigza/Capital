@@ -2,6 +2,7 @@ export {
   FTUE_VERSION,
   FTUE_EVENT_NAMES,
   FTUE_PRIMARY_METRICS,
+  FTUE_SUPPORTING_METRICS,
   FTUE_PAYLOAD_ALLOWLIST,
 } from "./types";
 export type {
@@ -38,9 +39,18 @@ export {
   trackFirstControlReceived,
   trackFirstMeaningfulAction,
   trackDecisionPresented,
+  trackDecisionSelected,
   trackDecisionCommitted,
+  trackDecisionChanged,
   trackConsequenceDisplayed,
+  trackFreeplayStarted,
   trackFreeplayEntered,
+  trackFailure,
+  trackRecovery,
+  trackSessionEnd,
+  trackAiIntervention,
+  trackReflectionStarted,
+  trackReflectionCompleted,
   resetFtueOnceGuards,
   hasFtueOnce,
 } from "./track";

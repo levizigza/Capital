@@ -12,10 +12,16 @@ export type FtueVersionId = typeof FTUE_VERSION | string;
 /** Metrics allowed as experiment primary — tutorial completion excluded. */
 export const EXPERIMENT_PRIMARY_METRICS = [
   "independent_transfer_rate",
-  "time_to_first_core_loop",
-  "freeplay_conversion",
+  "time_to_first_complete_loop",
+  "time_to_first_core_loop", // legacy alias
+  "time_to_first_decision",
   "failure_recovery_rate",
+  "hint_dependency",
+  "strategy_diversity",
   "d1_retention",
+  "d7_retention",
+  "d30_retention",
+  "freeplay_conversion",
 ] as const;
 
 export type ExperimentPrimaryMetricId = (typeof EXPERIMENT_PRIMARY_METRICS)[number];

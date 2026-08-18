@@ -131,7 +131,12 @@ export function analyzeFunnel(
         null,
       lastEvent: last?.name ?? null,
       maxStage: maxStageReached(windowEvents),
-      quitWithin5Min: Boolean(lastExit || last?.name === "session_ended" || last?.name === "islands_exit"),
+      quitWithin5Min: Boolean(
+        lastExit ||
+          last?.name === "session_ended" ||
+          last?.name === "session_end" ||
+          last?.name === "islands_exit",
+      ),
       events: windowEvents,
     });
   }

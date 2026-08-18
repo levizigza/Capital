@@ -1,3 +1,8 @@
+/**
+ * Privacy-conscious FTUE telemetry — event names, segments, and payload contracts.
+ * Tests for docs/design/LEARNING_TELEMETRY.md · docs/ftue/FTUE_TELEMETRY.md
+ */
+
 import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import type { AnalyticsEvent } from "../../types";
 import {
@@ -13,6 +18,7 @@ import {
   recordRetentionDay,
   localDayKey,
   trackConceptLifecycleFtue,
+  primaryMetricValues,
 } from "./index";
 import { createDefaultIslandSave } from "../../save";
 import { applyConceptSync } from "../../conceptProgression";
@@ -42,9 +48,11 @@ describe("FTUE telemetry privacy", () => {
       choiceId: "cove_save",
       instruction: "should drop",
       evil_custom: "drop me",
+      dwellMs: 1200,
     });
     expect(safe.concept_id).toBe("earn_then_decide");
     expect(safe.choiceId).toBe("cove_save");
+    expect(safe.dwellMs).toBe(1200);
     expect(safe.name).toBeUndefined();
     expect(safe.email).toBeUndefined();
     expect(safe.text).toBeUndefined();
@@ -79,7 +87,7 @@ describe("FTUE telemetry privacy", () => {
   });
 });
 
-describe("FTUE metrics", () => {
+describe("Learning metrics", () => {
   beforeEach(() => {
     resetFtueOnceGuards();
     resetFtueSessionStats();
@@ -90,38 +98,69 @@ describe("FTUE metrics", () => {
     clearRetentionDaysForTests();
   });
 
-  it("computes time-to and rate metrics without treating tutorial as primary", () => {
+  it("computes Measure set without treating tutorial as primary", () => {
     const events: AnalyticsEvent[] = [
       ev("ftue_started", 0),
       ev("first_control_received", 2_000),
-      ev("decision_presented", 10_000, "sess-1", { via: "first_decision_marker" }),
+      ev("first_meaningful_decision", 10_000, "sess-1", { choiceId: "cove_save" }),
+      ev("decision_selected", 10_000, "sess-1", { choiceId: "cove_save" }),
+      ev("decision_selected", 55_000, "sess-1", { choiceId: "cove_spend" }),
+      ev("first_complete_loop", 25_000),
       ev("consequence_displayed", 25_000, "sess-1", { via: "first_consequence_marker" }),
       ev("concept_introduced", 12_000, "sess-1", { concept_id: "earn_then_decide" }),
       ev("concept_practiced", 20_000, "sess-1", { concept_id: "earn_then_decide" }),
       ev("transfer_started", 20_500, "sess-1", { concept_id: "earn_then_decide" }),
       ev("transfer_success", 40_000, "sess-1", { concept_id: "earn_then_decide" }),
-      ev("failure_occurred", 15_000),
-      ev("retry_successful", 18_000),
-      ev("freeplay_entered", 30_000),
+      ev("failure", 15_000),
+      ev("recovery", 18_000),
+      ev("freeplay_started", 30_000),
+      ev("ai_intervention", 16_000, "sess-1", { via: "stuck" }),
       ev("tutorial_completed", 50_000),
     ];
 
     const snap = analyzeFtueMetrics(events);
     expect(snap.time_to_first_action_ms).toBe(2_000);
     expect(snap.time_to_first_decision_ms).toBe(10_000);
-    expect(snap.time_to_first_consequence_ms).toBe(25_000);
+    expect(snap.time_to_first_complete_loop_ms).toBe(25_000);
     expect(snap.time_to_first_core_loop_ms).toBe(25_000);
     expect(snap.guided_success_rate).toBe(1);
     expect(snap.independent_transfer_rate).toBe(1);
     expect(snap.failure_recovery_rate).toBe(1);
     expect(snap.freeplay_conversion).toBe(1);
+    expect(snap.strategy_diversity).toBe(1); // 2 unique / 2 decisions
     expect(snap.tutorial_completion_rate).toBe(1);
 
     const primary = FTUE_PRIMARY_METRICS;
     expect(primary[0]).toBe("independent_transfer_rate");
+    expect(primary).toContain("time_to_first_complete_loop");
+    expect(primary).toContain("strategy_diversity");
+    expect(primary).toContain("d1_retention");
+    expect(primary).toContain("d7_retention");
+    expect(primary).toContain("d30_retention");
     expect(primary).not.toContain("tutorial_completion_rate" as never);
-    expect(primary).toContain("freeplay_conversion");
-    expect(primary).toContain("independent_transfer_rate");
+
+    const values = primaryMetricValues(snap);
+    expect(values.independent_transfer_rate).toBe(1);
+    expect(values.strategy_diversity).toBe(1);
+  });
+
+  it("accepts legacy event aliases in metrics", () => {
+    const events: AnalyticsEvent[] = [
+      ev("ftue_started", 0),
+      ev("decision_committed", 8_000, "sess-1", { choiceId: "a" }),
+      ev("consequence_displayed", 20_000),
+      ev("failure_occurred", 12_000),
+      ev("retry_successful", 14_000),
+      ev("freeplay_entered", 22_000),
+      ev("transfer_started", 15_000),
+      ev("transfer_success", 18_000),
+    ];
+    const snap = analyzeFtueMetrics(events);
+    expect(snap.time_to_first_decision_ms).toBe(8_000);
+    expect(snap.time_to_first_complete_loop_ms).toBe(20_000);
+    expect(snap.failure_recovery_rate).toBe(1);
+    expect(snap.freeplay_conversion).toBe(1);
+    expect(snap.independent_transfer_rate).toBe(1);
   });
 
   it("computes D1 retention from local day keys", () => {

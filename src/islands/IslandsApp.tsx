@@ -202,10 +202,13 @@ import {
   trackConsequenceDisplayed,
   trackDecisionCommitted,
   trackDecisionPresented,
+  trackFailure,
   trackFirstMeaningfulAction,
   trackFreeplayEntered,
   trackFtue,
   trackFtueOnce,
+  trackRecovery,
+  trackSessionEnd,
 } from "./analytics/ftue";
 
 type IslandsAppProps = {
@@ -537,7 +540,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const handleExit = useCallback(async () => {
     await trackScreenExit("user_exit");
     await analytics.track("islands_exit", {});
-    await trackFtue("session_ended", { reason: "user_exit" });
+    await trackSessionEnd({ reason: "user_exit" });
     onExit();
   }, [onExit]);
 
@@ -1952,7 +1955,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         source: source ?? undefined,
       });
       if (questSuccess && perf.attempts > 1) {
-        void trackFtue("retry_successful", {
+        void trackRecovery({
           minigameId: activeMinigameId,
           islandId: activeIsland.id,
           attempts: perf.attempts,
@@ -2078,7 +2081,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               ? "coin_sort_threshold"
               : "generic_minigame",
         });
-        void trackFtue("failure_occurred", {
+        void trackFailure({
           minigameId: activeMinigameId,
           islandId: activeIsland.id,
           failureKind:
