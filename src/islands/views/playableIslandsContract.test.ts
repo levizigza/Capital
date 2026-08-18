@@ -52,9 +52,17 @@ describe("playable islands contract", () => {
     expect(shore).toMatch(/failsafe/);
   });
 
-  it("Credit Spiral lock names mastery progress for navigability", () => {
+  it("Credit Spiral lock names Paycheck Change for navigability", () => {
     const gates = readFileSync(join(__dirname, "../progressGates.ts"), "utf8");
-    expect(gates).toMatch(/Spiral locked — mastery/);
-    expect(gates).toMatch(/Earn Freedom Seal/);
+    expect(gates).toMatch(/Finish Paycheck Change — then Spiral opens/);
+    expect(gates).toMatch(/paycheckChange/);
+  });
+
+  it("quiet homecoming keeps Money Carpet walkable (no plinth soft-lock)", () => {
+    const hub = readFileSync(join(__dirname, "HomeHubView.tsx"), "utf8");
+    const ashore = readFileSync(join(__dirname, "../harborAshore.ts"), "utf8");
+    expect(ashore).toMatch(/return false/);
+    expect(hub).toMatch(/quietHarbor && id !== \"travel\" && id !== \"memory\"/);
+    expect(hub).toMatch(/guidedStep\?\.id === \"meet_guide\"/);
   });
 });

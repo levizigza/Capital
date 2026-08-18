@@ -62,7 +62,7 @@ Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
 | Piggy first meet | Piggy front-and-center; E prefers Talk over bank during `meet_guide`; Castle coach names the next verb while the plaza teaches it |
 | Ashore voyage | After Talk → Money Carpet → Coincraft Cove (Outfitter / Capsule / Daily Ritual are discoveries, not gates) |
 | No coach ahead | `meet_guide` Talk Battle never names Outfitter / Capsule / Cove |
-| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / stall grid / Daily Ritual auto-open |
+| Quiet chrome | Until Piggy talk (first meet **and** quiet homecoming): no CASH / Leave / Apprentice / distraction stalls / Daily Ritual auto-open — **Money Carpet + Plinth stay walkable** (Talk never soft-locks travel) |
 | Slow-device Harbor | Myth fallback (Talk Piggy → Carpet) — never a settings dashboard |
 | Carpet home | Welcome waits until after spectacle |
 | Spectacle | Hush → chime → captions over **Plinth camera lock** (not a modal card) → Plinth pulse |

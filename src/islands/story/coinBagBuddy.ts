@@ -79,7 +79,13 @@ export function coinBagHarborTip(
     /** Freedom Seal carpet tier label (plaza read) */
     carpetTierLabel?: string | null;
     /** Credit Kingdom unlock progress — plaza never silent-locks Spiral */
-    creditMastery?: { mastery: number; needed: number; escaped: boolean; unlocked: boolean } | null;
+    creditMastery?: {
+      mastery: number;
+      needed: number;
+      escaped: boolean;
+      unlocked: boolean;
+      paycheckChange?: boolean;
+    } | null;
     /** Soft Beat lookout arm whisper (multiplicative chemistry) */
     softBeatArmWhisper?: string | null;
     /** Incomplete digression rumor count for curiosity shelf */
@@ -189,18 +195,18 @@ function coinBagHarborTipRaw(
   }
 
   const credit = opts?.creditMastery;
-  if (credit && credit.escaped && !credit.unlocked) {
+  if (credit && !credit.unlocked) {
     return {
-      tip: `Credit Kingdom · mastery ${credit.mastery}/${credit.needed}`,
+      tip: "Paycheck Change first — then Spiral",
       coach:
-        "Spiral opens after Freedom plus three mastery clears. Clear Soft Beats / quizzes — then Interest Keep waits.",
+        "Credit Kingdom opens after you stamp Paycheck Change. Board the Carpet when the clock chapter is done.",
       track: "main",
     };
   }
-  if (credit && !credit.escaped && !opts?.nextPaintingHint) {
+  if (credit && credit.unlocked && !opts?.nextPaintingHint && !opts?.hasFreedom) {
     return {
-      tip: "Freedom Seal first — then Spiral",
-      coach: "Credit Kingdom stays locked until Harbor escape. Finish Paycheck Change, come home.",
+      tip: "Spiral is open — Freedom Seal still waits",
+      coach: "Credit Kingdom is on the map. Freedom Seal still upgrades Pavilion + carpet tiers.",
       track: "main",
     };
   }
@@ -279,13 +285,15 @@ export function attachCoinBagHorizons(
   const credit = opts?.creditMastery;
   let seal = tip.seal ?? null;
   if (!seal) {
-    if (credit && credit.escaped && !credit.unlocked) {
-      seal = `Spiral · mastery ${credit.mastery}/${credit.needed}`;
+    if (credit && !credit.unlocked) {
+      seal = "Spiral · after Paycheck Change";
     } else if (opts?.hasFreedom) {
       seal = opts.carpetTierLabel?.trim()
         ? `Freedom · ${opts.carpetTierLabel.trim()}`
         : "Freedom Seal";
-    } else if (credit && !credit.escaped) {
+    } else if (credit && credit.unlocked) {
+      seal = "Spiral open · Freedom someday";
+    } else {
       seal = "Someday · Freedom Seal";
     }
   }
