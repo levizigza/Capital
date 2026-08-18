@@ -12,7 +12,6 @@ import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
 import { peekIslandSaveSync } from '@/islands/save'
-import { shouldSkipAshoreTeachOnBoot } from '@/islands/playerOnboarding'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -192,8 +191,8 @@ function App() {
   const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
   const [bootExperiencedPlayer, setBootExperiencedPlayer] = useState(false)
 
-  // Every full page load: title → Street Fighter cast → (Ashore if new) → carpet.
-  // QA may opt out with ?skipIntro=1 + VITE_QA=1. Returning players still get the opening.
+  // Every full page load: title → Street Fighter cast → Ashore Teach → carpet.
+  // QA may opt out with ?skipIntro=1 + VITE_QA=1. Experienced checkbox skips Teach only.
   useEffect(() => {
     if (shouldPlayCapitalIntroOnBoot()) {
       setShowCapitalIntro(true)
@@ -479,12 +478,9 @@ function App() {
             key="capital-cast-boot"
             defaultName={userProfile?.name || ""}
             initialCharacter={peekIslandSaveSync()?.character ?? undefined}
-            skipAshoreTeach={shouldSkipAshoreTeachOnBoot(peekIslandSaveSync())}
             onComplete={(character, opts) => {
               setBootCharacter(character)
-              const skipTeach =
-                Boolean(opts?.experiencedPlayer) ||
-                shouldSkipAshoreTeachOnBoot(peekIslandSaveSync())
+              const skipTeach = Boolean(opts?.experiencedPlayer)
               setBootExperiencedPlayer(skipTeach)
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))

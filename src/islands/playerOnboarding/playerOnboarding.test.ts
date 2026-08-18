@@ -51,10 +51,10 @@ describe("player onboarding modes", () => {
     };
     expect(detectPlayerOnboardingMode(save)).toBe("experienced");
     expect(shouldSkipFtueBoot(save)).toBe(false);
-    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(false);
   });
 
-  it("detects returning after absence without replaying Ashore Teach", () => {
+  it("detects returning after absence and still plays Ashore Teach", () => {
     const save = {
       ...createDefaultIslandSave(),
       onboardingComplete: true,
@@ -68,17 +68,17 @@ describe("player onboarding modes", () => {
     expect(isReturningAfterAbsence(save)).toBe(true);
     expect(detectPlayerOnboardingMode(save)).toBe("returning");
     expect(shouldSkipFtueBoot(save)).toBe(false);
-    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(false);
   });
 
-  it("keeps title and Street Fighter cast on a same-day reload with a finished save", () => {
+  it("keeps title, Street Fighter cast, and Ashore Teach on a finished-save reload", () => {
     const save = {
       ...createDefaultIslandSave(),
       onboardingComplete: true,
       character: BASE_VOYAGER,
     };
     expect(shouldSkipFtueBoot(save)).toBe(false);
-    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(false);
   });
 
   it("does not treat same-day reload as returning", () => {

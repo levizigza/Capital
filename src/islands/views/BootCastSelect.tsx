@@ -18,8 +18,6 @@ type Props = {
   defaultName?: string;
   /** Prefill from a returning save so the Street Fighter board highlights the last Voyager. */
   initialCharacter?: CapitalCharacter;
-  /** Returning / already-taught: skip the beach classroom, not the coin board. */
-  skipAshoreTeach?: boolean;
   onComplete: (character: CapitalCharacter, opts?: { experiencedPlayer?: boolean }) => void;
 };
 
@@ -44,7 +42,6 @@ function resolvePickName(
 export function BootCastSelect({
   defaultName = "",
   initialCharacter,
-  skipAshoreTeach = false,
   onComplete,
 }: Props) {
   const [stage, setStage] = useState<Stage>("select");
@@ -53,7 +50,6 @@ export function BootCastSelect({
   );
   const [busy, setBusy] = useState(false);
   const [experiencedPlayer, setExperiencedPlayer] = useState(false);
-  const skipTeach = skipAshoreTeach || experiencedPlayer;
 
   const mascot = getMascot(draft.base);
 
@@ -79,7 +75,7 @@ export function BootCastSelect({
         const loaded = await loadIslandSave();
         const modeSave = experiencedPlayer
           ? declareExperiencedMode(loaded)
-          : skipAshoreTeach
+          : loaded.character || loaded.onboardingComplete
             ? loaded
             : declareNewPlayerMode(loaded);
         const withChar: IslandSaveV1 = {
@@ -127,10 +123,10 @@ export function BootCastSelect({
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
           {stage === "select"
-            ? skipAshoreTeach
-              ? "Your Voyager is waiting. Tap a coin face to keep them, or pick someone new."
-              : "Meet your Voyager. Tap a coin face — experienced players can skip Ashore Teach."
-            : "Dress your Voyager on the mirror — then continue before the Money Carpet."}
+            ? initialCharacter
+              ? "Your Voyager is waiting. Tap a coin face to keep them, or pick someone new — then Ashore Teach."
+              : "Meet your Voyager. Tap a coin face — then prove it on the beach. Experienced players can skip Ashore Teach."
+            : "Dress your Voyager on the mirror — then continue to Ashore Teach."}
         </p>
       </header>
 
@@ -173,18 +169,16 @@ export function BootCastSelect({
                   {mascot.tagline}
                 </p>
               </div>
-              {!skipAshoreTeach ? (
-                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-sm text-white/90">
-                  <input
-                    type="checkbox"
-                    checked={experiencedPlayer}
-                    onChange={(e) => setExperiencedPlayer(e.target.checked)}
-                    className="size-4 rounded border-amber-200/40"
-                    data-testid="boot-experienced-player"
-                  />
-                  I&apos;ve played money games before (skip Ashore Teach)
-                </label>
-              ) : null}
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-sm text-white/90">
+                <input
+                  type="checkbox"
+                  checked={experiencedPlayer}
+                  onChange={(e) => setExperiencedPlayer(e.target.checked)}
+                  className="size-4 rounded border-amber-200/40"
+                  data-testid="boot-experienced-player"
+                />
+                I&apos;ve played money games before (skip Ashore Teach)
+              </label>
               <button
                 type="button"
                 disabled={busy}
@@ -205,7 +199,7 @@ export function BootCastSelect({
               >
                 {busy
                   ? "Continuing…"
-                  : skipTeach
+                  : experiencedPlayer
                     ? "Continue to Money Carpet →"
                     : "Continue to Ashore Teach →"}
               </button>
@@ -229,7 +223,7 @@ export function BootCastSelect({
               saveLabel={
                 busy
                   ? "Continuing…"
-                  : skipTeach
+                  : experiencedPlayer
                     ? "Continue to Money Carpet →"
                     : "Continue to Ashore Teach →"
               }

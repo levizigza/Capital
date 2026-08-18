@@ -1,22 +1,20 @@
 import type { IslandSaveV1 } from "../types";
 
 /**
- * Title mural, Street Fighter cast, and Money Carpet play on every full page load.
- * Only App’s QA `?skipIntro=1` + VITE_QA=1 bypasses boot (via shouldPlayCapitalIntroOnBoot).
- * Returning / experienced saves skip Ashore Teach — not the opening.
+ * Title mural, Street Fighter cast, Ashore Teach, and Money Carpet play on
+ * every full page load. Only App’s QA `?skipIntro=1` + VITE_QA=1 bypasses boot.
+ * Ashore Teach skips only when the player checks “I've played money games before”
+ * on the coin board this session — never because a save already finished it.
  */
 export function shouldSkipFtueBoot(_save: IslandSaveV1 | null): boolean {
   return false;
 }
 
-/** Skip the beach classroom on boot; never skip title, cast, or carpet. */
-export function shouldSkipAshoreTeachOnBoot(save: IslandSaveV1 | null): boolean {
-  if (!save) return false;
-  if (save.playerOnboarding?.declaredMode === "experienced") return true;
-  if (save.onboardingComplete && save.character) return true;
+/** Save progress never auto-skips the beach classroom. */
+export function shouldSkipAshoreTeachOnBoot(_save: IslandSaveV1 | null): boolean {
   return false;
 }
 
-export function resolveBootTeachPhase(save: IslandSaveV1 | null): "teach" | "carpet" {
-  return shouldSkipAshoreTeachOnBoot(save) ? "carpet" : "teach";
+export function resolveBootTeachPhase(_save: IslandSaveV1 | null): "teach" | "carpet" {
+  return "teach";
 }
