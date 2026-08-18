@@ -22,9 +22,12 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(app).toMatch(/bootPhase.*"teach"/);
     expect(app).toMatch(/AshoreComprehensionTutorial/);
     expect(app).toMatch(/character=\{bootCharacter/);
-    // Experienced checkbox can skip teach → carpet; new players still land on teach.
-    expect(app).toMatch(/setBootPhase\(opts\?\.experiencedPlayer \? "carpet" : "teach"\)/);
+    expect(app).toMatch(/initialCharacter=/);
+    // Opening always plays; only Ashore Teach can skip to carpet.
+    expect(app).toMatch(/shouldSkipAshoreTeachOnBoot/);
+    expect(app).toMatch(/setBootPhase\(skipTeach \? "carpet" : "teach"\)/);
     expect(app).toMatch(/setBootPhase\("carpet"\)/);
+    expect(app).not.toMatch(/shouldSkipFtueBoot/);
   });
 
   it("keeps Chamber 00 to five prove-it steps", () => {
