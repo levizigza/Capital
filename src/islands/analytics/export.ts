@@ -3,6 +3,7 @@ import type { AnalyticsEvent } from "../types";
 import type { FunnelAnalysis } from "./funnel";
 import { analyzeFunnel } from "./funnel";
 import { analyzeFtueMetrics, type FtueMetricsSnapshot } from "./ftue";
+import { analyzeHealthDashboard, type HealthDashboardSnapshot } from "./healthDashboard";
 
 export const ANALYTICS_KV_KEY = "island_analytics_v1";
 export const MAX_ANALYTICS_EVENTS = 2_000;
@@ -49,15 +50,24 @@ export function eventsToJson(
   events: AnalyticsEvent[],
   analysis: FunnelAnalysis,
   ftue?: FtueMetricsSnapshot,
+  health?: HealthDashboardSnapshot,
 ): string {
+  const healthSnap = health ?? analyzeHealthDashboard(events);
   return JSON.stringify(
     {
       exportedAt: new Date().toISOString(),
       eventCount: events.length,
+      healthDashboard: {
+        law: healthSnap.law,
+        flags: healthSnap.flags,
+        engagement: healthSnap.engagement,
+        learning: healthSnap.learning,
+        business: healthSnap.business,
+      },
       /** Primary FTUE KPIs — tutorial completion is secondary only. */
       ftueMetrics: ftue ?? analyzeFtueMetrics(events),
       primarySuccessNote:
-        "Never use tutorial completion as the primary measure of success. King KPI: independent_transfer_rate. Also measure time_to_first_decision, time_to_first_complete_loop, failure_recovery_rate, hint_dependency, strategy_diversity, D1/D7/D30.",
+        "Never use tutorial completion as the primary measure of success. Never optimize one category (engagement / learning / business) while ignoring damage to another. King learning KPI: independent_transfer_rate.",
       funnel: analysis,
       events,
     },
@@ -85,8 +95,9 @@ export async function exportAnalyticsJson(): Promise<void> {
   const events = await loadAnalyticsEvents();
   const analysis = analyzeFunnel(events);
   const ftue = analyzeFtueMetrics(events);
+  const health = analyzeHealthDashboard(events);
   downloadText(
-    eventsToJson(events, analysis, ftue),
+    eventsToJson(events, analysis, ftue, health),
     `islands-analytics-${dateStamp()}.json`,
     "application/json",
   );

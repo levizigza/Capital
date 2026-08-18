@@ -48,4 +48,17 @@ export {
   MAX_ANALYTICS_EVENTS,
 } from "./export";
 
+export {
+  analyzeHealthDashboard,
+  evaluateHealthDamageFlags,
+} from "./healthDashboard";
+export type {
+  HealthDashboardSnapshot,
+  HealthCategorySnapshot,
+  HealthDamageFlag,
+  HealthDamageFlagId,
+  HealthMetric,
+  HealthCategoryId,
+} from "./healthDashboard";
+
 export { default as AnalyticsExportView } from "./AnalyticsExportView";
