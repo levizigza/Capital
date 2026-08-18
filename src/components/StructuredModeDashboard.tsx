@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { UserProfile, GameScore } from '@/App'
+import { BIBLE_RUNTIME_LAWS } from '@/design/designBible'
 
 interface StructuredModeDashboardProps {
   userProfile: UserProfile
@@ -80,7 +81,7 @@ export default function StructuredModeDashboard({
                 onClick={onOpenProfile}
                 className="w-11 h-11 rounded-full bg-gradient-to-br from-structured-primary to-structured-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg hover:scale-105 transition-all border-2 border-white/60 focus:outline-none focus:ring-2 focus:ring-structured-primary"
                 aria-label="Open profile"
-                title="View your profile and achievements"
+                title="View your profile"
               >
                 {userProfile.name?.[0] || 'U'}
               </button>
@@ -111,7 +112,7 @@ export default function StructuredModeDashboard({
         <motion.div className="text-center mb-8">
           <h2 className="text-3xl font-black text-blue-700 mb-2">Structured Mode</h2>
           <p className="text-lg font-bold text-blue-600">
-            Follow the guided lessons and quizzes below to build your financial literacy step by step. Your progress and achievements are tracked here.
+            Follow the guided lessons and quizzes below to build your financial literacy step by step.
           </p>
         </motion.div>
 
@@ -244,9 +245,11 @@ export default function StructuredModeDashboard({
           transition={{ delay: 0.5 }}
         >
           <Tabs defaultValue="overview" className="w-full animate-fade-in-slow">
-            <TabsList className="grid w-full grid-cols-3 mb-8 rounded-xl bg-gradient-to-r from-structured-muted/40 to-structured-card/60 shadow-sm">
+            <TabsList className={`grid w-full mb-8 rounded-xl bg-gradient-to-r from-structured-muted/40 to-structured-card/60 shadow-sm ${BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath ? "grid-cols-2" : "grid-cols-3"}`}>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="achievements">Achievements</TabsTrigger>
+              {!BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath ? (
+                <TabsTrigger value="achievements">Achievements</TabsTrigger>
+              ) : null}
               <TabsTrigger value="insights">Insights</TabsTrigger>
             </TabsList>
 
@@ -328,6 +331,7 @@ export default function StructuredModeDashboard({
               </Card>
             </TabsContent>
 
+            {!BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath ? (
             <TabsContent value="achievements">
               <Card className="pro-card shadow-lg backdrop-blur-xl bg-white/70 border border-structured-border/30">
                 <CardHeader>
@@ -345,6 +349,7 @@ export default function StructuredModeDashboard({
                 </CardContent>
               </Card>
             </TabsContent>
+            ) : null}
 
             <TabsContent value="insights">
               <Card className="pro-card shadow-lg backdrop-blur-xl bg-white/70 border border-structured-border/30">

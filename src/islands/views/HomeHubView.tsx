@@ -48,7 +48,7 @@ import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { takeFootprintFeedbackLine } from "../firstFinancialScenario";
 import { peekSoftBeatArm, softBeatArmWhisper, readSoftBeatTrail, softBeatTrailLabel } from "../softBeatArm";
-import { digressionScarGaps, digressionShelfRows, digressionShelfTotal } from "../digressionShelf";
+import { digressionScarGaps, digressionHeardMyths, digressionShelfTotal } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -363,7 +363,7 @@ export function HomeHubView({
 
   const plaques = harborScarPlaques(save);
   const talkScars = harborTalkScars(save);
-  const digressionShelf = useMemo(() => digressionShelfRows(save), [save]);
+  const digressionMyths = useMemo(() => digressionHeardMyths(save), [save]);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   // Design Bible: stance stays silent — no Plinth stance chrome.
@@ -1691,42 +1691,34 @@ export function HomeHubView({
           </div>
           <div data-testid="digression-myth-shelf" className="space-y-2">
             <p className="text-xs font-black uppercase tracking-wide text-stone-500">
-              Side rumors ·{" "}
-              {digressionShelf.filter((r) => r.filled).length}/
-              {digressionShelf.length}
+              Side rumors Harbor still names
             </p>
-            <ul className="grid gap-1.5 sm:grid-cols-2">
-              {digressionShelf.map((row) => (
-                <li
-                  key={row.label}
-                  className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
-                    row.filled
-                      ? "border-amber-200 bg-amber-50 text-amber-950"
-                      : "border-dashed border-stone-300 bg-stone-50/80 text-stone-400"
-                  }`}
-                  data-testid={
-                    row.filled
-                      ? `digression-slot-filled-${row.scarId}`
-                      : "digression-slot-empty"
-                  }
-                >
-                  {row.filled ? `✓ ${row.label}` : `· ${row.label}`}
-                  {row.scarLabel ? (
-                    <span className="mt-0.5 block text-[10px] font-medium opacity-80">
-                      “{row.scarLabel}”
-                    </span>
-                  ) : (
-                    <span className="mt-0.5 block text-[10px] font-medium opacity-70">
-                      Not heard yet
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {digressionMyths.length === 0 ? (
+              <p className="text-[11px] text-stone-400" data-testid="digression-myths-quiet">
+                Digressions leave living gossip here — not a checklist to fill.
+              </p>
+            ) : (
+              <ul className="grid gap-1.5 sm:grid-cols-2">
+                {digressionMyths.map((row) => (
+                  <li
+                    key={row.label}
+                    className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-semibold text-amber-950"
+                    data-testid={`digression-slot-filled-${row.scarId}`}
+                  >
+                    {row.label}
+                    {row.scarLabel ? (
+                      <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                        “{row.scarLabel}”
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div data-testid="soft-beat-trail-shelf" className="space-y-2">
             <p className="text-xs font-black uppercase tracking-wide text-stone-500">
-              Soft Beat trail · {readSoftBeatTrail().length} peeks
+              Soft Beat trail
             </p>
             {readSoftBeatTrail().length === 0 ? (
               <p className="text-[11px] text-stone-400">

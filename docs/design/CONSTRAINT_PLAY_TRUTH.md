@@ -27,10 +27,13 @@ Same campaign unlock path is OK **only if** Takes change what is possible later 
 | Board Stars as progress | Seal spaces → **Cashflow Claims** (pouch → monthly CF) |
 | Weekly ritual fill-% | Share myth without `progress/target` chrome |
 | Digression shelf fill-% tip | Myth curiosity without empty-slot count |
+| Digression Plinth checklist | Heard myths only — no empty era slots / X/Y fill |
+| Craft “badge” souvenir | Renamed Jar Keep Cork; quest XP reward stripped |
+| Legacy achievement dashboards | Structured mode tabs/panels gated off product path |
 
 ## Not in this PR
 
 - Live remote ITR dashboard / cold cohort execution (process already documented)
 - Wiring MasteryQuiz entry CTA (kept optional; no longer forced after clear)
 - Giant sim / AI guide / social expansion (still deferred)
-- Outer-shell XP / TrophyRoom (non-Islands entry)
+- Outer Creative TrophyRoom3D dead import cleanup (non-product)

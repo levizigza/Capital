@@ -35,6 +35,10 @@ export const BIBLE_RUNTIME_LAWS = {
   softBeatScarVista: true,
   /** Local Family Challenge + Share Witness (no fake MMO). */
   localFamilyChallengeAndWitness: true,
+  /** Digression Plinth shows heard myths only — never fill-% checklists. */
+  mythShelfNotCollectionPct: true,
+  /** Legacy Structured/Creative achievement dashboards stay off the product path. */
+  hideAchievementDashboardsOnProductPath: true,
 } as const;
 
 export type BibleRuntimeLaw = keyof typeof BIBLE_RUNTIME_LAWS;

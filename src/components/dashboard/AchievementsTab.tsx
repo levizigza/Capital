@@ -14,6 +14,7 @@ import {
   Lightning,
 } from '@phosphor-icons/react'
 import type { UserProfile } from '@/App'
+import { BIBLE_RUNTIME_LAWS } from '@/design/designBible'
 
 interface AchievementsTabProps {
   userProfile: UserProfile
@@ -72,6 +73,7 @@ export default function AchievementsTab({
   const t = translations[language]
 
   const achievements = useMemo<Achievement[]>(() => {
+    if (BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath) return []
     const userLevel = userProfile.level
     const userCoins = userProfile.totalCoins
     const gamesCompleted = userProfile.gamesCompleted
@@ -217,6 +219,16 @@ export default function AchievementsTab({
       legendary: 'default' as const,
     }
     return variants[rarity]
+  }
+
+  if (BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath) {
+    return (
+      <Card className="border-0 shadow-none bg-transparent">
+        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+          Harbor keeps plaques and scars — not achievement fill meters.
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

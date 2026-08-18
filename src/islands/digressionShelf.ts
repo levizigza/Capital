@@ -1,11 +1,11 @@
 /**
- * Known digression scar pairs — incomplete collection shelf (pattern #28).
- * Empty slots = curiosity; never gates Credit.
+ * Known digression scar pairs — myth gossip shelf (pattern #28).
+ * Heard scars = named plaza rumors. Never a collection %; never gates Credit.
  */
 
 import type { IslandSaveV1 } from "./types";
 
-/** Pair forks count as one filled shelf slot if either branch is present. */
+/** Pair forks count as one heard myth if either branch is present. */
 export const DIGRESSION_SHELF_SLOTS: {
   a: string;
   b: string;
@@ -27,7 +27,7 @@ export const DIGRESSION_SHELF_SLOTS: {
 
 const DIGRESSION_PAIRS: [string, string][] = DIGRESSION_SHELF_SLOTS.map((s) => [s.a, s.b]);
 
-/** How many digression rumor slots remain empty (incomplete set). */
+/** How many digression rumor slots remain unheard (analytics / family challenge only). */
 export function digressionScarGaps(save: IslandSaveV1): number {
   const have = new Set((save.harborScars ?? []).map((s) => s.id));
   let gaps = 0;
@@ -52,7 +52,7 @@ export type DigressionShelfRow = {
   scarLabel: string | null;
 };
 
-/** Plinth / Family myth shelf — filled vs empty rumor slots. */
+/** All pair rows — prefer `digressionHeardMyths` for player UI (no empty checklist). */
 export function digressionShelfRows(save: IslandSaveV1): DigressionShelfRow[] {
   const scars = save.harborScars ?? [];
   const byId = new Map(scars.map((s) => [s.id, s]));
@@ -65,4 +65,9 @@ export function digressionShelfRows(save: IslandSaveV1): DigressionShelfRow[] {
       scarLabel: hit?.label ?? null,
     };
   });
+}
+
+/** Player-facing Plinth myths — named gossip only, never empty-slot collection UI. */
+export function digressionHeardMyths(save: IslandSaveV1): DigressionShelfRow[] {
+  return digressionShelfRows(save).filter((r) => r.filled);
 }

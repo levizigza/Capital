@@ -18,6 +18,8 @@ describe("designBible runtime laws", () => {
     expect(BIBLE_RUNTIME_LAWS.demoteSideMagnetsUntilCoveChange).toBe(true);
     expect(BIBLE_RUNTIME_LAWS.partyPrizeIsCashflowClaim).toBe(true);
     expect(BIBLE_RUNTIME_LAWS.localFamilyChallengeAndWitness).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.mythShelfNotCollectionPct).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath).toBe(true);
   });
 
   it("names party prizes Cashflow Claim — not Freedom / Ledger Seal", () => {

@@ -24,6 +24,16 @@ describe("bible player-visible wiring", () => {
     expect(BIBLE_RUNTIME_LAWS.cutIslandsXpAwards).toBe(true);
   });
 
+  it("Plinth myth shelf is gossip, not collection %", () => {
+    expect(BIBLE_RUNTIME_LAWS.mythShelfNotCollectionPct).toBe(true);
+    expect(hub).toMatch(/digressionHeardMyths/);
+    expect(hub).not.toMatch(/digression-slot-empty/);
+  });
+
+  it("hides achievement dashboards on product path", () => {
+    expect(BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath).toBe(true);
+  });
+
   it("does not mount SkillStatsPanel on island play", () => {
     expect(play).not.toMatch(/LazySkillStatsPanel/);
     expect(play).not.toMatch(/SkillStatsPanel/);
