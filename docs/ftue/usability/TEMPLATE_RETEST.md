@@ -1,4 +1,4 @@
-# Retest — Capital FTUE fix verification
+# Retest — Capital fix verification
 
 **Retest id:** R-_______  
 **Parent cohort:** C-_______  
@@ -7,11 +7,15 @@
 **Date:** _______________  
 **Tester(s):** _______________
 
+Process: `docs/design/OBSERVATIONAL_PLAYTEST.md`
+
 ---
 
-## Hypothesis
+## Hypothesis under test
 
-The change below removes or softens the repeated blocker without breaking a Positive.
+_(Copy from finding HYPOTHESIS — what should improve; what must not regress.)_
+
+>
 
 **Change shipped:**
 
@@ -25,6 +29,7 @@ The change below removes or softens the repeated blocker without breaking a Posi
 - [ ] Same protocol silence rules  
 - [ ] Same primary task script  
 - [ ] Contaminated sessions do not count as Pass  
+- [ ] Same record lenses (notices / ignores / expects / attempts / why / hesitate / fail / recover / strategy / transfer / free play)
 
 Optional: one returning / experienced pass if the fix touched skip or briefing.
 
@@ -36,7 +41,8 @@ Optional: one returning / experienced pass if the fix touched skip or briefing.
 - [ ] Original **Major** occurs in 0 of retest participants  
 - [ ] No new Blocker introduced on the same path  
 - [ ] Transfer / recovery lens improved or unchanged  
-- [ ] Protected Positive still present (if listed)
+- [ ] Protected Positive still present (if listed)  
+- [ ] No new cross-category damage obvious (fun without learning, etc.)
 
 ---
 

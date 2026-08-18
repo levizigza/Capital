@@ -1,4 +1,4 @@
-# Session log — Capital FTUE
+# Session log — Capital observational playtest
 
 **Participant:** P___  
 **Cohort:** _______________  
@@ -9,13 +9,16 @@
 **Start / end:** _______ → _______  
 **Contaminated?** No / Yes (reason: _______________)
 
+Process: `docs/design/OBSERVATIONAL_PLAYTEST.md`
+
 ---
 
 ## Setup
 
 - [ ] Brief + consent done  
 - [ ] Observer silence confirmed  
-- [ ] Save mode noted (`fresh` / existing / simulated return)
+- [ ] Save mode noted (`fresh` / existing / simulated return)  
+- [ ] Pocket checklist open (`TEMPLATE_OBSERVATION_CHECKLIST.md`)
 
 ---
 
@@ -29,22 +32,55 @@
 
 ---
 
-## Required lenses (fill during or immediately after)
+## Required record lenses
 
-### What player attempts
--
-
-### Where player hesitates
--
-
-### What player expects
--
+Fill during or immediately after. Quotes > paraphrase.
 
 ### What player notices
 -
 
 ### What player ignores
 -
+
+### What they expect
+-
+
+### What they attempt
+-
+
+### Why they think an outcome occurred
+_(Their causal story — quote. Do not write your interpretation here.)_
+-
+
+### Where they hesitate
+-
+
+### Where they fail
+-
+
+### Whether they recover
+- [ ] Self-recovered (attempts: __)  
+- [ ] Needed intervention  
+- [ ] Did not recover  
+Notes:
+-
+
+### What strategy they form
+_(Recurring plan or rule they state or enact.)_
+-
+
+### Whether they transfer learning
+- [ ] Not reached  
+- [ ] Success — scenario: _______________  
+- [ ] Fail — scenario: _______________ · wrong model: _______________  
+
+### What they choose during free play
+_(After guidance thins: map, digression, shop, quit, flail, etc.)_
+-
+
+---
+
+## Supporting lenses
 
 ### What player believes changed
 -
@@ -58,27 +94,6 @@ _(scar id / irreversible key / quest / ledger — verify after)_
 |------|-----------|----------------------------------------|
 | | | |
 
-### Where player fails
--
-
-### Whether player understands why
-- [ ] Yes — quote:  
-- [ ] Partial — quote:  
-- [ ] No — quote:  
-
-### Whether player recovers
-- [ ] Self-recovered (attempts: __)  
-- [ ] Needed intervention  
-- [ ] Did not recover  
-
-### Whether player succeeds in transfer
-- [ ] Not reached  
-- [ ] Success — scenario: _______________  
-- [ ] Fail — scenario: _______________ · wrong model: _______________  
-
-### What happens after guidance disappears
--
-
 ---
 
 ## Interview (after play — may clarify; still record quotes)
@@ -89,16 +104,19 @@ _(scar id / irreversible key / quest / ledger — verify after)_
 2. What did Harbor keep or remember?  
    >
 
-3. Was anything unfair or confusing?  
+3. Why do you think that happened?  
    >
 
-4. When you got stuck, what did you try next?  
+4. Was anything unfair or confusing?  
    >
 
-5. If the tips went away, what would you do next?  
+5. When you got stuck, what did you try next?  
    >
 
-6. (Optional #94) Fun, or only functional?  
+6. If the tips went away, what would you do next?  
+   >
+
+7. (Optional) Fun, or only functional?  
    >
 
 ---
@@ -108,10 +126,12 @@ _(scar id / irreversible key / quest / ledger — verify after)_
 - F-___  
 - F-___  
 
+Each finding must use: **OBSERVATION · INTERPRETATION · HYPOTHESIS · RECOMMENDATION**
+
 ---
 
 ## Telemetry snapshot (optional)
 
 Export time: _______________  
-Notes (time-to-first-action / decision / freeplay — no PII):  
+Notes (time-to-first-decision / complete loop / freeplay / transfer — no PII):  
 -

@@ -1,4 +1,4 @@
-# Finding card — Capital FTUE
+# Finding card — Capital observational playtest
 
 **Finding id:** F-_______  
 **Cohort / build:** _______________  
@@ -7,11 +7,14 @@
 **Date:** _______________  
 **Author:** _______________
 
+Process: `docs/design/OBSERVATIONAL_PLAYTEST.md`  
+**Do not blend layers.** Observation ≠ interpretation ≠ hypothesis ≠ recommendation.
+
 ---
 
 ## OBSERVATION
 
-_(What happened — behavior, quote, time. No causal language.)_
+_(What happened — behavior, quote, time. No causal language. No “because.”)_
 
 >
 
@@ -19,9 +22,28 @@ _(What happened — behavior, quote, time. No causal language.)_
 
 ## INTERPRETATION
 
-_(Hypothesis: mental model, missing signal, competing affordance, etc.)_
+_(What this might mean for the player’s mental model, attention, or the UI — still not a fix plan.)_
 
 >
+
+---
+
+## HYPOTHESIS
+
+_(Testable cause → effect for the next change. Include what should improve and what must not regress.)_
+
+>
+
+---
+
+## RECOMMENDATION
+
+_(Smallest change to ship before next cohort, or “monitor.”)_
+
+>
+
+**Owner:** _______________  
+**Retest?** Yes — use `TEMPLATE_RETEST.md` / No  
 
 ---
 
@@ -36,22 +58,11 @@ _(Hypothesis: mental model, missing signal, competing affordance, etc.)_
 
 ## SEVERITY
 
-- [ ] **Blocker** — core loop / softlock / false teaching  
-- [ ] **Major** — breaks transfer, recovery, or next-verb clarity (repeated)  
+- [ ] **Blocker** — core loop / softlock / false teaching → fix before next cohort  
+- [ ] **Major** — breaks transfer, recovery, or next-verb clarity (repeated) → fix before expanding sample  
 - [ ] **Minor** — friction with workaround  
 - [ ] **Nit** — polish  
 - [ ] **Positive** — working beat to protect  
-
----
-
-## RECOMMENDATION
-
-_(Smallest change to ship before next cohort, or “monitor”.)_
-
->
-
-**Owner:** _______________  
-**Retest?** Yes — use `TEMPLATE_RETEST.md` / No  
 
 ---
 

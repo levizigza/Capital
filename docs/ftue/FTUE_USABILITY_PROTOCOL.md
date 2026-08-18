@@ -2,6 +2,7 @@
 
 **Purpose:** Repeatable, small-cohort human testing of Capital’s first-session teaching loop.  
 **Scope:** Title → Cast → Ashore Teach → Carpet → Harbor → Cove First Coins + Take → consequence → freeplay / transfer.  
+**Canonical process:** [`docs/design/OBSERVATIONAL_PLAYTEST.md`](../design/OBSERVATIONAL_PLAYTEST.md) — record lenses, four-layer findings, fix → retest.  
 **Related:** `FTUE_TELEMETRY.md` · `FAILURE_RECOVERY.md` · `TRANSFER_TASKS.md` · `PLAYER_ONBOARDING.md` · `ashore-tutorial-research.md` · `pattern-human-playtest.md`
 
 ---
@@ -79,39 +80,41 @@ Align with telemetry primary KPIs (`FTUE_TELEMETRY.md`): freeplay, transfer, rec
 
 ## What observers must record
 
-Live notes (timestamp + beat). Capture **all** of:
+Live notes (timestamp + beat). Capture **all** of (see also observational process):
 
 | Lens | Prompt |
 |------|--------|
-| **Attempts** | What the player tries (verbs, places, wrong-but-sensible actions) |
-| **Hesitation** | Where they pause, re-read, circle, or freeze (>3s with intent unclear) |
-| **Expects** | What they say or imply should happen next |
 | **Notices** | Signals they react to (coach, Piggy, Bag, scar, hush, ledger) |
 | **Ignores** | Signals present but unused |
-| **Believes changed** | What they think the Take / quest / Harbor did |
-| **Actually changed** | What the save/world did (scar, irreversible, ledger, quest) — observer verifies after or via QA |
-| **Asks for help** | Exact ask + time; observer response (scripted refusal / intervention) |
+| **Expects** | What they say or imply should happen next |
+| **Attempts** | What the player tries (verbs, places, wrong-but-sensible actions) |
+| **Why (their words)** | Why they think an outcome occurred — quote, not your theory |
+| **Hesitation** | Where they pause, re-read, circle, or freeze (>3s with intent unclear) |
 | **Fails** | Where they fail a gate, minigame, or comprehension |
-| **Understands why** | Yes / partial / no — with quote |
 | **Recovers** | Whether they self-recover; attempt count |
+| **Strategy** | Recurring plan or rule they form |
 | **Transfer** | Success / fail / not reached — which scenario |
-| **After guidance disappears** | Behavior when coach/hints drop (freeplay, flail, reopen Settings, quit) |
+| **Free play** | What they choose after guidance disappears |
+| **Believes changed** | What they think the Take / quest / Harbor did |
+| **Actually changed** | What the save/world did — observer verifies after or via QA |
+| **Asks for help** | Exact ask + time; observer response (scripted refusal / intervention) |
 
-Use [TEMPLATE_SESSION_LOG.md](./usability/TEMPLATE_SESSION_LOG.md) during the session. Promote sticky issues to finding cards.
+Use [TEMPLATE_SESSION_LOG.md](./usability/TEMPLATE_SESSION_LOG.md) + [TEMPLATE_OBSERVATION_CHECKLIST.md](./usability/TEMPLATE_OBSERVATION_CHECKLIST.md). Promote sticky issues to finding cards.
 
 ---
 
 ## Finding format (mandatory)
 
-Every finding **must** use five fields — no blended “insight” paragraphs:
+Every finding **must** separate four layers — no blended “insight” paragraphs:
 
 ```text
-OBSERVATION:     What happened (behavior / quote / time). No why.
-INTERPRETATION:  Your hypothesis about cause / mental model.
-EVIDENCE:        Timestamps, quotes, save/telemetry, repeat across participants.
-SEVERITY:        Blocker | Major | Minor | Nit | Positive
-RECOMMENDATION:  Smallest change to test next cohort (or “monitor”).
+OBSERVATION:      What happened (behavior / quote / time). No why.
+INTERPRETATION:   What this might mean for the player’s model or the UI.
+HYPOTHESIS:       Testable cause → effect for the next fix (and what must not regress).
+RECOMMENDATION:   Smallest change to test next cohort (or “monitor”).
 ```
+
+Also record **EVIDENCE** and **SEVERITY** on the card.
 
 Copy from [TEMPLATE_FINDING.md](./usability/TEMPLATE_FINDING.md).
 
@@ -154,10 +157,12 @@ Use [TEMPLATE_COHORT_SUMMARY.md](./usability/TEMPLATE_COHORT_SUMMARY.md):
 
 | Template | Use |
 |----------|-----|
+| [../design/OBSERVATIONAL_PLAYTEST.md](../design/OBSERVATIONAL_PLAYTEST.md) | Full observational process |
 | [TEMPLATE_PARTICIPANT_BRIEF.md](./usability/TEMPLATE_PARTICIPANT_BRIEF.md) | Consent + task framing |
 | [TEMPLATE_OBSERVER_SCRIPT.md](./usability/TEMPLATE_OBSERVER_SCRIPT.md) | Silent observer lines + interventions |
+| [TEMPLATE_OBSERVATION_CHECKLIST.md](./usability/TEMPLATE_OBSERVATION_CHECKLIST.md) | Pocket record lenses |
 | [TEMPLATE_SESSION_LOG.md](./usability/TEMPLATE_SESSION_LOG.md) | Live session notes |
-| [TEMPLATE_FINDING.md](./usability/TEMPLATE_FINDING.md) | One finding card |
+| [TEMPLATE_FINDING.md](./usability/TEMPLATE_FINDING.md) | O / I / H / R finding card |
 | [TEMPLATE_COHORT_SUMMARY.md](./usability/TEMPLATE_COHORT_SUMMARY.md) | End-of-cohort synthesis |
 | [TEMPLATE_RETEST.md](./usability/TEMPLATE_RETEST.md) | Fix verification |
 
