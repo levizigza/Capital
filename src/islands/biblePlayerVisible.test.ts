@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { BIBLE_RUNTIME_LAWS, BOARD_STAR_LABEL } from "@/design/designBible";
+import { BIBLE_RUNTIME_LAWS, BOARD_CASHFLOW_CLAIM_LABEL } from "@/design/designBible";
 
 const hub = readFileSync(join(__dirname, "views/HomeHubView.tsx"), "utf8");
 const reward = readFileSync(join(__dirname, "views/PartyRewardOverlay.tsx"), "utf8");
@@ -18,9 +18,10 @@ describe("bible player-visible wiring", () => {
     expect(hub).toMatch(/hasCompletedCoveChange\(save\)/);
   });
 
-  it("hides Islands XP from party reward chrome", () => {
+  it("hides Islands XP and Board Star chrome from party rewards", () => {
     expect(reward).not.toMatch(/\+\{reward\.xp\} XP/);
-    expect(reward).toMatch(/Board Star/);
+    expect(reward).not.toMatch(/Board Star/);
+    expect(BIBLE_RUNTIME_LAWS.cutIslandsXpAwards).toBe(true);
   });
 
   it("does not mount SkillStatsPanel on island play", () => {
@@ -33,9 +34,11 @@ describe("bible player-visible wiring", () => {
     expect(talks).toMatch(/What do you notice\?/);
   });
 
-  it("party board prizes are Board Stars", () => {
-    expect(board).toContain(`label: "${BOARD_STAR_LABEL}"`);
+  it("party board prizes are Cashflow Claims", () => {
+    expect(board).toContain(`label: BOARD_CASHFLOW_CLAIM_LABEL`);
+    expect(board).toMatch(/makeBoardCashflowClaim/);
     expect(board).not.toMatch(/label: "Ledger Seal"/);
+    expect(BOARD_CASHFLOW_CLAIM_LABEL).toBe("Cashflow Claim");
   });
 
   it("Soft Beat uses scar vista helper", () => {

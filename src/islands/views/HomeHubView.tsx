@@ -1844,11 +1844,10 @@ export function HomeHubView({
           </div>
           {weekly && weeklyInfo ? (
             <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950">
-              <p className="font-bold">Weekly · {weeklyInfo.title}</p>
+              <p className="font-bold">Weekly myth · {weeklyInfo.title}</p>
               <p className="mt-1">{weeklyInfo.blurb}</p>
-              <p className="mt-1 font-semibold">
-                {weekly.progress}/{weekly.target}
-                {weekly.done ? " — cleared!" : ""}
+              <p className="mt-1 text-xs text-violet-900/80">
+                Share if you want — not a progress bar. Freedom Pay Days are the real streak.
               </p>
               <GameButton
                 variant="outline"
@@ -1873,8 +1872,8 @@ export function HomeHubView({
                     await downloadWeeklyShareCard({
                       voyagerName: voyager.name || "Voyager",
                       title: weeklyInfo.title,
-                      progress: `${weekly.progress}/${weekly.target}${weekly.done ? " cleared" : ""}`,
-                      streak: save.harborRitual?.streakDays ?? 0,
+                      progress: weekly.done ? "Myth cleared this week" : "Chasing the myth",
+                      streak: 0,
                       plinthHint:
                         plaques.length > 0
                           ? `Memory Plinth · ${plaques.length} plaque${plaques.length === 1 ? "" : "s"}`

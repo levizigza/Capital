@@ -16,12 +16,17 @@ export const DESIGN_BIBLE_PATH = "docs/CAPITAL_DESIGN_BIBLE.md";
 export const BIBLE_RUNTIME_LAWS = {
   /** Hide Islands XP from reward chrome — Memory/scars are progress, not XP. */
   hideIslandsXpChrome: true,
+  /** Do not award Islands XP on the product path (pouch + CF only). */
+  cutIslandsXpAwards: true,
   /** Unmount skill-stats RPG panel from island play. */
   hideSkillStatsPanel: true,
   /** Arcade / Vibe Studio / Ritual magnets only after Cove Change. */
   demoteSideMagnetsUntilCoveChange: true,
-  /** Party board prize is Board Star — never “Ledger Seal” (Freedom Seal stays unique). */
-  partyPrizeIsBoardStar: true,
+  /**
+   * Party board “seal” spaces buy Cashflow Claims (ledger), not star counters.
+   * Freedom Seal stays unique; rival star race is flavor, not campaign progress.
+   */
+  partyPrizeIsCashflowClaim: true,
   /** Tip NPC Talk: no hollow yes/later fake choice. */
   tipTalkSingleContinue: true,
   /** Memory modal omits stance build chrome — organs + plaques only. */
@@ -34,8 +39,11 @@ export const BIBLE_RUNTIME_LAWS = {
 
 export type BibleRuntimeLaw = keyof typeof BIBLE_RUNTIME_LAWS;
 
-/** Party board score label — never confuse with Freedom Seal. */
+/** @deprecated Prefer Cashflow Claim — kept for rival flavor / old saves. */
 export const BOARD_STAR_LABEL = "Board Star";
+
+/** Party board seal prize — pouch → monthly CF. */
+export const BOARD_CASHFLOW_CLAIM_LABEL = "Cashflow Claim";
 
 /**
  * Soft Beat fork vista — same pad, scar-aware weather (longevity without new meters).

@@ -19,13 +19,18 @@ Same campaign unlock path is OK **only if** Takes change what is possible later 
 | Only Cove bites ledger | Paycheck umbrella/glitter + Credit patience/interest holdings |
 | Deal catalog empty → grind | `regenerateAssetDealOffer` renewed tradeoffs |
 | Liability auto | Borrow / Buyout / Walk choice on board |
-| Ritual streak +5 chrome | Streak/login reward UI removed; Pay Day kept |
+| Ritual streak +5 chrome | Streak/login reward UI removed; Pay Day kept; +5 faucet cut |
 | skillStats / coach RPG | `applySkillChanges` no-op; coach uses CF + fails only |
 | Bag spoils transfer | Credit tip + Piggy homecoming no longer name jar/glitter/wait answers |
 | Party Dash / pad copy still said quiz gates literacy | Player-facing copy + mastery gate requirement text de-gated |
+| Islands XP (hidden but awarded) | XP awards cut on product path (`cutIslandsXpAwards`) |
+| Board Stars as progress | Seal spaces → **Cashflow Claims** (pouch → monthly CF) |
+| Weekly ritual fill-% | Share myth without `progress/target` chrome |
+| Digression shelf fill-% tip | Myth curiosity without empty-slot count |
 
 ## Not in this PR
 
 - Live remote ITR dashboard / cold cohort execution (process already documented)
 - Wiring MasteryQuiz entry CTA (kept optional; no longer forced after clear)
 - Giant sim / AI guide / social expansion (still deferred)
+- Outer-shell XP / TrophyRoom (non-Islands entry)

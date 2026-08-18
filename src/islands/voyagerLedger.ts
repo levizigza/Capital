@@ -352,6 +352,24 @@ export function regenerateAssetDealOffer(
   };
 }
 
+/** Board seal space — pouch coins → monthly CF (not a star counter). */
+export const BOARD_CASHFLOW_CLAIM_MONTHLY = 3;
+
+export function makeBoardCashflowClaim(
+  ownedIds: string[],
+  purchaseCost: number,
+): LedgerHolding {
+  const gen = 1 + ownedIds.filter((id) => id.startsWith("board_cf_claim_")).length;
+  return {
+    id: `board_cf_claim_${gen}_${ownedIds.length}`,
+    name: gen > 1 ? `Board Cashflow Claim #${gen}` : "Board Cashflow Claim",
+    kind: "asset",
+    monthlyAmount: BOARD_CASHFLOW_CLAIM_MONTHLY,
+    icon: "📈",
+    purchaseCost,
+  };
+}
+
 export type LiabilityOffer = LedgerHolding & {
   /** Coins to refuse the debt without taking the monthly drain. */
   buyoutCost: number;

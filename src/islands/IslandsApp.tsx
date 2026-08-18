@@ -77,7 +77,6 @@ import {
   markRewardClaimed,
   bumpWeeklyTalk,
   bumpWeeklyStudio,
-  DAILY_RITUAL_REWARD_COINS,
 } from "./harborRitual";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
@@ -868,16 +867,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       itemTip?: string;
       ledger?: import("./voyagerLedger").VoyagerLedger;
     }) => {
-      if (payload.coins || payload.xp) {
+      if (payload.coins) {
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: Math.max(0, prev.totalCoins + (payload.coins || 0)),
-          xp: prev.xp + (payload.xp || 0),
         }));
       }
-      if (payload.star && activeIslandId) {
-        awardPartyStar(activeIslandId);
-      }
+      // Board Stars retired as progress — seal spaces write ledger Cashflow Claims.
       if (payload.ledger) {
         updateSave((prev) => {
           const next = {
@@ -888,7 +884,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
       }
     },
-    [activeIslandId, awardPartyStar, setUserProfile, updateSave]
+    [setUserProfile, updateSave]
   );
 
   const onSyncHarborRitual = useCallback(() => {
@@ -923,25 +919,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }, [setUserProfile, updateSave]);
 
   const onClaimRitualReward = useCallback(() => {
-    let claimed = false;
+    // Extrinsic +5 ritual coins cut — mark claimed without pouch faucet.
     updateSave((prev) => {
       if (prev.harborRitual?.today.rewardClaimed) return prev;
       if (!prev.harborRitual?.today.paydayDone || !prev.harborRitual?.today.rumorSeen) {
         return prev;
       }
-      claimed = true;
       return markRewardClaimed(prev);
     });
-    if (claimed) {
-      setUserProfile((prev) => ({
-        ...prev,
-        totalCoins: prev.totalCoins + DAILY_RITUAL_REWARD_COINS,
-      }));
-      toast.message(`+${DAILY_RITUAL_REWARD_COINS} ritual coins`, {
-        description: "Tiny thank-you for showing up today — never pay-to-win.",
-      });
-    }
-  }, [setUserProfile, updateSave]);
+  }, [updateSave]);
 
   const onMarkRitualRumor = useCallback(() => {
     updateSave((prev) => markRumorSeen(prev));
@@ -1216,16 +1202,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       }
 
       const rewards = quest.rewards;
-      if (rewards?.coins || rewards?.xp) {
+      if (rewards?.coins) {
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: prev.totalCoins + (rewards.coins || 0),
-          xp: prev.xp + (rewards.xp || 0),
         }));
-        const bits: string[] = [];
-        if (rewards.coins) bits.push(`+${rewards.coins} coins`);
-        if (rewards.xp) bits.push(`+${rewards.xp} XP`);
-        toast.message(bits.join(" · "), {
+        toast.message(`+${rewards.coins} coins`, {
           description: resolveProfileText(quest.title, learningProfile),
         });
       }
@@ -1956,7 +1938,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: prev.totalCoins + reward.coins,
-          xp: prev.xp + reward.xp,
         }));
         if (reward.starEarned) {
           awardPartyStar(activeIsland.id);
@@ -2137,7 +2118,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           setUserProfile((prev) => ({
             ...prev,
             totalCoins: prev.totalCoins + consolation.coins,
-            xp: prev.xp + consolation.xp,
           }));
         }
 
@@ -2213,7 +2193,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       setUserProfile((prev) => ({
         ...prev,
         totalCoins: prev.totalCoins + reward.coins,
-        xp: prev.xp + reward.xp,
       }));
       if (reward.starEarned) {
         awardPartyStar(activeIsland.id);

@@ -253,8 +253,8 @@ function coinBagHarborTipRaw(
   }
   if (opts?.digressionGaps && opts.digressionGaps > 0 && (opts.hasFreedom || opts.latestScarLabel)) {
     return {
-      tip: `Myth shelf · ${opts.digressionGaps} empty rumor slot${opts.digressionGaps === 1 ? "" : "s"}`,
-      coach: "Plinth keeps empty shelves curious. Side shores and digressions fill them — spine stays open.",
+      tip: "Myth shelf still curious",
+      coach: "Plinth keeps empty rumor shelves as curiosity — digressions fill them; spine stays open.",
       track: "side",
     };
   }

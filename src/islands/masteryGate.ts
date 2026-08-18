@@ -164,7 +164,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
         choices: [
           "Buying more snacks on impulse",
           "Covering surprise bills without wrecking your plan",
-          "Paying rivals’ Board Stars",
+          "Winning a star race that doesn’t change cashflow",
           "Skipping every quiz forever",
         ],
         correctIndex: 1,

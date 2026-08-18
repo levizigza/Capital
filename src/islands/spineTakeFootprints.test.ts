@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultIslandSave } from "./save";
-import { ensureLedger, netCashflow } from "./voyagerLedger";
+import {
+  BOARD_CASHFLOW_CLAIM_MONTHLY,
+  ensureLedger,
+  makeBoardCashflowClaim,
+  netCashflow,
+} from "./voyagerLedger";
 import {
   applySpineTakeLedgerFootprint,
   COVE_TAKE_KEY,
@@ -12,6 +17,7 @@ import { bossUnlockProgress, isIslandProgressLocked, islandLockHint } from "./pr
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { PAYCHECK_CHANGE_QUEST_ID } from "./islandIds";
 import { harborWeatherMood, feedbackLoopLine } from "./harborWeather";
+import { computeMinigameReward } from "./partyBoard";
 
 const stub = (id: string): IslandDefinition =>
   ({
@@ -101,5 +107,21 @@ describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
     } as IslandSaveV1;
     expect(bossUnlockProgress(save).unlocked).toBe(true);
     expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(false);
+  });
+});
+
+describe("Cashflow Claim + XP cut (fake-mechanics wave 2)", () => {
+  it("makeBoardCashflowClaim writes a monthly asset", () => {
+    const claim = makeBoardCashflowClaim([], 20);
+    expect(claim.kind).toBe("asset");
+    expect(claim.monthlyAmount).toBe(BOARD_CASHFLOW_CLAIM_MONTHLY);
+    expect(claim.id).toMatch(/^board_cf_claim_/);
+  });
+
+  it("minigame board rewards award coins without XP or stars", () => {
+    const reward = computeMinigameReward(true, 80, true, true);
+    expect(reward.xp).toBe(0);
+    expect(reward.starEarned).toBe(false);
+    expect(reward.coins).toBeGreaterThan(0);
   });
 });
