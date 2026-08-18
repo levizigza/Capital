@@ -1,0 +1,92 @@
+%%{init: {'theme': 'neutral', 'flowchart': {'htmlLabels': false}} }%%
+flowchart TB
+  subgraph player [Player-facing]
+    Verbs[Walk Talk Take SoftBeat PayDay BoardCarpet EnterStructure Share]
+    HUD[Quiet Harbor HUD · Coin Bag · Wealth · Ledger late]
+    Cinema[Hush · Spectacle · Plinth · Share · Day2]
+  end
+
+  subgraph sim [Simulation]
+    Ledger[VoyagerLedger CF + holdings + Pay Day]
+    Pouch[totalCoins pouch]
+    Weather[harborWeather from CF]
+    EconAlt[economy.ts boom/recession — minigames]
+    Irrev[irreversibleChoices]
+    Scars[harborScars plaques]
+    Ledger --> Weather
+    Ledger --> FreedomSeal[harborEscaped Freedom Seal]
+    TakeFX[Take effects] --> Irrev
+    TakeFX --> Scars
+    TakeFX --> Ledger
+  end
+
+  subgraph progress [Progression]
+    MainCourse[MAIN_COURSE Harbor Cove Paycheck Freedom Credit]
+    Gates[progressGates side shores · Credit Freedom+mastery3]
+    Carpet[boats carpet tiers]
+    Mastery[masteryClears quizzes]
+    XP[xp awards chrome hidden]
+    Skills[skillStats coach only]
+    FreedomSeal --> Gates
+    Mastery --> Gates
+  end
+
+  subgraph teach [Teaching / FTUE]
+    FTUE7[FTUE-7 AshoreComprehensionTutorial]
+    Ashore[harborAshore Piggy then Carpet]
+    Transfer[independentTransfer stamps]
+    Concepts[conceptProgression transfer tasks]
+    Coach[adaptiveCoach heuristics]
+  end
+
+  subgraph social [Social — local]
+    Family[familyRoom encrypted local]
+    Witness[share Witness stamps]
+    PNG[weeklyShareCard Harbor-felt PNG]
+  end
+
+  subgraph feedback [Feedback]
+    SFX[capitalSfx procedural]
+    Music[capitalMusic + musicMute]
+    Juice[triggerJuice]
+  end
+
+  subgraph a11y [Accessibility]
+    Settings[textSize reduceMotion highContrast]
+    Motion[a11yMotion cinemaFlashAmp]
+    Input[input bindings · TouchWalkPad]
+  end
+
+  subgraph telemetry [Telemetry]
+    Analytics[analytics KV sink]
+    FtuePriv[analytics/ftue allowlist]
+    ITR[local independent_transfer_rate]
+    SRE[sre/telemetry optional URL]
+  end
+
+  subgraph absent [MISSING on main]
+    Stripe[Stripe / IAP / ads]
+    LLM[LLM tutor]
+    RemoteKPI[Remote product ITR dashboard]
+    FakeMP[Fake multiplayer backend]
+  end
+
+  Verbs --> TakeFX
+  Verbs --> Cinema
+  Cinema --> Scars
+  HUD --> Coach
+  Coach --> Skills
+  FTUE7 --> Ashore
+  Ashore --> Verbs
+  Scars --> PNG
+  PNG --> Witness
+  Family --> Witness
+  Ledger --> HUD
+  Pouch --> HUD
+  Gates --> MainCourse
+  Transfer --> ITR
+  Analytics --> FtuePriv
+  Settings --> Motion
+
+  classDef missing fill:#f5f5f5,stroke:#999,stroke-dasharray: 5 5
+  class Stripe,LLM,RemoteKPI,FakeMP missing
