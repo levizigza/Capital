@@ -16,6 +16,10 @@ type Stage = "select" | "look";
 
 type Props = {
   defaultName?: string;
+  /** Prefill from a returning save so the Street Fighter board highlights the last Voyager. */
+  initialCharacter?: CapitalCharacter;
+  /** Returning / already-taught: skip the beach classroom, not the coin board. */
+  skipAshoreTeach?: boolean;
   onComplete: (character: CapitalCharacter, opts?: { experiencedPlayer?: boolean }) => void;
 };
 
@@ -37,13 +41,19 @@ function resolvePickName(
  * Boot cast select — Street Fighter coin board → full 3D body + Snapchat customize.
  * Stage and dock are flex siblings so WebGL/coins never cover the controls.
  */
-export function BootCastSelect({ defaultName = "", onComplete }: Props) {
+export function BootCastSelect({
+  defaultName = "",
+  initialCharacter,
+  skipAshoreTeach = false,
+  onComplete,
+}: Props) {
   const [stage, setStage] = useState<Stage>("select");
   const [draft, setDraft] = useState<CapitalCharacter>(() =>
-    sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || ""),
+    initialCharacter ?? sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || ""),
   );
   const [busy, setBusy] = useState(false);
   const [experiencedPlayer, setExperiencedPlayer] = useState(false);
+  const skipTeach = skipAshoreTeach || experiencedPlayer;
 
   const mascot = getMascot(draft.base);
 
@@ -67,8 +77,13 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
     void (async () => {
       try {
         const loaded = await loadIslandSave();
+        const modeSave = experiencedPlayer
+          ? declareExperiencedMode(loaded)
+          : skipAshoreTeach
+            ? loaded
+            : declareNewPlayerMode(loaded);
         const withChar: IslandSaveV1 = {
-          ...(experiencedPlayer ? declareExperiencedMode(loaded) : declareNewPlayerMode(loaded)),
+          ...modeSave,
           character,
           updatedAt: new Date().toISOString(),
         };
@@ -111,7 +126,10 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
           {stage === "select" ? "Choose your Voyager" : `${mascot.name}`}
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
-          {stage === "select" ? "Meet your Voyager. Tap a coin face — experienced players can skip Ashore Teach."
+          {stage === "select"
+            ? skipAshoreTeach
+              ? "Your Voyager is waiting. Tap a coin face to keep them, or pick someone new."
+              : "Meet your Voyager. Tap a coin face — experienced players can skip Ashore Teach."
             : "Dress your Voyager on the mirror — then continue before the Money Carpet."}
         </p>
       </header>
@@ -155,16 +173,18 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                   {mascot.tagline}
                 </p>
               </div>
-              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-sm text-white/90">
-                <input
-                  type="checkbox"
-                  checked={experiencedPlayer}
-                  onChange={(e) => setExperiencedPlayer(e.target.checked)}
-                  className="size-4 rounded border-amber-200/40"
-                  data-testid="boot-experienced-player"
-                />
-                I&apos;ve played money games before (skip Ashore Teach)
-              </label>
+              {!skipAshoreTeach ? (
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-sm text-white/90">
+                  <input
+                    type="checkbox"
+                    checked={experiencedPlayer}
+                    onChange={(e) => setExperiencedPlayer(e.target.checked)}
+                    className="size-4 rounded border-amber-200/40"
+                    data-testid="boot-experienced-player"
+                  />
+                  I&apos;ve played money games before (skip Ashore Teach)
+                </label>
+              ) : null}
               <button
                 type="button"
                 disabled={busy}
@@ -185,7 +205,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               >
                 {busy
                   ? "Continuing…"
-                  : experiencedPlayer
+                  : skipTeach
                     ? "Continue to Money Carpet →"
                     : "Continue to Ashore Teach →"}
               </button>
@@ -209,7 +229,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               saveLabel={
                 busy
                   ? "Continuing…"
-                  : experiencedPlayer
+                  : skipTeach
                     ? "Continue to Money Carpet →"
                     : "Continue to Ashore Teach →"
               }

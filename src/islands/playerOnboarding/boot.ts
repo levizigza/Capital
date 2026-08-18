@@ -1,19 +1,22 @@
 import type { IslandSaveV1 } from "../types";
-import { detectPlayerOnboardingMode, isReturningAfterAbsence } from "./detect";
 
 /**
- * Skip title → cast → teach → carpet when the player already has a shell-complete save.
- * Returning players must never replay FTUE because of absence alone.
+ * Title mural, Street Fighter cast, and Money Carpet play on every full page load.
+ * Only App’s QA `?skipIntro=1` + VITE_QA=1 bypasses boot (via shouldPlayCapitalIntroOnBoot).
+ * Returning / experienced saves skip Ashore Teach — not the opening.
  */
-export function shouldSkipFtueBoot(save: IslandSaveV1 | null): boolean {
+export function shouldSkipFtueBoot(_save: IslandSaveV1 | null): boolean {
+  return false;
+}
+
+/** Skip the beach classroom on boot; never skip title, cast, or carpet. */
+export function shouldSkipAshoreTeachOnBoot(save: IslandSaveV1 | null): boolean {
   if (!save) return false;
+  if (save.playerOnboarding?.declaredMode === "experienced") return true;
   if (save.onboardingComplete && save.character) return true;
-  if (isReturningAfterAbsence(save)) return true;
-  const mode = detectPlayerOnboardingMode(save);
-  return mode === "returning";
+  return false;
 }
 
 export function resolveBootTeachPhase(save: IslandSaveV1 | null): "teach" | "carpet" {
-  if (save?.playerOnboarding?.declaredMode === "experienced") return "carpet";
-  return "teach";
+  return shouldSkipAshoreTeachOnBoot(save) ? "carpet" : "teach";
 }

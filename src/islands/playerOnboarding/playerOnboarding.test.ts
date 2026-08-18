@@ -8,6 +8,7 @@ import {
   isReturningAfterAbsence,
   shouldShowReturningBriefing,
   shouldSkipFtueBoot,
+  shouldSkipAshoreTeachOnBoot,
   isTutorialShellComplete,
   isConceptMastered,
   applyExperiencedBootstrap,
@@ -40,6 +41,7 @@ describe("player onboarding modes", () => {
     const save = createDefaultIslandSave();
     expect(detectPlayerOnboardingMode(save)).toBe("new");
     expect(shouldSkipFtueBoot(save)).toBe(false);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(false);
   });
 
   it("detects experienced from declared mode", () => {
@@ -48,9 +50,11 @@ describe("player onboarding modes", () => {
       playerOnboarding: { version: 1 as const, declaredMode: "experienced" as const },
     };
     expect(detectPlayerOnboardingMode(save)).toBe("experienced");
+    expect(shouldSkipFtueBoot(save)).toBe(false);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
   });
 
-  it("detects returning after absence without replaying FTUE boot", () => {
+  it("detects returning after absence without replaying Ashore Teach", () => {
     const save = {
       ...createDefaultIslandSave(),
       onboardingComplete: true,
@@ -63,7 +67,18 @@ describe("player onboarding modes", () => {
     };
     expect(isReturningAfterAbsence(save)).toBe(true);
     expect(detectPlayerOnboardingMode(save)).toBe("returning");
-    expect(shouldSkipFtueBoot(save)).toBe(true);
+    expect(shouldSkipFtueBoot(save)).toBe(false);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
+  });
+
+  it("keeps title and Street Fighter cast on a same-day reload with a finished save", () => {
+    const save = {
+      ...createDefaultIslandSave(),
+      onboardingComplete: true,
+      character: BASE_VOYAGER,
+    };
+    expect(shouldSkipFtueBoot(save)).toBe(false);
+    expect(shouldSkipAshoreTeachOnBoot(save)).toBe(true);
   });
 
   it("does not treat same-day reload as returning", () => {

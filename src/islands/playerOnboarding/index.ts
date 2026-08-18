@@ -39,4 +39,8 @@ export {
   markReorientationSeen,
 } from "./bootstrap";
 
-export { shouldSkipFtueBoot, resolveBootTeachPhase } from "./boot";
+export {
+  shouldSkipFtueBoot,
+  shouldSkipAshoreTeachOnBoot,
+  resolveBootTeachPhase,
+} from "./boot";

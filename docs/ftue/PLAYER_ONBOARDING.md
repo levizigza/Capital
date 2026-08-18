@@ -8,7 +8,9 @@ Three session modes share one save but differ in **guidance density** and **boot
 |------|-----------|-------------|------------------|
 | **New** | No meaningful save progress | Full title → cast → Ashore teach → carpet | Progressive teaching (hub coach, concept GUIDED phases) |
 | **Experienced** | Cast select: “I've played money games before” | Title → cast → **skip teach** → carpet | Reduced coach; escalated concept hints only; proofs unchanged |
-| **Returning** | `onboardingComplete` + character + ≥72h since `lastActiveAt` | **Skip entire FTUE boot** | Returning briefing overlay; no FTUE replay for absence |
+| **Returning** | `onboardingComplete` + character + ≥72h since `lastActiveAt` | Title → cast (prefilled) → **skip teach** → carpet | Returning briefing overlay; Ashore classroom is not replayed |
+
+Every **full page load** plays the title mural, Street Fighter coin board, and Money Carpet. Only QA (`?skipIntro=1` + `VITE_QA=1`) skips that opening. A finished save skips **Ashore Teach**, not the cinematics.
 
 ## Persistence (`save.playerOnboarding`)
 

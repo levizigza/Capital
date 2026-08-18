@@ -12,7 +12,7 @@ import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
 import { peekIslandSaveSync } from '@/islands/save'
-import { shouldSkipFtueBoot } from '@/islands/playerOnboarding'
+import { shouldSkipAshoreTeachOnBoot } from '@/islands/playerOnboarding'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -186,28 +186,19 @@ function App() {
   const [profileError, setProfileError] = useState(false)
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
-  const [showCapitalIntro, setShowCapitalIntro] = useState(() => {
-    if (!shouldPlayCapitalIntroOnBoot()) return false
-    const save = peekIslandSaveSync()
-    return !shouldSkipFtueBoot(save)
-  })
+  const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
   /** Title mural → cast → comprehension teach → carpet POV into Harbor. */
   const [bootPhase, setBootPhase] = useState<"title" | "cast" | "teach" | "carpet">("title")
   const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
   const [bootExperiencedPlayer, setBootExperiencedPlayer] = useState(false)
 
-  // Every full page load: title → cast select → carpet (QA may opt out with skipIntro).
+  // Every full page load: title → Street Fighter cast → (Ashore if new) → carpet.
+  // QA may opt out with ?skipIntro=1 + VITE_QA=1. Returning players still get the opening.
   useEffect(() => {
     if (shouldPlayCapitalIntroOnBoot()) {
-      const save = peekIslandSaveSync()
-      if (shouldSkipFtueBoot(save)) {
-        setShowCapitalIntro(false)
-        setCurrentMode("islands")
-        return
-      }
       setShowCapitalIntro(true)
       setBootPhase("title")
-      setBootCharacter(null)
+      setBootCharacter(peekIslandSaveSync()?.character ?? null)
       setBootExperiencedPlayer(false)
       setCurrentMode("islands")
     }
@@ -487,13 +478,18 @@ function App() {
           <BootCastSelect
             key="capital-cast-boot"
             defaultName={userProfile?.name || ""}
+            initialCharacter={peekIslandSaveSync()?.character ?? undefined}
+            skipAshoreTeach={shouldSkipAshoreTeachOnBoot(peekIslandSaveSync())}
             onComplete={(character, opts) => {
               setBootCharacter(character)
-              setBootExperiencedPlayer(Boolean(opts?.experiencedPlayer))
+              const skipTeach =
+                Boolean(opts?.experiencedPlayer) ||
+                shouldSkipAshoreTeachOnBoot(peekIslandSaveSync())
+              setBootExperiencedPlayer(skipTeach)
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
               }
-              setBootPhase(opts?.experiencedPlayer ? "carpet" : "teach")
+              setBootPhase(skipTeach ? "carpet" : "teach")
             }}
           />
         ) : bootPhase === "teach" && !bootExperiencedPlayer ? (
