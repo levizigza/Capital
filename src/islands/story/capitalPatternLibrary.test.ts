@@ -237,10 +237,8 @@ describe("capital pattern library contracts", () => {
     const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
     expect(app).toMatch(/handleMasteryFailed/);
     expect(app).toMatch(/pendingMinigameFail/);
-    const failBlock = app.slice(
-      app.indexOf("handleMasteryFailed"),
-      app.indexOf("handleMasteryFailed") + 800,
-    );
+    const start = app.indexOf("const handleMasteryFailed");
+    const failBlock = app.slice(start, start + 2_400);
     expect(failBlock).toMatch(/minigameFailCopy/);
     expect(failBlock).not.toMatch(/setActiveMinigameId\(mgId\)/);
   });

@@ -115,11 +115,20 @@ export function applyConceptSync(
         const updated = finalizeGuidedMetricsOnReduced(entry, now);
         Object.assign(entry, updated);
         setPhase(entry, "REDUCED_GUIDANCE", now);
+        // Open the Independent Transfer window — attempt counted even before the analogous Take.
+        if (!entry.transferStartedAt) {
+          entry.transferStartedAt = now;
+          entry.transferAttempts = Math.max(1, entry.transferAttempts ?? 0);
+        }
       }
     }
 
     if (entry.phase === "REDUCED_GUIDANCE") {
       if (evalPredicate(def.transfer_task, evidence)) {
+        if (!entry.transferStartedAt) {
+          entry.transferStartedAt = now;
+          entry.transferAttempts = Math.max(1, entry.transferAttempts ?? 0);
+        }
         const updated = finalizeTransferMetricsOnIndependent(entry, working, def.concept_id, now);
         Object.assign(entry, updated);
         setPhase(entry, "INDEPENDENT", now);
@@ -151,11 +160,19 @@ export function applyConceptSync(
         const updated = finalizeGuidedMetricsOnReduced(entry, now);
         Object.assign(entry, updated);
         setPhase(entry, "REDUCED_GUIDANCE", now);
+        if (!entry.transferStartedAt) {
+          entry.transferStartedAt = now;
+          entry.transferAttempts = Math.max(1, entry.transferAttempts ?? 0);
+        }
       }
       if (
         (entry.phase === "REDUCED_GUIDANCE" || entry.phase === "GUIDED") &&
         evalPredicate(def.transfer_task, evidence)
       ) {
+        if (!entry.transferStartedAt) {
+          entry.transferStartedAt = now;
+          entry.transferAttempts = Math.max(1, entry.transferAttempts ?? 0);
+        }
         const updated = finalizeTransferMetricsOnIndependent(entry, working, def.concept_id, now);
         Object.assign(entry, updated);
         setPhase(entry, "INDEPENDENT", now);

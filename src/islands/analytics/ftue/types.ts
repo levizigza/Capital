@@ -101,18 +101,20 @@ export const FTUE_PAYLOAD_ALLOWLIST = new Set([
   "daysSinceLast",
 ]);
 
-/** Metric ids — tutorial_completed is intentionally absent as a primary KPI. */
+/** Metric ids — tutorial_completed is intentionally absent as a primary KPI.
+ * Independent Transfer Rate is the king KPI (first in list).
+ */
 export const FTUE_PRIMARY_METRICS = [
+  "independent_transfer_rate",
+  "time_to_first_core_loop",
+  "freeplay_conversion",
+  "failure_recovery_rate",
+  "d1_retention",
   "time_to_first_action",
   "time_to_first_decision",
   "time_to_first_consequence",
-  "time_to_first_core_loop",
   "guided_success_rate",
-  "independent_transfer_rate",
   "hint_dependency",
-  "failure_recovery_rate",
-  "freeplay_conversion",
-  "d1_retention",
   "d7_retention",
   "d30_retention",
 ] as const;

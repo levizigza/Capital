@@ -23,9 +23,14 @@ export function trackConceptLifecycleFtue(before: IslandSaveV1, after: IslandSav
     if (now === "REDUCED_GUIDANCE" && was === "GUIDED") {
       void trackFtue("concept_practiced", { ...base, guidedSuccess: true });
       void trackFtue("guidance_reduced", base);
+      // Transfer window opens when guided proof clears — player faces the analogous problem alone.
       void trackFtue("transfer_started", base);
     }
     if (now === "INDEPENDENT" && was !== "INDEPENDENT") {
+      // Same-tick GUIDED→INDEPENDENT still counts as a transfer attempt (no REDUCED dwell).
+      if (was === "GUIDED" || was === "AVAILABLE" || was === "LOCKED") {
+        void trackFtue("transfer_started", base);
+      }
       void trackFtue("transfer_success", base);
       void trackFtue("autonomy_unlocked", { ...base, via: "independent" });
     }

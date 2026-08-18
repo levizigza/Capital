@@ -2,6 +2,8 @@
 
 Capital’s north star for this phase: make **one money choice** feel unforgettable.
 
+**Teaching north star:** [`ftue/NORTH_STAR.md`](./ftue/NORTH_STAR.md) — players should remember how the world works; **Independent Transfer Rate** is the king FTUE KPI.
+
 **Design constitution:** [`CAPITAL_DESIGN_BIBLE.md`](./CAPITAL_DESIGN_BIBLE.md) — fantasy, loop, pillars, economy/progression, social, metrics, feature approval, and the ship question: *Does this help Capital generate a more interesting player story?*
 
 **Related audits:** [`COMPLEXITY_CUT_REVIEW.md`](./COMPLEXITY_CUT_REVIEW.md) · [`LONGEVITY_100H.md`](./LONGEVITY_100H.md) · [`FEATURE_GATE.md`](./FEATURE_GATE.md)

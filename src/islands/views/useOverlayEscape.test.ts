@@ -25,7 +25,8 @@ describe("Overlay navigability contract", () => {
 
     for (const src of [share, take, spectacle, soft, trailer, day2, arrive]) {
       expect(src).toMatch(/useOverlayEscape/);
-      expect(src).toMatch(/Esc · Leave/);
+      // Binding-aware Leave (Take hush) or fixed Esc · Leave chrome both count.
+      expect(src).toMatch(/Esc · Leave|Leave · \{cancelLabel\}|actionBindingLabel\("cancel"\)/);
     }
     expect(share).toMatch(/data-testid="harbor-felt-keep-walking"/);
     expect(trailer).toMatch(/data-testid="signature-trailer-leave"/);

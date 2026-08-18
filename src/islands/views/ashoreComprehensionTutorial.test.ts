@@ -22,7 +22,8 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     expect(app).toMatch(/bootPhase.*"teach"/);
     expect(app).toMatch(/AshoreComprehensionTutorial/);
     expect(app).toMatch(/character=\{bootCharacter/);
-    expect(app).toMatch(/setBootPhase\("teach"\)/);
+    // Experienced checkbox can skip teach → carpet; new players still land on teach.
+    expect(app).toMatch(/setBootPhase\(opts\?\.experiencedPlayer \? "carpet" : "teach"\)/);
     expect(app).toMatch(/setBootPhase\("carpet"\)/);
   });
 

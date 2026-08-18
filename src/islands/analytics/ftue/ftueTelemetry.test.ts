@@ -118,6 +118,7 @@ describe("FTUE metrics", () => {
     expect(snap.tutorial_completion_rate).toBe(1);
 
     const primary = FTUE_PRIMARY_METRICS;
+    expect(primary[0]).toBe("independent_transfer_rate");
     expect(primary).not.toContain("tutorial_completion_rate" as never);
     expect(primary).toContain("freeplay_conversion");
     expect(primary).toContain("independent_transfer_rate");

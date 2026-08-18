@@ -1,7 +1,8 @@
 # Privacy-conscious FTUE telemetry
 
 Local-first instrumentation for Harbor / Ashore / Cove learning loops.  
-**Primary success is comprehension and autonomy — never tutorial shell completion alone.**
+**King KPI is Independent Transfer Rate** — see [NORTH_STAR.md](./NORTH_STAR.md).  
+Tutorial shell completion is diagnostic only.
 
 ## Events (minimum set)
 
@@ -26,17 +27,17 @@ Local-first instrumentation for Harbor / Ashore / Cove learning loops.
 | `session_ended` | Exit |
 | `return_session` | Returning player (≥72h) |
 
-## Primary metrics
+## Metrics
 
-- `time_to_first_action` / `decision` / `consequence` / `core_loop`
-- `guided_success_rate`
-- `independent_transfer_rate`
-- `hint_dependency`
-- `failure_recovery_rate`
-- `freeplay_conversion`
-- `D1` / `D7` / `D30` retention (local day keys only)
+**King KPI — Independent Transfer Rate** (see [NORTH_STAR.md](./NORTH_STAR.md)):
 
-**Secondary only:** `tutorial_completion_rate` (exported but labeled non-primary).
+| Metric | Role |
+|--------|------|
+| **`independent_transfer_rate`** | **King.** Successful transfer events ÷ transfer attempts. After Capital teaches a principle once, can the player reason with it in a different situation without being told? |
+| `time_to_first_*` / `guided_success_rate` / `hint_dependency` / `failure_recovery_rate` / `freeplay_conversion` / `D1`–`D30` | Supporting autonomy metrics |
+| `tutorial_completion_rate` | **Diagnostic only** — never the ship metric |
+
+If a change only raises tutorial completion, do **not** ship it as a win.
 
 ## Segments (on every FTUE event)
 

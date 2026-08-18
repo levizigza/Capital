@@ -120,7 +120,10 @@ import {
   shouldForceTalkCta,
   shouldStripPlazaForPresence,
 } from "../harborAshore";
-import { shouldShowCastleCoachForPlayer } from "../playerOnboarding";
+import {
+  shouldReduceHubPresenceCopy,
+  shouldShowCastleCoachForPlayer,
+} from "../playerOnboarding";
 import type { PlayerOnboardingMode } from "../playerOnboarding";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import {
@@ -1499,7 +1502,9 @@ export function HomeHubView({
               className="text-center text-[11px] font-semibold text-white/85 drop-shadow"
               data-testid="harbor-controls-whisper"
             >
-              {firstMeet && !nearPiggy ? (
+              {firstMeet &&
+              !nearPiggy &&
+              !shouldReduceHubPresenceCopy(playerOnboardingMode) ? (
                 <>Walk to Piggy when you’re ready</>
               ) : showTravelChip ? (
                 "Or walk to the Money Carpet"

@@ -56,27 +56,42 @@ function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
 
 function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
   const primary: Record<(typeof FTUE_PRIMARY_METRICS)[number], number | null> = {
+    independent_transfer_rate: snap.independent_transfer_rate,
+    time_to_first_core_loop: snap.time_to_first_core_loop_ms,
+    freeplay_conversion: snap.freeplay_conversion,
+    failure_recovery_rate: snap.failure_recovery_rate,
+    d1_retention: snap.d1_retention,
     time_to_first_action: snap.time_to_first_action_ms,
     time_to_first_decision: snap.time_to_first_decision_ms,
     time_to_first_consequence: snap.time_to_first_consequence_ms,
-    time_to_first_core_loop: snap.time_to_first_core_loop_ms,
     guided_success_rate: snap.guided_success_rate,
-    independent_transfer_rate: snap.independent_transfer_rate,
     hint_dependency: snap.hint_dependency,
-    failure_recovery_rate: snap.failure_recovery_rate,
-    freeplay_conversion: snap.freeplay_conversion,
-    d1_retention: snap.d1_retention,
     d7_retention: snap.d7_retention,
     d30_retention: snap.d30_retention,
   };
 
   return (
     <div className="space-y-3">
+      <div
+        className="rounded-xl border-2 border-emerald-700/40 bg-emerald-100/90 px-3 py-3"
+        data-testid="ftue-king-kpi"
+      >
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-900/80">
+          King KPI · Independent Transfer Rate
+        </p>
+        <p className="mt-1 text-3xl font-black tabular-nums text-emerald-950">
+          {formatMetric("independent_transfer_rate", snap.independent_transfer_rate)}
+        </p>
+        <p className="mt-1 text-xs leading-relaxed text-emerald-900/90">
+          After Capital teaches a principle once, can players reason with it in a new situation
+          without being told what to do? Tutorial completion is not success.
+        </p>
+      </div>
       <p className="text-xs text-gray-600">
-        Primary FTUE KPIs measure comprehension and autonomy — not tutorial shell completion.
+        Supporting autonomy metrics — comprehension over checklist finish.
       </p>
       <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
-        {FTUE_PRIMARY_METRICS.map((id) => (
+        {FTUE_PRIMARY_METRICS.filter((id) => id !== "independent_transfer_rate").map((id) => (
           <div
             key={id}
             className="rounded-lg bg-emerald-50 px-2 py-1.5"
@@ -94,7 +109,7 @@ function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
             ? "—"
             : `${Math.round(snap.tutorial_completion_rate * 100)}%`}
         </span>{" "}
-        (not a primary success metric)
+        (diagnostic only — never the ship metric)
       </div>
     </div>
   );

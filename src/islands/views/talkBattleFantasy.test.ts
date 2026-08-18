@@ -24,7 +24,7 @@ describe("Talk Battle fantasy contract", () => {
 
   it("uses plaza Leave chrome — not SaaS Skip", () => {
     expect(src).toMatch(/>\s*Leave\s*</);
-    expect(src).toMatch(/Esc · Leave/);
+    expect(src).toMatch(/Leave talk \(Esc\)/);
     expect(src).toMatch(/talk-battle-leave/);
     expect(src).not.toMatch(/Skip ▸/);
     expect(src).not.toMatch(/Continue ▾/);

@@ -1,5 +1,7 @@
 # FTUE Audit — Capital first-time player experience
 
+**Living north star:** [NORTH_STAR.md](./NORTH_STAR.md) — architecture Launch→transfer→freedom→normal play; **Independent Transfer Rate** is the king KPI (tutorial completion is diagnostic only).
+
 **Date:** 2026-08-17  
 **Scope:** Code + design docs as shipped on `main` (post Pattern Library Pass L).  
 **Rule:** Reconstruct only what exists. No invented features. **No production code changes in this pass.**
