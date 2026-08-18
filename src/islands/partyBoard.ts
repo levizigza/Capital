@@ -17,10 +17,15 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  netCashflow,
   type DealOffer,
   type LedgerHolding,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import { harborWeatherMood, moodFromCashflow } from "./harborWeather";
+import { biasDealsForStance, composePaydayMultiplier } from "./systemInteractions";
+import { scarOrganId } from "./worldMemory";
+import type { VoyagerStance } from "./worldMemory";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -35,10 +40,32 @@ import { getIslandTheme } from "./themes/islandThemes";
 function pickUnusedHolding(
   kind: LedgerHolding["kind"],
   ownedIds: string[],
+  stance?: VoyagerStance | null,
 ): LedgerHolding | null {
   const pool = HARBOR_DEALS.filter((d) => d.kind === kind && !ownedIds.includes(d.id));
   if (pool.length === 0) return null;
-  return pool[Math.floor(Math.random() * pool.length)]!;
+  const ordered = biasDealsForStance(pool as DealOffer[], stance);
+  // Soft bias: 60% top of stance order, else random — keeps variance.
+  if (Math.random() < 0.6) return ordered[0]!;
+  return ordered[Math.floor(Math.random() * ordered.length)]!;
+}
+
+function paydayMultForBoard(
+  ledgerIn?: VoyagerLedger | null,
+  save?: IslandSaveV1 | null,
+): number {
+  if (save) {
+    const lastScar = (save.harborScars ?? []).at(-1);
+    return composePaydayMultiplier({
+      weatherMood: harborWeatherMood(save),
+      organStain: lastScar ? scarOrganId(lastScar) : null,
+    });
+  }
+  const ledger = ensureLedger(ledgerIn);
+  return composePaydayMultiplier({
+    weatherMood: moodFromCashflow(netCashflow(ledger)),
+    organStain: null,
+  });
 }
 
 export type BoardSpaceType =
@@ -419,15 +446,17 @@ export function spaceAccent(type: BoardSpaceType): string {
 export function resolvePassStart(
   mode: BoardEconomyMode,
   ledgerIn?: VoyagerLedger | null,
+  save?: IslandSaveV1 | null,
 ): SpaceResolvePayload {
   if (usesCashflowPassStart(mode)) {
     const trackEscape = tracksHarborEscape(mode);
-    const { ledger, coins, escapedNow } = applyPayday(ensureLedger(ledgerIn), 1, {
+    const mult = paydayMultForBoard(ledgerIn, save);
+    const { ledger, coins, escapedNow } = applyPayday(ensureLedger(ledgerIn), mult, {
       trackHarborEscape: trackEscape,
     });
     return {
       coins,
-      xp: 3,
+      xp: 0,
       message: escapedNow
         ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
         : coins >= 0
@@ -438,7 +467,7 @@ export function resolvePassStart(
   }
   return {
     coins: HARBOR_DIVIDEND,
-    xp: 2,
+    xp: 0,
     message: `Harbor dividend: +${HARBOR_DIVIDEND} coins (salary day)!`,
   };
 }
@@ -449,7 +478,7 @@ export function resolvePlayerSpace(
   state: PartyIslandState,
   playerCoins: number,
   ledgerIn?: VoyagerLedger | null,
-  opts?: { trackHarborEscape?: boolean },
+  opts?: { trackHarborEscape?: boolean; save?: IslandSaveV1 | null },
 ): { next: PartyIslandState; payload: SpaceResolvePayload } {
   const next: PartyIslandState = {
     ...state,
@@ -459,6 +488,7 @@ export function resolvePlayerSpace(
   };
   const payload: SpaceResolvePayload = { coins: 0, message: "" };
   let ledger = ensureLedger(ledgerIn);
+  const stance = opts?.save?.stance;
 
   const addItem = (id: PartyItemId) => {
     const items = next.items ?? [];
@@ -473,7 +503,8 @@ export function resolvePlayerSpace(
 
   switch (space.type) {
     case "payday": {
-      let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, 1, {
+      const mult = paydayMultForBoard(ledger, opts?.save);
+      let { ledger: nextLedger, coins, escapedNow } = applyPayday(ledger, mult, {
         trackHarborEscape: opts?.trackHarborEscape ?? false,
       });
       if (next.buffs?.doubleCoinsNext && coins > 0) {
@@ -490,7 +521,7 @@ export function resolvePlayerSpace(
             : `Pay Day shortfall: ${coins} coins.`;
       }
       payload.coins = coins;
-      payload.xp = 5;
+      payload.xp = 0;
       payload.ledger = nextLedger;
       break;
     }
@@ -505,7 +536,7 @@ export function resolvePlayerSpace(
     }
     case "deal": {
       const owned = ledger.holdings.map((h) => h.id);
-      const deal = pickUnusedHolding("asset", owned);
+      const deal = pickUnusedHolding("asset", owned, stance);
       if (!deal) {
         payload.message = "No new income deals left — keep grinding cashflow!";
         break;
@@ -520,7 +551,7 @@ export function resolvePlayerSpace(
     }
     case "liability": {
       const owned = ledger.holdings.map((h) => h.id);
-      const trap = pickUnusedHolding("liability", owned);
+      const trap = pickUnusedHolding("liability", owned, stance);
       if (!trap) {
         payload.message = "You already carry every Harbor liability — watch that cashflow!";
         break;

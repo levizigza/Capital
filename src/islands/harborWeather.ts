@@ -1,25 +1,66 @@
 /**
  * Harbor world reactivity — cashflow → sky mood + shop prices.
+ * Multiplicative: day-2 echo + organ scars can stain the same weather fiction.
  */
 
-import { netCashflow, ensureLedger, type VoyagerLedger } from "./voyagerLedger";
+import { netCashflow, ensureLedger } from "./voyagerLedger";
 import type { IslandSaveV1 } from "./types";
 import type { SkyMode } from "./world3d/ledgerlight";
+import { scarOrganId } from "./worldMemory";
+import type { MoneyOrganId } from "./moneyOrgans";
 
 export type HarborWeatherMood = "boom" | "fair" | "tight" | "storm";
+
+/** Chain 3 — day-2 echo forces organ-tinted sky for one calendar day. */
+export function day2WeatherLaw(organ: MoneyOrganId): HarborWeatherMood {
+  if (organ === "spiral") return "storm";
+  if (organ === "clock") return "tight";
+  if (organ === "coin") return "fair";
+  return "boom";
+}
 
 export function harborCashflow(save: IslandSaveV1): number {
   return netCashflow(ensureLedger(save.voyagerLedger));
 }
 
-export function harborWeatherMood(save: IslandSaveV1): HarborWeatherMood {
-  const cf = harborCashflow(save);
-  const hasteScar = (save.harborScars ?? []).some((s) => s.id.includes("haste") || s.id.includes("risk"));
+/** Mood from cashflow alone. */
+export function moodFromCashflow(cf: number, hasteScar = false): HarborWeatherMood {
   if (hasteScar && cf < 20) return "storm";
   if (cf >= 40) return "boom";
   if (cf >= 15) return "fair";
   if (cf >= 0) return "tight";
   return "storm";
+}
+
+/**
+ * Soft Pay Day income mult from Harbor weather.
+ */
+export function paydayIncomeMultiplier(mood: HarborWeatherMood): number {
+  switch (mood) {
+    case "boom":
+      return 1.1;
+    case "fair":
+      return 1;
+    case "tight":
+      return 0.95;
+    case "storm":
+      return 0.9;
+  }
+}
+
+export function harborWeatherMood(save: IslandSaveV1): HarborWeatherMood {
+  // Chain 3: day-2 scar echo forces a one-day weather law (multiplicative).
+  const rumorId = save.harborRitual?.today.rumorId;
+  if (rumorId?.startsWith("scar_echo_")) {
+    const last = (save.harborScars ?? []).at(-1);
+    if (last) return day2WeatherLaw(scarOrganId(last));
+  }
+
+  const cf = harborCashflow(save);
+  const hasteScar = (save.harborScars ?? []).some(
+    (s) => s.id.includes("haste") || s.id.includes("risk"),
+  );
+  return moodFromCashflow(cf, hasteScar);
 }
 
 /** Sky intent driven by ledger health (mixed with director elsewhere). */
