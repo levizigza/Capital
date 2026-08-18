@@ -2,11 +2,18 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  ASHORE_FTUE_STEP_IDS,
   ASHORE_SPINE_PAINTING_PLACES,
   ASHORE_TEACH_STEP_COUNT,
 } from "./AshoreComprehensionTutorial";
+import {
+  analyzeFtueFunnel,
+  FTUE_STEP_COUNT,
+  shouldSkipAshoreTeach,
+} from "../ftueTelemetry";
+import type { AnalyticsEvent } from "../types";
 
-describe("Ashore comprehension tutorial (Chamber 00)", () => {
+describe("Ashore FTUE-7 interactive teach", () => {
   const app = readFileSync(join(__dirname, "../../App.tsx"), "utf8");
   const teach = readFileSync(
     join(__dirname, "AshoreComprehensionTutorial.tsx"),
@@ -17,93 +24,123 @@ describe("Ashore comprehension tutorial (Chamber 00)", () => {
     "utf8",
   );
   const show = readFileSync(join(__dirname, "AshoreTeachShowcases.tsx"), "utf8");
+  const ftueDoc = readFileSync(
+    join(__dirname, "../../../docs/ftue-interactive-teach.md"),
+    "utf8",
+  );
 
-  it("boots title → cast → teach → carpet and passes the Voyager", () => {
+  it("boots title → cast → teach → carpet (experienced checkbox can skip teach)", () => {
     expect(app).toMatch(/bootPhase.*"teach"/);
     expect(app).toMatch(/AshoreComprehensionTutorial/);
     expect(app).toMatch(/character=\{bootCharacter/);
-    expect(app).toMatch(/initialCharacter=/);
-    // Opening + Ashore Teach always play; only the experienced checkbox skips Teach.
-    expect(app).toMatch(/setBootPhase\(skipTeach \? "carpet" : "teach"\)/);
     expect(app).toMatch(/opts\?\.experiencedPlayer/);
+    expect(app).toMatch(/setBootPhase\(skipTeach \? "carpet" : "teach"\)/);
     expect(app).toMatch(/setBootPhase\("carpet"\)/);
-    expect(app).not.toMatch(/shouldSkipFtueBoot/);
-    expect(app).not.toMatch(/shouldSkipAshoreTeachOnBoot/);
   });
 
-  it("keeps Chamber 00 to five prove-it steps", () => {
-    expect(ASHORE_TEACH_STEP_COUNT).toBe(5);
-    expect(teach).toMatch(/data-teach-mode="chamber-00"/);
-    expect(teach).toMatch(/"fantasy"/);
-    expect(teach).toMatch(/"walk"/);
-    expect(teach).toMatch(/"talk"/);
-    expect(teach).toMatch(/"dock"/);
-    expect(teach).toMatch(/"ready"/);
+  it("teaches seven prove-it beats — one concept each", () => {
+    expect(ASHORE_TEACH_STEP_COUNT).toBe(7);
+    expect(FTUE_STEP_COUNT).toBe(7);
+    expect(ASHORE_FTUE_STEP_IDS).toEqual([
+      "goal",
+      "walk",
+      "economy",
+      "decision",
+      "consequence",
+      "reward",
+      "deeper",
+    ]);
+    expect(teach).toMatch(/data-teach-mode="ftue-7"/);
     expect(teach).not.toMatch(/"paycheck"/);
     expect(teach).not.toMatch(/"credit"/);
-    expect(teach).not.toMatch(/"return_scar"/);
-    expect(teach).not.toMatch(/stepId === "enter"/);
     expect(teach).not.toMatch(/PaintingLessonShowcase/);
     expect(teach).not.toMatch(/ShareCardShowcase/);
-    expect(teach).not.toMatch(/EnterStructuresShowcase/);
+    expect(teach).not.toMatch(/MURAL_THESIS/);
   });
 
-  it("teaches with visible Voyager walk pad and marker claims", () => {
+  it("requires performing actions — not continue-only dumps", () => {
+    expect(teach).toMatch(/GoalPlinthClaim/);
     expect(teach).toMatch(/VoyagerWalkPracticeStage/);
-    expect(teach).toMatch(/MURAL_THESIS/);
-    expect(teach).toMatch(/ashore-comprehension-tutorial/);
-    expect(pad).toMatch(/VoyagerMesh/);
-    expect(pad).toMatch(/mergeWalkIntent|stepWalkVelocity/);
+    expect(teach).toMatch(/FantasyOrganToys/);
+    expect(teach).toMatch(/DecisionForkShowcase/);
+    expect(teach).toMatch(/ConsequenceHushShowcase/);
+    expect(teach).toMatch(/RewardPlinthShowcase/);
+    expect(teach).toMatch(/DeeperStrategyShowcase/);
     expect(pad).toMatch(/onClaimMarker/);
-    expect(pad).toMatch(/Piggy/);
+    expect(show).toMatch(/ashore-goal-plinth/);
+    expect(show).toMatch(/ashore-decision-fork/);
+    expect(show).toMatch(/ashore-consequence-hush/);
+    expect(show).toMatch(/ashore-reward-plinth/);
+    expect(show).toMatch(/ashore-deeper-soft-beat/);
   });
 
-  it("fantasy pokes organ toys; dock boards Cove; launch names first voyage", () => {
+  it("keeps Leave · Esc skip for experienced players", () => {
+    expect(teach).toMatch(/Leave · Esc/);
+    expect(teach).toMatch(/finish\("leave"\)/);
+    expect(typeof shouldSkipAshoreTeach).toBe("function");
+    expect(ftueDoc).toMatch(/skipTeach/);
+  });
+
+  it("instruments FTUE steps for funnel metrics", () => {
+    expect(teach).toMatch(/FtueSessionTracker/);
+    expect(teach).toMatch(/startSession|startStep|completeStep|abandon/);
+    const hub = readFileSync(join(__dirname, "HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/trackCoreLoopFirstSuccess/);
+
+    const events: AnalyticsEvent[] = [
+      {
+        id: "1",
+        ts: "2026-01-01T00:00:00.000Z",
+        name: "ftue_started",
+        payload: {},
+      },
+      {
+        id: "2",
+        ts: "2026-01-01T00:00:01.000Z",
+        name: "ftue_step_started",
+        payload: { stepId: "goal" },
+      },
+      {
+        id: "3",
+        ts: "2026-01-01T00:00:05.000Z",
+        name: "ftue_step_completed",
+        payload: { stepId: "goal", durationMs: 4000, retries: 0 },
+      },
+      {
+        id: "4",
+        ts: "2026-01-01T00:01:00.000Z",
+        name: "ftue_completed",
+        payload: {},
+      },
+      {
+        id: "5",
+        ts: "2026-01-01T00:10:00.000Z",
+        name: "core_loop_first_success",
+        payload: {},
+      },
+    ];
+    const analysis = analyzeFtueFunnel(events);
+    expect(analysis.started).toBe(1);
+    expect(analysis.completed).toBe(1);
+    expect(analysis.completionRate).toBe(100);
+    expect(analysis.coreLoopFirstSuccess).toBe(1);
+    expect(analysis.steps.find((s) => s.stepId === "goal")?.avgDurationMs).toBe(4000);
+  });
+
+  it("names Harbor then Cove as first voyage without triangle glossary", () => {
     expect(ASHORE_SPINE_PAINTING_PLACES).toEqual([
       "Harbor Haven",
       "Coincraft Cove",
       "Paycheck Peninsula",
       "Credit Kingdom",
     ]);
-    expect(teach).toMatch(/FantasyOrganToys/);
-    expect(teach).toMatch(/CarpetDockShowcase/);
-    expect(teach).toMatch(/ReadyCarpetShowcase/);
     expect(teach).toMatch(/ashore-teach-route/);
-    expect(teach).toMatch(/Harbor, then Cove/);
-    expect(show).toMatch(/ashore-fantasy-toys/);
-    expect(show).toMatch(/ashore-carpet-showcase/);
+    expect(teach).toMatch(/Coincraft Cove/);
     expect(show).toMatch(/ashore-carpet-board-cove/);
-    expect(show).toMatch(/ashore-ready-showcase/);
-    expect(show).toMatch(/drawMemoryPlinthSilhouette/);
   });
 
   it("keeps opening music bed and organ stingers", () => {
     expect(teach).toMatch(/playPlace\(\{\s*kind:\s*"opening"/);
-    expect(teach).toMatch(/playOrganSfx/);
-  });
-
-  it("uses Leave binding and prove gates — not SaaS Skip / collect-all", () => {
-    expect(teach).toMatch(/Leave ·/);
-    expect(teach).toMatch(/cancelPrompt/);
-    expect(teach).toMatch(/pointerSafeActivate/);
-    expect(teach).toMatch(/Poke a living-money toy|Board Cove first/);
-    expect(teach).not.toMatch(/Visit all four/);
-    expect(teach).not.toMatch(/Light all six/);
-    expect(teach).not.toMatch(/>\s*Skip\s*</);
-  });
-
-  it("keeps Fantasy toys + Continue on a sticky prove dock (no below-fold soft-lock)", () => {
-    expect(teach).toMatch(/ashore-teach-prove-dock/);
-    expect(teach).toMatch(/ashore-teach-scroll/);
-    expect(teach).toMatch(/compactPad/);
-    expect(teach).toMatch(/aria-disabled=\{!fantasyDone\}/);
-    expect(teach).toMatch(/setToyNudge\(true\)/);
-    expect(show).toMatch(/Tap to poke/);
-    expect(show).toMatch(/data-nudge/);
-  });
-
-  it("uses binding-aware interact via InputManager", () => {
-    expect(teach).toMatch(/useInputAction\(\s*["']interact["']/);
-    expect(teach).toMatch(/formatMovePhrase/);
+    expect(teach).toMatch(/playOrganSfx|playCapitalSfx/);
   });
 });

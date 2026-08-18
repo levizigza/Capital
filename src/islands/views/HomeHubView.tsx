@@ -135,6 +135,7 @@ import {
 import { downloadWeeklyShareCard, harborFeltCardDataUrl, shareHarborFeltCard } from "./weeklyShareCard";
 import { playCapitalSfx } from "../audio/capitalSfx";
 import { capitalMusic } from "../audio/capitalMusic";
+import { trackCoreLoopFirstSuccess } from "../ftueTelemetry";
 import { WorldArriveOverlay } from "./WorldArriveOverlay";
 import { SIGNATURE_TIMING } from "@/qa/signatureLoop";
 import { isKilled } from "@/sre";
@@ -492,6 +493,10 @@ export function HomeHubView({
     setPlinthGlow(true);
     setFeltShareOpen(true);
     playCapitalSfx("plinth_hum");
+    trackCoreLoopFirstSuccess({
+      scarCount: plaques.length,
+      via: "scar_spectacle",
+    });
   }, [plaques.length, onMarkScarSpectacle]);
 
   useEffect(() => {

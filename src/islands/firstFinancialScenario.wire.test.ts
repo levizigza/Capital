@@ -45,7 +45,8 @@ describe("first financial scenario wire", () => {
     expect(mg).toMatch(/Clear at/);
 
     const ashore = readFileSync(join(__dirname, "views/AshoreComprehensionTutorial.tsx"), "utf8");
-    expect(ashore).toMatch(/playCapitalSfx\("walk_stop"\)/);
+    expect(ashore).toMatch(/playCapitalSfx|playOrganSfx/);
+    expect(ashore).toMatch(/data-teach-mode="ftue-7"/);
 
     const hud = readFileSync(join(__dirname, "views/VoyagerLedgerHud.tsx"), "utf8");
     expect(hud).toMatch(/keep \+/);

@@ -23,7 +23,7 @@ Severity: **S0** blocks / soft-lock · **S1** high confusion · **S2** medium dr
 
 | ID | Friction | Severity | Evidence | Player feels | Class |
 |----|----------|----------|----------|--------------|-------|
-| F04 | Five chambers before real Harbor | S2 | `STEPS = fantasy→walk→talk→dock→ready` | Tutorial fatigue | SIMPLIFY |
+| F04 | Seven FTUE-7 prove-it beats before Harbor | S2 | `goal→walk→economy→decision→consequence→reward→deeper` | Tutorial fatigue | KEEP (interactive; Leave skips) |
 | F05 | Fantasy continue gated on poke — easy, but thesis text heavy | S3 | `fantasyPoked.length >= 1` + `MURAL_THESIS` | Skim / skip reading | SIMPLIFY |
 | F06 | Walk rings: reduced motion hides TouchWalkPad | S0–S1 | `TouchWalkPad` + `prefersReducedMotion` | Stuck on touch+reduce | MISSING a11y |
 | F07 | Talk requires near-ring; E outside does nothing | S2 | Ashore talk key handler needs `nearTalk` | “Controls broken” | KEEP pattern / MAKE CONTEXTUAL feedback |

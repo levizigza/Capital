@@ -1,6 +1,6 @@
 /**
- * Ashore Teach Chamber-00 visuals — Dock + Launch only.
- * Research: docs/ashore-tutorial-research.md (≤5 prove-it chambers).
+ * Ashore Teach visuals — FTUE prove-it toys (goal → deeper).
+ * Research: docs/ftue-interactive-teach.md
  */
 
 import { useEffect, useRef } from "react";
@@ -192,26 +192,25 @@ export function SpinePaintingPortal({
   );
 }
 
-/** Fantasy chamber — poke organ toys so living money is felt, not only read. */
+/** Fantasy / economy — poke organ toys so living money is felt, not only read. */
 export function FantasyOrganToys({
   poked,
   onPoke,
-  nudge = false,
+  organs = ["memory", "coin"],
 }: {
   poked: MoneyOrganId[];
   onPoke: (id: MoneyOrganId) => void;
-  /** Pulse toys when Continue was pressed before a poke (clipped-CTA recovery). */
-  nudge?: boolean;
+  /** Limit which toys appear (economy beat = Coin only). */
+  organs?: MoneyOrganId[];
 }) {
   const toys: { id: MoneyOrganId; label: string }[] = [
     { id: "memory", label: "Memory keeps" },
     { id: "coin", label: "Coin holds" },
-  ];
+  ].filter((t) => organs.includes(t.id));
   return (
     <div
-      className={`flex justify-center gap-4 ${nudge ? "animate-pulse" : ""}`}
+      className="mt-3 flex justify-center gap-3"
       data-testid="ashore-fantasy-toys"
-      data-nudge={nudge ? "1" : "0"}
     >
       {toys.map((t) => {
         const lit = poked.includes(t.id);
@@ -221,14 +220,8 @@ export function FantasyOrganToys({
             key={t.id}
             type="button"
             data-testid={`ashore-fantasy-toy-${t.id}`}
-            aria-pressed={lit}
-            aria-label={`Poke ${t.label}`}
-            className={`flex min-h-[7.5rem] min-w-[6.5rem] flex-col items-center gap-1.5 rounded-xl px-3 py-2.5 ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${
-              lit
-                ? "bg-white/15 ring-amber-200/70"
-                : nudge
-                  ? "bg-amber-400/20 ring-amber-200/90 hover:bg-amber-400/30"
-                  : "bg-white/10 ring-white/35 hover:bg-white/15"
+            className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2 ring-1 transition ${
+              lit ? "bg-white/15 ring-amber-200/60" : "bg-white/5 ring-white/20 hover:bg-white/10"
             }`}
             {...pointerSafeActivate(() => {
               playOrganSfx(t.id);
@@ -236,15 +229,226 @@ export function FantasyOrganToys({
             })}
           >
             <SpinePaintingPortal organ={t.id} lit={lit} size="sm" />
-            <span className="text-[11px] font-bold" style={{ color: accent }}>
+            <span className="text-[10px] font-bold" style={{ color: accent }}>
               {t.label}
-            </span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">
-              {lit ? "Lit" : "Tap to poke"}
             </span>
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** Goal beat — touch empty Plinth to claim the fantasy. */
+export function GoalPlinthClaim({
+  claimed,
+  onClaim,
+}: {
+  claimed: boolean;
+  onClaim: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      data-testid="ashore-goal-plinth"
+      className={`mt-4 flex flex-col items-center rounded-2xl px-6 py-4 ring-1 transition ${
+        claimed
+          ? "bg-amber-400/20 ring-amber-200/70"
+          : "bg-white/5 ring-white/25 hover:bg-white/10"
+      }`}
+      {...pointerSafeActivate(() => {
+        playOrganSfx("memory");
+        onClaim();
+      })}
+    >
+      <PlinthCanvas lit={claimed} className="h-36 w-36 drop-shadow-lg sm:h-40 sm:w-40" />
+      <span className="mt-2 text-sm font-bold text-amber-100">
+        {claimed ? "Goal claimed — Harbor will keep your mark" : "Touch the empty Plinth"}
+      </span>
+    </button>
+  );
+}
+
+/** Decision beat — irreversible practice fork (both advance). */
+export function DecisionForkShowcase({
+  chosen,
+  onChoose,
+}: {
+  chosen: string | null;
+  onChoose: (label: string) => void;
+}) {
+  const forks = ["Jar before treat", "Treat before jar"] as const;
+  return (
+    <div
+      className="mt-4 flex w-full max-w-md flex-col gap-3"
+      data-testid="ashore-decision-fork"
+    >
+      {forks.map((label, i) => {
+        const selected = chosen === label;
+        return (
+          <button
+            key={label}
+            type="button"
+            disabled={chosen != null}
+            data-testid={`ashore-decision-${i === 0 ? "a" : "b"}`}
+            className={`min-h-14 rounded-2xl border-2 px-4 py-3 text-base font-black transition ${
+              selected
+                ? "border-amber-200 bg-amber-400/30 text-amber-50"
+                : chosen
+                  ? "border-white/10 bg-white/5 text-white/40"
+                  : "border-[#1c1917] bg-[#f4b942] text-[#1c1917] shadow-[3px_3px_0_#1c1917] hover:brightness-105"
+            }`}
+            {...pointerSafeActivate(() => {
+              if (chosen != null) return;
+              playOrganSfx("coin");
+              onChoose(label);
+            })}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Consequence beat — hush + plaque write (witness). */
+export function ConsequenceHushShowcase({
+  plaque,
+  phase,
+}: {
+  plaque: string;
+  phase: "hush" | "mark";
+}) {
+  return (
+    <div
+      className="mt-4 flex w-full max-w-md flex-col items-center rounded-2xl bg-[#0f172a]/80 px-5 py-6 ring-1 ring-white/20"
+      data-testid="ashore-consequence-hush"
+      data-hush-phase={phase}
+    >
+      {phase === "hush" ? (
+        <p className="tracking-[0.4em] text-white/50" data-testid="ashore-hush-ellipsis">
+          …
+        </p>
+      ) : (
+        <>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-200/80">
+            Mark
+          </p>
+          <p className="mt-2 text-lg font-black text-amber-100">“{plaque}”</p>
+          <p className="mt-2 text-sm text-white/70">The Coin holds. Harbor is already listening.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Reward beat — tap lit Plinth. */
+export function RewardPlinthShowcase({
+  plaque,
+  claimed,
+  onClaim,
+}: {
+  plaque: string;
+  claimed: boolean;
+  onClaim: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      data-testid="ashore-reward-plinth"
+      className={`mt-4 flex flex-col items-center rounded-2xl px-6 py-4 ring-1 transition ${
+        claimed
+          ? "bg-amber-400/25 ring-amber-200/80"
+          : "bg-white/5 ring-amber-300/50 hover:bg-amber-400/10"
+      }`}
+      {...pointerSafeActivate(() => {
+        playOrganSfx("memory");
+        onClaim();
+      })}
+    >
+      <PlinthCanvas lit className="h-40 w-40 drop-shadow-[0_0_28px_#f59e0b] sm:h-44 sm:w-44" />
+      <p className="mt-2 text-lg font-black text-amber-100">Harbor felt that</p>
+      <p className="mt-1 text-sm text-white/75">“{plaque}”</p>
+      <p className="mt-2 text-xs font-bold text-amber-200/90">
+        {claimed ? "Reward claimed" : "Tap the glowing Plinth"}
+      </p>
+    </button>
+  );
+}
+
+/** Deeper hint — Soft Beat look + dim Clock, then board Cove. */
+export function DeeperStrategyShowcase({
+  looked,
+  boarded,
+  onLook,
+  onBoard,
+}: {
+  looked: boolean;
+  boarded: boolean;
+  onLook: () => void;
+  onBoard: () => void;
+}) {
+  return (
+    <div
+      className="mx-auto mt-3 flex w-full max-w-xl flex-col items-center gap-4"
+      data-testid="ashore-deeper-showcase"
+    >
+      <button
+        type="button"
+        data-testid="ashore-deeper-soft-beat"
+        className={`rounded-xl px-4 py-3 text-sm font-bold ring-1 ${
+          looked
+            ? "bg-sky-400/20 text-sky-100 ring-sky-300/50"
+            : "bg-white/5 text-white/85 ring-white/25 hover:bg-white/10"
+        }`}
+        {...pointerSafeActivate(() => {
+          playOrganSfx("coin");
+          onLook();
+        })}
+      >
+        {looked
+          ? "Soft Beat — lookouts show weight, not a second Take"
+          : "Peek Soft Beat — look, then leave"}
+      </button>
+      <div
+        className="relative flex w-full flex-col items-center overflow-hidden rounded-2xl px-4 pb-4 pt-5 ring-1 ring-amber-200/35"
+        style={{ background: "linear-gradient(180deg, #0c4a6e 0%, #164e63 45%, #14532d 100%)" }}
+      >
+        <div className="flex items-end gap-3 sm:gap-5">
+          <div className="h-36 w-3 rounded-t-md bg-amber-800 sm:h-44 sm:w-3.5" />
+          <button
+            type="button"
+            data-testid="ashore-carpet-board-cove"
+            className="relative transition hover:scale-[1.03]"
+            disabled={!looked}
+            {...pointerSafeActivate(() => {
+              if (!looked) return;
+              playOrganSfx("coin");
+              onBoard();
+            })}
+          >
+            <SpinePaintingPortal organ="coin" lit={looked} size="xl" />
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2">
+              <StructureHero hero="carpet" accent="#fbbf24" lit={looked} size="lg" />
+            </div>
+          </button>
+          <div className="mb-10 flex flex-col gap-2 opacity-35" data-testid="ashore-deeper-clock-dim">
+            <SpinePaintingPortal organ="clock" size="sm" />
+            <p className="max-w-[4.5rem] text-center text-[9px] font-bold text-sky-100/80">
+              Clock later
+            </p>
+          </div>
+          <div className="h-36 w-3 rounded-t-md bg-amber-800 sm:h-44 sm:w-3.5" />
+        </div>
+        <p className="mt-8 text-sm font-bold text-amber-100">
+          {!looked
+            ? "Look Soft Beat first"
+            : boarded
+              ? "Boarded · Cove opens first"
+              : "Board the lit Cove painting"}
+        </p>
+      </div>
     </div>
   );
 }
@@ -300,7 +504,7 @@ export function CarpetDockShowcase({
   );
 }
 
-/** Chamber 5 — Launch composition. */
+/** Launch composition (legacy ready beat). */
 export function ReadyCarpetShowcase() {
   return (
     <div

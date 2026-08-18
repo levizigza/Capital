@@ -15,11 +15,11 @@ describe("FTUE accessibility contracts", () => {
   const settings = readFileSync(join(__dirname, "SettingsPanel.tsx"), "utf8");
   const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
 
-  it("Ashore uses binding-aware copy and interact action — not hard-coded KeyE only", () => {
-    expect(ashore).toMatch(/useInputAction\(\s*["']interact["']/);
-    expect(ashore).toMatch(/formatMovePhrase/);
-    expect(ashore).not.toMatch(/Press E to talk/);
+  it("Ashore FTUE-7 uses Leave/cancel and walk pad — not hard-coded KeyE talk", () => {
+    expect(ashore).toMatch(/useInputAction\(\s*["']cancel["']/);
     expect(ashore).toMatch(/TouchWalkPad/);
+    expect(ashore).toMatch(/data-teach-mode="ftue-7"/);
+    expect(ashore).not.toMatch(/Press E to talk/);
   });
 
   it("Harbor HUD whisper uses MoveTalkMapHint", () => {

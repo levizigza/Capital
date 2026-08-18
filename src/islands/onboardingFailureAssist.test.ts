@@ -112,7 +112,7 @@ describe("onboarding failure assist", () => {
     expect(app).toMatch(/piggy_bypassed/);
 
     const ashore = readFileSync(join(__dirname, "views/AshoreComprehensionTutorial.tsx"), "utf8");
-    expect(ashore).toMatch(/tutorial_step/);
-    expect(ashore).not.toMatch(/walk\" \|\| stepId === \"talk\"\) && !reduced/);
+    expect(ashore).toMatch(/FtueSessionTracker|tutorial_step|ftue_step/);
+    expect(ashore).toMatch(/data-teach-mode="ftue-7"/);
   });
 });
