@@ -1500,9 +1500,7 @@ export function HomeHubView({
               data-testid="harbor-controls-whisper"
             >
               {firstMeet && !nearPiggy ? (
-                <>
-                  <MoveTalkMapHint compact className="justify-center" /> · walk to Piggy
-                </>
+                <>Walk to Piggy when you’re ready</>
               ) : showTravelChip ? (
                 "Or walk to the Money Carpet"
               ) : nearStore ? (

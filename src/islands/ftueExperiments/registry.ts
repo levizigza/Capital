@@ -56,18 +56,19 @@ export const FTUE_EXPERIMENT_REGISTRY: FtueExperimentDef[] = [
     ftue_version: FTUE_VERSION,
     status: "draft",
     hypothesis:
-      "Reducing Harbor castle coach copy for players who already cleared Ashore Teach will raise freeplay_conversion without hurting independent_transfer_rate or failure_recovery_rate.",
+      "With castle coach already removed, further reducing Coin Bag coach lines after Ashore will raise freeplay_conversion without hurting independent_transfer_rate or failure_recovery_rate.",
     learning_problem:
-      "Some players treat coach banners as a checklist and delay authentic freeplay after Piggy.",
+      "Some players still treat the Coin Bag tip strip as a checklist and delay authentic freeplay after Piggy.",
     target_behavior:
-      "After Ashore + Piggy meet, players open the map / board carpet without waiting for another coach prompt, then still succeed on Cove Take transfer later.",
+      "After Ashore + Piggy meet, players open the map / board carpet from world hotspots without waiting for another tip, then still succeed on Cove Take transfer later.",
     control: {
       id: "control",
-      description: "Full castle coach during meet_guide → to_dock.",
+      description:
+        "Post scaffold-removal baseline: no castle coach; Coin Bag tips + presence + proximity CTAs (FTUE_SCAFFOLD_REMOVAL_AUDIT).",
     },
     variant: {
-      id: "reduced_coach",
-      description: "Suppress non-escalated castle coach after Ashore complete; Bag tips only on failure.",
+      id: "bag_tip_quiet",
+      description: "Suppress non-escalated Coin Bag coach lines after Ashore; tip only on failure or quest start.",
     },
     primary_metric: "freeplay_conversion",
     guardrail_metrics: [

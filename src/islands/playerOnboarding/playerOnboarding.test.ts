@@ -144,9 +144,10 @@ describe("player onboarding modes", () => {
     expect(
       shouldShowCastleCoachForPlayer("returning", { guidedStepId: "meet_guide" }),
     ).toBe(false);
+    // Scaffold removal: castle coach deleted for new players too (world verbs teach).
     expect(
       shouldShowCastleCoachForPlayer("new", { guidedStepId: "meet_guide" }),
-    ).toBe(true);
+    ).toBe(false);
     expect(getActiveGuidanceForPlayer(createDefaultIslandSave(), "returning")).toEqual([]);
   });
 

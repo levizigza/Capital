@@ -48,8 +48,8 @@ describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
 
   it("Coin Bag meet_guide tip only points at Piggy", () => {
     const tip = coinBagHarborTip(createDefaultHubGuidedIntro());
-    expect(tip.coach ?? tip.tip).toMatch(/Piggy/i);
-    expect(`${tip.tip} ${tip.coach ?? ""}`).not.toMatch(/Outfitter|Capsule/i);
+    expect(tip.tip).toMatch(/Piggy/i);
+    expect(`${tip.tip} ${tip.coach ?? ""}`).not.toMatch(/I'm Coin Bag|Outfitter|Capsule/i);
   });
 
   it("voyage tip names Carpet · Cove (practice leave)", () => {

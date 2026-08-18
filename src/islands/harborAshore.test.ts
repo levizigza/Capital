@@ -58,16 +58,16 @@ describe("Harbor Ashore redesign", () => {
     );
   });
 
-  it("shows soft Castle coach on first meet; mutes only quiet homecoming", () => {
+  it("removes Castle coach banner — world verbs teach instead", () => {
     expect(
       shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: false }),
-    ).toBe(true);
-    expect(
-      shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: true }),
     ).toBe(false);
     expect(
       shouldShowCastleCoach({ guidedStepId: "to_dock", quietHomecoming: false }),
-    ).toBe(true);
+    ).toBe(false);
+    expect(
+      shouldShowCastleCoach({ guidedStepId: "meet_guide", quietHomecoming: true }),
+    ).toBe(false);
   });
 
   it("keeps first-meet plaza walkable; Talk CTA only when near Piggy", () => {
@@ -91,7 +91,7 @@ describe("Harbor Ashore redesign", () => {
     expect(ashorePresenceLine({ firstMeet: true }).length).toBeLessThan(80);
   });
 
-  it("Daily Ritual waits until Cove Change (Memory organ)", () => {
+  it("Daily Ritual never auto-opens as FTUE chrome", () => {
     const beforeCove = bareSave({
       hubGuidedIntro: { version: 1, step: "done", didDock: true },
       harborRitual: ritualToday,
@@ -118,70 +118,6 @@ describe("Harbor Ashore redesign", () => {
     expect(
       shouldAutoOpenDailyRitual({
         save: afterCove,
-        guidedActive: false,
-        anyBlockingOverlay: false,
-      }),
-    ).toBe(true);
-
-    expect(
-      shouldAutoOpenDailyRitual({
-        save: afterCove,
-        guidedActive: true,
-        anyBlockingOverlay: false,
-      }),
-    ).toBe(false);
-
-    const day2Echo = bareSave({
-      hubGuidedIntro: { version: 1, step: "done", didDock: true },
-      harborRitual: {
-        ...ritualToday,
-        today: {
-          ...ritualToday.today,
-          rumorId: "scar_echo_cove_saver_plaque",
-          echoSurpriseSeen: false,
-        },
-      },
-      questStatus: {
-        q_cc_save_or_spend: {
-          started: true,
-          completed: true,
-          completedObjectives: [],
-        },
-      },
-    });
-    expect(
-      shouldAutoOpenDailyRitual({
-        save: day2Echo,
-        guidedActive: false,
-        anyBlockingOverlay: false,
-      }),
-    ).toBe(false);
-
-    const spectaclePending = bareSave({
-      hubGuidedIntro: { version: 1, step: "done", didDock: true },
-      harborRitual: ritualToday,
-      harborScars: [
-        {
-          id: "cove_saver_plaque",
-          islandId: "coincraft_cove",
-          choiceId: "save",
-          label: "Jar before treat",
-          kind: "plaque",
-          createdAt: "2026-08-03T12:00:00.000Z",
-        },
-      ],
-      scarSpectacle: { shownForCount: 0 },
-      questStatus: {
-        q_cc_save_or_spend: {
-          started: true,
-          completed: true,
-          completedObjectives: [],
-        },
-      },
-    });
-    expect(
-      shouldAutoOpenDailyRitual({
-        save: spectaclePending,
         guidedActive: false,
         anyBlockingOverlay: false,
       }),

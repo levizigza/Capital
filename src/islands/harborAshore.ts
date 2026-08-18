@@ -5,10 +5,9 @@
  * Harbor land: free walk · Piggy speech bubble · Talk only when player opts in.
  * Voyage: Money Carpet → Cove Take (combine).
  *
- * Design: docs/harbor-ashore.md
+ * Design: docs/harbor-ashore.md · docs/ftue/FTUE_SCAFFOLD_REMOVAL_AUDIT.md
  */
 
-import { hasCompletedCoveChange } from "./chapterLoop";
 import type { IslandSaveV1 } from "./types";
 import {
   ASHORE_LEGACY_GATE_STEPS,
@@ -26,17 +25,17 @@ export {
 };
 
 /**
- * Castle coach — soft tip during first meet / voyage.
- * Never stacks a forced Talk CTA (teach already covered controls).
+ * Castle coach banner — removed as duplicate FTUE chrome.
+ * Piggy presence + Coin Bag + proximity Talk / Board Carpet CTA teach the same verbs.
+ * See docs/ftue/FTUE_SCAFFOLD_REMOVAL_AUDIT.md
  */
 export function shouldShowCastleCoach(opts: {
   guidedStepId?: string | null;
   /** Quiet homecoming still mutes coach so presence owns the beat */
   quietHomecoming?: boolean;
 }): boolean {
-  if (!opts.guidedStepId || opts.guidedStepId === "done") return false;
-  if (opts.quietHomecoming) return false;
-  return true;
+  void opts;
+  return false;
 }
 
 /** Soft presence — walk first; never a modal Talk ambush. */
@@ -79,8 +78,9 @@ export function ashoreVoyageVerb(): string {
 }
 
 /**
- * Daily Ritual auto-open — Memory organ after Harbor has something to remember.
- * Never interrupt first-meet, voyage, quiet homecoming, or signature cinema.
+ * Daily Ritual — never auto-open as FTUE chrome.
+ * Ritual stays a Harbor place players find in freeplay (plaza / Piggy / map).
+ * See docs/ftue/FTUE_SCAFFOLD_REMOVAL_AUDIT.md
  */
 export function shouldAutoOpenDailyRitual(opts: {
   save: IslandSaveV1;
@@ -88,25 +88,8 @@ export function shouldAutoOpenDailyRitual(opts: {
   anyBlockingOverlay: boolean;
   homecomingPending?: boolean;
 }): boolean {
-  const ritual = opts.save.harborRitual;
-  if (!ritual || ritual.today.greeted) return false;
-  if (opts.anyBlockingOverlay) return false;
-  if (opts.homecomingPending) return false;
-  if (opts.guidedActive) return false;
-  if (!opts.save.hubGuidedIntro?.didDock) return false;
-  if (!hasCompletedCoveChange(opts.save)) return false;
-  const scars = opts.save.harborScars?.length ?? 0;
-  const shown = opts.save.scarSpectacle?.shownForCount ?? 0;
-  if (scars > shown) return false;
-  const hc = opts.save.harborHomecoming;
-  if (hc && !hc.piggyTalked) return false;
-  if (
-    ritual.today.rumorId?.startsWith("scar_echo_") &&
-    !ritual.today.echoSurpriseSeen
-  ) {
-    return false;
-  }
-  return true;
+  void opts;
+  return false;
 }
 
 /**

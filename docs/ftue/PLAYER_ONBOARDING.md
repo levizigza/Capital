@@ -53,3 +53,5 @@ Dismissal sets `reorientationSeenAt` and session flag — does **not** reset FTU
 Also see `docs/ftue/FTUE_TELEMETRY.md` for privacy-conscious FTUE events and primary metrics (tutorial completion is secondary only).
 
 Human validation: `docs/ftue/FTUE_USABILITY_PROTOCOL.md` + templates in `docs/ftue/usability/`.
+
+Scaffold thinning: `docs/ftue/FTUE_SCAFFOLD_REMOVAL_AUDIT.md` — remove chrome without reducing comprehension.
