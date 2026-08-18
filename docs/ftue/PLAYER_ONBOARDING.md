@@ -50,8 +50,4 @@ Dismissal sets `reorientationSeenAt` and session flag — does **not** reset FTU
 - `src/islands/views/ReturningPlayerBriefing.tsx` — UI
 - Wired in `App.tsx`, `BootCastSelect.tsx`, `IslandsApp.tsx`, `HomeHubView.tsx`, `save.ts`
 
-## QA
-
-- `?fresh=1` — clean save, new player path
-- Returning: set `lastActiveAt` >72h ago on a shell-complete save; reload — no title mural, briefing appears
-- Experienced: toggle at cast; Ashore teach skipped; Cove Take gates still require proof
+Also see `docs/ftue/FTUE_TELEMETRY.md` for privacy-conscious FTUE events and primary metrics (tutorial completion is secondary only).

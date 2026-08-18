@@ -11,6 +11,11 @@ import { BASE_VOYAGER } from "../character";
 import { capitalMusic } from "../audio/capitalMusic";
 import { playCapitalSfx, playOrganSfx } from "../audio/capitalSfx";
 import { analytics } from "../analytics";
+import {
+  trackFirstControlReceived,
+  trackFirstMeaningfulAction,
+  trackFtue,
+} from "../analytics/ftue";
 import { MURAL_THESIS, type MoneyOrganId } from "../moneyOrgans";
 import { cinemaTimeScale } from "../a11yMotion";
 import { TouchWalkPad } from "./TouchWalkPad";
@@ -67,6 +72,7 @@ export function AshoreComprehensionTutorial({
   useEffect(() => {
     capitalMusic.unlock();
     capitalMusic.playPlace({ kind: "opening" });
+    void trackFtue("ftue_started", { source: "ashore_teach" });
   }, []);
 
   useEffect(() => {
@@ -76,6 +82,9 @@ export function AshoreComprehensionTutorial({
   const completeAshore = useCallback(
     (action: "complete" | "skip") => {
       void analytics.track("tutorial_step", { step: stepId, action });
+      if (action === "skip") {
+        void trackFtue("tutorial_skipped", { source: "ashore_teach", step: stepId });
+      }
       onComplete();
     },
     [onComplete, stepId],
@@ -94,6 +103,7 @@ export function AshoreComprehensionTutorial({
 
   const onClaimMarker = useCallback((id: string) => {
     playCapitalSfx("walk_stop");
+    void trackFirstControlReceived("ashore_walk");
     setClaimed((prev) => (prev.includes(id) ? prev : [...prev, id]));
   }, []);
 
@@ -116,6 +126,7 @@ export function AshoreComprehensionTutorial({
     () => {
       if (!nearTalk || talked) return;
       playOrganSfx("memory");
+      void trackFirstMeaningfulAction("ashore_talk");
       setTalked(true);
     },
     stepId === "talk" && nearTalk && !talked,
@@ -126,6 +137,7 @@ export function AshoreComprehensionTutorial({
     () => {
       if (!nearTalk || talked) return;
       playOrganSfx("memory");
+      void trackFirstMeaningfulAction("ashore_talk");
       setTalked(true);
     },
     stepId === "talk" && nearTalk && !talked,

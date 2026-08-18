@@ -193,6 +193,18 @@ import {
   syncSystemsSeenAt,
 } from "./playerOnboarding";
 import { ReturningPlayerBriefing } from "./views/ReturningPlayerBriefing";
+import {
+  setFtueExperienceMode,
+  setFtueSkipStatus,
+  trackConceptLifecycleFtue,
+  trackConsequenceDisplayed,
+  trackDecisionCommitted,
+  trackDecisionPresented,
+  trackFirstMeaningfulAction,
+  trackFreeplayEntered,
+  trackFtue,
+  trackFtueOnce,
+} from "./analytics/ftue";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -241,8 +253,9 @@ function findNode(graph: DialogueGraph, nodeId: DialogueNodeId): DialogueNode | 
   return graph.nodes.find((n) => n.id === nodeId);
 }
 
-/** Emit concept_transfer when a spine concept reaches INDEPENDENT (transfer pass). */
+/** Emit concept_transfer + FTUE concept lifecycle when phases advance. */
 function trackConceptTransferEvents(before: IslandSaveV1, after: IslandSaveV1): void {
+  trackConceptLifecycleFtue(before, after);
   for (const def of CONCEPT_REGISTRY) {
     const was = getConceptPhase(before, def.concept_id);
     const now = getConceptPhase(after, def.concept_id);
@@ -463,13 +476,30 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     if (!save || analyticsSessionReady) return;
     void (async () => {
       await analytics.track("session_started", {});
-      if (!localStorage.getItem(TUTORIAL_STARTED_KEY)) {
+      const mode = detectPlayerOnboardingMode(save);
+      setFtueExperienceMode(mode);
+      if (mode === "experienced") setFtueSkipStatus("teach_skipped");
+      else if (mode === "returning") setFtueSkipStatus("ftue_boot_skipped");
+      else setFtueSkipStatus("none");
+
+      if (mode === "returning") {
+        await trackFtue("return_session", { mode: "returning" });
+      } else if (!localStorage.getItem(TUTORIAL_STARTED_KEY)) {
+        await trackFtue("ftue_started", { source: "first_islands_session" });
         await analytics.track("tutorial_started", { source: "first_islands_session" });
         localStorage.setItem(TUTORIAL_STARTED_KEY, "1");
+      } else if (mode === "experienced" && save.playerOnboarding?.declaredMode === "experienced") {
+        await trackFtueOnce("ftue_start_exp", "ftue_started", { source: "experienced_boot" });
       }
+
       setAnalyticsSessionReady(true);
     })();
   }, [save, analyticsSessionReady]);
+
+  useEffect(() => {
+    if (!save) return;
+    setFtueExperienceMode(playerOnboardingMode);
+  }, [save, playerOnboardingMode]);
 
   useEffect(() => {
     if (!save || !analyticsSessionReady) return;
@@ -494,7 +524,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   const handleExit = useCallback(async () => {
     await trackScreenExit("user_exit");
     await analytics.track("islands_exit", {});
-    await analytics.track("session_ended", { reason: "user_exit" });
+    await trackFtue("session_ended", { reason: "user_exit" });
     onExit();
   }, [onExit]);
 
@@ -643,6 +673,14 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             hintLevel: 2,
             assistChannel: "bag",
           });
+          void trackFtue("hint_offered", { reason: "piggy_bypass", via: "opened_map" });
+        }
+        if (event === "opened_map") {
+          void trackFreeplayEntered({ via: "opened_map" });
+          void trackFirstMeaningfulAction("opened_map");
+        }
+        if (next.step === "done" && guided.step !== "done") {
+          void trackFreeplayEntered({ via: "hub_guided_done" });
         }
         return { ...prev, hubGuidedIntro: next };
       });
@@ -1383,6 +1421,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           kind: armedPeek,
           npcId,
         });
+        void trackDecisionPresented({
+          kind: armedPeek,
+          npcId,
+          islandId: island?.id ?? HUB_ISLAND_ID,
+        });
       }
 
       if (island) {
@@ -1523,6 +1566,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
         if (effect.type === "setIrreversible") {
+          void trackDecisionCommitted({
+            kind: effect.key,
+            choiceId: effect.choiceId,
+            islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+          });
           updateSave((prev) => {
             if (prev.irreversibleChoices?.[effect.key]) return prev;
             let next: IslandSaveV1 = {
@@ -1546,6 +1594,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           });
         }
         if (effect.type === "addScar") {
+          void trackConsequenceDisplayed({
+            kind: "scar",
+            islandId: activeIsland?.id ?? HUB_ISLAND_ID,
+          });
           updateSave((prev) => {
             const scars = prev.harborScars ?? [];
             if (scars.some((s) => s.id === effect.id)) return prev;
@@ -1740,6 +1792,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         nodeId: dialogueNode.id,
         choiceId,
       });
+      void trackFirstMeaningfulAction("dialogue_choice");
+      if (choice.effects?.some((e) => e.type === "setIrreversible")) {
+        void trackDecisionPresented({
+          kind: "irreversible_take",
+          choiceId,
+          graphId: dialogueGraph.id,
+          nodeId: dialogueNode.id,
+        });
+      }
       const armedPeek = peekSoftBeatArm();
       if (armedPeek && softBeatArmConsumesOnChoice({ effects: choice.effects })) {
         const armed = consumeSoftBeatArm();
@@ -1862,6 +1923,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         successRate: perf.attempts > 0 ? (perf.successes / perf.attempts).toFixed(2) : "0",
         source: source ?? undefined,
       });
+      if (questSuccess && perf.attempts > 1) {
+        void trackFtue("retry_successful", {
+          minigameId: activeMinigameId,
+          islandId: activeIsland.id,
+          attempts: perf.attempts,
+        });
+      }
 
       const applyBoardReward = (fromSource: MinigameSource, clearFirst: boolean) => {
         if (fromSource !== "board") return;
@@ -1982,11 +2050,25 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               ? "coin_sort_threshold"
               : "generic_minigame",
         });
+        void trackFtue("failure_occurred", {
+          minigameId: activeMinigameId,
+          islandId: activeIsland.id,
+          failureKind:
+            failReason === "score_below_threshold"
+              ? "coin_sort_threshold"
+              : "generic_minigame",
+          attempts: perf.attempts,
+        });
 
         await analytics.track("minigame_retry", {
           islandId: activeIsland.id,
           minigameId: activeMinigameId,
           attempt: perf.attempts,
+        });
+        void trackFtue("retry_started", {
+          minigameId: activeMinigameId,
+          islandId: activeIsland.id,
+          attempts: perf.attempts,
         });
 
         const relatedQuests = activeIsland.quests.filter((q) =>
@@ -2020,6 +2102,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 islandId: activeIsland.id,
               }),
             );
+            void trackFtue("hint_offered", {
+              questId: q.id,
+              minigameId: activeMinigameId,
+              islandId: activeIsland.id,
+              attempts: failCount,
+              failureKind,
+            });
+            void trackFtue("hint_used", {
+              questId: q.id,
+              minigameId: activeMinigameId,
+              islandId: activeIsland.id,
+              attempts: failCount,
+            });
           }
         }
 
@@ -2478,7 +2573,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onOpenArcade={() => setView("arcade")}
             onOpenStudio={() => setView("studio")}
             onReplayIntro={onReplayIntro}
-            onReplayAshoreChambers={() => setAshoreReplayOpen(true)}
+            onReplayAshoreChambers={() => {
+              void trackFtue("tutorial_replayed", { source: "settings" });
+              setAshoreReplayOpen(true);
+            }}
             onOpenAnalytics={() => setShowAnalytics(true)}
             onResume={() => {
               const id = save.currentIslandId || HUB_ISLAND_ID;
@@ -2812,18 +2910,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               markReturningBriefingSeenSession();
               setReturningBriefingOpen(false);
               updateSave((prev) => markReorientationSeen(prev));
+              void trackFtue("return_session", { surface: "briefing_dismissed" });
             }}
             onRefresher={(action) => {
               if (action === "ashore_chambers") {
+                void trackFtue("hint_requested", { source: "returning_refresher", action: "ashore_chambers" });
+                void trackFtue("tutorial_replayed", { source: "returning_refresher" });
                 setReturningBriefingOpen(false);
                 setAshoreReplayOpen(true);
                 return;
               }
               if (action === "controls_hint") {
+                void trackFtue("hint_requested", { source: "returning_refresher", action: "controls_hint" });
                 setHubModal("settings");
                 return;
               }
               if (action === "ledger_hud") {
+                void trackFtue("hint_requested", { source: "returning_refresher", action: "ledger_hud" });
                 toast.message("Voyager Ledger is in the top HUD on Harbor.");
               }
             }}

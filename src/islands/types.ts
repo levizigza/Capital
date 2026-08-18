@@ -45,7 +45,31 @@ export type AnalyticsEventName =
   | "concept_transfer"
   | "soft_beat_armed"
   | "take_foreshadow"
-  | "player_onboarding_mode";
+  | "player_onboarding_mode"
+  /** Privacy-conscious FTUE telemetry — see docs/ftue/FTUE_TELEMETRY.md */
+  | "ftue_started"
+  | "first_control_received"
+  | "first_meaningful_action"
+  | "decision_presented"
+  | "decision_committed"
+  | "consequence_displayed"
+  | "concept_introduced"
+  | "concept_practiced"
+  | "hint_offered"
+  | "hint_requested"
+  | "hint_used"
+  | "failure_occurred"
+  | "retry_started"
+  | "retry_successful"
+  | "transfer_started"
+  | "transfer_success"
+  | "transfer_failure"
+  | "guidance_reduced"
+  | "autonomy_unlocked"
+  | "tutorial_skipped"
+  | "tutorial_replayed"
+  | "freeplay_entered"
+  | "return_session";
 
 export type AnalyticsEvent = {
   id: string;

@@ -16,6 +16,7 @@ import { triggerJuice } from "@/juice";
 import { useOverlayEscape } from "./useOverlayEscape";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { analytics } from "../analytics";
+import { trackConsequenceDisplayed } from "../analytics/ftue";
 
 export type { TakeCinemaPhase };
 
@@ -65,6 +66,11 @@ export function TakeHushOverlay({
         triggerJuice("reward", { burst: true });
       }
       void analytics.track("core_loop_beat", { beat: "take_mark", organId });
+      void trackConsequenceDisplayed({
+        kind: "take_hush",
+        organId,
+        islandId,
+      });
     }, t.hushMs);
 
     const tLine = window.setTimeout(() => {

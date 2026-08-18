@@ -6,6 +6,7 @@ import { loadIslandSave, persistIslandSave } from "../save";
 import { applyCompanionPurchase, STARTER_COMPANION_ID } from "../harborShop";
 import type { IslandSaveV1 } from "../types";
 import { declareExperiencedMode, declareNewPlayerMode } from "../playerOnboarding";
+import { setFtueSkipStatus, trackFtue } from "../analytics/ftue";
 import { OutfitterStudio3D } from "../world3d/OutfitterStudio3D";
 import { StreetFighterCoinSelect } from "../world3d/StreetFighterCoinSelect";
 import { CharacterCreator } from "./CharacterCreator";
@@ -59,6 +60,10 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
       companion: from.companion === "none" ? STARTER_COMPANION_ID : from.companion,
     };
     onComplete(character, { experiencedPlayer });
+    if (experiencedPlayer) {
+      setFtueSkipStatus("teach_skipped");
+      void trackFtue("tutorial_skipped", { source: "cast_select", reason: "experienced" });
+    }
     void (async () => {
       try {
         const loaded = await loadIslandSave();

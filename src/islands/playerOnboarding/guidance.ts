@@ -1,5 +1,6 @@
 import { shouldShowCastleCoach } from "../harborAshore";
-import { getActiveGuidance, type ActiveGuidance } from "../conceptProgression";
+import { getActiveGuidance } from "../conceptProgression";
+import type { ActiveGuidance } from "../conceptProgression/engine";
 import type { IslandSaveV1 } from "../types";
 import type { PlayerOnboardingMode } from "./types";
 

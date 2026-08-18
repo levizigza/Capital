@@ -26,6 +26,8 @@ export type {
   SessionSummary,
 } from "./funnel";
 
+export * from "./ftue";
+
 export {
   loadAnalyticsEvents,
   clearAnalyticsEvents,

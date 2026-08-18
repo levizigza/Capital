@@ -20,6 +20,7 @@ import { triggerJuice } from "@/juice";
 import { prefersReducedMotion } from "../a11yMotion";
 import { useOverlayEscape } from "./useOverlayEscape";
 import { analytics } from "../analytics";
+import { trackConsequenceDisplayed } from "../analytics/ftue";
 
 export type SpectacleCinemaPhase = "hush" | "in" | "hold" | "out";
 
@@ -65,6 +66,10 @@ export function ScarSpectacleOverlay({ scars, onDone, onPhaseChange }: Props) {
       });
       void analytics.track("core_loop_beat", {
         beat: "harbor_felt",
+        organId: organIdRef.current,
+      });
+      void trackConsequenceDisplayed({
+        kind: "scar_spectacle",
         organId: organIdRef.current,
       });
     }, t.hushMs);

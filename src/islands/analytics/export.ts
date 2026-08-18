@@ -2,6 +2,7 @@ import type { AnalyticsEvent } from "../types";
 
 import type { FunnelAnalysis } from "./funnel";
 import { analyzeFunnel } from "./funnel";
+import { analyzeFtueMetrics, type FtueMetricsSnapshot } from "./ftue";
 
 export const ANALYTICS_KV_KEY = "island_analytics_v1";
 export const MAX_ANALYTICS_EVENTS = 2_000;
@@ -44,11 +45,19 @@ function csvCell(value: string): string {
   return value;
 }
 
-export function eventsToJson(events: AnalyticsEvent[], analysis: FunnelAnalysis): string {
+export function eventsToJson(
+  events: AnalyticsEvent[],
+  analysis: FunnelAnalysis,
+  ftue?: FtueMetricsSnapshot,
+): string {
   return JSON.stringify(
     {
       exportedAt: new Date().toISOString(),
       eventCount: events.length,
+      /** Primary FTUE KPIs — tutorial completion is secondary only. */
+      ftueMetrics: ftue ?? analyzeFtueMetrics(events),
+      primarySuccessNote:
+        "Do not treat tutorial_completion_rate as the primary success metric. Prefer freeplay_conversion, independent_transfer_rate, failure_recovery_rate, and time_to_first_core_loop.",
       funnel: analysis,
       events,
     },
@@ -75,7 +84,12 @@ export async function exportAnalyticsCsv(): Promise<void> {
 export async function exportAnalyticsJson(): Promise<void> {
   const events = await loadAnalyticsEvents();
   const analysis = analyzeFunnel(events);
-  downloadText(eventsToJson(events, analysis), `islands-analytics-${dateStamp()}.json`, "application/json");
+  const ftue = analyzeFtueMetrics(events);
+  downloadText(
+    eventsToJson(events, analysis, ftue),
+    `islands-analytics-${dateStamp()}.json`,
+    "application/json",
+  );
 }
 
 function dateStamp(): string {

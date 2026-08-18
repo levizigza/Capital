@@ -4,6 +4,7 @@ import { GameButton, GamePanel } from "@/game-ui";
 
 import type { AnalyticsEvent } from "../types";
 import { analyzeFunnel, FUNNEL_WINDOW_MS, type FunnelAnalysis } from "./funnel";
+import { analyzeFtueMetrics, FTUE_PRIMARY_METRICS, type FtueMetricsSnapshot } from "./ftue";
 import {
   clearAnalyticsEvents,
   exportAnalyticsCsv,
@@ -16,6 +17,20 @@ function formatMs(ms: number): string {
   return `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`;
 }
 
+function formatMetric(id: string, value: number | null): string {
+  if (value == null) return "—";
+  if (id.startsWith("time_to_")) return formatMs(value);
+  if (
+    id.includes("rate") ||
+    id.includes("conversion") ||
+    id.includes("retention") ||
+    id.includes("dependency")
+  ) {
+    return `${Math.round(value * 100)}%`;
+  }
+  return String(value);
+}
+
 function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
   const max = Math.max(...analysis.stages.map((s) => s.reached), 1);
 
@@ -26,7 +41,7 @@ function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
           <span className="truncate text-gray-600" title={stage.label}>
             {stage.label}
           </span>
-          <div className="h-5 rounded bg-gray-100 overflow-hidden">
+          <div className="h-5 overflow-hidden rounded bg-gray-100">
             <div
               className="h-full rounded bg-blue-500 transition-all"
               style={{ width: `${(stage.reached / max) * 100}%` }}
@@ -35,6 +50,52 @@ function FunnelChart({ analysis }: { analysis: FunnelAnalysis }) {
           <span className="text-right font-mono font-semibold">{stage.reached}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function FtueMetricsPanel({ snap }: { snap: FtueMetricsSnapshot }) {
+  const primary: Record<(typeof FTUE_PRIMARY_METRICS)[number], number | null> = {
+    time_to_first_action: snap.time_to_first_action_ms,
+    time_to_first_decision: snap.time_to_first_decision_ms,
+    time_to_first_consequence: snap.time_to_first_consequence_ms,
+    time_to_first_core_loop: snap.time_to_first_core_loop_ms,
+    guided_success_rate: snap.guided_success_rate,
+    independent_transfer_rate: snap.independent_transfer_rate,
+    hint_dependency: snap.hint_dependency,
+    failure_recovery_rate: snap.failure_recovery_rate,
+    freeplay_conversion: snap.freeplay_conversion,
+    d1_retention: snap.d1_retention,
+    d7_retention: snap.d7_retention,
+    d30_retention: snap.d30_retention,
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-600">
+        Primary FTUE KPIs measure comprehension and autonomy — not tutorial shell completion.
+      </p>
+      <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">
+        {FTUE_PRIMARY_METRICS.map((id) => (
+          <div
+            key={id}
+            className="rounded-lg bg-emerald-50 px-2 py-1.5"
+            data-testid={`ftue-metric-${id}`}
+          >
+            <div className="font-medium text-emerald-900">{id.replace(/_/g, " ")}</div>
+            <div className="font-mono text-emerald-800">{formatMetric(id, primary[id])}</div>
+          </div>
+        ))}
+      </div>
+      <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-2 py-1.5 text-xs text-gray-500">
+        Secondary — tutorial completion rate:{" "}
+        <span className="font-mono">
+          {snap.tutorial_completion_rate == null
+            ? "—"
+            : `${Math.round(snap.tutorial_completion_rate * 100)}%`}
+        </span>{" "}
+        (not a primary success metric)
+      </div>
     </div>
   );
 }
@@ -59,6 +120,7 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
   }, [refresh]);
 
   const analysis = useMemo(() => analyzeFunnel(events), [events]);
+  const ftueSnap = useMemo(() => analyzeFtueMetrics(events), [events]);
 
   const quitSessions = useMemo(
     () => analysis.sessions.filter((s) => s.quitWithin5Min),
@@ -66,12 +128,12 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
   );
 
   return (
-    <div className="space-y-4 max-h-[min(80dvh,720px)] overflow-y-auto">
+    <div className="max-h-[min(80dvh,720px)] space-y-4 overflow-y-auto">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-xl font-black">📊 Analytics Export</h2>
+          <h2 className="text-xl font-black">Analytics Export</h2>
           <p className="text-xs text-gray-500">
-            First {formatMs(FUNNEL_WINDOW_MS)} funnel · {events.length} events ·{" "}
+            FTUE metrics + first {formatMs(FUNNEL_WINDOW_MS)} funnel · {events.length} events ·{" "}
             {analysis.sessionsInWindow} sessions
           </p>
         </div>
@@ -79,10 +141,20 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
           <GameButton size="sm" variant="outline" motionEnabled={false} onClick={() => void refresh()}>
             Refresh
           </GameButton>
-          <GameButton size="sm" variant="outline" motionEnabled={false} onClick={() => void exportAnalyticsCsv()}>
+          <GameButton
+            size="sm"
+            variant="outline"
+            motionEnabled={false}
+            onClick={() => void exportAnalyticsCsv()}
+          >
             Export CSV
           </GameButton>
-          <GameButton size="sm" variant="primary" motionEnabled={false} onClick={() => void exportAnalyticsJson()}>
+          <GameButton
+            size="sm"
+            variant="primary"
+            motionEnabled={false}
+            onClick={() => void exportAnalyticsJson()}
+          >
             Export JSON
           </GameButton>
           {onClose ? (
@@ -98,11 +170,16 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
       ) : events.length === 0 ? (
         <GamePanel title="No data yet">
           <p className="text-sm text-gray-600">
-            Play through the islands hub, travel map, and a quest to populate analytics. Events are stored locally.
+            Play through Harbor and a chapter Take to populate privacy-safe FTUE telemetry. Events stay
+            local.
           </p>
         </GamePanel>
       ) : (
         <>
+          <GamePanel title="FTUE primary metrics">
+            <FtueMetricsPanel snap={ftueSnap} />
+          </GamePanel>
+
           <GamePanel title={`Onboarding funnel (first ${formatMs(FUNNEL_WINDOW_MS)})`}>
             <FunnelChart analysis={analysis} />
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
@@ -150,7 +227,7 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
             {quitSessions.length === 0 ? (
               <p className="text-sm text-gray-500">No early quits detected in this window.</p>
             ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
+              <div className="max-h-48 space-y-2 overflow-y-auto">
                 {quitSessions.slice(0, 20).map((s) => (
                   <div
                     key={s.sessionId}
@@ -170,16 +247,19 @@ export default function AnalyticsExportView({ onClose }: AnalyticsExportViewProp
 
           <GamePanel title="Recent events">
             <div className="max-h-40 overflow-y-auto font-mono text-[10px] leading-relaxed text-gray-700">
-              {[...events].reverse().slice(0, 40).map((e) => (
-                <div key={e.id} className="border-b border-gray-100 py-0.5">
-                  <span className="text-gray-400">{e.ts.slice(11, 19)}</span>{" "}
-                  <span className="font-semibold">{e.name}</span>{" "}
-                  {e.payload?.screen ? `@${String(e.payload.screen)}` : ""}{" "}
-                  {typeof e.payload?.elapsedMs === "number"
-                    ? `+${formatMs(e.payload.elapsedMs as number)}`
-                    : ""}
-                </div>
-              ))}
+              {[...events]
+                .reverse()
+                .slice(0, 40)
+                .map((e) => (
+                  <div key={e.id} className="border-b border-gray-100 py-0.5">
+                    <span className="text-gray-400">{e.ts.slice(11, 19)}</span>{" "}
+                    <span className="font-semibold">{e.name}</span>{" "}
+                    {e.payload?.screen ? `@${String(e.payload.screen)}` : ""}{" "}
+                    {typeof e.payload?.elapsedMs === "number"
+                      ? `+${formatMs(e.payload.elapsedMs as number)}`
+                      : ""}
+                  </div>
+                ))}
             </div>
           </GamePanel>
 
