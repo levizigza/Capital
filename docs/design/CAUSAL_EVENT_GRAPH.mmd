@@ -1,0 +1,45 @@
+%%{init: {'theme': 'neutral', 'flowchart': {'htmlLabels': false}} }%%
+flowchart TB
+  subgraph player [Player-facing myth — only these surfaces]
+    Plinth[Memory Plinth plaque]
+    Piggy[Piggy because-sentence]
+    Bag[Coin Bag short because]
+    PayFeel[Pay Day cite kid label]
+    Sky[Harbor weather feel]
+  end
+
+  subgraph internal [Internal causal graph — never shown as UI]
+    Dec{Decision X label_kid}
+    StNow[State NOW pouch CF scars]
+    EvSoon[Event SOON Pay Day / Harbor return]
+    EvLater[Event LATER streak weather band]
+    EvLong[Event LONG-TERM Freedom plaque forever]
+    Out[Outcome sky Pay Day Freedom]
+    Obl[Obligation liability / streak risk]
+    OppPlus[Opportunity created]
+    OppMinus[Opportunity lost]
+  end
+
+  Player((Voyager)) -->|DECIDES| Dec
+  Dec -->|WRITES immediate_state_change| StNow
+  Dec -->|SCHEDULES horizon+trigger| EvSoon
+  Dec -->|SCHEDULES| EvLater
+  Dec -->|SCHEDULES persistent| EvLong
+  Dec -->|OBLIGES future_obligation| Obl
+  Dec -->|ENABLES opportunity_created| OppPlus
+  Dec -->|BLOCKS opportunity_lost| OppMinus
+
+  EvSoon -->|FIRES probability| Out
+  EvLater -->|FIRES| Out
+  EvLong -->|FIRES| Out
+  StNow --> EvSoon
+  Obl --> EvLater
+
+  Out -->|BECAUSE| Dec
+
+  Out -.->|retell only| Plinth
+  Out -.->|retell only| Piggy
+  Out -.->|retell only| Bag
+  Out -.->|retell only| PayFeel
+  Out -.->|retell only| Sky
+  Dec -.->|plaque name| Plinth
