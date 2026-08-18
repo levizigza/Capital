@@ -5,6 +5,7 @@ import type { CapitalCharacter } from "../character";
 import { loadIslandSave, persistIslandSave } from "../save";
 import { applyCompanionPurchase, STARTER_COMPANION_ID } from "../harborShop";
 import type { IslandSaveV1 } from "../types";
+import { declareExperiencedMode, declareNewPlayerMode } from "../playerOnboarding";
 import { OutfitterStudio3D } from "../world3d/OutfitterStudio3D";
 import { StreetFighterCoinSelect } from "../world3d/StreetFighterCoinSelect";
 import { CharacterCreator } from "./CharacterCreator";
@@ -14,7 +15,7 @@ type Stage = "select" | "look";
 
 type Props = {
   defaultName?: string;
-  onComplete: (character: CapitalCharacter) => void;
+  onComplete: (character: CapitalCharacter, opts?: { experiencedPlayer?: boolean }) => void;
 };
 
 function resolvePickName(
@@ -41,6 +42,7 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
     sheetLookForBase(SERIES_LEAD_MASCOT_IDS[0]!, defaultName || ""),
   );
   const [busy, setBusy] = useState(false);
+  const [experiencedPlayer, setExperiencedPlayer] = useState(false);
 
   const mascot = getMascot(draft.base);
 
@@ -56,12 +58,12 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
       name: from.name.trim() || defaultName || getMascot(from.base).name,
       companion: from.companion === "none" ? STARTER_COMPANION_ID : from.companion,
     };
-    onComplete(character);
+    onComplete(character, { experiencedPlayer });
     void (async () => {
       try {
         const loaded = await loadIslandSave();
         const withChar: IslandSaveV1 = {
-          ...loaded,
+          ...(experiencedPlayer ? declareExperiencedMode(loaded) : declareNewPlayerMode(loaded)),
           character,
           updatedAt: new Date().toISOString(),
         };
@@ -104,9 +106,8 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
           {stage === "select" ? "Choose your Voyager" : `${mascot.name}`}
         </h1>
         <p className="max-w-xl text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>
-          {stage === "select"
-            ? "Meet your Voyager. Tap a coin face to choose — continue to Ashore Teach, or customize first."
-            : "Dress your Voyager on the mirror — then continue to Ashore Teach before the Money Carpet."}
+          {stage === "select" ? "Meet your Voyager. Tap a coin face — experienced players can skip Ashore Teach."
+            : "Dress your Voyager on the mirror — then continue before the Money Carpet."}
         </p>
       </header>
 
@@ -149,6 +150,16 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                   {mascot.tagline}
                 </p>
               </div>
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/15 bg-black/25 px-3 py-2 text-sm text-white/90">
+                <input
+                  type="checkbox"
+                  checked={experiencedPlayer}
+                  onChange={(e) => setExperiencedPlayer(e.target.checked)}
+                  className="size-4 rounded border-amber-200/40"
+                  data-testid="boot-experienced-player"
+                />
+                I&apos;ve played money games before (skip Ashore Teach)
+              </label>
               <button
                 type="button"
                 disabled={busy}
@@ -167,7 +178,11 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
                 }}
                 data-testid="boot-board-carpet-now"
               >
-                {busy ? "Continuing…" : "Continue to Ashore Teach →"}
+                {busy
+                  ? "Continuing…"
+                  : experiencedPlayer
+                    ? "Continue to Money Carpet →"
+                    : "Continue to Ashore Teach →"}
               </button>
               <button
                 type="button"
@@ -186,7 +201,13 @@ export function BootCastSelect({ defaultName = "", onComplete }: Props) {
               hideCompanion
               preview="none"
               chrome="dark"
-              saveLabel={busy ? "Continuing…" : "Continue to Ashore Teach →"}
+              saveLabel={
+                busy
+                  ? "Continuing…"
+                  : experiencedPlayer
+                    ? "Continue to Money Carpet →"
+                    : "Continue to Ashore Teach →"
+              }
               cancelLabel="← Back to coin faces"
               saveTestId="boot-board-carpet"
               cancelTestId="boot-cancel-look"

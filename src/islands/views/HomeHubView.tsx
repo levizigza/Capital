@@ -118,9 +118,10 @@ import {
   normalizeHubGuidedIntro,
   shouldAutoOpenDailyRitual,
   shouldForceTalkCta,
-  shouldShowCastleCoach,
   shouldStripPlazaForPresence,
 } from "../harborAshore";
+import { shouldShowCastleCoachForPlayer } from "../playerOnboarding";
+import type { PlayerOnboardingMode } from "../playerOnboarding";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import {
   harborFallbackMode,
@@ -197,6 +198,8 @@ export type HomeHubViewProps = {
   onTalkNpc?: (npcId: string) => void;
   /** True while Talk Battle is open — freeze world input */
   talkOpen?: boolean;
+  /** New / experienced / returning — adjusts coach density */
+  playerOnboardingMode?: PlayerOnboardingMode;
   onSyncHarborRitual?: () => void;
   onClaimRitualPayday?: () => void;
   onClaimRitualReward?: () => void;
@@ -248,6 +251,7 @@ export function HomeHubView({
   onExit,
   onTalkNpc,
   talkOpen = false,
+  playerOnboardingMode = "new",
   onSyncHarborRitual,
   onClaimRitualPayday,
   onClaimRitualReward,
@@ -1519,7 +1523,7 @@ export function HomeHubView({
           <div className="sr-only" data-testid="harbor-plaza" data-plaza-room={plazaRoom} />
           {castleMode &&
           guidedStep &&
-          shouldShowCastleCoach({
+          shouldShowCastleCoachForPlayer(playerOnboardingMode, {
             guidedStepId: guidedStep.id,
             quietHomecoming: quietHarbor,
           }) ? (

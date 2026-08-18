@@ -183,6 +183,16 @@ import {
   takeFootprintFeedbackLine,
 } from "./firstFinancialScenario";
 import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
+import {
+  applyExperiencedBootstrap,
+  buildReturningBriefing,
+  detectPlayerOnboardingMode,
+  markReorientationSeen,
+  markReturningBriefingSeenSession,
+  shouldShowReturningBriefing,
+  syncSystemsSeenAt,
+} from "./playerOnboarding";
+import { ReturningPlayerBriefing } from "./views/ReturningPlayerBriefing";
 
 type IslandsAppProps = {
   userProfile: UserProfile;
@@ -258,6 +268,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const [view, setView] = useState<View>("home");
   const [save, setSave] = useState<IslandSaveV1 | null>(null);
+  const playerOnboardingMode = useMemo(
+    () => (save ? detectPlayerOnboardingMode(save) : "new"),
+    [save],
+  );
+  const returningBriefing = useMemo(
+    () =>
+      save && playerOnboardingMode === "returning"
+        ? buildReturningBriefing(save, content)
+        : null,
+    [save, content, playerOnboardingMode],
+  );
   const viewRef = useRef(view);
   const saveRef = useRef(save);
   viewRef.current = view;
@@ -280,6 +301,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   });
   const [bootHubHandled, setBootHubHandled] = useState(false);
   const [ashoreReplayOpen, setAshoreReplayOpen] = useState(false);
+  const [returningBriefingOpen, setReturningBriefingOpen] = useState(false);
+  const systemsSyncedRef = useRef(false);
 
   const [activeIslandId, setActiveIslandId] = useState<string | null>(null);
   const activeIsland = useMemo(
@@ -508,6 +531,24 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     return () => window.clearTimeout(t);
   }, [save]);
 
+  useEffect(() => {
+    if (!save || systemsSyncedRef.current) return;
+    systemsSyncedRef.current = true;
+    updateSave((prev) => syncSystemsSeenAt(prev));
+  }, [save, updateSave]);
+
+  useEffect(() => {
+    if (!save || content.islands.length === 0) return;
+    if (!shouldShowReturningBriefing(save)) return;
+    setReturningBriefingOpen(true);
+    void analytics.track("player_onboarding_mode", { mode: "returning", surface: "briefing" });
+  }, [save, content.islands.length]);
+
+  useEffect(() => {
+    if (!save) return;
+    void analytics.track("player_onboarding_mode", { mode: playerOnboardingMode });
+  }, [save, playerOnboardingMode]);
+
   const saveCharacter = useCallback(
     (character: CapitalCharacter) => {
       updateSave((prev) => {
@@ -702,7 +743,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       // tutorial (or leftover quiet homecoming) over the opening carpet ceremony —
       // that steals first-meet and strands players with no coach.
       const { hubGuidedIntro, clearQuietPending } = resolveCarpetBootGuidedIntro(prev);
-      return {
+      let next: IslandSaveV1 = {
         ...prev,
         onboardingComplete: true,
         character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
@@ -723,6 +764,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           areas: defaultArea ? uniq([...prev.discovered.areas, defaultArea]) : prev.discovered.areas,
         },
       };
+      if (prev.playerOnboarding?.declaredMode === "experienced") {
+        next = applyExperiencedBootstrap(next);
+      }
+      return next;
     });
     if (!save.onboardingComplete) {
       void analytics.track("onboarding_completed", { via: "carpet_boot" });
@@ -2501,6 +2546,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             a11y={a11y}
             updateA11y={updateA11y}
             updateLearningProfile={updateLearningProfile}
+            playerOnboardingMode={playerOnboardingMode}
           />
         ) : view === "travel" ? (
           <TravelMapView
@@ -2756,6 +2802,31 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           <AshoreComprehensionTutorial
             character={save?.character ?? BASE_VOYAGER}
             onComplete={() => setAshoreReplayOpen(false)}
+          />
+        ) : null}
+
+        {returningBriefingOpen && returningBriefing ? (
+          <ReturningPlayerBriefing
+            briefing={returningBriefing}
+            onDismiss={() => {
+              markReturningBriefingSeenSession();
+              setReturningBriefingOpen(false);
+              updateSave((prev) => markReorientationSeen(prev));
+            }}
+            onRefresher={(action) => {
+              if (action === "ashore_chambers") {
+                setReturningBriefingOpen(false);
+                setAshoreReplayOpen(true);
+                return;
+              }
+              if (action === "controls_hint") {
+                setHubModal("settings");
+                return;
+              }
+              if (action === "ledger_hud") {
+                toast.message("Voyager Ledger is in the top HUD on Harbor.");
+              }
+            }}
           />
         ) : null}
       </GameTooltipProvider>

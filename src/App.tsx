@@ -11,6 +11,8 @@ import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehension
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
+import { peekIslandSaveSync } from '@/islands/save'
+import { shouldSkipFtueBoot } from '@/islands/playerOnboarding'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -184,17 +186,29 @@ function App() {
   const [profileError, setProfileError] = useState(false)
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
-  const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
+  const [showCapitalIntro, setShowCapitalIntro] = useState(() => {
+    if (!shouldPlayCapitalIntroOnBoot()) return false
+    const save = peekIslandSaveSync()
+    return !shouldSkipFtueBoot(save)
+  })
   /** Title mural → cast → comprehension teach → carpet POV into Harbor. */
   const [bootPhase, setBootPhase] = useState<"title" | "cast" | "teach" | "carpet">("title")
   const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
+  const [bootExperiencedPlayer, setBootExperiencedPlayer] = useState(false)
 
   // Every full page load: title → cast select → carpet (QA may opt out with skipIntro).
   useEffect(() => {
     if (shouldPlayCapitalIntroOnBoot()) {
+      const save = peekIslandSaveSync()
+      if (shouldSkipFtueBoot(save)) {
+        setShowCapitalIntro(false)
+        setCurrentMode("islands")
+        return
+      }
       setShowCapitalIntro(true)
       setBootPhase("title")
       setBootCharacter(null)
+      setBootExperiencedPlayer(false)
       setCurrentMode("islands")
     }
   }, [])
@@ -473,15 +487,16 @@ function App() {
           <BootCastSelect
             key="capital-cast-boot"
             defaultName={userProfile?.name || ""}
-            onComplete={(character) => {
+            onComplete={(character, opts) => {
               setBootCharacter(character)
+              setBootExperiencedPlayer(Boolean(opts?.experiencedPlayer))
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
               }
-              setBootPhase("teach")
+              setBootPhase(opts?.experiencedPlayer ? "carpet" : "teach")
             }}
           />
-        ) : bootPhase === "teach" ? (
+        ) : bootPhase === "teach" && !bootExperiencedPlayer ? (
           <AshoreComprehensionTutorial
             key="capital-ashore-teach"
             character={bootCharacter ?? BASE_VOYAGER}

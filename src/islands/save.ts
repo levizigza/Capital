@@ -6,6 +6,8 @@ import {
 } from "./islandIds";
 import { normalizeHubGuidedIntro } from "./story/storyBible";
 import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
+import { PLAYER_ONBOARDING_VERSION } from "./playerOnboarding";
+import type { PlayerOnboardingState } from "./playerOnboarding";
 
 const SAVE_KEY = "island_save_v1";
 
@@ -49,6 +51,38 @@ function asDiscovered(value: unknown): IslandSaveV1["discovered"] {
     areas: asStringArray(d.areas),
     islands: asStringArray(d.islands),
   };
+}
+
+function sanitizePlayerOnboarding(raw: unknown): PlayerOnboardingState | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const p = raw as Record<string, unknown>;
+  const out: PlayerOnboardingState = { version: PLAYER_ONBOARDING_VERSION };
+  if (p.declaredMode === "new" || p.declaredMode === "experienced") {
+    out.declaredMode = p.declaredMode;
+  }
+  if (typeof p.lastActiveAt === "string") out.lastActiveAt = p.lastActiveAt;
+  if (typeof p.reorientationSeenAt === "string") out.reorientationSeenAt = p.reorientationSeenAt;
+  if (p.systemsSeenAt && typeof p.systemsSeenAt === "object" && !Array.isArray(p.systemsSeenAt)) {
+    const seen: Record<string, string> = {};
+    for (const [k, v] of Object.entries(p.systemsSeenAt as Record<string, unknown>)) {
+      if (typeof v === "string") seen[k] = v;
+    }
+    if (Object.keys(seen).length > 0) out.systemsSeenAt = seen;
+  }
+  return out;
+}
+
+/**
+ * Sync read for boot-path decisions before async KV load completes.
+ */
+export function peekIslandSaveSync(): IslandSaveV1 | null {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    return sanitizeIslandSave(JSON.parse(raw));
+  } catch {
+    return null;
+  }
 }
 
 function asPartyBoard(value: unknown): IslandSaveV1["partyBoard"] | undefined {
@@ -127,6 +161,16 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   }
   if (typeof parsed.piggyBondHomecomings === "number") {
     sanitized.piggyBondHomecomings = parsed.piggyBondHomecomings;
+  }
+  if (parsed.playerOnboarding && typeof parsed.playerOnboarding === "object") {
+    sanitized.playerOnboarding = sanitizePlayerOnboarding(parsed.playerOnboarding);
+  }
+  if (parsed.conceptProgress && typeof parsed.conceptProgress === "object") {
+    sanitized.conceptProgress = parsed.conceptProgress as IslandSaveV1["conceptProgress"];
+  }
+  if (parsed.conceptTransferPasses && typeof parsed.conceptTransferPasses === "object") {
+    sanitized.conceptTransferPasses =
+      parsed.conceptTransferPasses as IslandSaveV1["conceptTransferPasses"];
   }
   const board = asPartyBoard(parsed.partyBoard);
   if (board) sanitized.partyBoard = board;
@@ -245,9 +289,15 @@ export async function loadIslandSave(): Promise<IslandSaveV1> {
 }
 
 export async function persistIslandSave(save: IslandSaveV1): Promise<void> {
+  const now = new Date().toISOString();
   const next: IslandSaveV1 = {
     ...save,
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
+    playerOnboarding: {
+      version: PLAYER_ONBOARDING_VERSION,
+      ...save.playerOnboarding,
+      lastActiveAt: now,
+    },
   };
   // Always mirror locally so GitHub Pages / preview survive without Spark KV.
   try {

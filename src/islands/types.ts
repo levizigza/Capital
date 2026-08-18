@@ -44,7 +44,8 @@ export type AnalyticsEventName =
   | "core_loop_beat"
   | "concept_transfer"
   | "soft_beat_armed"
-  | "take_foreshadow";
+  | "take_foreshadow"
+  | "player_onboarding_mode";
 
 export type AnalyticsEvent = {
   id: string;
@@ -309,6 +310,11 @@ export type IslandSaveV1 = {
    * See docs/ftue/PROGRESSIVE_DISCLOSURE_DESIGN.md · conceptProgression/
    */
   conceptProgress?: import("./conceptProgression").ConceptProgressState;
+  /**
+   * Player onboarding mode persistence — separate from concept mastery.
+   * See docs/ftue/PLAYER_ONBOARDING.md · playerOnboarding/
+   */
+  playerOnboarding?: import("./playerOnboarding").PlayerOnboardingState;
   /** Soft personality axes derived from money choices */
   stance?: import("./worldMemory").VoyagerStance;
   /** Per-NPC talk memory for greeting branches */
