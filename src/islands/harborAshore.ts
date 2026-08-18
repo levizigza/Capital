@@ -47,14 +47,17 @@ export function ashorePresenceLine(opts: { firstMeet: boolean }): string {
 }
 
 /**
- * Strip stall grid only on quiet homecoming (scar hush).
- * First meet keeps the plaza walkable after the pre-carpet teach.
+ * Full plaza strip (plinth-only) — retired.
+ * Quiet homecoming still soft-hides distraction stalls in HomeHubView, but
+ * Money Carpet + Plinth stay walkable so Talk cannot soft-lock travel.
+ * First meet has always kept the plaza walkable after the pre-carpet teach.
  */
 export function shouldStripPlazaForPresence(opts: {
   firstMeet?: boolean;
   quietHomecoming?: boolean;
 }): boolean {
-  return Boolean(opts.quietHomecoming);
+  void opts;
+  return false;
 }
 
 /** Forced bottom Talk CTA — never on first meet (near-Piggy prompt only). */

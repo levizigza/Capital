@@ -73,18 +73,21 @@ describe("Harbor Ashore redesign", () => {
     ).toBe(false);
   });
 
-  it("keeps first-meet plaza walkable; Talk CTA only when near Piggy", () => {
+  it("keeps first-meet plaza walkable; quiet homecoming no longer plinth-locks Carpet", () => {
     expect(
       shouldStripPlazaForPresence({ firstMeet: true, quietHomecoming: false }),
     ).toBe(false);
     expect(
       shouldStripPlazaForPresence({ firstMeet: false, quietHomecoming: true }),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       shouldForceTalkCta({ firstMeet: true, nearPiggy: false }),
     ).toBe(false);
     expect(
       shouldForceTalkCta({ firstMeet: true, nearPiggy: true }),
+    ).toBe(true);
+    expect(
+      shouldForceTalkCta({ firstMeet: false, quietHomecoming: true, nearPiggy: false }),
     ).toBe(true);
   });
 

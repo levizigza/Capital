@@ -118,7 +118,6 @@ import {
   normalizeHubGuidedIntro,
   shouldAutoOpenDailyRitual,
   shouldForceTalkCta,
-  shouldStripPlazaForPresence,
 } from "../harborAshore";
 import {
   shouldReduceHubPresenceCopy,
@@ -330,11 +329,6 @@ export function HomeHubView({
     firstMeet,
     quietHomecoming: quietHarbor,
   });
-  /** Only scar hush strips stalls — first meet stays walkable after pre-carpet teach. */
-  const stripPlaza = shouldStripPlazaForPresence({
-    firstMeet,
-    quietHomecoming: quietHarbor,
-  });
   const nearPiggy =
     nearNpc?.id === HARBOR_KEEPER_MASCOT_ID ||
     nearNpc?.id === "guide";
@@ -350,11 +344,17 @@ export function HomeHubView({
   });
   // Outfitter is plaza discovery after Ashore — never a guided hero teach.
   const showOutfitterChrome = !quietHarbor && !castleMode && !firstMeet;
-  /** Map chrome once voyage starts — free roam also uses diegetic Money Carpet. */
+  /**
+   * Map chrome as soon as Harbor is walkable — do not wait on Piggy Talk.
+   * Quiet homecoming still leads with Talk CTA; carpet stays diegetic on the plaza.
+   * Talk-near-Piggy still wins the bottom CTA via forceTalkCta.
+   */
   const showTravelChip =
     !quietHarbor &&
-    Boolean(castleMode) &&
-    (guidedStep?.id === "to_dock" || guidedStep?.id === "done");
+    (guidedStep?.id === "to_dock" ||
+      guidedStep?.id === "done" ||
+      guidedStep?.id === "meet_guide" ||
+      !castleMode);
   const showLeaveChrome = !quietHarbor && !castleMode;
   const pointNextPainting =
     hasCompletedCoveChange(save) &&
@@ -712,7 +712,7 @@ export function HomeHubView({
 
   // Never pulse Outfitter during Ashore first session (discovery after voyage).
   const showOutfitterHighlight =
-    !stripPlaza &&
+    !quietHarbor &&
     !firstMeet &&
     guidedStep?.id !== "to_dock" &&
     (highlightOutfitter || guidedStep?.highlight === "outfitter");
@@ -725,15 +725,28 @@ export function HomeHubView({
 
   const harborHotspots = useMemo<HarborHotspot[]>(
     () => {
-      // Quiet homecoming only: hush stalls. First meet keeps the plaza walkable.
-      if (stripPlaza) {
-        return [harborMemoryPlinthHotspot({ scarCount: plaques.length })];
-      }
       const arcadeSlot = plazaSlotById("arcade")!;
       const outfitterSlot = plazaSlotById("outfitter")!;
       const carpetSlot = plazaSlotById("travel")!;
       const noticeSlot = plazaSlotById("practice")!;
       const bankSlot = plazaSlotById("ledger_bank");
+      // Quiet homecoming: hush distraction stalls, keep Carpet + Plinth (no soft-lock).
+      if (quietHarbor) {
+        return [
+          {
+            id: "travel",
+            label: "Money Carpet",
+            icon: "🪄",
+            position: carpetSlot.position,
+            yaw: carpetSlot.yaw,
+            kind: "carpet_gate" as const,
+          } satisfies HarborHotspot,
+          {
+            ...harborMemoryPlinthHotspot({ scarCount: plaques.length }),
+            yaw: plazaSlotById("memory")?.yaw,
+          },
+        ];
+      }
       return [
       // —— Plaza heroes (master plan — see docs/harbor-plaza-plan.md) ——
       ...(sideMagnetsOpen
@@ -922,7 +935,7 @@ export function HomeHubView({
     ];
     },
     [
-      stripPlaza,
+      quietHarbor,
       onOpenEditor,
       pavilionOpen,
       marketOpen,
@@ -1010,8 +1023,8 @@ export function HomeHubView({
   };
 
   const onHarborHotspot = (id: string) => {
-    // Quiet homecoming hush: Piggy owns the plaza — never open Plinth/stalls.
-    if (stripPlaza) return;
+    // Quiet homecoming: Piggy owns distraction stalls — Carpet + Plinth stay open.
+    if (quietHarbor && id !== "travel" && id !== "memory") return;
     if (id === "arcade") onOpenArcade();
     else if (id === "outfitter") {
       // Discovery only — never a guided Ashore gate.
@@ -1109,10 +1122,16 @@ export function HomeHubView({
       return;
     }
     if (bankOpen) return;
-    // Quiet homecoming: Talk wins. First meet: only when near Piggy (opt-in).
-    if (stripPlaza && onTalkNpc) {
-      onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
-      return;
+    // Quiet homecoming: Carpet/Plinth when near; otherwise Talk wins.
+    if (quietHarbor) {
+      if (nearStore?.id === "travel" || nearStore?.id === "memory") {
+        onHarborHotspot(nearStore.id);
+        return;
+      }
+      if (onTalkNpc) {
+        onTalkNpc(nearNpc?.id ?? HARBOR_KEEPER_MASCOT_ID);
+        return;
+      }
     }
     if (nearStore) {
       onHarborHotspot(nearStore.id);
@@ -1128,7 +1147,7 @@ export function HomeHubView({
     feltShareOpen,
     trailerOpen,
     echoSurpriseOpen,
-    stripPlaza,
+    quietHarbor,
     bankOpen,
     nearStore,
     nearNpc,
@@ -1266,7 +1285,7 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  piggyPresenceBeat={stripPlaza}
+                  piggyPresenceBeat={piggyPresence}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
                 />
@@ -1352,7 +1371,7 @@ export function HomeHubView({
           </div>
         }
         topLeft={
-          hideHudForCinema || hideHudForHarborLoad ? null : stripPlaza ? (
+          hideHudForCinema || hideHudForHarborLoad ? null : quietHarbor ? (
             <div className="cap-play-hud-left">
               <p
                 className="rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white/90"
@@ -1441,12 +1460,12 @@ export function HomeHubView({
         bottom={
           hideHudForCinema || hideHudForHarborLoad ? null : (
           <div className="flex w-full max-w-sm flex-col items-center gap-2 px-2">
-            {firstMeet || stripPlaza ? (
+            {firstMeet || quietHarbor ? (
               <p
                 className="max-w-xs text-center text-sm font-semibold text-white/90 drop-shadow"
                 data-testid="harbor-piggy-presence"
               >
-                {ashorePresenceLine({ firstMeet: firstMeet && !stripPlaza })}
+                {ashorePresenceLine({ firstMeet })}
               </p>
             ) : showTravelChip ? null : (
             <CoinBagBuddyHud

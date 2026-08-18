@@ -5,7 +5,7 @@
 
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { ensureLedger } from "./voyagerLedger";
-import { hasCompletedCoveChange } from "./chapterLoop";
+import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "./chapterLoop";
 import {
   HUB_ISLAND_ID,
   isHubIslandId,
@@ -15,10 +15,13 @@ import { isSideShoreTravelId } from "./spineArchipelago";
 /** Inventory flag granted on Harbor escape — also used for carpet/plaza rewards */
 export const HARBOR_FREEDOM_ITEM = "harbor_freedom_seal";
 
-/** Boss island — locked until Harbor escape + enough mastery clears */
+/** Boss island — locked until Paycheck Change (clearer spine gate) */
 export const BOSS_ISLAND_ID = "credit_kingdom";
 
-/** How many all-correct mastery gates needed to open the boss island */
+/**
+ * Legacy mastery clear count (still tracked on the ledger for Soft Beats / quizzes).
+ * Credit Kingdom unlock no longer waits on this — Paycheck Change opens Spiral.
+ */
 export const BOSS_MASTERY_REQUIRED = 3;
 
 /** Plaza free-roam rooms on Harbor Haven */
@@ -66,6 +69,7 @@ export function hasHarborFreedom(save: IslandSaveV1): boolean {
 
 export function bossUnlockProgress(save: IslandSaveV1): {
   escaped: boolean;
+  paycheckChange: boolean;
   mastery: number;
   needed: number;
   unlocked: boolean;
@@ -73,11 +77,14 @@ export function bossUnlockProgress(save: IslandSaveV1): {
   const ledger = ensureLedger(save.voyagerLedger);
   const mastery = ledger.masteryClears.length;
   const escaped = hasHarborFreedom(save);
+  const paycheckChange = hasCompletedPaycheckChange(save);
   return {
     escaped,
+    paycheckChange,
     mastery,
     needed: BOSS_MASTERY_REQUIRED,
-    unlocked: escaped && mastery >= BOSS_MASTERY_REQUIRED,
+    /** Spine clarity: stamp Paycheck Change → Spiral opens (Freedom Seal stays Pavilion/carpet). */
+    unlocked: paycheckChange,
   };
 }
 
@@ -114,11 +121,9 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
     return "Finish Cove Change — then free-roam shores open";
   }
   if (island.id === BOSS_ISLAND_ID) {
-    const prog = bossUnlockProgress(save);
-    if (!prog.escaped) {
-      return "Earn Freedom Seal — then Spiral can open";
+    if (!bossUnlockProgress(save).paycheckChange) {
+      return "Finish Paycheck Change — then Spiral opens";
     }
-    return `Spiral locked — mastery ${prog.mastery}/${prog.needed}`;
   }
   return "Locked";
 }
