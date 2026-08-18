@@ -148,8 +148,9 @@ Phases:
 | `transfer_scenario_passed` predicate | **Done** |
 | `syncConceptTransferPasses` in `applyConceptSync` | **Done** |
 | `concept_transfer` analytics | **Done** (on phase → INDEPENDENT) |
-| Dedicated transfer UI shells (no guidance) | Follow-up per scenario |
+| Dedicated transfer UI shells (no guidance) | **Spine live:** Paycheck Vee + Credit Rex are unguided analogous Takes (no Cove/umbrella mapping coach) |
 | `session_liquidity` in CONCEPT_REGISTRY | Follow-up (catalog + scenario exist) |
+| Independent Transfer Rate from real landings | **Done** — `stampIndependentTransferWindows` on Paycheck/Credit land; Coin Bag muted during the window |
 
 ---
 

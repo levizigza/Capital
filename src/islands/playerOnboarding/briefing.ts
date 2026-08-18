@@ -10,6 +10,17 @@ function formatConceptLabel(conceptId: string): string {
   return conceptId.replace(/_/g, " ");
 }
 
+function systemLine(
+  id: string,
+  def: NonNullable<ReturnType<typeof getConceptDef>>,
+  phase: string,
+): string {
+  if (phase === "REDUCED_GUIDANCE" || phase === "INDEPENDENT") {
+    return `${formatConceptLabel(id)} — a new situation is open. Harbor will not re-teach the mapping.`;
+  }
+  return `${formatConceptLabel(id)} — ${def.instruction}`;
+}
+
 function recentMajorEvents(save: IslandSaveV1): string[] {
   const lines: string[] = [];
   const home = save.harborHomecoming;
@@ -47,16 +58,17 @@ function newlyIntroducedSystems(save: IslandSaveV1): string[] {
     const firstSeen = seenAt[id] ?? entry.guidedEnteredAt ?? entry.lastTransitionAt;
     const lastActive = save.playerOnboarding?.lastActiveAt;
     if (lastActive && firstSeen && Date.parse(firstSeen) > Date.parse(lastActive)) {
-      out.push(`${formatConceptLabel(id)} — ${def.instruction}`);
+      out.push(systemLine(id, def, phase));
     } else if (!lastActive && phase === "GUIDED") {
-      out.push(`${formatConceptLabel(id)} — ${def.instruction}`);
+      out.push(systemLine(id, def, phase));
     }
   }
   if (out.length === 0) {
     for (const [id, entry] of Object.entries(concepts)) {
       if (entry?.phase === "GUIDED" || entry?.phase === "REDUCED_GUIDANCE") {
         const def = getConceptDef(id);
-        if (def) out.push(`${formatConceptLabel(id)} — ${def.instruction}`);
+        const phase = entry.phase;
+        if (def) out.push(systemLine(id, def, phase));
       }
     }
   }

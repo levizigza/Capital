@@ -175,6 +175,7 @@ import {
 import { resolveCarpetBootGuidedIntro } from "./harborFirstMeet";
 import { normalizeHubGuidedIntro } from "./harborAshore";
 import { applyConceptSync, getConceptPhase, getConceptTransferMetrics } from "./conceptProgression";
+import { stampIndependentTransferWindows } from "./independentTransfer";
 import { CONCEPT_REGISTRY } from "./conceptProgression/registry";
 import {
   applyCoveTakeLedgerFootprint,
@@ -538,7 +539,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
     const prev = saveRef.current;
     if (!prev) return;
     // Progressive disclosure sync — proof predicates only (never time/Next).
-    const next = reconcileFtueQuestProofs(applyConceptSync(updater(prev)));
+    const next = stampIndependentTransferWindows(
+      reconcileFtueQuestProofs(applyConceptSync(updater(prev))),
+    );
     trackConceptTransferEvents(prev, next);
     saveRef.current = next;
     setSave(next);
@@ -546,7 +549,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const replaceSave = useCallback((next: IslandSaveV1) => {
     const prev = saveRef.current;
-    const synced = reconcileFtueQuestProofs(applyConceptSync(next));
+    const synced = stampIndependentTransferWindows(
+      reconcileFtueQuestProofs(applyConceptSync(next)),
+    );
     if (prev) trackConceptTransferEvents(prev, synced);
     saveRef.current = synced;
     setSave(synced);
@@ -1268,6 +1273,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             ? ` ${plaqueShelfLine(lastScar)}.`
             : "";
           const next = lastScar ? nextPaintingAfterScar(lastScar) : "Credit Kingdom";
+          const pp = prev.irreversibleChoices?.paycheck_protect_vs_spend?.choiceId;
+          const clockFelt =
+            pp === "spend"
+              ? "The Clock still names the rain gossip — glitter went first."
+              : pp === "protect"
+                ? "The Clock kept the loft dry when the sky cracked."
+                : "The Clock shelters — Harbor felt the stamp.";
           return {
             ...prev,
             harborHomecoming: {
@@ -1277,7 +1289,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The Clock shelters — wait under the umbrella before glitter.${scarBit} ${next} is newly open on the Carpet.`,
+              message: `Piggy Penny: ${clockFelt}${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });

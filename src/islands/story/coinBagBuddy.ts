@@ -16,6 +16,7 @@ import { questTrack, trackCoachPrefix } from "../questTracks";
 import { hasHarborFreedom } from "../progressGates";
 import { isRoomUnlocked } from "../harborShop";
 import { HUB_ISLAND_ID, isHubIslandId } from "../islandIds";
+import { shouldMutePrincipleReteach } from "../independentTransfer";
 
 export type CoinBagBuddyTip = {
   /** Short line for 3D bubble / HUD */
@@ -327,7 +328,15 @@ export function coinBagIslandTip(
       const rainy = save.questStatus["q_pp_rainy_day"];
       const basics = save.questStatus["q_pp_budget_basics"];
       const anyStarted = Object.values(save.questStatus ?? {}).some((q) => q?.started);
+      const transferOpen = shouldMutePrincipleReteach(save, island.id);
       if (!anyStarted) {
+        if (transferOpen) {
+          return {
+            tip: "Main Street — the fountain cracked",
+            coach: "Walk the plaza. Harbor will keep what you choose here — I won't choose for you.",
+            track: "main",
+          };
+        }
         return {
           tip: "Payroll Tower — climb the chute!",
           coach:
@@ -346,20 +355,22 @@ export function coinBagIslandTip(
         }
         if (!have.includes("talk:npc_vendor_vee") || !have.includes("item:pp_rainy_day_fund")) {
           return {
-            tip: "Vendor Vee — fountain vs glitter",
-            coach: "This is the Take. Umbrella before glitter, or glitter ate the umbrella. Harbor will remember.",
+            tip: "Vendor Vee — stall by the fountain",
+            coach: transferOpen
+              ? "Two prices. Harbor keeps either. Your call."
+              : "Harbor will keep whichever stall price you pick.",
             track: "main",
           };
         }
       }
       if (basics?.started && !basics.completed) {
         return {
-          tip: "Budget Bureau — needs, wants, savings",
-          coach: "Paycheck runs on buckets. Priya's whiteboard is waiting.",
+          tip: "Budget Bureau — payday buckets",
+          coach: "Priya's whiteboard is waiting — stamp when you're ready.",
           track: "main",
         };
       }
-      if (!basics?.started) {
+      if (!basics?.started && !transferOpen) {
         return {
           tip: "Main Street — Payroll Pat has your check",
           coach: "First paycheck energy! Grab it, then we plan — not panic.",

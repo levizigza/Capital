@@ -13,9 +13,16 @@ export function trackConceptLifecycleFtue(before: IslandSaveV1, after: IslandSav
     const id = def.concept_id;
     const was = getConceptPhase(before, id);
     const now = getConceptPhase(after, id);
-    if (was === now) continue;
-
     const base = { concept_id: id, phase: now };
+
+    const wasAttempts = before.conceptProgress?.concepts[id]?.transferAttempts ?? 0;
+    const nowAttempts = after.conceptProgress?.concepts[id]?.transferAttempts ?? 0;
+    if (nowAttempts > wasAttempts) {
+      // Real analogous surface (Paycheck/Credit land), not guided-shell complete.
+      void trackFtue("transfer_started", base);
+    }
+
+    if (was === now) continue;
 
     if (now === "GUIDED" && was !== "GUIDED") {
       void trackFtue("concept_introduced", base);
@@ -23,14 +30,8 @@ export function trackConceptLifecycleFtue(before: IslandSaveV1, after: IslandSav
     if (now === "REDUCED_GUIDANCE" && was === "GUIDED") {
       void trackFtue("concept_practiced", { ...base, guidedSuccess: true });
       void trackFtue("guidance_reduced", base);
-      // Transfer window opens when guided proof clears — player faces the analogous problem alone.
-      void trackFtue("transfer_started", base);
     }
     if (now === "INDEPENDENT" && was !== "INDEPENDENT") {
-      // Same-tick GUIDED→INDEPENDENT still counts as a transfer attempt (no REDUCED dwell).
-      if (was === "GUIDED" || was === "AVAILABLE" || was === "LOCKED") {
-        void trackFtue("transfer_started", base);
-      }
       void trackFtue("transfer_success", base);
       void trackFtue("autonomy_unlocked", { ...base, via: "independent" });
     }

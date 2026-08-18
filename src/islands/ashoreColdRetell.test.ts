@@ -39,7 +39,9 @@ describe("Ashore → Cove cold retell", () => {
   it("wires kid sentences into IslandsApp Cove / Paycheck / Credit homecoming", () => {
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
     expect(app).toContain(coldOrganKidSentence("coin"));
-    expect(app).toContain(coldOrganKidSentence("clock"));
+    // Paycheck homecoming is choice-true — names what Harbor kept, not the exam answer.
+    expect(app).toMatch(/The Clock kept the loft dry when the sky cracked/);
+    expect(app).toMatch(/The Clock still names the rain gossip/);
     expect(app).toContain(coldOrganKidSentence("spiral"));
   });
 });

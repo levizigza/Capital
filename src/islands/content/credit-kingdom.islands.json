@@ -169,13 +169,13 @@
             {
               "id": "r_scan_go",
               "speaker": "Rex the Collector",
-              "text": "Score Scanner opens on the Debt Anvil. Weigh the signals — then talk to me again. The Ordeal choice that stains Harbor waits until after practice.",
+              "text": "Score Scanner opens on the Debt Anvil. Weigh the signals — then talk to me again. The spiral stays quiet until you’ve felt it.",
               "end": true
             },
             {
               "id": "r_fork",
               "speaker": "Rex the Collector",
-              "text": "You felt the signals. Now the Ordeal choice — it stains Harbor. Waited the spiral, or haste fed the spiral?",
+              "text": "You felt the signals. The spiral is quiet until you pick: wait it out, or take the cash now and feed the coil. Harbor keeps either.",
               "choices": [
                 {
                   "id": "r_wait",

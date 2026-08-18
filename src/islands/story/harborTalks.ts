@@ -553,10 +553,10 @@ export function piggyHomecomingGraph(
         : bond;
 
   const nextLine = nextPainting
-    ? `${nextPainting} is newly open on the Carpet Dock — Coin Bag will point the way. Memory keeps your story on the Plinth.`
+    ? `${nextPainting} is newly open on the Carpet Dock. Walk it when you’re curious — Memory keeps your story on the Plinth.`
     : digressionHome
       ? "When you're ready, the Carpet Dock still waits — gossip fades slower than lessons."
-      : "Coin Bag will point the Carpet Dock when a painting waits — Memory keeps your story on the Plinth.";
+      : "The Carpet Dock waits when a painting wakes — Memory keeps your story on the Plinth.";
 
   return {
     id: "dlg_harbor_piggy_penny_homecoming",
@@ -789,7 +789,7 @@ export function piggyMemoryGraph(
           shelf.length > 0
             ? dig
               ? `Still carrying: ${shelf}. No lecture — just the weight. Coin Bag stays; walk when you’re ready.`
-              : `Your shelf: ${shelf}. Coin Bag will point when the next painting waits — or walk the Memory Plinth with me anytime.`
+              : `Your shelf: ${shelf}. A painting may be open on the Carpet — or walk the Memory Plinth with me anytime.`
             : "Coin Bag sticks with you. When a painting calls, we’ll float together.",
         choices: [{ id: "m2_ok", text: "Thanks, Piggy!" }],
         end: true,

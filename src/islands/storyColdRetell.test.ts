@@ -81,7 +81,7 @@ describe("Pillar 12 story cold retell", () => {
     expect(spectacle).toMatch(/coldOrganKidSentence/);
     expect(talks).toMatch(/coldOrganKidSentence/);
     expect(app).toMatch(/The Coin holds — save a little/);
-    expect(app).toMatch(/The Clock shelters — wait under the umbrella/);
+    expect(app).toMatch(/The Clock kept the loft dry|The Clock still names the rain gossip|The Clock shelters — Harbor felt the stamp/);
     expect(app).toMatch(/The Spiral withstands — wait beats haste/);
   });
 });

@@ -24,18 +24,18 @@ Launch Capital
 → normal play
 ```
 
-Mapped onto live Capital (Cove → Paycheck → Credit + Harbor):
+Mapped onto live Capital (Cove → Paycheck → Credit + Harbor) — **player-felt, not docs-only**:
 
 | Beat | Capital |
 |------|---------|
 | Launch → situation | Title → Cast → Ashore prove → Carpet → Harbor meet → Cove shore |
 | Consequential choice | Cove Take (jar vs treat) on real ledger/scar systems |
 | Immediate response + simulated consequence | Take hush → Carpet home → Harbor scar spectacle / Plinth |
-| Causal understanding | Piggy names what Harbor kept |
-| Second analogous problem | Paycheck protect-vs-spend (transfer task) |
-| Independent transfer | Concept phase → INDEPENDENT via transfer predicates |
-| Freedom | Freeplay; map unlocks; optional Soft Beat / ritual as places |
-| New interacting concept | Clock → Spiral (Paycheck → Credit) progressive disclosure |
+| Causal understanding | Piggy names what Harbor kept (their plaque — not a quiz) |
+| Second analogous problem | Paycheck fountain stall — two prices, **no Cove mapping**, **no “this is the Take”** |
+| Independent transfer | Land on Paycheck after Cove Take stamps `transfer_started`; Vee commit → INDEPENDENT. King KPI uses those events. |
+| Freedom | Map unlocks as curiosity (“a painting woke”), not homework. Coin Bag does not point the answer. |
+| New interacting concept | Clock buckets / Credit spiral — new organ, still no “this is like the jar/umbrella” |
 | Curiosity hook | Soft Beat, digressions, day-2 echo — never forced FTUE |
 | Normal play | Scaffolding indistinguishable from Capital verbs |
 

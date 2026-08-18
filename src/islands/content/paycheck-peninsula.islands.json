@@ -119,8 +119,8 @@
           "id": "q_pp_rainy_day",
           "track": "main",
           "title": "Expect the Unexpected",
-          "description": "Coach Carlos sets the challenge. Vendor Vee forces the Take — protect rainy-day or spend it. Harbor will notice.",
-          "hint": "Head to Rainy Day Park after Budget Basics, then face Vee's fork on Main Street.",
+          "description": "Coach Carlos names the rain. Vendor Vee’s stall has two prices. Harbor will notice.",
+          "hint": "Rainy Day Park, then Vee on Main Street — pick a stall price when you’re ready.",
           "objectives": [
             { "type": "talkToNpc", "npcId": "npc_coach_carlos" },
             { "type": "talkToNpc", "npcId": "npc_vendor_vee" },
@@ -252,13 +252,13 @@
             {
               "id": "pri2",
               "speaker": "Planner Priya",
-              "text": "Drag each expense into the right payday bucket. Rent and food are needs. Entertainment is a want. Always stamp something into savings — that's Clock shelter, not Cove's jar Take.",
+              "text": "Drag each expense into the right payday bucket. Rent and food are needs. Entertainment is a want. Stamp something into savings so the loft can stay dry.",
               "end": true
             },
             {
               "id": "pri3",
               "speaker": "Planner Priya",
-              "text": "Needs are must-pays after a stamp — housing, food, transport. Wants are enjoy-but-skippable. Savings is future shelter. Cove taught Coin Hold; here we balance all three so rainy-day loft stays dry.",
+              "text": "Needs are must-pays after a stamp — housing, food, transport. Wants are enjoy-but-skippable. Savings is future shelter. Three buckets, one stamp.",
               "end": true
             }
           ]
@@ -302,7 +302,7 @@
             {
               "id": "vv1",
               "speaker": "Vendor Vee",
-              "text": "The fountain broke — and my stall has a glitter sale TODAY. This is the Take: umbrella before glitter, or glitter ate the umbrella?",
+              "text": "The fountain broke. Shelter kit’s on the left — glitter’s half-off until dusk. Harbor keeps whichever you pick.",
               "choices": [
                 {
                   "id": "vv_protect",

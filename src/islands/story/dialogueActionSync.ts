@@ -96,8 +96,8 @@ export const HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
 export const POST_HOMECOMING_VISUAL_BEATS: GuidedVisualBeats = {
   keeperEmote: "point",
   keeperBubbleWhenNear:
-    "Piggy Penny: Carpet Dock that way — Paycheck is next. Era shores woke up on the outer ring too!",
-  bagTip: "Carpet → Paycheck · side shores open",
+    "Piggy Penny: Carpet Dock that way — a new painting woke. Walk it when you’re curious.",
+  bagTip: "Carpet Dock — a painting woke",
   pulseHotspot: "travel",
 };
 
