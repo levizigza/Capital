@@ -1,8 +1,9 @@
 # Independent Transfer cohort — 2026-08-19 v1
 
+**Facilitator one-pager:** [FACILITATOR_ONE_PAGER.md](./FACILITATOR_ONE_PAGER.md)  
 **Protocol:** [INDEPENDENT_TRANSFER_PLAYTEST.md](../../INDEPENDENT_TRANSFER_PLAYTEST.md)  
 **Observer script:** [COLD_SESSION_OBSERVER_SCRIPT.md](../../../playtest/COLD_SESSION_OBSERVER_SCRIPT.md)  
-**Build under test:** _fill git sha / release tag_  
+**Build under test:** production Pages after merge — confirm SHA in `health.json`  
 **Facilitator:** _name or “anonymous”_  
 **Status:** **PENDING** — do not count seed runs in ITR denominator
 
