@@ -27,6 +27,17 @@ export const SPINE_TRAVEL_IDS = [
 export type SpineTravelId = (typeof SPINE_TRAVEL_IDS)[number];
 
 /**
+ * Inner-ring map placement (clockwise from north).
+ * Cove sits forward-right toward the camera; Paycheck holds the north landmark
+ * with 1960s vector dawn — strip / quest order stays SPINE_TRAVEL_IDS.
+ */
+export const SPINE_MAP_RING_IDS = [
+  PAYCHECK_PENINSULA_ID,
+  COVE_ISLAND_ID,
+  CREDIT_KINGDOM_ID,
+] as const;
+
+/**
  * Discoverable era side shores — Capital-framed chapters with per-shore soundtrack.
  * Outer map ring; soft-locked until first Cove Change.
  */

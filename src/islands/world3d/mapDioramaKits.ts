@@ -15,7 +15,8 @@ export type MapArchStyle =
   | "upload_spires"
   | "orbital_habitats"
   | "scrap_shacks"
-  | "ai_terminals";
+  | "ai_terminals"
+  | "vector_blocks";
 
 export type MapEcologyStyle =
   | "meadow_palms"
@@ -105,7 +106,20 @@ const KITS: Record<GenreWorldId | "harbor", MapDioramaKit> = {
   },
 };
 
+/** Map-only overrides — era silhouette beats genre clone on the spine. */
+const MAP_KIT_OVERRIDES: Record<string, MapDioramaKit> = {
+  paycheck_peninsula: {
+    arch: "vector_blocks",
+    ecology: "ice_nodes",
+    buildingCount: 5,
+    ecologyCount: 4,
+    houseBodies: ["#f8fafc", "#e2e8f0", "#cbd5e1", "#94a3b8"],
+    roofAccentFallback: "#38bdf8",
+  },
+};
+
 export function getMapDioramaKit(islandId: string): MapDioramaKit {
+  if (MAP_KIT_OVERRIDES[islandId]) return MAP_KIT_OVERRIDES[islandId]!;
   if (islandId === "harbor_haven") return KITS.harbor;
   const genre = GENRE_BY_ISLAND[islandId];
   return genre ? KITS[genre] : KITS.harbor;

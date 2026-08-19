@@ -8,7 +8,7 @@ import {
   isHubIslandId,
   LEGACY_HUB_ISLAND_ID,
 } from "./islandIds";
-import { SIDE_SHORE_TRAVEL_IDS, SPINE_TRAVEL_IDS } from "./spineArchipelago";
+import { SIDE_SHORE_TRAVEL_IDS, SPINE_MAP_RING_IDS, SPINE_TRAVEL_IDS } from "./spineArchipelago";
 import {
   PHI_INV,
   SEED_HUB,
@@ -130,8 +130,9 @@ export function buildArchipelagoLayout(islands: IslandDefinition[]): {
   };
 
   const byId = new Map(islands.map((i) => [i.id, i]));
-  const spineOuter = SPINE_TRAVEL_IDS.map((id) => byId.get(id))
-    .filter((i): i is IslandDefinition => Boolean(i) && i.id !== hubIsland.id);
+  const spineOuter = SPINE_MAP_RING_IDS.map((id) => byId.get(id)).filter(
+    (i): i is IslandDefinition => Boolean(i) && i.id !== hubIsland.id,
+  );
 
   const sideKnown = SIDE_SHORE_TRAVEL_IDS.map((id) => byId.get(id)).filter(
     (i): i is IslandDefinition => Boolean(i),

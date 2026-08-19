@@ -181,6 +181,24 @@ function ArchBuilding({
       </group>
     );
   }
+  if (arch === "vector_blocks") {
+    return (
+      <group>
+        <mesh castShadow position={[0, 0.1, 0]}>
+          <boxGeometry args={[0.3, 0.12, 0.24]} />
+          <meshStandardMaterial color={body} roughness={0.45} flatShading wireframe={wire} transparent={locked} opacity={dim} />
+        </mesh>
+        <mesh castShadow position={[0, 0.28, 0]}>
+          <boxGeometry args={[0.2, 0.24, 0.18]} />
+          <meshStandardMaterial color={body} roughness={0.4} flatShading wireframe={wire} transparent={locked} opacity={dim} />
+        </mesh>
+        <mesh castShadow position={[0, 0.46, 0]}>
+          <cylinderGeometry args={[0.12, 0.12, 0.04, 12]} />
+          <meshStandardMaterial color={a} emissive={a} emissiveIntensity={wire ? 0.65 : 0.35} metalness={0.25} transparent={locked} opacity={dim} />
+        </mesh>
+      </group>
+    );
+  }
   return (
     <group>
       <mesh castShadow position={[0, 0.12, 0]}>
@@ -368,6 +386,7 @@ export function DioramaIslandMesh({
     if (kit.arch === "orbital_habitats") return ["#0c4a6e", "#0369a1", "#38bdf8", "#cbd5e1", "#e2e8f0"];
     if (kit.arch === "gene_bulbs") return ["#022c22", "#064e3b", "#14532d", "#166534", "#34d399"];
     if (kit.arch === "solar_domes") return ["#365314", "#4d7c0f", "#65a30d", "#a3e635", "#fef08a"];
+    if (kit.arch === "vector_blocks") return ["#050508", "#0c0c12", "#1c1c22", "#3f3f46", "#94a3b8"];
     return ["#4a3728", "#6b4f2a", "#8b6914", "#c4a574", "#e8d5b5"];
   }, [kit.arch]);
 

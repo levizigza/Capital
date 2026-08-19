@@ -16,7 +16,8 @@ describe("mapDioramaKits", () => {
     expect(getMapDioramaKit("credit_kingdom").arch).toBe("scrap_shacks");
     expect(getMapDioramaKit("business_assets").arch).toBe("orbital_habitats");
     expect(getMapDioramaKit("intangibles").arch).toBe("upload_spires");
-    expect(getMapDioramaKit("paycheck_peninsula").arch).toBe("ai_terminals");
+    expect(getMapDioramaKit("paycheck_peninsula").arch).toBe("vector_blocks");
+    expect(getMapDioramaKit("paycheck_peninsula").ecology).toBe("ice_nodes");
   });
 
   it("does not clone the same kit across primary genre islands", () => {

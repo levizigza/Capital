@@ -3,6 +3,7 @@ import {
   ARCHIPELAGO_MAP_TRAVEL_IDS,
   FORTUNE_ARCHIPELAGO_NAME,
   SIDE_SHORE_TRAVEL_IDS,
+  SPINE_MAP_RING_IDS,
   SPINE_TRAVEL_IDS,
   islandsForArchipelagoMap,
   islandsForSpineTravel,
@@ -38,6 +39,11 @@ describe("spine archipelago freeze", () => {
       "harbor_haven",
       "coincraft_cove",
       "paycheck_peninsula",
+      "credit_kingdom",
+    ]);
+    expect([...SPINE_MAP_RING_IDS]).toEqual([
+      "paycheck_peninsula",
+      "coincraft_cove",
       "credit_kingdom",
     ]);
     const wide = [

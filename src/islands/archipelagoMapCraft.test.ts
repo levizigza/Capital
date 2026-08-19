@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   buildArchipelagoLayout,
+  getArchipelagoNode,
   MAP_SIDE_RX,
   MAP_SPINE_RX,
 } from "./worldMapLayout";
@@ -50,6 +51,23 @@ describe("archipelago map sacred geometry + named islands", () => {
       const sideDist = Math.hypot(side[0].mapX - hub.mapX, side[0].mapY - hub.mapY);
       expect(spineDist).toBeLessThan(sideDist);
     }
+  });
+
+  it("places Coincraft Cove forward-right and Paycheck north on the spine ring", () => {
+    const islands = [
+      stub("harbor_haven", "Harbor Haven"),
+      stub("coincraft_cove", "Coincraft Cove"),
+      stub("paycheck_peninsula", "Paycheck Peninsula"),
+      stub("credit_kingdom", "Credit Kingdom"),
+    ];
+    const layout = buildArchipelagoLayout(islands);
+    const cove = getArchipelagoNode(layout, "coincraft_cove");
+    const paycheck = getArchipelagoNode(layout, "paycheck_peninsula");
+    expect(cove?.ring).toBe("spine");
+    expect(paycheck?.ring).toBe("spine");
+    expect(cove!.mapY).toBeGreaterThan(paycheck!.mapY);
+    expect(cove!.mapX).toBeGreaterThan(layout.hub.mapX);
+    expect(paycheck!.mapY).toBeLessThan(layout.hub.mapY);
   });
 
   it("names every island, keeps Seed guides + Harbor start cue", () => {
