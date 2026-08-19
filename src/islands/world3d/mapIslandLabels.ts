@@ -48,8 +48,9 @@ export function mapLabelOffsetY(node: ArchipelagoNode): number {
   return 0;
 }
 
-/** Html z-index band — spine above side so labels never disappear behind neighbors. */
+/** Html z-index band — hub (Harbor) highest so the start name never vanishes under spine plates. */
 export function mapLabelZIndex(ring: ArchipelagoNode["ring"]): [number, number] {
-  if (ring === "spine" || ring === "hub") return [48, 0];
+  if (ring === "hub") return [72, 0];
+  if (ring === "spine") return [48, 0];
   return [24, 0];
 }

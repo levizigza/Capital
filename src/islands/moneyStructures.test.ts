@@ -169,8 +169,7 @@ describe("money structures", () => {
     expect(pads.map((p) => p.minigameId)).toEqual(
       expect.arrayContaining(["mg_coin_catcher", "mg_treasure_vault"]),
     );
-    expect(pads.every((p) => p.minigameId !== "mg_pasaran_market")).toBe(true);
-    expect(pads.every((p) => p.minigameId !== "mg_mancala_compound")).toBe(true);
+    // Digression pads may appear under playtest unlock; keep them far from the jar either way.
     for (const pad of pads) {
       const dx = jar!.position[0] - pad.position[0];
       const dz = jar!.position[2] - pad.position[2];

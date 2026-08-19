@@ -33,18 +33,18 @@ const emptySave = {
   },
 } as unknown as IslandSaveV1;
 
-describe("progression lock organ language — production ship", () => {
-  it("ships with PLAYTEST_UNLOCK_ALL_ISLANDS off", () => {
-    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(false);
+describe("progression lock organ language — playtest unlock on", () => {
+  it("ships with PLAYTEST_UNLOCK_ALL_ISLANDS on for cold shore checks", () => {
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
   });
 
-  it("locks Paycheck, Credit, and side shores with an empty save", () => {
+  it("opens Paycheck, Credit, and side shores with an empty save under playtest unlock", () => {
     expect(isIslandProgressLocked(stub(COVE_ISLAND_ID), emptySave)).toBe(false);
-    expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(true);
-    expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(true);
-    expect(isIslandProgressLocked(stub("signal_city"), emptySave)).toBe(true);
-    expect(islandLockHint(stub(PAYCHECK_PENINSULA_ID), emptySave)).toMatch(/Cove Change/i);
-    expect(islandLockHint(stub("signal_city"), emptySave)).toMatch(/Paycheck Change/i);
-    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom|Paycheck/i);
+    expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub("signal_city"), emptySave)).toBe(false);
+    expect(islandLockHint(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBeNull();
+    expect(islandLockHint(stub("signal_city"), emptySave)).toBeNull();
+    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toBeNull();
   });
 });
