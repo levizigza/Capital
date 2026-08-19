@@ -26,6 +26,7 @@ import type { ArchetypeId } from '@/data/archetype-questions'
 // nested Suspense retry can never replace Harbor with the purple App LoadingFallback
 // (React hides the committed tree with display:none !important while fallback shows).
 import IslandsApp from '@/islands/IslandsApp'
+import { BillingShell, parseBillingHash } from '@/billing/BillingShell'
 const EnhancedGameHub = React.lazy(() => import('@/components/EnhancedGameHub'))
 const AIChatHelper = React.lazy(() => import('@/components/AIChatHelper'))
 const ArchetypeQuiz = React.lazy(() => import('@/components/ArchetypeQuiz'))
@@ -162,6 +163,15 @@ function resolveStartupMode(): LearningMode {
 }
 
 function App() {
+  const billingRoute =
+    typeof window !== "undefined" ? parseBillingHash(window.location.hash) : null
+  if (billingRoute) {
+    return <BillingShell route={billingRoute} />
+  }
+  return <CapitalApp />
+}
+
+function CapitalApp() {
   // ?fresh query param wipes saved state for a clean demo
   if (typeof window !== 'undefined' && window.location.search.includes('fresh')) {
     localStorage.removeItem('kv_user-profile')

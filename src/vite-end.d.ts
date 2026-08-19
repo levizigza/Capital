@@ -17,6 +17,8 @@ interface ImportMetaEnv {
   readonly VITE_KILL_FAMILY?: string
   readonly VITE_KILL_GALLERY?: string
   readonly VITE_KILL_PARTY?: string
+  /** Public billing API origin only — never put Stripe secrets here. */
+  readonly VITE_BILLING_API_BASE?: string
 }
 
 interface ImportMeta {
