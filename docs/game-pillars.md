@@ -48,6 +48,8 @@ Hub (pick island / profile)
 
 **Session target:** 10–15 min (families), 20–30 min (teens/adults). Return hook: unfinished quest + “what if” replay.
 
+**Business economics (company books, not in-game):** see [BUSINESS_ECONOMICS.md](./BUSINESS_ECONOMICS.md) — formula engine with no fabricated accounting (`src/business/economics/`).
+
 ---
 
 ## Three pillars
