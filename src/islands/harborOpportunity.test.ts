@@ -5,8 +5,11 @@ import {
   dealPassHint,
   moodFromCashflow,
   pickContextualAssetDeal,
+  pickDealPair,
   resolveBoardAssetDeal,
+  resolveBoardDealChoices,
   isPassRationalForDeal,
+  isWaitRationalForDealPair,
 } from "./harborOpportunity";
 
 describe("harborOpportunity — Living Cashflow Commit", () => {
@@ -21,6 +24,34 @@ describe("harborOpportunity — Living Cashflow Commit", () => {
     expect(offer!.purchaseCost).toBeLessThanOrEqual(25);
   });
 
+  it("pickDealPair returns commit A and B with optional wait hint", () => {
+    const ledger = ensureLedger(createDefaultVoyagerLedger());
+    const ctx = buildHarborOpportunityContext(ledger, 12, "storm");
+    const pair = pickDealPair(ctx);
+    expect(pair).not.toBeNull();
+    expect(pair!.commitA.purchaseCost).toBeLessThanOrEqual(pair!.commitB.purchaseCost);
+    expect(pair!.waitHint).toMatch(/buffer|storm|weather|bill/i);
+  });
+
+  it("resolveBoardDealChoices names Living Cashflow Commit with wait option", () => {
+    const ledger = ensureLedger(createDefaultVoyagerLedger());
+    const ctx = buildHarborOpportunityContext(ledger, 35, "fair");
+    const { choices, message } = resolveBoardDealChoices(ctx);
+    expect(message).toMatch(/Living Cashflow Commit|Deal on the table|Renewed deal/);
+    expect(message).toMatch(/wait/i);
+    if (choices && choices.commitA.id !== choices.commitB.id) {
+      expect(message).toMatch(/vs/i);
+    }
+  });
+
+  it("isWaitRationalForDealPair true in storm with low pouch", () => {
+    const ledger = ensureLedger(createDefaultVoyagerLedger());
+    const ctx = buildHarborOpportunityContext(ledger, 12, "storm");
+    const pair = pickDealPair(ctx);
+    expect(pair).not.toBeNull();
+    expect(isWaitRationalForDealPair(ctx, pair!)).toBe(true);
+  });
+
   it("can pick largest deal in boom weather with buffer and streak", () => {
     const ledger = ensureLedger({
       ...createDefaultVoyagerLedger(),
@@ -28,9 +59,9 @@ describe("harborOpportunity — Living Cashflow Commit", () => {
       positivePaydayStreak: 2,
     });
     const ctx = buildHarborOpportunityContext(ledger, 80, "boom");
-    const offer = pickContextualAssetDeal(ctx);
-    expect(offer).not.toBeNull();
-    expect(offer!.purchaseCost).toBeGreaterThanOrEqual(40);
+    const pair = pickDealPair(ctx);
+    expect(pair).not.toBeNull();
+    expect(pair!.commitB.purchaseCost).toBeGreaterThanOrEqual(40);
   });
 
   it("is deterministic for the same ledger + pouch + mood", () => {
@@ -84,9 +115,9 @@ describe("harborOpportunity — Living Cashflow Commit", () => {
       positivePaydayStreak: 2,
     });
     const boomCtx = buildHarborOpportunityContext(boomLedger, 80, "boom");
-    const boomOffer = pickContextualAssetDeal(boomCtx);
-    expect(boomOffer).not.toBeNull();
-    expect(boomOffer!.purchaseCost).toBeGreaterThanOrEqual(40);
-    expect(boomCtx.pouchCoins).toBeGreaterThanOrEqual(boomOffer!.purchaseCost);
+    const boomPair = pickDealPair(boomCtx);
+    expect(boomPair).not.toBeNull();
+    expect(boomPair!.commitB.purchaseCost).toBeGreaterThanOrEqual(40);
+    expect(boomCtx.pouchCoins).toBeGreaterThanOrEqual(boomPair!.commitB.purchaseCost);
   });
 });

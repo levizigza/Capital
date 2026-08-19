@@ -1,6 +1,6 @@
 ﻿# Digital Assets — Story Circle (Digital Atoll)
 
-> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Paycheck Change.
 
 **Island ID:** `digital_assets`  
 **Map name:** Digital Asset Atoll (2000s glossy web)  

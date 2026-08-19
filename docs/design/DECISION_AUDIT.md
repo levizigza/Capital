@@ -290,7 +290,7 @@ Listen / lean · scars `ck_collector_*` · **0 CF.** Side tomfoolery, not Ordeal
 ### D-ERA — Era shore linger/listen vs rush (pattern)
 
 **CONTEXT**  
-Same pattern on Signal, Foundry, Financial Assets, Digital Assets, Business Assets, Intangibles, Future Shores, Real Estate (see content JSON `*_fork` nodes). Soft-locked until Cove Change. Each: `addScar` ±1 stance, **0 CF**, idempotent scars.
+Same pattern on Signal, Foundry, Financial Assets, Digital Assets, Business Assets, Intangibles, Future Shores, Real Estate (see content JSON `*_fork` nodes). Soft-locked until Paycheck Change. Each: `addScar` ±1 stance, **0 CF**, idempotent scars.
 
 **OPTIONS**  
 Linger/listen/peek/watch vs rush (labels vary).

@@ -42,14 +42,14 @@ const ROLE_TIPS: Record<
 > = {
   piggy_penny: {
     tip: {
-      explorer: "Save a little every day — even shiny pennies grow into a jar!",
-      apprentice: "Pay yourself first. A small automatic save beats a big maybe-later.",
-      strategist: "Automate a savings transfer before discretionary Harbor spends.",
+      explorer: "Memory keeps — Harbor names what you chose on the Plinth.",
+      apprentice: "Coin holds · Clock shelters · Spiral withstands — the organs speak if you listen.",
+      strategist: "Harbor remembers your Take. The Plinth is the receipt — not a quiz score.",
     },
     bye: {
-      explorer: "I’m by the fountain if you need me!",
-      apprentice: "Come back anytime — Harbor Keeper desk is open.",
-      strategist: "Ping me when cashflow or freedom seals need a check-in.",
+      explorer: "I’m by the fountain if Harbor needs a keeper!",
+      apprentice: "Come back — Memory keeps your mark.",
+      strategist: "Ping me when a new scar lands on the Plinth.",
     },
   },
   coiny: {
@@ -78,14 +78,14 @@ const ROLE_TIPS: Record<
   },
   budget_bot: {
     tip: {
-      explorer: "Make a simple plan: needs, wants, save. Check!",
-      apprentice: "Budget = plan for coins before they leave. Three jars work.",
-      strategist: "Allocate envelopes before payday hits — then stick the percentages.",
+      explorer: "Clock shelters — needs, wants, and save can share one umbrella.",
+      apprentice: "The Clock organ stamps time before glitter — Harbor hears the rhythm.",
+      strategist: "Paycheck buckets are Clock practice — not a spreadsheet grade.",
     },
     bye: {
-      explorer: "Beep-boop. Plan complete!",
-      apprentice: "Spreadsheet smile.",
-      strategist: "Model updated.",
+      explorer: "Beep-boop. Harbor keeps!",
+      apprentice: "Clock tick — Memory waits.",
+      strategist: "Model the month, not the mood.",
     },
   },
   spendy_sue: {
@@ -126,27 +126,21 @@ const ROLE_TIPS: Record<
   },
   cashwell: {
     tip: {
-      explorer:
-        "I’m Cashwell — money with a mustache. Harbor remembers every choice on that glowing Plinth!",
-      apprentice:
-        "Cashwell Capital, at your service. Growth is style — but Piggy keeps the verbs. Check the Plinth when Harbor feels different.",
-      strategist:
-        "Series lead, not Harbor Keeper. Markets move; Memory Plinth files the receipt. Always up — after you face the Take.",
+      explorer: "Cashwell Capital — tip your hat! Markets move; Piggy keeps Harbor’s verbs.",
+      apprentice: "Series lead on the terrace — style is mine, Take receipts are Piggy’s.",
+      strategist: "Boardroom flash, not Harbor Keeper. Compound patience beats chasing every ticker.",
     },
     bye: {
-      explorer: "Tip the hat — and tip yourself first!",
-      apprentice: "Extra tall. Extra flash. Extra patience with your jar.",
-      strategist: "Time is money. I own the smile — you own the choice.",
+      explorer: "Tip the hat — pay yourself first!",
+      apprentice: "Extra tall. Extra flash. Harbor stays Piggy’s.",
+      strategist: "Time is money. You own the choice.",
     },
   },
   cashmere: {
     tip: {
-      explorer:
-        "Cashmere Couture — capital is my couture. That glowing Plinth? Harbor’s memory, tailored.",
-      apprentice:
-        "Style is strategy. Invest with precision — then let Piggy keep the Harbor verbs. Visit the Plinth when a choice lands.",
-      strategist:
-        "Boardroom royalty, not Harbor Keeper. Fortunes follow taste; Memory Plinth files the receipt after every Take.",
+      explorer: "Cashmere Couture — capital is couture. I tip my hat; Piggy names what Harbor remembers.",
+      apprentice: "Style is strategy — but the Carpet and Plinth belong to Piggy, not the terrace.",
+      strategist: "Boardroom royalty, not Keeper. Taste opens doors; discipline keeps the ledger.",
     },
     bye: {
       explorer: "Inherited. Intelligent. Iconic — go count your coins!",
@@ -156,12 +150,9 @@ const ROLE_TIPS: Record<
   },
   peso_pedro: {
     tip: {
-      explorer:
-        "¡Peso Pedro! Small symbol, massive impact — and that Plinth remembers every fiesta of a choice!",
-      apprentice:
-        "Money moves, wealth grows. I turn opportunities into celebrations — Piggy still keeps Harbor’s verbs. Check the Plinth.",
-      strategist:
-        "Always in circulation, never Harbor Keeper. Calculated charm; Memory Plinth files the peso after every Take.",
+      explorer: "¡Peso Pedro! Small symbol, big circulation — I celebrate; Piggy steers Harbor.",
+      apprentice: "Fiesta energy on the terrace — earn first, then celebrate with Piggy’s map.",
+      strategist: "Charm in motion, not Harbor Keeper. Liquidity before spectacle.",
     },
     bye: {
       explorer: "Fiesta of fortune — go make a smart move!",
@@ -171,12 +162,9 @@ const ROLE_TIPS: Record<
   },
   fortuna_fernanda: {
     tip: {
-      explorer:
-        "Fortuna Fernanda — I arrive like abundance! That glowing Plinth? Harbor’s memory, dressed for the fiesta!",
-      apprentice:
-        "Charm is currency, confidence is capital. Celebrate smart choices — Piggy keeps Harbor’s verbs. Visit the Plinth.",
-      strategist:
-        "Queen of celebration, not Harbor Keeper. Glamour with edge; Memory Plinth files every Take in gold.",
+      explorer: "Fortuna Fernanda — abundance arrives loud! I sparkle; Piggy keeps the Harbor verbs.",
+      apprentice: "Confidence is capital — tip your hat, then follow Piggy to the next painting.",
+      strategist: "Celebration queen, not Keeper. Glamour without a plan is just burn rate.",
     },
     bye: {
       explorer: "Bold. Brilliant. Blessed — go glow!",
@@ -186,12 +174,9 @@ const ROLE_TIPS: Record<
   },
   billionaire_bao: {
     tip: {
-      explorer:
-        "Billionaire Bao. Quiet luxury — that Plinth remembers every careful choice without shouting.",
-      apprentice:
-        "Strategy first: every move intentional. Piggy keeps Harbor’s verbs; I compound the outcome. Visit the Plinth.",
-      strategist:
-        "Legacy wealth, not Harbor Keeper. Connections open doors; Memory Plinth files the receipt after every Take.",
+      explorer: "Billionaire Bao — quiet luxury. I tip my hat; Piggy files the Take.",
+      apprentice: "Intentional moves compound — terrace flash, Harbor discipline.",
+      strategist: "Legacy wealth, not Keeper. Connections open doors; buffers keep them open.",
     },
     bye: {
       explorer: "Respected without noise — go make a lasting move!",
@@ -201,12 +186,9 @@ const ROLE_TIPS: Record<
   },
   jade_fortune: {
     tip: {
-      explorer:
-        "Jade Fortune — I never chase attention. Value follows… and that Plinth keeps every graceful choice.",
-      apprentice:
-        "Heirloom wealth: legacy is language. Piggy keeps Harbor’s verbs; jade instinct guides the Take. Visit the Plinth.",
-      strategist:
-        "Social capital, not Harbor Keeper. Rooms remember her; Memory Plinth files prosperity after every Take.",
+      explorer: "Jade Fortune — grace without chasing lights. Piggy keeps Harbor; I keep poise.",
+      apprentice: "Heirloom patience — tip your hat, then let Piggy point the Carpet.",
+      strategist: "Social capital, not Keeper. Elegance multiplies when cashflow is calm.",
     },
     bye: {
       explorer: "Polished. Poised. Prosperous — go bloom!",
@@ -216,12 +198,9 @@ const ROLE_TIPS: Record<
   },
   sultan_stacks: {
     tip: {
-      explorer:
-        "Sultan Stacks — I enter like a celebration! That Plinth? Harbor’s treasure chest of every Take!",
-      apprentice:
-        "Trade-route wisdom: fortune favors foresight. Piggy keeps Harbor’s verbs; I stack the legacy. Visit the Plinth.",
-      strategist:
-        "Palace presence, not Harbor Keeper. Riches follow strategy; Memory Plinth files the dinar after every Take.",
+      explorer: "Sultan Stacks — big vision, bigger stacks! Terrace royalty; Piggy runs Harbor.",
+      apprentice: "Trade-route foresight — stack slow, sail when Piggy opens the Clock.",
+      strategist: "Palace presence, not Keeper. Strategy stacks; impulse scatters.",
     },
     bye: {
       explorer: "Big treasure. Big vision. Bigger legacy — go stack!",
@@ -231,12 +210,9 @@ const ROLE_TIPS: Record<
   },
   dinar_dahlia: {
     tip: {
-      explorer:
-        "Dinar Dahlia — I arrive like a treasure procession! That glowing Plinth keeps every radiant choice.",
-      apprentice:
-        "Elegance is currency, confidence is crown. Piggy keeps Harbor’s verbs; I turn prosperity into spectacle. Visit the Plinth.",
-      strategist:
-        "Palace presence, not Harbor Keeper. Every room feels richer; Memory Plinth files the dinar after every Take.",
+      explorer: "Dinar Dahlia — radiant entrance! I tip my hat; Piggy remembers the Take.",
+      apprentice: "Elegance is currency — celebrate after Piggy’s spine lesson lands.",
+      strategist: "Regal flair, not Keeper. Prosperity travels with a plan.",
     },
     bye: {
       explorer: "Radiant. Regal. Rewarded — go glow!",
@@ -246,12 +222,9 @@ const ROLE_TIPS: Record<
   },
   mansa_moneybaggs: {
     tip: {
-      explorer:
-        "Mansa Moneybaggs — golden legacy! That Plinth remembers every generous choice across the trade route.",
-      apprentice:
-        "Wealth that protects, prosperity that uplifts. Piggy keeps Harbor’s verbs; I measure legacy in lives changed. Visit the Plinth.",
-      strategist:
-        "Kingdom wealth, not Harbor Keeper. Paths connect kingdoms; Memory Plinth files the gold after every Take.",
+      explorer: "Mansa Moneybaggs — golden legacy on the terrace! Generosity scales when Piggy’s map is clear.",
+      apprentice: "Wealth that uplifts — tip your hat, then walk Piggy’s Harbor route.",
+      strategist: "Kingdom wealth, not Keeper. Legacy is responsibility, not flex alone.",
     },
     bye: {
       explorer: "Giving is royalty — go inspire!",
@@ -261,12 +234,9 @@ const ROLE_TIPS: Record<
   },
   kandake_kash: {
     tip: {
-      explorer:
-        "Kandake Kash — I carry history like a crown! That Plinth keeps every stride of greatness.",
-      apprentice:
-        "Crowned commerce: she leads with value. Piggy keeps Harbor’s verbs; prosperity moves through shared hands. Visit the Plinth.",
-      strategist:
-        "Queen of community, not Harbor Keeper. Riches feel richer when shared; Memory Plinth files the kash after every Take.",
+      explorer: "Kandake Kash — crowned commerce! Community riches when Piggy’s verbs lead.",
+      apprentice: "Shared prosperity — terrace tip, Harbor walk with Piggy.",
+      strategist: "Queen of community, not Keeper. Riches feel richer when the ledger is honest.",
     },
     bye: {
       explorer: "Crowned. Cultured. Collected — go walk wealth!",
@@ -276,12 +246,9 @@ const ROLE_TIPS: Record<
   },
   moneybagg_bro: {
     tip: {
-      explorer:
-        "Moneybagg Bro — swagger always! That Plinth remembers every big play you make on Harbor.",
-      apprentice:
-        "Business moves: strategic mind, real results. Piggy keeps Harbor’s verbs; cash flow works 24/7. Visit the Plinth.",
-      strategist:
-        "Executive style, not Harbor Keeper. Discipline today, freedom tomorrow; Memory Plinth files the bag after every Take.",
+      explorer: "Moneybagg Bro — swagger on the terrace! Hustle loud; Piggy keeps Harbor honest.",
+      apprentice: "Multiple streams need one map — Piggy’s, not mine.",
+      strategist: "Executive style, not Keeper. Discipline today beats flex tomorrow.",
     },
     bye: {
       explorer: "Walk in confidence — leave a legacy!",
@@ -291,12 +258,9 @@ const ROLE_TIPS: Record<
   },
   mula_mami: {
     tip: {
-      explorer:
-        "Mula Mami — boss babe energy! That Plinth keeps every move money follows.",
-      apprentice:
-        "Queen of the bag: stacks in hand, plans in motion. Piggy keeps Harbor’s verbs; I hustle loud and shine louder. Visit the Plinth.",
-      strategist:
-        "Street glamour, not Harbor Keeper. Built for profit, dressed for impact; Memory Plinth files the mula after every Take.",
+      explorer: "Mula Mami — boss energy! I shine on the terrace; Piggy steers the Harbor.",
+      apprentice: "Stacks in hand, plans in motion — follow Piggy before the side dash.",
+      strategist: "Street glamour, not Keeper. Profit with poise, not Plinth lectures.",
     },
     bye: {
       explorer: "Bold. Bossed up. Bankrolled — go shine!",
@@ -378,14 +342,39 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
   };
 }
 
+export type PiggyGuidedOpts = {
+  ashoreTeachComplete?: boolean;
+  coveChangeDone?: boolean;
+  paycheckChangeDone?: boolean;
+};
+
 /** Guided Piggy conversations — Ashore live beats only (legacy ids remap to voyage). */
-export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
+export function piggyGuidedGraph(
+  step: HubGuidedStepId | null | undefined,
+  opts?: PiggyGuidedOpts,
+): DialogueGraph {
   const live: HubGuidedStepId =
     step == null || step === "done"
       ? "done"
       : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
 
   if (live === "meet_guide") {
+    if (opts?.ashoreTeachComplete) {
+      return {
+        id: "dlg_harbor_piggy_penny_guided",
+        startNodeId: "g1",
+        nodes: [
+          {
+            id: "g1",
+            speaker: "Piggy Penny",
+            text: resolveControlPlaceholders(
+              "Ashore proved the organs — this plaza is home. I'm Piggy Penny, Harbor Keeper. Memory keeps. Coin Bag points the Money Carpet to Coincraft Cove when you're ready.",
+            ),
+            choices: [{ id: "go", text: "To the carpet!", end: true }],
+          },
+        ],
+      };
+    }
     return {
       id: "dlg_harbor_piggy_penny_guided",
       startNodeId: "g1",
@@ -421,13 +410,28 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
           id: "g_chart",
           speaker: "Piggy Penny",
           text: "Tap Harbor (you're here) and Coincraft Cove (first painting). Peek at Paycheck, Credit, and the outer ring if you're curious — extra games, not homework.",
-          end: true,
+          choices: [
+            {
+              id: "walk",
+              text: {
+                explorer: "Walk on",
+                apprentice: "Walk on",
+                strategist: "Walk on",
+              },
+            },
+          ],
         },
       ],
     };
   }
 
   if (live === "to_dock") {
+    const afterText = opts?.paycheckChangeDone
+      ? "The outer ring is side quests — extra games after Paycheck Change. Inner ring: Credit when Harbor trusts your transfer."
+      : opts?.coveChangeDone
+        ? "Paycheck Peninsula waits on the inner ring — Clock organ after Harbor felt your Cove mark."
+        : "First: Coincraft Cove only. Paycheck Peninsula and Credit Kingdom wake after you come home changed. Outer-ring side quests open after Paycheck Change — extra games, not homework.";
+
     return {
       id: "dlg_harbor_piggy_penny_guided",
       startNodeId: "g1",
@@ -446,7 +450,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
         {
           id: "g_after",
           speaker: "Piggy Penny",
-          text: "Paycheck Peninsula and Credit Kingdom wait on the inner ring. The outer ring is side quests — extra financial games that wake after you come home changed. They're never required.",
+          text: afterText,
           choices: [{ id: "go", text: "To the carpet!", nextNodeId: "g_go" }],
         },
         {

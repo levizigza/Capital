@@ -161,7 +161,7 @@ Each principle states the law, what it means in Capital, repository evidence whe
 
 **Law:** Progress must unlock new verbs, places, deals, and constraints — not merely bigger numbers on the same action.
 
-**In Capital:** Cove Change → side shores + Paycheck painting. Paycheck Change → Credit unlock (with Freedom). Freedom Seal → Pavilion, carpet tier floor, harder CF chase. `MAIN_COURSE` five steps expand the triangle — not an XP ladder.
+**In Capital:** Cove Change → Paycheck painting · Paycheck Change → side shores. Paycheck Change → Credit unlock (with Freedom). Freedom Seal → Pavilion, carpet tier floor, harder CF chase. `MAIN_COURSE` five steps expand the triangle — not an XP ladder.
 
 **Repository anchors:** `progressGates.ts` · `nextPaintingAfterScar()` · `PLAZA_ROOMS` · `bossUnlockProgress`
 

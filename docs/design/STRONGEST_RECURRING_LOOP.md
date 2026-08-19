@@ -1,6 +1,6 @@
 # Capital — Strongest Recurring Loop (Specification)
 
-**Status:** SPEC FOR APPROVAL — **do not prototype until approved**  
+**Status:** **SHIPPED** on Harbor party board (`harborOpportunity.ts` · `IslandBoardView.tsx`) — Living Cashflow Commit A/B/Wait with `harborWeatherMood(save)`  
 **Inputs:** `MASTER_DESIGN_AUDIT.md` · `CAPITAL_DESIGN_CONSTITUTION.md` · `DECISION_AUDIT.md` · shipped Voyager Ledger + signature cinema  
 **Law:** Do **not** add extrinsic rewards (XP, vanity seals, login streaks, quiz clears) to compensate for an uninteresting decision. Interest must live in the decision’s tradeoffs and the world’s causal reply.
 
@@ -118,7 +118,7 @@ If Wait is never rational, the loop collapses to **OBVIOUS_CHOICE** (today’s A
 | Voyager Ledger HUD | Situation + immediate CF | `VoyagerLedgerHud`, `voyagerLedger.ts` |
 | Weather from CF | Delayed world | `harborWeather.ts` |
 | Freedom streak display | Goal pressure | `HARBOR_ESCAPE_*` |
-| **Opportunity panel** (1 UI) | Information + Decision | New thin UI **or** stripped deal modal — **spec only until approved** |
+| **Opportunity panel** (1 UI) | Information + Decision | **Shipped** — deal modal on Harbor board (`IslandBoardView`) |
 | Pay Day control | Delayed consequence | Ritual Pay Day path (strip rumor/chores) |
 | Piggy or Coin Bag one-liner | Interpretation | `coinBagBuddy` / Piggy line table |
 | Tiny opportunity deck (4–6 cards) | New Situation | Data only; shapes below |
@@ -222,29 +222,24 @@ Back to Living Cashflow Commit (new CF baseline)
 
 ---
 
-## 7. Explicit non-goals (this spec)
+## 7. Shipped implementation (2026-08)
 
-- Rebalancing live `HARBOR_DEALS` numbers on `main` **before approval**  
-- Implementing Opportunity UI  
+- **Board deal spaces:** `resolveBoardDealChoices` → Commit A · Commit B · Wait  
+- **Weather:** `harborWeatherMood(save)` — not CF-only `moodFromCashflow`  
+- **Tests:** `harborOpportunity.test.ts` · dominance / wait-rational probes  
+- **Whole-product guard:** `wholeGameCohesionMachine.test.ts`
+
+---
+
+## 8. Explicit non-goals (post-ship)
+
+- Rebalancing `HARBOR_DEALS` without playtest evidence  
 - Widening the map  
-- Adding extrinsic reward layers  
+- Adding extrinsic reward layers on top of the commit loop  
 
 ---
 
-## 8. Approval ask
-
-Please approve or amend:
-
-1. **Loop name & model** — Living Cashflow Commit as the recurring core  
-2. **Minimal slice scope** — Harbor + ledger + weather + Freedom streak + Opportunity A/B/Wait + Pay Day + Piggy line  
-3. **Interest law** — fix non-dominance before any prototype; no XP/polish crutches  
-4. **Separation** — signature Takes stay chapter climaxes  
-
-**After written approval:** prototype the minimal slice only, instrument cold retell + which option was chosen by situation, and compare against failure criteria above.
-
----
-
-## Appendix — Evidence pointers
+## 9. Appendix — Evidence pointers
 
 - CF engine / Freedom: `src/islands/voyagerLedger.ts`  
 - Weather from CF: `src/islands/harborWeather.ts`  

@@ -13,6 +13,7 @@ import {
   PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import type { MoneyOrganId } from "./moneyOrgans";
+import { organVerbChip } from "./worldMemory";
 import {
   SIDE_SHORE_TRAVEL_IDS,
   SPINE_TRAVEL_IDS,
@@ -596,4 +597,11 @@ export function assertRegistryMuralLaw(pieces = SPINE_CONTENT_REGISTRY): string[
     }
   }
   return errors;
+}
+
+/** Side-shore 3D title subtitle — organ · verb (not genre city copy). */
+export function sideShoreHudLine(islandId: string): string | null {
+  if (!isSideShoreContentIslandId(islandId)) return null;
+  const meta = SIDE_SHORE_CONTENT[islandId as SideShoreTravelId];
+  return `${organVerbChip(meta.organ)} — ${meta.verb} on this shore`;
 }

@@ -176,7 +176,7 @@ Design targets — validate with human cohort; do not ship on tutorial-completio
 | Monthly cushion changed | CF chip / holding line on ledger | “Your net worth went up 10%” |
 | Harbor remembers | Plinth + Piggy line already seen | Achievement badge popup |
 | **New place** | Paycheck painting **visible** on map | Arrow: “Go do the same thing here” |
-| Side shores exist | Map ring tease after Cove Change | Required side quest |
+| Side shores exist | Map ring tease after Paycheck Change | Required side quest |
 
 Coin Bag may say *“Paycheck Peninsula is newly open on the Carpet”* — **never** *“Apply your Cove answer at Vee’s stall.”*
 

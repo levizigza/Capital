@@ -34,6 +34,7 @@ import {
   type FtueStepId,
   ftueStepMeta,
 } from "../ftueTelemetry";
+import { stashAshoreTeachResult } from "../ashoreTeachFlags";
 
 export type TeachStepId = FtueStepId;
 
@@ -91,9 +92,11 @@ export function AshoreComprehensionTutorial({
       if (kind === "complete") {
         tracker.current.completeStep();
         tracker.current.completeSession();
+        stashAshoreTeachResult("complete");
       } else {
         tracker.current.abandon("leave");
         tracker.current.skip("leave");
+        stashAshoreTeachResult("leave");
       }
       onComplete();
     },

@@ -133,7 +133,7 @@ For each item, the seven questions are answered in compressed form: **G**ameplay
 - Coin Bag pointing (normal Capital buddy)  
 - Guide arrows default-on (optional in Settings)  
 - Quiet Carpet-home CTA after Take  
-- Map locks until Cove Change  
+- Side-shore map locks until Paycheck Change  
 
 ---
 

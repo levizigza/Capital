@@ -41,7 +41,7 @@ Keep these **separate in design thinking** even when one beat touches several. D
 | Unlock (shipped) | Tracks touched | New decision enabled? | Verdict |
 |------------------|----------------|----------------------|---------|
 | Ashore Walk/Talk/Board | Capability, Knowledge | Yes — plaza & voyage verbs | **KEEP** |
-| Cove Change complete | Access, Identity, Knowledge | Yes — Paycheck sail; side shores; Ritual magnets | **KEEP** |
+| Cove Change complete | Access, Identity, Knowledge | Yes — Paycheck sail; Ritual magnets (side shores after Paycheck Change) | **KEEP** |
 | Cove jar vs treat | Identity, Resources, World | Yes — live with Holds or Owes; weather/Freedom path | **KEEP** |
 | Soft Beat lookout | Capability, Knowledge | Yes — timed arm on next Take/scar Talk | **KEEP** |
 | Harbor deals Accept/Wait | Resources, Knowledge | Yes — liquidity vs CF | **KEEP** (reshape for non-dominance) |

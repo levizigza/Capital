@@ -12,6 +12,7 @@ import {
 import { HomeHubView } from "./views/HomeHubView";
 import { AshoreComprehensionTutorial } from "./views/AshoreComprehensionTutorial";
 import { HarborWorldBriefing } from "./views/HarborWorldBriefing";
+import { shouldShowHarborWorldBriefing, consumeAshoreTeachResult } from "./ashoreTeachFlags";
 import { TravelMapView } from "./views/TravelMapView";
 import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
@@ -26,7 +27,13 @@ import { getIslandTheme } from "./themes/islandThemes";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
-import { islandHasChapterContent, buildCoveChangeReplayTimeline, buildPaycheckChangeReplayTimeline } from "./chapterLoop";
+import {
+  islandHasChapterContent,
+  buildCoveChangeReplayTimeline,
+  buildPaycheckChangeReplayTimeline,
+  hasCompletedCoveChange,
+  hasCompletedPaycheckChange,
+} from "./chapterLoop";
 import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
@@ -679,8 +686,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         );
         const next = advanceHubGuided(guided, event);
         if (event === "talked_guide" && guided.step === "meet_guide") {
-          setWorldBriefOpen(true);
-          void analytics.track("tutorial_step", { step: "harbor_world_briefing" });
+          if (shouldShowHarborWorldBriefing(prev.ashoreTeachDone)) {
+            setWorldBriefOpen(true);
+            void analytics.track("tutorial_step", { step: "harbor_world_briefing" });
+          } else {
+            void analytics.track("tutorial_step", { step: "harbor_world_briefing_skipped_ashore" });
+          }
         }
         if (
           event === "opened_map" &&
@@ -805,9 +816,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       // tutorial (or leftover quiet homecoming) over the opening carpet ceremony —
       // that steals first-meet and strands players with no coach.
       const { hubGuidedIntro, clearQuietPending } = resolveCarpetBootGuidedIntro(prev);
+      const ashoreFromBoot = consumeAshoreTeachResult();
       let next: IslandSaveV1 = {
         ...prev,
         onboardingComplete: true,
+        ...(ashoreFromBoot ? { ashoreTeachDone: ashoreFromBoot } : {}),
         character: prev.character ?? { ...BASE_VOYAGER, name: userProfile.name || "Voyager" },
         currentIslandId: HUB_ISLAND_ID,
         currentAreaId: defaultArea ?? prev.currentAreaId,
@@ -1683,7 +1696,11 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         save?.hubGuidedIntro && !isHubGuidedComplete(save.hubGuidedIntro)
           ? getHubGuidedStep(save.hubGuidedIntro)?.id
           : "done";
-      return piggyGuidedGraph(guided);
+      return piggyGuidedGraph(guided, {
+        ashoreTeachComplete: save?.ashoreTeachDone === "complete",
+        coveChangeDone: save ? hasCompletedCoveChange(save) : false,
+        paycheckChangeDone: save ? hasCompletedPaycheckChange(save) : false,
+      });
     }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);
     if (fromHarbor) return fromHarbor;
@@ -2611,6 +2628,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             onMarkScarSpectacle={(scarCount) => {
               updateSave((prev) => ({
                 ...prev,
+                pendingScarSessionEcho: true,
                 scarSpectacle: {
                   shownForCount: Math.max(prev.scarSpectacle?.shownForCount ?? 0, scarCount),
                   lastShownAt: new Date().toISOString(),

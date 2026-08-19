@@ -10,6 +10,7 @@ import {
   syncHarborRitual,
   weeklyShareText,
 } from "./harborRitual";
+import { addHarborScar } from "./worldMemory";
 import type { IslandSaveV1 } from "./types";
 
 function baseSave(): IslandSaveV1 {
@@ -133,5 +134,22 @@ describe("harborRitual", () => {
     const rumor = pickDailyRumor(save, dayKey);
     expect(rumor.id).toBe("scar_echo_pp_tip_plan");
     expect(rumor.text).toMatch(/whispers|echo/i);
+  });
+
+  it("fires scar_echo on same calendar day when pendingScarSessionEcho is set", () => {
+    const dayKey = "2026-08-19";
+    let save = baseSave();
+    save = addHarborScar(save, {
+      id: "cove_jar",
+      islandId: "coincraft_cove",
+      choiceId: "save",
+      label: "Jar before treat",
+      kind: "plaque",
+      createdAt: `${dayKey}T14:00:00.000Z`,
+    });
+    save = { ...save, pendingScarSessionEcho: true };
+    const rumor = pickDailyRumor(save, dayKey);
+    expect(rumor.id).toMatch(/^scar_echo_/);
+    expect(rumor.text).toMatch(/Coin|jar|treat/i);
   });
 });

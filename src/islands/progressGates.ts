@@ -9,6 +9,7 @@ import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "./chapterLoo
 import {
   HUB_ISLAND_ID,
   isHubIslandId,
+  PAYCHECK_PENINSULA_ID,
 } from "./islandIds";
 import { isSideShoreTravelId } from "./spineArchipelago";
 
@@ -106,9 +107,13 @@ export function isIslandProgressLocked(island: IslandDefinition, save: IslandSav
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;
 
-  // Cove + Paycheck stay open on the signature strip after Harbor.
-  // Era side shores still open after first Cove Change so first-run stays on the spine.
-  if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
+  // Paycheck opens after Cove Change — transfer test assumes Coin Hold first.
+  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
+    return true;
+  }
+
+  // Era side shores after Paycheck Change — do not compete with Clock transfer.
+  if (isSideShoreTravelId(island.id) && !hasCompletedPaycheckChange(save)) {
     return true;
   }
 
@@ -125,13 +130,16 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
   if ((island.requiredItems || []).some((id) => !save.inventory.includes(id))) {
     return "Need a key item";
   }
-  if (isSideShoreTravelId(island.id) && !hasCompletedCoveChange(save)) {
-    return "Finish Cove Change — then free-roam shores open";
+  if (island.id === PAYCHECK_PENINSULA_ID && !hasCompletedCoveChange(save)) {
+    return "Finish Cove Change — then Clock opens on Paycheck";
+  }
+  if (isSideShoreTravelId(island.id) && !hasCompletedPaycheckChange(save)) {
+    return "Finish Paycheck Change — then outer-ring shores open";
   }
   if (island.id === BOSS_ISLAND_ID) {
     const prog = bossUnlockProgress(save);
     if (!prog.escaped) {
-      return "Earn Freedom Seal — then Spiral can open";
+      return "Clock Pay Days can earn Freedom — then Spiral can open";
     }
     if (!prog.transferProof) {
       return "Finish Paycheck Change — then Spiral opens";
@@ -153,7 +161,8 @@ export function withHarborFreedomRewards(save: IslandSaveV1): IslandSaveV1 {
       pending: true,
       chapterIslandId: HUB_ISLAND_ID,
       questId: "harbor_freedom",
-      message: "Freedom seal earned — visit the Freedom Pavilion!",
+      message:
+        "Clock Pay Days earned Freedom — the Pavilion opens. Credit Kingdom still waits on Spiral.",
     },
   };
 }

@@ -48,7 +48,7 @@ SIDE SHORE restore is **live on the outer ring** and **not scored** in the 100% 
 
 `signal_city` · `venture_foundry` · `financial_assets` · `digital_assets` · `business_assets` · `intangibles` · `future_shores` · `real_estate`  
 
-Docs carry **SIDE SHORE** banners. Soft-locked until Cove Change. Soundtrack cues already in `soundtrackCatalog.ts`.
+Docs carry **SIDE SHORE** banners. Soft-locked until Paycheck Change. Soundtrack cues already in `soundtrackCatalog.ts`.
 
 ---
 

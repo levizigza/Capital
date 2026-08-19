@@ -2,7 +2,7 @@
  * Living Cashflow Commit — contextual Harbor deal selection.
  * Design: docs/design/STRONGEST_RECURRING_LOOP.md · docs/design/CAUSAL_STORY_ARCHITECTURE.md
  *
- * Law: Wait (Pass) must sometimes be rational — not Accept ≫ Pass every lap.
+ * Law: Wait must sometimes be rational — two commits + wait, not Accept ≫ Pass.
  */
 
 import type { HarborWeatherMood } from "./harborWeather";
@@ -21,6 +21,13 @@ export type HarborOpportunityContext = {
   pouchCoins: number;
 };
 
+export type BoardDealChoices = {
+  commitA: DealOffer;
+  commitB: DealOffer;
+  waitHint: string | null;
+};
+
+/** @deprecated Prefer harborWeatherMood(save) — CF bands only, ignores haste scars. */
 export function moodFromCashflow(cf: number): HarborWeatherMood {
   if (cf >= 40) return "boom";
   if (cf >= 15) return "fair";
@@ -42,10 +49,9 @@ export function buildHarborOpportunityContext(
 }
 
 /**
- * Pick an asset deal where the rational choice shifts with liquidity + weather.
- * Deterministic — same ledger + pouch → same offer (replay-safe for QA).
+ * Pick smallest vs largest (or mid) asset deals — deterministic for QA.
  */
-export function pickContextualAssetDeal(ctx: HarborOpportunityContext): DealOffer | null {
+export function pickDealPair(ctx: HarborOpportunityContext): BoardDealChoices | null {
   const owned = ctx.ledger.holdings.map((h) => h.id);
   const pool = HARBOR_DEALS.filter((d) => d.kind === "asset" && !owned.includes(d.id));
   if (pool.length === 0) return null;
@@ -53,29 +59,66 @@ export function pickContextualAssetDeal(ctx: HarborOpportunityContext): DealOffe
   const ranked = [...pool].sort(
     (a, b) => dealPurchaseCost(a) - dealPurchaseCost(b) || a.monthlyAmount - b.monthlyAmount,
   );
-  const smallest = ranked[0]!;
-  const largest = ranked[ranked.length - 1]!;
+  const small = ranked[0]!;
+  let large = ranked[ranked.length - 1]!;
   const cf = netCashflow(ctx.ledger);
-
-  let pick = smallest;
-  const largestCost = dealPurchaseCost(largest);
 
   if (
     (ctx.mood === "boom" || ctx.mood === "fair") &&
-    ctx.pouchCoins >= largestCost &&
+    ctx.pouchCoins >= dealPurchaseCost(large) &&
     cf >= 18 &&
     ctx.ledger.positivePaydayStreak >= 1
   ) {
-    pick = largest;
-  } else if (ctx.mood === "storm" || ctx.pouchCoins < dealPurchaseCost(smallest) + 8) {
-    pick = smallest;
-  } else if (ranked.length >= 2) {
-    pick = ranked[1] ?? smallest;
+    // boom path keeps largest as commit B
+  } else if (ranked.length >= 2 && ctx.mood !== "storm") {
+    large = ranked[1] ?? large;
+  } else {
+    large = small;
   }
 
+  const commitA: DealOffer = { ...small, purchaseCost: dealPurchaseCost(small) };
+  const commitB: DealOffer = { ...large, purchaseCost: dealPurchaseCost(large) };
+
+  const waitHint =
+    dealPassHint(ctx, commitB) ??
+    dealPassHint(ctx, commitA) ??
+    (ctx.mood === "storm" ? "Wait keeps your buffer in the storm." : null);
+
+  return { commitA, commitB, waitHint };
+}
+
+export function pickContextualAssetDeal(ctx: HarborOpportunityContext): DealOffer | null {
+  return pickDealPair(ctx)?.commitA ?? null;
+}
+
+export function resolveBoardDealChoices(ctx: HarborOpportunityContext): {
+  choices: BoardDealChoices | null;
+  message: string;
+} {
+  const pair = pickDealPair(ctx);
+  if (pair) {
+    const same = pair.commitA.id === pair.commitB.id;
+    const waitLine = pair.waitHint ? ` ${pair.waitHint}` : "";
+    if (same) {
+      const o = pair.commitA;
+      return {
+        choices: pair,
+        message: `Living Cashflow Commit: ${o.icon} ${o.name} — ${o.purchaseCost} coins for +$${o.monthlyAmount}/mo. Or wait.${waitLine}`,
+      };
+    }
+    return {
+      choices: pair,
+      message:
+        `Living Cashflow Commit: ${pair.commitA.icon} ${pair.commitA.name} (+$${pair.commitA.monthlyAmount}/mo, ${pair.commitA.purchaseCost} coins) ` +
+        `vs ${pair.commitB.icon} ${pair.commitB.name} (+$${pair.commitB.monthlyAmount}/mo, ${pair.commitB.purchaseCost} coins). Or wait.${waitLine}`,
+    };
+  }
+  const fallback = resolveBoardAssetDeal(ctx);
   return {
-    ...pick,
-    purchaseCost: dealPurchaseCost(pick),
+    choices: fallback.offer
+      ? { commitA: fallback.offer, commitB: fallback.offer, waitHint: dealPassHint(ctx, fallback.offer) }
+      : null,
+    message: fallback.message,
   };
 }
 
@@ -102,10 +145,10 @@ export function resolveBoardAssetDeal(
 /** One-line literacy for Pass / Wait on the deal panel. */
 export function dealPassHint(ctx: HarborOpportunityContext, offer: DealOffer): string | null {
   if (ctx.pouchCoins < offer.purchaseCost) {
-    return "Pass keeps your buffer — earn first.";
+    return "Wait keeps your buffer — earn first.";
   }
   if (ctx.mood === "storm" || ctx.mood === "tight") {
-    return "Pass is often smart in tight weather.";
+    return "Wait is often smart in tight weather.";
   }
   if (offer.purchaseCost >= 40 && ctx.pouchCoins < offer.purchaseCost + 15) {
     return "Wait keeps coins for the next bill.";
@@ -113,10 +156,18 @@ export function dealPassHint(ctx: HarborOpportunityContext, offer: DealOffer): s
   return null;
 }
 
-/** QA / dominance probe — Pass must be rational under storm + low pouch. */
+/** QA / dominance probe — Wait must be rational under storm + low pouch. */
 export function isPassRationalForDeal(
   ctx: HarborOpportunityContext,
   offer: DealOffer,
 ): boolean {
   return dealPassHint(ctx, offer) !== null;
+}
+
+/** Wait is rational when either commit strains the pouch or weather is tight. */
+export function isWaitRationalForDealPair(ctx: HarborOpportunityContext, pair: BoardDealChoices): boolean {
+  if (pair.waitHint) return true;
+  return (
+    isPassRationalForDeal(ctx, pair.commitA) || isPassRationalForDeal(ctx, pair.commitB)
+  );
 }

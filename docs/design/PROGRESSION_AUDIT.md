@@ -82,7 +82,7 @@ Ordered beats from `mainCourse.ts`. Each row answers the unlock test.
 
 **FACT:** `BOSS_MASTERY_REQUIRED = 0` — quiz count no longer gates Credit (`progressGates.ts`).
 
-**INFERENCE:** Side shores opening after Cove Change is the correct “breadth earned by depth” expression of iconic freeze.
+**INFERENCE:** Side shores opening after Paycheck Change is the correct “breadth earned by depth” expression of iconic freeze.
 
 ---
 
@@ -324,7 +324,7 @@ These exist in repo but **do not** drive `IslandsApp` save progression:
 | ID | Reward | Category | New decision? | Flags | Disposition |
 |----|--------|----------|---------------|-------|-------------|
 | P-01 | Hub guided complete | ACCESS, SKILL | Yes — voyage | — | KEEP |
-| P-02 | Cove Change | ACCESS, IDENTITY, KNOWLEDGE | Yes — Paycheck + shores | — | KEEP |
+| P-02 | Cove Change | ACCESS, IDENTITY, KNOWLEDGE | Yes — Paycheck sail (side shores after Paycheck Change) | — | KEEP |
 | P-03 | Paycheck Change | ACCESS, IDENTITY, FINANCIAL | Yes — Credit half + transfer | — | KEEP |
 | P-04 | Freedom Seal | ACCESS, IDENTITY, FINANCIAL | Yes — Pavilion + Credit | — | KEEP |
 | P-05 | Credit Ordeal clear | ACCESS, IDENTITY | Yes — end spine Ordeal | — | KEEP |
@@ -396,7 +396,7 @@ These exist in repo but **do not** drive `IslandsApp` save progression:
 
 ### FACTS FOUND IN REPOSITORY
 
-- Spine gates: Cove/Paycheck open; side shores after Cove Change; Credit after Freedom + Paycheck Change (`progressGates.ts`).
+- Spine gates: Cove/Paycheck open; side shores after Paycheck Change; Credit after Freedom + Paycheck Change (`progressGates.ts`).
 - Freedom = CF ≥ $30/mo for 3 consecutive tracked Pay Days (`voyagerLedger.ts`).
 - Mastery quizzes optional; `BOSS_MASTERY_REQUIRED = 0`.
 - Minigame rewards grant coins only; XP and Board Stars retired (`partyBoard.ts`, `IslandsApp.tsx`).

@@ -13,6 +13,7 @@ import { GlobalMusicMuteButton } from '@/islands/views/GlobalMusicMuteButton'
 import type { CapitalCharacter } from '@/islands/character'
 import { BASE_VOYAGER } from '@/islands/character'
 import { peekIslandSaveSync } from '@/islands/save'
+import { stashAshoreTeachResult } from '@/islands/ashoreTeachFlags'
 
 // Use the new 3D mode selection
 import ThreeJSModeSelection from '@/components/ThreeJSModeSelection'
@@ -483,6 +484,9 @@ function App() {
               setBootCharacter(character)
               const skipTeach = Boolean(opts?.experiencedPlayer)
               setBootExperiencedPlayer(skipTeach)
+              if (skipTeach) {
+                stashAshoreTeachResult("leave")
+              }
               if (character.name) {
                 setUserProfile((prev) => (prev ? { ...prev, name: character.name } : prev))
               }

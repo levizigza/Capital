@@ -285,6 +285,10 @@ export type IslandSaveV1 = {
   character?: import("./character").CapitalCharacter;
   /** Whether the first-run world onboarding has been completed */
   onboardingComplete?: boolean;
+  /** Ashore FTUE-7 outcome — skips Harbor chart when complete */
+  ashoreTeachDone?: "complete" | "skipped";
+  /** Same-day scar: next Harbor session should run day-2 echo cinema */
+  pendingScarSessionEcho?: boolean;
   /** Voyager Ledger — Cashflow-style income/expenses/holdings */
   voyagerLedger?: import("./voyagerLedger").VoyagerLedger;
   /** Harbor Haven purchases — carpet polish, plaza passes, owned pets */

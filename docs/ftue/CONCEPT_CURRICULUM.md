@@ -476,7 +476,7 @@ Present on **era side shores** / some mastery lines after Cove Change free roam.
 | Asset / Liability deal cards | Felt `cashflow` | Harbor deals can appear before interpretation settles | Ledger as shop menu |
 | Freedom Seal chase chrome | Stable `cashflow` literacy | Early Bag / pavilion hints | Goal without equation |
 | APR / utilization events | Felt `interest_compounds` | If Inbox opened as grind before Soft Beat/Cleo | Jargon pile |
-| Diversification era shores | `cashflow` + shelter Take | Available after Cove Change unlock | OK if optional; bad if tipped as “next main” |
+| Diversification era shores | `cashflow` + shelter Take | Available after Paycheck Change unlock | OK if optional; bad if tipped as “next main” |
 | Soft Beat before first Take | `irreversible_take` | Optional Jar climb on Cove | Toy without footprint thesis |
 
 ---

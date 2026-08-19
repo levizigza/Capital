@@ -116,6 +116,18 @@ export function pickDailyRumor(save: IslandSaveV1, dayKey: string): { id: string
   if (plaques.length > 0) {
     const p = plaques[plaques.length - 1]!;
     const scarDay = (p.createdAt || "").slice(0, 10);
+    // Session echo: same calendar day but a new Harbor visit after Take.
+    if (
+      save.pendingScarSessionEcho &&
+      scarDay &&
+      scarDay <= dayKey &&
+      !save.harborRitual?.today?.echoSurpriseSeen
+    ) {
+      return {
+        id: `scar_echo_${p.id}`,
+        text: scarRumorLine(p, "later"),
+      };
+    }
     // Day 2+: Harbor still names the plaque — world proved it remembers
     if (scarDay && scarDay < dayKey) {
       return {
@@ -251,6 +263,7 @@ export function markEchoSurpriseSeen(save: IslandSaveV1): IslandSaveV1 {
   if (!save.harborRitual) return save;
   return {
     ...save,
+    pendingScarSessionEcho: false,
     harborRitual: {
       ...save.harborRitual,
       today: { ...save.harborRitual.today, echoSurpriseSeen: true },

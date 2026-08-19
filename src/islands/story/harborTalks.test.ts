@@ -90,7 +90,7 @@ describe("harborTalks", () => {
     const vault = resolveProfileText(harborTipPreview("vault_vince"), "apprentice");
     expect(piggy).not.toEqual(spendy);
     expect(spendy).not.toEqual(vault);
-    expect(piggy.toLowerCase()).toMatch(/save|pay yourself/);
+    expect(piggy.toLowerCase()).toMatch(/coin holds|memory keeps|organ/);
     expect(spendy.toLowerCase()).toMatch(/impulse|wait|24/);
   });
 

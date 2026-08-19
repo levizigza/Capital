@@ -38,11 +38,13 @@ describe("progression lock organ language — production ship", () => {
     expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(false);
   });
 
-  it("locks Credit and side shores with an empty save", () => {
+  it("locks Paycheck, Credit, and side shores with an empty save", () => {
     expect(isIslandProgressLocked(stub(COVE_ISLAND_ID), emptySave)).toBe(false);
-    expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(true);
     expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(true);
     expect(isIslandProgressLocked(stub("signal_city"), emptySave)).toBe(true);
-    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom Seal/i);
+    expect(islandLockHint(stub(PAYCHECK_PENINSULA_ID), emptySave)).toMatch(/Cove Change/i);
+    expect(islandLockHint(stub("signal_city"), emptySave)).toMatch(/Paycheck Change/i);
+    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom|Paycheck/i);
   });
 });

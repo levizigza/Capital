@@ -10,7 +10,7 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 1 | Living fantasy | Astro / GotS | Player feels *inside living money* — Voyager among organs, not a spreadsheet app | **Pass** |
 | 2 | Emotional main story | TLOU2 / GotS | Cove→Paycheck→Credit + Harbor memory cold-retold with feeling | **Pass** — weighted retell · Soft Beat · day-2 · Piggy homecoming |
 | 3 | Signature loop juice | Portal checklist | Take → hush → carpet → spectacle → Plinth → share → Piggy without soft-lock | **Pass** — juice + e2e |
-| 4 | Free roam | BotW | After Cove Change, stray to side shores / structures / digressions | **Pass** — outer ring + travel whisper names spine + stray |
+| 4 | Free roam | BotW | After Paycheck Change, stray to side shores / structures / digressions | **Pass** — outer ring + travel whisper names spine + stray |
 | 5 | Side quests with stakes | D&D × GTA4 | Digressions with NPCs, choices, Harbor Memory consequences | **Pass** — spine forks + era patience/haste forks (dual gossip scars) |
 | 6 | Alive NPCs | GTA4 streets | Talkable locals with scar memory + plaza motion | **Pass** — rotating gossip · ambientNear · denser roam |
 | 7 | Every island playable | Playability | Enter, walk, talk, leave; no endless loading | **Pass** |
@@ -33,4 +33,4 @@ Patterns distilled from: **The Last of Us Part II** (story weight) · **Ghost of
 | 2026-08-17 pass E | Myth fallback always playable · era digressions = patience/haste forks | Share juice + dual gossip scars; still **Hold** ship until cold human “again” |
 | 2026-08-17 pass F | Credit Collector listen/lean fork · travel whisper poetry | Collector dual scars; BotW stray copy; e2e failsafe+signature green |
 | 2026-08-17 pass G | Day-2 organ-true headlines · cold triangle + spine retell scripts green | Machine cold pass; still **Hold** ship until a human says “again” |
-| **Ship iconic?** | **Hold** — machine contracts Pass×12 + cold scripts; one cold human triangle still required before declaring to the player |
+| **Ship iconic?** | **Machine Pass×12** + whole-product cohesion guards + cold scripts; **Hold** ship until a human says “again” |

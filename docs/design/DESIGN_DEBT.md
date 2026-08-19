@@ -58,9 +58,9 @@ This register tracks **design debt** — gaps between intended player experience
 | **Severity** | 🔴 P0 |
 | **Type** | Surface debt |
 | **Classification** | IMPROVE |
-| **FACTS** | `isIslandProgressLocked()` unlocks side shores after Cove Change. `TravelMapView` shows spine strip when `PLAYTEST_UNLOCK_ALL_ISLANDS = false`; full archipelago when true. Lock hint: *"Finish Cove Change — then free-roam shores open"*. |
+| **FACTS** | `isIslandProgressLocked()` unlocks side shores after Paycheck Change. `TravelMapView` shows spine strip when `PLAYTEST_UNLOCK_ALL_ISLANDS = false`; full archipelago when true. Lock hint: *"Finish Paycheck Change — then outer-ring shores open"*. |
 | **INFERENCE** | Players may not discover outer ring without map UX pass; code gate ≠ felt unlock. |
-| **RECOMMENDATION** | Cold playtest: after Cove Change, can player find one side shore without Coin Bag spoiling? |
+| **RECOMMENDATION** | Cold playtest: after Paycheck Change, can player find one side shore without Coin Bag spoiling? |
 
 ---
 
@@ -177,7 +177,7 @@ This register tracks **design debt** — gaps between intended player experience
 | **Severity** | 🟠 P1 |
 | **Type** | Surface debt |
 | **Classification** | IMPROVE |
-| **FACTS** | `islandContentDepth.test.ts` enforces ≥8 minigames, ≥3 quests per non-hub island. Side shores unlocked after Cove Change. |
+| **FACTS** | `islandContentDepth.test.ts` enforces ≥8 minigames, ≥3 quests per non-hub island. Side shores unlocked after Paycheck Change. |
 | **INFERENCE** | Machine depth ≠ iconic feel; side shores may read as content packs vs organ-true districts. |
 | **RECOMMENDATION** | Per-shore cold retell + one signature side scar pair playtest per `digressionShelf.ts` slots. |
 

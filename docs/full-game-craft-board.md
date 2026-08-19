@@ -17,6 +17,27 @@
 
 ---
 
+## Whole-product machine cohesion — **100%** (2026-08-19)
+
+| | |
+|--|--:|
+| **Machine contracts** | **100%** — `wholeGameCohesionMachine.test.ts` + passes 1–2 on PR #171 |
+| **Human ITR / “again”** | **Pending** — not machine-scorable |
+
+### Guarded (machine)
+- Paycheck Change gates outer ring (code + docs + travel whisper)
+- Living Cashflow Commit A/B/Wait on Harbor board
+- One front door: Ashore complete skips duplicate chart briefing
+- Signal City: no credit-score classroom before Credit Kingdom
+- Side-shore 3D organ HUD; series leads tip-hat only
+- Mastery quizzes optional digression copy only
+- `npm run test:iconic` (278 unit) + `npm run test:iconic:e2e`
+
+### Still human-only
+- Cold kid says “again” on device (criteria row 12 hold until cohort)
+
+---
+
 ## Latest — Pass R (2026-08-17) · **100%**
 
 | | |
