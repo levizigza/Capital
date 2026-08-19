@@ -6,6 +6,8 @@ import {
   getArchipelagoNode,
   MAP_SIDE_RX,
   MAP_SPINE_RX,
+  MAP_SPINE_SIDE_MIN_ANGLE,
+  separateSideFromSpine,
 } from "./worldMapLayout";
 import { ARCHIPELAGO_MAP_SPACING } from "./world3d/ArchipelagoMap3D";
 import { PHI, SEED_SIDE_R, SEED_SPINE_R } from "./sacredGeometry";
@@ -51,6 +53,27 @@ describe("archipelago map sacred geometry + named islands", () => {
       const sideDist = Math.hypot(side[0].mapX - hub.mapX, side[0].mapY - hub.mapY);
       expect(spineDist).toBeLessThan(sideDist);
     }
+  });
+
+  it("separates side shores from spine bearings on the map", () => {
+    const islands = [
+      stub("harbor_haven", "Harbor Haven"),
+      stub("coincraft_cove", "Coincraft Cove"),
+      stub("paycheck_peninsula", "Paycheck Peninsula"),
+      stub("credit_kingdom", "Credit Kingdom"),
+      stub("intangibles", "Intangible Isle"),
+      stub("financial_assets", "Budget Kart Coast"),
+    ];
+    const { outer } = buildArchipelagoLayout(islands);
+    const spine = outer.filter((n) => n.ring === "spine");
+    const side = outer.filter((n) => n.ring === "side");
+    for (const s of side) {
+      for (const p of spine) {
+        const diff = Math.abs(((s.angle - p.angle + Math.PI) % (Math.PI * 2)) - Math.PI);
+        expect(diff).toBeGreaterThanOrEqual(MAP_SPINE_SIDE_MIN_ANGLE - 0.01);
+      }
+    }
+    expect(separateSideFromSpine(spine, side).length).toBe(side.length);
   });
 
   it("places Coincraft Cove forward-right and Paycheck north on the spine ring", () => {

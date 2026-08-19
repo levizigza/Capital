@@ -125,4 +125,42 @@ test.describe("Islands smoke", () => {
       .poll(async () => page.evaluate(() => window.__QA__?.getView()), { timeout: 30_000 })
       .toBe("explore");
   });
+
+  test("travel map names Paycheck Peninsula and docks playable shore", async ({ page }) => {
+    await page.goto("/?mode=islands&skipIntro=1");
+    await waitForQaReady(page);
+    await page.evaluate(async () => {
+      await window.__QA__!.seedSignatureLoop("day2_echo");
+    });
+    const hearThem = page.getByRole("button", { name: /I hear them/i });
+    if (await hearThem.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await hearThem.click({ force: true });
+    }
+
+    await page.evaluate(() => {
+      window.__QA__!.openTravel();
+    });
+
+    await expect(page.getByTestId("archipelago-map-3d")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId("map-island-label-paycheck_peninsula")).toContainText(
+      /Paycheck Peninsula/i,
+    );
+    await expect(page.getByTestId("map-island-label-paycheck_peninsula")).toContainText(
+      /1960s|Vector Dawn|Tower/i,
+    );
+    await expect(page.getByTestId("map-island-label-coincraft_cove")).toContainText(
+      /Coincraft Cove/i,
+    );
+
+    await page.evaluate(async () => {
+      await window.__QA__?.enterIsland("paycheck_peninsula");
+    });
+    await expect
+      .poll(async () => page.evaluate(() => window.__QA__?.getView()), { timeout: 30_000 })
+      .toBe("explore");
+    await expect(page.getByTestId("island-shore-view")).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(/Payroll Tower|Paycheck Peninsula/i).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  });
 });

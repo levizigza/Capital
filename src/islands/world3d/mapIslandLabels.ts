@@ -8,6 +8,13 @@ import {
 } from "../islandIds";
 import type { ArchipelagoNode } from "../worldMapLayout";
 
+/** Player-facing era nicknames on the voyage map (organ names lead on spine). */
+const SPINE_ERA_NICKNAME: Partial<Record<string, string>> = {
+  paycheck_peninsula: "Vector Dawn",
+  coincraft_cove: "Solarpunk Cove",
+  credit_kingdom: "Credit Ruins",
+};
+
 /** Structure chip for map nameplates (Jar · Tower · Keep · Bank). */
 export function mapStructurePin(islandId: string): string {
   const theme = moneyStructureForIsland(islandId)?.theme;
@@ -18,7 +25,7 @@ export function mapStructurePin(islandId: string): string {
   return "Shore";
 }
 
-/** Spine islands — era decade + structure pin so every landmark reads named. */
+/** Spine islands — era decade + landmark nickname + structure pin. */
 export function mapSpineSubtitle(
   islandId: string,
   opts: { locked: boolean; current: boolean },
@@ -26,9 +33,10 @@ export function mapSpineSubtitle(
   const theme = getIslandTheme(islandId);
   const era = getAnimationStyle(theme.animationStyle);
   const pin = mapStructurePin(islandId);
+  const nick = SPINE_ERA_NICKNAME[islandId];
   if (opts.current) return "Here";
-  if (opts.locked) return `${era.decade} · Locked`;
-  return `${era.decade} · ${pin}`;
+  if (opts.locked) return nick ? `${era.decade} · ${nick} · Locked` : `${era.decade} · Locked`;
+  return nick ? `${era.decade} · ${nick} · ${pin}` : `${era.decade} · ${pin}`;
 }
 
 /** Lift nameplates when side shores crowd a spine slot (north Cove / forward Cove). */

@@ -75,6 +75,51 @@ export function resolveHubIsland(islands: IslandDefinition[]): IslandDefinition 
   );
 }
 
+/** Minimum bearing separation (radians) between side-shore and spine slots on the map. */
+export const MAP_SPINE_SIDE_MIN_ANGLE = (14 * Math.PI) / 180;
+
+function normalizeAngle(angle: number): number {
+  let a = angle;
+  while (a <= -Math.PI) a += Math.PI * 2;
+  while (a > Math.PI) a -= Math.PI * 2;
+  return a;
+}
+
+function angleSeparation(a: number, b: number): number {
+  return Math.abs(normalizeAngle(a - b));
+}
+
+function repositionNode(node: ArchipelagoNode, angle: number, mapRx: number, mapRy: number, worldR: number): ArchipelagoNode {
+  return {
+    ...node,
+    angle,
+    mapX: MAP_HUB.x + Math.cos(angle) * mapRx,
+    mapY: MAP_HUB.y + Math.sin(angle) * mapRy,
+    worldX: Math.sin(angle) * worldR,
+    worldY: -Math.cos(angle) * worldR,
+  };
+}
+
+/** Push side shores away from spine bearings so nameplates and meshes do not stack. */
+export function separateSideFromSpine(
+  spineNodes: ArchipelagoNode[],
+  sideNodes: ArchipelagoNode[],
+  minAngle = MAP_SPINE_SIDE_MIN_ANGLE,
+): ArchipelagoNode[] {
+  if (spineNodes.length === 0) return sideNodes;
+  const spineAngles = spineNodes.map((n) => n.angle);
+  return sideNodes.map((side) => {
+    let angle = side.angle;
+    for (const spineAngle of spineAngles) {
+      if (angleSeparation(angle, spineAngle) >= minAngle) continue;
+      const sign = normalizeAngle(angle - spineAngle) >= 0 ? 1 : -1;
+      angle = spineAngle + sign * minAngle;
+    }
+    if (angleSeparation(angle, side.angle) < 1e-6) return side;
+    return repositionNode(side, angle, MAP_SIDE_RX, MAP_SIDE_RY, SIDE_SHORE_WORLD_RADIUS);
+  });
+}
+
 function placeRing(
   islands: IslandDefinition[],
   opts: {
@@ -150,7 +195,7 @@ export function buildArchipelagoLayout(islands: IslandDefinition[]): {
     worldR: SPINE_WORLD_RADIUS,
     startAngle: -Math.PI / 2,
   });
-  const sideNodes = placeRing(sideOuter, {
+  const sideNodesRaw = placeRing(sideOuter, {
     ring: "side",
     mapRx: MAP_SIDE_RX,
     mapRy: MAP_SIDE_RY,
@@ -158,6 +203,7 @@ export function buildArchipelagoLayout(islands: IslandDefinition[]): {
     // Offset so side shores don't sit directly behind spine chips.
     startAngle: -Math.PI / 2 + Math.PI / 8,
   });
+  const sideNodes = separateSideFromSpine(spineNodes, sideNodesRaw);
 
   const outer = [...spineNodes, ...sideNodes];
   return { hub, outer, all: [hub, ...outer] };

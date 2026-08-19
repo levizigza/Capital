@@ -23,13 +23,13 @@ describe("mapIslandLabels", () => {
     expect(mapStructurePin("coincraft_cove")).toBe("Jar");
     expect(mapStructurePin("paycheck_peninsula")).toBe("Tower");
     expect(mapSpineSubtitle("paycheck_peninsula", { locked: false, current: false })).toBe(
-      "1960s · Tower",
+      "1960s · Vector Dawn · Tower",
     );
     expect(mapSpineSubtitle("coincraft_cove", { locked: false, current: false })).toBe(
-      "1990s · Jar",
+      "1990s · Solarpunk Cove · Jar",
     );
     expect(mapSpineSubtitle("paycheck_peninsula", { locked: true, current: false })).toBe(
-      "1960s · Locked",
+      "1960s · Vector Dawn · Locked",
     );
   });
 
