@@ -5,7 +5,7 @@
 **Scope:** Read-only reconstruction of what exists in code and docs. No production code was modified for this audit.  
 **Auditors (roles):** Principal game designer · economy designer · narrative systems designer · UX architect · learning scientist · senior software architect.
 
-**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md) · [CAPITAL_DESIGN_CONSTITUTION.md](./CAPITAL_DESIGN_CONSTITUTION.md) · [PLAYER_FANTASY.md](./PLAYER_FANTASY.md) · [PLAYER_VERB_MATRIX.md](./PLAYER_VERB_MATRIX.md) · [NPC_ECONOMIC_MODEL.md](../narrative/NPC_ECONOMIC_MODEL.md) · [NARRATIVE_EVENT_ENGINE.md](../narrative/NARRATIVE_EVENT_ENGINE.md) · [MASTER_DESIGN_AUDIT.md](./MASTER_DESIGN_AUDIT.md) (prior partial audit — supplementary)
+**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md) · [CAPITAL_DESIGN_CONSTITUTION.md](./CAPITAL_DESIGN_CONSTITUTION.md) · [PLAYER_FANTASY.md](./PLAYER_FANTASY.md) · [PLAYER_VERB_MATRIX.md](./PLAYER_VERB_MATRIX.md) · [NPC_ECONOMIC_MODEL.md](../narrative/NPC_ECONOMIC_MODEL.md) · [NARRATIVE_EVENT_ENGINE.md](../narrative/NARRATIVE_EVENT_ENGINE.md) · [ECONOMIC_ENVIRONMENT_SYSTEM.md](../world/ECONOMIC_ENVIRONMENT_SYSTEM.md) · [MASTER_DESIGN_AUDIT.md](./MASTER_DESIGN_AUDIT.md) (prior partial audit — supplementary)
 
 ---
 
