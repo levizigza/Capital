@@ -104,7 +104,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.21.0",
-        "@playwright/test": "^1.58.2",
+        "@playwright/test": "^1.62.0",
         "@tailwindcss/postcss": "^4.1.14",
         "@types/howler": "^2.2.12",
         "@types/node": "^25.3.3",
