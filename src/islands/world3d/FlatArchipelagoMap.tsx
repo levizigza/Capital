@@ -86,7 +86,9 @@ function IslandFlatPin({
       <span className="sr-only">{node.island.name}</span>
       {/* Nameplate — always visible so voyagers know what is what */}
       <span
-        className="pointer-events-none absolute left-1/2 top-full z-10 mt-1 w-max max-w-[7.5rem] -translate-x-1/2 rounded-full bg-[#0f172a]/88 px-2 py-0.5 text-center ring-1 ring-white/30"
+        className={`pointer-events-none absolute left-1/2 top-full mt-1 w-max max-w-[7.5rem] -translate-x-1/2 rounded-full bg-[#0f172a]/88 px-2 py-0.5 text-center ring-1 ring-white/30 ${
+          isHarbor ? "z-30" : "z-10"
+        }`}
         data-testid={`map-island-label-${node.island.id}`}
       >
         <span className="block text-[9px] font-black leading-tight text-white">

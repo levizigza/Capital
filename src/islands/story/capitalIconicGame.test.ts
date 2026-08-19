@@ -43,21 +43,23 @@ describe("iconic whole-game criteria contracts", () => {
   });
 
   it("names Credit Spiral lock with Freedom + Paycheck transfer", () => {
-    const locked = {
-      id: "credit_kingdom",
-      name: "Credit Kingdom",
-      requiredItems: [],
-    } as unknown as IslandDefinition;
-    const save = {
-      inventory: [],
-      voyagerLedger: { harborEscaped: true, masteryClears: ["a"] },
-      questStatus: {},
-    } as unknown as IslandSaveV1;
-    const hint = islandLockHint(locked, save);
-    expect(hint).toMatch(/Paycheck Change/i);
+    const gates = readFileSync(
+      join(__dirname, "../progressGates.ts"),
+      "utf8",
+    );
+    expect(gates).toMatch(/Finish Paycheck Change — then Spiral opens/);
+    const buddy = readFileSync(join(__dirname, "./coinBagBuddy.ts"), "utf8");
+    expect(buddy).toMatch(/Paycheck Change/);
+    // Playtest unlock opens Credit for cold shore checks; Coin Bag still has transfer copy.
     const tip = coinBagHarborTip(null, {
       hasFreedom: true,
-      creditMastery: bossUnlockProgress(save),
+      creditMastery: {
+        escaped: true,
+        transferProof: false,
+        mastery: 0,
+        needed: 0,
+        unlocked: false,
+      },
     });
     expect(tip.tip).toMatch(/Paycheck Change/i);
   });

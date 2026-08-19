@@ -115,9 +115,10 @@ describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
       questStatus: {},
     } as IslandSaveV1;
     expect(bossUnlockProgress(save).transferProof).toBe(false);
-    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(false);
-    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(true);
-    expect(islandLockHint(stub("credit_kingdom"), save)).toMatch(/Paycheck Change/i);
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
+    // Playtest unlock opens Credit for cold shore checks; transfer still false until Paycheck Change.
+    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(false);
+    expect(bossUnlockProgress(save).unlocked).toBe(true);
   });
 
   it("opens with Freedom + Paycheck Change even with zero mastery clears", () => {

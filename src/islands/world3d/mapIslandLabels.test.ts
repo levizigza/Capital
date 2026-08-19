@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   mapLabelOffsetY,
+  mapLabelZIndex,
   mapSpineSubtitle,
   mapStructurePin,
 } from "./mapIslandLabels";
@@ -43,5 +44,10 @@ describe("mapIslandLabels", () => {
     const pay = layout.outer.find((n) => n.island.id === "paycheck_peninsula")!;
     const cove = layout.outer.find((n) => n.island.id === "coincraft_cove")!;
     expect(mapLabelOffsetY(pay)).toBeGreaterThan(mapLabelOffsetY(cove));
+  });
+
+  it("keeps Harbor hub nameplates above spine / side plates", () => {
+    expect(mapLabelZIndex("hub")[0]).toBeGreaterThan(mapLabelZIndex("spine")[0]);
+    expect(mapLabelZIndex("spine")[0]).toBeGreaterThan(mapLabelZIndex("side")[0]);
   });
 });

@@ -106,6 +106,9 @@ describe("archipelago map sacred geometry + named islands", () => {
     expect(map).not.toMatch(/hideLabels/);
     expect(map).toMatch(/harbor-map-start-cue/);
     expect(map).toMatch(/Start at Harbor Haven/);
+    expect(map).toMatch(/layout\.hub\.island\.name/);
+    expect(map).toMatch(/mapLabelZIndex\("hub"\)/);
+    expect(map).toMatch(/showHarborCue = earlyJourney/);
     expect(map).not.toMatch(/Click here · start/);
     expect(map).toMatch(/FlatArchipelagoMap/);
     expect(map).toMatch(/ARCHIPELAGO_MAP_3D_FAIL_KEY/);

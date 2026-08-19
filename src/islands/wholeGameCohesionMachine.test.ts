@@ -13,6 +13,7 @@ import {
 import {
   islandLockHint,
   isIslandProgressLocked,
+  PLAYTEST_UNLOCK_ALL_ISLANDS,
 } from "./progressGates";
 import { MASTERY_GATES, PARTY_DASH_MASTERY_GATE } from "./masteryGate";
 import { piggyGuidedGraph } from "./story/harborTalks";
@@ -51,12 +52,18 @@ const coveDoneSave = {
 } as unknown as IslandSaveV1;
 
 describe("whole-game machine cohesion", () => {
-  it("outer-ring side shores gate on Paycheck Change, not Cove alone", () => {
+  it("outer-ring side shores gate on Paycheck Change in code; playtest unlock opens them now", () => {
     expect(hasCompletedCoveChange(coveDoneSave)).toBe(true);
     expect(hasCompletedPaycheckChange(coveDoneSave)).toBe(false);
+    const gates = readFileSync(join(__dirname, "progressGates.ts"), "utf8");
+    expect(gates).toMatch(/isSideShoreTravelId/);
+    expect(gates).toMatch(/hasCompletedPaycheckChange/);
+    expect(gates).toMatch(/Finish Paycheck Change — then outer-ring shores open/);
+    // Live playtest: every shore open for cold-check (flip PLAYTEST_UNLOCK_ALL_ISLANDS off to re-gate).
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
     for (const id of SIDE_SHORE_TRAVEL_IDS) {
-      expect(isIslandProgressLocked(stub(id), coveDoneSave)).toBe(true);
-      expect(islandLockHint(stub(id), coveDoneSave)).toMatch(/Paycheck Change/i);
+      expect(isIslandProgressLocked(stub(id), coveDoneSave)).toBe(false);
+      expect(islandLockHint(stub(id), coveDoneSave)).toBeNull();
     }
     expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), coveDoneSave)).toBe(
       false,

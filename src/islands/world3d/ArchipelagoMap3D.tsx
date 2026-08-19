@@ -22,7 +22,6 @@ import { OceanWater } from "./OceanWater";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { HARBOR_HARD_FAILSAFE_MS } from "./harborLoadFailsafe";
 import { hasCompletedCoveChange } from "../chapterLoop";
-import { HARBOR_HAVEN_ID } from "../islandIds";
 import { prefersReducedMotion } from "../a11yMotion";
 import {
   PHI,
@@ -50,24 +49,6 @@ type Props = {
 
 const LOOK = getEraLook3D("capital-default");
 export const ARCHIPELAGO_MAP_SPACING = SEED_SCENE_SPACING;
-
-const START_CUE_KEY = "capital_map_harbor_start_cue_v1";
-
-function startCueDismissed(): boolean {
-  try {
-    return sessionStorage.getItem(START_CUE_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function dismissStartCue() {
-  try {
-    sessionStorage.setItem(START_CUE_KEY, "1");
-  } catch {
-    /* ignore */
-  }
-}
 
 function StructurePinBadge({
   islandId,
@@ -208,11 +189,11 @@ function HarborStartCue({
   const reduced = prefersReducedMotion();
   return (
     <Html
-      position={[position[0], position[1] + 4.15, position[2]]}
+      position={[position[0], position[1] + 4.55, position[2]]}
       center
       distanceFactor={10}
       style={{ pointerEvents: "none" }}
-      zIndexRange={[40, 0]}
+      zIndexRange={[80, 0]}
     >
       <div
         className="pointer-events-none flex flex-col items-center"
@@ -270,7 +251,7 @@ function MapScene({
 
       <DioramaIslandMesh
         look={LOOK}
-        title="Harbor Haven"
+        title={layout.hub.island.name || "Harbor Haven"}
         subtitle={layout.hub.island.id === currentId ? "Here" : "Start"}
         seed={layout.hub.island.id}
         islandId={layout.hub.island.id}
@@ -280,6 +261,8 @@ function MapScene({
         selected={layout.hub.island.id === currentId}
         locked={isIslandLocked(layout.hub.island, save.inventory, save)}
         onSelect={() => onSelect(layout.hub.island.id)}
+        labelOffsetY={showHarborCue ? 0.55 : 0.35}
+        labelZIndexRange={mapLabelZIndex("hub")}
       />
       <StructurePinBadge islandId={layout.hub.island.id} position={hubPos} />
       <HarborStartCue position={hubPos} visible={showHarborCue} />
@@ -347,7 +330,6 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const [hint, setHint] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const reduced = prefersReducedMotion();
-  const [cueOn, setCueOn] = useState(() => !startCueDismissed());
   const [skipCanvas, setSkipCanvas] = useState(() => {
     try {
       return sessionStorage.getItem(ARCHIPELAGO_MAP_3D_FAIL_KEY) === "1";
@@ -357,7 +339,8 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   });
 
   const earlyJourney = !hasCompletedCoveChange(save);
-  const showHarborCue = cueOn && earlyJourney;
+  // Red start cue stays on Harbor until Cove Change — never migrate to another shore.
+  const showHarborCue = earlyJourney;
 
   const readyRef = useRef(ready);
   readyRef.current = ready;
@@ -379,10 +362,6 @@ export function ArchipelagoMap3D({ islands, save, currentId, onSelect }: Props) 
   const pick = (id: string) => {
     const node = islands.find((i) => i.id === id);
     if (node && isIslandLocked(node, save.inventory, save)) return;
-    if (id === HARBOR_HAVEN_ID || id === currentId) {
-      dismissStartCue();
-      setCueOn(false);
-    }
     if (id !== currentId) setHint(id);
     onSelect(id);
   };

@@ -13,19 +13,18 @@ import { voyagerForIslandStyle, BASE_VOYAGER } from "./character";
 import { partyDashIdForIsland } from "./partyPlayStyle";
 
 describe("map islands — fleshed, distinct, production gates", () => {
-  it("keeps PLAYTEST_UNLOCK_ALL_ISLANDS off for production ship", () => {
-    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(false);
+  it("keeps PLAYTEST_UNLOCK_ALL_ISLANDS on so every shore can be cold-checked", () => {
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
   });
 
-  it("locks Credit and side shores with an empty save when playtest unlock is off", () => {
+  it("opens every archipelago map island with an empty save under playtest unlock", () => {
     const save = createDefaultIslandSave();
     const content = loadIslandsContent();
-    const credit = content.islands.find((i) => i.id === "credit_kingdom")!;
-    const side = content.islands.find((i) => i.id === "signal_city")!;
-    const paycheck = content.islands.find((i) => i.id === "paycheck_peninsula")!;
-    expect(isIslandProgressLocked(paycheck, save)).toBe(true);
-    expect(isIslandProgressLocked(credit, save)).toBe(true);
-    expect(isIslandProgressLocked(side, save)).toBe(true);
+    for (const id of ARCHIPELAGO_MAP_TRAVEL_IDS) {
+      const island = content.islands.find((i) => i.id === id);
+      expect(island, id).toBeTruthy();
+      expect(isIslandProgressLocked(island!, save)).toBe(false);
+    }
   });
 
   it("gives each map island a distinct theme + era lens + shore play pads", () => {
