@@ -92,7 +92,8 @@ describe("archipelago map sacred geometry + named islands", () => {
     expect(flat).toMatch(/Start at Harbor Haven/);
     expect(flat).not.toMatch(/Click here · start/);
     expect(flat).toMatch(/SEED_PETAL_ANGLES/);
-    expect(map).toMatch(/spineOuter\.map/);
+    expect(map).toMatch(/mapSpineSubtitle/);
+    expect(map).toMatch(/Side shores first/);
     expect(travel).not.toMatch(/archipelago-side-shore-strip/);
     expect(travel).not.toMatch(/HudChip/);
     expect(travel).toMatch(/Spine voyage/);

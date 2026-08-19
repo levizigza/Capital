@@ -32,6 +32,11 @@ import {
   SEED_SPINE_R,
 } from "../sacredGeometry";
 import { FlatArchipelagoMap } from "./FlatArchipelagoMap";
+import {
+  mapLabelOffsetY,
+  mapLabelZIndex,
+  mapSpineSubtitle,
+} from "./mapIslandLabels";
 
 /** Sticky only for the travel map — Harbor plaza fail must not wipe islands. */
 export const ARCHIPELAGO_MAP_3D_FAIL_KEY = "capital_archipelago_map3d_fail";
@@ -279,31 +284,7 @@ function MapScene({
       <StructurePinBadge islandId={layout.hub.island.id} position={hubPos} />
       <HarborStartCue position={hubPos} visible={showHarborCue} />
 
-      {spineOuter.map((node) => {
-        const theme = getIslandTheme(node.island.id, node.island.themeId);
-        const look = getIslandLook3D(node.island.id, theme.animationStyle);
-        const locked = isIslandLocked(node.island, save.inventory, save);
-        const pos = mapNodeToScene(node);
-        return (
-          <group key={node.island.id}>
-            <DioramaIslandMesh
-              look={look}
-              title={node.island.name}
-              subtitle={locked ? "Locked" : "Playable"}
-              seed={node.island.id}
-              islandId={node.island.id}
-              position={pos}
-              scale={0.88}
-              current={node.island.id === currentId}
-              locked={locked}
-              onSelect={() => onSelect(node.island.id)}
-            />
-            <StructurePinBadge islandId={node.island.id} position={pos} />
-          </group>
-        );
-      })}
-
-      {/* Side shores: named dioramas — user must know what is what. */}
+      {/* Side shores first — spine renders last so nameplates stay on top. */}
       {sideOuter.map((node) => {
         const theme = getIslandTheme(node.island.id, node.island.themeId);
         const era = getAnimationStyle(theme.animationStyle);
@@ -323,7 +304,35 @@ function MapScene({
             current={node.island.id === currentId}
             locked={locked}
             onSelect={() => onSelect(node.island.id)}
+            labelZIndexRange={mapLabelZIndex(node.ring)}
           />
+        );
+      })}
+
+      {spineOuter.map((node) => {
+        const theme = getIslandTheme(node.island.id, node.island.themeId);
+        const look = getIslandLook3D(node.island.id, theme.animationStyle);
+        const locked = isIslandLocked(node.island, save.inventory, save);
+        const pos = mapNodeToScene(node);
+        const current = node.island.id === currentId;
+        return (
+          <group key={node.island.id}>
+            <DioramaIslandMesh
+              look={look}
+              title={node.island.name}
+              subtitle={mapSpineSubtitle(node.island.id, { locked, current })}
+              seed={node.island.id}
+              islandId={node.island.id}
+              position={pos}
+              scale={0.88}
+              current={current}
+              locked={locked}
+              onSelect={() => onSelect(node.island.id)}
+              labelOffsetY={mapLabelOffsetY(node)}
+              labelZIndexRange={mapLabelZIndex(node.ring)}
+            />
+            <StructurePinBadge islandId={node.island.id} position={pos} />
+          </group>
         );
       })}
     </>

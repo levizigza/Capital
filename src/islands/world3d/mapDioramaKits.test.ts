@@ -15,7 +15,8 @@ describe("mapDioramaKits", () => {
     expect(getMapDioramaKit("signal_city").ecology).toBe("gene_mangrove");
     expect(getMapDioramaKit("credit_kingdom").arch).toBe("scrap_shacks");
     expect(getMapDioramaKit("business_assets").arch).toBe("orbital_habitats");
-    expect(getMapDioramaKit("intangibles").arch).toBe("upload_spires");
+    expect(getMapDioramaKit("financial_assets").arch).toBe("scrap_shacks");
+    expect(getMapDioramaKit("financial_assets").ecology).toBe("scrap_wrecks");
     expect(getMapDioramaKit("paycheck_peninsula").arch).toBe("vector_blocks");
     expect(getMapDioramaKit("paycheck_peninsula").ecology).toBe("ice_nodes");
   });

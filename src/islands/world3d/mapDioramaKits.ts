@@ -116,6 +116,14 @@ const MAP_KIT_OVERRIDES: Record<string, MapDioramaKit> = {
     houseBodies: ["#f8fafc", "#e2e8f0", "#cbd5e1", "#94a3b8"],
     roofAccentFallback: "#38bdf8",
   },
+  financial_assets: {
+    arch: "scrap_shacks",
+    ecology: "scrap_wrecks",
+    buildingCount: 7,
+    ecologyCount: 6,
+    houseBodies: ["#78716c", "#57534e", "#a8a29e", "#44403c"],
+    roofAccentFallback: "#fb923c",
+  },
 };
 
 export function getMapDioramaKit(islandId: string): MapDioramaKit {

@@ -7,10 +7,10 @@ import {
   type ArchipelagoNode,
 } from "../worldMapLayout";
 import { getIslandTheme } from "../themes/islandThemes";
-import { moneyStructureForIsland } from "../moneyStructures";
 import { HARBOR_HAVEN_ID } from "../islandIds";
 import { PHI, SEED_PETAL_ANGLES, SEED_SIDE_R, SEED_SPINE_R } from "../sacredGeometry";
 import { pointerSafeActivate } from "../pointerSafeClick";
+import { mapSpineSubtitle, mapStructurePin } from "./mapIslandLabels";
 
 type Props = {
   islands: Parameters<typeof buildArchipelagoLayout>[0];
@@ -21,12 +21,20 @@ type Props = {
 };
 
 function structurePin(islandId: string): string {
-  const theme = moneyStructureForIsland(islandId)?.theme;
-  if (theme === "jar") return "Jar";
-  if (theme === "tower") return "Tower";
-  if (theme === "keep") return "Keep";
-  if (theme === "bank") return "Bank";
-  return "Shore";
+  return mapStructurePin(islandId);
+}
+
+function flatSubtitle(
+  node: ArchipelagoNode,
+  currentId: string,
+  locked: boolean,
+): string {
+  const here = node.island.id === currentId;
+  if (node.ring === "spine") {
+    return mapSpineSubtitle(node.island.id, { locked, current: here });
+  }
+  if (here) return "Here";
+  return structurePin(node.island.id);
 }
 
 function IslandFlatPin({
@@ -88,7 +96,7 @@ function IslandFlatPin({
           className="block text-[7px] font-bold uppercase tracking-wide"
           style={{ color: here ? "#fbbf24" : theme.accent }}
         >
-          {here ? "Here" : structurePin(node.island.id)}
+          {flatSubtitle(node, currentId, locked)}
         </span>
       </span>
       {isHarbor && showHarborCue ? (

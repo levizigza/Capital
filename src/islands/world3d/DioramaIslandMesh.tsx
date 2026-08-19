@@ -20,6 +20,9 @@ type Props = {
   onSelect?: () => void;
   /** Skip nameplate (legacy; map prefers HTML labels) */
   hideLabels?: boolean;
+  /** Extra lift for crowded map slots (scene units). */
+  labelOffsetY?: number;
+  labelZIndexRange?: [number, number];
 };
 
 function hash(s: string): number {
@@ -370,6 +373,8 @@ export function DioramaIslandMesh({
   islandId,
   onSelect,
   hideLabels = false,
+  labelOffsetY = 0,
+  labelZIndexRange = [20, 0],
 }: Props) {
   const group = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
@@ -624,11 +629,11 @@ export function DioramaIslandMesh({
 
       {!hideLabels ? (
         <Html
-          position={[0, locked ? 2.85 : 3.15, 0]}
+          position={[0, (locked ? 2.85 : 3.15) + labelOffsetY, 0]}
           center
           distanceFactor={14}
           style={{ pointerEvents: "none" }}
-          zIndexRange={[20, 0]}
+          zIndexRange={labelZIndexRange}
         >
           <div
             className="pointer-events-none flex max-w-[8.5rem] flex-col items-center rounded-full bg-[#0f172a]/82 px-2.5 py-1 text-center backdrop-blur-[2px] ring-1 ring-white/30"

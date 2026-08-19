@@ -44,10 +44,10 @@ export const SPINE_MAP_RING_IDS = [
 export const SIDE_SHORE_TRAVEL_IDS = [
   "signal_city",
   "venture_foundry",
-  "financial_assets",
+  "intangibles",
   "digital_assets",
   "business_assets",
-  "intangibles",
+  "financial_assets",
   "future_shores",
   "real_estate",
 ] as const;
