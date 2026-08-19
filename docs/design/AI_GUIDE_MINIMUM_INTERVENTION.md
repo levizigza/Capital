@@ -3,7 +3,7 @@
 **Status:** Design law for Coin Bag / adaptive coach / “Why?”  
 **Voice:** Coin Bag (path buddy) + optional Piggy presence — **not** a spreadsheet tutor, not an LLM that plays the game for you.  
 **Honesty:** Runtime today is **offline heuristics** (`adaptiveCoach.ts`). Generative models are optional later and must obey the same laws.  
-**Companions:** `CONCEPT_MASTERY_PEDAGOGY.md` · `REFLECTION_SYSTEM.md` · `DECISION_PREVIEW_ARCHITECTURE.md` · `UI_LAYER_AUDIT.md` · `CAPITAL_DESIGN_CONSTITUTION.md` (§ coach subordination, AI for AI’s sake) · `docs/ftue/NORTH_STAR.md`
+**Companions:** [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) · [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md) · `CONCEPT_MASTERY_PEDAGOGY.md` · `REFLECTION_SYSTEM.md` · `DECISION_PREVIEW_ARCHITECTURE.md` · `UI_LAYER_AUDIT.md` · `CAPITAL_DESIGN_CONSTITUTION.md` (§ coach subordination, AI for AI’s sake) · `docs/ftue/NORTH_STAR.md`
 
 **Prime directive:** **Minimum necessary intervention.** Default **SILENT** when the player is progressing successfully. Escalate only on **repeated evidence of misunderstanding**. Never auto-reveal the optimal strategy. Explain **rules and consequences**; never make the financial decision for the player.
 
