@@ -47,6 +47,7 @@ Mapped onto live Capital (Cove → Paycheck → Credit + Harbor) — **player-fe
 |-------|----------|
 | **First hour design** | `docs/ftue/CAPITAL_FIRST_HOUR.md` |
 | **Learning measurement** | `docs/research/LEARNING_TRANSFER_FRAMEWORK.md` |
+| **Vertical slice gate** | `docs/design/VERTICAL_SLICE_GATE.md` |
 | Transfer tasks | `src/islands/conceptProgression/` · `docs/ftue/TRANSFER_TASKS.md` |
 | Autonomy stages | `docs/ftue/AUTONOMY_PROGRESSION.md` |
 | Player modes | `src/islands/playerOnboarding/` |

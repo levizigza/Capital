@@ -5,7 +5,7 @@
 **Scope:** Read-only reconstruction of what exists in code and docs. No production code was modified for this audit.  
 **Auditors (roles):** Principal game designer · economy designer · narrative systems designer · UX architect · learning scientist · senior software architect.
 
-**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md) · [CAPITAL_DESIGN_CONSTITUTION.md](./CAPITAL_DESIGN_CONSTITUTION.md) · [PLAYER_FANTASY.md](./PLAYER_FANTASY.md) · [PLAYER_VERB_MATRIX.md](./PLAYER_VERB_MATRIX.md) · [PROGRESSION_AUDIT.md](./PROGRESSION_AUDIT.md) · [FINANCIAL_DECISION_UI.md](../ui/FINANCIAL_DECISION_UI.md) · [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) · [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md) · [LEARNING_TRANSFER_FRAMEWORK.md](../research/LEARNING_TRANSFER_FRAMEWORK.md) · [ANECDOTE_SYSTEM.md](../research/ANECDOTE_SYSTEM.md) · [ECONOMIC_STRESS_TEST_PLAN.md](../qa/ECONOMIC_STRESS_TEST_PLAN.md) · [NPC_ECONOMIC_MODEL.md](../narrative/NPC_ECONOMIC_MODEL.md) · [NARRATIVE_EVENT_ENGINE.md](../narrative/NARRATIVE_EVENT_ENGINE.md) · [ECONOMIC_ENVIRONMENT_SYSTEM.md](../world/ECONOMIC_ENVIRONMENT_SYSTEM.md) · [MASTER_DESIGN_AUDIT.md](./MASTER_DESIGN_AUDIT.md) (prior partial audit — supplementary)
+**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md) · [CAPITAL_DESIGN_CONSTITUTION.md](./CAPITAL_DESIGN_CONSTITUTION.md) · [PLAYER_FANTASY.md](./PLAYER_FANTASY.md) · [PLAYER_VERB_MATRIX.md](./PLAYER_VERB_MATRIX.md) · [PROGRESSION_AUDIT.md](./PROGRESSION_AUDIT.md) · [FINANCIAL_DECISION_UI.md](../ui/FINANCIAL_DECISION_UI.md) · [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) · [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md) · [LEARNING_TRANSFER_FRAMEWORK.md](../research/LEARNING_TRANSFER_FRAMEWORK.md) · [ANECDOTE_SYSTEM.md](../research/ANECDOTE_SYSTEM.md) · [ECONOMIC_STRESS_TEST_PLAN.md](../qa/ECONOMIC_STRESS_TEST_PLAN.md) · [VERTICAL_SLICE_GATE.md](./VERTICAL_SLICE_GATE.md) · [NPC_ECONOMIC_MODEL.md](../narrative/NPC_ECONOMIC_MODEL.md) · [NARRATIVE_EVENT_ENGINE.md](../narrative/NARRATIVE_EVENT_ENGINE.md) · [ECONOMIC_ENVIRONMENT_SYSTEM.md](../world/ECONOMIC_ENVIRONMENT_SYSTEM.md) · [MASTER_DESIGN_AUDIT.md](./MASTER_DESIGN_AUDIT.md) (prior partial audit — supplementary)
 
 ---
 
@@ -944,7 +944,7 @@ type QuestObjective = talkToNpc | collectItem | completeMinigame;
 | **Market sim minigame** | `CONNECT` | Deep sim; partial ledger integration |
 | **Legacy questSystem.ts** | `REMOVE` or `MOVE_LATER` | Parallel to Islands quests |
 | **Skill stats** | `REMOVE` | No-op on product path |
-| **Human playtest gate** | `MISSING` | Pattern #94 infrastructure ready; execution pending |
+| **Human playtest gate** | `MISSING` | Pattern #94 infrastructure ready; execution pending — see [VERTICAL_SLICE_GATE.md](./VERTICAL_SLICE_GATE.md) (**NOT CLEARED**) |
 | **Remote analytics sink** | `MISSING` | Local KV only |
 | **Economy batch harness** | `MISSING` | Referenced in Bible; not in repo |
 

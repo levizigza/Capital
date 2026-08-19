@@ -6,7 +6,7 @@ Capital’s north star for this phase: make **one money choice** feel unforgetta
 
 **Design constitution:** [`CAPITAL_DESIGN_BIBLE.md`](./CAPITAL_DESIGN_BIBLE.md) — fantasy, loop, pillars, economy/progression, social, metrics, feature approval, and the ship question: *Does this help Capital generate a more interesting player story?*
 
-**Related audits:** [`COMPLEXITY_CUT_REVIEW.md`](./COMPLEXITY_CUT_REVIEW.md) · [`LONGEVITY_100H.md`](./LONGEVITY_100H.md) · [`FEATURE_GATE.md`](./FEATURE_GATE.md)
+**Related audits:** [`COMPLEXITY_CUT_REVIEW.md`](./COMPLEXITY_CUT_REVIEW.md) · [`LONGEVITY_100H.md`](./LONGEVITY_100H.md) · [`FEATURE_GATE.md`](./FEATURE_GATE.md) · [`design/VERTICAL_SLICE_GATE.md`](./design/VERTICAL_SLICE_GATE.md) — **NOT CLEARED** until external playtest
 
 ## Signature loop (protect this)
 
