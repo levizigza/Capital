@@ -210,8 +210,9 @@ function HarborStartCue({
       zIndexRange={[40, 0]}
     >
       <div
-        className="pointer-events-none flex flex-col items-center gap-0.5"
+        className="pointer-events-none flex flex-col items-center"
         data-testid="harbor-map-start-cue"
+        aria-label="Start at Harbor Haven"
       >
         <div
           className={`text-[2rem] leading-none text-[#ef4444] drop-shadow-[0_2px_0_#7f1d1d] ${
@@ -220,9 +221,6 @@ function HarborStartCue({
           aria-hidden
         >
           ▼
-        </div>
-        <div className="rounded-full border-2 border-[#7f1d1d] bg-[#dc2626] px-3.5 py-1.5 text-center shadow-lg">
-          <p className="text-[11px] font-black tracking-wide text-white">Click here · start</p>
         </div>
       </div>
     </Html>

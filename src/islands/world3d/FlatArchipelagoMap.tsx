@@ -93,14 +93,12 @@ function IslandFlatPin({
       </span>
       {isHarbor && showHarborCue ? (
         <span
-          className="pointer-events-none absolute left-1/2 bottom-full z-20 mb-1 flex -translate-x-1/2 flex-col items-center gap-0.5"
+          className="pointer-events-none absolute left-1/2 bottom-full z-20 mb-1 flex -translate-x-1/2 flex-col items-center"
           data-testid="harbor-map-start-cue-flat"
+          aria-label="Start at Harbor Haven"
         >
           <span className="animate-bounce text-xl leading-none text-[#ef4444] drop-shadow-[0_2px_0_#7f1d1d]">
             ▼
-          </span>
-          <span className="rounded-full border border-[#7f1d1d]/80 bg-[#dc2626]/95 px-2.5 py-0.5 text-[9px] font-black tracking-wide text-white shadow-md">
-            Click here · start
           </span>
         </span>
       ) : null}

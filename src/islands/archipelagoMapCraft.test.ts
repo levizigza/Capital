@@ -64,13 +64,15 @@ describe("archipelago map sacred geometry + named islands", () => {
     expect(map).toMatch(/SeedOfLifeGuides/);
     expect(map).not.toMatch(/hideLabels/);
     expect(map).toMatch(/harbor-map-start-cue/);
-    expect(map).toMatch(/Click here · start/);
+    expect(map).toMatch(/Start at Harbor Haven/);
+    expect(map).not.toMatch(/Click here · start/);
     expect(map).toMatch(/FlatArchipelagoMap/);
     expect(map).toMatch(/ARCHIPELAGO_MAP_3D_FAIL_KEY/);
     expect(map).not.toMatch(/HARBOR_3D_FAIL_KEY/);
     expect(flat).toMatch(/map-island-label-/);
     expect(flat).toMatch(/flat-map-island-/);
-    expect(flat).toMatch(/Click here · start/);
+    expect(flat).toMatch(/Start at Harbor Haven/);
+    expect(flat).not.toMatch(/Click here · start/);
     expect(flat).toMatch(/SEED_PETAL_ANGLES/);
     expect(map).toMatch(/spineOuter\.map/);
     expect(travel).not.toMatch(/archipelago-side-shore-strip/);
