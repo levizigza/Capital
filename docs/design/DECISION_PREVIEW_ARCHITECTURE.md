@@ -2,7 +2,7 @@
 
 **Status:** Design specification for consequential financial commits  
 **Layer:** UI Layer 2 — information for the **current decision** (`UI_LAYER_AUDIT.md`)  
-**Companions:** `CAUSAL_TIME_SYSTEM.md` · `FINANCIAL_FEEDBACK_VOCABULARY.md` · `DECISION_AUDIT.md` · `STRONGEST_RECURRING_LOOP.md` · `CAPITAL_DESIGN_CONSTITUTION.md`  
+**Companions:** `CAUSAL_TIME_SYSTEM.md` · `FINANCIAL_FEEDBACK_VOCABULARY.md` · `DECISION_AUDIT.md` · `STRONGEST_RECURRING_LOOP.md` · `CAPITAL_DESIGN_CONSTITUTION.md` · [FINANCIAL_DECISION_UI.md](../ui/FINANCIAL_DECISION_UI.md) (shipped audit)  
 **Law:** Preview only what the simulation can honestly know. **Do not reveal unknowable futures.** Presentation must teach **risk literacy** (certainty labels), not spreadsheet cosplay or casino odds theater.
 
 **Prototype policy:** Spec first; implement with Living Cashflow Commit / Take Talk when approved — no production code in this doc.
