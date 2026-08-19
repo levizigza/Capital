@@ -1,0 +1,226 @@
+%% Capital — Current System Map
+%% Snapshot: main @ a6dcc204 (2026-08-19)
+%% Companion: docs/design/CAPITAL_MASTER_AUDIT.md
+
+flowchart TB
+  subgraph BOOT["Boot & FTUE"]
+    INTRO["CapitalOpeningIntro"]
+    CAST["BootCastSelect"]
+    ASHORE["AshoreComprehensionTutorial<br/>(7 steps · skippable)"]
+    CARPET_INTRO["CarpetOpeningIntro"]
+    HUB_GUIDE["Hub Guided Intro<br/>meet_guide → to_dock → done"]
+  end
+
+  subgraph SHELL["Runtime Shell — IslandsApp"]
+    VIEWS["Views: home · travel · voyage · explore · chapter · island · arcade · studio"]
+    SAVE_PIPE["Save Pipeline<br/>stampIndependentTransfer → reconcileFtueQuestProofs → conceptSync"]
+    OVERLAYS["Overlays: TalkBattle · Minigame · Fail · Mastery · Signature Cinema"]
+  end
+
+  subgraph WORLD["World Structure"]
+    HARBOR["Harbor Haven<br/>(Castle Grounds · Memory organ)"]
+    COVE["Coincraft Cove<br/>(Coin organ)"]
+    PAYCHECK["Paycheck Peninsula<br/>(Clock organ)"]
+    CREDIT["Credit Kingdom<br/>(Spiral organ)"]
+    SIDE["8 Era Side Shores<br/>(soft-locked until Cove Change)"]
+    STRUCTURES["Money Structures<br/>Jar · Bank · Tower · Keep"]
+  end
+
+  subgraph SPINE["Main Course — MAIN_COURSE[]"]
+    MC1["harbor_grounds"]
+    MC2["first_painting · Cove Change"]
+    MC3["second_painting · Paycheck Change"]
+    MC4["freedom_seal"]
+    MC5["boss_ordeal · Credit Ordeal"]
+    MC1 --> MC2 --> MC3 --> MC4 --> MC5
+  end
+
+  subgraph SIG["Signature Loop — Protected"]
+    TAKE["Irreversible Take"]
+    HUSH["chapterQuietPending · hush"]
+    SCAR["Harbor scar spectacle"]
+    PLINTH["Memory Plinth glow"]
+    SHARE["Share PNG"]
+    PIGGY["Piggy homecoming"]
+    DAY2["Day-2 echo"]
+    TAKE --> HUSH --> SCAR --> PLINTH --> SHARE --> PIGGY --> DAY2
+  end
+
+  subgraph FIN["Financial Layer"]
+    LEDGER["VoyagerLedger<br/>income · expenses · holdings · net CF"]
+    POUCH["Pouch Coins<br/>(session toy currency)"]
+    FREEDOM["Freedom Seal<br/>3× PayDay @ $30+/mo CF"]
+    MACRO["Macro Economy<br/>boom · normal · recession"]
+    BOARD["Party Board<br/>16-space loop · CF claims"]
+    SHOP["Harbor Shop<br/>capsules · companions · polish"]
+  end
+
+  subgraph NARR["Narrative State"]
+    SCARS["harborScars · irreversibleChoices"]
+    STANCE["VoyagerStance · npcMemory"]
+    DIGRESS["Digression Shelf · 12 slots"]
+    STORY["Story Bible · story-circle docs"]
+    TALKS["harborTalks · cold retell"]
+  end
+
+  subgraph QUEST["Quest Layer"]
+    JSON_Q["Island JSON Quests<br/>main | side tracks"]
+    CHAPTER["chapterLoop · nextIncompleteObjective"]
+    DIALOGUE["Talk Battle · DialogueEffect verbs"]
+    RECOVERY["ftueQuestRecovery"]
+  end
+
+  subgraph PROG["Progression Gates"]
+    GATES["progressGates.ts"]
+    PLAYTEST["PLAYTEST_UNLOCK_ALL_ISLANDS = false"]
+    COVE_GATE["Side shores ← Cove Change"]
+    CREDIT_GATE["Credit ← Freedom + Paycheck Change"]
+    CONCEPT["conceptProgression · ITR phases"]
+  end
+
+  subgraph PLAY["Player Verbs"]
+    WALK["Walk · Look · Poke"]
+    TALK["Talk (E) · Take · Share"]
+    TRAVEL["Board Carpet · Enter Structure"]
+    PLAY_MG["Play Minigames · Pay Day · Board fork"]
+  end
+
+  subgraph MG["Minigames — 24 registered"]
+    KINE["Kinesthetic-first<br/>CoinCatcher · PartyDash · PartyArena"]
+    LITERACY["Literacy pads<br/>Budget · Signal · Inbox · Explore"]
+    MARKET["market-sim.ts · GBM"]
+  end
+
+  subgraph COACH["Coach Layer — Heuristics"]
+    ADAPT["adaptiveCoach.ts<br/>(not neural net)"]
+    COINBAG["CoinBagBuddyHud"]
+    DIRECTOR["worldDirector · worldBlackboard"]
+    PROFILE["Learning Profile<br/>Explorer · Apprentice · Strategist"]
+  end
+
+  subgraph TELEM["Telemetry — Local KV"]
+    ANALYTICS["analytics.ts · 40+ events"]
+    FTUE_T["analytics/ftue · ITR metrics"]
+    HEALTH["healthDashboard<br/>ENGAGEMENT · LEARNING · BUSINESS"]
+    EXPORT["AnalyticsExportView"]
+  end
+
+  subgraph A11Y["Accessibility"]
+    SETTINGS["textSize · reducedMotion · highContrast · guideArrows"]
+    MOTION["a11yMotion · cinemaFlashAmp"]
+    FAILSAFE["3D shore fallback"]
+  end
+
+  subgraph SOCIAL["Social — Local Only"]
+    FAMILY["Family Room<br/>invite codes · JSON import"]
+    WITNESS["Witness stamps · plaque myths"]
+  end
+
+  subgraph LATER["Demoted / Later"]
+    ARCADE["Arcade — spine replay"]
+    STUDIO["VibeCode Studio"]
+    LEGACY_Q["utils/questSystem.ts<br/>(parallel · non-canonical)"]
+    STRIPE["Real-money monetization<br/>(MISSING)"]
+    REMOTE["Remote analytics sink<br/>(MISSING)"]
+  end
+
+  subgraph PERSIST["Save — IslandSaveV1"]
+    LOCAL["localStorage"]
+    KV["Spark KV"]
+    SANITIZE["sanitizeIslandSave · migrate"]
+  end
+
+  %% Boot flow
+  INTRO --> CAST --> ASHORE --> CARPET_INTRO --> HUB_GUIDE
+  CARPET_INTRO --> SHELL
+
+  %% Shell to world
+  SHELL --> VIEWS
+  VIEWS --> HARBOR
+  VIEWS --> COVE
+  VIEWS --> PAYCHECK
+  VIEWS --> CREDIT
+  VIEWS --> SIDE
+  VIEWS --> STRUCTURES
+
+  %% Spine placement
+  HARBOR --- MC1
+  COVE --- MC2
+  PAYCHECK --- MC3
+  HARBOR --- MC4
+  CREDIT --- MC5
+
+  %% Signature loop triggers
+  DIALOGUE --> TAKE
+  TAKE --> SCARS
+  SCAR --> SCARS
+  DAY2 --> TALKS
+
+  %% Financial connections
+  BOARD --> LEDGER
+  SHOP --> POUCH
+  LEDGER --> FREEDOM
+  TAKE --> LEDGER
+  MACRO --> BOARD
+  MACRO --> MG
+  FREEDOM --> CREDIT_GATE
+
+  %% Quest flow
+  JSON_Q --> CHAPTER
+  DIALOGUE --> JSON_Q
+  CHAPTER --> MC2
+  CHAPTER --> MC3
+  CHAPTER --> MC5
+  RECOVERY --> SAVE_PIPE
+
+  %% Gates
+  GATES --> COVE_GATE
+  GATES --> CREDIT_GATE
+  PLAYTEST -.-> GATES
+  MC2 --> COVE_GATE
+
+  %% Verbs to systems
+  PLAY --> DIALOGUE
+  PLAY --> MG
+  PLAY --> TRAVEL
+  TRAVEL --> WORLD
+
+  %% Coach
+  SAVE_PIPE --> ADAPT
+  ADAPT --> COINBAG
+  ADAPT --> DIRECTOR
+  PROFILE --> ADAPT
+
+  %% Telemetry
+  SHELL --> ANALYTICS
+  ANALYTICS --> FTUE_T
+  ANALYTICS --> HEALTH
+  HEALTH --> EXPORT
+
+  %% Persistence
+  SAVE_PIPE --> PERSIST
+  LOCAL --- KV
+  SANITIZE --> PERSIST
+
+  %% Social
+  FAMILY --> WITNESS
+  WITNESS --> SCARS
+
+  %% Minigames
+  MG --> KINE
+  MG --> LITERACY
+  MG --> MARKET
+  DIALOGUE --> MG
+
+  %% A11y
+  SETTINGS --> MOTION
+  MOTION --> OVERLAYS
+
+  %% Styling
+  classDef protected fill:#1a3a2a,stroke:#4ade80,color:#ecfdf5
+  classDef missing fill:#3a1a1a,stroke:#f87171,color:#fef2f2
+  classDef later fill:#2a2a3a,stroke:#a78bfa,color:#f5f3ff
+
+  class TAKE,HUSH,SCAR,PLINTH,SHARE,PIGGY,DAY2 protected
+  class STRIPE,REMOTE missing
+  class ARCADE,STUDIO,LEGACY_Q later

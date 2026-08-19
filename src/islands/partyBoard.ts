@@ -17,8 +17,10 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  formatPaydayMessage,
   liabilityBuyoutCost,
   makeBoardCashflowClaim,
+  netCashflow,
   regenerateAssetDealOffer,
   type DealOffer,
   type LedgerHolding,
@@ -35,7 +37,9 @@ import {
   usesCashflowPassStart,
   type BoardEconomyMode,
 } from "./boardEconomy";
+import { buildHarborOpportunityContext, moodFromCashflow, resolveBoardAssetDeal } from "./harborOpportunity";
 import { getIslandTheme } from "./themes/islandThemes";
+import { mulberry32 } from "@/lib/seededRng";
 
 function pickUnusedHolding(
   kind: LedgerHolding["kind"],
@@ -161,8 +165,19 @@ export const BOARD_LAYOUT: Array<{ x: number; y: number }> = [
   { x: 10, y: 36 },
 ];
 
+let boardRng: (() => number) | null = null;
+
+/** Test / QA harness — deterministic board dice and picks. */
+export function setPartyBoardSeed(seed: number | null): void {
+  boardRng = seed == null ? null : mulberry32(seed);
+}
+
+function rollUnit(): number {
+  return boardRng ? boardRng() : Math.random();
+}
+
 export function rollDice(): number {
-  return Math.floor(Math.random() * 6) + 1;
+  return Math.floor(rollUnit() * 6) + 1;
 }
 
 export function rollDoubleDice(): number {
@@ -434,11 +449,10 @@ export function resolvePassStart(
     });
     return {
       coins,
-      message: escapedNow
-        ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
-        : coins >= 0
-          ? `Pay Day! Monthly cashflow credited (+${coins} coins).`
-          : `Pay Day shortfall (${coins} coins). Grow income or cut expenses!`,
+      message: formatPaydayMessage(coins, ledger, {
+        escapedNow,
+        trackEscape,
+      }),
       ledger,
     };
   }
@@ -488,11 +502,7 @@ export function resolvePlayerSpace(
           ? `Dividend Magnet Pay Day (+${coins}) — Harbor escape unlocked!`
           : `Dividend Magnet! Pay Day doubled to +${coins} coins.`;
       } else {
-        payload.message = escapedNow
-          ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
-          : coins >= 0
-            ? `Pay Day: +${coins} coins from monthly cashflow.`
-            : `Pay Day shortfall: ${coins} coins.`;
+        payload.message = formatPaydayMessage(coins, nextLedger, { escapedNow });
       }
       payload.coins = coins;
       payload.ledger = nextLedger;
@@ -507,23 +517,14 @@ export function resolvePlayerSpace(
       break;
     }
     case "deal": {
-      const owned = ledger.holdings.map((h) => h.id);
-      let deal = pickUnusedHolding("asset", owned);
-      let offer: DealOffer;
-      if (!deal) {
-        const gen =
-          1 + ledger.holdings.filter((h) => h.kind === "asset" && h.id.includes("_gen")).length;
-        offer = regenerateAssetDealOffer(owned, gen);
-        payload.pendingDeal = offer;
-        payload.message = `Renewed deal: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo (catalog clear — new tradeoff).`;
-        break;
-      }
-      offer = {
-        ...deal,
-        purchaseCost: dealPurchaseCost(deal),
-      };
+      const oppCtx = buildHarborOpportunityContext(
+        ledger,
+        playerCoins,
+        moodFromCashflow(netCashflow(ledger)),
+      );
+      const { offer, message } = resolveBoardAssetDeal(oppCtx);
       payload.pendingDeal = offer;
-      payload.message = `Deal on the table: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo.`;
+      payload.message = message;
       break;
     }
     case "liability": {

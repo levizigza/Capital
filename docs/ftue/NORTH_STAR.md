@@ -5,6 +5,8 @@ After Capital teaches a financial principle once, what percentage of players can
 
 Tutorial completion is diagnostic only. Players should not remember the instructions — they should remember **how the world works**.
 
+**Architecture:** The financial model is story machinery, not a lesson that interrupts play — [CAUSAL_STORY_ARCHITECTURE.md](../design/CAUSAL_STORY_ARCHITECTURE.md).
+
 ---
 
 ## Target architecture (player experience)
@@ -45,6 +47,9 @@ Mapped onto live Capital (Cove → Paycheck → Credit + Harbor) — **player-fe
 
 | Layer | Location |
 |-------|----------|
+| **First hour design** | `docs/ftue/CAPITAL_FIRST_HOUR.md` |
+| **Learning measurement** | `docs/research/LEARNING_TRANSFER_FRAMEWORK.md` |
+| **Vertical slice gate** | `docs/design/VERTICAL_SLICE_GATE.md` |
 | Transfer tasks | `src/islands/conceptProgression/` · `docs/ftue/TRANSFER_TASKS.md` |
 | Autonomy stages | `docs/ftue/AUTONOMY_PROGRESSION.md` |
 | Player modes | `src/islands/playerOnboarding/` |

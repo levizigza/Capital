@@ -101,6 +101,10 @@ _(scar id / irreversible key / quest / ledger — verify after)_
 6. (Optional #94) Fun, or only functional?  
    >
 
+7. **Tell me about the most memorable thing that happened during your session.**  
+   _(Compare answer to telemetry — [ANECDOTE_SYSTEM.md](../../research/ANECDOTE_SYSTEM.md) §7–8)_  
+   >
+
 ---
 
 ## Finding ids promoted from this session

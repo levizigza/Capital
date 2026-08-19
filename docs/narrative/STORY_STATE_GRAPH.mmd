@@ -1,0 +1,112 @@
+%% Capital — Story State Graph (Narrative Event Engine)
+%% One authored graph. Systems activate/modify nodes; they never mint new ones.
+%% Companion: docs/narrative/NARRATIVE_EVENT_ENGINE.md
+
+flowchart TB
+  subgraph LIFE["Situation lifecycle"]
+    LK[Locked]
+    AV[Available]
+    AC[Active — max one main]
+    RS[Resolving]
+    RD[Resolved]
+    FD[Folded — spine rejoin]
+    LK -->|"prereqs ∧ ¬blocking"| AV
+    AV -->|"hush / cinema / transfer firewall"| LK
+    AV -->|"enter place / Talk"| AC
+    AC -->|"approach commit"| RS
+    RS -->|"consequences within bounds"| RD
+    RS -->|"foldback edge"| FD
+    FD -->|"unlock next authored id"| AV
+    RD -->|"whitelist follow-up"| AV
+  end
+
+  subgraph READ["Predicate channels — systems read"]
+    P1[Player finances]
+    P2[NPC finances]
+    P3[Relationships / trust]
+    P4[Location]
+    P5[Economic conditions]
+    P6[Previous decisions]
+    P7[Business / employment]
+    P8[Time / memory / reputation]
+  end
+
+  READ --> LK
+
+  subgraph AUTHOR["Author supplies — finite"]
+    A_CH[Characters · theme · organ]
+    A_DQ[Dramatic question · stakes]
+    A_AP[Approaches — named list]
+    A_BD[Consequence boundaries]
+    A_FB[Foldbacks · follow-up ids]
+  end
+
+  subgraph SYS["Systems decide — no new nodes"]
+    S_W[When possible]
+    S_H[How state reshapes stakes]
+    S_A[Which approaches remain]
+    S_C[What consequences modify]
+  end
+
+  AUTHOR --> SYS --> AV
+
+  subgraph SPINE["Main track"]
+    S0["sit_harbor_ashore"]
+    S1["sit_cove_jar_or_treat"]
+    F1["fold_harbor_remembers"]
+    S2["sit_harbor_felt"]
+    F2["fold_homecoming"]
+    S3["sit_paycheck_two_prices"]
+    F3["fold_paycheck_change"]
+    S4["sit_credit_spiral"]
+    F4["fold_credit_ordeal"]
+    S0 --> S1 --> F1 --> S2 --> F2 --> S3 --> F3 --> S4 --> F4
+  end
+
+  subgraph SIDE["Echo / side — cannot steal Plinth"]
+    SH["sit_shelly_shell"]
+    PR["sit_priya_buckets"]
+    SB[Soft Beat]
+    D2[Day-2 echo]
+    FG["fold_plaza_gossip"]
+    SH --> FG
+    PR --> FG
+    SB --> FG
+    D2 --> F2
+  end
+
+  F1 -.-> SH
+  F3 -.->|"after Vee + transfer closed"| PR
+
+  subgraph APPROACH["Approaches stay authored"]
+    C1["Cove: hold_jar | buy_treat"]
+    C2["Paycheck: umbrella | glitter"]
+    C3["Credit: inbox → scan → wait | borrow"]
+    C4["Harbor: talk | carpet | share"]
+  end
+
+  S1 --- C1
+  S3 --- C2
+  S4 --- C3
+  S0 --- C4
+  S2 --- C4
+
+  subgraph FX["Resolve → consequence engine"]
+    IMM[Immediate economic / story]
+    DEL[Delayed weather / reputation]
+    REL[Relationship]
+    FLG[Memory flags]
+  end
+
+  RS --> FX
+  S1 --> FX
+  S3 --> FX
+  S4 --> FX
+
+  classDef fold fill:#14532d,stroke:#86efac,color:#ecfdf5
+  classDef sit fill:#1e3a5f,stroke:#93c5fd,color:#eff6ff
+  classDef sys fill:#422006,stroke:#fdba74,color:#fff7ed
+
+  class F1,F2,F3,F4,FG fold
+  class S0,S1,S2,S3,S4,SH,PR,SB,D2 sit
+  class S_W,S_H,S_A,S_C sys

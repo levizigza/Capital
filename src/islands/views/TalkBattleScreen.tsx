@@ -33,7 +33,8 @@ import {
   softBeatArmChoiceSuffix,
 } from "../softBeatArm";
 import type { SoftBeatKind } from "./SoftBeatOverlay";
-import { coveTakeChoiceFootprintPreview } from "../firstFinancialScenario";
+import { coveTakeChoiceFootprintPreview as coveTakeChoiceFootprintPreviewLegacy } from "../firstFinancialScenario";
+import { spineTakeChoiceFootprintPreview } from "../spineTakeFootprints";
 
 /** Opening click (Talk CTA) must not land on I hear you / Walk on in the same gesture. */
 const TALK_INPUT_ARM_MS = 220;
@@ -331,7 +332,9 @@ export function TalkBattleScreen({
               {choices.map((choice: DialogueChoice) => {
                 const base = resolveProfileText(choice.text, learningProfile);
                 const suffix = softBeatArmChoiceSuffix(armKind, choice.effects);
-                const footprint = coveTakeChoiceFootprintPreview(choice.effects);
+                const footprint =
+                  spineTakeChoiceFootprintPreview(choice.effects) ??
+                  coveTakeChoiceFootprintPreviewLegacy(choice.effects);
                 return (
                 <button
                   key={choice.id}

@@ -66,7 +66,7 @@ describe("first financial scenario wire", () => {
     expect(doc).toMatch(/layout/);
 
     const talk = readFileSync(join(__dirname, "views/TalkBattleScreen.tsx"), "utf8");
-    expect(talk).toMatch(/coveTakeChoiceFootprintPreview/);
+    expect(talk).toMatch(/spineTakeChoiceFootprintPreview/);
     expect(talk).toMatch(/talk-choice-footprint-/);
 
     const buddy = readFileSync(join(__dirname, "story/coinBagBuddy.ts"), "utf8");

@@ -12,6 +12,9 @@ import {
   PAYCHECK_TAKE_KEY,
   CREDIT_TAKE_KEY,
   takeFootprintFeedbackLine,
+  spineTakeChoiceFootprintPreview,
+  paycheckTakeStanceFootprintPreview,
+  creditTakeStanceFootprintPreview,
 } from "./spineTakeFootprints";
 import { bossUnlockProgress, isIslandProgressLocked, islandLockHint, PLAYTEST_UNLOCK_ALL_ISLANDS } from "./progressGates";
 import type { IslandDefinition, IslandSaveV1 } from "./types";
@@ -69,6 +72,34 @@ describe("spine Take footprints — world diverges", () => {
   it("Cove footprint still applies via spine helper", () => {
     const save = applySpineTakeLedgerFootprint(createDefaultIslandSave(), COVE_TAKE_KEY, "save");
     expect(takeFootprintFeedbackLine(save)).toMatch(/Jar|keep/i);
+  });
+
+  it("Talk Battle previews show Known /mo rows for all spine Takes", () => {
+    expect(
+      spineTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: COVE_TAKE_KEY, choiceId: "save" },
+      ]),
+    ).toMatch(/\+\$5\/mo.*Known/i);
+    expect(
+      spineTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: PAYCHECK_TAKE_KEY, choiceId: "protect" },
+      ]),
+    ).toMatch(paycheckTakeStanceFootprintPreview("protect"));
+    expect(
+      spineTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: PAYCHECK_TAKE_KEY, choiceId: "spend" },
+      ]),
+    ).toMatch(/−\$4\/mo · Glitter Tab/i);
+    expect(
+      spineTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: CREDIT_TAKE_KEY, choiceId: "wait" },
+      ]),
+    ).toMatch(creditTakeStanceFootprintPreview("wait"));
+    expect(
+      spineTakeChoiceFootprintPreview([
+        { type: "setIrreversible", key: CREDIT_TAKE_KEY, choiceId: "borrow" },
+      ]),
+    ).toMatch(/−\$8\/mo · Interest Spiral/i);
   });
 });
 

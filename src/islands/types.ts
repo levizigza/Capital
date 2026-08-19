@@ -74,6 +74,8 @@ export type AnalyticsEventName =
   | "guidance_reduced"
   | "autonomy_unlocked"
   | "tutorial_skipped"
+  /** Emergent story candidate — validated only with human recall (ANECDOTE_SYSTEM.md) */
+  | "anecdote_emerged"
   | "tutorial_replayed"
   | "freeplay_entered"
   | "return_session";

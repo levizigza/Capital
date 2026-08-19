@@ -54,4 +54,19 @@ describe("harborWeather", () => {
     expect(feedbackLoopLine(looped)).toMatch(/Loop closed/);
     expect(feedbackLoopLine(withLedger(80, 10))).toBeNull();
   });
+
+  it("plaza weather is CF-authoritative — macro recession phase does not override CF sky", () => {
+    const healthy = withLedger(80, 10);
+    const withMacro = {
+      ...healthy,
+      economyState: {
+        phase: "recession" as const,
+        turnsInPhase: 1,
+        totalTurns: 99,
+        phaseHistory: [],
+      },
+    };
+    expect(harborWeatherMood(withMacro)).toBe(harborWeatherMood(healthy));
+    expect(harborWeatherMood(withMacro)).toBe("boom");
+  });
 });

@@ -63,6 +63,7 @@ import {
   nextPaintingAfterScar,
   plaqueShelfLine,
   stanceGreetingHint,
+  spineMemoryGreetingHint,
   recordNpcTalk,
   scarTriggersChapterQuiet,
 } from "./worldMemory";
@@ -153,9 +154,10 @@ import {
   type SignaturePhase,
   type SignatureSpineOrgan,
 } from "@/qa/signatureLoop";
-import { computeMinigameReward, getPartyState } from "./partyBoard";
+import { computeMinigameReward, getPartyState, setPartyBoardSeed } from "./partyBoard";
 import type { MinigameBoardReward } from "./partyBoard";
-import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear } from "./voyagerLedger";
+import { trackAnecdoteOnSaveChange } from "./analytics/anecdoteTelemetry";
+import { applyPayday, ensureLedger, hasMasteryClear, markMasteryClear, paydayHoldingsCite } from "./voyagerLedger";
 import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
@@ -256,6 +258,7 @@ function findNode(graph: DialogueGraph, nodeId: DialogueNodeId): DialogueNode | 
 /** Emit concept_transfer + FTUE concept lifecycle when phases advance. */
 function trackConceptTransferEvents(before: IslandSaveV1, after: IslandSaveV1): void {
   trackConceptLifecycleFtue(before, after);
+  trackAnecdoteOnSaveChange(before, after);
   for (const def of CONCEPT_REGISTRY) {
     const was = getConceptPhase(before, def.concept_id);
     const now = getConceptPhase(after, def.concept_id);
@@ -894,16 +897,19 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
 
   const onClaimRitualPayday = useCallback(() => {
     let applied: number | null = null;
+    let cite = "";
     updateSave((prev) => {
       if (prev.harborRitual?.today.paydayDone) return prev;
-      const { ledger, coins } = applyPayday(ensureLedger(prev.voyagerLedger), 1, {
+      const ledger = ensureLedger(prev.voyagerLedger);
+      const { ledger: nextLedger, coins } = applyPayday(ledger, 1, {
         trackHarborEscape: true,
       });
       applied = coins;
+      cite = paydayHoldingsCite(nextLedger);
       return markPaydayDone(
         withHarborFreedomRewards({
           ...prev,
-          voyagerLedger: ledger,
+          voyagerLedger: nextLedger,
         }),
       );
     });
@@ -914,7 +920,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       }));
       toast.message(
         applied >= 0 ? `Pay Day +${applied} coins` : `Pay Day shortfall ${applied}`,
-        { description: "Ledger cashflow hit your pouch." },
+        { description: cite ? `Ledger cashflow hit your pouch.${cite}` : "Ledger cashflow hit your pouch." },
       );
     }
   }, [setUserProfile, updateSave]);
@@ -1149,6 +1155,9 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         window.dispatchEvent(
           new CustomEvent("capital:qa-structure", { detail: { action: "exit" } }),
         );
+      },
+      setPartyBoardSeed: (seed) => {
+        setPartyBoardSeed(seed);
       },
     });
   }, [save, enterIsland, startQuest, activeIslandId, replaceSave]);
@@ -1463,7 +1472,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
         ),
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: save ? spineMemoryGreetingHint(save) : stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
@@ -1683,7 +1692,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         homecoming: save?.harborHomecoming,
         scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: save?.piggyBondHomecomings ?? 0,
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: save ? spineMemoryGreetingHint(save) : stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
       });
     }

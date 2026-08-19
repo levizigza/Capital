@@ -40,6 +40,15 @@ export const ICONIC_COLD_CHECKLIST: readonly ColdCheckRow[] = [
     guards: ["src/qa/signatureLoop.test.ts", "e2e/signature-loop.spec.ts"],
   },
   {
+    id: "paycheck_transfer",
+    step: "Paycheck transfer surface",
+    modes: ["unit", "e2e", "human"],
+    guards: [
+      "src/islands/independentTransfer/independentTransfer.test.ts",
+      "e2e/transfer-paycheck.spec.ts",
+    ],
+  },
+  {
     id: "carpet_rail",
     step: "Carpet to Cove",
     modes: ["unit", "human"],
@@ -256,6 +265,11 @@ export const ICONIC_PILLAR_CONTRACTS: readonly PillarContract[] = [
 export function iconicUnitTestPaths(): string[] {
   const set = new Set<string>([
     "src/qa/signatureLoop.test.ts",
+    "src/qa/econStress/econStress.test.ts",
+    "src/qa/econStress/fingerprint.test.ts",
+    "src/islands/harborOpportunity.test.ts",
+    "src/islands/independentTransfer/independentTransfer.test.ts",
+    "src/islands/analytics/anecdoteTelemetry.test.ts",
     "src/qa/iconicCraftCadence.test.ts",
     "src/qa/iconicProofLaw.test.ts",
     "src/qa/capitalPatternLibrary.test.ts",
@@ -290,6 +304,7 @@ export function iconicUnitTestPaths(): string[] {
 /** Playwright specs for signature Harbor / Cove smoke. */
 export const ICONIC_E2E_SPECS = [
   "e2e/signature-loop.spec.ts",
+  "e2e/transfer-paycheck.spec.ts",
   "e2e/harbor-tutorial.spec.ts",
   "e2e/harbor-3d-failsafe.spec.ts",
   "e2e/cast-select.spec.ts",

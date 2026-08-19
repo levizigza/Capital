@@ -6,6 +6,7 @@
 
 import type { IslandSaveV1 } from "./types";
 import type { MoneyOrganId } from "./moneyOrgans";
+import { takeFootprintFeedbackLine } from "./spineTakeFootprints";
 
 export type HarborScarKind = "plaque" | "npc_tone" | "plaza_prop";
 
@@ -463,6 +464,25 @@ export function plazaScarGossipLine(
     return `${talks}Auction Yard still hammers soft about it — you watched before you bid. “${scar.label}.” Digression left a footprint.${stanceBit}`;
   }
 
+  if (id.includes("cove_saver") || id === "cove_saver_plaque") {
+    return `${talks}Tip jars still click your jar rhythm — “${scar.label}.” The Coin holds.${stanceBit}`;
+  }
+  if (id.includes("cove_spender") || id === "cove_spender_plaque") {
+    return `${talks}Treat tabs still whisper your glitter day — “${scar.label}.” Harbor noticed.${stanceBit}`;
+  }
+  if (id.includes("pp_protector") || id === "pp_protector_plaque") {
+    return `${talks}Main Street still stamps about your umbrella — “${scar.label}.” The Clock shelters.${stanceBit}`;
+  }
+  if (id.includes("pp_spender") || id === "pp_spender_plaque") {
+    return `${talks}Glitter stalls still light up — “${scar.label}.” The Clock felt the rain.${stanceBit}`;
+  }
+  if (id.includes("credit_patience") || id === "credit_patience_plaque") {
+    return `${talks}Canyon wind still names your wait — “${scar.label}.” The Spiral withstands.${stanceBit}`;
+  }
+  if (id.includes("credit_haste") || id === "credit_haste_plaque") {
+    return `${talks}Interest wall still hums your haste — “${scar.label}.” Harbor heard the spiral.${stanceBit}`;
+  }
+
   if (isDigressionScar(scar)) {
     return `${talks}Side-street rumor: “${scar.label}.” Not a Plinth plaque — still a footprint on the plaza.${stanceBit}`;
   }
@@ -645,4 +665,12 @@ export function stanceGreetingHint(
     default:
       return null;
   }
+}
+
+/** Stance + ledger footprint — NPC greetings cite sim truth, not vibes alone. */
+export function spineMemoryGreetingHint(save: IslandSaveV1): string | null {
+  const footprint = takeFootprintFeedbackLine(save);
+  const stance = stanceGreetingHint(save.stance);
+  if (footprint && stance) return `${footprint} · ${stance}`;
+  return footprint ?? stance;
 }
