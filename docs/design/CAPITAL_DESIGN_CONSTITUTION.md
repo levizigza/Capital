@@ -194,7 +194,7 @@ Each principle states the law, what it means in Capital, repository evidence whe
 
 **In Capital:** `adaptiveCoach.ts` header: *"Not a neural net — honest heuristics."* Coach inputs: fail pressure, cashflow, idle time, learning profile — explicitly **not** `skillStats`. `iconicProofLaw.ts` gates giant sim / AI guide. Family Room is local JSON — no fake server intelligence.
 
-**Repository anchors:** `worldDirector.ts` · `worldBlackboard.ts` · `familyRoom.ts` · no LLM inference in Islands product path
+**Repository anchors:** `worldDirector.ts` · `worldBlackboard.ts` · `familyRoom.ts` · no LLM inference in Islands product path · [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) · [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md)
 
 **Constitution Test:** If the coach were removed entirely, would money outcomes be identical? (Must be yes.)
 
@@ -322,6 +322,8 @@ Before shipping on the spine, a change must clear **all** of:
 | [iconic-path.md](../iconic-path.md) | Freeze + cold playtest checklist |
 | [ftue/NORTH_STAR.md](../ftue/NORTH_STAR.md) | Independent Transfer king KPI |
 | [CONSTRAINT_PLAY_TRUTH.md](./CONSTRAINT_PLAY_TRUTH.md) | Honest gameplay laws + regression guards |
+| [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) | Productive-struggle guide system + truth hierarchy |
+| [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md) | Allow/deny law + LLM PromptPack contract |
 
 **Conflict resolution:** **This constitution + iconic freeze** win until deliberately amended in a docs PR.
 
