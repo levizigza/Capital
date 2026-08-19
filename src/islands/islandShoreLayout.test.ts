@@ -6,7 +6,7 @@ import {
 } from "./islandShoreLayout";
 import { loadIslandsContent } from "./content/loader";
 import { COVE_ISLAND_ID } from "./islandIds";
-import { partyDashIdForIsland, isKinestheticComponent } from "./partyPlayStyle";
+import { isKinestheticComponent } from "./partyPlayStyle";
 import { getMasteryGateForMinigame } from "./masteryGate";
 import type { IslandDefinition } from "./types";
 

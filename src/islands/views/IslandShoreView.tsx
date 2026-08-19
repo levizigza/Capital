@@ -18,6 +18,7 @@ import type {
 } from "../types";
 import type { LearningProfileId } from "../learningProfile";
 import type { CapitalCharacter } from "../character";
+import { BASE_VOYAGER, voyagerForIslandStyle } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
@@ -114,6 +115,10 @@ export function IslandShoreView({
   structurePlayLocked = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
+  const shoreCharacter = useMemo(
+    () => voyagerForIslandStyle(character ?? BASE_VOYAGER, theme.animationStyle),
+    [character, theme.animationStyle],
+  );
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
   const organ = useMemo(() => moneyOrganForIsland(island.id), [island.id]);
@@ -318,7 +323,8 @@ export function IslandShoreView({
         <>
           <MoneyStructureInteriorView
             structure={structure}
-            character={character}
+            character={shoreCharacter}
+            animationStyle={theme.animationStyle}
             onExit={() => setStructureOpen(false)}
             onEnterPart={onEnterPart}
             inputFrozen={Boolean(softBeat) || structurePlayLocked}
@@ -352,7 +358,7 @@ export function IslandShoreView({
           <div className="absolute inset-0">
             <WalkableIslandExplore
               island={island}
-              character={character}
+              character={shoreCharacter}
               hotspots={hotspots}
               onHotspot={activate}
               onNearChange={onNearChange}
@@ -456,7 +462,7 @@ export function IslandShoreView({
             ) : null}
             {!chapterQuiet && character ? (
               <CharacterAvatar
-                character={character}
+                character={shoreCharacter}
                 size={40}
                 animationStyle={theme.animationStyle}
                 morphFromHome

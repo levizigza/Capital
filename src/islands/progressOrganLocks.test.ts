@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { islandLockHint, isIslandProgressLocked } from "./progressGates";
+import { islandLockHint, isIslandProgressLocked, PLAYTEST_UNLOCK_ALL_ISLANDS } from "./progressGates";
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { COVE_ISLAND_ID, PAYCHECK_PENINSULA_ID } from "./islandIds";
 
@@ -30,10 +30,12 @@ const emptySave = {
 } as unknown as IslandSaveV1;
 
 describe("progression lock organ language", () => {
-  it("keeps Cove and Paycheck open from Harbor; Credit needs Freedom + Paycheck Change", () => {
+  it("playtest unlock opens Credit and side shores with an empty save", () => {
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
     expect(isIslandProgressLocked(stub(COVE_ISLAND_ID), emptySave)).toBe(false);
     expect(isIslandProgressLocked(stub(PAYCHECK_PENINSULA_ID), emptySave)).toBe(false);
-    expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(true);
-    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toMatch(/Freedom Seal|Spiral|Paycheck/);
+    expect(isIslandProgressLocked(stub("credit_kingdom"), emptySave)).toBe(false);
+    expect(isIslandProgressLocked(stub("signal_city"), emptySave)).toBe(false);
+    expect(islandLockHint(stub("credit_kingdom"), emptySave)).toBeNull();
   });
 });

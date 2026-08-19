@@ -191,3 +191,37 @@ export function moneyGlyphFromBase(base?: string | null): string | undefined {
 export function resolveCharacterMascotId(base?: string | null): MoneyMascotId {
   return resolveMascotId(base);
 }
+
+/**
+ * Landing on an era shore remaps the same Voyager into that island's decade gear.
+ * Identity (base + coat color) stays; accessory / pants / companion flip to the era.
+ */
+const ERA_VOYAGER_GEAR: Record<
+  string,
+  { accessory: string; pants?: string; companion?: string }
+> = {
+  "capital-default": { accessory: "none" },
+  "era-1960s": { accessory: "goggles", pants: "ink", companion: "none" },
+  "era-1970s": { accessory: "headset", pants: "seafoam", companion: "crab" },
+  "era-1980s": { accessory: "cape", pants: "ledger", companion: "none" },
+  "era-1990s": { accessory: "cap", pants: "coral", companion: "finch" },
+  "era-2000s": { accessory: "goggles", pants: "marigold", companion: "iguana" },
+  "era-2010s": { accessory: "scarf", pants: "ink", companion: "tortoise" },
+  "era-2020s": { accessory: "sash", pants: "ledger", companion: "otter" },
+};
+
+export function voyagerForIslandStyle(
+  character: CapitalCharacter,
+  animationStyle?: string | null,
+): CapitalCharacter {
+  if (!animationStyle || animationStyle === "capital-default") {
+    return character;
+  }
+  const gear = ERA_VOYAGER_GEAR[animationStyle] ?? ERA_VOYAGER_GEAR["era-1990s"]!;
+  return {
+    ...character,
+    accessory: gear.accessory,
+    pants: gear.pants ?? character.pants,
+    companion: gear.companion ?? character.companion,
+  };
+}

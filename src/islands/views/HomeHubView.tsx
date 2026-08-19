@@ -1166,6 +1166,7 @@ export function HomeHubView({
           <MoneyStructureInteriorView
             structure={ledgerBank}
             character={voyager}
+            animationStyle="capital-default"
             onExit={() => setBankOpen(false)}
             onEnterPart={onEnterBankPart}
             inputFrozen={Boolean(bankSoftBeat) || structurePlayLocked}

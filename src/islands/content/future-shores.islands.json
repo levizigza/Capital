@@ -65,6 +65,20 @@
           "icon": "🧑‍🎨",
           "areaId": "fs_scaffold",
           "dialogueGraphId": "dlg_future_keeper"
+        },
+        {
+          "id": "npc_fs_weather",
+          "name": "Weather Weaver",
+          "icon": "🌤️",
+          "areaId": "fs_blank_canvas",
+          "dialogueGraphId": "dlg_fs_weather"
+        },
+        {
+          "id": "npc_fs_dock",
+          "name": "Dock Steward",
+          "icon": "🛟",
+          "areaId": "fs_community_dock",
+          "dialogueGraphId": "dlg_fs_dock"
         }
       ],
       "items": [
@@ -98,9 +112,103 @@
             "xp": 25,
             "coins": 50
           }
+        },
+        {
+          "id": "q_fs_weather_walk",
+          "track": "side",
+          "title": "Walk the Weather",
+          "description": "Meet the Weather Weaver and Dock Steward — portfolio weather is a people skill here.",
+          "objectives": [
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_fs_weather"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_fs_dock"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fs_diversify"
+            }
+          ],
+          "rewards": {
+            "xp": 40,
+            "coins": 75
+          }
         }
       ],
       "dialogues": [
+        {
+          "id": "dlg_fs_weather",
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "id": "start",
+              "speaker": "Weather Weaver",
+              "text": "Market weather paints these isles. Diversify baskets before the aurora flips — one storm shouldn't sink every raft.",
+              "choices": [
+                {
+                  "id": "c_ok",
+                  "text": "I'll rebalance before the front hits.",
+                  "nextNodeId": "done",
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_fs_weather_walk"
+                    }
+                  ]
+                },
+                {
+                  "id": "c_bye",
+                  "text": "Just looking.",
+                  "nextNodeId": "done"
+                }
+              ]
+            },
+            {
+              "id": "done",
+              "speaker": "Weather Weaver",
+              "text": "Horizon patience beats chasing every gust.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_fs_dock",
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "id": "start",
+              "speaker": "Dock Steward",
+              "text": "Community dock is where sky gardens trade shade and seed. Budget the districts before you float a new raft.",
+              "choices": [
+                {
+                  "id": "c1",
+                  "text": "Show me the sky budget idea.",
+                  "nextNodeId": "budget"
+                },
+                {
+                  "id": "c2",
+                  "text": "I'll walk the pier.",
+                  "nextNodeId": "bye"
+                }
+              ]
+            },
+            {
+              "id": "budget",
+              "speaker": "Dock Steward",
+              "text": "Needs · wants · reserves — same three buckets, just painted under aurora.",
+              "end": true
+            },
+            {
+              "id": "bye",
+              "speaker": "Dock Steward",
+              "text": "Carpet's ready when you are.",
+              "end": true
+            }
+          ]
+        },
         {
           "id": "dlg_future_keeper",
           "startNodeId": "start",
