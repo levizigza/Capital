@@ -192,7 +192,7 @@ See [whole-game-iconic-pass.md](./whole-game-iconic-pass.md).
 
 - **Harbor civic plan:** Outfitter off pier axis; Bank due-east; doors cleared of fountain (`harborPlazaPlan` + tests). Coin eye-paths curve around the basin.
 - **Myth fallback:** civic plaza sketch so layout still reads when 3D stalls; Enter Harbor uses pointer-safe activate.
-- **Side shores fun:** after Cove Change, travel UI shows a side-shore chip row + Piggy names outer-ring wake-up.
+- **Side shores fun:** after Paycheck Change, travel UI shows free-roam whisper + outer-ring shores unlock on the map.
 - **Playtest:** cold scripts + iconic e2e; human 3D veil must never brick Talk→Carpet→Cove.
 
 ## Still deepen (from iconic-later)

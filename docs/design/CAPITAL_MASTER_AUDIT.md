@@ -466,7 +466,7 @@ type QuestObjective = talkToNpc | collectItem | completeMinigame;
 **Gates** (`src/islands/progressGates.ts`):
 
 - `PLAYTEST_UNLOCK_ALL_ISLANDS = false` (production)
-- Side shores locked until Cove Change (`isSideShoreTravelId`)
+- Side shores locked until Paycheck Change (`isSideShoreTravelId`)
 - Credit locked until Freedom + Paycheck Change (`bossUnlockProgress`)
 - `BOSS_MASTERY_REQUIRED = 0` — quizzes do not gate Credit
 - Freedom Pavilion requires Freedom Seal (`PLAZA_ROOMS`)
@@ -489,7 +489,7 @@ type QuestObjective = talkToNpc | collectItem | completeMinigame;
 
 ### DESIGN INFERENCES
 
-- Progression is **literacy-first**: Cove Change → side shores; Freedom + Paycheck Change → Credit.
+- Progression is **literacy-first**: Paycheck Change → side shores; Freedom + Paycheck Change → Credit.
 - Concept phases and onboarding complete are intentionally separate — prevents fake completion.
 
 ### RECOMMENDATIONS

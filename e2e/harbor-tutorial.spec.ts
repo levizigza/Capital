@@ -121,7 +121,7 @@ test.describe("Harbor Haven tutorial opening", () => {
     const talk = page.getByTestId("hub-talk-npc");
     const mythTalk = page.getByTestId("fallback-talk-piggy");
 
-    // First meet: presence tip visible; Talk CTA only when near Piggy (or myth fallback).
+    // First meet: presence tip visible; plaza or myth fallback ready.
     await expect
       .poll(async () => {
         const presence = await page
@@ -134,12 +134,8 @@ test.describe("Harbor Haven tutorial opening", () => {
       }, { timeout: 25_000 })
       .toBe(true);
 
-    // Ambush guard: spawn must not force Talk unless myth fallback (no WebGL).
-    const talkAtSpawn = await talk.isVisible().catch(() => false);
-    const mythTalkOk = await mythTalk.isVisible().catch(() => false);
-    if (!mythTalkOk) {
-      expect(talkAtSpawn).toBe(false);
-    }
+    // Ambush guard: Talk Battle must not auto-open at spawn (near-Piggy CTA is OK).
+    await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0);
 
     // Daily Ritual must not steal first-meet (Memory organ waits for Cove Change).
     await expect(page.getByRole("heading", { name: /Harbor Daily Ritual/i })).toHaveCount(0);
@@ -183,24 +179,29 @@ test.describe("Harbor Haven tutorial opening", () => {
 
     // Finish Talk: listen → reply → Walk on.
     // Use element handles + force clicks — choice nodes remount and defeat auto-wait.
-    await page.waitForTimeout(250); // TalkBattle input arm after open
-    for (let step = 0; step < 8; step++) {
+    await page.waitForTimeout(400); // TalkBattle input arm after open
+    for (let step = 0; step < 12; step++) {
       if ((await page.getByTestId("talk-battle-screen").count()) === 0) break;
-      const cont = await page.$('[data-testid="talk-battle-continue"]');
-      if (cont) {
-        const label = ((await cont.textContent()) || "").trim();
-        await cont.evaluate((el) => (el as HTMLElement).click());
-        await page.waitForTimeout(120);
+
+      const choiceHandle = await page.$('[data-testid^="talk-choice-"]');
+      if (choiceHandle && (await choiceHandle.isVisible())) {
+        await choiceHandle.evaluate((el) => (el as HTMLElement).click());
+        await choiceHandle.dispose();
+        await page.waitForTimeout(200);
+        continue;
+      }
+
+      const contHandle = await page.$('[data-testid="talk-battle-continue"]');
+      if (contHandle && (await contHandle.isVisible())) {
+        const label = ((await contHandle.textContent()) || "").trim();
+        await contHandle.evaluate((el) => (el as HTMLElement).click());
+        await contHandle.dispose();
+        await page.waitForTimeout(200);
         if (/Walk on/i.test(label)) break;
         continue;
       }
-      const choice = await page.$('[data-testid^="talk-choice-"]');
-      if (choice) {
-        await choice.evaluate((el) => (el as HTMLElement).click());
-        await page.waitForTimeout(120);
-        continue;
-      }
-      await page.waitForTimeout(120);
+
+      await page.waitForTimeout(150);
     }
     await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0, {
       timeout: 15_000,

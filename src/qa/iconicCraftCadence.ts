@@ -276,6 +276,7 @@ export function iconicUnitTestPaths(): string[] {
     "src/islands/story/iconicCraft.test.ts",
     "src/islands/story/capitalPatternLibrary.test.ts",
     "src/islands/story/capitalIconicGame.test.ts",
+    "src/islands/wholeGameCohesionMachine.test.ts",
     "src/islands/signatureCinemaGate.test.ts",
     "src/islands/views/signatureJuiceContract.test.ts",
     "src/islands/views/minigameFailContract.test.ts",

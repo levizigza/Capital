@@ -315,7 +315,7 @@ When two pillars fight, **fantasy + signature loop win**.
 
 **Shipped (Pillar 17):** Main-quest strip frozen (`assertSpineTravelFrozen` — Harbor · Cove · Paycheck · Credit). Era **SIDE SHORE** restore on outer ring ([era-shores-restore.md](./era-shores-restore.md)). Later list at `docs/iconic-later.md`. Guarded by `iconicScopeFreeze.test.ts`.
 
-**Iteration 21:** Harbor civic master plan ([harbor-plaza-plan.md](./harbor-plaza-plan.md)) — Outfitter off pier axis, Bank due-east, door/fountain clearance tests; myth civic sketch; side-shore chip row after Cove Change.
+**Iteration 21:** Harbor civic master plan ([harbor-plaza-plan.md](./harbor-plaza-plan.md)) — Outfitter off pier axis, Bank due-east, door/fountain clearance tests; myth civic sketch; outer ring after Paycheck Change.
 
 **Iteration 22:** Whole-game iconic thresholds ([whole-game-iconic-pass.md](./whole-game-iconic-pass.md)) — organ vocabulary lock, Ashore anti-checklist, juice/input parity boot→structure exit, shore next-verb, Settings voice.
 

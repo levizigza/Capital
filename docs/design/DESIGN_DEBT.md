@@ -177,7 +177,7 @@ This register tracks **design debt** — gaps between intended player experience
 | **Severity** | 🟠 P1 |
 | **Type** | Surface debt |
 | **Classification** | IMPROVE |
-| **FACTS** | `islandContentDepth.test.ts` enforces ≥8 minigames, ≥3 quests per non-hub island. Side shores unlocked after Cove Change. |
+| **FACTS** | `islandContentDepth.test.ts` enforces ≥8 minigames, ≥3 quests per non-hub island. Side shores unlocked after Paycheck Change. |
 | **INFERENCE** | Machine depth ≠ iconic feel; side shores may read as content packs vs organ-true districts. |
 | **RECOMMENDATION** | Per-shore cold retell + one signature side scar pair playtest per `digressionShelf.ts` slots. |
 

@@ -149,24 +149,27 @@ export function TalkBattleScreen({
   }, [open, organ?.id]);
 
   const advanceFromListen = useCallback(() => {
-    if (!inputArmed.current) return;
     const next = nextTalkPhase(node, "listen");
     if (next === "choose") {
       setPhase("choose");
       playCapitalSfx("talk_confirm");
       return;
     }
+    const terminal = Boolean(node.end) || choices.length === 0;
+    if (!inputArmed.current && !terminal) return;
     onContinue();
-  }, [node, onContinue]);
+  }, [choices.length, node, onContinue]);
 
   const chooseReply = useCallback(
     (choiceId: string) => {
-      if (!inputArmed.current) return;
+      const choice = node.choices?.find((c) => c.id === choiceId);
+      const terminalChoice = Boolean(choice && !choice.nextNodeId);
+      if (!inputArmed.current && !terminalChoice) return;
       playCapitalSfx("talk_confirm");
       triggerJuice("accept");
       onChoice(choiceId);
     },
-    [onChoice],
+    [node.choices, onChoice],
   );
 
   useInputAction("cancel", onSkip);

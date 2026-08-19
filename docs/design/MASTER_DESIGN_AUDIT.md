@@ -157,7 +157,7 @@ Ashore order: Walk · Talk · board Cove (`harborAshore.ts`). Coin Bag pointer: 
 
 - **Main course** (`mainCourse.ts`): Harbor → Cove Change → Paycheck Change → Freedom Seal → Credit Ordeal
 - **Gates** (`progressGates.ts` on `main`):
-  - Side shores soft-locked until Cove Change
+  - Side shores soft-locked until Paycheck Change
   - Cove + Paycheck open after Harbor (playability sweep)
   - **Credit Kingdom:** Freedom Seal **and** `masteryClears.length >= 3`
   - Freedom Pavilion requires Freedom

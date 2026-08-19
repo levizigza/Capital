@@ -18,7 +18,7 @@
 | Gates | `src/islands/progressGates.ts` (`hasCompletedCoveChange`) |
 | Telemetry | `src/islands/types.ts` (`AnalyticsEventName`) · call sites in IslandsApp / overlays |
 
-**Canon spine (freeze):** Harbor · Cove → Paycheck → Credit. Side shores after Cove Change. Family Room local.
+**Canon spine (freeze):** Harbor · Cove → Paycheck → Credit. Side shores after Paycheck Change. Family Room local.
 
 ---
 
@@ -381,7 +381,7 @@ Classification key: **KEEP · SIMPLIFY · MOVE LATER · MAKE INTERACTIVE · MAKE
 |---------------|-------------------------------|
 | Ashore 5 chambers | Harbor Talk / Carpet / Cove quests |
 | Carpet boot cinema | Take · hush · spectacle · homecoming |
-| Quiet chrome overlays | Travel locks until Cove Change |
+| Quiet chrome overlays | Side-shore travel locks until Paycheck Change |
 
 ### Forced vs skippable (code)
 

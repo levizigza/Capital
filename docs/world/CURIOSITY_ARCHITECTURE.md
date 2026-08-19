@@ -65,7 +65,7 @@ Pull the eye **without** inventing GDP.
 | Needs a **travel-map** marker | Does not |
 |------------------------------|----------|
 | Harbor, Cove, Paycheck, Credit (spine chips) | Outfitter, Capsule, Settings |
-| Side shores **after** Cove Change (outer ring) | Individual shore play pads |
+| Side shores **after** Paycheck Change (outer ring) | Individual shore play pads |
 | — | Structure **parts** (cork, teller) |
 | — | Journal, arcade catalog games |
 | — | Demo Key Cove (parked) |

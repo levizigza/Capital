@@ -274,7 +274,7 @@ Almost every outer island ships **two “curriculum” quests** (talk ×2 + mini
 Shared flags for arcade lanes (`q_*_arcade_lane`, `q_sc_reef_arcade`, `q_fs_arcade_lane`, …):  
 **FETCH_QUEST** · **NO_HUMAN_STAKES** · **NO_SYSTEM_INTERACTION** · **NO_CONSEQUENCE** · **REPEATED_TEMPLATE**. Pillars: E + sometimes F → **n≤2**. Fail strong-quest bar.
 
-Curriculum quests below: all **side**, unlock after Cove Change.
+Curriculum quests below: all **side**, unlock after Paycheck Change (side shores).
 
 ### Phosphor Reef (`signal_city`)
 

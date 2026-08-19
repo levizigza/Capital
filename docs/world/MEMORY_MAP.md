@@ -11,7 +11,7 @@ This is not a GIS layer and not NPC chat history. It is the **player’s mental 
 
 | Map | What it stores | Player-facing |
 |-----|----------------|---------------|
-| **Travel map** | Destinations (spine always; side shores after Cove Change) | `TravelMapView` / `ArchipelagoMap3D` |
+| **Travel map** | Destinations (spine always; side shores after Paycheck Change) | `TravelMapView` / `ArchipelagoMap3D` |
 | **Memory map** | What Harbor and organs **kept** | Plinth, plaques, weather, hush, Piggy lines, day-2 |
 
 The travel map answers *where can I go?*  
@@ -183,7 +183,7 @@ Filler locations **create no memory object**. If a place never writes a scar, fl
 ## QA
 
 1. After first Take, player can walk to Plinth without opening Travel.  
-2. Travel strip is 4 chips until Cove Change, then outer ring — not 40 POIs.  
+2. Travel strip is 4 chips on spine; outer ring opens after Paycheck Change — not 40 POIs.  
 3. Quiet Harbor: Carpet + Plinth still findable (navigability vs presence).  
 4. Paycheck visit does not require remembering Cove’s **answer** — only that Harbor keeps choices.  
 5. Era shores do not add main-course pins.

@@ -410,7 +410,16 @@ export function piggyGuidedGraph(
           id: "g_chart",
           speaker: "Piggy Penny",
           text: "Tap Harbor (you're here) and Coincraft Cove (first painting). Peek at Paycheck, Credit, and the outer ring if you're curious — extra games, not homework.",
-          end: true,
+          choices: [
+            {
+              id: "walk",
+              text: {
+                explorer: "Walk on",
+                apprentice: "Walk on",
+                strategist: "Walk on",
+              },
+            },
+          ],
         },
       ],
     };
