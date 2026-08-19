@@ -13,6 +13,7 @@ import { useInputAction } from "@/input";
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import type { CapitalCharacter } from "../character";
+import { BASE_VOYAGER, voyagerForIslandStyle } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
 import { getAnimationStyle } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
@@ -115,6 +116,10 @@ export function IslandBoardView({
   const { reduced } = useGameMotion();
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
+  const boardCharacter = useMemo(
+    () => voyagerForIslandStyle(character ?? BASE_VOYAGER, theme.animationStyle),
+    [character, theme.animationStyle],
+  );
   const boardMode = getBoardEconomyMode(island);
   const board = useMemo(() => buildBoardForIsland(island), [island]);
   const party = getPartyState(save, island.id);
@@ -546,7 +551,7 @@ export function IslandBoardView({
               <div className="party-token" style={{ left: `${tokenLayout.x}%`, top: `${tokenLayout.y}%` }}>
                 {character ? (
                   <CharacterAvatar
-                    character={character}
+                    character={boardCharacter}
                     size={40}
                     animationStyle={theme.animationStyle}
                     reducedMotion={reduced}

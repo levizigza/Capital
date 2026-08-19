@@ -13,7 +13,7 @@ import {
   CREDIT_TAKE_KEY,
   takeFootprintFeedbackLine,
 } from "./spineTakeFootprints";
-import { bossUnlockProgress, isIslandProgressLocked, islandLockHint } from "./progressGates";
+import { bossUnlockProgress, isIslandProgressLocked, islandLockHint, PLAYTEST_UNLOCK_ALL_ISLANDS } from "./progressGates";
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { PAYCHECK_CHANGE_QUEST_ID } from "./islandIds";
 import { harborWeatherMood, feedbackLoopLine } from "./harborWeather";
@@ -73,7 +73,7 @@ describe("spine Take footprints — world diverges", () => {
 });
 
 describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
-  it("stays locked with Freedom alone", () => {
+  it("Freedom alone is not transfer proof; playtest still opens the map island", () => {
     const save = {
       ...createDefaultIslandSave(),
       voyagerLedger: {
@@ -83,9 +83,10 @@ describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
       },
       questStatus: {},
     } as IslandSaveV1;
-    expect(bossUnlockProgress(save).unlocked).toBe(false);
-    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(true);
-    expect(islandLockHint(stub("credit_kingdom"), save)).toMatch(/Paycheck Change/i);
+    expect(bossUnlockProgress(save).transferProof).toBe(false);
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
+    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(false);
+    expect(islandLockHint(stub("credit_kingdom"), save)).toBeNull();
   });
 
   it("opens with Freedom + Paycheck Change even with zero mastery clears", () => {

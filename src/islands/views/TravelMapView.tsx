@@ -17,7 +17,7 @@ import {
 } from "../spineArchipelago";
 import { ArchipelagoMap3D } from "../world3d/ArchipelagoMap3D";
 import { getIslandTheme } from "../themes/islandThemes";
-import { islandLockHint } from "../progressGates";
+import { islandLockHint, PLAYTEST_UNLOCK_ALL_ISLANDS } from "../progressGates";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { pointerSafeActivate } from "../pointerSafeClick";
 import { hasCompletedCoveChange } from "../chapterLoop";
@@ -91,9 +91,15 @@ export function TravelMapView({
     [currentId, onBack, onStartVoyage],
   );
 
-  const stripIslands = useMemo(() => islandsForSpineTravel(islands), [islands]);
+  const stripIslands = useMemo(
+    () =>
+      PLAYTEST_UNLOCK_ALL_ISLANDS
+        ? islandsForArchipelagoMap(islands)
+        : islandsForSpineTravel(islands),
+    [islands],
+  );
   const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
-  const freeRoamOpen = hasCompletedCoveChange(save);
+  const freeRoamOpen = PLAYTEST_UNLOCK_ALL_ISLANDS || hasCompletedCoveChange(save);
 
   const scrollStrip = useCallback((dir: "prev" | "next") => {
     const el = stripRef.current;
@@ -220,7 +226,9 @@ export function TravelMapView({
               className="max-w-md text-center text-[10px] font-medium text-sky-100/75"
               data-testid="travel-free-roam-whisper"
             >
-              Free roam · side shores whisper — stray, choose, leave footprints; spine stays Cove → Paycheck → Credit
+              {PLAYTEST_UNLOCK_ALL_ISLANDS
+                ? "Playtest · every shore open — board any island to cold-check play"
+                : "Free roam · side shores whisper — stray, choose, leave footprints; spine stays Cove → Paycheck → Credit"}
             </p>
           ) : (
             <p className="max-w-md text-center text-[10px] font-medium text-white/45">

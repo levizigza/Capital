@@ -24,6 +24,12 @@ export const BOSS_ISLAND_ID = "credit_kingdom";
  */
 export const BOSS_MASTERY_REQUIRED = 0;
 
+/**
+ * Playtest: open every island so shores can be cold-checked for playability.
+ * Flip to `false` before shipping gated progression again.
+ */
+export const PLAYTEST_UNLOCK_ALL_ISLANDS = true;
+
 /** Plaza free-roam rooms on Harbor Haven */
 export type PlazaRoomId = "plaza" | "market" | "dock" | "pavilion";
 
@@ -85,7 +91,7 @@ export function bossUnlockProgress(save: IslandSaveV1): {
     mastery,
     needed: BOSS_MASTERY_REQUIRED,
     // Literacy is gameplay: Freedom (sim) + Paycheck Change (transfer), not quiz count.
-    unlocked: escaped && transferProof,
+    unlocked: PLAYTEST_UNLOCK_ALL_ISLANDS || (escaped && transferProof),
   };
 }
 
@@ -95,6 +101,7 @@ export function bossUnlockProgress(save: IslandSaveV1): {
  */
 export function isIslandProgressLocked(island: IslandDefinition, save: IslandSaveV1): boolean {
   if (isHubIslandId(island.id)) return false;
+  if (PLAYTEST_UNLOCK_ALL_ISLANDS) return false;
 
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;

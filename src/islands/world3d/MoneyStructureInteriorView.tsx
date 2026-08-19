@@ -46,6 +46,8 @@ function themeExitHint(theme: MoneyStructureDef["theme"], near: boolean) {
 type Props = {
   structure: MoneyStructureDef;
   character?: CapitalCharacter | null;
+  /** Island decade lens — remaps Voyager materials inside the structure */
+  animationStyle?: string;
   onExit: () => void;
   onEnterPart: (part: MoneyStructurePart) => void;
   /** Freeze walk while a Soft Beat overlay owns the screen */
@@ -60,11 +62,13 @@ function InteriorPlayer({
   pads,
   onNear,
   inputFrozen,
+  animationStyle,
 }: {
   character?: CapitalCharacter | null;
   pads: { id: string; position: [number, number, number] }[];
   onNear: (id: string | null) => void;
   inputFrozen: boolean;
+  animationStyle?: string;
 }) {
   const group = useRef<THREE.Group>(null);
   const { camera } = useThree();
@@ -137,7 +141,11 @@ function InteriorPlayer({
 
   return (
     <group ref={group} position={[0, 0, 5]}>
-      <VoyagerMesh character={character ?? undefined} scale={1.05} />
+      <VoyagerMesh
+        character={character ?? undefined}
+        scale={1.05}
+        animationStyle={animationStyle}
+      />
     </group>
   );
 }
@@ -291,6 +299,7 @@ function InteriorWorld({
   setNearId,
   inputFrozen,
   onEnterPart,
+  animationStyle,
 }: {
   structure: MoneyStructureDef;
   character?: CapitalCharacter | null;
@@ -298,6 +307,7 @@ function InteriorWorld({
   setNearId: (id: string | null) => void;
   inputFrozen: boolean;
   onEnterPart: (part: MoneyStructurePart) => void;
+  animationStyle?: string;
 }) {
   const shell = structureShell(structure.theme);
   const pads = useMemo(
@@ -370,6 +380,7 @@ function InteriorWorld({
         pads={pads}
         onNear={setNearId}
         inputFrozen={inputFrozen}
+        animationStyle={animationStyle}
       />
     </>
   );
@@ -378,6 +389,7 @@ function InteriorWorld({
 export function MoneyStructureInteriorView({
   structure,
   character,
+  animationStyle,
   onExit,
   onEnterPart,
   inputFrozen = false,
@@ -476,6 +488,7 @@ export function MoneyStructureInteriorView({
                   setNearId={setNearId}
                   inputFrozen={inputFrozen}
                   onEnterPart={onEnterPart}
+                  animationStyle={animationStyle}
                 />
               </Suspense>
             </Canvas>

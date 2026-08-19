@@ -11,6 +11,7 @@ import {
 } from "./islandCulture";
 import { moneyStructureForIsland } from "./moneyStructures";
 import { isParkedMinigameId } from "./spineContentRegistry";
+import { PLAYTEST_UNLOCK_ALL_ISLANDS } from "./progressGates";
 
 export type ShoreHotspotKind =
   | "pier"
@@ -116,7 +117,9 @@ export function buildShoreHotspots(island: IslandDefinition): ShoreHotspot[] {
     subtitle: "Quests, bag, and chapter notes",
   });
 
-  const games = (island.minigames ?? []).filter((g) => !isParkedMinigameId(g.id));
+  const games = (island.minigames ?? []).filter(
+    (g) => PLAYTEST_UNLOCK_ALL_ISLANDS || !isParkedMinigameId(g.id),
+  );
   const kinesthetic = games.filter((g) => isKinestheticComponent(g.componentId));
   const literacy = games.filter((g) => !isKinestheticComponent(g.componentId));
   /**
