@@ -4,32 +4,65 @@
     {
       "id": "harbor_haven",
       "name": "Harbor Haven",
-      "description": "Castle Grounds — walk with Coin Bag, talk to Piggy Penny, style at the Outfitter, peek Capsules, then board your carpet for the first painting.",
-      "icon": "🏝️",
+      "description": "Castle Grounds \u2014 walk with Coin Bag, talk to Piggy Penny, style at the Outfitter, peek Capsules, then board your carpet for the first painting.",
+      "icon": "\ud83c\udfdd\ufe0f",
       "provenance": {
         "learning_objectives": [
           "Orient to Harbor as home base",
           "Meet the Harbor Keeper and Coin Bag",
           "Practice a tiny spend before voyaging"
         ],
-        "mechanics_used": ["hub-exploration", "npc-dialogue-tree", "shop-spend"],
-        "originality_notes": "SM64-style Castle Grounds hub. Not a chapter island — chapters live on outer paintings (Coincraft Cove first).",
-        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday"]
+        "mechanics_used": [
+          "hub-exploration",
+          "npc-dialogue-tree",
+          "shop-spend"
+        ],
+        "originality_notes": "SM64-style Castle Grounds hub. Not a chapter island \u2014 chapters live on outer paintings (Coincraft Cove first).",
+        "forbidden_references": [
+          "Monopoly",
+          "Cashflow",
+          "Game of Life",
+          "Payday"
+        ]
       },
       "areas": [
         {
           "id": "hh_plaza",
           "name": "Main Plaza",
-          "description": "Outfitter, Capsules, Arcade, and Piggy Penny’s welcome mat.",
-          "icon": "🏛️",
-          "connections": ["hh_dock"]
+          "description": "Outfitter, Capsules, Arcade, and Piggy Penny\u2019s welcome mat.",
+          "icon": "\ud83c\udfdb\ufe0f",
+          "connections": [
+            "hh_dock",
+            "hh_market"
+          ]
         },
         {
           "id": "hh_dock",
           "name": "Carpet Dock",
           "description": "Your money magic carpet waits to float to the Fortune Archipelago.",
-          "icon": "🪄",
-          "connections": ["hh_plaza"]
+          "icon": "\ud83e\ude84",
+          "connections": [
+            "hh_plaza"
+          ]
+        },
+        {
+          "id": "hh_market",
+          "name": "Pasaran Lane",
+          "description": "Fair trade practice and money-culture locals \u2014 Harbor's market wing.",
+          "icon": "\ud83e\uddfa",
+          "connections": [
+            "hh_plaza",
+            "hh_pavilion"
+          ]
+        },
+        {
+          "id": "hh_pavilion",
+          "name": "Freedom Pavilion",
+          "description": "Unlocked after Freedom Seal \u2014 carpet upgrades and victory lap toys.",
+          "icon": "\ud83c\udfc6",
+          "connections": [
+            "hh_market"
+          ]
         }
       ],
       "npcs": [],
@@ -40,8 +73,8 @@
         {
           "id": "mg_harbor_safe_memory",
           "name": "Safe Heart Rooms",
-          "description": "Memory rooms inside the vault — Harbor remembers what you keep.",
-          "icon": "🔐",
+          "description": "Memory rooms inside the vault \u2014 Harbor remembers what you keep.",
+          "icon": "\ud83d\udd10",
           "componentId": "ExplorablePuzzleGame",
           "areaId": "hh_plaza",
           "genre": "exploration",
@@ -52,15 +85,17 @@
         {
           "id": "mg_harbor_ledger_mail",
           "name": "Ledger Mail",
-          "description": "Harbor mail Memory stamps — each choice is something Harbor will remember.",
-          "icon": "📮",
+          "description": "Harbor mail Memory stamps \u2014 each choice is something Harbor will remember.",
+          "icon": "\ud83d\udcee",
           "componentId": "ModularMinigame",
           "areaId": "hh_plaza",
           "modules": [
             {
               "id": "EventDeck",
               "config": {
-                "deckIds": ["finance_kids"],
+                "deckIds": [
+                  "finance_kids"
+                ],
                 "tags": [],
                 "maxDraws": 6
               }
@@ -70,6 +105,67 @@
           "complexity": "easy",
           "visualShell": "cards",
           "estimatedMinutes": 4
+        },
+        {
+          "id": "mg_harbor_compound",
+          "name": "Harbor Snowball",
+          "description": "Watch Harbor savings compound in the vault display.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "hh_market",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 25,
+                "ratePct": 5,
+                "years": 6,
+                "label": "Harbor jar"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_harbor_pasaran",
+          "name": "Pasaran Practice",
+          "description": "Fair trade stalls before your first voyage.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "PasaranMarketGame",
+          "areaId": "hh_market"
+        },
+        {
+          "id": "mg_harbor_coin_catcher",
+          "name": "Plaza Coin Catcher",
+          "description": "Catch coins, dodge impulse buys \u2014 Harbor arcade warm-up.",
+          "icon": "\ud83d\udd79\ufe0f",
+          "componentId": "CoinCatcherMinigame",
+          "areaId": "hh_plaza",
+          "genre": "arcade",
+          "complexity": "easy"
+        },
+        {
+          "id": "mg_harbor_life_fork",
+          "name": "Harbor Life Fork",
+          "description": "Tiny spend choices fork before your first painting.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "hh_plaza"
+        },
+        {
+          "id": "mg_harbor_budget",
+          "name": "Dock Budget Warm-up",
+          "description": "Split a tiny pouch into needs, wants, and voyage savings.",
+          "icon": "\ud83d\udcca",
+          "componentId": "BudgetSplitterGame",
+          "areaId": "hh_dock"
+        },
+        {
+          "id": "mg_harbor_diversify",
+          "name": "Pavilion Baskets",
+          "description": "Spread Freedom rewards across Harbor upgrades.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "hh_pavilion"
         }
       ]
     }

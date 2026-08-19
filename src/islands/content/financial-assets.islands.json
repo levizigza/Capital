@@ -4,8 +4,8 @@
     {
       "id": "financial_assets",
       "name": "Budget Kart Coast",
-      "description": "Scrap-coast markets where coin trades teach risk. Side shore of Fortune Archipelago — scrap coast soundtrack.",
-      "icon": "🏎️",
+      "description": "Scrap-coast markets where coin trades teach risk. Side shore of Fortune Archipelago \u2014 scrap coast soundtrack.",
+      "icon": "\ud83c\udfce\ufe0f",
       "provenance": {
         "learning_objectives": [
           "Understand stocks, bonds, ETFs, and mutual funds",
@@ -31,7 +31,7 @@
           "id": "fa_market_street",
           "name": "Market Street",
           "description": "Bright ticker screens line the streets. Traders hustle between stalls.",
-          "icon": "🏙️",
+          "icon": "\ud83c\udfd9\ufe0f",
           "connections": [
             "fa_broker_hall",
             "fa_news_stand"
@@ -41,7 +41,7 @@
           "id": "fa_broker_hall",
           "name": "Broker Hall",
           "description": "A grand marble hall where brokers execute trades. Practice paper trading here.",
-          "icon": "🏛️",
+          "icon": "\ud83c\udfdb\ufe0f",
           "connections": [
             "fa_market_street",
             "fa_etf_lab"
@@ -54,7 +54,7 @@
           "id": "fa_news_stand",
           "name": "News Stand",
           "description": "Newspapers and screens everywhere. News events move the markets.",
-          "icon": "📰",
+          "icon": "\ud83d\udcf0",
           "connections": [
             "fa_market_street"
           ]
@@ -63,7 +63,7 @@
           "id": "fa_etf_lab",
           "name": "ETF Research Lab",
           "description": "Quiet desks with data terminals. Compare funds and pick the best one.",
-          "icon": "🔬",
+          "icon": "\ud83d\udd2c",
           "connections": [
             "fa_broker_hall"
           ],
@@ -76,35 +76,35 @@
         {
           "id": "npc_penny",
           "name": "Penny the Trader",
-          "icon": "💹",
+          "icon": "\ud83d\udcb9",
           "areaId": "fa_market_street",
           "dialogueGraphId": "dlg_penny"
         },
         {
           "id": "npc_marcus",
           "name": "Marcus the Broker",
-          "icon": "🤵",
+          "icon": "\ud83e\udd35",
           "areaId": "fa_broker_hall",
           "dialogueGraphId": "dlg_marcus"
         },
         {
           "id": "npc_nina",
           "name": "Nina the Analyst",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "areaId": "fa_news_stand",
           "dialogueGraphId": "dlg_nina"
         },
         {
           "id": "npc_dr_fund",
           "name": "Dr. Fund",
-          "icon": "🧑‍🔬",
+          "icon": "\ud83e\uddd1\u200d\ud83d\udd2c",
           "areaId": "fa_etf_lab",
           "dialogueGraphId": "dlg_dr_fund"
         },
         {
           "id": "npc_old_timer",
           "name": "Old Timer Walt",
-          "icon": "👴",
+          "icon": "\ud83d\udc74",
           "areaId": "fa_market_street",
           "dialogueGraphId": "dlg_old_timer"
         }
@@ -114,7 +114,7 @@
           "id": "fa_trading_license",
           "name": "Trading License",
           "description": "Penny gave you this license to enter Broker Hall.",
-          "icon": "📜",
+          "icon": "\ud83d\udcdc",
           "location": {
             "areaId": "fa_market_street"
           }
@@ -123,7 +123,7 @@
           "id": "fa_portfolio_report",
           "name": "Portfolio Report",
           "description": "Proof that you successfully built a diversified paper portfolio.",
-          "icon": "📋",
+          "icon": "\ud83d\udccb",
           "location": {
             "areaId": "fa_broker_hall"
           }
@@ -132,7 +132,7 @@
           "id": "fa_bond_certificate",
           "name": "Bond Certificate",
           "description": "Earned by understanding the difference between bonds and stocks.",
-          "icon": "🏦",
+          "icon": "\ud83c\udfe6",
           "location": {
             "areaId": "fa_news_stand"
           }
@@ -141,7 +141,7 @@
           "id": "fa_etf_badge",
           "name": "ETF Detective Badge",
           "description": "Awarded for correctly matching ETFs to investor goals.",
-          "icon": "🔍",
+          "icon": "\ud83d\udd0d",
           "location": {
             "areaId": "fa_etf_lab"
           }
@@ -150,7 +150,7 @@
           "id": "fa_island_medallion",
           "name": "Asset Island Medallion",
           "description": "The ultimate proof of financial asset mastery. Unlocks the next island!",
-          "icon": "🏅",
+          "icon": "\ud83c\udfc5",
           "location": {
             "areaId": "fa_etf_lab"
           }
@@ -237,6 +237,26 @@
               "fa_island_medallion"
             ]
           }
+        },
+        {
+          "id": "q_fa_arcade_lane",
+          "track": "side",
+          "title": "Market Arcade Lane",
+          "description": "Optional coast lane \u2014 life fork and explore after your ETF badge.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fa_life_fork"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fa_explore"
+            }
+          ],
+          "rewards": {
+            "coins": 60,
+            "xp": 120
+          }
         }
       ],
       "dialogues": [
@@ -262,7 +282,7 @@
                 },
                 {
                   "id": "p1_listen",
-                  "text": "Digression — peek or trade blind?",
+                  "text": "Digression \u2014 peek or trade blind?",
                   "nextNodeId": "p_fork"
                 },
                 {
@@ -275,7 +295,7 @@
             {
               "id": "p_fork",
               "speaker": "Penny the Trader",
-              "text": "Boards are loud today. Peek first — or slap a trade before you’ve read the tape?",
+              "text": "Boards are loud today. Peek first \u2014 or slap a trade before you\u2019ve read the tape?",
               "choices": [
                 {
                   "id": "p_peek",
@@ -294,7 +314,7 @@
                 },
                 {
                   "id": "p_rush",
-                  "text": "Trade blind — I’ll learn mid-swing.",
+                  "text": "Trade blind \u2014 I\u2019ll learn mid-swing.",
                   "nextNodeId": "p_rush_done",
                   "effects": [
                     {
@@ -318,13 +338,13 @@
             {
               "id": "p_rush_done",
               "speaker": "Penny the Trader",
-              "text": "Swing first, read later — that’s a story. Harbor may gossip that you traded blind.",
+              "text": "Swing first, read later \u2014 that\u2019s a story. Harbor may gossip that you traded blind.",
               "end": true
             },
             {
               "id": "p2",
               "speaker": "Penny the Trader",
-              "text": "Great! First rule: diversification. Don't put all your eggs in one basket. Take this Trading License — it'll get you into Broker Hall where Marcus can set up your paper trading account.",
+              "text": "Great! First rule: diversification. Don't put all your eggs in one basket. Take this Trading License \u2014 it'll get you into Broker Hall where Marcus can set up your paper trading account.",
               "choices": [
                 {
                   "id": "p2c1",
@@ -342,7 +362,7 @@
             {
               "id": "p2b",
               "speaker": "Penny the Trader",
-              "text": "Head to Broker Hall — it's connected from here. Marcus will show you the trading simulator. Good luck!",
+              "text": "Head to Broker Hall \u2014 it's connected from here. Marcus will show you the trading simulator. Good luck!",
               "end": true
             },
             {
@@ -383,17 +403,17 @@
             {
               "id": "m2",
               "speaker": "Marcus the Broker",
-              "text": "Opening the trading floor now…",
+              "text": "Opening the trading floor now\u2026",
               "end": true
             },
             {
               "id": "m3",
               "speaker": "Marcus the Broker",
-              "text": "A portfolio is your collection of investments — stocks, bonds, etc. The key is spreading your money across different asset types so one bad day doesn't wipe you out. That's diversification!",
+              "text": "A portfolio is your collection of investments \u2014 stocks, bonds, etc. The key is spreading your money across different asset types so one bad day doesn't wipe you out. That's diversification!",
               "choices": [
                 {
                   "id": "m3c1",
-                  "text": "Got it — let's trade!",
+                  "text": "Got it \u2014 let's trade!",
                   "nextNodeId": "m2",
                   "effects": [
                     {
@@ -440,7 +460,7 @@
             {
               "id": "n2",
               "speaker": "Nina the Analyst",
-              "text": "Loading the scenario simulator…",
+              "text": "Loading the scenario simulator\u2026",
               "end": true
             },
             {
@@ -474,7 +494,7 @@
             {
               "id": "d1",
               "speaker": "Dr. Fund",
-              "text": "Welcome to the ETF Research Lab! An ETF — Exchange-Traded Fund — bundles many assets together so you can invest in a whole market with one purchase. Want to become an ETF Detective?",
+              "text": "Welcome to the ETF Research Lab! An ETF \u2014 Exchange-Traded Fund \u2014 bundles many assets together so you can invest in a whole market with one purchase. Want to become an ETF Detective?",
               "choices": [
                 {
                   "id": "d1c1",
@@ -501,13 +521,13 @@
             {
               "id": "d2",
               "speaker": "Dr. Fund",
-              "text": "Let me pull up the comparison terminal…",
+              "text": "Let me pull up the comparison terminal\u2026",
               "end": true
             },
             {
               "id": "d3",
               "speaker": "Dr. Fund",
-              "text": "When you buy a stock, you own a piece of one company. An ETF is like a basket — it holds shares in many companies. You get instant diversification! But watch the fees — they eat into your returns over time.",
+              "text": "When you buy a stock, you own a piece of one company. An ETF is like a basket \u2014 it holds shares in many companies. You get instant diversification! But watch the fees \u2014 they eat into your returns over time.",
               "choices": [
                 {
                   "id": "d3c1",
@@ -558,7 +578,7 @@
             {
               "id": "ot3",
               "speaker": "Old Timer Walt",
-              "text": "Panic selling. Markets drop 20-30% sometimes — it's normal. Beginners sell at the bottom and miss the recovery. If you have a long time horizon, stay the course.",
+              "text": "Panic selling. Markets drop 20-30% sometimes \u2014 it's normal. Beginners sell at the bottom and miss the recovery. If you have a long time horizon, stay the course.",
               "end": true
             }
           ]
@@ -569,7 +589,7 @@
           "id": "mg_paper_trading",
           "name": "Paper Trading Simulator",
           "description": "Build a diversified portfolio with $10,000 virtual cash over 30 trading days.",
-          "icon": "📈",
+          "icon": "\ud83d\udcc8",
           "componentId": "PaperTradingGame",
           "areaId": "fa_broker_hall"
         },
@@ -577,7 +597,7 @@
           "id": "mg_bonds_vs_stocks",
           "name": "Bonds vs Stocks Challenge",
           "description": "React to news events by choosing bonds or stocks. Learn volatility vs yield.",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "componentId": "BondsVsStocksGame",
           "areaId": "fa_news_stand"
         },
@@ -585,15 +605,15 @@
           "id": "mg_etf_detective",
           "name": "ETF Detective",
           "description": "Compare ETFs and pick the best match for each investor goal.",
-          "icon": "🔍",
+          "icon": "\ud83d\udd0d",
           "componentId": "ETFDetectiveGame",
           "areaId": "fa_etf_lab"
         },
         {
           "id": "mg_diversify_baskets",
           "name": "Don't Break the Basket",
-          "description": "Allocate your coins across cash, bonds, index funds, stocks, and crypto — then weather live market years. Feel why spreading risk wins.",
-          "icon": "🧺",
+          "description": "Allocate your coins across cash, bonds, index funds, stocks, and crypto \u2014 then weather live market years. Feel why spreading risk wins.",
+          "icon": "\ud83e\uddfa",
           "componentId": "DiversifyBasketsGame",
           "areaId": "fa_broker_hall",
           "genre": "strategy",
@@ -605,7 +625,7 @@
           "id": "mg_compound_snowball",
           "name": "Compound Snowball",
           "description": "Reinvest your gains each year and watch the curve balloon, or cash out and stay flat. Compounding, learned by doing.",
-          "icon": "⛄",
+          "icon": "\u26c4",
           "componentId": "CompoundSnowballGame",
           "areaId": "fa_etf_lab",
           "genre": "simulation",
@@ -620,6 +640,44 @@
                 "ratePct": 10,
                 "years": 15,
                 "label": "your portfolio"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_fa_life_fork",
+          "name": "Market Life Fork",
+          "description": "Index vs stock-pick vs bond ladder \u2014 paths fork.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "fa_market_street"
+        },
+        {
+          "id": "mg_fa_explore",
+          "name": "Broker Hall Walk",
+          "description": "Explore broker hall rooms for portfolio clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "fa_broker_hall",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_fa_news",
+          "name": "News Stand Shocks",
+          "description": "Headline dispatches \u2014 read before you trade.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "fa_news_stand",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "finance_kids"
+                ],
+                "maxDraws": 8
               }
             }
           ]

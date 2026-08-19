@@ -28,7 +28,7 @@ export const BOSS_MASTERY_REQUIRED = 0;
  * Playtest: open every island so shores can be cold-checked for playability.
  * Flip to `false` before shipping gated progression again.
  */
-export const PLAYTEST_UNLOCK_ALL_ISLANDS = true;
+export const PLAYTEST_UNLOCK_ALL_ISLANDS = false;
 
 /** Plaza free-roam rooms on Harbor Haven */
 export type PlazaRoomId = "plaza" | "market" | "dock" | "pavilion";

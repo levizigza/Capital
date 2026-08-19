@@ -14,7 +14,7 @@
 |---|------|-----------|-----|---------------|
 | 1 | **You** | Spawn on Main Plaza as Voyager + Coin Bag | area `hh_plaza` | “I’m home at Harbor.” |
 | 2 | **Need** | Guided intro: meet Piggy, learn carpet | runtime `dlg_harbor_*` | “Where do I go?” |
-| 3 | **Go** | Walk plaza → dock; optional Safe Heart / Ledger Mail | `mg_harbor_safe_memory`, `mg_harbor_ledger_mail` | “Let’s explore.” |
+| 3 | **Go** | Walk plaza → market → dock; optional Safe Heart / Ledger Mail | `mg_harbor_safe_memory`, `mg_harbor_ledger_mail`, areas `hh_market`, `hh_pavilion` | “Let’s explore.” |
 | 4 | **Search** | Outfitter, Capsules, Arcade, Memory Plinth | plaza rooms | “Harbor has toys.” |
 | 5 | **Find** | First painting named — Coincraft Cove | travel strip | “Cove is next!” |
 | 6 | **Take** | Chapters live on outer paintings; Harbor holds scars | `harborScars` from Cove/Paycheck/Credit + digressions | “Harbor remembers.” |

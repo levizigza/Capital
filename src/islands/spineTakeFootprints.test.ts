@@ -73,7 +73,7 @@ describe("spine Take footprints — world diverges", () => {
 });
 
 describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
-  it("Freedom alone is not transfer proof; playtest still opens the map island", () => {
+  it("Freedom alone is not transfer proof; Credit stays locked in production", () => {
     const save = {
       ...createDefaultIslandSave(),
       voyagerLedger: {
@@ -84,9 +84,9 @@ describe("Credit unlock — Freedom + Paycheck transfer, not quiz", () => {
       questStatus: {},
     } as IslandSaveV1;
     expect(bossUnlockProgress(save).transferProof).toBe(false);
-    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(true);
-    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(false);
-    expect(islandLockHint(stub("credit_kingdom"), save)).toBeNull();
+    expect(PLAYTEST_UNLOCK_ALL_ISLANDS).toBe(false);
+    expect(isIslandProgressLocked(stub("credit_kingdom"), save)).toBe(true);
+    expect(islandLockHint(stub("credit_kingdom"), save)).toMatch(/Paycheck Change/i);
   });
 
   it("opens with Freedom + Paycheck Change even with zero mastery clears", () => {

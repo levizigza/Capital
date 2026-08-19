@@ -4,8 +4,8 @@
     {
       "id": "paycheck_peninsula",
       "name": "Paycheck Peninsula",
-      "description": "Clock organ shore — a stall with two prices after Cove. Harbor keeps whichever you pick, then Clock buckets wait as a new organ.",
-      "icon": "🕒",
+      "description": "Clock organ shore \u2014 a stall with two prices after Cove. Harbor keeps whichever you pick, then Clock buckets wait as a new organ.",
+      "icon": "\ud83d\udd52",
       "provenance": {
         "learning_objectives": [
           "Create a basic monthly budget from a fixed income",
@@ -13,59 +13,79 @@
           "Understand opportunity cost when making spending choices",
           "Practice adjusting a budget when unexpected expenses arise"
         ],
-        "mechanics_used": ["budget-allocation", "resource-management", "npc-dialogue-tree", "sorting-categorization"],
+        "mechanics_used": [
+          "budget-allocation",
+          "resource-management",
+          "npc-dialogue-tree",
+          "sorting-categorization"
+        ],
         "originality_notes": "Theme: coastal peninsula with neighborhood districts (not a spreadsheet or office). Verb: allocate budget across NPC requests and drag-sort expenses (not passive income collection). Structure: branching quest scenarios where budget choices affect NPC outcomes (not competitive or score-based). Combines budget-allocation puzzles with story-driven NPC consequence chains.",
-        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Banzai"]
+        "forbidden_references": [
+          "Monopoly",
+          "Cashflow",
+          "Game of Life",
+          "Payday",
+          "Banzai"
+        ]
       },
       "areas": [
         {
           "id": "pp_main_street",
           "name": "Main Street",
           "description": "The heart of the peninsula. Shops, a post office, and a community board with odd jobs.",
-          "icon": "🏘️",
-          "connections": ["pp_budget_bureau", "pp_rainy_day_park"]
+          "icon": "\ud83c\udfd8\ufe0f",
+          "connections": [
+            "pp_budget_bureau",
+            "pp_rainy_day_park"
+          ]
         },
         {
           "id": "pp_budget_bureau",
           "name": "Budget Bureau",
           "description": "A cozy office with whiteboards and pie charts. The town planner works here.",
-          "icon": "📊",
-          "connections": ["pp_main_street", "pp_rainy_day_park"]
+          "icon": "\ud83d\udcca",
+          "connections": [
+            "pp_main_street",
+            "pp_rainy_day_park"
+          ]
         },
         {
           "id": "pp_rainy_day_park",
           "name": "Rainy Day Park",
           "description": "A peaceful park with a fountain. Locals come here to think about unexpected expenses.",
-          "icon": "🌧️",
-          "connections": ["pp_main_street", "pp_budget_bureau"]
+          "icon": "\ud83c\udf27\ufe0f",
+          "connections": [
+            "pp_main_street",
+            "pp_budget_bureau"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_payroll_pat",
           "name": "Payroll Pat",
-          "icon": "📬",
+          "icon": "\ud83d\udcec",
           "areaId": "pp_main_street",
           "dialogueGraphId": "dlg_payroll_pat"
         },
         {
           "id": "npc_planner_priya",
           "name": "Planner Priya",
-          "icon": "📋",
+          "icon": "\ud83d\udccb",
           "areaId": "pp_budget_bureau",
           "dialogueGraphId": "dlg_planner_priya"
         },
         {
           "id": "npc_coach_carlos",
           "name": "Coach Carlos",
-          "icon": "🏋️",
+          "icon": "\ud83c\udfcb\ufe0f",
           "areaId": "pp_rainy_day_park",
           "dialogueGraphId": "dlg_coach_carlos"
         },
         {
           "id": "npc_vendor_vee",
           "name": "Vendor Vee",
-          "icon": "🛒",
+          "icon": "\ud83d\uded2",
           "areaId": "pp_main_street",
           "dialogueGraphId": "dlg_vendor_vee"
         }
@@ -75,29 +95,37 @@
           "id": "pp_first_paycheck",
           "name": "First Paycheck",
           "description": "Your very first earnings! Now you need to decide how to use them.",
-          "icon": "💰",
-          "location": { "areaId": "pp_main_street" }
+          "icon": "\ud83d\udcb0",
+          "location": {
+            "areaId": "pp_main_street"
+          }
         },
         {
           "id": "pp_budget_planner",
           "name": "Budget Planner",
           "description": "A notebook to track income and expenses. The foundation of smart money management.",
-          "icon": "📓",
-          "location": { "areaId": "pp_budget_bureau" }
+          "icon": "\ud83d\udcd3",
+          "location": {
+            "areaId": "pp_budget_bureau"
+          }
         },
         {
           "id": "pp_rainy_day_fund",
           "name": "Rainy Day Fund",
           "description": "A small emergency stash. You'll be glad you have it when surprises happen!",
-          "icon": "☂️",
-          "location": { "areaId": "pp_rainy_day_park" }
+          "icon": "\u2602\ufe0f",
+          "location": {
+            "areaId": "pp_rainy_day_park"
+          }
         },
         {
           "id": "pp_peninsula_badge",
           "name": "Peninsula Budget Badge",
           "description": "Awarded for mastering the basics of budgeting.",
-          "icon": "🎖️",
-          "location": { "areaId": "pp_budget_bureau" }
+          "icon": "\ud83c\udf96\ufe0f",
+          "location": {
+            "areaId": "pp_budget_bureau"
+          }
         }
       ],
       "quests": [
@@ -105,27 +133,57 @@
           "id": "q_pp_budget_basics",
           "track": "side",
           "title": "Budget Basics",
-          "description": "After the stall, collect a paycheck from Pat and stamp buckets with Priya — Clock as a new organ.",
-          "hint": "Main Street Pat, then the Budget Bureau — after Vee’s stall has spoken.",
+          "description": "After the stall, collect a paycheck from Pat and stamp buckets with Priya \u2014 Clock as a new organ.",
+          "hint": "Main Street Pat, then the Budget Bureau \u2014 after Vee\u2019s stall has spoken.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_payroll_pat" },
-            { "type": "collectItem", "itemId": "pp_first_paycheck" },
-            { "type": "talkToNpc", "npcId": "npc_planner_priya" },
-            { "type": "completeMinigame", "minigameId": "mg_budget_split" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_payroll_pat"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "pp_first_paycheck"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_planner_priya"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_budget_split"
+            }
           ],
-          "rewards": { "coins": 40, "xp": 80, "items": ["pp_budget_planner"] }
+          "rewards": {
+            "coins": 40,
+            "xp": 80,
+            "items": [
+              "pp_budget_planner"
+            ]
+          }
         },
         {
           "id": "q_pp_rainy_day",
           "track": "main",
           "title": "Expect the Unexpected",
-          "description": "Vendor Vee’s stall has two prices. Harbor will notice.",
-          "hint": "Rainy Day Park, then Vee on Main Street — pick a stall price when you’re ready.",
+          "description": "Vendor Vee\u2019s stall has two prices. Harbor will notice.",
+          "hint": "Rainy Day Park, then Vee on Main Street \u2014 pick a stall price when you\u2019re ready.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_vendor_vee" },
-            { "type": "collectItem", "itemId": "pp_rainy_day_fund" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_vendor_vee"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "pp_rainy_day_fund"
+            }
           ],
-          "rewards": { "coins": 60, "xp": 120, "items": ["pp_peninsula_badge"] }
+          "rewards": {
+            "coins": 60,
+            "xp": 120,
+            "items": [
+              "pp_peninsula_badge"
+            ]
+          }
         },
         {
           "id": "q_pp_inbox_storm",
@@ -134,9 +192,21 @@
           "description": "Your inbox is overflowing with real-life money decisions. Open each message, weigh the options, and make smart choices before time runs out!",
           "hint": "Head to Main Street and check your inbox. Think before you click!",
           "objectives": [
-            { "type": "completeMinigame", "minigameId": "mg_inbox_storm", "scoreThreshold": { "explorer": 30, "apprentice": 50, "strategist": 80 } }
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_inbox_storm",
+              "scoreThreshold": {
+                "explorer": 30,
+                "apprentice": 50,
+                "strategist": 80
+              }
+            }
           ],
-          "rewards": { "coins": 80, "xp": 150, "items": [] }
+          "rewards": {
+            "coins": 80,
+            "xp": 150,
+            "items": []
+          }
         }
       ],
       "dialogues": [
@@ -148,24 +218,33 @@
               "id": "pat1",
               "speaker": "Payroll Pat",
               "text": {
-                "explorer": "Stamp came in! After the stall, we can split fun stuff AND a little keep — Clock buckets, when you’re ready.",
-                "apprentice": "Paycheck’s here. Fountain’s already a Harbor story. When you’re ready, Priya stamps needs / wants / savings — Clock’s new organ.",
-                "strategist": "Income is in. The stall already wrote Harbor weather. Clock’s next organ is allocation — 50/30/20 if you want the Bureau."
+                "explorer": "Stamp came in! After the stall, we can split fun stuff AND a little keep \u2014 Clock buckets, when you\u2019re ready.",
+                "apprentice": "Paycheck\u2019s here. Fountain\u2019s already a Harbor story. When you\u2019re ready, Priya stamps needs / wants / savings \u2014 Clock\u2019s new organ.",
+                "strategist": "Income is in. The stall already wrote Harbor weather. Clock\u2019s next organ is allocation \u2014 50/30/20 if you want the Bureau."
               },
               "choices": [
                 {
                   "id": "pat1_a",
                   "text": "Show me Clock buckets",
                   "nextNodeId": "pat2",
-                  "effects": [{ "type": "startQuest", "questId": "q_pp_budget_basics" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_pp_budget_basics"
+                    }
+                  ]
                 },
-                { "id": "pat1_b", "text": "I’ll wander first.", "nextNodeId": "pat3" }
+                {
+                  "id": "pat1_b",
+                  "text": "I\u2019ll wander first.",
+                  "nextNodeId": "pat3"
+                }
               ]
             },
             {
               "id": "pat2",
               "speaker": "Payroll Pat",
-              "text": "Clock’s the stamp organ. Grab the paycheck here, then Priya’s Bureau — buckets after the stall.",
+              "text": "Clock\u2019s the stamp organ. Grab the paycheck here, then Priya\u2019s Bureau \u2014 buckets after the stall.",
               "end": true
             },
             {
@@ -183,30 +262,39 @@
             {
               "id": "pri1",
               "speaker": "Planner Priya",
-              "text": "Welcome to the Budget Bureau! On this Coast the Clock stamps three payday buckets — needs, wants, and savings — so shelter sticks after the stamp. Ready to try?",
+              "text": "Welcome to the Budget Bureau! On this Coast the Clock stamps three payday buckets \u2014 needs, wants, and savings \u2014 so shelter sticks after the stamp. Ready to try?",
               "choices": [
                 {
                   "id": "pri1_a",
                   "text": "Let's stamp the buckets!",
                   "nextNodeId": "pri2",
-                  "effects": [{ "type": "startMinigame", "minigameId": "mg_budget_split" }]
+                  "effects": [
+                    {
+                      "type": "startMinigame",
+                      "minigameId": "mg_budget_split"
+                    }
+                  ]
                 },
                 {
                   "id": "pri1_digress",
-                  "text": "Digression — tip first or plan first?",
+                  "text": "Digression \u2014 tip first or plan first?",
                   "nextNodeId": "pri_fork"
                 },
-                { "id": "pri1_b", "text": "Tell me more first.", "nextNodeId": "pri3" }
+                {
+                  "id": "pri1_b",
+                  "text": "Tell me more first.",
+                  "nextNodeId": "pri3"
+                }
               ]
             },
             {
               "id": "pri_fork",
               "speaker": "Planner Priya",
-              "text": "Tip jar’s ringing. Plan the three buckets first — or tip the glitter stall before you’ve stamped?",
+              "text": "Tip jar\u2019s ringing. Plan the three buckets first \u2014 or tip the glitter stall before you\u2019ve stamped?",
               "choices": [
                 {
                   "id": "pri_plan",
-                  "text": "Plan buckets first — Clock shelters · quieter Main Street",
+                  "text": "Plan buckets first \u2014 Clock shelters \u00b7 quieter Main Street",
                   "nextNodeId": "pri_plan_done",
                   "effects": [
                     {
@@ -221,7 +309,7 @@
                 },
                 {
                   "id": "pri_tip",
-                  "text": "Tip first — louder tip-jar weather · Harbor still keeps it",
+                  "text": "Tip first \u2014 louder tip-jar weather \u00b7 Harbor still keeps it",
                   "nextNodeId": "pri_tip_done",
                   "effects": [
                     {
@@ -239,7 +327,7 @@
             {
               "id": "pri_plan_done",
               "speaker": "Planner Priya",
-              "text": "Shelter before glitter tips. Harbor may gossip that you planned first — Clock skill.",
+              "text": "Shelter before glitter tips. Harbor may gossip that you planned first \u2014 Clock skill.",
               "end": true
             },
             {
@@ -257,7 +345,7 @@
             {
               "id": "pri3",
               "speaker": "Planner Priya",
-              "text": "Needs are must-pays after a stamp — housing, food, transport. Wants are enjoy-but-skippable. Savings is future shelter. Three buckets, one stamp.",
+              "text": "Needs are must-pays after a stamp \u2014 housing, food, transport. Wants are enjoy-but-skippable. Savings is future shelter. Three buckets, one stamp.",
               "end": true
             }
           ]
@@ -269,21 +357,30 @@
             {
               "id": "cc1",
               "speaker": "Coach Carlos",
-              "text": "Life throws curveballs — phones, shoes, rain. A Rainy Day Fund is Clock shelter you don’t touch until then. Vee’s stall already wrote today’s weather; swing by if you want the long version.",
+              "text": "Life throws curveballs \u2014 phones, shoes, rain. A Rainy Day Fund is Clock shelter you don\u2019t touch until then. Vee\u2019s stall already wrote today\u2019s weather; swing by if you want the long version.",
               "choices": [
                 {
                   "id": "cc1_a",
                   "text": "Tell me about rainy-day funds",
                   "nextNodeId": "cc2",
-                  "effects": [{ "type": "startQuest", "questId": "q_pp_rainy_day" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_pp_rainy_day"
+                    }
+                  ]
                 },
-                { "id": "cc1_b", "text": "I'll manage without one.", "nextNodeId": "cc3" }
+                {
+                  "id": "cc1_b",
+                  "text": "I'll manage without one.",
+                  "nextNodeId": "cc3"
+                }
               ]
             },
             {
               "id": "cc2",
               "speaker": "Coach Carlos",
-              "text": "An emergency fund is money you don't touch unless something unexpected happens. Even saving a little each week adds up. Go talk to Vendor Vee — she'll show you what surprise expenses look like!",
+              "text": "An emergency fund is money you don't touch unless something unexpected happens. Even saving a little each week adds up. Go talk to Vendor Vee \u2014 she'll show you what surprise expenses look like!",
               "end": true
             },
             {
@@ -301,14 +398,17 @@
             {
               "id": "vv1",
               "speaker": "Vendor Vee",
-              "text": "The fountain broke. Shelter kit’s on the left — glitter’s half-off until dusk. Harbor keeps whichever you pick.",
+              "text": "The fountain broke. Shelter kit\u2019s on the left \u2014 glitter\u2019s half-off until dusk. Harbor keeps whichever you pick.",
               "choices": [
                 {
                   "id": "vv_protect",
-                  "text": "Umbrella before glitter — Clock shelters · quieter Main Street",
+                  "text": "Umbrella before glitter \u2014 Clock shelters \u00b7 quieter Main Street",
                   "nextNodeId": "vv_protect_end",
                   "effects": [
-                    { "type": "startQuest", "questId": "q_pp_rainy_day" },
+                    {
+                      "type": "startQuest",
+                      "questId": "q_pp_rainy_day"
+                    },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
@@ -323,15 +423,21 @@
                       "stance": "saver",
                       "stanceDelta": 2
                     },
-                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" }
+                    {
+                      "type": "giveItem",
+                      "itemId": "pp_rainy_day_fund"
+                    }
                   ]
                 },
                 {
                   "id": "vv_spend",
-                  "text": "Glitter ate the umbrella — louder rain gossip · Harbor still keeps it",
+                  "text": "Glitter ate the umbrella \u2014 louder rain gossip \u00b7 Harbor still keeps it",
                   "nextNodeId": "vv_spend_end",
                   "effects": [
-                    { "type": "startQuest", "questId": "q_pp_rainy_day" },
+                    {
+                      "type": "startQuest",
+                      "questId": "q_pp_rainy_day"
+                    },
                     {
                       "type": "setIrreversible",
                       "key": "paycheck_protect_vs_spend",
@@ -346,7 +452,10 @@
                       "stance": "spender",
                       "stanceDelta": 2
                     },
-                    { "type": "giveItem", "itemId": "pp_rainy_day_fund" }
+                    {
+                      "type": "giveItem",
+                      "itemId": "pp_rainy_day_fund"
+                    }
                   ]
                 }
               ]
@@ -354,13 +463,13 @@
             {
               "id": "vv_protect_end",
               "speaker": "Vendor Vee",
-              "text": "That's the Change. Harbor will remember you kept an umbrella when the sky cracked. Fly home — Piggy is waiting.",
+              "text": "That's the Change. Harbor will remember you kept an umbrella when the sky cracked. Fly home \u2014 Piggy is waiting.",
               "end": true
             },
             {
               "id": "vv_spend_end",
               "speaker": "Vendor Vee",
-              "text": "Glitter now, thinner pouch later. Harbor will show it — and you can still rebuild. Fly home changed either way.",
+              "text": "Glitter now, thinner pouch later. Harbor will show it \u2014 and you can still rebuild. Fly home changed either way.",
               "end": true
             }
           ]
@@ -371,7 +480,7 @@
           "id": "mg_budget_split",
           "name": "Budget Splitter",
           "description": "Drag expense cards into Needs, Wants, and Savings buckets to balance a monthly budget.",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "componentId": "BudgetSplitterGame",
           "areaId": "pp_budget_bureau"
         },
@@ -379,7 +488,7 @@
           "id": "mg_treasure_hunt",
           "name": "Main Street Treasure Hunt",
           "description": "Walk the peninsula grid, talk to locals, and solve budget puzzles hidden in chests.",
-          "icon": "🗺️",
+          "icon": "\ud83d\uddfa\ufe0f",
           "componentId": "ExplorablePuzzleGame",
           "areaId": "pp_main_street",
           "genre": "exploration",
@@ -391,7 +500,7 @@
           "id": "mg_inbox_storm",
           "name": "Inbox Storm",
           "description": "Your inbox is flooded with money decisions! Open each message, read the scenario, and choose wisely.",
-          "icon": "📨",
+          "icon": "\ud83d\udce8",
           "componentId": "ModularMinigame",
           "areaId": "pp_main_street",
           "modules": [
@@ -400,7 +509,11 @@
               "config": {
                 "startingBalance": 120,
                 "earnOptions": [
-                  { "id": "part_time_job", "label": "Part-Time Shift", "amount": 40 }
+                  {
+                    "id": "part_time_job",
+                    "label": "Part-Time Shift",
+                    "amount": 40
+                  }
                 ],
                 "spendOptions": []
               }
@@ -408,7 +521,9 @@
             {
               "id": "EventDeck",
               "config": {
-                "deckIds": ["budgeting_teens"],
+                "deckIds": [
+                  "budgeting_teens"
+                ],
                 "tags": [],
                 "maxDraws": 8
               }
@@ -419,7 +534,7 @@
           "id": "mg_price_it_right",
           "name": "Set the Price",
           "description": "Run a lemonade stand: slide the price and watch the crowd and your profit react. Find the sweet spot.",
-          "icon": "🍋",
+          "icon": "\ud83c\udf4b",
           "componentId": "PriceItRightGame",
           "areaId": "pp_main_street",
           "genre": "simulation",
@@ -427,8 +542,60 @@
           "visualShell": "notebook",
           "estimatedMinutes": 3,
           "modules": [
-            { "id": "PriceConfig", "config": { "product": "Lemonade", "emoji": "🍋", "cost": 2, "maxDemand": 40, "chokePrice": 12 } }
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "Lemonade",
+                "emoji": "\ud83c\udf4b",
+                "cost": 2,
+                "maxDemand": 40,
+                "chokePrice": 12
+              }
+            }
           ]
+        },
+        {
+          "id": "mg_pp_compound",
+          "name": "Peninsula Snowball",
+          "description": "Rainy-day fund compounding over calm seasons.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "pp_rainy_day_park",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 60,
+                "ratePct": 6,
+                "years": 8,
+                "label": "rainy-day fund"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_pp_life_fork",
+          "name": "Clock Life Fork",
+          "description": "Shelter vs splurge vs side gig \u2014 cashflow paths fork.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "pp_main_street"
+        },
+        {
+          "id": "mg_pp_diversify",
+          "name": "Bucket Baskets",
+          "description": "Spread paycheck across buckets before surprise bills hit.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "pp_budget_bureau"
+        },
+        {
+          "id": "mg_pp_pasaran",
+          "name": "Main Street Fair",
+          "description": "Fair trade at Vendor Vee's lane after the stall Take.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "PasaranMarketGame",
+          "areaId": "pp_main_street"
         }
       ]
     }

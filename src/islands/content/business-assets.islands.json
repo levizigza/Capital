@@ -4,8 +4,8 @@
     {
       "id": "business_assets",
       "name": "Diversify Keep",
-      "description": "Orbital keep ops — run the shop from the outer ring. Side shore of Fortune Archipelago.",
-      "icon": "🏰",
+      "description": "Orbital keep ops \u2014 run the shop from the outer ring. Side shore of Fortune Archipelago.",
+      "icon": "\ud83c\udff0",
       "requiredItems": [
         "da_island_medallion"
       ],
@@ -35,7 +35,7 @@
           "id": "ba_storefront",
           "name": "Storefront",
           "description": "Your shop's front counter. Manage inventory, set prices, and serve customers.",
-          "icon": "🛍️",
+          "icon": "\ud83d\udecd\ufe0f",
           "connections": [
             "ba_back_office",
             "ba_warehouse"
@@ -45,7 +45,7 @@
           "id": "ba_back_office",
           "name": "Back Office",
           "description": "Desks covered in spreadsheets. Track cash flow, profit margins, and expenses.",
-          "icon": "🖥️",
+          "icon": "\ud83d\udda5\ufe0f",
           "connections": [
             "ba_storefront",
             "ba_warehouse"
@@ -55,7 +55,7 @@
           "id": "ba_warehouse",
           "name": "Warehouse",
           "description": "Shelves of equipment and stock. Learn about assets, depreciation, and write-offs.",
-          "icon": "📦",
+          "icon": "\ud83d\udce6",
           "connections": [
             "ba_storefront",
             "ba_back_office"
@@ -66,28 +66,28 @@
         {
           "id": "npc_shop_sam",
           "name": "Shop Owner Sam",
-          "icon": "🧑‍💼",
+          "icon": "\ud83e\uddd1\u200d\ud83d\udcbc",
           "areaId": "ba_storefront",
           "dialogueGraphId": "dlg_sam"
         },
         {
           "id": "npc_accountant_amy",
           "name": "Accountant Amy",
-          "icon": "🧮",
+          "icon": "\ud83e\uddee",
           "areaId": "ba_back_office",
           "dialogueGraphId": "dlg_amy"
         },
         {
           "id": "npc_supplier_steve",
           "name": "Supplier Steve",
-          "icon": "🚚",
+          "icon": "\ud83d\ude9a",
           "areaId": "ba_warehouse",
           "dialogueGraphId": "dlg_steve"
         },
         {
           "id": "npc_tax_tina",
           "name": "Tax Advisor Tina",
-          "icon": "📋",
+          "icon": "\ud83d\udccb",
           "areaId": "ba_back_office",
           "dialogueGraphId": "dlg_tina"
         }
@@ -97,7 +97,7 @@
           "id": "ba_ledger",
           "name": "Business Ledger",
           "description": "A record of all business income and expenses.",
-          "icon": "📒",
+          "icon": "\ud83d\udcd2",
           "location": {
             "areaId": "ba_back_office"
           }
@@ -105,8 +105,8 @@
         {
           "id": "ba_equipment",
           "name": "Store Equipment",
-          "description": "A depreciating asset — worth less every year on the books.",
-          "icon": "🔧",
+          "description": "A depreciating asset \u2014 worth less every year on the books.",
+          "icon": "\ud83d\udd27",
           "location": {
             "areaId": "ba_warehouse"
           }
@@ -115,7 +115,7 @@
           "id": "ba_cashflow_report",
           "name": "Cash Flow Report",
           "description": "Shows money in vs money out. Positive cash flow keeps the business alive.",
-          "icon": "💵",
+          "icon": "\ud83d\udcb5",
           "location": {
             "areaId": "ba_back_office"
           }
@@ -124,7 +124,7 @@
           "id": "ba_island_medallion",
           "name": "Business Bay Medallion",
           "description": "Proof of business acumen. Unlocks the next island!",
-          "icon": "🏅",
+          "icon": "\ud83c\udfc5",
           "location": {
             "areaId": "ba_back_office"
           }
@@ -187,6 +187,26 @@
               "ba_island_medallion"
             ]
           }
+        },
+        {
+          "id": "q_ba_arcade_lane",
+          "track": "side",
+          "title": "Shop Arcade Lane",
+          "description": "Optional shop lane \u2014 budget split and compound after inventory hustle.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ba_budget"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ba_compound"
+            }
+          ],
+          "rewards": {
+            "coins": 50,
+            "xp": 100
+          }
         }
       ],
       "dialogues": [
@@ -212,7 +232,7 @@
                 },
                 {
                   "id": "sm1_listen",
-                  "text": "Digression — browse or stock first?",
+                  "text": "Digression \u2014 browse or stock first?",
                   "nextNodeId": "sm_fork"
                 },
                 {
@@ -231,7 +251,7 @@
             {
               "id": "sm_fork",
               "speaker": "Shop Owner Sam",
-              "text": "Aisles or invoices — browse the floor first, or stock shelves before you’ve walked them?",
+              "text": "Aisles or invoices \u2014 browse the floor first, or stock shelves before you\u2019ve walked them?",
               "choices": [
                 {
                   "id": "sm_browse",
@@ -250,7 +270,7 @@
                 },
                 {
                   "id": "sm_rush",
-                  "text": "Stock first — I’ll browse later.",
+                  "text": "Stock first \u2014 I\u2019ll browse later.",
                   "nextNodeId": "sm_rush_done",
                   "effects": [
                     {
@@ -274,13 +294,13 @@
             {
               "id": "sm_rush_done",
               "speaker": "Shop Owner Sam",
-              "text": "Shelves before footsteps — that’s a story. Harbor may gossip that you stocked blind.",
+              "text": "Shelves before footsteps \u2014 that\u2019s a story. Harbor may gossip that you stocked blind.",
               "end": true
             },
             {
               "id": "sm3",
               "speaker": "Shop Owner Sam",
-              "text": "Come back anytime — the store's always open!",
+              "text": "Come back anytime \u2014 the store's always open!",
               "end": true
             }
           ]
@@ -315,7 +335,7 @@
             {
               "id": "am2",
               "speaker": "Accountant Amy",
-              "text": "I'll prepare a cash flow report for you. But also talk to Tina about depreciation — it's a non-cash expense that reduces your tax bill. Sounds boring, but it saves real money.",
+              "text": "I'll prepare a cash flow report for you. But also talk to Tina about depreciation \u2014 it's a non-cash expense that reduces your tax bill. Sounds boring, but it saves real money.",
               "end": true
             },
             {
@@ -386,7 +406,7 @@
             {
               "id": "sv4",
               "speaker": "Supplier Steve",
-              "text": "Launching the simulator…",
+              "text": "Launching the simulator\u2026",
               "end": true
             }
           ]
@@ -421,13 +441,13 @@
             {
               "id": "tn2",
               "speaker": "Tax Advisor Tina",
-              "text": "Exactly! Here's your cash flow report showing how depreciation affects your bottom line. The equipment isn't worth less in reality — it's an accounting tool that reduces taxable income.",
+              "text": "Exactly! Here's your cash flow report showing how depreciation affects your bottom line. The equipment isn't worth less in reality \u2014 it's an accounting tool that reduces taxable income.",
               "end": true
             },
             {
               "id": "tn3",
               "speaker": "Tax Advisor Tina",
-              "text": "A write-off means you deduct a business expense from your taxable income. But remember — a write-off isn't 'free money.' You still spent the money, you just pay less tax on it. A $1,000 write-off in a 25% tax bracket saves you $250.",
+              "text": "A write-off means you deduct a business expense from your taxable income. But remember \u2014 a write-off isn't 'free money.' You still spent the money, you just pay less tax on it. A $1,000 write-off in a 25% tax bracket saves you $250.",
               "choices": [
                 {
                   "id": "tn3c1",
@@ -450,7 +470,7 @@
           "id": "mg_cashflow_sim",
           "name": "Cash Flow Micro-Sim",
           "description": "Run a small store for 12 simulated months. Balance inventory costs, revenue, and expenses to stay cash-positive.",
-          "icon": "💵",
+          "icon": "\ud83d\udcb5",
           "componentId": "CashFlowSimGame",
           "areaId": "ba_storefront"
         },
@@ -458,7 +478,7 @@
           "id": "mg_price_it_right",
           "name": "Set the Price",
           "description": "Price the products in your store. Slide the price and watch foot traffic and profit move in real time to find the sweet spot.",
-          "icon": "🏷️",
+          "icon": "\ud83c\udff7\ufe0f",
           "componentId": "PriceItRightGame",
           "areaId": "ba_storefront",
           "genre": "simulation",
@@ -470,10 +490,83 @@
               "id": "PriceConfig",
               "config": {
                 "product": "your signature item",
-                "emoji": "🥐",
+                "emoji": "\ud83e\udd50",
                 "cost": 4,
                 "maxDemand": 50,
                 "chokePrice": 16
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_ba_budget",
+          "name": "Shop Budget Split",
+          "description": "Split shop income across inventory, payroll, and reserves.",
+          "icon": "\ud83d\udcca",
+          "componentId": "BudgetSplitterGame",
+          "areaId": "ba_back_office"
+        },
+        {
+          "id": "mg_ba_compound",
+          "name": "Ledger Snowball",
+          "description": "Reinvest shop profits and watch reserves grow.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "ba_back_office",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 120,
+                "ratePct": 8,
+                "years": 10,
+                "label": "shop reserves"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_ba_explore",
+          "name": "Warehouse Walk",
+          "description": "Explore the warehouse for depreciation clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "ba_warehouse",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_ba_life_fork",
+          "name": "Business Life Fork",
+          "description": "Lease vs buy vs hire \u2014 business paths fork.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "ba_storefront"
+        },
+        {
+          "id": "mg_ba_diversify",
+          "name": "Inventory Baskets",
+          "description": "Spread stock across categories before a slow season.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "ba_warehouse"
+        },
+        {
+          "id": "mg_ba_news",
+          "name": "Shop Dispatch",
+          "description": "Supplier and tax dispatches \u2014 read before you sign.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "ba_storefront",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "finance_kids"
+                ],
+                "maxDraws": 6
               }
             }
           ]
