@@ -6,6 +6,8 @@
 
 This register tracks **design debt** — gaps between intended player experience (Design Bible + iconic freeze) and what the repository actually ships or validates. It is not a bug list; it is a prioritization ledger for craft decisions.
 
+**Front-to-end cohesion (iconic bar):** [WHOLE_GAME_COHESION_AUDIT.md](./WHOLE_GAME_COHESION_AUDIT.md) — ranked P0–P2 close list; Pass R 100% is spine harness only.
+
 **Severity:** 🔴 P0 (blocks iconic ship truth) · 🟠 P1 (degrades loop quality) · 🟡 P2 (longevity / scale / later gates)
 
 ---

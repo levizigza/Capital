@@ -38,4 +38,6 @@
 | Board Cove | 100 | cove_shore + jar CTA |
 | Organ retell home | 100 | kid Coin holds |
 
-Tutorial is closed for iconic craft; deepen only if a new soft-lock appears.
+Tutorial is closed for **spine harness** craft; deepen only if a new soft-lock appears.
+
+**Honest split:** human ITR and stacked Ashore + Piggy + chart cohesion are **not** closed — [WHOLE_GAME_COHESION_AUDIT.md](./design/WHOLE_GAME_COHESION_AUDIT.md).

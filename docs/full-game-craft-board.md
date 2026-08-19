@@ -15,9 +15,11 @@
 
 **Overall %** = mean of pillars 0–17 on the frozen spine only.
 
+**Split (2026-08-19):** This board is **spine machine/harness**. Whole-product cohesion (front-to-end as one memorable cosmos, human ITR) is scored in [WHOLE_GAME_COHESION_AUDIT.md](./design/WHOLE_GAME_COHESION_AUDIT.md) — do not cite Pass R 100% as “every piece iconic.”
+
 ---
 
-## Latest — Pass R (2026-08-17) · **100%**
+## Latest — Pass R (2026-08-17) · **100%** (spine harness)
 
 | | |
 |--|--:|
