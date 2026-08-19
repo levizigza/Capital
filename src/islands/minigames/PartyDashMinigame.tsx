@@ -8,7 +8,7 @@ import { getAnimationStyle } from "../animationStyles";
 
 /**
  * Fortune Party–style kinesthetic opener for islands that lack a movement game.
- * Clear this first; mastery quiz gates literacy after the dash.
+ * Clear this first; optional mastery digression never gates Credit or clears.
  */
 export default function PartyDashMinigame({
   minigameId,
@@ -34,12 +34,12 @@ export default function PartyDashMinigame({
       icon="🏃"
       genre="arcade"
       complexity="easy"
-      homage={`${era.eraLabel} · move first, quiz after`}
+      homage={`${era.eraLabel} · move first`}
       onClose={onClose}
     >
       <p className="mb-3 text-sm opacity-80">
-        Kinesthetic warm-up on {island.name}: catch value, dodge impulse spends. Ace the mastery
-        quiz after you clear the dash — clear the course, then prove mastery.
+        Kinesthetic warm-up on {island.name}: catch value, dodge impulse spends. Clear the course —
+        Harbor keeps what you choose later on the shore, not a quiz gate.
       </p>
       <CoinCatcherGame
         userTier={learningProfileToTier(learningProfile)}

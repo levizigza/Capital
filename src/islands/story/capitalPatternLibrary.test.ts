@@ -121,11 +121,11 @@ describe("capital pattern library contracts", () => {
         nextPaintingHint: "Paycheck Peninsula",
         hasFreedom: true,
         carpetTierLabel: "Skiff",
-        creditMastery: { mastery: 1, needed: 3, escaped: true, unlocked: false },
+        creditMastery: { mastery: 0, needed: 0, escaped: true, unlocked: false },
       },
     );
     expect(tip.painting).toMatch(/Paycheck/);
-    expect(tip.seal).toMatch(/Spiral|Freedom/);
+    expect(tip.seal).toMatch(/Spiral|Paycheck Change|Freedom/);
   });
 
   it("digression shelf tracks incomplete rumor pairs", () => {
@@ -186,10 +186,12 @@ describe("capital pattern library contracts", () => {
     expect(shore).toMatch(/softBeatArmWhisper|peekSoftBeatArm/);
   });
 
-  it("Plinth shows digression myth shelf with empty slots", () => {
+  it("Plinth shows digression myths without empty-slot collection UI", () => {
     const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
     expect(hub).toMatch(/digression-myth-shelf/);
-    expect(hub).toMatch(/digression-slot-empty/);
+    expect(hub).toMatch(/digressionHeardMyths/);
+    expect(hub).not.toMatch(/digression-slot-empty/);
+    expect(hub).not.toMatch(/Not heard yet/);
   });
 
   it("fail overlay plays organ SFX", () => {

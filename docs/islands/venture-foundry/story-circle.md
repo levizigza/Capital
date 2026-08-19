@@ -1,9 +1,11 @@
-﻿# venture-foundry — Story Circle (draft)
+﻿# Venture Foundry — Story Circle (Gridlock Galleria)
 
-> **SIDE SHORE** — Discoverable era chapter on the outer Fortune Archipelago ring (not a main-quest strip chip). Soft-locked until Cove Change. Soundtrack via `cueForIsland`. See [era-shores-restore.md](../../era-shores-restore.md) · [iconic-later.md](../../iconic-later.md).
+> **SIDE SHORE** — Era chapter on the outer Fortune Archipelago ring. Soft-locked until Cove Change. See [era-shores-restore.md](../../era-shores-restore.md).
 
 **Island ID:** `venture_foundry`  
-**Status:** SIDE SHORE — outer ring; Capital-framed; not a main-course strip chip  
+**Map name:** Gridlock Galleria (1980s neon grid)  
+**Learning kernel:** Idea → plan → pitch → P&L · startup funding trade-offs  
+**Island Ally:** Founder Fern · Mentor Malik · Investor Ike · Strategist Sara  
 **Canon:** [story-bible.md](../../story-bible.md)
 
 ---
@@ -12,21 +14,22 @@
 
 | # | Beat | In this island | IDs | Kid one-liner |
 |---|------|----------------|-----|---------------|
-| 1 | **You** | Arrive via carpet / shore | TBD | "I'm here." |
-| 2 | **Need** | Ally names the money want | TBD | "I need to learn." |
-| 3 | **Go** | Cross into the main area | TBD | "Let's go." |
-| 4 | **Search** | Quests + minigames + soft fails | TBD | "I try." |
-| 5 | **Find** | Core lesson payoff | TBD | "I got it!" |
-| 6 | **Take** | Hard choice (irreversible preferred) | TBD | "Choices cost." |
-| 7 | **Return** | Carpet home | travel | "Back to Harbor." |
-| 8 | **Change** | Harbor scar / plaque / seal | harborScars | "I'm different." |
+| 1 | **You** | Land on the neon workshop floor | area `vf_workshop` | “Gridlock Galleria!” |
+| 2 | **Need** | Fern: every business starts with a problem | `npc_founder_fern`, `dlg_founder_fern` | “I need an idea.” |
+| 3 | **Go** | Draft plan with Malik; allocate seed budget | `q_vf_idea_to_plan`, `mg_startup_budget` | “Let’s build it.” |
+| 4 | **Search** | Pitch Ike; enter Growth Lab with Sara | `vf_pitch_stage`, `vf_growth_lab` | “I try the pitch.” |
+| 5 | **Find** | Seed funding + P&L sheet | `vf_seed_funding`, `vf_pnl_sheet` | “Investors said yes!” |
+| 6 | **Take** | Digression: linger in foundry vs rush pitch | `ff_fork`, `vf_foundry_listen` / `vf_foundry_rush` | “Look first or pitch cold?” |
+| 7 | **Return** | Carpet home | travel | “Back to Harbor.” |
+| 8 | **Change** | Harbor myth shelf gossip | `harborScars` | “Harbor heard that.” |
+
+**Main quests:** `q_vf_idea_to_plan`, `q_vf_pitch_and_grow`
 
 ---
 
 ## Completeness gate
 
-- [ ] Beats filled with concrete IDs  
-- [ ] Irreversible Take wired  
-- [ ] Fits Story Bible (no second myth)
-
-**Gate:** Content validation requires this file to exist for every live island pack.
+- [x] Beats filled with concrete IDs  
+- [x] Digression scar pair wired (`vf_foundry_listen` / `vf_foundry_rush`)  
+- [x] Minigames registered (`mg_startup_budget`, `mg_price_it_right`)  
+- [x] Fits Story Bible (side shore, not spine Take)

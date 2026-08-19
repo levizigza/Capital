@@ -115,11 +115,11 @@ describe("Pillar 8 balance sheet — Cove → carpet → first seal", () => {
     expect(third.ledger.harborEscaped).toBe(true);
   });
 
-  it("plaza pass and first Board Star stay soft sinks after Cove", () => {
+  it("plaza pass and first Cashflow Claim stay soft sinks after Cove", () => {
     expect(PLAZA_PASS_PRICE).toBe(80);
-    const sealCost = 20; // partyBoard seal space coinReward
+    const claimCost = 20; // partyBoard seal space → Cashflow Claim
     const postCoveMin = coveMainQuestCoins() + computeMinigameReward(true, 20, true, false).coins;
-    expect(postCoveMin).toBeGreaterThanOrEqual(sealCost);
+    expect(postCoveMin).toBeGreaterThanOrEqual(claimCost);
     expect(postCoveMin).toBeGreaterThanOrEqual(PLAZA_PASS_PRICE); // pass is a choice, not a wall
   });
 

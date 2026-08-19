@@ -9,7 +9,8 @@ type Props = {
 };
 
 /**
- * Explicit learning gate: every answer must be correct to unlock.
+ * Optional literacy digression — never gates Credit or island clears.
+ * Prefer Independent Transfer + ledger footprints as proof of learning.
  */
 export function MasteryQuiz({ gate, onPassed, onFailed }: Props) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -36,8 +37,9 @@ export function MasteryQuiz({ gate, onPassed, onFailed }: Props) {
         <div className="text-4xl mb-1">🧠</div>
         <div className="cap-eyebrow">{gate.bossLabel}</div>
         <h2 className="cap-display text-2xl text-[var(--cap-ink)]">{gate.title}</h2>
-        <p className="mt-2 text-sm font-semibold text-[var(--cap-coral)]">
-          To pass this block you must get ALL answers correct. Learning is required — no skipping.
+        <p className="mt-2 text-sm font-semibold text-[var(--cap-ink-soft)]">
+          Optional digression — all answers must be correct to pass this quiz. Credit opens from Freedom +
+          Paycheck Change, not from worksheets.
         </p>
         <p className="mt-1 text-sm text-[var(--cap-ink-soft)]">{gate.requirementCopy}</p>
       </div>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   BIBLE_RUNTIME_LAWS,
-  BOARD_STAR_LABEL,
+  BOARD_CASHFLOW_CLAIM_LABEL,
   DESIGN_BIBLE_SHIP_QUESTION,
   softBeatScarVistaLine,
 } from "./designBible";
@@ -13,16 +13,19 @@ describe("designBible runtime laws", () => {
 
   it("encodes player-visible bible laws as on", () => {
     expect(BIBLE_RUNTIME_LAWS.hideIslandsXpChrome).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.cutIslandsXpAwards).toBe(true);
     expect(BIBLE_RUNTIME_LAWS.hideSkillStatsPanel).toBe(true);
     expect(BIBLE_RUNTIME_LAWS.demoteSideMagnetsUntilCoveChange).toBe(true);
-    expect(BIBLE_RUNTIME_LAWS.partyPrizeIsBoardStar).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.partyPrizeIsCashflowClaim).toBe(true);
     expect(BIBLE_RUNTIME_LAWS.localFamilyChallengeAndWitness).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.mythShelfNotCollectionPct).toBe(true);
+    expect(BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath).toBe(true);
   });
 
-  it("names party prizes Board Star — not Freedom / Ledger Seal", () => {
-    expect(BOARD_STAR_LABEL).toBe("Board Star");
-    expect(BOARD_STAR_LABEL.toLowerCase()).not.toContain("freedom");
-    expect(BOARD_STAR_LABEL.toLowerCase()).not.toContain("ledger seal");
+  it("names party prizes Cashflow Claim — not Freedom / Ledger Seal", () => {
+    expect(BOARD_CASHFLOW_CLAIM_LABEL).toBe("Cashflow Claim");
+    expect(BOARD_CASHFLOW_CLAIM_LABEL.toLowerCase()).not.toContain("freedom");
+    expect(BOARD_CASHFLOW_CLAIM_LABEL.toLowerCase()).not.toContain("ledger seal");
   });
 
   it("softBeatScarVistaLine deepens hold vs spend on Coin lookout", () => {

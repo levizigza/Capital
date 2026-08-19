@@ -77,7 +77,6 @@ import {
   markRewardClaimed,
   bumpWeeklyTalk,
   bumpWeeklyStudio,
-  DAILY_RITUAL_REWARD_COINS,
 } from "./harborRitual";
 
 import { COINCRAFT_SKIN_CLASS, isCoincraftIsland, NpcPortrait, shouldUseCoincraftSkin } from "@/art/coincraft";
@@ -161,6 +160,7 @@ import { getMasteryGateForMinigame, type MasteryGateDef } from "./masteryGate";
 import { MasteryQuiz } from "./views/MasteryQuiz";
 import { withHarborFreedomRewards } from "./progressGates";
 import { moneyOrganForIsland } from "./moneyOrgans";
+import { hostIslandForStructureMinigame } from "./moneyStructures";
 import {
   applyCapsulePurchase,
   applyCarpetPolish,
@@ -179,11 +179,9 @@ import { applyConceptSync, getConceptPhase, getConceptTransferMetrics } from "./
 import { resolveTransferTalk, stampIndependentTransferWindows, buildIndependentTransferSave } from "./independentTransfer";
 import { CONCEPT_REGISTRY } from "./conceptProgression/registry";
 import {
-  applyCoveTakeLedgerFootprint,
-  coveTakeStanceFromChoiceId,
-  COVE_TAKE_KEY,
+  applySpineTakeLedgerFootprint,
   takeFootprintFeedbackLine,
-} from "./firstFinancialScenario";
+} from "./spineTakeFootprints";
 import { reconcileFtueQuestProofs } from "./ftueQuestRecovery";
 import {
   applyExperiencedBootstrap,
@@ -870,16 +868,13 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       itemTip?: string;
       ledger?: import("./voyagerLedger").VoyagerLedger;
     }) => {
-      if (payload.coins || payload.xp) {
+      if (payload.coins) {
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: Math.max(0, prev.totalCoins + (payload.coins || 0)),
-          xp: prev.xp + (payload.xp || 0),
         }));
       }
-      if (payload.star && activeIslandId) {
-        awardPartyStar(activeIslandId);
-      }
+      // Board Stars retired as progress — seal spaces write ledger Cashflow Claims.
       if (payload.ledger) {
         updateSave((prev) => {
           const next = {
@@ -890,7 +885,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         });
       }
     },
-    [activeIslandId, awardPartyStar, setUserProfile, updateSave]
+    [setUserProfile, updateSave]
   );
 
   const onSyncHarborRitual = useCallback(() => {
@@ -925,25 +920,15 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   }, [setUserProfile, updateSave]);
 
   const onClaimRitualReward = useCallback(() => {
-    let claimed = false;
+    // Extrinsic +5 ritual coins cut — mark claimed without pouch faucet.
     updateSave((prev) => {
       if (prev.harborRitual?.today.rewardClaimed) return prev;
       if (!prev.harborRitual?.today.paydayDone || !prev.harborRitual?.today.rumorSeen) {
         return prev;
       }
-      claimed = true;
       return markRewardClaimed(prev);
     });
-    if (claimed) {
-      setUserProfile((prev) => ({
-        ...prev,
-        totalCoins: prev.totalCoins + DAILY_RITUAL_REWARD_COINS,
-      }));
-      toast.message(`+${DAILY_RITUAL_REWARD_COINS} ritual coins`, {
-        description: "Tiny thank-you for showing up today — never pay-to-win.",
-      });
-    }
-  }, [setUserProfile, updateSave]);
+  }, [updateSave]);
 
   const onMarkRitualRumor = useCallback(() => {
     updateSave((prev) => markRumorSeen(prev));
@@ -1218,16 +1203,12 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       }
 
       const rewards = quest.rewards;
-      if (rewards?.coins || rewards?.xp) {
+      if (rewards?.coins) {
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: prev.totalCoins + (rewards.coins || 0),
-          xp: prev.xp + (rewards.xp || 0),
         }));
-        const bits: string[] = [];
-        if (rewards.coins) bits.push(`+${rewards.coins} coins`);
-        if (rewards.xp) bits.push(`+${rewards.xp} XP`);
-        toast.message(bits.join(" · "), {
+        toast.message(`+${rewards.coins} coins`, {
           description: resolveProfileText(quest.title, learningProfile),
         });
       }
@@ -1269,7 +1250,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The Coin holds — save a little; the jar still waits.${scarBit} ${next} is newly open on the Carpet.`,
+              message: `Piggy Penny: The Coin holds — Harbor felt your Take.${scarBit} ${next} is newly open on the Carpet.`,
             },
           };
         });
@@ -1293,12 +1274,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             : "";
           const next = lastScar ? nextPaintingAfterScar(lastScar) : "Credit Kingdom";
           const pp = prev.irreversibleChoices?.paycheck_protect_vs_spend?.choiceId;
-          const clockFelt =
-            pp === "spend"
-              ? "The Clock still names the rain gossip — glitter went first."
-              : pp === "protect"
-                ? "The Clock kept the loft dry when the sky cracked."
-                : "The Clock shelters — Harbor felt the stamp.";
+          const clockFelt = "The Clock shelters — Harbor felt the stamp.";
+          void pp;
           return {
             ...prev,
             harborHomecoming: {
@@ -1341,7 +1318,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               quietPending: true,
               chapterIslandId: activeIsland.id,
               questId,
-              message: `Piggy Penny: The Spiral withstands — wait beats haste on the interest wall.${scarBit} Memory keeps your Ordeal on the Plinth.`,
+              message: `Piggy Penny: The Spiral withstands — Harbor kept your Ordeal on the Plinth.${scarBit} Memory keeps what you chose.`,
             },
           };
         });
@@ -1558,7 +1535,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
               playId = lead?.id ?? partyDashIdForIsland(activeIsland.id);
               toast.message("Movement game first", {
                 description:
-                  "Clear the play pad — then the mastery quiz. That’s the Party style pairing.",
+                  "Clear the play pad first — literacy sticks in the world (Takes, cashflow), not a worksheet gate.",
               });
             }
           }
@@ -1616,11 +1593,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 },
               },
             };
-            // First financial scenario — real ledger footprint (not tutorial fake).
-            if (effect.key === COVE_TAKE_KEY) {
-              const stance = coveTakeStanceFromChoiceId(effect.choiceId);
-              if (stance) next = applyCoveTakeLedgerFootprint(next, stance);
-            }
+            // Spine Takes write real CF footprints — world diverges even when unlock path is shared.
+            next = applySpineTakeLedgerFootprint(next, effect.key, effect.choiceId);
             return next;
           });
         }
@@ -1965,7 +1939,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         setUserProfile((prev) => ({
           ...prev,
           totalCoins: prev.totalCoins + reward.coins,
-          xp: prev.xp + reward.xp,
         }));
         if (reward.starEarned) {
           awardPartyStar(activeIsland.id);
@@ -2036,22 +2009,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       };
 
       if (questSuccess) {
-        const gate = getMasteryGateForMinigame(mgId);
-        const ledger = ensureLedger(save.voyagerLedger);
-        if (gate && !hasMasteryClear(ledger, gate.id)) {
-          setPendingMastery({
-            gate,
-            mgId,
-            score,
-            timeline,
-            source,
-            firstClear,
-          });
-          setActiveMinigameId(null);
-          setMinigameStartedAt(null);
-          setMinigameSource(null);
-          return;
-        }
+        // Mastery quiz is optional digression — never blocks clear or Credit unlock.
         await finalizeSuccessfulClear(firstClear);
       } else {
         const failReason = resolveMinigameFailReason({
@@ -2161,7 +2119,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           setUserProfile((prev) => ({
             ...prev,
             totalCoins: prev.totalCoins + consolation.coins,
-            xp: prev.xp + consolation.xp,
           }));
         }
 
@@ -2237,7 +2194,6 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
       setUserProfile((prev) => ({
         ...prev,
         totalCoins: prev.totalCoins + reward.coins,
-        xp: prev.xp + reward.xp,
       }));
       if (reward.starEarned) {
         awardPartyStar(activeIsland.id);
@@ -2654,18 +2610,20 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
             }
             onPlayStructureMinigame={(minigameId) => {
               const host =
+                hostIslandForStructureMinigame(minigameId) ??
                 content.islands.find((i) => i.minigames?.some((m) => m.id === minigameId))?.id ??
-                null;
-              if (host) setActiveIslandId(host);
+                HUB_ISLAND_ID;
+              setActiveIslandId(host);
               setMinigameSource("structure");
               setActiveMinigameId(minigameId as MinigameId);
               setMinigameStartedAt(Date.now());
               void analytics.track("minigame_started", {
-                islandId: host ?? HUB_ISLAND_ID,
+                islandId: host,
                 minigameId,
                 source: "money_structure",
               });
             }}
+            structurePlayLocked={Boolean(activeMinigameId)}
             onOpenEditor={import.meta.env.DEV ? () => setShowEditor(true) : undefined}
             onTalkNpc={(npcId) => void openNpcDialogue(npcId)}
             talkOpen={dialogueState.open}
@@ -2750,6 +2708,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                   source: "money_structure",
                 });
               }}
+              structurePlayLocked={Boolean(activeMinigameId)}
               onOpenBoard={() => setView("island")}
               onOpenTravel={() => setView("travel")}
               onOpenHub={() => setView("home")}
@@ -2783,6 +2742,17 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
                 setMinigameSource("dialogue");
                 setActiveMinigameId(minigameId as MinigameId);
                 setMinigameStartedAt(Date.now());
+              }}
+              onOpenMasteryDigression={(minigameId) => {
+                const gate = getMasteryGateForMinigame(minigameId);
+                if (!gate) return;
+                setPendingMastery({
+                  gate,
+                  mgId: minigameId as MinigameId,
+                  score: undefined,
+                  source: "dialogue",
+                  firstClear: false,
+                });
               }}
               onOpenBoard={() => setView("island")}
               chapterQuiet={Boolean(save?.chapterQuietPending)}

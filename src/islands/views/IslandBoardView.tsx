@@ -13,6 +13,7 @@ import { useInputAction } from "@/input";
 import type { UserProfile } from "@/App";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 import type { CapitalCharacter } from "../character";
+import { BASE_VOYAGER, voyagerForIslandStyle } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
 import { getAnimationStyle } from "../animationStyles";
 import { CharacterAvatar } from "./CharacterAvatar";
@@ -35,7 +36,7 @@ import {
   type PartyIslandState,
   type SpaceResolvePayload,
 } from "../partyBoard";
-import { ensureLedger, acceptDeal, type DealOffer } from "../voyagerLedger";
+import { ensureLedger, acceptDeal, addHolding, type DealOffer, type LiabilityOffer } from "../voyagerLedger";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -115,6 +116,10 @@ export function IslandBoardView({
   const { reduced } = useGameMotion();
   const theme = getIslandTheme(island.id, island.themeId);
   const era = getAnimationStyle(theme.animationStyle);
+  const boardCharacter = useMemo(
+    () => voyagerForIslandStyle(character ?? BASE_VOYAGER, theme.animationStyle),
+    [character, theme.animationStyle],
+  );
   const boardMode = getBoardEconomyMode(island);
   const board = useMemo(() => buildBoardForIsland(island), [island]);
   const party = getPartyState(save, island.id);
@@ -140,6 +145,8 @@ export function IslandBoardView({
   const [pendingDoubleRoll, setPendingDoubleRoll] = useState(false);
   const [dealOffer, setDealOffer] = useState<DealOffer | null>(null);
   const [dealPartyState, setDealPartyState] = useState<PartyIslandState | null>(null);
+  const [liabilityOffer, setLiabilityOffer] = useState<LiabilityOffer | null>(null);
+  const [liabilityPartyState, setLiabilityPartyState] = useState<PartyIslandState | null>(null);
 
   useEffect(() => {
     setDisplayPosition(party.position);
@@ -256,6 +263,13 @@ export function IslandBoardView({
         return;
       }
 
+      if (payload.pendingLiability) {
+        setLiabilityOffer(payload.pendingLiability);
+        setLiabilityPartyState(working);
+        setPhase("idle");
+        return;
+      }
+
       await runRivalTurns(working);
     },
     [
@@ -286,7 +300,6 @@ export function IslandBoardView({
           const result = acceptDeal(ensureLedger(save.voyagerLedger), offer);
           applyPayload({
             coins: result.coins,
-            xp: 8,
             ledger: result.ledger,
             message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
           });
@@ -301,6 +314,50 @@ export function IslandBoardView({
       applyPayload,
       dealOffer,
       dealPartyState,
+      runRivalTurns,
+      save.voyagerLedger,
+      userProfile.totalCoins,
+    ],
+  );
+
+  const resolveLiabilityOffer = useCallback(
+    (choice: "borrow" | "buyout" | "walk") => {
+      if (!liabilityOffer || !liabilityPartyState) return;
+      const offer = liabilityOffer;
+      const state = liabilityPartyState;
+      setLiabilityOffer(null);
+      setLiabilityPartyState(null);
+
+      if (choice === "borrow") {
+        const ledger = addHolding(ensureLedger(save.voyagerLedger), offer);
+        applyPayload({
+          coins: 0,
+          ledger,
+          message: `Borrowed: ${offer.icon} ${offer.name} (−$${offer.monthlyAmount}/mo). Cashflow just got tighter.`,
+        });
+      } else if (choice === "buyout") {
+        if (userProfile.totalCoins < offer.buyoutCost) {
+          setEventMessage(
+            `Buyout costs ${offer.buyoutCost} coins — not enough. Borrow or walk.`,
+          );
+          setLiabilityOffer(offer);
+          setLiabilityPartyState(state);
+          return;
+        }
+        applyPayload({
+          coins: -offer.buyoutCost,
+          message: `Bought out of ${offer.name} for ${offer.buyoutCost} coins — no monthly drain.`,
+        });
+      } else {
+        setEventMessage(`Walked away from ${offer.name}. No new liability — this month.`);
+      }
+
+      void runRivalTurns(state);
+    },
+    [
+      applyPayload,
+      liabilityOffer,
+      liabilityPartyState,
       runRivalTurns,
       save.voyagerLedger,
       userProfile.totalCoins,
@@ -327,9 +384,9 @@ export function IslandBoardView({
   );
 
   const handleRoll = useCallback(async () => {
-    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer) return;
+    if (phase !== "idle" || boardLocked || minigameCount === 0 || dealOffer || liabilityOffer) return;
     if (party.turnsRemaining === 0) {
-      setEventMessage("Session complete! Compare Board Stars with your rivals, then float on.");
+      setEventMessage("Session complete! Check your cashflow claims and pouch, then float on.");
       return;
     }
 
@@ -365,7 +422,7 @@ export function IslandBoardView({
 
   const handleUseItem = useCallback(
     (itemId: PartyItemId) => {
-      if (phase !== "idle" || boardLocked || dealOffer) return;
+      if (phase !== "idle" || boardLocked || dealOffer || liabilityOffer) return;
       const { next, payload, extraSteps } = usePartyItem(itemId, party, userProfile.totalCoins);
       onUpdatePartyState(next);
       applyPayload(payload, getPartyItem(itemId)?.moneyTip);
@@ -378,7 +435,7 @@ export function IslandBoardView({
     [applyPayload, boardLocked, dealOffer, onUpdatePartyState, party, phase, userProfile.totalCoins],
   );
 
-  const busy = phase !== "idle" || boardLocked || Boolean(dealOffer);
+  const busy = phase !== "idle" || boardLocked || Boolean(dealOffer) || Boolean(liabilityOffer);
   const boardSkin = era.boardSkinClass;
   const culture = getIslandCulture(island);
   const buddy = resolveAdaptiveBuddyTip({
@@ -494,7 +551,7 @@ export function IslandBoardView({
               <div className="party-token" style={{ left: `${tokenLayout.x}%`, top: `${tokenLayout.y}%` }}>
                 {character ? (
                   <CharacterAvatar
-                    character={character}
+                    character={boardCharacter}
                     size={40}
                     animationStyle={theme.animationStyle}
                     reducedMotion={reduced}
@@ -602,7 +659,9 @@ export function IslandBoardView({
 
               <GamePanel title="How Fortune Party works" padding="default">
                 <ul className="text-sm space-y-1 text-gray-700 list-disc pl-4">
-                  <li>Roll, move, and race rival captains for <strong>Board Stars</strong>.</li>
+                  <li>
+                    Roll, move, and buy <strong>Cashflow Claims</strong> — pouch coins for monthly keep.
+                  </li>
                   <li>Minigame spaces teach money skills in this era&apos;s art style.</li>
                   <li>Capsules let you raid, shield, fog, or compound — with money tips.</li>
                   <li>Collector spaces = surprise fees. Chance is part of the lesson.</li>
@@ -672,6 +731,64 @@ export function IslandBoardView({
                     onClick={() => resolveDealOffer(true)}
                   >
                     Buy deal
+                  </GameButton>
+                </div>
+              </GamePanel>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {liabilityOffer ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <GamePanel
+                title="Debt trap"
+                padding="default"
+                className="border-rose-300 bg-rose-50/90"
+                data-testid="harbor-liability-offer"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-3xl">{liabilityOffer.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-black text-[var(--cap-ink)]">{liabilityOffer.name}</div>
+                    <p className="text-sm text-[var(--cap-ink-soft)]">
+                      Borrow and carry{" "}
+                      <b className="text-rose-800">−${liabilityOffer.monthlyAmount}/mo</b>, buy out for{" "}
+                      <b>{liabilityOffer.buyoutCost} coins</b>, or walk away.
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--cap-ink-soft)]">
+                      Your pouch: 🪙 {userProfile.totalCoins}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-liability-walk"
+                    onClick={() => resolveLiabilityOffer("walk")}
+                  >
+                    Walk
+                  </GameButton>
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-liability-buyout"
+                    onClick={() => resolveLiabilityOffer("buyout")}
+                  >
+                    Buy out
+                  </GameButton>
+                  <GameButton
+                    variant="primary"
+                    className="flex-1"
+                    data-testid="harbor-liability-borrow"
+                    onClick={() => resolveLiabilityOffer("borrow")}
+                  >
+                    Borrow
                   </GameButton>
                 </div>
               </GamePanel>

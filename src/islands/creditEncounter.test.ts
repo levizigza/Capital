@@ -32,7 +32,7 @@ describe("Credit encounter — Pillar 6 skill tests", () => {
     );
     expect(questBlock).toMatch(/mg_ck_signal/);
     expect(questBlock).not.toMatch(/mg_ck_budget_balancer/);
-    expect(json).toMatch(/"startMinigame", "minigameId": "mg_ck_signal"/);
+    expect(json).toMatch(/"type": "startMinigame"[\s\S]*?"minigameId": "mg_ck_signal"/);
   });
 
   it("opens Rex on the Ordeal fork only after Score Scanner", () => {

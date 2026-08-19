@@ -1,6 +1,6 @@
 /**
  * Fortune Party–style play classification.
- * Kinesthetic / movement games come first on the shore; quizzes prove mastery after.
+ * Kinesthetic / movement games come first on the shore; quizzes are optional digression.
  */
 
 export type PartyPlayKind = "kinesthetic" | "quiz" | "sim";

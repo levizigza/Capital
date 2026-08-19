@@ -164,7 +164,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
         choices: [
           "Buying more snacks on impulse",
           "Covering surprise bills without wrecking your plan",
-          "Paying rivals’ Board Stars",
+          "Winning a star race that doesn’t change cashflow",
           "Skipping every quiz forever",
         ],
         correctIndex: 1,
@@ -379,26 +379,26 @@ export const MASTERY_GATES: MasteryGateDef[] = [
   },
 ];
 
-/** Shared mastery quiz after any island Party Dash (kinesthetic → quiz). */
+/** Optional mastery digression after Party Dash — never gates Credit or clears. */
 export const PARTY_DASH_MASTERY_GATE: MasteryGateDef = {
   id: "gate_party_dash",
   minigameId: "mg_party_dash",
   title: "Party Pad Mastery Quiz",
   bossLabel: "Play-Pad Boss",
   requirementCopy:
-    "You cleared the kinesthetic Party Dash. Ace every question to prove the lesson stuck — then prove it on the quiz.",
+    "Optional digression after the Party Dash. Ace every question if you want the worksheet — Credit still opens from Freedom + Paycheck Change.",
   questions: [
     {
       id: "pd1",
-      prompt: "Why do play pads come before quizzes in Fortune Archipelago?",
+      prompt: "Why do play pads come before worksheets in Fortune Archipelago?",
       choices: [
         "Quizzes are more fun than moving",
-        "You learn by doing first, then prove you understood",
+        "You learn by doing first — then prove it in the world",
         "Movement games don’t teach anything",
         "So you can skip financial literacy",
       ],
       correctIndex: 1,
-      explainCorrect: "Kinesthetic play builds the feel; the quiz locks in the literacy.",
+      explainCorrect: "Kinesthetic play builds the feel; Takes and cashflow lock in the literacy.",
     },
     {
       id: "pd2",

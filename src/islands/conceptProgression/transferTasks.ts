@@ -12,6 +12,7 @@ import {
   COVE_ISLAND_ID,
   CREDIT_KINGDOM_ID,
   HARBOR_HAVEN_ID,
+  PAYCHECK_CHANGE_QUEST_ID,
   PAYCHECK_PENINSULA_ID,
 } from "../islandIds";
 
@@ -398,26 +399,26 @@ export const TRANSFER_SCENARIOS: TransferScenarioDef[] = [
     rule: "Sustain target cashflow for N Pay Days — not one lucky month.",
     training: { context: "First seal streak UI", guidance: "Bag Freedom horizon" },
     transfer: {
-      context: "Credit unlock gate (needs Freedom + mastery)",
-      surface_change: "Spiral lock copy · mastery counter",
-      numbers_change: "Mastery 3/3 + escaped",
+      context: "Credit unlock gate (needs Freedom + Paycheck Change)",
+      surface_change: "Spiral lock copy · transfer proof",
+      numbers_change: "Escaped + Paycheck Change complete",
       guidance_removed: "No first streak celebration replay",
     },
     success_predicate: {
       type: "all_of",
       of: [
         { type: "has_freedom" },
-        { type: "island_discovered", islandId: CREDIT_KINGDOM_ID },
+        { type: "quest_completed", questId: PAYCHECK_CHANGE_QUEST_ID },
       ],
     },
   },
   {
     scenarioId: "ts_mastery_spiral_gate",
     concept_id: "mastery_clear",
-    rule: "Mastery quiz proves literacy after kinesthetic clear.",
-    training: { context: "Cove Coin Sort mastery", guidance: "Quiz-only retry on fail" },
+    rule: "Mastery quiz is optional digression after kinesthetic clear — does not gate Credit.",
+    training: { context: "Cove Coin Sort mastery digression", guidance: "Quiz-only retry on fail" },
     transfer: {
-      context: "Paycheck / Credit mastery gates",
+      context: "Optional mastery digression on any organ",
       surface_change: "Different organ quiz items",
       numbers_change: "Different gate id",
       guidance_removed: "No Coin Sort pad replay required after quiz pass",

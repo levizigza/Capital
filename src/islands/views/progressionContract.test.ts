@@ -28,11 +28,13 @@ describe("Harbor progression contract", () => {
   it("wires share + homecoming to name newly open painting", () => {
     const share = readFileSync(join(__dirname, "HarborFeltShareOverlay.tsx"), "utf8");
     const app = readFileSync(join(__dirname, "../IslandsApp.tsx"), "utf8");
+    const recovery = readFileSync(join(__dirname, "../ftueQuestRecovery.ts"), "utf8");
+    const homecoming = `${app}\n${recovery}`;
     expect(share).toMatch(/harbor-felt-newly-true/);
     expect(share).toMatch(/harbor-felt-kid-sentence/);
     expect(share).toMatch(/nextPaintingAfterScar/);
-    expect(app).toMatch(/newly open on the Carpet/);
-    expect(app).toMatch(/The Coin holds — save a little/);
+    expect(homecoming).toMatch(/newly open on the Carpet/);
+    expect(homecoming).toMatch(/The Coin holds — save a little|The Coin holds — Harbor felt your Take/);
   });
 
   it("names Freedom Seal + carpet tier on the plaza", () => {

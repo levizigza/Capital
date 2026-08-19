@@ -1,10 +1,10 @@
 /**
- * Fortune Archipelago party board — dice, chance, capsules, seals, rivals.
+ * Fortune Archipelago party board — dice, chance, capsules, cashflow claims, rivals.
  *
  * Core loop (Fortune Party–style, financially themed):
  *   Roll → Move → Resolve space → Optional minigame → Rival turns → repeat
- * Win condition for an island session: most Board Stars after N turns (or free play).
- * (Design Bible: never call these Freedom / Ledger Seals — Freedom Seal is CF escape only.)
+ * Session prize: Cashflow Claims (pouch → monthly CF), not star counters as progress.
+ * (Design Bible: Freedom Seal is CF escape only — never confuse with board toys.)
  */
 
 import type { IslandDefinition, IslandId, IslandSaveV1, MinigameId } from "./types";
@@ -17,10 +17,15 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  liabilityBuyoutCost,
+  makeBoardCashflowClaim,
+  regenerateAssetDealOffer,
   type DealOffer,
   type LedgerHolding,
+  type LiabilityOffer,
   type VoyagerLedger,
 } from "./voyagerLedger";
+import { BOARD_CASHFLOW_CLAIM_LABEL } from "@/design/designBible";
 import {
   CASHFLOW_SPACE_PATTERN,
   PARTY_SPACE_PATTERN,
@@ -110,6 +115,8 @@ export type SpaceResolvePayload = {
   ledger?: VoyagerLedger;
   /** Interactive deal offer — player must accept or pass */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  /** Interactive liability — borrow / buyout / walk */
+  pendingLiability?: import("./voyagerLedger").LiabilityOffer;
 };
 
 /** Larger loop for richer party boards (dense party density). */
@@ -300,10 +307,10 @@ export function buildBoardForIsland(island: IslandDefinition): BoardSpace[] {
         spaces.push({
           index: i,
           type: "seal",
-          label: "Board Star",
-          icon: "🏅",
+          label: BOARD_CASHFLOW_CLAIM_LABEL,
+          icon: "📈",
           coinReward: 20,
-          eventText: "Spend coins to claim a Board Star — or earn one by winning a minigame!",
+          eventText: "Spend pouch coins for a monthly cashflow claim — tradeoff, not a star counter.",
         });
         break;
       case "lucky":
@@ -427,7 +434,6 @@ export function resolvePassStart(
     });
     return {
       coins,
-      xp: 3,
       message: escapedNow
         ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
         : coins >= 0
@@ -438,7 +444,6 @@ export function resolvePassStart(
   }
   return {
     coins: HARBOR_DIVIDEND,
-    xp: 2,
     message: `Harbor dividend: +${HARBOR_DIVIDEND} coins (salary day)!`,
   };
 }
@@ -490,7 +495,6 @@ export function resolvePlayerSpace(
             : `Pay Day shortfall: ${coins} coins.`;
       }
       payload.coins = coins;
-      payload.xp = 5;
       payload.ledger = nextLedger;
       break;
     }
@@ -500,17 +504,21 @@ export function resolvePlayerSpace(
       payload.coins = result.coins;
       payload.ledger = result.ledger;
       payload.message = result.ledger.recentEvents[0]?.text ?? `Bill: −${amount} coins.`;
-      payload.xp = 2;
       break;
     }
     case "deal": {
       const owned = ledger.holdings.map((h) => h.id);
-      const deal = pickUnusedHolding("asset", owned);
+      let deal = pickUnusedHolding("asset", owned);
+      let offer: DealOffer;
       if (!deal) {
-        payload.message = "No new income deals left — keep grinding cashflow!";
+        const gen =
+          1 + ledger.holdings.filter((h) => h.kind === "asset" && h.id.includes("_gen")).length;
+        offer = regenerateAssetDealOffer(owned, gen);
+        payload.pendingDeal = offer;
+        payload.message = `Renewed deal: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo (catalog clear — new tradeoff).`;
         break;
       }
-      const offer: DealOffer = {
+      offer = {
         ...deal,
         purchaseCost: dealPurchaseCost(deal),
       };
@@ -522,12 +530,15 @@ export function resolvePlayerSpace(
       const owned = ledger.holdings.map((h) => h.id);
       const trap = pickUnusedHolding("liability", owned);
       if (!trap) {
-        payload.message = "You already carry every Harbor liability — watch that cashflow!";
+        payload.message = "No fresh debt traps — your cashflow still carries what you already borrowed.";
         break;
       }
-      ledger = addHolding(ledger, trap);
-      payload.ledger = ledger;
-      payload.message = `Debt Trap! ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo).`;
+      const liabilityOffer: LiabilityOffer = {
+        ...trap,
+        buyoutCost: liabilityBuyoutCost(trap),
+      };
+      payload.pendingLiability = liabilityOffer;
+      payload.message = `Debt Trap on the table: ${trap.icon} ${trap.name} (−$${trap.monthlyAmount}/mo). Borrow, buy out, or walk.`;
       break;
     }
     case "coins":
@@ -545,17 +556,18 @@ export function resolvePlayerSpace(
             : `You collected ${coins} coins!`;
       }
       payload.coins = coins;
-      payload.xp = 5;
       break;
     }
     case "seal": {
       const cost = space.coinReward ?? 20;
       if (playerCoins >= cost) {
+        const owned = ledger.holdings.map((h) => h.id);
+        const claim = makeBoardCashflowClaim(owned, cost);
         payload.coins = -cost;
-        payload.star = true;
-        payload.message = `You bought a Board Star for ${cost} coins!`;
+        payload.ledger = addHolding(ledger, claim);
+        payload.message = `${BOARD_CASHFLOW_CLAIM_LABEL}: spent ${cost} coins for +$${claim.monthlyAmount}/mo. Pouch paid for future cashflow.`;
       } else {
-        payload.message = `Seal costs ${cost} coins — earn more, then claim it.`;
+        payload.message = `${BOARD_CASHFLOW_CLAIM_LABEL} costs ${cost} coins — earn more, then claim monthly keep.`;
       }
       break;
     }
@@ -564,7 +576,6 @@ export function resolvePlayerSpace(
       addItem(item);
       if (payload.itemGained) {
         payload.message = `Fortune Capsule: you got a new item!`;
-        payload.xp = 3;
       }
       break;
     }
@@ -617,28 +628,26 @@ export function computeMinigameReward(
   success: boolean,
   score: number | undefined,
   firstClear: boolean,
-  landedOnSealSpace: boolean,
+  _landedOnSealSpace: boolean,
 ): MinigameBoardReward {
   if (!success) {
     return {
       coins: 2,
-      xp: 5,
+      xp: 0,
       starEarned: false,
       message: "Good try! You still learned something — roll again.",
     };
   }
 
   const baseCoins = 15 + Math.min(25, Math.floor((score ?? 70) / 4));
-  const baseXp = 20 + Math.min(30, Math.floor((score ?? 70) / 5));
   const bonusCoins = firstClear ? 10 : 0;
-  const starEarned = firstClear || landedOnSealSpace;
 
   return {
     coins: baseCoins + bonusCoins,
-    xp: baseXp,
-    starEarned,
-    message: starEarned
-      ? "Victory! You earned a Board Star on this island."
+    xp: 0,
+    starEarned: false,
+    message: firstClear
+      ? "First clear! Coins hit your pouch — seal spaces buy cashflow, not star chrome."
       : "Minigame cleared! Coins added to your pouch.",
   };
 }

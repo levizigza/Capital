@@ -183,6 +183,26 @@
               "sc_signal_badge"
             ]
           }
+        },
+        {
+          "id": "q_sc_reef_arcade",
+          "track": "side",
+          "title": "Reef Arcade Lane",
+          "description": "Optional wireframe arcade \u2014 compound patience and life forks without the Take.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_sc_compound"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_sc_life_fork"
+            }
+          ],
+          "rewards": {
+            "coins": 45,
+            "xp": 90
+          }
         }
       ],
       "dialogues": [
@@ -193,7 +213,7 @@
             {
               "id": "mm1",
               "speaker": "Mentor Max",
-              "text": "Phosphor Reef side shore — free roam. Every blinking light tells a money story. Digress here anytime; the spine still waits.",
+              "text": "Phosphor Reef side shore \u2014 free roam. Every blinking light tells a money story. Digress here anytime; the spine still waits.",
               "choices": [
                 {
                   "id": "mm1_a",
@@ -208,7 +228,7 @@
                 },
                 {
                   "id": "mm1_listen",
-                  "text": "Digression — listen or rush the blink?",
+                  "text": "Digression \u2014 listen or rush the blink?",
                   "nextNodeId": "mm_fork"
                 },
                 {
@@ -227,11 +247,11 @@
             {
               "id": "mm_fork",
               "speaker": "Mentor Max",
-              "text": "Reef lights blink your name. Listen for the money story — or rush the signal before you’ve heard it?",
+              "text": "Reef lights blink your name. Listen for the money story \u2014 or rush the signal before you\u2019ve heard it?",
               "choices": [
                 {
                   "id": "mm_linger",
-                  "text": "Listen first — then I’ll roam.",
+                  "text": "Listen first \u2014 then I\u2019ll roam.",
                   "nextNodeId": "mm_listen_done",
                   "effects": [
                     {
@@ -246,7 +266,7 @@
                 },
                 {
                   "id": "mm_rush",
-                  "text": "Rush the blink — I’ll listen later.",
+                  "text": "Rush the blink \u2014 I\u2019ll listen later.",
                   "nextNodeId": "mm_rush_done",
                   "effects": [
                     {
@@ -419,6 +439,97 @@
           "complexity": "easy",
           "visualShell": "flat",
           "estimatedMinutes": 4
+        },
+        {
+          "id": "mg_sc_compound",
+          "name": "Reef Snowball",
+          "description": "Watch diversified savings compound under phosphor glow.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "sc_investor_tower",
+          "genre": "simulation",
+          "complexity": "easy",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 100,
+                "ratePct": 7,
+                "years": 12,
+                "label": "reef portfolio"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_sc_life_fork",
+          "name": "Signal Life Fork",
+          "description": "Career and credit choices fork your cashflow path.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "sc_credit_lane",
+          "genre": "quiz",
+          "complexity": "medium"
+        },
+        {
+          "id": "mg_sc_explore",
+          "name": "Tower Treasure Walk",
+          "description": "Explore Investor Tower rooms for portfolio clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "sc_investor_tower",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_sc_news",
+          "name": "Reef News Shocks",
+          "description": "Navigate market news dispatches \u2014 read before you react.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "sc_signal_plaza",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "finance_kids"
+                ],
+                "maxDraws": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_sc_pasaran",
+          "name": "Plaza Fair Trade",
+          "description": "Practice fair prices at the signal plaza stalls.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "PasaranMarketGame",
+          "areaId": "sc_signal_plaza",
+          "genre": "party",
+          "complexity": "easy"
+        },
+        {
+          "id": "mg_sc_price",
+          "name": "Ticker Price Lab",
+          "description": "Slide a mock ticker price and watch demand react.",
+          "icon": "\ud83d\udcc8",
+          "componentId": "PriceItRightGame",
+          "areaId": "sc_credit_lane",
+          "modules": [
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "signal subscription",
+                "emoji": "\ud83d\udce1",
+                "cost": 2,
+                "maxDemand": 50,
+                "chokePrice": 20
+              }
+            }
+          ]
         }
       ]
     }

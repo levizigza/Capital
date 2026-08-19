@@ -4,8 +4,8 @@
     {
       "id": "intangibles",
       "name": "Intangible Isle",
-      "description": "Nocturne void of brands and names. Side shore of Fortune Archipelago — spiral naming lessons.",
-      "icon": "💡",
+      "description": "Nocturne void of brands and names. Side shore of Fortune Archipelago \u2014 spiral naming lessons.",
+      "icon": "\ud83d\udca1",
       "requiredItems": [
         "ba_island_medallion"
       ],
@@ -34,7 +34,7 @@
           "id": "in_patent_office",
           "name": "Patent Office",
           "description": "Rows of filing cabinets and inventors pitching ideas. Learn how IP creates value.",
-          "icon": "📝",
+          "icon": "\ud83d\udcdd",
           "connections": [
             "in_brand_boulevard",
             "in_goodwill_garden"
@@ -44,7 +44,7 @@
           "id": "in_brand_boulevard",
           "name": "Brand Boulevard",
           "description": "Billboards and logos everywhere. Discover why a name can be worth billions.",
-          "icon": "🏷️",
+          "icon": "\ud83c\udff7\ufe0f",
           "connections": [
             "in_patent_office",
             "in_goodwill_garden"
@@ -54,7 +54,7 @@
           "id": "in_goodwill_garden",
           "name": "Goodwill Garden",
           "description": "A peaceful park where deals are made. Understand goodwill in acquisitions.",
-          "icon": "🌳",
+          "icon": "\ud83c\udf33",
           "connections": [
             "in_patent_office",
             "in_brand_boulevard"
@@ -65,28 +65,28 @@
         {
           "id": "npc_inventor_iris",
           "name": "Inventor Iris",
-          "icon": "🔬",
+          "icon": "\ud83d\udd2c",
           "areaId": "in_patent_office",
           "dialogueGraphId": "dlg_iris"
         },
         {
           "id": "npc_branding_ben",
           "name": "Branding Ben",
-          "icon": "🎨",
+          "icon": "\ud83c\udfa8",
           "areaId": "in_brand_boulevard",
           "dialogueGraphId": "dlg_ben"
         },
         {
           "id": "npc_merger_maya",
           "name": "Merger Maya",
-          "icon": "🤝",
+          "icon": "\ud83e\udd1d",
           "areaId": "in_goodwill_garden",
           "dialogueGraphId": "dlg_maya"
         },
         {
           "id": "npc_lawyer_leon",
           "name": "Lawyer Leon",
-          "icon": "⚖️",
+          "icon": "\u2696\ufe0f",
           "areaId": "in_patent_office",
           "dialogueGraphId": "dlg_leon"
         }
@@ -96,7 +96,7 @@
           "id": "in_patent",
           "name": "Patent Certificate",
           "description": "A patent protects your invention for 20 years. Nobody else can copy it.",
-          "icon": "📜",
+          "icon": "\ud83d\udcdc",
           "location": {
             "areaId": "in_patent_office"
           }
@@ -105,7 +105,7 @@
           "id": "in_brand_valuation",
           "name": "Brand Valuation Report",
           "description": "Analysis showing how brand recognition translates into revenue.",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "location": {
             "areaId": "in_brand_boulevard"
           }
@@ -114,7 +114,7 @@
           "id": "in_goodwill_report",
           "name": "Goodwill Analysis",
           "description": "Shows the premium paid in an acquisition above the tangible asset value.",
-          "icon": "📋",
+          "icon": "\ud83d\udccb",
           "location": {
             "areaId": "in_goodwill_garden"
           }
@@ -123,7 +123,7 @@
           "id": "in_island_medallion",
           "name": "Intangible Isle Medallion",
           "description": "You understand the hidden value of intangible assets!",
-          "icon": "🏅",
+          "icon": "\ud83c\udfc5",
           "location": {
             "areaId": "in_goodwill_garden"
           }
@@ -189,6 +189,26 @@
               "in_island_medallion"
             ]
           }
+        },
+        {
+          "id": "q_in_arcade_lane",
+          "track": "side",
+          "title": "IP Arcade Lane",
+          "description": "Optional IP lane \u2014 price licenses and compound goodwill.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_in_price"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_in_compound"
+            }
+          ],
+          "rewards": {
+            "coins": 50,
+            "xp": 100
+          }
         }
       ],
       "dialogues": [
@@ -199,7 +219,7 @@
             {
               "id": "ir1",
               "speaker": "Inventor Iris",
-              "text": "I just invented a new gadget! But without a patent, anyone could copy it. Intellectual property — patents, trademarks, copyrights — protects creators. Want to learn how?",
+              "text": "I just invented a new gadget! But without a patent, anyone could copy it. Intellectual property \u2014 patents, trademarks, copyrights \u2014 protects creators. Want to learn how?",
               "choices": [
                 {
                   "id": "ir1c1",
@@ -214,7 +234,7 @@
                 },
                 {
                   "id": "ir1_listen",
-                  "text": "Digression — glance or file first?",
+                  "text": "Digression \u2014 glance or file first?",
                   "nextNodeId": "ir_fork"
                 },
                 {
@@ -233,7 +253,7 @@
             {
               "id": "ir_fork",
               "speaker": "Inventor Iris",
-              "text": "Gallery glass or filing desk — glance at names first, or file before you’ve looked?",
+              "text": "Gallery glass or filing desk \u2014 glance at names first, or file before you\u2019ve looked?",
               "choices": [
                 {
                   "id": "ir_glance",
@@ -252,7 +272,7 @@
                 },
                 {
                   "id": "ir_rush",
-                  "text": "File first — I’ll name later.",
+                  "text": "File first \u2014 I\u2019ll name later.",
                   "nextNodeId": "ir_rush_done",
                   "effects": [
                     {
@@ -329,7 +349,7 @@
             {
               "id": "le2",
               "speaker": "Lawyer Leon",
-              "text": "Opening the IP scenario simulator…",
+              "text": "Opening the IP scenario simulator\u2026",
               "end": true
             },
             {
@@ -420,7 +440,7 @@
             {
               "id": "my1",
               "speaker": "Merger Maya",
-              "text": "When one company buys another, they often pay MORE than the sum of its assets. That 'extra' is called goodwill — it represents brand, customer relationships, patents, and team talent.",
+              "text": "When one company buys another, they often pay MORE than the sum of its assets. That 'extra' is called goodwill \u2014 it represents brand, customer relationships, patents, and team talent.",
               "choices": [
                 {
                   "id": "my1c1",
@@ -443,13 +463,13 @@
             {
               "id": "my2",
               "speaker": "Merger Maya",
-              "text": "Say a company has $10M in assets but is bought for $15M. That extra $5M is goodwill — the buyer believes the brand, customer base, and team are worth it. Here's an analysis report!",
+              "text": "Say a company has $10M in assets but is bought for $15M. That extra $5M is goodwill \u2014 the buyer believes the brand, customer base, and team are worth it. Here's an analysis report!",
               "end": true
             },
             {
               "id": "my3",
               "speaker": "Merger Maya",
-              "text": "Yes! If the acquired company underperforms, the buyer has to 'write down' goodwill — admitting they overpaid. It's a huge hit to the balance sheet. That's why due diligence matters.",
+              "text": "Yes! If the acquired company underperforms, the buyer has to 'write down' goodwill \u2014 admitting they overpaid. It's a huge hit to the balance sheet. That's why due diligence matters.",
               "choices": [
                 {
                   "id": "my3c1",
@@ -472,15 +492,15 @@
           "id": "mg_ip_scenario",
           "name": "IP Strategy Scenario",
           "description": "Navigate branching decisions about protecting your invention: patent, trademark, or open-source?",
-          "icon": "⚖️",
+          "icon": "\u2696\ufe0f",
           "componentId": "IPScenarioGame",
           "areaId": "in_patent_office"
         },
         {
           "id": "mg_license_pricing",
           "name": "Price Your License",
-          "description": "You own the patent — now set the licensing fee. Slide the price and watch how many partners sign on. Find the profit peak.",
-          "icon": "⚖️",
+          "description": "You own the patent \u2014 now set the licensing fee. Slide the price and watch how many partners sign on. Find the profit peak.",
+          "icon": "\u2696\ufe0f",
           "componentId": "PriceItRightGame",
           "areaId": "in_patent_office",
           "genre": "simulation",
@@ -492,10 +512,95 @@
               "id": "PriceConfig",
               "config": {
                 "product": "your patent license",
-                "emoji": "⚖️",
+                "emoji": "\u2696\ufe0f",
                 "cost": 3,
                 "maxDemand": 30,
                 "chokePrice": 20
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_in_compound",
+          "name": "Goodwill Snowball",
+          "description": "Brand trust compounds like savings over years.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "in_goodwill_garden",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 150,
+                "ratePct": 6,
+                "years": 15,
+                "label": "brand trust"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_in_explore",
+          "name": "Patent Office Walk",
+          "description": "Explore the patent office for IP clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "in_patent_office",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_in_life_fork",
+          "name": "IP Life Fork",
+          "description": "License vs sell vs protect \u2014 paths fork.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "in_brand_boulevard"
+        },
+        {
+          "id": "mg_in_diversify",
+          "name": "Brand Baskets",
+          "description": "Spread brand bets before a market mood swing.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "in_brand_boulevard"
+        },
+        {
+          "id": "mg_in_news",
+          "name": "IP Dispatch",
+          "description": "Legal and merger dispatches \u2014 read before you sign.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "in_patent_office",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "finance_kids"
+                ],
+                "maxDraws": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_in_price",
+          "name": "License Price Lab",
+          "description": "Price a mock license and watch demand react.",
+          "icon": "\ud83d\udcdc",
+          "componentId": "PriceItRightGame",
+          "areaId": "in_brand_boulevard",
+          "modules": [
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "brand license",
+                "emoji": "\u2122\ufe0f",
+                "cost": 5,
+                "maxDemand": 40,
+                "chokePrice": 30
               }
             }
           ]

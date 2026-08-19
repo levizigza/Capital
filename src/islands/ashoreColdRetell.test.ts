@@ -36,12 +36,16 @@ describe("Ashore → Cove cold retell", () => {
     expect(g.nodes.find((n) => n.id === "h3")?.text).toMatch(/Memory keeps/);
   });
 
-  it("wires kid sentences into IslandsApp Cove / Paycheck / Credit homecoming", () => {
+  it("wires kid sentences into Cove / Paycheck / Credit homecoming surfaces", () => {
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
-    expect(app).toContain(coldOrganKidSentence("coin"));
+    const recovery = readFileSync(join(__dirname, "ftueQuestRecovery.ts"), "utf8");
+    const chapter = readFileSync(join(__dirname, "chapterLoop.ts"), "utf8");
+    const homecoming = `${app}\n${recovery}\n${chapter}`;
+    expect(homecoming).toContain(coldOrganKidSentence("coin"));
     // Paycheck homecoming is choice-true — names what Harbor kept, not the exam answer.
-    expect(app).toMatch(/The Clock kept the loft dry when the sky cracked/);
-    expect(app).toMatch(/The Clock still names the rain gossip/);
-    expect(app).toContain(coldOrganKidSentence("spiral"));
+    expect(homecoming).toMatch(
+      /The Clock kept the loft dry|Harbor kept the loft dry|The Clock still names the rain gossip|The Clock shelters/,
+    );
+    expect(homecoming).toMatch(/The Spiral withstands|coldOrganKidSentence\("spiral"\)/);
   });
 });

@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart as RechartsPieChart, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
 import type { UserProfile, GameScore } from '@/App'
 import { TIER_DATA, SKILL_LINES, type Tier, type Quest, type SkillLine } from '@/data/tiers'
+import { BIBLE_RUNTIME_LAWS } from '@/design/designBible'
 
 interface EnhancedStructuredModeDashboardProps {
   userProfile: UserProfile
@@ -503,7 +504,8 @@ export default function EnhancedStructuredModeDashboard({
               </Card>
             </motion.section>
 
-            {/* Achievements */}
+            {/* Achievements — demoted on product path (scars/plaques are memory, not badge %). */}
+            {!BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath ? (
             <motion.section>
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                 <CardHeader>
@@ -551,6 +553,7 @@ export default function EnhancedStructuredModeDashboard({
                 </CardContent>
               </Card>
             </motion.section>
+            ) : null}
           </div>
         </div>
       </main>
