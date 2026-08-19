@@ -42,14 +42,14 @@ const ROLE_TIPS: Record<
 > = {
   piggy_penny: {
     tip: {
-      explorer: "Save a little every day — even shiny pennies grow into a jar!",
-      apprentice: "Pay yourself first. A small automatic save beats a big maybe-later.",
-      strategist: "Automate a savings transfer before discretionary Harbor spends.",
+      explorer: "Memory keeps — Harbor names what you chose on the Plinth.",
+      apprentice: "Coin holds · Clock shelters · Spiral withstands — the organs speak if you listen.",
+      strategist: "Harbor remembers your Take. The Plinth is the receipt — not a quiz score.",
     },
     bye: {
-      explorer: "I’m by the fountain if you need me!",
-      apprentice: "Come back anytime — Harbor Keeper desk is open.",
-      strategist: "Ping me when cashflow or freedom seals need a check-in.",
+      explorer: "I’m by the fountain if Harbor needs a keeper!",
+      apprentice: "Come back — Memory keeps your mark.",
+      strategist: "Ping me when a new scar lands on the Plinth.",
     },
   },
   coiny: {
@@ -78,14 +78,14 @@ const ROLE_TIPS: Record<
   },
   budget_bot: {
     tip: {
-      explorer: "Make a simple plan: needs, wants, save. Check!",
-      apprentice: "Budget = plan for coins before they leave. Three jars work.",
-      strategist: "Allocate envelopes before payday hits — then stick the percentages.",
+      explorer: "Clock shelters — needs, wants, and save can share one umbrella.",
+      apprentice: "The Clock organ stamps time before glitter — Harbor hears the rhythm.",
+      strategist: "Paycheck buckets are Clock practice — not a spreadsheet grade.",
     },
     bye: {
-      explorer: "Beep-boop. Plan complete!",
-      apprentice: "Spreadsheet smile.",
-      strategist: "Model updated.",
+      explorer: "Beep-boop. Harbor keeps!",
+      apprentice: "Clock tick — Memory waits.",
+      strategist: "Model the month, not the mood.",
     },
   },
   spendy_sue: {
@@ -379,13 +379,32 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
 }
 
 /** Guided Piggy conversations — Ashore live beats only (legacy ids remap to voyage). */
-export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
+export function piggyGuidedGraph(
+  step: HubGuidedStepId | null | undefined,
+  opts?: { ashoreTeachComplete?: boolean },
+): DialogueGraph {
   const live: HubGuidedStepId =
     step == null || step === "done"
       ? "done"
       : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
 
   if (live === "meet_guide") {
+    if (opts?.ashoreTeachComplete) {
+      return {
+        id: "dlg_harbor_piggy_penny_guided",
+        startNodeId: "g1",
+        nodes: [
+          {
+            id: "g1",
+            speaker: "Piggy Penny",
+            text: resolveControlPlaceholders(
+              "Ashore proved the organs — this plaza is home. I'm Piggy Penny, Harbor Keeper. Memory keeps. Coin Bag points the Money Carpet to Coincraft Cove when you're ready.",
+            ),
+            choices: [{ id: "go", text: "To the carpet!", end: true }],
+          },
+        ],
+      };
+    }
     return {
       id: "dlg_harbor_piggy_penny_guided",
       startNodeId: "g1",
@@ -446,7 +465,7 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
         {
           id: "g_after",
           speaker: "Piggy Penny",
-          text: "Paycheck Peninsula and Credit Kingdom wait on the inner ring. The outer ring is side quests — extra financial games that wake after you come home changed. They're never required.",
+          text: "Paycheck Peninsula and Credit Kingdom wait on the inner ring. The outer ring is side quests — extra financial games that wake after Paycheck Change. They're never required.",
           choices: [{ id: "go", text: "To the carpet!", nextNodeId: "g_go" }],
         },
         {

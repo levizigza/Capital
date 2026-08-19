@@ -54,6 +54,19 @@ describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
     expect(`${tip.tip} ${tip.coach ?? ""}`).not.toMatch(/I'm Coin Bag|Outfitter|Capsule/i);
   });
 
+  it("meet_guide after Ashore complete skips chart tease and re-teach controls", () => {
+    const g = piggyGuidedGraph("meet_guide", { ashoreTeachComplete: true });
+    const texts = g.nodes.map((n) => n.text).join(" ");
+    expect(texts).toMatch(/Ashore proved|Memory keeps/i);
+    expect(texts).not.toMatch(/chart of the islands|Show me the islands/i);
+    expect(texts).not.toMatch(/\{move\}|\{interact\}/);
+  });
+
+  it("HomeHub hides series courtyard on first-meet Piggy presence", () => {
+    const hub = readFileSync(join(__dirname, "../views/HomeHubView.tsx"), "utf8");
+    expect(hub).toMatch(/piggyPresenceBeat=\{piggyPresence\}/);
+  });
+
   it("voyage tip names Carpet · Cove (practice leave)", () => {
     const tip = coinBagHarborTip({ version: 1, step: "to_dock" });
     expect(`${tip.tip} ${tip.coach ?? ""}`).toMatch(/Carpet|Cove/i);

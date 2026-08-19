@@ -7,6 +7,7 @@ import {
   HARBOR_BRIEFING_GOAL,
   requiredBriefingIds,
 } from "./harborWorldBriefing";
+import { shouldShowHarborWorldBriefing } from "./ashoreTeachFlags";
 
 describe("harbor world briefing", () => {
   it("names Harbor home, Cove first, later spine, and optional side shores", () => {
@@ -30,6 +31,18 @@ describe("harbor world briefing", () => {
     expect(blob).not.toMatch(/this is the Take/i);
     expect(blob).not.toMatch(/same as Cove|just like Cove|umbrella is jar/i);
     expect(blob).toMatch(/I won't map the answer/i);
+  });
+
+  it("Paycheck briefing copy respects Cove gate", () => {
+    const pay = HARBOR_BRIEFING_CARDS.find((c) => c.id === "paycheck_peninsula")!;
+    expect(pay.objective).toMatch(/Cove Change/i);
+    expect(pay.piggyLine).toMatch(/won't map the answer/i);
+  });
+
+  it("chart overlay skipped after Ashore complete", () => {
+    expect(shouldShowHarborWorldBriefing("complete")).toBe(false);
+    const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
+    expect(app).toMatch(/shouldShowHarborWorldBriefing/);
   });
 
   it("overlay is interactive paintings, not a text dump", () => {

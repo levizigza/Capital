@@ -59,10 +59,10 @@ export const HARBOR_BRIEFING_CARDS: HarborBriefingCard[] = [
     lane: "spine",
     organ: "clock",
     era: "1960s",
-    objective: "A later stall with two prices — Clock organ, after you come home from Cove.",
+    objective: "Opens after Cove Change — a stall with two prices. Clock organ; Harbor won't map the answer.",
     games: "Budget buckets · Inbox storm · Payroll Tower",
     piggyLine:
-      "Paycheck Peninsula waits on the inner ring. Clock games — paycheck buckets, a busy inbox. You'll know it when a painting wakes. I won't map the answer.",
+      "Paycheck Peninsula waits until Harbor trusts your Cove mark. Clock games live there — I won't map the answer.",
     required: false,
   },
   {
@@ -83,10 +83,10 @@ export const HARBOR_BRIEFING_CARDS: HarborBriefingCard[] = [
     lane: "side",
     organ: "memory",
     era: "Open world",
-    objective: "Extra financial games — not required. They wake after your first Cove Change.",
+    objective: "Extra financial games — not required. They wake after Paycheck Change.",
     games: "Kart budgets · neon wages · gene reefs · orbital deeds · and more",
     piggyLine:
-      "The outer ring is open-world extra. Side quests and era games — scrap coasts, neon streets, quiet patents. Play them when you're curious. They never gate the ending.",
+      "The outer ring is open-world extra. Side quests wake after Paycheck Change — never gate the ending.",
     required: false,
   },
 ];

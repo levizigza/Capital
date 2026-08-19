@@ -1,6 +1,6 @@
 /**
- * Mastery Gates — kinesthetic win is not enough.
- * You must ace an all-correct quiz to unlock the next portion.
+ * Mastery Gates — optional digression quizzes after kinesthetic runs.
+ * Credit and main-course progression are gated by Freedom + Paycheck Change, not quiz count.
  */
 
 export type MasteryQuizQuestion = {

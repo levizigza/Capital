@@ -22,6 +22,8 @@ describe("map islands — fleshed, distinct, production gates", () => {
     const content = loadIslandsContent();
     const credit = content.islands.find((i) => i.id === "credit_kingdom")!;
     const side = content.islands.find((i) => i.id === "signal_city")!;
+    const paycheck = content.islands.find((i) => i.id === "paycheck_peninsula")!;
+    expect(isIslandProgressLocked(paycheck, save)).toBe(true);
     expect(isIslandProgressLocked(credit, save)).toBe(true);
     expect(isIslandProgressLocked(side, save)).toBe(true);
   });

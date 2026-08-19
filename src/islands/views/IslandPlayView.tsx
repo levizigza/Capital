@@ -35,7 +35,6 @@ import type {
   QuestObjective,
 } from "../types";
 
-const LazyEconomyWeather = lazy(() => import("../EconomyWeatherIndicator"));
 
 import { createDefaultEconomyState } from "../economy";
 import { AreaScene, isCoincraftIsland, NpcPortrait } from "@/art/coincraft";

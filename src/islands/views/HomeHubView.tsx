@@ -1284,7 +1284,7 @@ export function HomeHubView({
                         }
                       : undefined
                   }
-                  piggyPresenceBeat={stripPlaza}
+                  piggyPresenceBeat={piggyPresence}
                   cinemaActive={hideHudForCinema}
                   onPlazaReady={markPlazaReady}
                 />

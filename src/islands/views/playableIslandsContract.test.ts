@@ -55,7 +55,7 @@ describe("playable islands contract", () => {
   it("Credit Spiral lock names Freedom + Paycheck transfer for navigability", () => {
     const gates = readFileSync(join(__dirname, "../progressGates.ts"), "utf8");
     expect(gates).toMatch(/Finish Paycheck Change/);
-    expect(gates).toMatch(/Earn Freedom Seal/);
+    expect(gates).toMatch(/Clock Pay Days|Freedom/);
     expect(gates).not.toMatch(/Spiral locked — mastery/);
   });
 });

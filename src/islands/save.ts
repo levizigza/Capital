@@ -156,6 +156,12 @@ export function sanitizeIslandSave(raw: unknown): IslandSaveV1 | null {
   if (typeof parsed.onboardingComplete === "boolean") {
     sanitized.onboardingComplete = parsed.onboardingComplete;
   }
+  if (parsed.ashoreTeachDone === "complete" || parsed.ashoreTeachDone === "skipped") {
+    sanitized.ashoreTeachDone = parsed.ashoreTeachDone;
+  }
+  if (typeof parsed.pendingScarSessionEcho === "boolean") {
+    sanitized.pendingScarSessionEcho = parsed.pendingScarSessionEcho;
+  }
   if (typeof parsed.chapterQuietPending === "boolean") {
     sanitized.chapterQuietPending = parsed.chapterQuietPending;
   }
