@@ -29,7 +29,9 @@
         "pixel:pack": "node scripts/pack-pixel-atlas.mjs",
         "prebuild": "npm run assets:check && npm run sre:health",
         "optimize": "vite optimize",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "revenue:test": "npm test --prefix tools/revenue-intelligence",
+        "revenue:report": "npm run report --prefix tools/revenue-intelligence"
     },
     "dependencies": {
         "@github/spark": "^0.39.0",

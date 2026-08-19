@@ -1,0 +1,40 @@
+{
+  "$comment": "Capital Revenue Intelligence ledger schema (informational).",
+  "type": "object",
+  "required": ["version", "weekOf", "people", "sources", "offers", "costs"],
+  "properties": {
+    "people": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "segmentId", "sourceId", "stages"],
+        "properties": {
+          "id": { "type": "string" },
+          "segmentId": { "type": "string" },
+          "sourceId": { "type": "string" },
+          "offerId": { "type": ["string", "null"] },
+          "stages": {
+            "type": "object",
+            "description": "ISO timestamps (or true) when each lifecycle stage was reached. Omit if not reached.",
+            "properties": {
+              "DISCOVERED": {},
+              "CONTACTED": {},
+              "REPLIED": {},
+              "INTERVIEWED": {},
+              "USER_TEST": {},
+              "QUALIFIED": {},
+              "OFFERED": {},
+              "CHECKOUT_STARTED": {},
+              "PAID": {},
+              "ACTIVATED": {},
+              "RETAINED": {},
+              "REFERRED": {}
+            }
+          },
+          "revenueUsd": { "type": ["number", "null"] },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

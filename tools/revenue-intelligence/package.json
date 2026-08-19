@@ -1,0 +1,13 @@
+{
+  "name": "@capital/revenue-intelligence",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "report": "node generate-weekly-report.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
