@@ -94,6 +94,7 @@ If a change only raises tutorial completion, **do not ship it as a win**.
 
 - `docs/ftue/FTUE_TELEMETRY.md` — privacy + FTUE shell notes  
 - `docs/research/LEARNING_TRANSFER_FRAMEWORK.md` — per-principle stages + IFTR definition  
+- `docs/research/ANECDOTE_SYSTEM.md` — emergent story telemetry + recall validation  
 - `docs/design/CONCEPT_MASTERY_PEDAGOGY.md` — transfer ≠ tip click  
 - `docs/design/REFLECTION_SYSTEM.md` — Whisper A/B vs ITR  
 - `docs/design/AI_GUIDE_MINIMUM_INTERVENTION.md` — intervention levels  
