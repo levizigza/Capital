@@ -37,6 +37,13 @@ import {
   type SpaceResolvePayload,
 } from "../partyBoard";
 import { ensureLedger, acceptDeal, addHolding, type DealOffer, type LiabilityOffer } from "../voyagerLedger";
+import {
+  dealPassHint,
+  buildHarborOpportunityContext,
+  moodFromCashflow,
+} from "../harborOpportunity";
+import { harborWeatherMood } from "../harborWeather";
+import { netCashflow } from "../voyagerLedger";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -161,6 +168,17 @@ export function IslandBoardView({
   }, [island.id]);
 
   const tokenLayout = BOARD_LAYOUT[displayPosition] ?? BOARD_LAYOUT[0]!;
+
+  const dealPassHintLine = useMemo(() => {
+    if (!dealOffer) return null;
+    const ledger = ensureLedger(save.voyagerLedger);
+    const ctx = buildHarborOpportunityContext(
+      ledger,
+      userProfile.totalCoins,
+      moodFromCashflow(netCashflow(ledger)),
+    );
+    return dealPassHint(ctx, dealOffer);
+  }, [dealOffer, save.voyagerLedger, userProfile.totalCoins]);
 
   const applyPayload = useCallback(
     (payload: SpaceResolvePayload, tip?: string) => {
@@ -305,7 +323,18 @@ export function IslandBoardView({
           });
         }
       } else {
-        setEventMessage(`Passed on ${offer.name}. Patience is a cashflow skill too.`);
+        const ledger = ensureLedger(save.voyagerLedger);
+        const ctx = buildHarborOpportunityContext(
+          ledger,
+          userProfile.totalCoins,
+          moodFromCashflow(netCashflow(ledger)),
+        );
+        const hint = dealPassHint(ctx, offer);
+        setEventMessage(
+          hint
+            ? `Passed on ${offer.name}. ${hint}`
+            : `Passed on ${offer.name}. Patience is a cashflow skill too.`,
+        );
       }
 
       void runRivalTurns(state);
@@ -718,10 +747,23 @@ export function IslandBoardView({
                         ? " — not enough yet (you can pass)."
                         : ""}
                     </p>
+                    {dealPassHintLine ? (
+                      <p
+                        className="mt-2 text-xs font-semibold text-[var(--cap-ink-soft)]"
+                        data-testid="harbor-deal-pass-hint"
+                      >
+                        {dealPassHintLine}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <GameButton variant="outline" className="flex-1" onClick={() => resolveDealOffer(false)}>
+                  <GameButton
+                    variant="outline"
+                    className="flex-1"
+                    data-testid="harbor-deal-pass"
+                    onClick={() => resolveDealOffer(false)}
+                  >
                     Pass
                   </GameButton>
                   <GameButton

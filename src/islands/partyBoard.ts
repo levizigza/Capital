@@ -19,6 +19,7 @@ import {
   ensureLedger,
   liabilityBuyoutCost,
   makeBoardCashflowClaim,
+  netCashflow,
   regenerateAssetDealOffer,
   type DealOffer,
   type LedgerHolding,
@@ -35,6 +36,7 @@ import {
   usesCashflowPassStart,
   type BoardEconomyMode,
 } from "./boardEconomy";
+import { buildHarborOpportunityContext, moodFromCashflow, resolveBoardAssetDeal } from "./harborOpportunity";
 import { getIslandTheme } from "./themes/islandThemes";
 
 function pickUnusedHolding(
@@ -507,23 +509,14 @@ export function resolvePlayerSpace(
       break;
     }
     case "deal": {
-      const owned = ledger.holdings.map((h) => h.id);
-      let deal = pickUnusedHolding("asset", owned);
-      let offer: DealOffer;
-      if (!deal) {
-        const gen =
-          1 + ledger.holdings.filter((h) => h.kind === "asset" && h.id.includes("_gen")).length;
-        offer = regenerateAssetDealOffer(owned, gen);
-        payload.pendingDeal = offer;
-        payload.message = `Renewed deal: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo (catalog clear — new tradeoff).`;
-        break;
-      }
-      offer = {
-        ...deal,
-        purchaseCost: dealPurchaseCost(deal),
-      };
+      const oppCtx = buildHarborOpportunityContext(
+        ledger,
+        playerCoins,
+        moodFromCashflow(netCashflow(ledger)),
+      );
+      const { offer, message } = resolveBoardAssetDeal(oppCtx);
       payload.pendingDeal = offer;
-      payload.message = `Deal on the table: ${offer.icon} ${offer.name} — ${offer.purchaseCost} coins for +$${offer.monthlyAmount}/mo.`;
+      payload.message = message;
       break;
     }
     case "liability": {

@@ -30,8 +30,10 @@ import {
   scarRumorLine,
   scarTriggersChapterQuiet,
   stanceGreetingHint,
+  spineMemoryGreetingHint,
 } from "./worldMemory";
 import type { IslandSaveV1 } from "./types";
+import { applySpineTakeLedgerFootprint, PAYCHECK_TAKE_KEY } from "./spineTakeFootprints";
 
 function baseSave(): IslandSaveV1 {
   return {
@@ -279,5 +281,25 @@ describe("worldMemory", () => {
     expect(first?.label).toBeTruthy();
     expect(later?.label).toBeTruthy();
     expect(first!.label).not.toEqual(later!.label);
+  });
+
+  it("spine plaque gossip names organ verbs", () => {
+    const line = plazaScarGossipLine({
+      id: "pp_protector_plaque",
+      islandId: "paycheck_peninsula",
+      choiceId: "protect",
+      label: "Umbrella before glitter",
+      kind: "plaque",
+    });
+    expect(line).toMatch(/Clock shelters|umbrella/i);
+  });
+
+  it("spineMemoryGreetingHint merges footprint and stance", () => {
+    let save = baseSave() as IslandSaveV1;
+    save = applySpineTakeLedgerFootprint(save, PAYCHECK_TAKE_KEY, "protect");
+    save = { ...save, stance: applyStanceDelta(save.stance, "saver", 2) };
+    const hint = spineMemoryGreetingHint(save);
+    expect(hint).toMatch(/Umbrella|keep/i);
+    expect(hint).toMatch(/jar|pouch/i);
   });
 });

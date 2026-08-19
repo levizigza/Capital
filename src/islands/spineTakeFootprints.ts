@@ -14,6 +14,8 @@ import {
   COVE_TAKE_KEY,
   COVE_JAR_HOLD_ID,
   COVE_TREAT_TAB_ID,
+  COVE_JAR_MONTHLY,
+  COVE_TREAT_MONTHLY,
   takeFootprintFeedbackLine as coveFootprintLine,
 } from "./firstFinancialScenario";
 
@@ -50,6 +52,47 @@ export function paycheckTakeStanceFromChoiceId(choiceId: string): PaycheckTakeSt
 export function creditTakeStanceFromChoiceId(choiceId: string): CreditTakeStance | null {
   if (choiceId === "wait") return "wait";
   if (choiceId === "borrow") return "borrow";
+  return null;
+}
+
+/** Preview row before commit — sync with apply*Footprint monthly amounts. */
+export function paycheckTakeStanceFootprintPreview(stance: PaycheckTakeStance): string {
+  if (stance === "protect") {
+    return `Monthly keep +$${PAYCHECK_UMBRELLA_MONTHLY}/mo · Umbrella Buffer — Known`;
+  }
+  return `Monthly drain −$${PAYCHECK_GLITTER_MONTHLY}/mo · Glitter Tab — Known`;
+}
+
+export function creditTakeStanceFootprintPreview(stance: CreditTakeStance): string {
+  if (stance === "wait") {
+    return `Monthly keep +$${CREDIT_PATIENCE_MONTHLY}/mo · Patience Reserve — Known`;
+  }
+  return `Monthly drain −$${CREDIT_INTEREST_MONTHLY}/mo · Interest Spiral Tab — Known`;
+}
+
+/** Unified spine Take preview for Talk Battle (Cove · Paycheck · Credit). */
+export function spineTakeChoiceFootprintPreview(
+  effects: { type: string; key?: string; choiceId?: string }[] | undefined,
+): string | null {
+  const irr = effects?.find((e) => e.type === "setIrreversible");
+  if (!irr?.key || !irr.choiceId) return null;
+  if (irr.key === COVE_TAKE_KEY) {
+    const stance = coveTakeStanceFromChoiceId(irr.choiceId);
+    if (!stance) return null;
+    const sign = stance === "save" ? "+" : "−";
+    const verb = stance === "save" ? "keep" : "drain";
+    const amount = stance === "save" ? COVE_JAR_MONTHLY : COVE_TREAT_MONTHLY;
+    const name = stance === "save" ? "Cove Jar Hold" : "Cove Treat Tab";
+    return `Monthly ${verb} ${sign}$${amount}/mo · ${name} — Known`;
+  }
+  if (irr.key === PAYCHECK_TAKE_KEY) {
+    const stance = paycheckTakeStanceFromChoiceId(irr.choiceId);
+    return stance ? paycheckTakeStanceFootprintPreview(stance) : null;
+  }
+  if (irr.key === CREDIT_TAKE_KEY) {
+    const stance = creditTakeStanceFromChoiceId(irr.choiceId);
+    return stance ? creditTakeStanceFootprintPreview(stance) : null;
+  }
   return null;
 }
 

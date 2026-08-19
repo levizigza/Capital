@@ -13,3 +13,10 @@ export type {
 } from "./runMinigameTest";
 export { mountQABridge, QA_ENABLED } from "./qaBridge";
 export type { QABridge, QAView } from "./qaBridge";
+export {
+  assertSaveLoadCoreInvariant,
+  coreHash,
+  extractCoreResult,
+  fingerprintSave,
+} from "./econStress/fingerprint";
+export type { CoreResult, CoreResultPayload } from "./econStress/fingerprint";

@@ -63,6 +63,7 @@ import {
   nextPaintingAfterScar,
   plaqueShelfLine,
   stanceGreetingHint,
+  spineMemoryGreetingHint,
   recordNpcTalk,
   scarTriggersChapterQuiet,
 } from "./worldMemory";
@@ -1463,7 +1464,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           upcomingBond,
           save?.harborHomecoming?.celebrated ? 1 : 0,
         ),
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: save ? spineMemoryGreetingHint(save) : stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[npcId]?.talks,
       });
       const graphId = harborGraph?.id ?? npc.dialogueGraphId;
@@ -1683,7 +1684,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
         homecoming: save?.harborHomecoming,
         scars: harborTalkScars(save ?? ({} as IslandSaveV1)),
         bondBeat: save?.piggyBondHomecomings ?? 0,
-        stanceHint: stanceGreetingHint(save?.stance),
+        stanceHint: save ? spineMemoryGreetingHint(save) : stanceGreetingHint(save?.stance),
         npcTalks: save?.npcMemory?.[dialogueState.npcId]?.talks,
       });
     }
