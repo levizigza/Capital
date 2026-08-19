@@ -33,7 +33,7 @@ Tutorial shell completion is diagnostic only.
 
 | Metric | Role |
 |--------|------|
-| **`independent_transfer_rate`** | **King.** Successful transfer events ÷ transfer attempts. After Capital teaches a principle once, can the player reason with it in a different situation without being told? |
+| **`independent_transfer_rate`** | **King.** Successful transfer events ÷ transfer attempts. After Capital teaches a principle once, can the player reason with it in a different situation without being told? Formal per-principle definition: [LEARNING_TRANSFER_FRAMEWORK.md](../research/LEARNING_TRANSFER_FRAMEWORK.md) (**IFTR**). |
 | `time_to_first_*` / `guided_success_rate` / `hint_dependency` / `failure_recovery_rate` / `freeplay_conversion` / `D1`–`D30` | Supporting autonomy metrics |
 | `tutorial_completion_rate` | **Diagnostic only** — never the ship metric |
 

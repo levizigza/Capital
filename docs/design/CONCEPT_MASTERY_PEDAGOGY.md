@@ -3,7 +3,7 @@
 **Status:** Design law for foundational financial concepts  
 **King KPI:** Independent Transfer (`docs/ftue/NORTH_STAR.md`)  
 **Runtime:** `src/islands/conceptProgression/*` · transfer stamps · `docs/ftue/PROGRESSIVE_DISCLOSURE_DESIGN.md` · `CONCEPT_CURRICULUM.md` · `TRANSFER_TASKS.md`  
-**Companions:** `DECISION_PREVIEW_ARCHITECTURE.md` · `CAUSAL_TIME_SYSTEM.md` · `MECHANICS_NARRATIVE_MATRIX.md` · `CAPITAL_DESIGN_CONSTITUTION.md`
+**Companions:** `DECISION_PREVIEW_ARCHITECTURE.md` · `CAUSAL_TIME_SYSTEM.md` · `MECHANICS_NARRATIVE_MATRIX.md` · `CAPITAL_DESIGN_CONSTITUTION.md` · [LEARNING_TRANSFER_FRAMEWORK.md](../research/LEARNING_TRANSFER_FRAMEWORK.md)
 
 **Hard law:** Do **not** classify a concept as **MASTERED** because the player clicked through an explanation, dismissed a tip, watched a cutscene, or finished a tutorial checklist. Mastery requires **independent transfer proof**.
 
