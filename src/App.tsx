@@ -8,6 +8,10 @@ import { ISLANDS_ENABLED, ISLANDS_DEFAULT } from '@/islands/featureFlags'
 import { CapitalOpeningIntro, shouldPlayCapitalIntroOnBoot } from '@/islands/views/CapitalOpeningIntro'
 import { BootCastSelect } from '@/islands/views/BootCastSelect'
 import { AshoreComprehensionTutorial } from '@/islands/views/AshoreComprehensionTutorial'
+import {
+  CoreLoopPrototype,
+  shouldOpenCoreLoopPrototype,
+} from '@/islands/views/CoreLoopPrototype'
 import { CarpetOpeningIntro } from '@/islands/world3d/CarpetOpeningIntro'
 import { GlobalMusicMuteButton } from '@/islands/views/GlobalMusicMuteButton'
 import type { CapitalCharacter } from '@/islands/character'
@@ -186,6 +190,8 @@ function App() {
   const [showIPLint, setShowIPLint] = useState(false)
   const [showDeckSim, setShowDeckSim] = useState(false)
   const [showCapitalIntro, setShowCapitalIntro] = useState(() => shouldPlayCapitalIntroOnBoot())
+  /** Isolated Commit → hush → Harbor felt that playground (?coreLoop=1). */
+  const [showCoreLoop, setShowCoreLoop] = useState(() => shouldOpenCoreLoopPrototype())
   /** Title mural → cast → comprehension teach → carpet POV into Harbor. */
   const [bootPhase, setBootPhase] = useState<"title" | "cast" | "teach" | "carpet">("title")
   const [bootCharacter, setBootCharacter] = useState<CapitalCharacter | null>(null)
@@ -461,6 +467,33 @@ function App() {
     } catch {
       setProfileError(true)
     }
+  }
+
+  // Isolated core-loop prototype — no boot stack, map, XP, or Freedom chrome.
+  if (showCoreLoop && ISLANDS_ENABLED) {
+    return (
+      <>
+        <Toaster position="top-right" richColors />
+        <CoreLoopPrototype
+          key="capital-core-loop"
+          onExit={() => {
+            setShowCoreLoop(false)
+            try {
+              const url = new URL(window.location.href)
+              url.searchParams.delete('coreLoop')
+              const next = `${url.pathname}${url.search}${url.hash}`
+              window.history.replaceState(window.history.state, '', next)
+            } catch {
+              /* ignore */
+            }
+            if (shouldPlayCapitalIntroOnBoot()) {
+              setShowCapitalIntro(true)
+              setBootPhase('title')
+            }
+          }}
+        />
+      </>
+    )
   }
 
   // Boot: title → cast → Ashore teach (prove controls) → Money Carpet → Harbor walk.
