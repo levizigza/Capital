@@ -217,6 +217,8 @@ The kid-drawable Harbor silhouette is the **Memory Plinth**: open ledger on a te
 
 **Iconic path stop:** do not widen the map. Deepen only if the Plinth glow is not yet true.
 
+**100h longevity:** after the spine is solved, do not add grind — see [`LONGEVITY_100H.md`](./LONGEVITY_100H.md) (mastery · interaction · uncertainty · expression · local social · emergence).
+
 When in doubt: make the Plinth glow true, and make tomorrow remember yesterday.
 
 ## Series cast (Cashwell Capital)
