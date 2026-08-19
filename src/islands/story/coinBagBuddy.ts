@@ -34,7 +34,7 @@ export type CoinBagBuddyTip = {
 /** Voyage tip — shared by to_dock + demoted legacy gate ids. */
 const VOYAGE_TIP: CoinBagBuddyTip = {
   tip: "Money Carpet → Coincraft Cove",
-  coach: "Board the carpet with me. First painting!",
+    coach: "Board with me. First painting is Cove — I'll stay for the chart if you need it.",
 };
 
 const TUTORIAL_TIPS: Record<HubGuidedStepId, CoinBagBuddyTip> = {

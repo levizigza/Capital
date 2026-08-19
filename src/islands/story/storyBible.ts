@@ -92,9 +92,9 @@ export const HUB_GUIDED_STEPS: Array<{
     id: "meet_guide",
     storyBeat: "you",
     // Soft tip — Talk is opt-in when near Piggy (pre-carpet teach already covered controls).
-    coach: "Walk the plaza — Piggy waves by the fountain.",
+    coach: "Walk Harbor Haven — Piggy waves by the fountain. This plaza is home.",
     guideLine:
-      "Piggy Penny: Welcome ashore! I’m your Harbor Keeper — talk when you’re ready.",
+      "Piggy Penny: You're on Harbor Haven — talk when you're ready. I'll show you the islands.",
     verb: "Walk",
     highlight: "guide",
   },
@@ -103,36 +103,40 @@ export const HUB_GUIDED_STEPS: Array<{
   {
     id: "walk_outfitter",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },
   {
     id: "become_you",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },
   {
     id: "tiny_spend",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },
   {
     id: "practice_optional",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },
@@ -140,18 +144,20 @@ export const HUB_GUIDED_STEPS: Array<{
     id: "to_dock",
     storyBeat: "go",
     // Critical path after Talk (Harbor Ashore) — one voyage verb.
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },
   {
     id: "first_island",
     storyBeat: "go",
-    coach: "Board the Money Carpet — Coincraft Cove is your first painting.",
+    coach:
+      "Board the Money Carpet — Coincraft Cove is first. Later shores and side quests wait.",
     guideLine:
-      "Piggy Penny: Coin Bag points at the Money Carpet — open the map for Coincraft Cove!",
+      "Piggy Penny: Coin Bag points the Money Carpet — tap the chart if you still need the islands!",
     verb: "Board carpet",
     highlight: "travel",
   },

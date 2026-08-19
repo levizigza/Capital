@@ -16,14 +16,16 @@ import { createDefaultHubGuidedIntro } from "./hubGuidedIntro";
  * Live UI must not hero-teach Outfitter / Capsule on the first session.
  */
 describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
-  it("meet_guide Piggy teaches Walk · Talk only (not Outfitter / Carpet / Cove)", () => {
+  it("meet_guide Piggy teaches Harbor-as-home · Walk · Talk (not Outfitter / Capsule)", () => {
     const g = piggyGuidedGraph("meet_guide");
     const texts = g.nodes.map((n) => n.text).join(" ");
-    expect(texts).toMatch(/Welcome to Harbor Haven/i);
+    expect(texts).toMatch(/Harbor Haven/i);
     expect(texts).toMatch(/WASD|walk pad|\{move\}/i);
     expect(texts).toMatch(/Talk/i);
+    expect(texts).toMatch(/plaza that remembers|this is home/i);
     expect(texts).not.toMatch(/Outfitter/i);
     expect(texts).not.toMatch(/Capsule|Carpet Dock|Freedom Seal/i);
+    expect(g.nodes.some((n) => (n.choices?.length ?? 0) > 1)).toBe(true);
   });
 
   it("legacy Outfitter/Capsule steps remap to voyage (never hero-teach Outfitter)", () => {
@@ -56,6 +58,16 @@ describe("Onboarding — Ashore law (Talk → Carpet → Cove)", () => {
     const tip = coinBagHarborTip({ version: 1, step: "to_dock" });
     expect(`${tip.tip} ${tip.coach ?? ""}`).toMatch(/Carpet|Cove/i);
     expect(`${tip.tip} ${tip.coach ?? ""}`).not.toMatch(/Outfitter/i);
+  });
+
+  it("to_dock Piggy names first painting + optional outer-ring side quests", () => {
+    const g = piggyGuidedGraph("to_dock");
+    const texts = g.nodes.map((n) => n.text).join(" ");
+    expect(texts).toMatch(/Coincraft Cove/i);
+    expect(texts).toMatch(/side quests|outer ring/i);
+    expect(texts).toMatch(/Paycheck Peninsula/i);
+    expect(texts).not.toMatch(/Outfitter/i);
+    expect(texts).not.toMatch(/this is the Take/i);
   });
 
   it("IslandsApp never mounts Outfitter-card WelcomeOnboarding", () => {

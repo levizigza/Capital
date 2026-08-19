@@ -11,6 +11,7 @@ import {
 
 import { HomeHubView } from "./views/HomeHubView";
 import { AshoreComprehensionTutorial } from "./views/AshoreComprehensionTutorial";
+import { HarborWorldBriefing } from "./views/HarborWorldBriefing";
 import { TravelMapView } from "./views/TravelMapView";
 import { PovVoyageView } from "./views/PovVoyageView";
 import { IslandBoardView } from "./views/IslandBoardView";
@@ -317,6 +318,7 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
   });
   const [bootHubHandled, setBootHubHandled] = useState(false);
   const [ashoreReplayOpen, setAshoreReplayOpen] = useState(false);
+  const [worldBriefOpen, setWorldBriefOpen] = useState(false);
   const [returningBriefingOpen, setReturningBriefingOpen] = useState(false);
   const systemsSyncedRef = useRef(false);
 
@@ -676,6 +678,10 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           prev.hubGuidedIntro ?? createDefaultHubGuidedIntro(),
         );
         const next = advanceHubGuided(guided, event);
+        if (event === "talked_guide" && guided.step === "meet_guide") {
+          setWorldBriefOpen(true);
+          void analytics.track("tutorial_step", { step: "harbor_world_briefing" });
+        }
         if (
           event === "opened_map" &&
           guided.step === "meet_guide" &&
@@ -2907,6 +2913,23 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           <AshoreComprehensionTutorial
             character={save?.character ?? BASE_VOYAGER}
             onComplete={() => setAshoreReplayOpen(false)}
+          />
+        ) : null}
+
+        {worldBriefOpen ? (
+          <HarborWorldBriefing
+            onContinue={() => {
+              setWorldBriefOpen(false);
+              void analytics.track("tutorial_step", {
+                step: "harbor_world_briefing_done",
+              });
+            }}
+            onSkip={() => {
+              setWorldBriefOpen(false);
+              void analytics.track("tutorial_step", {
+                step: "harbor_world_briefing_skipped",
+              });
+            }}
           />
         ) : null}
 

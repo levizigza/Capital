@@ -380,33 +380,85 @@ function localGraph(mascotId: MoneyMascotId): DialogueGraph {
 
 /** Guided Piggy conversations — Ashore live beats only (legacy ids remap to voyage). */
 export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): DialogueGraph {
-  // One concept per step — never pitch Outfitter / Capsule before Talk → Carpet → Cove.
-  const lines: Record<string, { text: string; next?: string; choice?: string; follow?: string }> = {
-    meet_guide: {
-      text: "Welcome to Harbor Haven! I'm Piggy Penny — your Harbor Keeper. Move with {move}, talk with {interact}. Coin Bag sticks with you.",
-      choice: "Nice to meet you!",
-      next: "meet_b",
-      // Celebrate Talk only — voyage coach names the carpet next.
-      follow:
-        "You practiced Talk. When you're ready, follow Coin Bag — he'll point the way.",
-    },
-    to_dock: {
-      text: "Carpet Dock is that way. Open the Archipelago map ({map}) and board for Coincraft Cove — your first painting!",
-      choice: "To the carpet!",
-    },
-    done: {
-      text: "Harbor is yours. Talk to locals, shop, or open the map whenever you're ready.",
-      choice: "Thanks!",
-    },
-  };
-
-  // Free-roam null → done. Legacy Outfitter/Capsule ids → voyage (Ashore law).
   const live: HubGuidedStepId =
     step == null || step === "done"
       ? "done"
       : normalizeHubGuidedIntro({ version: STORY_BIBLE_VERSION, step }).step;
-  const beat = lines[live] ?? lines.done!;
-  const spoken = resolveControlPlaceholders(beat.text);
+
+  if (live === "meet_guide") {
+    return {
+      id: "dlg_harbor_piggy_penny_guided",
+      startNodeId: "g1",
+      nodes: [
+        {
+          id: "g1",
+          speaker: "Piggy Penny",
+          text: resolveControlPlaceholders(
+            "You're standing on Harbor Haven — this is home. I'm Piggy Penny, your Harbor Keeper. Walk with {move}, talk with {interact}. Coin Bag stays beside you.",
+          ),
+          choices: [
+            { id: "where", text: "Where am I?", nextNodeId: "g_where" },
+            { id: "do", text: "What do I do here?", nextNodeId: "g_do" },
+          ],
+        },
+        {
+          id: "g_where",
+          speaker: "Piggy Penny",
+          text: "Harbor Haven is the plaza that remembers. Walk the fountain, talk to me, come back to the Memory Plinth later — it keeps the marks you make on other shores.",
+          choices: [
+            { id: "first", text: "What should I do first?", nextNodeId: "g_do" },
+          ],
+        },
+        {
+          id: "g_do",
+          speaker: "Piggy Penny",
+          text: "Right now: walk this plaza and talk. Next I'll show you a chart of the islands — tap each painting so the world makes sense. Then Coin Bag points the way.",
+          choices: [
+            { id: "chart", text: "Show me the islands", nextNodeId: "g_chart" },
+          ],
+        },
+        {
+          id: "g_chart",
+          speaker: "Piggy Penny",
+          text: "Tap Harbor (you're here) and Coincraft Cove (first painting). Peek at Paycheck, Credit, and the outer ring if you're curious — extra games, not homework.",
+          end: true,
+        },
+      ],
+    };
+  }
+
+  if (live === "to_dock") {
+    return {
+      id: "dlg_harbor_piggy_penny_guided",
+      startNodeId: "g1",
+      nodes: [
+        {
+          id: "g1",
+          speaker: "Piggy Penny",
+          text: resolveControlPlaceholders(
+            "Coin Bag points the Money Carpet. Open the Archipelago map ({map}) and board Coincraft Cove — your first painting. Earn coins, then choose. Harbor will remember.",
+          ),
+          choices: [
+            { id: "after", text: "What's after Cove?", nextNodeId: "g_after" },
+            { id: "go", text: "To the carpet!", nextNodeId: "g_go" },
+          ],
+        },
+        {
+          id: "g_after",
+          speaker: "Piggy Penny",
+          text: "Paycheck Peninsula and Credit Kingdom wait on the inner ring. The outer ring is side quests — extra financial games that wake after you come home changed. They're never required.",
+          choices: [{ id: "go", text: "To the carpet!", nextNodeId: "g_go" }],
+        },
+        {
+          id: "g_go",
+          speaker: "Piggy Penny",
+          text: "Follow Coin Bag to the dock. I'll be at the fountain when you fly home.",
+          end: true,
+        },
+      ],
+    };
+  }
+
   return {
     id: "dlg_harbor_piggy_penny_guided",
     startNodeId: "g1",
@@ -414,28 +466,10 @@ export function piggyGuidedGraph(step: HubGuidedStepId | null | undefined): Dial
       {
         id: "g1",
         speaker: "Piggy Penny",
-        text: spoken,
-        choices: [
-          {
-            id: "ok",
-            text: beat.choice ?? "OK",
-            nextNodeId: beat.next,
-          },
-        ],
-        end: !beat.next,
+        text: "Harbor is yours. Talk to locals, shop, or open the map whenever you're ready. Outer-ring side shores are extra — play them when you're curious.",
+        choices: [{ id: "ok", text: "Thanks!" }],
+        end: true,
       },
-      ...(beat.next
-        ? [
-            {
-              id: beat.next,
-              speaker: "Piggy Penny",
-              text:
-                beat.follow ??
-                "Coin Bag stays beside you the whole journey. Wave if you get stuck!",
-              end: true,
-            },
-          ]
-        : []),
     ],
   };
 }

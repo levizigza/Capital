@@ -172,7 +172,7 @@ test.describe("Harbor Haven tutorial opening", () => {
     await expect(page.getByTestId("talk-battle-continue")).toContainText(/I hear you|Walk on/);
     // meet_guide — Teach Talk only (one verb). Outfitter waits for the next step.
     await expect(page.getByTestId("talk-battle-screen")).toContainText(
-      /Welcome to Harbor Haven/i,
+      /Harbor Haven/i,
       { timeout: 8_000 },
     );
     await expect(page.getByTestId("talk-battle-screen")).toContainText(/WASD|walk pad/i);
@@ -205,6 +205,22 @@ test.describe("Harbor Haven tutorial opening", () => {
     await expect(page.getByTestId("talk-battle-screen")).toHaveCount(0, {
       timeout: 15_000,
     });
+
+    const briefing = page.getByTestId("harbor-world-briefing");
+    if (await briefing.isVisible({ timeout: 4_000 }).catch(() => false)) {
+      await expect(briefing).toContainText(/Harbor chart|Harbor keeps/i);
+      await page.getByTestId("harbor-brief-card-harbor_haven").click({ force: true });
+      await page.getByTestId("harbor-brief-card-coincraft_cove").click({ force: true });
+      await expect(page.getByTestId("harbor-world-briefing-piggy")).toContainText(
+        /first painting|Coincraft Cove/i,
+      );
+      await page.getByTestId("harbor-brief-card-side_shores").click({ force: true });
+      await expect(page.getByTestId("harbor-world-briefing-piggy")).toContainText(
+        /side quests|outer ring|extra/i,
+      );
+      await page.getByTestId("harbor-world-briefing-continue").click({ force: true });
+      await expect(briefing).toHaveCount(0, { timeout: 8_000 });
+    }
 
     // Voyage next: Carpet CTA, myth board, or map already open (Ashore → to_dock).
     const hubCarpet = page.getByTestId("hub-travel-map");

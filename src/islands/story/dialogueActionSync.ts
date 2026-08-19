@@ -28,7 +28,8 @@ export type GuidedVisualBeats = {
 export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   meet_guide: {
     keeperEmote: "wave",
-    keeperBubbleWhenNear: "Piggy Penny: Want to talk? {interact} when you're ready.",
+    keeperBubbleWhenNear:
+      "Piggy Penny: Want to talk? {interact} when you're ready. I'll explain Harbor and the islands.",
     bagTip: "Piggy’s waving by the fountain — walk over when you want",
     pulseHotspot: "guide",
   },
@@ -36,42 +37,42 @@ export const GUIDED_VISUAL_BEATS: Record<string, GuidedVisualBeats> = {
   walk_outfitter: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   become_you: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   tiny_spend: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   practice_optional: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   to_dock: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
   first_island: {
     keeperEmote: "point",
     keeperBubbleWhenNear:
-      "Piggy Penny: Coin Bag points at the Money Carpet — Coincraft Cove is waiting!",
+      "Piggy Penny: Coin Bag points the Money Carpet — Coincraft Cove first; outer ring is extra!",
     bagTip: "Money Carpet → Coincraft Cove",
     pulseHotspot: "travel",
   },
