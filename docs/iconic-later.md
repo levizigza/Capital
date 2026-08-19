@@ -7,8 +7,10 @@
 
 **Signature loop + Cove · Paycheck · Credit organs cold-retellable at Harbor.**
 
+**Before un-parking or inventing work:** pass [FEATURE_GATE.md](./FEATURE_GATE.md) (VALUE vs COST; multi-system prefer; no copycat justifications).
+
 **Canon:** [iconic-path.md](./iconic-path.md) · [iconic-craft-plan.md](./iconic-craft-plan.md) · [mural-thesis.md](./mural-thesis.md) · [era-shores-restore.md](./era-shores-restore.md)  
-**Code law:** `src/islands/iconicScopeFreeze.ts` · `src/islands/spineContentRegistry.ts`
+**Code law:** `src/islands/iconicScopeFreeze.ts` · `src/islands/spineContentRegistry.ts` · `src/design/featureGate.ts`
 
 ---
 

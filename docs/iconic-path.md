@@ -46,6 +46,8 @@ Shore craft: every non-hub island gets `ShoreRhythmCraft` (tiers, eye-path, berm
 
 This is **structure depth** on the main quest. Era **side shores** may ride the outer map ring with their own music — they are not new main-course strip chips. See [era-shores-restore.md](./era-shores-restore.md).
 
+**Cold playtest checklist** lives below. **Before any new feature implementation**, run the [feature gate](./FEATURE_GATE.md) (VALUE SCORE vs COST SCORE; reject “other games have this”).
+
 ## Cold playtest checklist
 
 Use a fresh profile (or QA seed). Phone + desktop. Try `prefers-reduced-motion`.
