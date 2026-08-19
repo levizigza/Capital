@@ -243,7 +243,7 @@ This register tracks **design debt** — gaps between intended player experience
 | **Severity** | 🟡 P2 |
 | **Type** | Honest gap |
 | **Classification** | MISSING |
-| **FACTS** | Design Bible references economy sim framework; no `economy-sim/` runner in repo. Balance validated via unit tests + manual play. |
+| **FACTS** | Design Bible references economy sim framework; no `economy-sim/` runner in repo. Spec: [ECONOMIC_STRESS_TEST_PLAN.md](../qa/ECONOMIC_STRESS_TEST_PLAN.md). Balance validated via unit tests + manual play. |
 | **RECOMMENDATION** | Build when balance churn increases or second currency interactions multiply. |
 
 ---

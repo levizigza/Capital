@@ -32,6 +32,7 @@ Same campaign unlock path is OK **only if** Takes change what is possible later 
 | Legacy achievement dashboards | Structured mode tabs/panels gated off product path |
 | Mastery digression unreachable | Cleared play pads offer optional worksheet CTA (never gates) |
 | Local ITR / health measurement | Health dashboard in Settings → Analytics; local-only honesty copy |
+| Automated econ stress scenarios | Spec: [ECONOMIC_STRESS_TEST_PLAN.md](../qa/ECONOMIC_STRESS_TEST_PLAN.md) — runner not shipped |
 | Outer TrophyRoom / XP ladder chrome | Trophy room retired; Creative hub hides level ladder under bible law |
 
 ## Still deferred (not a product honesty lie)
