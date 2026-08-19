@@ -1,9 +1,11 @@
-﻿# intangibles — Story Circle (draft)
+﻿# Intangibles — Story Circle (Intangible Isle)
 
-> **SIDE SHORE** — Discoverable era chapter on the outer Fortune Archipelago ring (not a main-quest strip chip). Soft-locked until Cove Change. Soundtrack via `cueForIsland`. See [era-shores-restore.md](../../era-shores-restore.md) · [iconic-later.md](../../iconic-later.md).
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
 
 **Island ID:** `intangibles`  
-**Status:** SIDE SHORE — outer ring; Capital-framed; not a main-course strip chip  
+**Map name:** Intangible Isle (2020s stylized IP)  
+**Learning kernel:** Patents · brand value · goodwill · IP protection  
+**Island Ally:** Inventor Iris · Branding Ben · Merger Maya · Lawyer Leon  
 **Canon:** [story-bible.md](../../story-bible.md)
 
 ---
@@ -12,21 +14,22 @@
 
 | # | Beat | In this island | IDs | Kid one-liner |
 |---|------|----------------|-----|---------------|
-| 1 | **You** | Arrive via carpet / shore | TBD | "I'm here." |
-| 2 | **Need** | Ally names the money want | TBD | "I need to learn." |
-| 3 | **Go** | Cross into the main area | TBD | "Let's go." |
-| 4 | **Search** | Quests + minigames + soft fails | TBD | "I try." |
-| 5 | **Find** | Core lesson payoff | TBD | "I got it!" |
-| 6 | **Take** | Hard choice (irreversible preferred) | TBD | "Choices cost." |
-| 7 | **Return** | Carpet home | travel | "Back to Harbor." |
-| 8 | **Change** | Harbor scar / plaque / seal | harborScars | "I'm different." |
+| 1 | **You** | Land at Patent Office | area `in_patent_office` | “Intangible Isle!” |
+| 2 | **Need** | Iris: protect what you create | `npc_inventor_iris`, `q_ip_creator` | “Ideas have value.” |
+| 3 | **Go** | Brand Boulevard with Broker | `in_brand_boulevard` | “Let’s brand it.” |
+| 4 | **Search** | Goodwill garden; valuation reports | `q_brand_and_goodwill`, `in_goodwill_garden` | “I try the math.” |
+| 5 | **Find** | Patent + goodwill report | `in_patent`, `in_goodwill_report` | “My IP counts!” |
+| 6 | **Take** | Digression: glance at IP docs vs rush a deal | `ir_fork`, `in_ip_glance` / `in_ip_rush` | “Read or rush?” |
+| 7 | **Return** | Carpet home | travel | “Back to Harbor.” |
+| 8 | **Change** | Harbor myth shelf | `harborScars` | “Harbor heard that.” |
+
+**Main quests:** `q_ip_creator`, `q_brand_and_goodwill`
 
 ---
 
 ## Completeness gate
 
-- [ ] Beats filled with concrete IDs  
-- [ ] Irreversible Take wired  
-- [ ] Fits Story Bible (no second myth)
-
-**Gate:** Content validation requires this file to exist for every live island pack.
+- [x] Beats filled with concrete IDs  
+- [x] Digression scar pair wired (`in_ip_glance` / `in_ip_rush`)  
+- [x] Minigames registered  
+- [x] Fits Story Bible (side shore literacy)

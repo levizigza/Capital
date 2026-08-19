@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { coinBagHarborTip } from "./coinBagBuddy";
-import { islandLockHint, bossUnlockProgress } from "../progressGates";
+import {
+  islandLockHint,
+  bossUnlockProgress,
+} from "../progressGates";
 import { SIDE_TOMFOOLERY } from "../mainCourse";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 
@@ -39,7 +42,7 @@ describe("iconic whole-game criteria contracts", () => {
     expect(shore).not.toMatch(/genreShoreBlurb/);
   });
 
-  it("names Credit Spiral lock with mastery progress", () => {
+  it("names Credit Spiral lock with Freedom + Paycheck transfer", () => {
     const locked = {
       id: "credit_kingdom",
       name: "Credit Kingdom",
@@ -48,14 +51,15 @@ describe("iconic whole-game criteria contracts", () => {
     const save = {
       inventory: [],
       voyagerLedger: { harborEscaped: true, masteryClears: ["a"] },
+      questStatus: {},
     } as unknown as IslandSaveV1;
     const hint = islandLockHint(locked, save);
-    expect(hint).toMatch(/Spiral locked — mastery 1\/3/);
+    expect(hint).toMatch(/Paycheck Change/i);
     const tip = coinBagHarborTip(null, {
       hasFreedom: true,
       creditMastery: bossUnlockProgress(save),
     });
-    expect(tip.tip).toMatch(/mastery 1\/3/);
+    expect(tip.tip).toMatch(/Paycheck Change/i);
   });
 
   it("ships Cove Shell Want as a side digression that can scar Harbor", () => {

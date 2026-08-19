@@ -154,7 +154,7 @@ export function buildCoveChangeReplayTimeline(opts: {
           chosenIndex: 0,
         },
         alternatives: ["Spend everything now"],
-        stateDiff: "+50 coins, craft badge",
+        stateDiff: "+50 coins · jar keep souvenir",
         explanation:
           "Choosing to save — even a little — is the Change beat. Harbor will notice when you fly home.",
       },

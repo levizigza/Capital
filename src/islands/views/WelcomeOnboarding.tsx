@@ -246,7 +246,8 @@ export function WelcomeOnboarding({
                   art style.
                 </li>
                 <li>
-                  <strong className="text-[var(--cap-ink)]">Board Stars</strong> are the prize — race rival captains.
+                  <strong className="text-[var(--cap-ink)]">Cashflow Claims</strong> trade pouch coins for monthly
+                  keep — real ledger, not star chrome.
                 </li>
                 <li>
                   <strong className="text-[var(--cap-ink)]">Fortune Capsules</strong> let you raid, shield, or fog rivals.

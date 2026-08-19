@@ -4,8 +4,8 @@
     {
       "id": "future_shores",
       "name": "Portfolio Skies",
-      "description": "Solarpunk horizon beyond the spine. Side shore of Fortune Archipelago — imagine tomorrow’s Memory.",
-      "icon": "🎨",
+      "description": "Solarpunk horizon beyond the spine. Side shore of Fortune Archipelago \u2014 imagine tomorrow\u2019s Memory.",
+      "icon": "\ud83c\udfa8",
       "themeId": "future_shores",
       "provenance": {
         "learning_objectives": [
@@ -19,7 +19,7 @@
           "vibe-code-studio",
           "diversification"
         ],
-        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors — not unfinished scaffolding alone.",
+        "originality_notes": "Painterly floating-island party boards teaching Modern Portfolio Theory metaphors \u2014 not unfinished scaffolding alone.",
         "forbidden_references": [
           "Mario",
           "Nintendo",
@@ -30,8 +30,8 @@
         {
           "id": "fs_scaffold",
           "name": "The Scaffold",
-          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished — waiting for your ideas.",
-          "icon": "🚧",
+          "description": "Cranes, dashed outlines, and caution tape. This corner of the island is deliberately unfinished \u2014 waiting for your ideas.",
+          "icon": "\ud83d\udea7",
           "connections": [
             "fs_blank_canvas",
             "fs_community_dock"
@@ -41,7 +41,7 @@
           "id": "fs_blank_canvas",
           "name": "Blank Canvas Bay",
           "description": "Empty lots marked with chalk grids. Each plot is a game someone hasn't dreamed up yet. Maybe that someone is you.",
-          "icon": "📐",
+          "icon": "\ud83d\udcd0",
           "connections": [
             "fs_scaffold",
             "fs_community_dock"
@@ -51,7 +51,7 @@
           "id": "fs_community_dock",
           "name": "Community Dock",
           "description": "Where creators moor their prototypes. Open VibeCode Studio from home base to publish levels that can live here someday.",
-          "icon": "⚓",
+          "icon": "\u2693",
           "connections": [
             "fs_scaffold",
             "fs_blank_canvas"
@@ -62,9 +62,23 @@
         {
           "id": "npc_future_keeper",
           "name": "The Keeper",
-          "icon": "🧑‍🎨",
+          "icon": "\ud83e\uddd1\u200d\ud83c\udfa8",
           "areaId": "fs_scaffold",
           "dialogueGraphId": "dlg_future_keeper"
+        },
+        {
+          "id": "npc_fs_weather",
+          "name": "Weather Weaver",
+          "icon": "\ud83c\udf24\ufe0f",
+          "areaId": "fs_blank_canvas",
+          "dialogueGraphId": "dlg_fs_weather"
+        },
+        {
+          "id": "npc_fs_dock",
+          "name": "Dock Steward",
+          "icon": "\ud83d\udedf",
+          "areaId": "fs_community_dock",
+          "dialogueGraphId": "dlg_fs_dock"
         }
       ],
       "items": [
@@ -72,7 +86,7 @@
           "id": "fs_builder_chalk",
           "name": "Builder's Chalk",
           "description": "Mark your territory on the blank canvas.",
-          "icon": "🖍️",
+          "icon": "\ud83d\udd8d\ufe0f",
           "location": {
             "areaId": "fs_blank_canvas"
           }
@@ -98,9 +112,153 @@
             "xp": 25,
             "coins": 50
           }
+        },
+        {
+          "id": "q_fs_weather_walk",
+          "track": "side",
+          "title": "Walk the Weather",
+          "description": "Meet the Weather Weaver and Dock Steward \u2014 portfolio weather is a people skill here.",
+          "objectives": [
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_fs_weather"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_fs_dock"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fs_diversify"
+            }
+          ],
+          "rewards": {
+            "xp": 40,
+            "coins": 75
+          }
+        },
+        {
+          "id": "q_fs_arcade_lane",
+          "track": "side",
+          "title": "Sky Arcade Lane",
+          "description": "Optional sky lane \u2014 life forks and explore the scaffold grid.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fs_life_fork"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_fs_explore"
+            }
+          ],
+          "rewards": {
+            "coins": 40,
+            "xp": 80
+          }
         }
       ],
       "dialogues": [
+        {
+          "id": "dlg_fs_weather",
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "id": "start",
+              "speaker": "Weather Weaver",
+              "text": "Market weather paints these isles. Diversify baskets before the aurora flips \u2014 one storm shouldn't sink every raft.",
+              "choices": [
+                {
+                  "id": "c_ok",
+                  "text": "I'll rebalance before the front hits.",
+                  "nextNodeId": "done",
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_fs_weather_walk"
+                    }
+                  ]
+                },
+                {
+                  "id": "c_bye",
+                  "text": "Just looking.",
+                  "nextNodeId": "done"
+                }
+              ]
+            },
+            {
+              "id": "done",
+              "speaker": "Weather Weaver",
+              "text": "Horizon patience beats chasing every gust.",
+              "end": true
+            },
+            {
+              "id": "fs_weather_extra",
+              "speaker": "Weather Weaver",
+              "text": "Try the Sky Arcade lane if baskets feel easy \u2014 life forks teach patience too.",
+              "end": true
+            }
+          ]
+        },
+        {
+          "id": "dlg_fs_dock",
+          "startNodeId": "start",
+          "nodes": [
+            {
+              "id": "start",
+              "speaker": "Dock Steward",
+              "text": "Community dock is where sky gardens trade shade and seed. Budget the districts before you float a new raft.",
+              "choices": [
+                {
+                  "id": "c1",
+                  "text": "Show me the sky budget idea.",
+                  "nextNodeId": "budget"
+                },
+                {
+                  "id": "c2",
+                  "text": "I'll walk the pier.",
+                  "nextNodeId": "bye"
+                }
+              ]
+            },
+            {
+              "id": "budget",
+              "speaker": "Dock Steward",
+              "text": "Needs \u00b7 wants \u00b7 reserves \u2014 same three buckets, just painted under aurora.",
+              "end": true
+            },
+            {
+              "id": "bye",
+              "speaker": "Dock Steward",
+              "text": "Carpet's ready when you are.",
+              "end": true
+            },
+            {
+              "id": "dock_arcade",
+              "speaker": "Dock Steward",
+              "text": "Sky Arcade Lane floats off the pier — life forks and scaffold walks when you want extra practice.",
+              "choices": [
+                {
+                  "id": "dock_arcade_go",
+                  "text": "I'll try the arcade lane.",
+                  "nextNodeId": "dock_arcade_done",
+                  "effects": [{ "type": "startQuest", "questId": "q_fs_arcade_lane" }]
+                },
+                {
+                  "id": "dock_arcade_later",
+                  "text": "Maybe after weather walk.",
+                  "nextNodeId": "dock_arcade_done"
+                }
+              ]
+            },
+            {
+              "id": "dock_arcade_done",
+              "speaker": "Dock Steward",
+              "text": "Horizon patience beats chasing every gust — arcade or not.",
+              "end": true
+            }
+          ]
+        },
         {
           "id": "dlg_future_keeper",
           "startNodeId": "start",
@@ -108,7 +266,7 @@
             {
               "id": "start",
               "speaker": "The Keeper",
-              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn — carve out games for your era in VibeCode Studio.",
+              "text": "Welcome to Future Shores. We left this island unfinished on purpose. The Flash kids had their sites. The Poptropica kids had their islands. Now it's your turn \u2014 carve out games for your era in VibeCode Studio.",
               "choices": [
                 {
                   "id": "c1",
@@ -117,7 +275,7 @@
                 },
                 {
                   "id": "c_listen",
-                  "text": "Digression — study or claim first?",
+                  "text": "Digression \u2014 study or claim first?",
                   "nextNodeId": "scaffold_fork"
                 },
                 {
@@ -130,7 +288,7 @@
             {
               "id": "scaffold_fork",
               "speaker": "The Keeper",
-              "text": "Unfinished poles lean your way. Study the scaffolding — or claim a plot before you’ve looked?",
+              "text": "Unfinished poles lean your way. Study the scaffolding \u2014 or claim a plot before you\u2019ve looked?",
               "choices": [
                 {
                   "id": "c_look",
@@ -149,7 +307,7 @@
                 },
                 {
                   "id": "c_rush",
-                  "text": "Claim a plot cold — I’ll study later.",
+                  "text": "Claim a plot cold \u2014 I\u2019ll study later.",
                   "nextNodeId": "rush_done",
                   "effects": [
                     {
@@ -179,7 +337,7 @@
             {
               "id": "build",
               "speaker": "The Keeper",
-              "text": "Exactly. Sail to the other islands to see how each era looked — Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
+              "text": "Exactly. Sail to the other islands to see how each era looked \u2014 Poptropica sketch, Flash flat, Miniclip glossy. Then come back here and make something nobody's seen before.",
               "end": true,
               "choices": [
                 {
@@ -197,7 +355,7 @@
             {
               "id": "old",
               "speaker": "The Keeper",
-              "text": "They're still out there — each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
+              "text": "They're still out there \u2014 each island keeps its own animation style. Your character morphs when you land. But this shore? It's all scaffolding until you and your friends fill it in.",
               "end": true,
               "choices": [
                 {
@@ -211,6 +369,12 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "fs_arcade_hint",
+              "speaker": "The Keeper",
+              "text": "Sky Arcade Lane opens when you want extra practice \u2014 compound, explore, no Take required.",
+              "end": true
             }
           ]
         }
@@ -219,8 +383,8 @@
         {
           "id": "mg_fs_diversify",
           "name": "Weather Baskets",
-          "description": "Market weather shifts — rebalance baskets of assets like floating islands in the wind.",
-          "icon": "🧺",
+          "description": "Market weather shifts \u2014 rebalance baskets of assets like floating islands in the wind.",
+          "icon": "\ud83e\uddfa",
           "componentId": "DiversifyBasketsGame",
           "areaId": "fs_blank_canvas",
           "genre": "strategy",
@@ -230,8 +394,8 @@
         {
           "id": "mg_fs_compound",
           "name": "Horizon Snowball",
-          "description": "Watch long-horizon compounding under painterly aurora — patience is the weather pattern.",
-          "icon": "❄️",
+          "description": "Watch long-horizon compounding under painterly aurora \u2014 patience is the weather pattern.",
+          "icon": "\u2744\ufe0f",
           "componentId": "CompoundSnowballGame",
           "areaId": "fs_scaffold",
           "genre": "simulation",
@@ -252,11 +416,77 @@
           "id": "mg_fs_budget",
           "name": "Sky Budget",
           "description": "Allocate coins across floating districts before the storm front arrives.",
-          "icon": "📊",
+          "icon": "\ud83d\udcca",
           "componentId": "BudgetSplitterGame",
           "areaId": "fs_community_dock",
           "genre": "strategy",
           "complexity": "medium"
+        },
+        {
+          "id": "mg_fs_life_fork",
+          "name": "Horizon Life Fork",
+          "description": "Long horizon vs quick flip \u2014 portfolio paths fork.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "fs_blank_canvas"
+        },
+        {
+          "id": "mg_fs_explore",
+          "name": "Scaffold Grid Walk",
+          "description": "Walk the unfinished scaffold for builder clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "fs_scaffold",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_fs_news",
+          "name": "Sky Dispatch",
+          "description": "Weather dispatches \u2014 read before you rebalance.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "fs_community_dock",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "finance_kids"
+                ],
+                "maxDraws": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_fs_pasaran",
+          "name": "Dock Fair Trade",
+          "description": "Fair trade at the community dock prototypes.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "PasaranMarketGame",
+          "areaId": "fs_community_dock"
+        },
+        {
+          "id": "mg_fs_price",
+          "name": "Plot Price Lab",
+          "description": "Price a sky plot before the storm front.",
+          "icon": "\ud83d\udcd0",
+          "componentId": "PriceItRightGame",
+          "areaId": "fs_blank_canvas",
+          "modules": [
+            {
+              "id": "PriceConfig",
+              "config": {
+                "product": "sky plot lease",
+                "emoji": "\ud83c\udfa8",
+                "cost": 4,
+                "maxDemand": 35,
+                "chokePrice": 28
+              }
+            }
+          ]
         }
       ]
     }

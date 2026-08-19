@@ -88,9 +88,9 @@
         },
         {
           "id": "cc_craft_badge",
-          "name": "Coincraft Badge",
-          "description": "Proof you understand the basics of earning, spending, and saving!",
-          "icon": "🎖️",
+          "name": "Jar Keep Cork",
+          "description": "A cork from Kira’s jar — Harbor remembers you chose to keep a little.",
+          "icon": "🫙",
           "location": { "areaId": "cc_savings_lighthouse" }
         }
       ],
@@ -135,7 +135,7 @@
             { "type": "talkToNpc", "npcId": "npc_keeper_kira" },
             { "type": "collectItem", "itemId": "cc_savings_jar" }
           ],
-          "rewards": { "coins": 50, "xp": 100, "items": ["cc_craft_badge"] }
+          "rewards": { "coins": 50, "items": ["cc_craft_badge"] }
         },
         {
           "id": "q_cc_shell_want",

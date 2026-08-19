@@ -8,8 +8,9 @@ For Independent Transfer Rate (king FTUE KPI), use [`docs/ftue/INDEPENDENT_TRANS
 ## How to Pass #94
 
 1. Fresh profile · Harbor · Cove → Paycheck → Credit cold path (or signature Soft Beat + share).
-2. Answer the six questions in your own words (not copy-pasted from agents).
-3. Sign the block below.
+2. Run the one-page observer script: [`docs/playtest/COLD_SESSION_OBSERVER_SCRIPT.md`](./playtest/COLD_SESSION_OBSERVER_SCRIPT.md).
+3. Answer the six questions in your own words (not copy-pasted from agents).
+4. Sign the block below.
 
 ## Six questions
 

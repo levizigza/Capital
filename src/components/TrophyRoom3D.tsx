@@ -1,32 +1,31 @@
-import React, { useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import * as THREE from 'three'
+/**
+ * Legacy Creative-mode trophy diorama.
+ * Product path (Fortune Archipelago) keeps scars/plaques — not trophy fill-%.
+ * This component stays as a no-op shell so old imports do not resurrect badge chrome.
+ */
 
-function Trophy({ position, color }: { position: [number, number, number], color: string }) {
-  const meshRef = useRef<THREE.Mesh>(null!)
-  
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += 0.02
-    }
-  })
-  
+import { BIBLE_RUNTIME_LAWS } from "@/design/designBible";
+
+const TrophyRoom3D = ({ trophies }: { trophies: Array<{ color: string }> }) => {
+  if (BIBLE_RUNTIME_LAWS.hideAchievementDashboardsOnProductPath) {
+    return (
+      <div
+        className="flex h-40 items-center justify-center rounded-xl border border-dashed border-stone-300 bg-stone-50 text-center text-xs text-stone-500"
+        data-testid="trophy-room-retired"
+      >
+        Trophy room retired — Harbor remembers plaques, not badge shelves.
+        {trophies.length > 0 ? (
+          <span className="sr-only">{trophies.length} legacy trophies ignored</span>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <mesh ref={meshRef} position={position}>
-      <coneGeometry args={[0.3, 0.8, 32]} />
-      <meshStandardMaterial color={color} metalness={0.9} roughness={0.1} />
-    </mesh>
-  )
-}
+    <div className="h-40 rounded-xl bg-stone-100" data-testid="trophy-room-legacy">
+      {/* Legacy placeholder — never the product progress surface. */}
+    </div>
+  );
+};
 
-const TrophyRoom3D = ({ trophies }: { trophies: Array<{ color: string }> }) => (
-  <Canvas style={{ width: "100%", height: "350px" }}>
-    <ambientLight intensity={0.5} />
-    <pointLight position={[10, 10, 10]} />
-    {trophies.map((trophy, idx) => (
-      <Trophy key={idx} position={[(idx - 1) * 2, 0, 0]} color={trophy.color} />
-    ))}
-  </Canvas>
-)
-
-export default TrophyRoom3D
+export default TrophyRoom3D;

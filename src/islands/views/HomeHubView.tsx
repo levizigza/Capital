@@ -48,7 +48,7 @@ import { resolveHarborVisualBeats } from "../story/dialogueActionSync";
 import { coinBagHarborTip, coinBagShouldPointPavilion } from "../story/coinBagBuddy";
 import { takeFootprintFeedbackLine } from "../firstFinancialScenario";
 import { peekSoftBeatArm, softBeatArmWhisper, readSoftBeatTrail, softBeatTrailLabel } from "../softBeatArm";
-import { digressionScarGaps, digressionShelfRows, digressionShelfTotal } from "../digressionShelf";
+import { digressionScarGaps, digressionHeardMyths, digressionShelfTotal } from "../digressionShelf";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { resolveHarborGuideLookAt } from "../coinBagGuideTargets";
 import { resolveAdaptiveBuddyTip, syncWorldPlace, gameEvents } from "../gameSystems";
@@ -218,6 +218,8 @@ export type HomeHubViewProps = {
   onClearChapterQuiet?: () => void;
   /** Launch a minigame from a Money Structure part (may be hosted on another island) */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** True while a structure / shore minigame modal owns input — freeze vault walk */
+  structurePlayLocked?: boolean;
 };
 
 function guidedFromSave(save: IslandSaveV1): HubGuidedIntroState | null {
@@ -266,6 +268,7 @@ export function HomeHubView({
   onMarkEchoSurprise,
   onClearChapterQuiet,
   onPlayStructureMinigame,
+  structurePlayLocked = false,
 }: HomeHubViewProps) {
   useInputAction("map", () => {
     if (hubModal || talkOpen) return;
@@ -280,6 +283,7 @@ export function HomeHubView({
   useInputAction("cancel", () => {
     // Talk Battle owns Esc while open
     if (talkOpen) return;
+    if (structurePlayLocked) return;
     if (bankOpen) {
       setBankOpen(false);
       return;
@@ -363,7 +367,7 @@ export function HomeHubView({
 
   const plaques = harborScarPlaques(save);
   const talkScars = harborTalkScars(save);
-  const digressionShelf = useMemo(() => digressionShelfRows(save), [save]);
+  const digressionMyths = useMemo(() => digressionHeardMyths(save), [save]);
   const plaqueGroups = groupScarsByChapter(plaques);
   const studioMarks = save.harborStudioMarks ?? [];
   // Design Bible: stance stays silent — no Plinth stance chrome.
@@ -1064,8 +1068,7 @@ export function HomeHubView({
       }
       if (part.minigameId) {
         playCapitalSfx("organ_memory");
-        // Hide vault shell so the minigame modal is not buried under z-60.
-        setBankOpen(false);
+        // Keep vault mounted under GameModal (z-90) so closing a pad returns to the bank.
         onPlayStructureMinigame?.(part.minigameId);
       }
     },
@@ -1163,9 +1166,10 @@ export function HomeHubView({
           <MoneyStructureInteriorView
             structure={ledgerBank}
             character={voyager}
+            animationStyle="capital-default"
             onExit={() => setBankOpen(false)}
             onEnterPart={onEnterBankPart}
-            inputFrozen={Boolean(bankSoftBeat)}
+            inputFrozen={Boolean(bankSoftBeat) || structurePlayLocked}
           />
           {bankSoftBeat ? (
             <SoftBeatOverlay
@@ -1691,42 +1695,34 @@ export function HomeHubView({
           </div>
           <div data-testid="digression-myth-shelf" className="space-y-2">
             <p className="text-xs font-black uppercase tracking-wide text-stone-500">
-              Side rumors ·{" "}
-              {digressionShelf.filter((r) => r.filled).length}/
-              {digressionShelf.length}
+              Side rumors Harbor still names
             </p>
-            <ul className="grid gap-1.5 sm:grid-cols-2">
-              {digressionShelf.map((row) => (
-                <li
-                  key={row.label}
-                  className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold ${
-                    row.filled
-                      ? "border-amber-200 bg-amber-50 text-amber-950"
-                      : "border-dashed border-stone-300 bg-stone-50/80 text-stone-400"
-                  }`}
-                  data-testid={
-                    row.filled
-                      ? `digression-slot-filled-${row.scarId}`
-                      : "digression-slot-empty"
-                  }
-                >
-                  {row.filled ? `✓ ${row.label}` : `· ${row.label}`}
-                  {row.scarLabel ? (
-                    <span className="mt-0.5 block text-[10px] font-medium opacity-80">
-                      “{row.scarLabel}”
-                    </span>
-                  ) : (
-                    <span className="mt-0.5 block text-[10px] font-medium opacity-70">
-                      Not heard yet
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {digressionMyths.length === 0 ? (
+              <p className="text-[11px] text-stone-400" data-testid="digression-myths-quiet">
+                Digressions leave living gossip here — not a checklist to fill.
+              </p>
+            ) : (
+              <ul className="grid gap-1.5 sm:grid-cols-2">
+                {digressionMyths.map((row) => (
+                  <li
+                    key={row.label}
+                    className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-semibold text-amber-950"
+                    data-testid={`digression-slot-filled-${row.scarId}`}
+                  >
+                    {row.label}
+                    {row.scarLabel ? (
+                      <span className="mt-0.5 block text-[10px] font-medium opacity-80">
+                        “{row.scarLabel}”
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div data-testid="soft-beat-trail-shelf" className="space-y-2">
             <p className="text-xs font-black uppercase tracking-wide text-stone-500">
-              Soft Beat trail · {readSoftBeatTrail().length} peeks
+              Soft Beat trail
             </p>
             {readSoftBeatTrail().length === 0 ? (
               <p className="text-[11px] text-stone-400">
@@ -1811,8 +1807,7 @@ export function HomeHubView({
       >
         <div className="space-y-4 text-left">
           <p className="text-sm text-muted-foreground text-center">
-            Streak {save.harborRitual?.streak ?? 1} day
-            {(save.harborRitual?.streak ?? 1) === 1 ? "" : "s"} — show up, listen, collect.
+            Harbor return — listen for day-2 echoes, then one honest Pay Day.
           </p>
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-950">
             <p className="font-bold">Mascot rumor</p>
@@ -1843,31 +1838,12 @@ export function HomeHubView({
               {save.harborRitual?.today.paydayDone ? "Pay Day collected" : "Collect Pay Day"}
             </GameButton>
           </div>
-          <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
-            <p className="font-bold">Tiny reward</p>
-            <p className="mt-1 text-muted-foreground">
-              +5 coins after rumor + Pay Day — never buys progress.
-            </p>
-            <GameButton
-              variant="outline"
-              className="mt-2 w-full"
-              disabled={
-                Boolean(save.harborRitual?.today.rewardClaimed) ||
-                !save.harborRitual?.today.paydayDone ||
-                !save.harborRitual?.today.rumorSeen
-              }
-              onClick={() => onClaimRitualReward?.()}
-            >
-              {save.harborRitual?.today.rewardClaimed ? "Reward claimed" : "Claim +5 coins"}
-            </GameButton>
-          </div>
           {weekly && weeklyInfo ? (
             <div className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-sm text-violet-950">
-              <p className="font-bold">Weekly · {weeklyInfo.title}</p>
+              <p className="font-bold">Weekly myth · {weeklyInfo.title}</p>
               <p className="mt-1">{weeklyInfo.blurb}</p>
-              <p className="mt-1 font-semibold">
-                {weekly.progress}/{weekly.target}
-                {weekly.done ? " — cleared!" : ""}
+              <p className="mt-1 text-xs text-violet-900/80">
+                Share if you want — not a progress bar. Freedom Pay Days are the real streak.
               </p>
               <GameButton
                 variant="outline"
@@ -1892,8 +1868,8 @@ export function HomeHubView({
                     await downloadWeeklyShareCard({
                       voyagerName: voyager.name || "Voyager",
                       title: weeklyInfo.title,
-                      progress: `${weekly.progress}/${weekly.target}${weekly.done ? " cleared" : ""}`,
-                      streak: save.harborRitual?.streakDays ?? 0,
+                      progress: weekly.done ? "Myth cleared this week" : "Chasing the myth",
+                      streak: 0,
                       plinthHint:
                         plaques.length > 0
                           ? `Memory Plinth · ${plaques.length} plaque${plaques.length === 1 ? "" : "s"}`

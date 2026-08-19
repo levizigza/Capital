@@ -10,13 +10,16 @@ export const PHI_SQ_INV = PHI_INV * PHI_INV; // ≈ 0.382
 
 /** Map % — Seed of Life: hub · equilateral spine · φ-outer side ring */
 export const SEED_HUB = { x: 50, y: 52 };
-/** Spine triangle radius (% of map) — nest into hub (vesica overlap). */
-export const SEED_SPINE_R = 16;
+/**
+ * Spine triangle radius (% of map).
+ * Wide enough that dioramas breathe — not a jammed nest around the hub.
+ */
+export const SEED_SPINE_R = 26;
 /** Side ring = spine × φ (Flower of Life next circle). */
-export const SEED_SIDE_R = SEED_SPINE_R * PHI; // ≈ 25.9
+export const SEED_SIDE_R = SEED_SPINE_R * PHI; // ≈ 42.1
 
-/** Scene units for 3D map — keep dioramas nested. */
-export const SEED_SCENE_SPACING = 3.35;
+/** Scene units for 3D map — clear water gaps between shores. */
+export const SEED_SCENE_SPACING = 6.4;
 
 /** Title / reveal plate vertical bias (golden section from top). */
 export const TITLE_GOLDEN_TOP = `${PHI_SQ_INV * 100}%`; // ≈ 38.2%

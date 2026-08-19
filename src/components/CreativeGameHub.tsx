@@ -6,7 +6,6 @@ import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
 import type { UserProfile, GameScore } from '../App'
 import UserAvatar3D from './UserAvatar3D'
-import TrophyRoom3D from './TrophyRoom3D'
 
 interface CreativeGameHubProps {
   userProfile: UserProfile

@@ -13,6 +13,7 @@ import ProgressionCutscene from './ProgressionCutscenes'
 import GameInstructionBox from './GameInstructionBox'
 import { GAME_INSTRUCTIONS } from '@/data/gameInstructions'
 import type { UserProfile, GameScore } from '@/App'
+import { BIBLE_RUNTIME_LAWS } from '@/design/designBible'
 import { buildBossForNeighborhood } from '@/data/worldBoss'
 import { BossBattle } from '@/game/components/games/BossBattle'
 
@@ -366,7 +367,11 @@ export default function EnhancedGameHub({
                 </div>
                 <div>
                   <h2 className="text-xl font-bold">{userProfile.name || 'Explorer'}</h2>
-                  <p className="text-gray-600">Level {userProfile.level}</p>
+                  {BIBLE_RUNTIME_LAWS.cutIslandsXpAwards ? (
+                    <p className="text-gray-600">Creative sandbox · pouch coins only</p>
+                  ) : (
+                    <p className="text-gray-600">Level {userProfile.level}</p>
+                  )}
                 </div>
               </div>
               <div className="retro-money-display text-xl">
@@ -544,8 +549,17 @@ export default function EnhancedGameHub({
                   <p className="text-sm text-gray-500">Stories Read</p>
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{userProfile.level}</p>
-                  <p className="text-sm text-gray-500">Level</p>
+                  {BIBLE_RUNTIME_LAWS.cutIslandsXpAwards ? (
+                    <>
+                      <p className="text-2xl font-bold text-blue-600">—</p>
+                      <p className="text-sm text-gray-500">No XP ladder</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-2xl font-bold text-blue-600">{userProfile.level}</p>
+                      <p className="text-sm text-gray-500">Level</p>
+                    </>
+                  )}
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-orange-600">{playTime}m</p>

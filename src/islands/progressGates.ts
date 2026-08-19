@@ -5,7 +5,7 @@
 
 import type { IslandDefinition, IslandSaveV1 } from "./types";
 import { ensureLedger } from "./voyagerLedger";
-import { hasCompletedCoveChange } from "./chapterLoop";
+import { hasCompletedCoveChange, hasCompletedPaycheckChange } from "./chapterLoop";
 import {
   HUB_ISLAND_ID,
   isHubIslandId,
@@ -15,11 +15,20 @@ import { isSideShoreTravelId } from "./spineArchipelago";
 /** Inventory flag granted on Harbor escape — also used for carpet/plaza rewards */
 export const HARBOR_FREEDOM_ITEM = "harbor_freedom_seal";
 
-/** Boss island — locked until Harbor escape + enough mastery clears */
+/** Boss island — locked until Freedom Seal + Paycheck Change (transfer proof). */
 export const BOSS_ISLAND_ID = "credit_kingdom";
 
-/** How many all-correct mastery gates needed to open the boss island */
-export const BOSS_MASTERY_REQUIRED = 3;
+/**
+ * @deprecated Quiz clears no longer gate Credit. Kept for digression / analytics only.
+ * Prefer Freedom + Paycheck Change (independent transfer surface).
+ */
+export const BOSS_MASTERY_REQUIRED = 0;
+
+/**
+ * Playtest: open every island so shores can be cold-checked for playability.
+ * Flip to `false` before shipping gated progression again.
+ */
+export const PLAYTEST_UNLOCK_ALL_ISLANDS = false;
 
 /** Plaza free-roam rooms on Harbor Haven */
 export type PlazaRoomId = "plaza" | "market" | "dock" | "pavilion";
@@ -66,6 +75,8 @@ export function hasHarborFreedom(save: IslandSaveV1): boolean {
 
 export function bossUnlockProgress(save: IslandSaveV1): {
   escaped: boolean;
+  /** True when Paycheck Change completed — Independent Transfer surface passed. */
+  transferProof: boolean;
   mastery: number;
   needed: number;
   unlocked: boolean;
@@ -73,11 +84,14 @@ export function bossUnlockProgress(save: IslandSaveV1): {
   const ledger = ensureLedger(save.voyagerLedger);
   const mastery = ledger.masteryClears.length;
   const escaped = hasHarborFreedom(save);
+  const transferProof = hasCompletedPaycheckChange(save);
   return {
     escaped,
+    transferProof,
     mastery,
     needed: BOSS_MASTERY_REQUIRED,
-    unlocked: escaped && mastery >= BOSS_MASTERY_REQUIRED,
+    // Literacy is gameplay: Freedom (sim) + Paycheck Change (transfer), not quiz count.
+    unlocked: PLAYTEST_UNLOCK_ALL_ISLANDS || (escaped && transferProof),
   };
 }
 
@@ -87,6 +101,7 @@ export function bossUnlockProgress(save: IslandSaveV1): {
  */
 export function isIslandProgressLocked(island: IslandDefinition, save: IslandSaveV1): boolean {
   if (isHubIslandId(island.id)) return false;
+  if (PLAYTEST_UNLOCK_ALL_ISLANDS) return false;
 
   const missingItems = (island.requiredItems || []).some((id) => !save.inventory.includes(id));
   if (missingItems) return true;
@@ -118,7 +133,10 @@ export function islandLockHint(island: IslandDefinition, save: IslandSaveV1): st
     if (!prog.escaped) {
       return "Earn Freedom Seal — then Spiral can open";
     }
-    return `Spiral locked — mastery ${prog.mastery}/${prog.needed}`;
+    if (!prog.transferProof) {
+      return "Finish Paycheck Change — then Spiral opens";
+    }
+    return "Spiral locked";
   }
   return "Locked";
 }

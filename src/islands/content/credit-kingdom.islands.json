@@ -4,8 +4,8 @@
     {
       "id": "credit_kingdom",
       "name": "Credit Kingdom",
-      "description": "Spiral organ shore — Interest Keep weighs on-time history vs haste. Recover score artifacts, dodge interest storms, rebuild trust. Ruins are scenery; the Keep is the test.",
-      "icon": "🗿",
+      "description": "Spiral organ shore \u2014 Interest Keep weighs on-time history vs haste. Recover score artifacts, dodge interest storms, rebuild trust. Ruins are scenery; the Keep is the test.",
+      "icon": "\ud83d\uddff",
       "provenance": {
         "learning_objectives": [
           "Understand how credit scores are calculated",
@@ -13,56 +13,76 @@
           "Compare loan types: secured vs unsecured, fixed vs variable",
           "Practice recovering from credit mistakes"
         ],
-        "mechanics_used": ["party-board", "resource-management", "event-deck", "quiz-challenge"],
+        "mechanics_used": [
+          "party-board",
+          "resource-management",
+          "event-deck",
+          "quiz-challenge"
+        ],
         "originality_notes": "Theme: ruined jungle temples as metaphors for damaged credit (not a bank sim). Verb: recover artifacts on a Fortune Party board with rival captains. Structure: chance + skill minigames teaching credit repair. Canon name: Credit Kingdom (Story Bible Ordeal).",
-        "forbidden_references": ["Monopoly", "Cashflow", "Game of Life", "Payday", "Credit Karma", "Mario", "Nintendo"]
+        "forbidden_references": [
+          "Monopoly",
+          "Cashflow",
+          "Game of Life",
+          "Payday",
+          "Credit Karma",
+          "Mario",
+          "Nintendo"
+        ]
       },
       "areas": [
         {
           "id": "ck_gate",
           "name": "Ruined Gate",
           "description": "Mossy pillars and a cracked credit obelisk. Your compass points deeper.",
-          "icon": "🚪",
-          "connections": ["ck_score_vault", "ck_debt_canyon"]
+          "icon": "\ud83d\udeaa",
+          "connections": [
+            "ck_score_vault",
+            "ck_debt_canyon"
+          ]
         },
         {
           "id": "ck_score_vault",
           "name": "Score Vault",
           "description": "Stone tablets etched with payment histories. Touch them carefully.",
-          "icon": "📜",
-          "connections": ["ck_gate"]
+          "icon": "\ud83d\udcdc",
+          "connections": [
+            "ck_gate"
+          ]
         },
         {
           "id": "ck_debt_canyon",
           "name": "Debt Canyon",
           "description": "Echoes of interest. The Collector patrols these ledges.",
-          "icon": "🕳️",
-          "connections": ["ck_gate"]
+          "icon": "\ud83d\udd73\ufe0f",
+          "connections": [
+            "ck_gate"
+          ]
         }
       ],
       "npcs": [
         {
           "id": "npc_credit_cleo_ruins",
           "name": "Cleo the Archivist",
-          "icon": "🧭",
+          "icon": "\ud83e\udded",
           "areaId": "ck_score_vault",
           "dialogueGraphId": "dlg_cleo_ruins"
         },
         {
           "id": "npc_collector_rex",
           "name": "Rex the Collector",
-          "icon": "⛓️",
+          "icon": "\u26d3\ufe0f",
           "areaId": "ck_debt_canyon",
           "dialogueGraphId": "dlg_collector_rex",
-          "tagline": "Payment plans vs panic — ally against the storm"
+          "tagline": "Payment plans vs panic \u2014 ally against the storm"
         },
         {
           "id": "npc_debt_collector",
           "name": "The Debt Collector",
-          "icon": "🏦",
+          "icon": "\ud83c\udfe6",
           "areaId": "ck_debt_canyon",
           "dialogueGraphId": "dlg_debt_collector",
-          "tagline": "Ultimate Ordeal villain — Bank of Obligation",
+          "tagline": "Ultimate Ordeal villain \u2014 Bank of Obligation",
           "mascotId": "debt_collector"
         }
       ],
@@ -71,15 +91,19 @@
           "id": "ck_credit_shard",
           "name": "Credit Shard",
           "description": "A fragment of on-time payment history.",
-          "icon": "💎",
-          "location": { "areaId": "ck_score_vault" }
+          "icon": "\ud83d\udc8e",
+          "location": {
+            "areaId": "ck_score_vault"
+          }
         },
         {
           "id": "ck_canyon_seal",
           "name": "Canyon Seal",
-          "description": "Proof you faced interest in the canyon — and chose a payment plan over panic.",
-          "icon": "🦭",
-          "location": { "areaId": "ck_debt_canyon" }
+          "description": "Proof you faced interest in the canyon \u2014 and chose a payment plan over panic.",
+          "icon": "\ud83e\uddad",
+          "location": {
+            "areaId": "ck_debt_canyon"
+          }
         }
       ],
       "quests": [
@@ -87,26 +111,73 @@
           "id": "q_ck_first_recovery",
           "track": "main",
           "title": "First Recovery",
-          "description": "Archivist Cleo opens the Ordeal. Clear Credit Inbox, then weigh signals in Debt Canyon with Rex — the wait-vs-haste Take comes after you practice, not before.",
+          "description": "Archivist Cleo opens the Ordeal. Clear Credit Inbox, then weigh signals in Debt Canyon with Rex \u2014 the wait-vs-haste Take comes after you practice, not before.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_credit_cleo_ruins" },
-            { "type": "completeMinigame", "minigameId": "mg_ck_inbox_credit" },
-            { "type": "talkToNpc", "npcId": "npc_collector_rex" },
-            { "type": "completeMinigame", "minigameId": "mg_ck_signal" },
-            { "type": "collectItem", "itemId": "ck_canyon_seal" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_credit_cleo_ruins"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ck_inbox_credit"
+            },
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_collector_rex"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ck_signal"
+            },
+            {
+              "type": "collectItem",
+              "itemId": "ck_canyon_seal"
+            }
           ],
-          "rewards": { "coins": 40, "xp": 30, "items": ["ck_credit_shard"] }
+          "rewards": {
+            "coins": 40,
+            "xp": 30,
+            "items": [
+              "ck_credit_shard"
+            ]
+          }
         },
         {
           "id": "q_ck_collector_rumor",
           "track": "side",
           "title": "Collector Rumor",
-          "description": "Optional digression — hear The Debt Collector’s pitch without feeding the Ordeal. Harbor may gossip.",
-          "hint": "Talk to The Debt Collector in Debt Canyon when you want a scare — then walk away.",
+          "description": "Optional digression \u2014 hear The Debt Collector\u2019s pitch without feeding the Ordeal. Harbor may gossip.",
+          "hint": "Talk to The Debt Collector in Debt Canyon when you want a scare \u2014 then walk away.",
           "objectives": [
-            { "type": "talkToNpc", "npcId": "npc_debt_collector" }
+            {
+              "type": "talkToNpc",
+              "npcId": "npc_debt_collector"
+            }
           ],
-          "rewards": { "coins": 10, "xp": 25 }
+          "rewards": {
+            "coins": 10,
+            "xp": 25
+          }
+        },
+        {
+          "id": "q_ck_score_practice",
+          "track": "side",
+          "title": "Score Practice",
+          "description": "Optional ruins lane \u2014 score scanner and compound without the Ordeal Take.",
+          "objectives": [
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ck_signal"
+            },
+            {
+              "type": "completeMinigame",
+              "minigameId": "mg_ck_compound"
+            }
+          ],
+          "rewards": {
+            "coins": 35,
+            "xp": 70
+          }
         }
       ],
       "dialogues": [
@@ -117,21 +188,30 @@
             {
               "id": "c1",
               "speaker": "Cleo the Archivist",
-              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Debt Collector — interest feeds on haste.",
+              "text": "These ruins remember every late payment. Recover shards, keep your Emergency Ledger ready, and never ignore The Debt Collector \u2014 interest feeds on haste.",
               "choices": [
                 {
                   "id": "c1a",
                   "text": "Teach me credit recovery.",
                   "nextNodeId": "c2",
-                  "effects": [{ "type": "startQuest", "questId": "q_ck_first_recovery" }]
+                  "effects": [
+                    {
+                      "type": "startQuest",
+                      "questId": "q_ck_first_recovery"
+                    }
+                  ]
                 },
-                { "id": "c1b", "text": "I'll explore the board.", "nextNodeId": "c3" }
+                {
+                  "id": "c1b",
+                  "text": "I'll explore the board.",
+                  "nextNodeId": "c3"
+                }
               ]
             },
             {
               "id": "c2",
               "speaker": "Cleo the Archivist",
-              "text": "Practice first — Clear the Credit Inbox, then weigh signals with Rex in Debt Canyon. The wait-vs-haste Ordeal that stains Harbor comes after you can read the spiral — not as an opening quiz.",
+              "text": "Practice first \u2014 Clear the Credit Inbox, then weigh signals with Rex in Debt Canyon. The wait-vs-haste Ordeal that stains Harbor comes after you can read the spiral \u2014 not as an opening quiz.",
               "end": true
             },
             {
@@ -149,14 +229,17 @@
             {
               "id": "r1",
               "speaker": "Rex the Collector",
-              "text": "The Debt Collector owns these ledges. Interest doesn't yell — it compounds. Weigh on-time history against utilization spikes. Panic sorts bills; a signal read shrinks his grip.",
+              "text": "The Debt Collector owns these ledges. Interest doesn't yell \u2014 it compounds. Weigh on-time history against utilization spikes. Panic sorts bills; a signal read shrinks his grip.",
               "choices": [
                 {
                   "id": "r1_plan",
-                  "text": "I'll run Score Scanner — weigh the spiral.",
+                  "text": "I'll run Score Scanner \u2014 weigh the spiral.",
                   "nextNodeId": "r_scan_go",
                   "effects": [
-                    { "type": "startMinigame", "minigameId": "mg_ck_signal" }
+                    {
+                      "type": "startMinigame",
+                      "minigameId": "mg_ck_signal"
+                    }
                   ]
                 },
                 {
@@ -169,7 +252,7 @@
             {
               "id": "r_scan_go",
               "speaker": "Rex the Collector",
-              "text": "Score Scanner opens on the Debt Anvil. Weigh the signals — then talk to me again. The spiral stays quiet until you’ve felt it.",
+              "text": "Score Scanner opens on the Debt Anvil. Weigh the signals \u2014 then talk to me again. The spiral stays quiet until you\u2019ve felt it.",
               "end": true
             },
             {
@@ -179,7 +262,7 @@
               "choices": [
                 {
                   "id": "r_wait",
-                  "text": "Waited the spiral — cooler coil · Harbor soft-names patience",
+                  "text": "Waited the spiral \u2014 cooler coil \u00b7 Harbor soft-names patience",
                   "nextNodeId": "r_done",
                   "effects": [
                     {
@@ -196,12 +279,15 @@
                       "stance": "saver",
                       "stanceDelta": 2
                     },
-                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                    {
+                      "type": "giveItem",
+                      "itemId": "ck_canyon_seal"
+                    }
                   ]
                 },
                 {
                   "id": "r_borrow",
-                  "text": "Haste fed the spiral — tighter interest weather · Harbor still keeps it",
+                  "text": "Haste fed the spiral \u2014 tighter interest weather \u00b7 Harbor still keeps it",
                   "nextNodeId": "r_done_rush",
                   "effects": [
                     {
@@ -218,7 +304,10 @@
                       "stance": "risk",
                       "stanceDelta": 2
                     },
-                    { "type": "giveItem", "itemId": "ck_canyon_seal" }
+                    {
+                      "type": "giveItem",
+                      "itemId": "ck_canyon_seal"
+                    }
                   ]
                 }
               ]
@@ -226,25 +315,25 @@
             {
               "id": "r_done",
               "speaker": "Rex the Collector",
-              "text": "Patience is a credit signal. Harbor will keep “Waited the spiral” on the Memory Plinth — and this seal proves you faced the canyon without feeding the storm.",
+              "text": "Patience is a credit signal. Harbor will keep \u201cWaited the spiral\u201d on the Memory Plinth \u2014 and this seal proves you faced the canyon without feeding the storm.",
               "end": true
             },
             {
               "id": "r_done_rush",
               "speaker": "Rex the Collector",
-              "text": "Speed has a price. Harbor will keep the haste mark — fog follows you home. The seal still proves you entered his canyon; rebuild starts now.",
+              "text": "Speed has a price. Harbor will keep the haste mark \u2014 fog follows you home. The seal still proves you entered his canyon; rebuild starts now.",
               "end": true
             },
             {
               "id": "r_remember",
               "speaker": "Rex the Collector",
-              "text": "Your Ordeal already stains the Plinth. Interest still compounds — keep reading signals before you rush.",
+              "text": "Your Ordeal already stains the Plinth. Interest still compounds \u2014 keep reading signals before you rush.",
               "end": true
             },
             {
               "id": "r_later",
               "speaker": "Rex the Collector",
-              "text": "The Bank of Obligation waits. Come back when you're ready to weigh the spiral — then choose.",
+              "text": "The Bank of Obligation waits. Come back when you're ready to weigh the spiral \u2014 then choose.",
               "end": true
             }
           ]
@@ -260,12 +349,12 @@
               "choices": [
                 {
                   "id": "dc1_rumor",
-                  "text": "Digression — hear the pitch or lean in?",
+                  "text": "Digression \u2014 hear the pitch or lean in?",
                   "nextNodeId": "dc_fork"
                 },
                 {
                   "id": "dc1_defy",
-                  "text": "I rebuild trust — I don't feed interest haste.",
+                  "text": "I rebuild trust \u2014 I don't feed interest haste.",
                   "nextNodeId": "dc2"
                 },
                 {
@@ -278,15 +367,21 @@
             {
               "id": "dc_fork",
               "speaker": "The Debt Collector",
-              "text": "Interest loves an audience. Stand and listen — or lean into the Bank’s haste?",
+              "text": "Interest loves an audience. Stand and listen \u2014 or lean into the Bank\u2019s haste?",
               "choices": [
                 {
                   "id": "dc_listen",
-                  "text": "Only listening — cooler canyon · Harbor soft-names patience",
+                  "text": "Only listening \u2014 cooler canyon \u00b7 Harbor soft-names patience",
                   "nextNodeId": "dc_rumor_done",
                   "effects": [
-                    { "type": "startQuest", "questId": "q_ck_collector_rumor" },
-                    { "type": "completeQuest", "questId": "q_ck_collector_rumor" },
+                    {
+                      "type": "startQuest",
+                      "questId": "q_ck_collector_rumor"
+                    },
+                    {
+                      "type": "completeQuest",
+                      "questId": "q_ck_collector_rumor"
+                    },
                     {
                       "type": "addScar",
                       "id": "ck_collector_rumor",
@@ -299,11 +394,17 @@
                 },
                 {
                   "id": "dc_lean",
-                  "text": "Lean in — tighter interest weather · Harbor still keeps it",
+                  "text": "Lean in \u2014 tighter interest weather \u00b7 Harbor still keeps it",
                   "nextNodeId": "dc_lean_done",
                   "effects": [
-                    { "type": "startQuest", "questId": "q_ck_collector_rumor" },
-                    { "type": "completeQuest", "questId": "q_ck_collector_rumor" },
+                    {
+                      "type": "startQuest",
+                      "questId": "q_ck_collector_rumor"
+                    },
+                    {
+                      "type": "completeQuest",
+                      "questId": "q_ck_collector_rumor"
+                    },
                     {
                       "type": "addScar",
                       "id": "ck_collector_lean",
@@ -325,13 +426,13 @@
             {
               "id": "dc_lean_done",
               "speaker": "The Debt Collector",
-              "text": "Good. Panic pays first. Harbor will gossip that you leaned toward the coil — Spiral still waits for the real Ordeal.",
+              "text": "Good. Panic pays first. Harbor will gossip that you leaned toward the coil \u2014 Spiral still waits for the real Ordeal.",
               "end": true
             },
             {
               "id": "dc2",
               "speaker": "The Debt Collector",
-              "text": "Interest grows. Freedom shrinks. Rex teaches plans — I collect what panic leaves behind. Prove patience in the canyon, Voyager.",
+              "text": "Interest grows. Freedom shrinks. Rex teaches plans \u2014 I collect what panic leaves behind. Prove patience in the canyon, Voyager.",
               "end": true
             },
             {
@@ -347,8 +448,8 @@
         {
           "id": "mg_ck_inbox_credit",
           "name": "Credit Inbox",
-          "description": "Diegetic messages about loans, APR, and late fees — choose the path that rebuilds score.",
-          "icon": "📨",
+          "description": "Diegetic messages about loans, APR, and late fees \u2014 choose the path that rebuilds score.",
+          "icon": "\ud83d\udce8",
           "componentId": "ModularMinigame",
           "areaId": "ck_score_vault",
           "genre": "strategy",
@@ -359,7 +460,9 @@
               "id": "EventDeck",
               "config": {
                 "title": "Credit Kingdom Dispatches",
-                "deckIds": ["credit_kingdom"]
+                "deckIds": [
+                  "credit_kingdom"
+                ]
               }
             }
           ]
@@ -368,7 +471,7 @@
           "id": "mg_ck_budget_balancer",
           "name": "Debt Loadout",
           "description": "Balance payments across debts before interest compounds in the canyon.",
-          "icon": "⚖️",
+          "icon": "\u2696\ufe0f",
           "componentId": "BudgetBalancerMinigame",
           "areaId": "ck_debt_canyon",
           "genre": "strategy",
@@ -377,12 +480,77 @@
         {
           "id": "mg_ck_signal",
           "name": "Score Scanner",
-          "description": "Debt Anvil skill test — weigh on-time history vs utilization spikes before the Ordeal Take.",
-          "icon": "📡",
+          "description": "Debt Anvil skill test \u2014 weigh on-time history vs utilization spikes before the Ordeal Take.",
+          "icon": "\ud83d\udce1",
           "componentId": "SignalScannerGame",
           "areaId": "ck_debt_canyon",
           "genre": "quiz",
           "complexity": "medium"
+        },
+        {
+          "id": "mg_ck_compound",
+          "name": "Recovery Snowball",
+          "description": "On-time payments compound trust like savings.",
+          "icon": "\u2744\ufe0f",
+          "componentId": "CompoundSnowballGame",
+          "areaId": "ck_score_vault",
+          "modules": [
+            {
+              "id": "CompoundConfig",
+              "config": {
+                "principal": 50,
+                "ratePct": 5,
+                "years": 10,
+                "label": "on-time streak"
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_ck_explore",
+          "name": "Ruins Walk",
+          "description": "Explore the ruined gate for credit shard clues.",
+          "icon": "\ud83d\uddfa\ufe0f",
+          "componentId": "ExplorablePuzzleGame",
+          "areaId": "ck_gate",
+          "genre": "exploration",
+          "complexity": "medium",
+          "visualShell": "explore"
+        },
+        {
+          "id": "mg_ck_life_fork",
+          "name": "Spiral Life Fork",
+          "description": "Wait vs borrow vs balance \u2014 paths fork before Rex.",
+          "icon": "\ud83d\udd00",
+          "componentId": "LifeForkGame",
+          "areaId": "ck_debt_canyon"
+        },
+        {
+          "id": "mg_ck_news",
+          "name": "Canyon Dispatch",
+          "description": "APR and late-fee dispatches \u2014 read before you panic.",
+          "icon": "\ud83d\udcf0",
+          "componentId": "ModularMinigame",
+          "areaId": "ck_debt_canyon",
+          "modules": [
+            {
+              "id": "EventDeck",
+              "config": {
+                "deckIds": [
+                  "credit_kingdom"
+                ],
+                "maxDraws": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "mg_ck_diversify",
+          "name": "Payment Baskets",
+          "description": "Spread payments across debts before interest compounds.",
+          "icon": "\ud83e\uddfa",
+          "componentId": "DiversifyBasketsGame",
+          "areaId": "ck_debt_canyon"
         }
       ]
     }

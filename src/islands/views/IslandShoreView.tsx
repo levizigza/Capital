@@ -18,6 +18,7 @@ import type {
 } from "../types";
 import type { LearningProfileId } from "../learningProfile";
 import type { CapitalCharacter } from "../character";
+import { BASE_VOYAGER, voyagerForIslandStyle } from "../character";
 import { getIslandTheme } from "../themes/islandThemes";
 import { CharacterAvatar } from "./CharacterAvatar";
 import { WealthHud } from "./WealthHud";
@@ -77,6 +78,8 @@ export type IslandShoreViewProps = {
   onPlayMinigame: (minigameId: string) => void;
   /** Money Structure part pads — stay-put fail source */
   onPlayStructureMinigame?: (minigameId: string) => void;
+  /** True while a minigame modal owns input — freeze structure walk */
+  structurePlayLocked?: boolean;
   onOpenBoard: () => void;
   onOpenTravel: () => void;
   onOpenHub: () => void;
@@ -109,8 +112,13 @@ export function IslandShoreView({
   onEnterArea,
   onStartQuest,
   talkOpen = false,
+  structurePlayLocked = false,
 }: IslandShoreViewProps) {
   const theme = getIslandTheme(island.id, island.themeId);
+  const shoreCharacter = useMemo(
+    () => voyagerForIslandStyle(character ?? BASE_VOYAGER, theme.animationStyle),
+    [character, theme.animationStyle],
+  );
   const hotspots = useMemo(() => buildShoreHotspots(island), [island]);
   const structure = useMemo(() => moneyStructureForIsland(island.id), [island.id]);
   const organ = useMemo(() => moneyOrganForIsland(island.id), [island.id]);
@@ -257,7 +265,7 @@ export function IslandShoreView({
       }
       if (part.minigameId) {
         playCapitalSfx("scar_chime");
-        setStructureOpen(false);
+        // Keep structure mounted under the modal so exit returns to the interior.
         (onPlayStructureMinigame ?? onPlayMinigame)(part.minigameId);
       }
     },
@@ -315,10 +323,11 @@ export function IslandShoreView({
         <>
           <MoneyStructureInteriorView
             structure={structure}
-            character={character}
+            character={shoreCharacter}
+            animationStyle={theme.animationStyle}
             onExit={() => setStructureOpen(false)}
             onEnterPart={onEnterPart}
-            inputFrozen={Boolean(softBeat)}
+            inputFrozen={Boolean(softBeat) || structurePlayLocked}
           />
             {softBeat ? (
             <SoftBeatOverlay
@@ -349,7 +358,7 @@ export function IslandShoreView({
           <div className="absolute inset-0">
             <WalkableIslandExplore
               island={island}
-              character={character}
+              character={shoreCharacter}
               hotspots={hotspots}
               onHotspot={activate}
               onNearChange={onNearChange}
@@ -453,7 +462,7 @@ export function IslandShoreView({
             ) : null}
             {!chapterQuiet && character ? (
               <CharacterAvatar
-                character={character}
+                character={shoreCharacter}
                 size={40}
                 animationStyle={theme.animationStyle}
                 morphFromHome

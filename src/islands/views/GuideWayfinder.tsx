@@ -102,8 +102,12 @@ export function GuideEdgeCue({
         }}
       >
         <div
-          className="h-0 w-0 border-l-[10px] border-r-[10px] border-b-[16px] border-l-transparent border-r-transparent border-b-amber-300/90 drop-shadow"
+          className="h-0 w-0 border-l-[12px] border-r-[12px] border-b-[18px] border-l-transparent border-r-transparent border-b-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)]"
           style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.45))" }}
+        />
+        <div
+          className="mt-[-2px] h-3 w-2.5 rounded-sm bg-amber-200/95"
+          aria-hidden
         />
         {label ? (
           <div
