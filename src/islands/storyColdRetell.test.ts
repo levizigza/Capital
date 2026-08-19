@@ -62,6 +62,9 @@ describe("Pillar 12 story cold retell", () => {
     const spectacle = readFileSync(join(views, "ScarSpectacleOverlay.tsx"), "utf8");
     const talks = readFileSync(join(__dirname, "story/harborTalks.ts"), "utf8");
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
+    const recovery = readFileSync(join(__dirname, "ftueQuestRecovery.ts"), "utf8");
+    const chapter = readFileSync(join(__dirname, "chapterLoop.ts"), "utf8");
+    const homecoming = `${app}\n${recovery}\n${chapter}`;
     expect(soft).toMatch(/coldOrganKidSentence/);
     expect(soft).toMatch(/soft-beat-retell/);
     expect(soft).toMatch(/data-soft-beat-climb/);
@@ -80,8 +83,12 @@ describe("Pillar 12 story cold retell", () => {
     expect(spectacle).toMatch(/scar-spectacle-kid-sentence/);
     expect(spectacle).toMatch(/coldOrganKidSentence/);
     expect(talks).toMatch(/coldOrganKidSentence/);
-    expect(app).toMatch(/The Coin holds — save a little/);
-    expect(app).toMatch(/The Clock kept the loft dry|The Clock still names the rain gossip|The Clock shelters — Harbor felt the stamp/);
-    expect(app).toMatch(/The Spiral withstands — wait beats haste/);
+    expect(homecoming).toMatch(/The Coin holds — save a little|The Coin holds — Harbor felt your Take/);
+    expect(homecoming).toMatch(
+      /The Clock kept the loft dry|The Clock still names the rain gossip|The Clock shelters — Harbor felt the stamp|The Clock shelters — wait under the umbrella/,
+    );
+    expect(homecoming).toMatch(
+      /The Spiral withstands — wait beats haste|The Spiral withstands — Harbor kept your Ordeal/,
+    );
   });
 });

@@ -5,9 +5,11 @@ import { join } from "node:path";
 describe("first financial scenario wire", () => {
   it("IslandsApp applies real ledger footprint on Cove Take", () => {
     const app = readFileSync(join(__dirname, "IslandsApp.tsx"), "utf8");
-    expect(app).toMatch(/applyCoveTakeLedgerFootprint/);
-    expect(app).toMatch(/COVE_TAKE_KEY/);
-    expect(app).toMatch(/coveTakeStanceFromChoiceId/);
+    const spine = readFileSync(join(__dirname, "spineTakeFootprints.ts"), "utf8");
+    const wire = `${app}\n${spine}`;
+    expect(wire).toMatch(/applySpineTakeLedgerFootprint/);
+    expect(wire).toMatch(/COVE_TAKE_KEY/);
+    expect(wire).toMatch(/coveTakeStanceFromChoiceId/);
   });
 
   it("scenario doc exists and forbids tutorial-only fake rules", () => {

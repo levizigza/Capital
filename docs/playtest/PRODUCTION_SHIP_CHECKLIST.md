@@ -22,9 +22,11 @@ npm run test -- --run \
 
 ## Human gate (pattern #94)
 
-1. Fresh profile · Harbor → Cove → Paycheck → Credit cold path
-2. Answer six questions in [`pattern-human-playtest.md`](./pattern-human-playtest.md)
-3. Replace `HUMAN_PLAYTEST: PENDING` with `HUMAN_PLAYTEST: PASS` when a non-designer confirms
+1. Run [`docs/playtest/COLD_SESSION_OBSERVER_SCRIPT.md`](./playtest/COLD_SESSION_OBSERVER_SCRIPT.md) with a kid + parent observer.
+2. Paste answers into [`docs/pattern-human-playtest.md`](../pattern-human-playtest.md).
+3. Replace `HUMAN_PLAYTEST: PENDING` with `HUMAN_PLAYTEST: PASS` when a non-designer confirms.
+
+**Defer this until after story + gameplay craft passes** if that is the current priority.
 
 **Cannot ship iconic to players until #94 is filled by a real human.**
 
