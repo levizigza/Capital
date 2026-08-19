@@ -6,6 +6,7 @@ import {
   moodFromCashflow,
   pickContextualAssetDeal,
   resolveBoardAssetDeal,
+  isPassRationalForDeal,
 } from "./harborOpportunity";
 
 describe("harborOpportunity — Living Cashflow Commit", () => {
@@ -70,5 +71,22 @@ describe("harborOpportunity — Living Cashflow Commit", () => {
     expect(moodFromCashflow(20)).toBe("fair");
     expect(moodFromCashflow(5)).toBe("tight");
     expect(moodFromCashflow(-5)).toBe("storm");
+  });
+
+  it("deal dominance — Pass rational in storm; Accept viable in boom with buffer", () => {
+    const ledger = ensureLedger(createDefaultVoyagerLedger());
+    const stormCtx = buildHarborOpportunityContext(ledger, 12, "storm");
+    const { offer: stormOffer } = resolveBoardAssetDeal(stormCtx);
+    expect(isPassRationalForDeal(stormCtx, stormOffer)).toBe(true);
+
+    const boomLedger = ensureLedger({
+      ...createDefaultVoyagerLedger(),
+      positivePaydayStreak: 2,
+    });
+    const boomCtx = buildHarborOpportunityContext(boomLedger, 80, "boom");
+    const boomOffer = pickContextualAssetDeal(boomCtx);
+    expect(boomOffer).not.toBeNull();
+    expect(boomOffer!.purchaseCost).toBeGreaterThanOrEqual(40);
+    expect(boomCtx.pouchCoins).toBeGreaterThanOrEqual(boomOffer!.purchaseCost);
   });
 });

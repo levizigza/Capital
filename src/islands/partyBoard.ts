@@ -17,6 +17,7 @@ import {
   applyPayday,
   dealPurchaseCost,
   ensureLedger,
+  formatPaydayMessage,
   liabilityBuyoutCost,
   makeBoardCashflowClaim,
   netCashflow,
@@ -38,6 +39,7 @@ import {
 } from "./boardEconomy";
 import { buildHarborOpportunityContext, moodFromCashflow, resolveBoardAssetDeal } from "./harborOpportunity";
 import { getIslandTheme } from "./themes/islandThemes";
+import { mulberry32 } from "@/lib/seededRng";
 
 function pickUnusedHolding(
   kind: LedgerHolding["kind"],
@@ -163,8 +165,19 @@ export const BOARD_LAYOUT: Array<{ x: number; y: number }> = [
   { x: 10, y: 36 },
 ];
 
+let boardRng: (() => number) | null = null;
+
+/** Test / QA harness — deterministic board dice and picks. */
+export function setPartyBoardSeed(seed: number | null): void {
+  boardRng = seed == null ? null : mulberry32(seed);
+}
+
+function rollUnit(): number {
+  return boardRng ? boardRng() : Math.random();
+}
+
 export function rollDice(): number {
-  return Math.floor(Math.random() * 6) + 1;
+  return Math.floor(rollUnit() * 6) + 1;
 }
 
 export function rollDoubleDice(): number {
@@ -436,11 +449,10 @@ export function resolvePassStart(
     });
     return {
       coins,
-      message: escapedNow
-        ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
-        : coins >= 0
-          ? `Pay Day! Monthly cashflow credited (+${coins} coins).`
-          : `Pay Day shortfall (${coins} coins). Grow income or cut expenses!`,
+      message: formatPaydayMessage(coins, ledger, {
+        escapedNow,
+        trackEscape,
+      }),
       ledger,
     };
   }
@@ -490,11 +502,7 @@ export function resolvePlayerSpace(
           ? `Dividend Magnet Pay Day (+${coins}) — Harbor escape unlocked!`
           : `Dividend Magnet! Pay Day doubled to +${coins} coins.`;
       } else {
-        payload.message = escapedNow
-          ? `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.`
-          : coins >= 0
-            ? `Pay Day: +${coins} coins from monthly cashflow.`
-            : `Pay Day shortfall: ${coins} coins.`;
+        payload.message = formatPaydayMessage(coins, nextLedger, { escapedNow });
       }
       payload.coins = coins;
       payload.ledger = nextLedger;

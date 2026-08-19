@@ -1,4 +1,4 @@
-import { Suspense, lazy, useMemo, useState, useCallback, useEffect } from "react";
+import { Suspense, lazy, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { GuideEdgeCue, type GuideProjection } from "./GuideWayfinder";
 import { MoveTalkMapHint } from "./FtueControlsHint";
 import {
@@ -546,6 +546,20 @@ export function HomeHubView({
       if (hush) capitalMusic.playPlace({ kind: "harbor" });
     };
   }, [spectacleOpen, feltShareOpen]);
+
+  // CF weather audio bed — subtle once per mood band (not during cinema).
+  const lastWeatherAudio = useRef<string | null>(null);
+  useEffect(() => {
+    if (spectacleOpen || feltShareOpen || echoSurpriseOpen || trailerOpen) return;
+    const mood = harborWeatherMood(save);
+    if (lastWeatherAudio.current === mood) return;
+    lastWeatherAudio.current = mood;
+    if (mood === "storm" || mood === "tight") {
+      playCapitalSfx("weather_storm");
+    } else if (mood === "fair" || mood === "boom") {
+      playCapitalSfx("weather_fair");
+    }
+  }, [save, spectacleOpen, feltShareOpen, echoSurpriseOpen, trailerOpen]);
 
   useEffect(() => {
     const rumorId = save.harborRitual?.today.rumorId;

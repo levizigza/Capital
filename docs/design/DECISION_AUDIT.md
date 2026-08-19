@@ -28,14 +28,14 @@ A row may note a **secondary** flag (e.g. interesting for identity, obvious for 
 | ID | Decision | Primary flag | Recurs? |
 |----|----------|--------------|---------|
 | D-COVE | Cove jar vs treat Take | INTERESTING (identity) / OBVIOUS (pure CF) | One-shot key; signature archetype |
-| D-PAY | Paycheck umbrella vs glitter | MEANINGLESS (CF) / INTERESTING (scar) | One-shot |
+| D-PAY | Paycheck umbrella vs glitter | INTERESTING (CF + scar) | One-shot |
 | D-CREDIT | Credit wait vs borrow | INTERESTING | One-shot (gated) |
 | D-DEFER | Take / digression “Maybe later” | INTERESTING | Until committed |
 | D-SHELL | Cove Shell Want need vs want | INTERESTING (thin) | One-shot digression |
 | D-TIP | Paycheck tip plan vs rush | MEANINGLESS (CF) | One-shot |
 | D-COLLECTOR | Credit collector listen vs lean | INTERESTING (thin) | One-shot |
 | D-ERA | Era shore linger vs rush pattern | MEANINGLESS / FAKE (strategy) | Per shore, one-shot each |
-| D-DEAL | Harbor board deal accept vs pass | OBVIOUS (if chasing Freedom) | Recurring |
+| D-DEAL | Harbor board deal accept vs pass | INTERESTING (contextual) | Recurring |
 | D-LIAB | Board Debt Trap liability | FAKE_CHOICE (no picker) | Recurring hazard |
 | D-SHOP | Capsule / polish / plaza pass buy | INTERESTING (thin) | Recurring |
 | D-PET | Outfitter companion buy | MEANINGLESS (economy) | Recurring |
@@ -115,7 +115,7 @@ Evidence: `paycheck-peninsula.islands.json`.
 Stamp Paycheck Change; get rainy-day item; scar for Harbor.
 
 **AVAILABLE INFORMATION**  
-Copy contrasts umbrella vs glitter. **No** Cove-style ledger holding for this key (CF Δ = **0** from the fork itself).
+Copy contrasts umbrella vs glitter. Talk Battle preview rows show **±$4/mo** holdings before commit (`spineTakeFootprints.ts`).
 
 **OPTIONS**  
 1. `vv_protect` — Umbrella before glitter  
@@ -123,33 +123,33 @@ Copy contrasts umbrella vs glitter. **No** Cove-style ledger holding for this ke
 (No defer row on this node.)
 
 **IMMEDIATE CONSEQUENCES**  
-Both: `startQuest` rainy-day · irreversible · scar · `giveItem` `pp_rainy_day_fund`.
+Both: `startQuest` rainy-day · irreversible · scar · `giveItem` · **ledger footprint ±$4/mo**.
 
 **DELAYED CONSEQUENCES**  
-Different plaque text / Piggy retell / stance. Homecoming copy differs. CF engine unchanged by fork.
+Different plaque / Piggy retell / stance. Pay Day cites holding labels; weather follows net CF.
 
 **RISK**  
-Narrative/identity only at CF layer.
+Glitter branch tightens monthly cushion.
 
 **OPPORTUNITY COST**  
-Other plaque; not monthly dollars.
+Other plaque; monthly dollars differ.
 
 **REVERSIBILITY**  
 Irreversible.
 
 **UNCERTAINTY**  
-Low on numbers (none); medium on how much Harbor cares (it does name the plaque).
+Low on numbers (previewed); medium on Harbor emotional weight.
 
 **VALID STRATEGIES**  
-Roleplay protect vs spend-as-story. No CF strategy split.
+Protect for buffer; spend for scar/identity with tighter CF.
 
 **DOMINANT STRATEGY**  
-None for economy. For “safe” fantasy, protect is thematically nudged but not rewarded in ledger.
+None — CF and scar both move.
 
 **LEARNING VALUE**  
-Medium for Clock *shelter* metaphor; **weak** for cashflow transfer (fork does not move CF).
+High for Clock *shelter* + cashflow transfer when preview read.
 
-**FLAG:** **MEANINGLESS_CHOICE** (economy) · **INTERESTING_CHOICE** (scar / identity only) · risk of **FAKE_CHOICE** if players expect Cove-parity ledger
+**FLAG:** **INTERESTING_CHOICE** (CF + identity) · watch **UNINFORMED_CHOICE** if preview skipped
 
 ---
 

@@ -25,7 +25,11 @@ export type CapitalSfxId =
   /** Walk came to rest — mute-friendly soft thud */
   | "walk_stop"
   /** Talk Battle open / choice confirm */
-  | "talk_confirm";
+  | "talk_confirm"
+  /** CF weather bed — storm fog (subtle, once per mood band) */
+  | "weather_storm"
+  /** CF weather bed — fair/boom lift */
+  | "weather_fair";
 
 let ctx: AudioContext | null = null;
 
@@ -160,6 +164,14 @@ export function playCapitalSfx(id: CapitalSfxId): void {
         // Talk Battle open / choice — Memory courtyard click
         tone(494, 80, "triangle", 0.03 * g, 0);
         tone(659.25, 110, "sine", 0.024 * g, 0.06);
+        break;
+      case "weather_storm":
+        tone(220, 420, "sine", 0.018 * g, 0);
+        tone(185, 380, "triangle", 0.014 * g, 0.12);
+        break;
+      case "weather_fair":
+        tone(330, 280, "sine", 0.016 * g, 0);
+        tone(440, 320, "triangle", 0.012 * g, 0.1);
         break;
       default:
         break;

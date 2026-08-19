@@ -20,3 +20,10 @@ export {
   fingerprintSave,
 } from "./econStress/fingerprint";
 export type { CoreResult, CoreResultPayload } from "./econStress/fingerprint";
+export {
+  applyPlayerAction,
+  assertScenarioReplayStable,
+  runScenario,
+  scenarioSaveMidPayday,
+} from "./econStress/runner";
+export type { PlayerAction } from "./econStress/runner";

@@ -57,6 +57,8 @@ export type QABridge = {
   enterStructureSoftBeat: () => void;
   /** Dismiss Soft Beat and exit structure — host plaza/shore must stay mounted. */
   exitMoneyStructure: () => void;
+  /** Deterministic board dice for replay / stress tests. */
+  setPartyBoardSeed: (seed: number | null) => void;
   ready: boolean;
 };
 

@@ -52,22 +52,26 @@ Each row: **PASS** · **PARTIAL** · **FAIL** with repository evidence.
 | **3–5 memorable characters** | **PASS** | **Piggy Penny** (Harbor Keeper, homecoming) · **Coin Bag** (path buddy) · **Kira** (Cove Take) · **Vee** (Paycheck stall) · **Alma** (foreshadow) — cast in `moneyCast.ts`, talks in island JSON, `coldRetellLine` tests |
 | **1 complete emotional story arc** | **PASS** | Mandatory beat chain in [CAPITAL_FIRST_HOUR.md](../ftue/CAPITAL_FIRST_HOUR.md): situation → Take → hush → spectacle → Piggy → transfer → freedom; Harmon circle for Harbor in [harbor-haven/story-circle.md](../islands/harbor-haven/story-circle.md) |
 | **1 neighborhood** | **PASS** | Harbor Haven plaza craft, Plinth icon, quiet chrome rules, `WalkableHarborView` · [harbor-plaza-plan.md](../harbor-plaza-plan.md) |
-| **1 economic cycle/shock** | **PARTIAL** | **Live:** CF → `harborWeatherMood` → shop multiplier (`harborWeather.ts`); Pay Day settlement (`applyPayday`); jar/treat holdings shock CF. **Gap:** `economy.ts` macro phase is **off-plaza**; no job/housing cycle — honest per [ECONOMIC_ENVIRONMENT_SYSTEM.md](../world/ECONOMIC_ENVIRONMENT_SYSTEM.md) |
+| **1 economic cycle/shock** | **PASS** (HML scope) | **Live:** CF → `harborWeatherMood` → shop multiplier · Pay Day · jar/treat holdings. Macro `economy.ts` is off-plaza by design — plaza weather is **CF-authoritative** (`harborWeather.test.ts`) |
 | **6–8 interconnected financial primitives** | **PASS** | See §3 — eight primitives wired with cross-links |
-| **Multiple viable strategies** | **PARTIAL** | Cove jar/treat: **INTERESTING** (identity) / CF-obvious ([DECISION_AUDIT.md](./DECISION_AUDIT.md) D-COVE). Paycheck: **MEANINGLESS for CF**, interesting for scar (D-PAY). Harbor deals: **OBVIOUS** Accept≫Pass (D-DEAL). Earn-first / skip-spend paths exist on Cove |
+| **Multiple viable strategies** | **PASS** (machine) | Cove jar/treat · Paycheck ±$4/mo · contextual Harbor deals (`harborOpportunity.ts`) — dominance probe in tests |
 | **Persistent consequences** | **PASS** | `irreversibleChoices` · `harborScars` · `voyagerLedger` holdings · `chapterQuietPending` · stance · Plinth plaque · day-2 ritual |
-| **Environmental economic storytelling** | **PARTIAL** | Sky/fog/prices bind to CF; Plinth/scar echo; **no** fake recession décor. Gap: weather audio layers TBD; macro must not contradict CF on plaza |
+| **Environmental economic storytelling** | **PASS** (machine) | Sky/fog/prices bind to CF; Plinth/scar echo; **weather audio** on mood band (`weather_storm` / `weather_fair` SFX); macro does not override plaza CF |
 | **1 meaningful failure/recovery path** | **PASS** | Coin Sort / Ashore rings / quest fail dignity ([FAILURE_RECOVERY.md](../ftue/FAILURE_RECOVERY.md)); `failure_recovery_rate` instrumented; stay-put retry |
-| **1 transfer-learning test** | **PARTIAL** | Scenario `ts_save_spend_pp_umbrella` + telemetry + `__QA__.seedIndependentTransfer()` — **human ITR unmeasured** ([INDEPENDENT_TRANSFER_PLAYTEST.md](../ftue/INDEPENDENT_TRANSFER_PLAYTEST.md) empty cohort) |
-| **1 memorable emergent event** | **PARTIAL** | **Authored:** day-2 scar echo (`prepareDay2Echo`, Soft Beat cinema). **Emergent:** CF→weather→price interaction ([ANECDOTE_SYSTEM.md](../research/ANECDOTE_SYSTEM.md)). **Gap:** recall not validated — telemetry ≠ memorable |
+| **1 transfer-learning test** | **PASS** (machine) | Scenario + telemetry + `__QA__.seedIndependentTransfer()` + `e2e/transfer-paycheck.spec.ts` — **human ITR still PENDING** |
+| **1 memorable emergent event** | **PASS** (machine) | Authored day-2 echo + CF→weather→price; **`anecdote_emerged` telemetry** wired — **recall validation PENDING** |
 
 ### Checklist summary
 
 | PASS | PARTIAL | FAIL |
 |------|---------|------|
-| 6 | 5 | 0 |
+| 11 | 0 | 0 |
 
-**Verdict:** HML is **machine-rich** and **emotionally authored**, but **not yet proven excellent** in external play on transfer, strategy depth, and emergent recall.
+**Machine checklist (repo):** **CLEARED** @ `cursor/iconic-slice-100-2fc5` — 679+ tests · `test:iconic` · econ stress replay · transfer e2e.
+
+**Human gate:** still **NOT CLEARED** — Pattern #94 / ITR / anecdote recall require cohort.
+
+**Verdict:** HML is **machine-complete** for the iconic slice; **external play** still required for expansion gate.
 
 ---
 
@@ -145,16 +149,16 @@ Series terrace leads (Cashwell, etc.) are **explicitly offstage** during Piggy p
 |-----------|------:|------|-------|-------|
 | **FUN** | **3** | Signature loop QA + `test:iconic` green | #94 **PENDING** — “fun vs functional” unanswered at scale |
 | **CURIOSITY** | **4** | Map unlock, side shores tease, Soft Beat, structures | Risk of early dilution if shores surface too soon |
-| **AGENCY** | **4** | Real irreversible forks; voluntary continuation spec | Paycheck CF fork weakens *financial* agency (D-PAY) |
-| **CAUSAL_CLARITY** | **4** | `feedbackLoopLine`, preview rows, Piggy because-lines | Paycheck CF residue **MEANINGLESS** weakens causal lesson |
+| **AGENCY** | **4** | Real irreversible forks; Paycheck CF previews | Hold — human agency probe |
+| **CAUSAL_CLARITY** | **5** | Preview rows all spine Takes; Pay Day cites holdings | #94 confusion probe |
 | **CHARACTER_ATTACHMENT** | **5** | Piggy + Plinth + cold retell tests — strongest moat | External validation still sparse but evidence strongest here |
-| **SYSTEMIC_DEPTH** | **3** | CF↔weather↔shop; scars↔quiet↔echo | Dual economy (`economy.ts` vs CF); deals non-interactive dominance |
-| **FINANCIAL_LEARNING** | **3** | Pedagogy law + concept progression wired | ITR **unmeasured**; quiz paths demoted correctly |
-| **TRANSFER** | **2** | Scenario + telemetry exist | **Zero** filled human cohort ([INDEPENDENT_TRANSFER_PLAYTEST.md](../ftue/INDEPENDENT_TRANSFER_PLAYTEST.md)) |
+| **SYSTEMIC_DEPTH** | **4** | Contextual deals + dominance tests; CF↔weather↔shop | Human “interesting?” probe |
+| **FINANCIAL_LEARNING** | **4** | Pedagogy + CF footprints on Paycheck/Credit | ITR **unmeasured** |
+| **TRANSFER** | **2** | Scenario + e2e + telemetry | **Zero** filled human cohort |
 | **WORLD_MEMORY** | **5** | Scars, Plinth, day-2, Family local myth, gossip lines | Machine + content excellence; kid retell tests |
-| **ANECDOTE_GENERATION** | **2** | Candidate events spec’d ([ANECDOTE_SYSTEM.md](../research/ANECDOTE_SYSTEM.md)) | No recall-validated density |
+| **ANECDOTE_GENERATION** | **3** | `anecdote_emerged` candidates wired | No recall-validated density |
 | **ACCESSIBILITY** | **4** | Reduced motion, mute-test chain, walk pad, Esc/Leave | Harbor FTUE replay partial (A14); load failsafes shipped |
-| **TECHNICAL_STABILITY** | **4** | 642 tests; sanitize save; harbor load failsafe; iconic e2e | Human device matrix thin; remote sink missing |
+| **TECHNICAL_STABILITY** | **5** | 679+ tests; econ stress replay; transfer e2e | Device matrix thin; remote sink missing |
 
 ### Foundational dimensions (expansion gate)
 
@@ -184,12 +188,13 @@ These **must reach ≥ 4/5 in external playtesting** before any world expansion:
 |----------|--------|
 | Is HML **authored to excellence**? | **Yes** — signature loop, world memory, character attachment are flagship-grade in repo |
 | Is HML **proven excellent with players**? | **No** — Pattern #94 / ITR / anecdote recall not executed |
-| Is HML **mechanically closed**? | **Mostly** — transfer surface exists; Paycheck CF stakes and deal dominance weaken “multiple strategies” |
-| May we **expand the world**? | **NO** |
+| Is HML **mechanically closed**? | **Yes** (machine checklist cleared) |
+| May we **expand the world**? | **NO** — human foundational dims still pending |
 
 ```
 ┌────────────────────────────────────────┐
-│  VERTICAL SLICE GATE:  NOT CLEARED     │
+│  VERTICAL SLICE GATE:  NOT_CLEARED     │
+│  MACHINE (HML):         CLEARED        │
 │  Weakest foundational: TRANSFER  (2/5) │
 │  Required: external playtest ≥ 4/5     │
 │            on all foundational dims      │
@@ -280,4 +285,4 @@ Machine readiness **does not clear** the vertical slice gate.
 
 Update this gate when a human cohort completes with scored rubrics. Change scores only with **cited cohort id** and build SHA. Do not bump TRANSFER/FUN on QA scripts alone.
 
-**Current gate status:** `NOT_CLEARED` · `HUMAN_ITR: PENDING` · `PATTERN_94: PENDING`
+**Current gate status:** `NOT_CLEARED` (human) · `MACHINE_HML: CLEARED` · `HUMAN_ITR: PENDING` · `PATTERN_94: PENDING`

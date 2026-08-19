@@ -211,6 +211,31 @@ export function raiseLivingExpenses(ledger: VoyagerLedger, amount: number, reaso
  * Apply one month of cashflow to the coin pouch.
  * Boom/recession multipliers can scale the payout.
  */
+export function paydayHoldingsCite(ledger: VoyagerLedger, max = 3): string {
+  const top = ledger.holdings.slice(0, max);
+  if (top.length === 0) return "";
+  const parts = top.map((h) => {
+    const sign = h.kind === "asset" ? "+" : "−";
+    return `${h.icon ?? ""}${h.name} ${sign}$${h.monthlyAmount}/mo`.trim();
+  });
+  return ` · ${parts.join(" · ")}`;
+}
+
+export function formatPaydayMessage(
+  coins: number,
+  ledger: VoyagerLedger,
+  opts?: { escapedNow?: boolean; streak?: number; trackEscape?: boolean },
+): string {
+  const cite = paydayHoldingsCite(ledger);
+  if (opts?.escapedNow) {
+    return `Pay Day (+${coins}) — Harbor escape unlocked! Cashflow stayed strong.${cite}`;
+  }
+  if (coins >= 0) {
+    return `Pay Day: +${coins} coins from monthly cashflow.${cite}`;
+  }
+  return `Pay Day shortfall: ${coins} coins. Grow income or cut expenses!${cite}`;
+}
+
 export function applyPayday(
   ledger: VoyagerLedger,
   incomeMultiplier = 1,
@@ -233,8 +258,8 @@ export function applyPayday(
   next = pushEvent(
     next,
     coins >= 0
-      ? `Pay Day: monthly cashflow credited (+${coins} coins).`
-      : `Pay Day shortfall: expenses exceeded income (${coins} coins).`,
+      ? `Pay Day: monthly cashflow credited (+${coins} coins).${paydayHoldingsCite(next)}`
+      : `Pay Day shortfall: expenses exceeded income (${coins} coins).${paydayHoldingsCite(next)}`,
     { coinDelta: coins, cashflowDelta: 0 },
   );
 

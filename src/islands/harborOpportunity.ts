@@ -112,3 +112,11 @@ export function dealPassHint(ctx: HarborOpportunityContext, offer: DealOffer): s
   }
   return null;
 }
+
+/** QA / dominance probe — Pass must be rational under storm + low pouch. */
+export function isPassRationalForDeal(
+  ctx: HarborOpportunityContext,
+  offer: DealOffer,
+): boolean {
+  return dealPassHint(ctx, offer) !== null;
+}
