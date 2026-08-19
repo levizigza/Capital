@@ -26,7 +26,7 @@ import {
   shoreAnchorsForCulture,
   type AmbientResident,
 } from "../islandCulture";
-import { genreHudLine } from "../genreWorlds";
+import { sideShoreHudLine } from "../spineContentRegistry";
 import { getMascot } from "../moneyCast";
 import { pickPersona, varyMascotForPersona } from "../npcPersonas";
 import { MoneyBagGuide } from "./MoneyBagGuide";
@@ -854,7 +854,7 @@ function ShoreScene({
   const culture = useMemo(() => getIslandCulture(island), [island]);
   const anchors = useMemo(() => shoreAnchorsForCulture(culture), [culture]);
   const ambients = useMemo(() => buildAmbientEcosystem(island), [island]);
-  const genreLine = genreHudLine(island.id);
+  const shoreLine = sideShoreHudLine(island.id);
   const guidedHotspotId = useMemo(() => {
     if (!guideArrows || !guideLookAt) return null;
     let best: string | null = null;
@@ -1007,8 +1007,8 @@ function ShoreScene({
         <IslandTitle
           title={island.name}
           subtitle={
-            genreLine
-              ? `${genreLine} · ${culture.cultureName}`
+            shoreLine
+              ? `${shoreLine} · ${culture.cultureName}`
               : `${biome.label} · ${culture.cultureName}`
           }
           height={shoreScale(8.2)}

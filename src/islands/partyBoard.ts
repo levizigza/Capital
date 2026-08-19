@@ -37,7 +37,8 @@ import {
   usesCashflowPassStart,
   type BoardEconomyMode,
 } from "./boardEconomy";
-import { buildHarborOpportunityContext, moodFromCashflow, resolveBoardAssetDeal } from "./harborOpportunity";
+import { buildHarborOpportunityContext, resolveBoardDealChoices } from "./harborOpportunity";
+import type { HarborWeatherMood } from "./harborWeather";
 import { getIslandTheme } from "./themes/islandThemes";
 import { mulberry32 } from "@/lib/seededRng";
 
@@ -117,8 +118,10 @@ export type SpaceResolvePayload = {
   playerSkip?: boolean;
   /** Updated ledger after cashflow spaces */
   ledger?: VoyagerLedger;
-  /** Interactive deal offer — player must accept or pass */
+  /** Interactive deal offer — player picks commit A, commit B, or wait */
   pendingDeal?: import("./voyagerLedger").DealOffer;
+  pendingDealB?: import("./voyagerLedger").DealOffer;
+  pendingDealWaitHint?: string | null;
   /** Interactive liability — borrow / buyout / walk */
   pendingLiability?: import("./voyagerLedger").LiabilityOffer;
 };
@@ -468,7 +471,7 @@ export function resolvePlayerSpace(
   state: PartyIslandState,
   playerCoins: number,
   ledgerIn?: VoyagerLedger | null,
-  opts?: { trackHarborEscape?: boolean },
+  opts?: { trackHarborEscape?: boolean; weatherMood?: HarborWeatherMood },
 ): { next: PartyIslandState; payload: SpaceResolvePayload } {
   const next: PartyIslandState = {
     ...state,
@@ -520,10 +523,14 @@ export function resolvePlayerSpace(
       const oppCtx = buildHarborOpportunityContext(
         ledger,
         playerCoins,
-        moodFromCashflow(netCashflow(ledger)),
+        opts?.weatherMood,
       );
-      const { offer, message } = resolveBoardAssetDeal(oppCtx);
-      payload.pendingDeal = offer;
+      const { choices, message } = resolveBoardDealChoices(oppCtx);
+      if (choices) {
+        payload.pendingDeal = choices.commitA;
+        payload.pendingDealB = choices.commitB;
+        payload.pendingDealWaitHint = choices.waitHint;
+      }
       payload.message = message;
       break;
     }

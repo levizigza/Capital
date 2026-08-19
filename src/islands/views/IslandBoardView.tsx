@@ -40,10 +40,9 @@ import { ensureLedger, acceptDeal, addHolding, type DealOffer, type LiabilityOff
 import {
   dealPassHint,
   buildHarborOpportunityContext,
-  moodFromCashflow,
+  type BoardDealChoices,
 } from "../harborOpportunity";
 import { harborWeatherMood } from "../harborWeather";
-import { netCashflow } from "../voyagerLedger";
 import { VoyagerLedgerHud } from "./VoyagerLedgerHud";
 import { CoinBagBuddyHud } from "./CoinBagBuddyHud";
 import { coinBagIslandTip } from "../story/coinBagBuddy";
@@ -151,6 +150,8 @@ export function IslandBoardView({
   const [rivalLog, setRivalLog] = useState<string[]>([]);
   const [pendingDoubleRoll, setPendingDoubleRoll] = useState(false);
   const [dealOffer, setDealOffer] = useState<DealOffer | null>(null);
+  const [dealOfferB, setDealOfferB] = useState<DealOffer | null>(null);
+  const [dealWaitHint, setDealWaitHint] = useState<string | null>(null);
   const [dealPartyState, setDealPartyState] = useState<PartyIslandState | null>(null);
   const [liabilityOffer, setLiabilityOffer] = useState<LiabilityOffer | null>(null);
   const [liabilityPartyState, setLiabilityPartyState] = useState<PartyIslandState | null>(null);
@@ -170,15 +171,19 @@ export function IslandBoardView({
   const tokenLayout = BOARD_LAYOUT[displayPosition] ?? BOARD_LAYOUT[0]!;
 
   const dealPassHintLine = useMemo(() => {
-    if (!dealOffer) return null;
+    if (!dealOffer && !dealOfferB) return dealWaitHint;
     const ledger = ensureLedger(save.voyagerLedger);
     const ctx = buildHarborOpportunityContext(
       ledger,
       userProfile.totalCoins,
-      moodFromCashflow(netCashflow(ledger)),
+      harborWeatherMood(save),
     );
-    return dealPassHint(ctx, dealOffer);
-  }, [dealOffer, save.voyagerLedger, userProfile.totalCoins]);
+    if (dealWaitHint) return dealWaitHint;
+    if (dealOfferB && dealOfferB.id !== dealOffer?.id) {
+      return dealPassHint(ctx, dealOfferB) ?? dealPassHint(ctx, dealOffer!);
+    }
+    return dealOffer ? dealPassHint(ctx, dealOffer) : null;
+  }, [dealOffer, dealOfferB, dealWaitHint, save, userProfile.totalCoins]);
 
   const applyPayload = useCallback(
     (payload: SpaceResolvePayload, tip?: string) => {
@@ -263,7 +268,10 @@ export function IslandBoardView({
         working,
         userProfile.totalCoins,
         save.voyagerLedger,
-        { trackHarborEscape: tracksHarborEscape(boardMode) },
+        {
+          trackHarborEscape: tracksHarborEscape(boardMode),
+          weatherMood: harborWeatherMood(save),
+        },
       );
       working = next;
       onUpdatePartyState(working);
@@ -276,6 +284,8 @@ export function IslandBoardView({
 
       if (payload.pendingDeal) {
         setDealOffer(payload.pendingDeal);
+        setDealOfferB(payload.pendingDealB ?? null);
+        setDealWaitHint(payload.pendingDealWaitHint ?? null);
         setDealPartyState(working);
         setPhase("idle");
         return;
@@ -302,39 +312,47 @@ export function IslandBoardView({
   );
 
   const resolveDealOffer = useCallback(
-    (accept: boolean) => {
-      if (!dealOffer || !dealPartyState) return;
-      const offer = dealOffer;
+    (picked: DealOffer | null) => {
+      if (!dealPartyState) return;
       const state = dealPartyState;
+      const offerA = dealOffer;
+      const offerB = dealOfferB;
+      const waitHint = dealWaitHint;
       setDealOffer(null);
+      setDealOfferB(null);
+      setDealWaitHint(null);
       setDealPartyState(null);
 
-      if (accept) {
-        if (userProfile.totalCoins < offer.purchaseCost) {
-          setEventMessage(
-            `Need ${offer.purchaseCost} coins for ${offer.name} — earn more, then catch the next Deal.`,
-          );
-        } else {
-          const result = acceptDeal(ensureLedger(save.voyagerLedger), offer);
-          applyPayload({
-            coins: result.coins,
-            ledger: result.ledger,
-            message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
-          });
-        }
-      } else {
+      if (!picked) {
         const ledger = ensureLedger(save.voyagerLedger);
         const ctx = buildHarborOpportunityContext(
           ledger,
           userProfile.totalCoins,
-          moodFromCashflow(netCashflow(ledger)),
+          harborWeatherMood(save),
         );
-        const hint = dealPassHint(ctx, offer);
+        const hint =
+          waitHint ??
+          (offerB ? dealPassHint(ctx, offerB) : null) ??
+          (offerA ? dealPassHint(ctx, offerA) : null);
         setEventMessage(
-          hint
-            ? `Passed on ${offer.name}. ${hint}`
-            : `Passed on ${offer.name}. Patience is a cashflow skill too.`,
+          hint ? `Wait — ${hint}` : "Wait — buffer kept for the next bill.",
         );
+        void runRivalTurns(state);
+        return;
+      }
+
+      const offer = picked;
+      if (userProfile.totalCoins < offer.purchaseCost) {
+        setEventMessage(
+          `Need ${offer.purchaseCost} coins for ${offer.name} — earn more, then catch the next Deal.`,
+        );
+      } else {
+        const result = acceptDeal(ensureLedger(save.voyagerLedger), offer);
+        applyPayload({
+          coins: result.coins,
+          ledger: result.ledger,
+          message: `Deal closed! ${offer.icon} ${offer.name} (+$${offer.monthlyAmount}/mo) for ${offer.purchaseCost} coins.`,
+        });
       }
 
       void runRivalTurns(state);
@@ -342,9 +360,11 @@ export function IslandBoardView({
     [
       applyPayload,
       dealOffer,
+      dealOfferB,
+      dealWaitHint,
       dealPartyState,
       runRivalTurns,
-      save.voyagerLedger,
+      save,
       userProfile.totalCoins,
     ],
   );
@@ -727,52 +747,57 @@ export function IslandBoardView({
               exit={{ opacity: 0 }}
             >
               <GamePanel
-                title="Deal offer"
+                title="Living Cashflow Commit"
                 padding="default"
                 className="border-cyan-300 bg-cyan-50/90"
                 data-testid="harbor-deal-offer"
               >
-                <div className="flex items-start gap-3">
-                  <span className="text-3xl">{dealOffer.icon}</span>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-black text-[var(--cap-ink)]">{dealOffer.name}</div>
-                    <p className="text-sm text-[var(--cap-ink-soft)]">
-                      Pay <b>{dealOffer.purchaseCost} coins</b> now to add{" "}
-                      <b className="text-emerald-700">+${dealOffer.monthlyAmount}/mo</b> income to your
-                      Voyager Ledger.
-                    </p>
-                    <p className="mt-1 text-xs text-[var(--cap-ink-soft)]">
-                      Your pouch: 🪙 {userProfile.totalCoins}
-                      {userProfile.totalCoins < dealOffer.purchaseCost
-                        ? " — not enough yet (you can pass)."
-                        : ""}
-                    </p>
-                    {dealPassHintLine ? (
-                      <p
-                        className="mt-2 text-xs font-semibold text-[var(--cap-ink-soft)]"
-                        data-testid="harbor-deal-pass-hint"
-                      >
-                        {dealPassHintLine}
-                      </p>
-                    ) : null}
-                  </div>
+                <p className="mb-3 text-xs font-semibold text-[var(--cap-ink-soft)]">
+                  Two commits on the table — or wait. Pouch: 🪙 {userProfile.totalCoins}
+                </p>
+                <div className="space-y-3">
+                  {[dealOffer, dealOfferB && dealOfferB.id !== dealOffer.id ? dealOfferB : null]
+                    .filter(Boolean)
+                    .map((offer) => (
+                      <div key={offer!.id} className="flex items-start gap-3 rounded-xl border border-cyan-200/80 bg-white/70 p-3">
+                        <span className="text-3xl">{offer!.icon}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-black text-[var(--cap-ink)]">{offer!.name}</div>
+                          <p className="text-sm text-[var(--cap-ink-soft)]">
+                            Pay <b>{offer!.purchaseCost} coins</b> for{" "}
+                            <b className="text-emerald-700">+${offer!.monthlyAmount}/mo</b>
+                          </p>
+                          {userProfile.totalCoins < offer!.purchaseCost ? (
+                            <p className="mt-1 text-xs text-amber-800">Not enough coins yet.</p>
+                          ) : null}
+                        </div>
+                        <GameButton
+                          variant="primary"
+                          size="sm"
+                          data-testid={`harbor-deal-commit-${offer!.id}`}
+                          onClick={() => resolveDealOffer(offer!)}
+                        >
+                          Commit
+                        </GameButton>
+                      </div>
+                    ))}
                 </div>
-                <div className="mt-3 flex gap-2">
+                {dealPassHintLine ? (
+                  <p
+                    className="mt-2 text-xs font-semibold text-[var(--cap-ink-soft)]"
+                    data-testid="harbor-deal-pass-hint"
+                  >
+                    {dealPassHintLine}
+                  </p>
+                ) : null}
+                <div className="mt-3">
                   <GameButton
                     variant="outline"
-                    className="flex-1"
+                    className="w-full"
                     data-testid="harbor-deal-pass"
-                    onClick={() => resolveDealOffer(false)}
+                    onClick={() => resolveDealOffer(null)}
                   >
-                    Pass
-                  </GameButton>
-                  <GameButton
-                    variant="primary"
-                    className="flex-1"
-                    data-testid="harbor-deal-accept"
-                    onClick={() => resolveDealOffer(true)}
-                  >
-                    Buy deal
+                    Wait
                   </GameButton>
                 </div>
               </GamePanel>

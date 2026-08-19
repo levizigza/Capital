@@ -27,7 +27,13 @@ import { getIslandTheme } from "./themes/islandThemes";
 import type { CapitalCharacter } from "./character";
 import { BASE_VOYAGER } from "./character";
 import { HUB_ISLAND_ID, isHubIslandId } from "./worldMapLayout";
-import { islandHasChapterContent, buildCoveChangeReplayTimeline, buildPaycheckChangeReplayTimeline } from "./chapterLoop";
+import {
+  islandHasChapterContent,
+  buildCoveChangeReplayTimeline,
+  buildPaycheckChangeReplayTimeline,
+  hasCompletedCoveChange,
+  hasCompletedPaycheckChange,
+} from "./chapterLoop";
 import {
   COVE_CHANGE_QUEST_ID,
   COVE_ISLAND_ID,
@@ -1692,6 +1698,8 @@ export default function IslandsApp({ userProfile, setUserProfile, onExit, onRepl
           : "done";
       return piggyGuidedGraph(guided, {
         ashoreTeachComplete: save?.ashoreTeachDone === "complete",
+        coveChangeDone: save ? hasCompletedCoveChange(save) : false,
+        paycheckChangeDone: save ? hasCompletedPaycheckChange(save) : false,
       });
     }
     const fromHarbor = findDialogue(HARBOR_DIALOGUES, dialogueState.graphId);

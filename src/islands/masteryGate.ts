@@ -21,14 +21,17 @@ export type MasteryGateDef = {
   questions: MasteryQuizQuestion[];
 };
 
+/** Shared framing — quizzes are optional digressions, never Credit gates. */
+const OPTIONAL_DIGRESSION_COPY =
+  "Optional digression after the kinesthetic run. Ace every question for the worksheet — main progression still comes from Freedom + Paycheck Change.";
+
 export const MASTERY_GATES: MasteryGateDef[] = [
   {
     id: "gate_coin_catcher",
     minigameId: "mg_coin_catcher",
     title: "Impulse Dodge Quiz",
     bossLabel: "Arcade Boss",
-    requirementCopy:
-      "You finished the kinesthetic run — but to clear this block you must answer EVERY question correctly. No partial credit.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -63,8 +66,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_coin_sort",
     title: "Change-Making Mastery",
     bossLabel: "Harbor Boss",
-    requirementCopy:
-      "Sorting coins isn’t enough — prove you understand value and change. All answers must be correct to pass.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -109,8 +111,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_treasure_vault",
     title: "Needs vs Wants Vault Quiz",
     bossLabel: "Lighthouse Boss",
-    requirementCopy:
-      "You explored the vault — now prove you know needs from wants. Every answer must be correct.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -155,8 +156,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_news_shocks",
     title: "Surprise Expense Quiz",
     bossLabel: "Market Crier Boss",
-    requirementCopy:
-      "Island news hit hard — show you can handle shocks. All answers must be correct to clear the block.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -201,8 +201,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_compound_snowball",
     title: "Compound Growth Quiz",
     bossLabel: "Snowball Boss",
-    requirementCopy:
-      "You watched the snowball roll — prove you understand compounding. No partial credit.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -247,7 +246,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_pasaran_market",
     title: "Fair Market Quiz",
     bossLabel: "Stall Boss",
-    requirementCopy: "You traded at the pasaran — now prove fair prices and exact change. All correct required.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -292,7 +291,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_mancala_compound",
     title: "Sow & Save Quiz",
     bossLabel: "Seed Boss",
-    requirementCopy: "You sowed the pits — prove you understand compounding. All answers must be correct.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -337,7 +336,7 @@ export const MASTERY_GATES: MasteryGateDef[] = [
     minigameId: "mg_life_fork",
     title: "Life Path Quiz",
     bossLabel: "Compass Boss",
-    requirementCopy: "You chose your forks — prove you know which paths grow cashflow. All correct.",
+    requirementCopy: OPTIONAL_DIGRESSION_COPY,
     questions: [
       {
         id: "q1",
@@ -385,8 +384,7 @@ export const PARTY_DASH_MASTERY_GATE: MasteryGateDef = {
   minigameId: "mg_party_dash",
   title: "Party Pad Mastery Quiz",
   bossLabel: "Play-Pad Boss",
-  requirementCopy:
-    "Optional digression after the Party Dash. Ace every question if you want the worksheet — Credit still opens from Freedom + Paycheck Change.",
+  requirementCopy: OPTIONAL_DIGRESSION_COPY,
   questions: [
     {
       id: "pd1",

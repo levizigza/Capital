@@ -1,6 +1,6 @@
 ﻿# Real Estate — Story Circle (Property Pier)
 
-> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Paycheck Change.
 
 **Island ID:** `real_estate`  
 **Map name:** Real Estate Row (rental + auction district)  

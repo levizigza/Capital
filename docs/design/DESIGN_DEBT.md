@@ -58,9 +58,9 @@ This register tracks **design debt** — gaps between intended player experience
 | **Severity** | 🔴 P0 |
 | **Type** | Surface debt |
 | **Classification** | IMPROVE |
-| **FACTS** | `isIslandProgressLocked()` unlocks side shores after Cove Change. `TravelMapView` shows spine strip when `PLAYTEST_UNLOCK_ALL_ISLANDS = false`; full archipelago when true. Lock hint: *"Finish Cove Change — then free-roam shores open"*. |
+| **FACTS** | `isIslandProgressLocked()` unlocks side shores after Paycheck Change. `TravelMapView` shows spine strip when `PLAYTEST_UNLOCK_ALL_ISLANDS = false`; full archipelago when true. Lock hint: *"Finish Paycheck Change — then outer-ring shores open"*. |
 | **INFERENCE** | Players may not discover outer ring without map UX pass; code gate ≠ felt unlock. |
-| **RECOMMENDATION** | Cold playtest: after Cove Change, can player find one side shore without Coin Bag spoiling? |
+| **RECOMMENDATION** | Cold playtest: after Paycheck Change, can player find one side shore without Coin Bag spoiling? |
 
 ---
 

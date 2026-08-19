@@ -39,7 +39,7 @@ export const SPINE_MAP_RING_IDS = [
 
 /**
  * Discoverable era side shores — Capital-framed chapters with per-shore soundtrack.
- * Outer map ring; soft-locked until first Cove Change.
+ * Outer map ring; soft-locked until Paycheck Change.
  */
 export const SIDE_SHORE_TRAVEL_IDS = [
   "signal_city",

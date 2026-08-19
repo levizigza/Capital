@@ -236,7 +236,7 @@ function persistRoom(room: FamilyRoom): FamilyRoom {
 export const FAMILY_CHALLENGE_KIND_LABEL: Record<FamilyChallengeKind, string> = {
   studio_clear: "Clear a pinned Studio voyage",
   freedom_seal: "Earn the Freedom Seal",
-  cove_take: "Finish the Cove Take",
+  cove_take: "Finish a spine Take (Cove or Paycheck)",
   digression_pair: "Fill a digression myth-shelf pair together",
 };
 

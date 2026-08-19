@@ -1,6 +1,6 @@
 ﻿# Future Shores — Story Circle (Portfolio Skies)
 
-> **SIDE SHORE** — Solarpunk horizon on the outer ring. Soft-locked until Cove Change. VibeCode Studio hooks live at Harbor.
+> **SIDE SHORE** — Solarpunk horizon on the outer ring. Soft-locked until Paycheck Change. VibeCode Studio hooks live at Harbor.
 
 **Island ID:** `future_shores`  
 **Map name:** Portfolio Skies (painterly floating isles)  

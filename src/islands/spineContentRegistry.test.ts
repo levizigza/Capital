@@ -16,6 +16,7 @@ import {
   PARKED_MINIGAME_IDS,
   spineRegistryPieces,
   SPINE_CONTENT_REGISTRY,
+  sideShoreHudLine,
 } from "./spineContentRegistry";
 import { genreHudLine, genreShoreBlurb } from "./genreWorlds";
 import { cueForIsland } from "./audio/soundtrackCatalog";
@@ -85,6 +86,12 @@ describe("Pillar 7 — spine content registry", () => {
     expect(cueForIsland("real_estate")).toBe("orbital_keep");
     expect(cueForIsland("intangibles")).toBe("nocturne_void");
     expect(cueForIsland("future_shores")).toBe("solarpunk_cove");
+  });
+
+  it("sideShoreHudLine uses organ verb, not genre city copy", () => {
+    expect(sideShoreHudLine("signal_city")).toMatch(/Listen on this shore/i);
+    expect(sideShoreHudLine("venture_foundry")).toMatch(/Build on this shore/i);
+    expect(sideShoreHudLine("harbor_haven")).toBeNull();
   });
 
   it("does not let genre cities lead spine HUD copy", () => {

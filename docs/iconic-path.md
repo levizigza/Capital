@@ -119,7 +119,7 @@ await __QA__.seedSignatureLoop("spectacle_ready", "clock") // or "coin" | "spira
 ## Identity freeze (Wave 4)
 
 - Player-facing world name: **Fortune Archipelago** (Capital = product brand).  
-- Travel **strip** = **Harbor · Cove · Paycheck · Credit**; 3D map + carpet also show era **side shores** (soft-locked until Cove Change) with per-shore soundtrack cues.  
+- Travel **strip** = **Harbor · Cove · Paycheck · Credit**; 3D map + carpet also show era **side shores** (soft-locked until Paycheck Change) with per-shore soundtrack cues.  
 - Phone cold-play: on-screen **Walk** pad on Harbor / shores (coarse pointer).  
 - Signature trailer: mute-friendly captions + Piggy/Coin Bag silhouettes.
 

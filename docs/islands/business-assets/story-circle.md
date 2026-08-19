@@ -1,6 +1,6 @@
 ﻿# Business Assets — Story Circle (Diversify Keep)
 
-> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Paycheck Change.
 
 **Island ID:** `business_assets`  
 **Map name:** Diversify Keep (2010s mobile-shop gloss)  

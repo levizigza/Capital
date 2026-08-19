@@ -4,20 +4,20 @@
     {
       "id": "signal_city",
       "name": "Phosphor Reef",
-      "description": "Biopunk signal gardens on the outer ring \u2014 listen for living market cues. Side shore of Fortune Archipelago (not a main-quest chip).",
-      "icon": "\ud83d\udfe2",
+      "description": "Biopunk signal gardens on the outer ring — listen for living market cues. Side shore of Fortune Archipelago (not a main-quest chip).",
+      "icon": "🟢",
       "provenance": {
         "learning_objectives": [
-          "Understand how credit scores are built and why they matter",
-          "Learn the basics of investing: risk, return, and diversification",
-          "Read simple market indicators like price trends and volume",
-          "Distinguish between responsible borrowing and debt traps"
+          "Listen for living market cues before reacting",
+          "Practice diversification without day-trading simulation",
+          "Leave Spiral borrowing lessons for Credit Kingdom — rumor only here",
+          "Choose listen vs rush on side-shore digressions"
         ],
         "mechanics_used": [
           "market-simulation",
-          "quiz-challenge",
           "npc-dialogue-tree",
-          "portfolio-builder"
+          "portfolio-builder",
+          "exploration"
         ],
         "originality_notes": "Theme: cyberpunk-inspired signal-tower city (not a trading floor or bank). Verb: decode market signals via NPC intel missions and build a mock portfolio (not day-trading simulation). Structure: investigation-style quests where players gather clues about credit and investing before making decisions (not competitive trading). Combines detective-style NPC quests with simplified portfolio-building puzzles.",
         "forbidden_references": [
@@ -34,7 +34,7 @@
           "id": "sc_signal_plaza",
           "name": "Signal Plaza",
           "description": "The city center. Giant screens flash market tickers and credit tips. A street mentor hangs out by the fountain.",
-          "icon": "\ud83d\udce1",
+          "icon": "📡",
           "connections": [
             "sc_credit_lane",
             "sc_investor_tower"
@@ -42,9 +42,9 @@
         },
         {
           "id": "sc_credit_lane",
-          "name": "Credit Lane",
-          "description": "A narrow street lined with lending offices and score-tracking kiosks. Learn what makes a score rise or fall.",
-          "icon": "\ud83d\udcb3",
+          "name": "Signal Lane",
+          "description": "Narrow phosphor alley — reef whispers about Spiral shore without teaching scores.",
+          "icon": "💳",
           "connections": [
             "sc_signal_plaza",
             "sc_investor_tower"
@@ -54,7 +54,7 @@
           "id": "sc_investor_tower",
           "name": "Investor Tower",
           "description": "A glass skyscraper where analysts study trends. The observation deck shows the whole market at a glance.",
-          "icon": "\ud83c\udfd9\ufe0f",
+          "icon": "🏙️",
           "connections": [
             "sc_signal_plaza",
             "sc_credit_lane"
@@ -68,28 +68,28 @@
         {
           "id": "npc_mentor_max",
           "name": "Mentor Max",
-          "icon": "\ud83d\udd75\ufe0f",
+          "icon": "🕵️",
           "areaId": "sc_signal_plaza",
           "dialogueGraphId": "dlg_mentor_max"
         },
         {
           "id": "npc_credit_cleo",
-          "name": "Credit Cleo",
-          "icon": "\ud83d\udcc8",
+          "name": "Reef Echo",
+          "icon": "🌊",
           "areaId": "sc_credit_lane",
           "dialogueGraphId": "dlg_credit_cleo"
         },
         {
           "id": "npc_analyst_ari",
           "name": "Analyst Ari",
-          "icon": "\ud83d\udd2c",
+          "icon": "🔬",
           "areaId": "sc_investor_tower",
           "dialogueGraphId": "dlg_analyst_ari"
         },
         {
           "id": "npc_broker_blake",
           "name": "Broker Blake",
-          "icon": "\ud83e\udd1d",
+          "icon": "🤝",
           "areaId": "sc_investor_tower",
           "dialogueGraphId": "dlg_broker_blake"
         }
@@ -98,17 +98,17 @@
         {
           "id": "sc_market_pass",
           "name": "Market Pass",
-          "description": "Grants access to Investor Tower. Earned by proving you understand credit basics.",
-          "icon": "\ud83c\udfab",
+          "description": "Grants access to Investor Tower. Earned by listening to reef signals — not a credit exam.",
+          "icon": "🎫",
           "location": {
             "areaId": "sc_credit_lane"
           }
         },
         {
           "id": "sc_credit_report",
-          "name": "Credit Report",
-          "description": "Your personal credit snapshot. Shows what actions raise or lower your score.",
-          "icon": "\ud83d\udcc4",
+          "name": "Reef Rumor Scroll",
+          "description": "A whisper that Spiral shore handles borrowing — no scores on Phosphor Reef.",
+          "icon": "📄",
           "location": {
             "areaId": "sc_credit_lane"
           }
@@ -117,7 +117,7 @@
           "id": "sc_signal_badge",
           "name": "Signal City Badge",
           "description": "Proof you can read market signals and manage credit responsibly.",
-          "icon": "\ud83c\udf96\ufe0f",
+          "icon": "🎖️",
           "location": {
             "areaId": "sc_investor_tower"
           }
@@ -127,25 +127,17 @@
         {
           "id": "q_sc_credit_101",
           "track": "side",
-          "title": "Credit 101",
-          "description": "Meet Mentor Max to learn what credit is, then visit Credit Cleo to see how scores work and earn your Market Pass.",
-          "hint": "Start at Signal Plaza, then head to Credit Lane.",
+          "title": "Reef Listen",
+          "description": "Meet Mentor Max, choose listen vs rush, then prove you read market signals — Spiral credit waits on the main spine.",
+          "hint": "Start at Signal Plaza — listen before you trade.",
           "objectives": [
             {
               "type": "talkToNpc",
               "npcId": "npc_mentor_max"
             },
             {
-              "type": "talkToNpc",
-              "npcId": "npc_credit_cleo"
-            },
-            {
-              "type": "collectItem",
-              "itemId": "sc_credit_report"
-            },
-            {
               "type": "completeMinigame",
-              "minigameId": "mg_signal_scan"
+              "minigameId": "mg_diversify_baskets"
             }
           ],
           "rewards": {
@@ -188,7 +180,7 @@
           "id": "q_sc_reef_arcade",
           "track": "side",
           "title": "Reef Arcade Lane",
-          "description": "Optional wireframe arcade \u2014 compound patience and life forks without the Take.",
+          "description": "Optional wireframe arcade — compound patience and life forks without the Take.",
           "objectives": [
             {
               "type": "completeMinigame",
@@ -213,11 +205,11 @@
             {
               "id": "mm1",
               "speaker": "Mentor Max",
-              "text": "Phosphor Reef side shore \u2014 free roam. Every blinking light tells a money story. Digress here anytime; the spine still waits.",
+              "text": "Phosphor Reef side shore — free roam. Every blinking light tells a money story. Digress here anytime; the spine still waits.",
               "choices": [
                 {
                   "id": "mm1_a",
-                  "text": "Let's start with credit!",
+                  "text": "Let's decode reef signals!",
                   "nextNodeId": "mm2",
                   "effects": [
                     {
@@ -228,7 +220,7 @@
                 },
                 {
                   "id": "mm1_listen",
-                  "text": "Digression \u2014 listen or rush the blink?",
+                  "text": "Digression — listen or rush the blink?",
                   "nextNodeId": "mm_fork"
                 },
                 {
@@ -241,17 +233,17 @@
             {
               "id": "mm2",
               "speaker": "Mentor Max",
-              "text": "Credit is borrowed money you promise to pay back. Your credit score tracks how reliably you keep that promise. Head to Credit Lane and talk to Cleo \u2014 she knows scores inside and out.",
+              "text": "Every blinking light is a market cue — not a credit score. Listen first; Spiral shore teaches borrowing when Harbor opens it.",
               "end": true
             },
             {
               "id": "mm_fork",
               "speaker": "Mentor Max",
-              "text": "Reef lights blink your name. Listen for the money story \u2014 or rush the signal before you\u2019ve heard it?",
+              "text": "Reef lights blink your name. Listen for the money story — or rush the signal before you’ve heard it?",
               "choices": [
                 {
                   "id": "mm_linger",
-                  "text": "Listen first \u2014 then I\u2019ll roam.",
+                  "text": "Listen first — then I’ll roam.",
                   "nextNodeId": "mm_listen_done",
                   "effects": [
                     {
@@ -266,7 +258,7 @@
                 },
                 {
                   "id": "mm_rush",
-                  "text": "Rush the blink \u2014 I\u2019ll listen later.",
+                  "text": "Rush the blink — I’ll listen later.",
                   "nextNodeId": "mm_rush_done",
                   "effects": [
                     {
@@ -307,12 +299,12 @@
           "nodes": [
             {
               "id": "cleo1",
-              "speaker": "Credit Cleo",
-              "text": "Your credit score goes UP when you pay bills on time and keep balances low. It goes DOWN when you miss payments or borrow too much. Simple as that!",
+              "speaker": "Reef Echo",
+              "text": "I only whisper rumors here — Credit Kingdom holds the Spiral lesson. On Phosphor Reef we listen to signals, not lecture scores.",
               "choices": [
                 {
                   "id": "cleo1_a",
-                  "text": "Can I see my credit report?",
+                  "text": "What should I listen for?",
                   "nextNodeId": "cleo2",
                   "effects": [
                     {
@@ -323,21 +315,21 @@
                 },
                 {
                   "id": "cleo1_b",
-                  "text": "What's a good score?",
+                  "text": "When does Spiral open?",
                   "nextNodeId": "cleo3"
                 }
               ]
             },
             {
               "id": "cleo2",
-              "speaker": "Credit Cleo",
-              "text": "Here you go! Keep an eye on it. Good habits now mean better options later \u2014 lower interest rates, easier approvals. Try the Signal Scanner minigame to test your knowledge!",
+              "speaker": "Reef Echo",
+              "text": "Trend, volume, patience — diversify before you react. Take this rumor scroll and head to the plaza baskets minigame when you're ready.",
               "end": true
             },
             {
               "id": "cleo3",
-              "speaker": "Credit Cleo",
-              "text": "Scores range from 300 to 850. Above 700 is considered good. The higher your score, the more trustworthy lenders think you are.",
+              "speaker": "Reef Echo",
+              "text": "Freedom plus Paycheck Change on the spine — then Harbor trusts you with Spiral. This shore stays extra games, not homework.",
               "end": true
             }
           ]
@@ -349,7 +341,7 @@
             {
               "id": "ari1",
               "speaker": "Analyst Ari",
-              "text": "Welcome to Investor Tower! Investing means putting money into something now, hoping it grows over time. The key is diversification \u2014 don't put all your eggs in one basket.",
+              "text": "Welcome to Investor Tower! Investing means putting money into something now, hoping it grows over time. The key is diversification — don't put all your eggs in one basket.",
               "choices": [
                 {
                   "id": "ari1_a",
@@ -372,13 +364,13 @@
             {
               "id": "ari2",
               "speaker": "Analyst Ari",
-              "text": "Spread your investments across different types \u2014 some safer, some riskier. That way, if one drops, the others can balance it out. Talk to Broker Blake to try building a practice portfolio!",
+              "text": "Spread your investments across different types — some safer, some riskier. That way, if one drops, the others can balance it out. Talk to Broker Blake to try building a practice portfolio!",
               "end": true
             },
             {
               "id": "ari3",
               "speaker": "Analyst Ari",
-              "text": "Every investment carries risk \u2014 you could lose money. But historically, diversified investments tend to grow over long periods. The trick is patience and balance.",
+              "text": "Every investment carries risk — you could lose money. But historically, diversified investments tend to grow over long periods. The trick is patience and balance.",
               "end": true
             }
           ]
@@ -413,7 +405,7 @@
             {
               "id": "bb3",
               "speaker": "Broker Blake",
-              "text": "Bonds are the safest, but they grow the slowest. If you're young, you have time to handle some risk \u2014 that's when growth stocks make sense. Think long-term!",
+              "text": "Bonds are the safest, but they grow the slowest. If you're young, you have time to handle some risk — that's when growth stocks make sense. Think long-term!",
               "end": true
             }
           ]
@@ -424,7 +416,7 @@
           "id": "mg_signal_scan",
           "name": "Signal Scanner",
           "description": "Read credit and market signals on screen and answer quick-fire questions about what each signal means.",
-          "icon": "\ud83d\udce1",
+          "icon": "📡",
           "componentId": "SignalScannerGame",
           "areaId": "sc_signal_plaza"
         },
@@ -432,7 +424,7 @@
           "id": "mg_diversify_baskets",
           "name": "Don't Break the Basket",
           "description": "Spread your coins across assets, then weather a live market year. Concentrate and a crash stings; diversify and you ride it out.",
-          "icon": "\ud83e\uddfa",
+          "icon": "🧺",
           "componentId": "DiversifyBasketsGame",
           "areaId": "sc_signal_plaza",
           "genre": "strategy",
@@ -444,7 +436,7 @@
           "id": "mg_sc_compound",
           "name": "Reef Snowball",
           "description": "Watch diversified savings compound under phosphor glow.",
-          "icon": "\u2744\ufe0f",
+          "icon": "❄️",
           "componentId": "CompoundSnowballGame",
           "areaId": "sc_investor_tower",
           "genre": "simulation",
@@ -465,7 +457,7 @@
           "id": "mg_sc_life_fork",
           "name": "Signal Life Fork",
           "description": "Career and credit choices fork your cashflow path.",
-          "icon": "\ud83d\udd00",
+          "icon": "🔀",
           "componentId": "LifeForkGame",
           "areaId": "sc_credit_lane",
           "genre": "quiz",
@@ -475,7 +467,7 @@
           "id": "mg_sc_explore",
           "name": "Tower Treasure Walk",
           "description": "Explore Investor Tower rooms for portfolio clues.",
-          "icon": "\ud83d\uddfa\ufe0f",
+          "icon": "🗺️",
           "componentId": "ExplorablePuzzleGame",
           "areaId": "sc_investor_tower",
           "genre": "exploration",
@@ -485,8 +477,8 @@
         {
           "id": "mg_sc_news",
           "name": "Reef News Shocks",
-          "description": "Navigate market news dispatches \u2014 read before you react.",
-          "icon": "\ud83d\udcf0",
+          "description": "Navigate market news dispatches — read before you react.",
+          "icon": "📰",
           "componentId": "ModularMinigame",
           "areaId": "sc_signal_plaza",
           "modules": [
@@ -505,7 +497,7 @@
           "id": "mg_sc_pasaran",
           "name": "Plaza Fair Trade",
           "description": "Practice fair prices at the signal plaza stalls.",
-          "icon": "\ud83e\uddfa",
+          "icon": "🧺",
           "componentId": "PasaranMarketGame",
           "areaId": "sc_signal_plaza",
           "genre": "party",
@@ -515,7 +507,7 @@
           "id": "mg_sc_price",
           "name": "Ticker Price Lab",
           "description": "Slide a mock ticker price and watch demand react.",
-          "icon": "\ud83d\udcc8",
+          "icon": "📈",
           "componentId": "PriceItRightGame",
           "areaId": "sc_credit_lane",
           "modules": [
@@ -523,7 +515,7 @@
               "id": "PriceConfig",
               "config": {
                 "product": "signal subscription",
-                "emoji": "\ud83d\udce1",
+                "emoji": "📡",
                 "cost": 2,
                 "maxDemand": 50,
                 "chokePrice": 20

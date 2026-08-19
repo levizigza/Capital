@@ -1,6 +1,6 @@
 ﻿# Financial Assets — Story Circle (Budget Kart)
 
-> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Paycheck Change.
 
 **Island ID:** `financial_assets`  
 **Map name:** Budget Kart Coast (1990s flat-color markets)  

@@ -1,6 +1,6 @@
 ﻿# Venture Foundry — Story Circle (Gridlock Galleria)
 
-> **SIDE SHORE** — Era chapter on the outer Fortune Archipelago ring. Soft-locked until Cove Change. See [era-shores-restore.md](../../era-shores-restore.md).
+> **SIDE SHORE** — Era chapter on the outer Fortune Archipelago ring. Soft-locked until Paycheck Change. See [era-shores-restore.md](../../era-shores-restore.md).
 
 **Island ID:** `venture_foundry`  
 **Map name:** Gridlock Galleria (1980s neon grid)  

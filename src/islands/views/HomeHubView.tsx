@@ -2005,7 +2005,7 @@ export function HomeHubView({
             </p>
           ) : (
             <p className="text-center text-xs text-muted-foreground">
-              After a Cove Take, this room will name your plaque — still local, still myth.
+              After Paycheck Change, this room will name your plaque — still local, still myth.
             </p>
           )}
           {familyWitnessMythLine(familyRoom?.witnesses?.[0]) ? (

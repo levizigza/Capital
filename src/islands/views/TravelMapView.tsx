@@ -20,7 +20,7 @@ import { getIslandTheme } from "../themes/islandThemes";
 import { islandLockHint, PLAYTEST_UNLOCK_ALL_ISLANDS } from "../progressGates";
 import { moneyStructureForIsland } from "../moneyStructures";
 import { pointerSafeActivate } from "../pointerSafeClick";
-import { hasCompletedCoveChange } from "../chapterLoop";
+import { hasCompletedPaycheckChange } from "../chapterLoop";
 
 /** Compact structure label for the spine strip. */
 function structurePinGlyph(islandId: string): string {
@@ -99,7 +99,7 @@ export function TravelMapView({
     [islands],
   );
   const mapIslands = useMemo(() => islandsForArchipelagoMap(islands), [islands]);
-  const freeRoamOpen = PLAYTEST_UNLOCK_ALL_ISLANDS || hasCompletedCoveChange(save);
+  const freeRoamOpen = PLAYTEST_UNLOCK_ALL_ISLANDS || hasCompletedPaycheckChange(save);
 
   const scrollStrip = useCallback((dir: "prev" | "next") => {
     const el = stripRef.current;
@@ -232,7 +232,7 @@ export function TravelMapView({
             </p>
           ) : (
             <p className="max-w-md text-center text-[10px] font-medium text-white/45">
-              Finish Cove Change — then the outer ring opens for free stray
+              Finish Paycheck Change — then the outer ring opens for free stray
             </p>
           )}
           {nextBoat ? (

@@ -1,6 +1,6 @@
 ﻿# Intangibles — Story Circle (Intangible Isle)
 
-> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Cove Change.
+> **SIDE SHORE** — Era chapter on the outer ring. Soft-locked until Paycheck Change.
 
 **Island ID:** `intangibles`  
 **Map name:** Intangible Isle (2020s stylized IP)  
