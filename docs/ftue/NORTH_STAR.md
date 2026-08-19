@@ -45,6 +45,7 @@ Mapped onto live Capital (Cove → Paycheck → Credit + Harbor) — **player-fe
 
 | Layer | Location |
 |-------|----------|
+| **First hour design** | `docs/ftue/CAPITAL_FIRST_HOUR.md` |
 | Transfer tasks | `src/islands/conceptProgression/` · `docs/ftue/TRANSFER_TASKS.md` |
 | Autonomy stages | `docs/ftue/AUTONOMY_PROGRESSION.md` |
 | Player modes | `src/islands/playerOnboarding/` |
