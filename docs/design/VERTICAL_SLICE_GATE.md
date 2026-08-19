@@ -3,6 +3,7 @@
 **Status:** Read-only audit — **one district** excellence gate before any world expansion  
 **Audited slice:** **Harbor Memory Loop (HML)** — bounded, iconic-freeze compliant  
 **Law:** **Do not expand the world** (no new districts, main-course islands, or map width) until this gate clears in **external playtesting**.  
+**Architecture:** [CAUSAL_STORY_ARCHITECTURE.md](./CAUSAL_STORY_ARCHITECTURE.md) — all nine links must fire in the slice before width.  
 **Date:** 2026-08-19  
 **Evidence:** Repository @ `main` lineage · [CAPITAL_MASTER_AUDIT.md](./CAPITAL_MASTER_AUDIT.md) · [iconic-path.md](../iconic-path.md) · Pattern #94 **PENDING**
 
