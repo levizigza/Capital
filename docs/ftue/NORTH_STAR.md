@@ -5,6 +5,8 @@ After Capital teaches a financial principle once, what percentage of players can
 
 Tutorial completion is diagnostic only. Players should not remember the instructions — they should remember **how the world works**.
 
+**Architecture:** The financial model is story machinery, not a lesson that interrupts play — [CAUSAL_STORY_ARCHITECTURE.md](../design/CAUSAL_STORY_ARCHITECTURE.md).
+
 ---
 
 ## Target architecture (player experience)

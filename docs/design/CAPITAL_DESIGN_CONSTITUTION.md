@@ -2,6 +2,7 @@
 
 **Status:** Non-negotiable principles for product, design, and engineering judgment  
 **Mission:** Create an outstanding financial game whose gameplay itself develops better financial reasoning.  
+**Architecture:** [CAUSAL_STORY_ARCHITECTURE.md](./CAUSAL_STORY_ARCHITECTURE.md) — simulate causes · display effects · characters give meaning · decisions · time · failure → knowledge → possibilities → lives → stories.  
 **Derived from:** [CAPITAL_MASTER_AUDIT.md](./CAPITAL_MASTER_AUDIT.md) · [CAPITAL_DESIGN_BIBLE.md](../CAPITAL_DESIGN_BIBLE.md) · [CONSTRAINT_PLAY_TRUTH.md](./CONSTRAINT_PLAY_TRUTH.md) · [ftue/NORTH_STAR.md](../ftue/NORTH_STAR.md) · iconic freeze  
 **Not:** A feature backlog. Principles outlive features. When a proposal conflicts with this constitution, change the proposal — or deliberately amend this document.
 
@@ -21,6 +22,10 @@
 > In a world where money is alive, a washed-ashore Voyager learns that fortune is a journey of choices — until they escape paycheck-to-paycheck and return home transformed.
 
 **Craft compression:** *I choose something about money → the living world marks it → Harbor remembers → I face the next living choice.*
+
+**Causal compression:** *Simulate causes → display effects → characters mean → player decides → time consequences → failure knowledge → new possibilities → different lives → stories told.*
+
+See [CAUSAL_STORY_ARCHITECTURE.md](./CAUSAL_STORY_ARCHITECTURE.md).
 
 **Player fantasy:** Economic agency among Money Mascots — curious explorer + careful chooser. Not a student in a classroom. Not a spreadsheet operator.
 
@@ -322,6 +327,7 @@ Before shipping on the spine, a change must clear **all** of:
 | [iconic-path.md](../iconic-path.md) | Freeze + cold playtest checklist |
 | [ftue/NORTH_STAR.md](../ftue/NORTH_STAR.md) | Independent Transfer king KPI |
 | [CONSTRAINT_PLAY_TRUTH.md](./CONSTRAINT_PLAY_TRUTH.md) | Honest gameplay laws + regression guards |
+| [CAUSAL_STORY_ARCHITECTURE.md](./CAUSAL_STORY_ARCHITECTURE.md) | Nine-link causal story law + financial-model-as-machinery breakthrough |
 | [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) | Productive-struggle guide system + truth hierarchy |
 | [AI_GUIDE_GUARDRAILS.md](../ai/AI_GUIDE_GUARDRAILS.md) | Allow/deny law + LLM PromptPack contract |
 
