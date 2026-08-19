@@ -59,7 +59,7 @@ Exclude: designers of the current FTUE, people who already know the intended Tak
 
 1. **Brief + consent** (5 min) — [TEMPLATE_PARTICIPANT_BRIEF.md](./usability/TEMPLATE_PARTICIPANT_BRIEF.md)  
 2. **Cold play task** (25–35 min) — think-aloud encouraged; observer silent except scripted prompts  
-3. **Guided interview** (10–15 min) — [TEMPLATE_SESSION_LOG.md](./usability/TEMPLATE_SESSION_LOG.md) § Interview  
+3. **Guided interview** (10–15 min) — [TEMPLATE_SESSION_LOG.md](./usability/TEMPLATE_SESSION_LOG.md) § Interview (includes anecdote recall question — [ANECDOTE_SYSTEM.md](../research/ANECDOTE_SYSTEM.md))  
 4. **Debrief** (optional 5 min) — may then explain design (not scored)
 
 ### Primary task script (new player)

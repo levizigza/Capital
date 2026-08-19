@@ -3,7 +3,7 @@
 **Status:** Research architecture for measuring **financial reasoning transfer** — not worksheet completion  
 **King metric:** **INDEPENDENT_FINANCIAL_TRANSFER_RATE (IFTR)**  
 **Law:** Quizzes, tip dismissals, and tutorial shell completion are **diagnostic at best** — never primary success signals for judgment concepts.  
-**Companions:** [NORTH_STAR.md](../ftue/NORTH_STAR.md) · [CONCEPT_MASTERY_PEDAGOGY.md](../design/CONCEPT_MASTERY_PEDAGOGY.md) · [TRANSFER_TASKS.md](../ftue/TRANSFER_TASKS.md) · [LEARNING_TELEMETRY.md](../design/LEARNING_TELEMETRY.md) · [FTUE_TELEMETRY.md](../ftue/FTUE_TELEMETRY.md) · [REFLECTION_SYSTEM.md](../design/REFLECTION_SYSTEM.md) · [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md)
+**Companions:** [NORTH_STAR.md](../ftue/NORTH_STAR.md) · [CONCEPT_MASTERY_PEDAGOGY.md](../design/CONCEPT_MASTERY_PEDAGOGY.md) · [TRANSFER_TASKS.md](../ftue/TRANSFER_TASKS.md) · [LEARNING_TELEMETRY.md](../design/LEARNING_TELEMETRY.md) · [FTUE_TELEMETRY.md](../ftue/FTUE_TELEMETRY.md) · [REFLECTION_SYSTEM.md](../design/REFLECTION_SYSTEM.md) · [AI_GUIDE_ARCHITECTURE.md](../ai/AI_GUIDE_ARCHITECTURE.md) · [ANECDOTE_SYSTEM.md](./ANECDOTE_SYSTEM.md)
 
 ---
 
