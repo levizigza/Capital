@@ -5,7 +5,7 @@
 **Scope:** Read-only reconstruction of what exists in code and docs. No production code was modified for this audit.  
 **Auditors (roles):** Principal game designer · economy designer · narrative systems designer · UX architect · learning scientist · senior software architect.
 
-**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md)
+**Companion artifacts:** [CURRENT_SYSTEM_MAP.mmd](./CURRENT_SYSTEM_MAP.mmd) · [DESIGN_DEBT.md](./DESIGN_DEBT.md) · [MASTER_DESIGN_AUDIT.md](./MASTER_DESIGN_AUDIT.md) (prior partial audit — supplementary)
 
 ---
 
