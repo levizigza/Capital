@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { coinBagHarborTip } from "./coinBagBuddy";
-import { islandLockHint, bossUnlockProgress } from "../progressGates";
+import {
+  islandLockHint,
+  bossUnlockProgress,
+  PLAYTEST_UNLOCK_ALL_ISLANDS,
+} from "../progressGates";
 import { SIDE_TOMFOOLERY } from "../mainCourse";
 import type { IslandDefinition, IslandSaveV1 } from "../types";
 
@@ -51,10 +55,16 @@ describe("iconic whole-game criteria contracts", () => {
       questStatus: {},
     } as unknown as IslandSaveV1;
     const hint = islandLockHint(locked, save);
-    expect(hint).toMatch(/Paycheck Change/i);
+    if (PLAYTEST_UNLOCK_ALL_ISLANDS) {
+      expect(hint).toBeNull();
+    } else {
+      expect(hint).toMatch(/Paycheck Change/i);
+    }
     const tip = coinBagHarborTip(null, {
       hasFreedom: true,
-      creditMastery: bossUnlockProgress(save),
+      creditMastery: PLAYTEST_UNLOCK_ALL_ISLANDS
+        ? { mastery: 0, needed: 0, escaped: true, unlocked: false }
+        : bossUnlockProgress(save),
     });
     expect(tip.tip).toMatch(/Paycheck Change/i);
   });
