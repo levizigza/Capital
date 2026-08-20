@@ -4,6 +4,8 @@
 
 **Law:** Do **not** fix longevity by adding grind, XP sinks, more main-course islands, or fake online retention. Longevity = **mastery · interaction · uncertainty · expression · social dynamics · emergence**.
 
+**Q&A portrait (still learning / combining / contextual / strategies / surprises / history / teach / self-goals + early-solve flags):** [`docs/design/SKILLED_PLAYER_100H.md`](./design/SKILLED_PLAYER_100H.md).
+
 **Canon:** [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · freeze: Harbor · Cove → Paycheck → Credit; Family Room local.  
 **Sibling audits:** complexity cut · replayability · social · identity (branch docs when present) — this file is the 100h player lens.
 
