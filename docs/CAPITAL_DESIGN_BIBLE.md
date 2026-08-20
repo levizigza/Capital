@@ -8,7 +8,7 @@
 [iconic-path.md](./iconic-path.md) · [iconic-later.md](./iconic-later.md) · [player-fantasy-and-loop.md](./player-fantasy-and-loop.md) · [game-pillars.md](./game-pillars.md) · [mural-thesis.md](./mural-thesis.md) · [story-bible.md](./story-bible.md) · [harbor-ashore.md](./harbor-ashore.md) · [era-shores-restore.md](./era-shores-restore.md) · [design/CAUSAL_STORY_ARCHITECTURE.md](./design/CAUSAL_STORY_ARCHITECTURE.md)
 
 **Audit siblings (deep dives; may live on design branches until merged):**  
-complexity cut · longevity 100h · feature gate · secrets · replayability · social · progression · economy · risk/reward · choices · system interactions · feedback · curiosity · identity · metrics · economy sim · playtest
+[quality north-star](./design/QUALITY_NORTH_STAR_AUDIT.md) · complexity cut · longevity 100h · feature gate · secrets · replayability · social · progression · economy · risk/reward · choices · system interactions · feedback · curiosity · identity · metrics · economy sim · playtest
 
 **Freeze (always on):** Main quest strip stays **Harbor · Cove → Paycheck → Credit**. Family Room stays **local**. No Nathan Project / BMO / CBE merges. Prefer deepening hush → scar spectacle → Plinth → share → Piggy → day-2 → Money Structure interiors over map width.
 
