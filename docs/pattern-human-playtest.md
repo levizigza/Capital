@@ -3,6 +3,8 @@
 **Why this exists:** Pattern #94 (test with non-designers) cannot Pass on QA cold scripts alone.  
 Automation proves systems; a human who did not design Capital must still play.
 
+For structured observational cohorts (record lenses + O/I/H/R findings + fix → retest), use [`docs/design/OBSERVATIONAL_PLAYTEST.md`](./design/OBSERVATIONAL_PLAYTEST.md).
+
 For Independent Transfer Rate (king FTUE KPI), use [`docs/ftue/INDEPENDENT_TRANSFER_PLAYTEST.md`](./ftue/INDEPENDENT_TRANSFER_PLAYTEST.md) — observer silence at Paycheck Vee after Cove.
 
 ## How to Pass #94

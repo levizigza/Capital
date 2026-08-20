@@ -1,4 +1,4 @@
-# Cohort summary — Capital FTUE
+# Cohort summary — Capital observational playtest
 
 **Cohort id:** C-_______  
 **Dates:** _______________  
@@ -8,24 +8,27 @@
 **Profiles:** New __ · Experienced __ · Returning __  
 **Facilitator:** _______________
 
+Process: `docs/design/OBSERVATIONAL_PLAYTEST.md`
+
 ---
 
 ## Stop rule check
 
 - [ ] Same **Major** or **Blocker** in ≥2 of first 3? → **stop recruiting; fix first**  
 - [ ] Continuing only because no Major/Blocker repeated  
+- [ ] Max **2** cohorts on this build before a fix  
 
 ---
 
 ## Sessions
 
-| P# | Profile | Contaminated? | Transfer | Recovered? | After guidance |
-|----|---------|---------------|----------|------------|----------------|
-| P1 | | | | | |
-| P2 | | | | | |
-| P3 | | | | | |
-| P4 | | | | | |
-| P5 | | | | | |
+| P# | Profile | Contaminated? | Transfer | Recovered? | Strategy formed? | Free play choice |
+|----|---------|---------------|----------|------------|------------------|------------------|
+| P1 | | | | | | |
+| P2 | | | | | | |
+| P3 | | | | | | |
+| P4 | | | | | | |
+| P5 | | | | | | |
 
 ---
 
@@ -33,10 +36,10 @@
 
 List finding ids that appeared ≥2× (or any Blocker):
 
-| Finding | Severity | Count | Beat |
-|---------|----------|-------|------|
-| F- | | | |
-| F- | | | |
+| Finding | Severity | Count | Beat | Hypothesis (one line) |
+|---------|----------|-------|------|------------------------|
+| F- | | | | |
+| F- | | | | |
 
 ---
 
@@ -50,8 +53,8 @@ List finding ids that appeared ≥2× (or any Blocker):
 
 ## Fix plan (before next cohort)
 
-| Priority | Finding | Change | Owner | Done? |
-|----------|---------|--------|-------|-------|
+| Priority | Finding | Recommendation | Owner | Done? |
+|----------|---------|----------------|-------|-------|
 | 1 | | | | [ ] |
 | 2 | | | | [ ] |
 | 3 | | | | [ ] |
@@ -62,21 +65,22 @@ List finding ids that appeared ≥2× (or any Blocker):
 
 ## Metrics glance (optional, privacy-safe)
 
-From local FTUE export — no individual identities:
+From local export / health dashboard — no individual identities:
 
 | Metric | Cohort note |
 |--------|-------------|
-| time_to_first_action | |
 | time_to_first_decision | |
-| freeplay_conversion | |
+| time_to_first_complete_loop | |
+| freeplay / voluntary play | |
 | failure_recovery (qualitative) | |
 | independent_transfer (qualitative) | |
+| hint_dependency | |
 
 Remember: tutorial completion is **not** the primary success metric.
 
 ---
 
-## Next cohort
+## Next step
 
 - [ ] Fixes merged  
 - [ ] Retest plan filed (`TEMPLATE_RETEST.md`)  
